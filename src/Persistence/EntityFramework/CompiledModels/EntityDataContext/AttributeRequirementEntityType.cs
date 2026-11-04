@@ -23,10 +23,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement),
                 baseEntityType,
+<<<<<<< HEAD
                 propertyCount: 8,
                 navigationCount: 1,
                 foreignKeyCount: 5,
                 unnamedIndexCount: 5,
+=======
+                propertyCount: 9,
+                navigationCount: 1,
+                foreignKeyCount: 6,
+                unnamedIndexCount: 6,
+>>>>>>> origin/slave
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -54,6 +61,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             gameMapDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+<<<<<<< HEAD
+=======
+            var gameServerDefinitionId = runtimeEntityType.AddProperty(
+                "GameServerDefinitionId",
+                typeof(Guid?),
+                nullable: true);
+            gameServerDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+>>>>>>> origin/slave
             var itemDefinitionId = runtimeEntityType.AddProperty(
                 "ItemDefinitionId",
                 typeof(Guid?),
@@ -99,12 +115,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 new[] { gameMapDefinitionId });
 
             var index1 = runtimeEntityType.AddIndex(
+<<<<<<< HEAD
                 new[] { itemDefinitionId });
 
             var index2 = runtimeEntityType.AddIndex(
                 new[] { skillId });
 
             var index3 = runtimeEntityType.AddIndex(
+=======
+                new[] { gameServerDefinitionId });
+
+            var index2 = runtimeEntityType.AddIndex(
+                new[] { itemDefinitionId });
+
+            var index3 = runtimeEntityType.AddIndex(
+                new[] { skillId });
+
+            var index4 = runtimeEntityType.AddIndex(
+>>>>>>> origin/slave
                 new[] { skillId1 });
 
             return runtimeEntityType;
@@ -144,6 +172,26 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
         public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
+<<<<<<< HEAD
+=======
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("GameServerDefinitionId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Cascade);
+
+            var rawJoinRequirements = principalEntityType.AddNavigation("RawJoinRequirements",
+                runtimeForeignKey,
+                onDependent: false,
+                typeof(System.Collections.Generic.ICollection<MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement>),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition).GetProperty("RawJoinRequirements", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition).GetField("<RawJoinRequirements>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+>>>>>>> origin/slave
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("ItemDefinitionId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
                 principalEntityType,
@@ -159,7 +207,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             return runtimeForeignKey;
         }
 
+<<<<<<< HEAD
         public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+=======
+        public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+>>>>>>> origin/slave
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("SkillId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
@@ -176,7 +228,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             return runtimeForeignKey;
         }
 
+<<<<<<< HEAD
         public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+=======
+        public static RuntimeForeignKey CreateForeignKey6(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+>>>>>>> origin/slave
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("SkillId1") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),

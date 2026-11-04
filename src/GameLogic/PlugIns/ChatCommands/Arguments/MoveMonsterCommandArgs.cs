@@ -13,5 +13,9 @@ public class MoveMonsterCommandArgs : CoordinatesCommandArgs
     /// Gets or sets the monster id.
     /// </summary>
     [Argument("id", true)]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.ObjectId)]
+>>>>>>> origin/slave
     public short Id { get; set; }
 }

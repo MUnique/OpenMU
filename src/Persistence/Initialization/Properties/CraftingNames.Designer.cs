@@ -321,5 +321,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GemstoneRefinery", resourceCulture);
             }
         }
+<<<<<<< HEAD
+=======
+
+        /// <summary>Gets LuckyItemExchange from the configuration name resources.</summary>
+        public static string LuckyItemExchange {
+            get {
+                return ResourceManager.GetString("LuckyItemExchange", resourceCulture);
+            }
+        }
+>>>>>>> origin/slave
     }
 }

@@ -28,6 +28,17 @@ public class GuildCreateAction
             return;
         }
 
+<<<<<<< HEAD
+=======
+        if (string.IsNullOrWhiteSpace(guildName))
+        {
+            // The client doesn't send an empty name; a crafted packet does. The protocol knows no better result.
+            creator.Logger.LogWarning("Account {account} requested a guild with an empty name.", creator.Account?.LoginName);
+            await creator.InvokeViewPlugInAsync<IShowGuildCreateResultPlugIn>(p => p.ShowGuildCreateResultAsync(GuildCreateErrorDetail.GuildAlreadyExist)).ConfigureAwait(false);
+            return;
+        }
+
+>>>>>>> origin/slave
         if (creator.GameContext.PlugInManager.GetPlugInPoint<IGuildCreatingPlugIn>() is { } plugInPoint)
         {
             var eventArgs = new CancelEventArgs();

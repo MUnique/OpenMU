@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // <copyright file="ObjectExtensions.cs" company="MUnique">
+=======
+﻿// <copyright file="ObjectExtensions.cs" company="MUnique">
+>>>>>>> origin/slave
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -19,7 +23,10 @@ public static class ObjectExtensions
 {
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> IdProperties = new();
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> NameProperties = new();
+<<<<<<< HEAD
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> NumberProperties = new();
+=======
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the guid identifier of an object, which has the name "Id".
@@ -101,6 +108,7 @@ public static class ObjectExtensions
 
         return result ?? string.Empty;
     }
+<<<<<<< HEAD
 
     /// <summary>
     /// Gets the number of an object, which identifies it in the game, e.g. the number of a monster or an item.
@@ -124,4 +132,6 @@ public static class ObjectExtensions
             ? Convert.ToInt32(number, CultureInfo.InvariantCulture)
             : null;
     }
+=======
+>>>>>>> origin/slave
 }

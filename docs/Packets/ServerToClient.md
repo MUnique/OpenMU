@@ -2,8 +2,15 @@
 
   * [C1 00 - ChatMessage (by server)](C1-00-ChatMessage_by-server.md)
   * [C1 01 - ObjectMessage (by server)](C1-01-ObjectMessage_by-server.md)
+<<<<<<< HEAD
   * [C1 07 - MagicEffectStatus (by server)](C1-07-MagicEffectStatus_by-server.md)
   * [C1 0B - MapEventState (by server)](C1-0B-MapEventState_by-server.md)
+=======
+  * [C1 03 - ChecksumRequest (by server)](C1-03-ChecksumRequest_by-server.md)
+  * [C1 07 - MagicEffectStatus (by server)](C1-07-MagicEffectStatus_by-server.md)
+  * [C1 0B - MapEventState (by server)](C1-0B-MapEventState_by-server.md)
+  * [C1 0C - WhisperResult (by server)](C1-0C-WhisperResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 0D - ServerMessage (by server)](C1-0D-ServerMessage_by-server.md)
   * [C1 0D - SlideNotice (by server)](C1-0D-SlideNotice_by-server.md)
   * [C1 0F - WeatherStatusUpdate (by server)](C1-0F-WeatherStatusUpdate_by-server.md)
@@ -26,6 +33,10 @@
   * [C3 19 - SkillAnimation (by server)](C3-19-SkillAnimation_by-server.md)
   * [C1 19 - SkillAnimation075 (by server)](C1-19-SkillAnimation075_by-server.md)
   * [C3 19 - SkillAnimation095 (by server)](C3-19-SkillAnimation095_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 1A - SkillTargetsAnimation (by server)](C1-1A-SkillTargetsAnimation_by-server.md)
+>>>>>>> origin/slave
   * [C1 1B - MagicEffectCancelled (by server)](C1-1B-MagicEffectCancelled_by-server.md)
   * [C1 1B - MagicEffectCancelled075 (by server)](C1-1B-MagicEffectCancelled075_by-server.md)
   * [C3 1C - MapChanged075 (by server)](C3-1C-MapChanged075_by-server.md)
@@ -60,6 +71,10 @@
   * [C1 28 - ItemRemoved (by server)](C1-28-ItemRemoved_by-server.md)
   * [C3 29 - ConsumeItemWithEffect (by server)](C3-29-ConsumeItemWithEffect_by-server.md)
   * [C1 2A - ItemDurabilityChanged (by server)](C1-2A-ItemDurabilityChanged_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 2B - Notification2B (by server)](C1-2B-Notification2B_by-server.md)
+>>>>>>> origin/slave
   * [C1 2C - FruitConsumptionResponse (by server)](C1-2C-FruitConsumptionResponse_by-server.md)
   * [C1 2D - EffectItemConsumption (by server)](C1-2D-EffectItemConsumption_by-server.md)
   * [C1 2F - MoneyDroppedExtended (by server)](C1-2F-MoneyDroppedExtended_by-server.md)
@@ -68,6 +83,10 @@
   * [C1 32 - ItemBought (by server)](C1-32-ItemBought_by-server.md)
   * [C1 32 FF - NpcItemBuyFailed (by server)](C1-32-FF-NpcItemBuyFailed_by-server.md)
   * [C3 33 - NpcItemSellResult (by server)](C3-33-NpcItemSellResult_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 34 - ItemRepairResponse (by server)](C1-34-ItemRepairResponse_by-server.md)
+>>>>>>> origin/slave
   * [C3 36 - TradeRequest (by server)](C3-36-TradeRequest_by-server.md)
   * [C1 37 - TradeRequestAnswer (by server)](C1-37-TradeRequestAnswer_by-server.md)
   * [C1 38 - TradeItemRemoved (by server)](C1-38-TradeItemRemoved_by-server.md)
@@ -84,10 +103,18 @@
   * [C1 3F 06 - PlayerShopBuyResultExtended (by server)](C1-3F-06-PlayerShopBuyResultExtended_by-server.md)
   * [C1 3F 08 - PlayerShopItemSoldToPlayer (by server)](C1-3F-08-PlayerShopItemSoldToPlayer_by-server.md)
   * [C1 3F 0A - PlayerShopPriceTypesExtended (by server)](C1-3F-0A-PlayerShopPriceTypesExtended_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 3F 10 - PlayerShopTitleChanged (by server)](C1-3F-10-PlayerShopTitleChanged_by-server.md)
+>>>>>>> origin/slave
   * [C1 3F 12 - ClosePlayerShopDialog (by server)](C1-3F-12-ClosePlayerShopDialog_by-server.md)
   * [C1 3F 2 - PlayerShopOpenSuccessful (by server)](C1-3F-2-PlayerShopOpenSuccessful_by-server.md)
   * [C1 3F 3 - PlayerShopClosed (by server)](C1-3F-3-PlayerShopClosed_by-server.md)
   * [C1 40 - PartyRequest (by server)](C1-40-PartyRequest_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 41 - PartyRequestResult (by server)](C1-41-PartyRequestResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 42 01 - PartyList (by server)](C1-42-01-PartyList_by-server.md)
   * [C1 42 01 - PartyList075 (by server)](C1-42-01-PartyList075_by-server.md)
   * [C1 43 - RemovePartyMember (by server)](C1-43-RemovePartyMember_by-server.md)
@@ -96,6 +123,10 @@
   * [C2 45 - AddTransformedCharactersToScope (by server)](C2-45-AddTransformedCharactersToScope_by-server.md)
   * [C2 45 - AddTransformedCharacterToScopeExtended (by server)](C2-45-AddTransformedCharacterToScopeExtended_by-server.md)
   * [C1 46 - ChangeTerrainAttributes (by server)](C1-46-ChangeTerrainAttributes_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 47 - PartyMemberItemPickedUp (by server)](C1-47-PartyMemberItemPickedUp_by-server.md)
+>>>>>>> origin/slave
   * [C1 48 - ShowEffect (by server)](C1-48-ShowEffect_by-server.md)
   * [C3 4A - RageAttack (by server)](C3-4A-RageAttack_by-server.md)
   * [C1 4B - RageAttackRangeResponse (by server)](C1-4B-RageAttackRangeResponse_by-server.md)
@@ -118,13 +149,26 @@
   * [C1 64 - GuildWarScoreUpdate (by server)](C1-64-GuildWarScoreUpdate_by-server.md)
   * [C2 65 - AssignCharacterToGuild (by server)](C2-65-AssignCharacterToGuild_by-server.md)
   * [C1 66 - GuildInformation (by server)](C1-66-GuildInformation_by-server.md)
+<<<<<<< HEAD
   * [C1 69 - MonsterSkillAnimation (by server)](C1-69-MonsterSkillAnimation_by-server.md)
+=======
+  * [C2 67 - GuildUnionViewportInfo (by server)](C2-67-GuildUnionViewportInfo_by-server.md)
+  * [C2 68 - ViewportPreviewObjects (by server)](C2-68-ViewportPreviewObjects_by-server.md)
+  * [C1 69 - MonsterSkillAnimation (by server)](C1-69-MonsterSkillAnimation_by-server.md)
+  * [C1 71 - PingRequest (by server)](C1-71-PingRequest_by-server.md)
+  * [C3 73 - GameGuardAuthRequest (by server)](C3-73-GameGuardAuthRequest_by-server.md)
+>>>>>>> origin/slave
   * [C1 81 - VaultMoneyUpdate (by server)](C1-81-VaultMoneyUpdate_by-server.md)
   * [C1 82 - VaultClosed (by server)](C1-82-VaultClosed_by-server.md)
   * [C1 83 - VaultProtectionInformation (by server)](C1-83-VaultProtectionInformation_by-server.md)
   * [C1 86 - ItemCraftingResult (by server)](C1-86-ItemCraftingResult_by-server.md)
   * [C1 87 - CraftingDialogClosed075 (by server)](C1-87-CraftingDialogClosed075_by-server.md)
   * [C1 88 - ItemCraftingPreviewExtended (by server)](C1-88-ItemCraftingPreviewExtended_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 8E 01 - MapMoveChecksumKey (by server)](C1-8E-01-MapMoveChecksumKey_by-server.md)
+  * [C1 8E 03 - MapMoveResponse (by server)](C1-8E-03-MapMoveResponse_by-server.md)
+>>>>>>> origin/slave
   * [C1 90 - DevilSquareEnterResult (by server)](C1-90-DevilSquareEnterResult_by-server.md)
   * [C1 91 - MiniGameOpeningState (by server)](C1-91-MiniGameOpeningState_by-server.md)
   * [C1 92 - UpdateMiniGameState (by server)](C1-92-UpdateMiniGameState_by-server.md)
@@ -132,8 +176,19 @@
   * [C1 93 - BloodCastleScore (by server)](C1-93-BloodCastleScore_by-server.md)
   * [C1 93 - ChaosCastleScore (by server)](C1-93-ChaosCastleScore_by-server.md)
   * [C1 94 - EventChipRegistrationResult (by server)](C1-94-EventChipRegistrationResult_by-server.md)
+<<<<<<< HEAD
   * [C1 9A - BloodCastleEnterResult (by server)](C1-9A-BloodCastleEnterResult_by-server.md)
   * [C1 9B - BloodCastleState (by server)](C1-9B-BloodCastleState_by-server.md)
+=======
+  * [C1 95 - EventChipCount (by server)](C1-95-EventChipCount_by-server.md)
+  * [C1 96 - MutoNumbers (by server)](C1-96-MutoNumbers_by-server.md)
+  * [C1 99 - ServerImmigrationResponse (by server)](C1-99-ServerImmigrationResponse_by-server.md)
+  * [C1 9A - BloodCastleEnterResult (by server)](C1-9A-BloodCastleEnterResult_by-server.md)
+  * [C1 9B - BloodCastleState (by server)](C1-9B-BloodCastleState_by-server.md)
+  * [C1 9C - ExperienceGainedLarge (by server)](C1-9C-ExperienceGainedLarge_by-server.md)
+  * [C1 9E - PlaySoundEffect (by server)](C1-9E-PlaySoundEffect_by-server.md)
+  * [C1 9F - MiniGameEventCount (by server)](C1-9F-MiniGameEventCount_by-server.md)
+>>>>>>> origin/slave
   * [C1 A0 - LegacyQuestStateList (by server)](C1-A0-LegacyQuestStateList_by-server.md)
   * [C1 A1 - LegacyQuestStateDialog (by server)](C1-A1-LegacyQuestStateDialog_by-server.md)
   * [C1 A2 - LegacySetQuestStateResponse (by server)](C1-A2-LegacySetQuestStateResponse_by-server.md)
@@ -150,12 +205,21 @@
   * [C1 AA 06 - DuelStatus (by server)](C1-AA-06-DuelStatus_by-server.md)
   * [C1 AA 07 - DuelInit (by server)](C1-AA-07-DuelInit_by-server.md)
   * [C1 AA 08 - DuelSpectatorAdded (by server)](C1-AA-08-DuelSpectatorAdded_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C3 AA 09 - DuelChannelQuitResult (by server)](C3-AA-09-DuelChannelQuitResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 AA 0A - DuelSpectatorRemoved (by server)](C1-AA-0A-DuelSpectatorRemoved_by-server.md)
   * [C1 AA 0B - DuelSpectatorList (by server)](C1-AA-0B-DuelSpectatorList_by-server.md)
   * [C1 AA 0C - DuelFinished (by server)](C1-AA-0C-DuelFinished_by-server.md)
   * [C1 AA 0D - DuelHealthBarInit (by server)](C1-AA-0D-DuelHealthBarInit_by-server.md)
   * [C2 AE - MuHelperConfigurationData (by server)](C2-AE-MuHelperConfigurationData_by-server.md)
   * [C1 AF 01 - ChaosCastleEnterResult (by server)](C1-AF-01-ChaosCastleEnterResult_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 B1 00 - MapServerChangeInfo (by server)](C1-B1-00-MapServerChangeInfo_by-server.md)
+  * [C1 B1 01 - MapServerChangeResult (by server)](C1-B1-01-MapServerChangeResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 B2 00 - CastleSiegeStatusResponse (by server)](C1-B2-00-CastleSiegeStatusResponse_by-server.md)
   * [C1 B2 01 - CastleSiegeRegistrationResponse (by server)](C1-B2-01-CastleSiegeRegistrationResponse_by-server.md)
   * [C1 B2 02 - CastleSiegeUnregisterResponse (by server)](C1-B2-02-CastleSiegeUnregisterResponse_by-server.md)
@@ -189,12 +253,21 @@
   * [C1 B7 00 - CastleSiegeMachineInterface (by server)](C1-B7-00-CastleSiegeMachineInterface_by-server.md)
   * [C1 B7 01 - CastleSiegeMachineUseResult (by server)](C1-B7-01-CastleSiegeMachineUseResult_by-server.md)
   * [C1 B7 02 - CastleSiegeMachineRegionNotify (by server)](C1-B7-02-CastleSiegeMachineRegionNotify_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 B8 01 - KillCountUpdate (by server)](C1-B8-01-KillCountUpdate_by-server.md)
+>>>>>>> origin/slave
   * [C1 B9 01 - CastleSiegeLifeStoneBuildTime (by server)](C1-B9-01-CastleSiegeLifeStoneBuildTime_by-server.md)
   * [C1 B9 02 - CastleSiegeOwnerLogo (by server)](C1-B9-02-CastleSiegeOwnerLogo_by-server.md)
   * [C1 B9 03 - CastleSiegeHuntingZoneGuardInfo (by server)](C1-B9-03-CastleSiegeHuntingZoneGuardInfo_by-server.md)
   * [C1 B9 05 - CastleSiegeHuntingZoneEnterResponse (by server)](C1-B9-05-CastleSiegeHuntingZoneEnterResponse_by-server.md)
   * [C1 BA - SkillStageUpdate (by server)](C1-BA-SkillStageUpdate_by-server.md)
   * [C2 BB - CastleSiegeMiniMapNpcPositions (by server)](C2-BB-CastleSiegeMiniMapNpcPositions_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 BC 00 - LahapJewelMixResult (by server)](C1-BC-00-LahapJewelMixResult_by-server.md)
+  * [C1 BC 01 - LahapJewelUnmixResult (by server)](C1-BC-01-LahapJewelUnmixResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 BD 00 - CrywolfInfo (by server)](C1-BD-00-CrywolfInfo_by-server.md)
   * [C1 BD 02 - CrywolfStatueAndAltarInfo (by server)](C1-BD-02-CrywolfStatueAndAltarInfo_by-server.md)
   * [C1 BD 03 - CrywolfContractResult (by server)](C1-BD-03-CrywolfContractResult_by-server.md)
@@ -213,7 +286,15 @@
   * [C1 BF 07 - IllusionTempleSkillEnded (by server)](C1-BF-07-IllusionTempleSkillEnded_by-server.md)
   * [C1 BF 07 - IllusionTempleSkillEnd (by server)](C1-BF-07-IllusionTempleSkillEnd_by-server.md)
   * [C1 BF 08 - IllusionTempleHolyItemRelics (by server)](C1-BF-08-IllusionTempleHolyItemRelics_by-server.md)
+<<<<<<< HEAD
   * [C1 BF 0A - ChainLightningHitInfo (by server)](C1-BF-0A-ChainLightningHitInfo_by-server.md)
+=======
+  * [C1 BF 09 - IllusionTempleEventState (by server)](C1-BF-09-IllusionTempleEventState_by-server.md)
+  * [C1 BF 0A - ChainLightningHitInfo (by server)](C1-BF-0A-ChainLightningHitInfo_by-server.md)
+  * [C1 BF 0B - LuckyCoinCount (by server)](C1-BF-0B-LuckyCoinCount_by-server.md)
+  * [C1 BF 0C - LuckyCoinRegistrationResult (by server)](C1-BF-0C-LuckyCoinRegistrationResult_by-server.md)
+  * [C1 BF 0D - LuckyCoinExchangeResult (by server)](C1-BF-0D-LuckyCoinExchangeResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 BF 0E - DoppelgangerEnterResult (by server)](C1-BF-0E-DoppelgangerEnterResult_by-server.md)
   * [C1 BF 0F - DoppelgangerMonsterPosition (by server)](C1-BF-0F-DoppelgangerMonsterPosition_by-server.md)
   * [C1 BF 10 - DoppelgangerStateUpdate (by server)](C1-BF-10-DoppelgangerStateUpdate_by-server.md)
@@ -221,6 +302,10 @@
   * [C1 BF 12 - DoppelgangerPlayInfo (by server)](C1-BF-12-DoppelgangerPlayInfo_by-server.md)
   * [C1 BF 13 - DoppelgangerResult (by server)](C1-BF-13-DoppelgangerResult_by-server.md)
   * [C1 BF 14 - DoppelgangerMonsterGoal (by server)](C1-BF-14-DoppelgangerMonsterGoal_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 BF 20 - InventoryItemEquipResult (by server)](C1-BF-20-InventoryItemEquipResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 BF 51 - MuHelperStatusUpdate (by server)](C1-BF-51-MuHelperStatusUpdate_by-server.md)
   * [C2 C0 - MessengerInitialization (by server)](C2-C0-MessengerInitialization_by-server.md)
   * [C1 C1 01 - FriendAdded (by server)](C1-C1-01-FriendAdded_by-server.md)
@@ -236,6 +321,10 @@
   * [C3 CB - FriendInvitationResult (by server)](C3-CB-FriendInvitationResult_by-server.md)
   * [C1 D1 00 - KanturuStateInfo (by server)](C1-D1-00-KanturuStateInfo_by-server.md)
   * [C1 D1 01 - KanturuEnterResult (by server)](C1-D1-01-KanturuEnterResult_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 D1 02 - KanturuRefineryState (by server)](C1-D1-02-KanturuRefineryState_by-server.md)
+>>>>>>> origin/slave
   * [C1 D1 03 - KanturuStateChange (by server)](C1-D1-03-KanturuStateChange_by-server.md)
   * [C1 D1 04 - KanturuBattleResult (by server)](C1-D1-04-KanturuBattleResult_by-server.md)
   * [C1 D1 05 - KanturuTimeLimit (by server)](C1-D1-05-KanturuTimeLimit_by-server.md)
@@ -250,14 +339,31 @@
   * [C1 D2 03 - CashShopItemBuyResult (by server)](C1-D2-03-CashShopItemBuyResult_by-server.md)
   * [C1 D2 04 - CashShopItemGiftResult (by server)](C1-D2-04-CashShopItemGiftResult_by-server.md)
   * [C1 D2 06 - CashShopStorageListResponse (by server)](C1-D2-06-CashShopStorageListResponse_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 D2 07 - CashShopSendCashGiftResult (by server)](C1-D2-07-CashShopSendCashGiftResult_by-server.md)
+  * [C1 D2 08 - CashShopBuyPossibilityResult (by server)](C1-D2-08-CashShopBuyPossibilityResult_by-server.md)
+  * [C1 D2 09 - CashShopItemLeftCount (by server)](C1-D2-09-CashShopItemLeftCount_by-server.md)
+>>>>>>> origin/slave
   * [C1 D2 0B - CashShopStorageItemConsumeResult (by server)](C1-D2-0B-CashShopStorageItemConsumeResult_by-server.md)
   * [C1 D2 0C - CashShopScriptVersion (by server)](C1-D2-0C-CashShopScriptVersion_by-server.md)
   * [C1 D2 0D - CashShopStorageItem (by server)](C1-D2-0D-CashShopStorageItem_by-server.md)
   * [C1 D2 0E - CashShopGiftStorageItem (by server)](C1-D2-0E-CashShopGiftStorageItem_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 D2 11 - PeriodItemListCount (by server)](C1-D2-11-PeriodItemListCount_by-server.md)
+  * [C1 D2 12 - PeriodItemInfo (by server)](C1-D2-12-PeriodItemInfo_by-server.md)
+  * [C1 D2 13 - CashShopEventItemListCount (by server)](C1-D2-13-CashShopEventItemListCount_by-server.md)
+  * [C1 D2 14 - CashShopEventItemList (by server)](C1-D2-14-CashShopEventItemList_by-server.md)
+>>>>>>> origin/slave
   * [C1 D2 15 - CashShopBannerVersion (by server)](C1-D2-15-CashShopBannerVersion_by-server.md)
   * [C1 D4 - ObjectWalked (by server)](C1-D4-ObjectWalked_by-server.md)
   * [C1 D4 - ObjectWalkedExtended (by server)](C1-D4-ObjectWalkedExtended_by-server.md)
   * [C1 DE 00 - CharacterClassCreationUnlock (by server)](C1-DE-00-CharacterClassCreationUnlock_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 E1 - GuildRoleAssignResponse (by server)](C1-E1-GuildRoleAssignResponse_by-server.md)
+>>>>>>> origin/slave
   * [C1 E5 - GuildRelationshipRequest (by server)](C1-E5-GuildRelationshipRequest_by-server.md)
   * [C1 E6 - GuildRelationshipChangeResult (by server)](C1-E6-GuildRelationshipChangeResult_by-server.md)
   * [C2 E9 - AllianceList (by server)](C2-E9-AllianceList_by-server.md)
@@ -265,6 +371,13 @@
   * [C1 F1 00 - GameServerEntered (by server)](C1-F1-00-GameServerEntered_by-server.md)
   * [C1 F1 01 - LoginResponse (by server)](C1-F1-01-LoginResponse_by-server.md)
   * [C3 F1 02 - LogoutResponse (by server)](C3-F1-02-LogoutResponse_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 F1 03 - AccountPasswordQuestion (by server)](C1-F1-03-AccountPasswordQuestion_by-server.md)
+  * [C1 F1 04 - AccountPasswordAnswerResult (by server)](C1-F1-04-AccountPasswordAnswerResult_by-server.md)
+  * [C1 F1 05 - AccountPasswordChangeResult (by server)](C1-F1-05-AccountPasswordChangeResult_by-server.md)
+  * [C1 F1 06 - GameServerChannelResult (by server)](C1-F1-06-GameServerChannelResult_by-server.md)
+>>>>>>> origin/slave
   * [C1 F3 00 - CharacterList (by server)](C1-F3-00-CharacterList_by-server.md)
   * [C1 F3 00 - CharacterListExtended (by server)](C1-F3-00-CharacterListExtended_by-server.md)
   * [C1 F3 00 - CharacterList075 (by server)](C1-F3-00-CharacterList075_by-server.md)
@@ -295,11 +408,23 @@
   * [C1 F3 11 - SkillAdded095 (by server)](C1-F3-11-SkillAdded095_by-server.md)
   * [C1 F3 11 - SkillRemoved095 (by server)](C1-F3-11-SkillRemoved095_by-server.md)
   * [C1 F3 11 - SkillListUpdate075 (by server)](C1-F3-11-SkillListUpdate075_by-server.md)
+<<<<<<< HEAD
   * [C1 F3 14 - InventoryItemUpgraded (by server)](C1-F3-14-InventoryItemUpgraded_by-server.md)
   * [C1 F3 15 - CharacterFocused (by server)](C1-F3-15-CharacterFocused_by-server.md)
   * [C1 F3 20 - SummonHealthUpdate (by server)](C1-F3-20-SummonHealthUpdate_by-server.md)
   * [C1 F3 22 - GuildSoccerTimeUpdate (by server)](C1-F3-22-GuildSoccerTimeUpdate_by-server.md)
   * [C1 F3 23 - GuildSoccerScoreUpdate (by server)](C1-F3-23-GuildSoccerScoreUpdate_by-server.md)
+=======
+  * [C1 F3 13 - PlayerEquipment (by server)](C1-F3-13-PlayerEquipment_by-server.md)
+  * [C1 F3 14 - InventoryItemUpgraded (by server)](C1-F3-14-InventoryItemUpgraded_by-server.md)
+  * [C1 F3 15 - CharacterFocused (by server)](C1-F3-15-CharacterFocused_by-server.md)
+  * [C1 F3 16 - CharacterRenameResult (by server)](C1-F3-16-CharacterRenameResult_by-server.md)
+  * [C1 F3 20 - SummonHealthUpdate (by server)](C1-F3-20-SummonHealthUpdate_by-server.md)
+  * [C1 F3 22 - GuildSoccerTimeUpdate (by server)](C1-F3-22-GuildSoccerTimeUpdate_by-server.md)
+  * [C1 F3 23 - GuildSoccerScoreUpdate (by server)](C1-F3-23-GuildSoccerScoreUpdate_by-server.md)
+  * [C1 F3 24 - SoccerMatchResult (by server)](C1-F3-24-SoccerMatchResult_by-server.md)
+  * [C1 F3 25 - SoccerGoal (by server)](C1-F3-25-SoccerGoal_by-server.md)
+>>>>>>> origin/slave
   * [C1 F3 30 - ApplyKeyConfiguration (by server)](C1-F3-30-ApplyKeyConfiguration_by-server.md)
   * [C1 F3 32 - BaseStatsExtended (by server)](C1-F3-32-BaseStatsExtended_by-server.md)
   * [C1 F3 40 - ServerCommand (by server)](C1-F3-40-ServerCommand_by-server.md)
@@ -317,7 +442,13 @@
   * [C1 F5 03 - DiscordIntegrationInfo (by server)](C1-F5-03-DiscordIntegrationInfo_by-server.md)
   * [C1 F5 05 - DiscordLinkCode (by server)](C1-F5-05-DiscordLinkCode_by-server.md)
   * [C2 F5 07 - ExternalChatMessage (by server)](C2-F5-07-ExternalChatMessage_by-server.md)
+<<<<<<< HEAD
   * [C1 F6 03 - QuestEventResponse (by server)](C1-F6-03-QuestEventResponse_by-server.md)
+=======
+  * [C1 F6 00 - QuestEventLimitResult (by server)](C1-F6-00-QuestEventLimitResult_by-server.md)
+  * [C1 F6 03 - QuestEventResponse (by server)](C1-F6-03-QuestEventResponse_by-server.md)
+  * [C1 F6 04 - QuestStartedByItem (by server)](C1-F6-04-QuestStartedByItem_by-server.md)
+>>>>>>> origin/slave
   * [C1 F6 0A - AvailableQuests (by server)](C1-F6-0A-AvailableQuests_by-server.md)
   * [C1 F6 0B - QuestStepInfo (by server)](C1-F6-0B-QuestStepInfo_by-server.md)
   * [C1 F6 0C - QuestProgress (by server)](C1-F6-0C-QuestProgress_by-server.md)
@@ -327,6 +458,10 @@
   * [C1 F6 1A - QuestStateList (by server)](C1-F6-1A-QuestStateList_by-server.md)
   * [C1 F6 1B - QuestState (by server)](C1-F6-1B-QuestState_by-server.md)
   * [C2 F6 1B - QuestStateExtended (by server)](C2-F6-1B-QuestStateExtended_by-server.md)
+<<<<<<< HEAD
+=======
+  * [C1 F6 20 - ActiveQuestListReady (by server)](C1-F6-20-ActiveQuestListReady_by-server.md)
+>>>>>>> origin/slave
   * [C1 F7 02 - ImperialGuardianEnterResult (by server)](C1-F7-02-ImperialGuardianEnterResult_by-server.md)
   * [C1 F7 04 - ImperialGuardianTimer (by server)](C1-F7-04-ImperialGuardianTimer_by-server.md)
   * [C1 F7 06 - ImperialGuardianResult (by server)](C1-F7-06-ImperialGuardianResult_by-server.md)

@@ -39,6 +39,11 @@ public static class EnumExtensions
             Storages.SeedSphereCrafting => ItemStorageKind.SeedSphereCrafting,
             Storages.SeedMountCrafting => ItemStorageKind.SeedMountCrafting,
             Storages.SeedUnmountCrafting => ItemStorageKind.SeedUnmountCrafting,
+<<<<<<< HEAD
+=======
+            Storages.LuckyItemTrade => ItemStorageKind.LuckyItemTrade,
+            Storages.LuckyItemRefinery => ItemStorageKind.LuckyItemRefinery,
+>>>>>>> origin/slave
             _ => throw new NotImplementedException($"Unhandled case {storage}."),
         };
     }
@@ -67,6 +72,11 @@ public static class EnumExtensions
             ItemStorageKind.SeedSphereCrafting => Storages.SeedSphereCrafting,
             ItemStorageKind.SeedMountCrafting => Storages.SeedMountCrafting,
             ItemStorageKind.SeedUnmountCrafting => Storages.SeedUnmountCrafting,
+<<<<<<< HEAD
+=======
+            ItemStorageKind.LuckyItemTrade => Storages.LuckyItemTrade,
+            ItemStorageKind.LuckyItemRefinery => Storages.LuckyItemRefinery,
+>>>>>>> origin/slave
             _ => throw new NotImplementedException($"Unhandled case {storage}."),
         };
     }

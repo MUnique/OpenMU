@@ -87,6 +87,19 @@ public enum Storages
     /// The storage of the seed unmount crafting dialog.
     /// </summary>
     SeedUnmountCrafting,
+<<<<<<< HEAD
+=======
+
+    /// <summary>
+    /// The storage of the lucky item exchange dialog.
+    /// </summary>
+    LuckyItemTrade,
+
+    /// <summary>
+    /// The storage of the lucky item refinery dialog.
+    /// </summary>
+    LuckyItemRefinery,
+>>>>>>> origin/slave
 }
 
 /// <summary>

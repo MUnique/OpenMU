@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // <copyright file="ItemConstants.cs" company="MUnique">
+=======
+﻿// <copyright file="ItemConstants.cs" company="MUnique">
+>>>>>>> origin/slave
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -50,6 +54,34 @@ public class ItemConstants
     public static ItemIdentifier Fruits => new(15, 13);
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets the identifier for the reset fruit of strength, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier StrengthResetFruit => new(54, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of agility, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier AgilityResetFruit => new(55, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of vitality, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier VitalityResetFruit => new(56, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of energy, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier EnergyResetFruit => new(57, 13);
+
+    /// <summary>
+    /// Gets the identifier for the reset fruit of command, which resets invested points of the stat.
+    /// </summary>
+    public static ItemIdentifier CommandResetFruit => new(58, 13);
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Gets the identifier for the fenrir.
     /// </summary>
     public static ItemIdentifier Fenrir => new(37, 13);
@@ -115,6 +147,14 @@ public class ItemConstants
     public static ItemIdentifier Antidote => new(8, 14);
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets the identifier for the kalima ticket.
+    /// </summary>
+    public static ItemIdentifier KalimaTicket => new(48, 13);
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Gets the identifier for the town portal scroll.
     /// </summary>
     public static ItemIdentifier TownPortalScroll => new(10, 14);
@@ -170,6 +210,29 @@ public class ItemConstants
     public static ItemIdentifier LargeShieldPotion => new(37, 14);
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets the identifier for the elite healing potion of the in-game shop, which recovers the health instantly.
+    /// </summary>
+    public static ItemIdentifier EliteHealingPotion => new(70, 14);
+
+    /// <summary>
+    /// Gets the identifier for the elite mana potion of the in-game shop, which recovers the mana instantly.
+    /// </summary>
+    public static ItemIdentifier EliteManaPotion => new(71, 14);
+
+    /// <summary>
+    /// Gets the identifier for the medium elite healing potion of the in-game shop, which recovers a part of the health instantly.
+    /// </summary>
+    public static ItemIdentifier MediumEliteHealingPotion => new(94, 14);
+
+    /// <summary>
+    /// Gets the identifier for the elite shield (SD) potion of the in-game shop, which recovers a part of the shield instantly.
+    /// </summary>
+    public static ItemIdentifier EliteShieldPotion => new(133, 14);
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Gets the identifier for the small complex potion.
     /// </summary>
     public static ItemIdentifier SmallComplexPotion => new(38, 14);

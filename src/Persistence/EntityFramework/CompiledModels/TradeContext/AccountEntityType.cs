@@ -22,7 +22,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Account),
                 baseEntityType,
                 propertyCount: 19,
+<<<<<<< HEAD
                 navigationCount: 3,
+=======
+                navigationCount: 4,
+>>>>>>> origin/slave
                 unnamedIndexCount: 1,
                 keyCount: 1);
 

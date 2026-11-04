@@ -16,6 +16,20 @@ using MUnique.OpenMU.Pathfinding;
 public class WarpGateAction
 {
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// The number of tiles by which the position of the player may be outside of the area of an enter gate.
+    /// </summary>
+    /// <remarks>
+    /// The position known by the server and the one of the client can differ a bit, so some inaccuracy is allowed.
+    /// It's independent of <see cref="DataModel.Configuration.GameConfiguration.InfoRange"/>, which is the view range:
+    /// raising it for wider screens or zoomed out cameras should not allow entering gates from further away.
+    /// 12 is the default info range, which was used here before.
+    /// </remarks>
+    internal const byte GateEntryTolerance = 12;
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Enters the gate.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -72,10 +86,16 @@ public class WarpGateAction
         }
 
         var currentPosition = player.IsWalking ? player.WalkTarget : player.Position;
+<<<<<<< HEAD
         var inaccuracy = player.GameContext.Configuration.InfoRange;
         if (player.CurrentMap!.Definition.EnterGates.Contains(enterGate)
             && !(this.IsXInRange(currentPosition, enterGate, inaccuracy)
                  && this.IsYInRange(currentPosition, enterGate, inaccuracy)))
+=======
+        if (player.CurrentMap!.Definition.EnterGates.Contains(enterGate)
+            && !(this.IsXInRange(currentPosition, enterGate, GateEntryTolerance)
+                 && this.IsYInRange(currentPosition, enterGate, GateEntryTolerance)))
+>>>>>>> origin/slave
         {
             return false;
         }

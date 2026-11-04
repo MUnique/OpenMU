@@ -15,7 +15,11 @@ public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
     /// Initializes a new instance of the <see cref="IllusionTempleTicketCrafting"/> class.
     /// </summary>
     public IllusionTempleTicketCrafting()
+<<<<<<< HEAD
         : base("Scroll of Blood", "Old Scroll", "Illusion Sorcerer Covenant")
+=======
+        : base("Illusion Sorcerer Covenant", "Old Scroll", "Scroll of Blood")
+>>>>>>> origin/slave
     {
     }
 

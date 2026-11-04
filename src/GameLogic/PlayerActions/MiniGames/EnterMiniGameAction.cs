@@ -11,6 +11,10 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+<<<<<<< HEAD
+=======
+using MUnique.OpenMU.GameLogic.Views.NPC;
+>>>>>>> origin/slave
 
 /// <summary>
 /// Player action which implements entering a mini game.
@@ -41,6 +45,10 @@ public class EnterMiniGameAction
             || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
             || player.CurrentMiniGame is not null)
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameEnterFailed)).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
@@ -52,12 +60,20 @@ public class EnterMiniGameAction
         var requiresMasterLevel = miniGameDefinition.RequiresMasterClass;
         if (characterLevel < minLevel || (requiresMasterLevel && player.SelectedCharacter?.CharacterClass?.IsMasterClass is not true))
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameCharacterLevelTooLowFormat), minLevel).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooLow)).ConfigureAwait(false);
             return;
         }
 
         if (characterLevel > maxLevel)
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameCharacterLevelTooHighFormat), maxLevel).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.CharacterLevelTooHigh)).ConfigureAwait(false);
             return;
         }
@@ -77,24 +93,40 @@ public class EnterMiniGameAction
 
         if (!this.CheckTicketItem(miniGameDefinition, player, gameTicketInventoryIndex, out var ticketItem))
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameTicketRequired)).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
 
         if (!this.CheckEntranceFee(miniGameDefinition, player, out var entranceFee))
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameEntranceFeeRequiredFormat), miniGameDefinition.EntranceFee).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotEnoughMoney)).ConfigureAwait(false);
             return;
         }
 
         if (!this.CheckPlayerKillState(miniGameDefinition, player))
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGamePlayerKillersCantEnter)).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.PlayerKillerCantEnter)).ConfigureAwait(false);
             return;
         }
 
         if (player.GuildWarContext is { State: GuildWarState.Started or GuildWarState.Requested })
         {
+<<<<<<< HEAD
+=======
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameNotDuringGuildWar)).ConfigureAwait(false);
+>>>>>>> origin/slave
             await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
             return;
         }
@@ -107,6 +139,10 @@ public class EnterMiniGameAction
                 && await miniGameStrategy.GetDurationUntilNextStartAsync(player.GameContext, miniGameDefinition).ConfigureAwait(false) != TimeSpan.Zero
                 && !IsJoinableRunningGame(player, miniGameDefinition))
             {
+<<<<<<< HEAD
+=======
+                await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameNotOpenFormat), miniGameDefinition.Name).ConfigureAwait(false);
+>>>>>>> origin/slave
                 await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.NotOpen)).ConfigureAwait(false);
                 return;
             }
@@ -157,6 +193,31 @@ public class EnterMiniGameAction
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Shows the reason why the player can't enter the mini game. The client only knows a fixed set of
+    /// refusal codes per event, and they don't cover every case the server checks - so the reason is
+    /// told in plain words, by the npc the player is talking to, or as a system message when the entry
+    /// was requested without an open npc dialog.
+    /// </summary>
+    /// <param name="player">The player which tried to enter.</param>
+    /// <param name="messageKey">The resource key of the reason, see <see cref="PlayerMessage"/>.</param>
+    /// <param name="arguments">The format arguments of the message.</param>
+    private static async ValueTask ShowRefusalAsync(Player player, string messageKey, params object?[] arguments)
+    {
+        var reason = player.GetLocalizedMessage(messageKey, arguments);
+        if (player.OpenedNpc is { } npc)
+        {
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(reason, npc)).ConfigureAwait(false);
+        }
+        else
+        {
+            await player.ShowBlueMessageAsync(reason).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Determines whether a running game of the definition exists which players may
     /// still join, e.g. to rejoin an ongoing event.
     /// </summary>
@@ -232,7 +293,13 @@ public class EnterMiniGameAction
             }
         }
 
+<<<<<<< HEAD
         return false;
+=======
+        // The regular ticket is preferred, because the free ticket is usually bought.
+        ticketItem = FreeTicketItems.Find(player, miniGameDefinition, gameTicketInventoryIndex);
+        return ticketItem is not null;
+>>>>>>> origin/slave
     }
 
     private bool IsValidTicket(Item? ticketItem, ItemDefinition requiredItemDefinition, MiniGameDefinition miniGameDefinition)

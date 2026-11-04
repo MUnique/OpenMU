@@ -15,12 +15,20 @@ public class CoordinatesCommandArgs : ArgumentsBase
     /// Gets or sets the coordinate X.
     /// </summary>
     [Argument("x", true)]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.MapCoordinateX)]
+>>>>>>> origin/slave
     public byte X { get; set; }
 
     /// <summary>
     /// Gets or sets the coordinate Y.
     /// </summary>
     [Argument("y", true)]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.MapCoordinateY)]
+>>>>>>> origin/slave
     public byte Y { get; set; }
 
     /// <summary>

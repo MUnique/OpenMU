@@ -11,10 +11,20 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 /// <param name="PropertyType">The type of the property.</param>
 /// <param name="Argument">The <see cref="ArgumentAttribute"/> of the property, if it has one.</param>
 /// <param name="ValidValues">The <see cref="ValidValuesAttribute"/> of the property, if it has one.</param>
+<<<<<<< HEAD
+=======
+/// <param name="Range">The <see cref="RangeAttribute"/> of the property, if it has one.</param>
+/// <param name="ValueReference">The <see cref="ValueReferenceAttribute"/> of the property, if it has one.</param>
+>>>>>>> origin/slave
 /// <param name="SetValue">The action which sets the value of the property of an instance of the arguments class.</param>
 public sealed record ChatCommandArgumentProperty(
     string Name,
     Type PropertyType,
     ArgumentAttribute? Argument,
     ValidValuesAttribute? ValidValues,
+<<<<<<< HEAD
+=======
+    RangeAttribute? Range,
+    ValueReferenceAttribute? ValueReference,
+>>>>>>> origin/slave
     Action<object, object?> SetValue);

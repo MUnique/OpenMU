@@ -278,6 +278,11 @@ public class MoveItemAction
             case Storages.SeedSphereCrafting:
             case Storages.SeedMountCrafting:
             case Storages.SeedUnmountCrafting:
+<<<<<<< HEAD
+=======
+            case Storages.LuckyItemTrade:
+            case Storages.LuckyItemRefinery:
+>>>>>>> origin/slave
                 if (player.TemporaryStorage is not null)
                 {
                     result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
@@ -479,6 +484,11 @@ public class MoveItemAction
             Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
             Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
             Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+<<<<<<< HEAD
+=======
+            Storages.LuckyItemTrade => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
+            Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
+>>>>>>> origin/slave
             _ => false,
         };
     }

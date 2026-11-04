@@ -69,6 +69,10 @@ public class SetLevelChatCommandPlugIn : ChatCommandPlugInBase<SetLevelChatComma
         /// <summary>
         /// Gets or sets the character name to set level for.
         /// </summary>
+<<<<<<< HEAD
+=======
+        [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
         public string? CharacterName { get; set; }
     }
 }

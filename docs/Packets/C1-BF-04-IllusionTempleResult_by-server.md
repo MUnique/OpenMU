@@ -19,12 +19,17 @@ The client shows the results.
 | 4 | 1 | Byte |  | Team1Points |
 | 5 | 1 | Byte |  | Team2Points |
 | 6 | 1 | Byte |  | PlayerCount |
+<<<<<<< HEAD
 | 10 | PlayerResult.Length * PlayerCount | Array of PlayerResult |  | Players |
+=======
+| 7 | PlayerResult.Length * PlayerCount | Array of PlayerResult |  | Players |
+>>>>>>> origin/slave
 
 ### PlayerResult Structure
 
 Contains the result of a player in the event.
 
+<<<<<<< HEAD
 Length: 17 Bytes
 
 | Index | Length | Data Type | Value | Description |
@@ -34,3 +39,14 @@ Length: 17 Bytes
 | 11 | 1 | Byte |  | Team |
 | 12 | 1 | Byte |  | Class |
 | 13 | 4 | IntegerLittleEndian |  | AddedExperience |
+=======
+Length: 20 Bytes
+
+| Index | Length | Data Type | Value | Description |
+|-------|--------|-----------|-------|-------------|
+| 0 | 10 | String |  | Name |
+| 10 | 1 | Byte |  | MapNumber |
+| 11 | 1 | Byte |  | Team |
+| 12 | 1 | Byte |  | Class |
+| 16 | 4 | IntegerLittleEndian |  | AddedExperience |
+>>>>>>> origin/slave

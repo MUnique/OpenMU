@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 @page "/edit-config-grid/{typeString}"
+=======
+﻿@page "/edit-config-grid/{typeString}"
+>>>>>>> origin/slave
 
 @using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.Web.AdminPanel.Properties
@@ -20,11 +24,14 @@
 
 <div>
     <QuickGrid Items="@this.ViewModels" Pagination="@_pagination" Theme="none" >
+<<<<<<< HEAD
         @if (this.HasNumbers)
         {
             <PropertyColumn Title="@Resources.Number" Property="@(c => c.Number)" Sortable="true" />
         }
 
+=======
+>>>>>>> origin/slave
         <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(c => c.Name)" Sortable="true">
             <HeaderTemplate>
                 <button type="button" class="col-title" onclick="@(() => context.Grid.SortByColumnAsync(context))">

@@ -67,9 +67,16 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
 
         // Reset backup inventory to avoid items are restored after failure and sudden disconnect of the client.
         player.BackupInventory = null;
+<<<<<<< HEAD
         foreach (var i in items)
         {
             await this.RequiredItemChangeAsync(player, i, false).ConfigureAwait(false);
+=======
+        var referencedItemsProtected = items.Any(link => link.ItemRequirement.FailResult == MixResult.DisappearAndProtectReferencedItems && link.Items.Any());
+        foreach (var i in items)
+        {
+            await this.RequiredItemChangeAsync(player, i, false, referencedItemsProtected).ConfigureAwait(false);
+>>>>>>> origin/slave
         }
 
         return (CraftingResult.Failed, null);
@@ -152,7 +159,11 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     {
         foreach (var requiredItemLink in requiredItems)
         {
+<<<<<<< HEAD
             await this.RequiredItemChangeAsync(player, requiredItemLink, true).ConfigureAwait(false);
+=======
+            await this.RequiredItemChangeAsync(player, requiredItemLink, true, false).ConfigureAwait(false);
+>>>>>>> origin/slave
         }
 
         var resultItems = await this.CreateOrModifyResultItemsAsync(requiredItems, player, socketSlot, successRate).ConfigureAwait(false);
@@ -165,13 +176,31 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
     /// <param name="player">The player.</param>
     /// <param name="itemLink">The item link.</param>
     /// <param name="success"><c>true</c>, if the crafting was successful; Otherwise, <c>false</c>.</param>
+<<<<<<< HEAD
     private async ValueTask RequiredItemChangeAsync(Player player, CraftingRequiredItemLink itemLink, bool success)
     {
         var mixResult = success ? itemLink.ItemRequirement.SuccessResult : itemLink.ItemRequirement.FailResult;
+=======
+    /// <param name="referencedItemsProtected">
+    /// <c>true</c>, if an item with <see cref="MixResult.DisappearAndProtectReferencedItems"/> protects the referenced items,
+    /// so that they stay as is.
+    /// </param>
+    private async ValueTask RequiredItemChangeAsync(Player player, CraftingRequiredItemLink itemLink, bool success, bool referencedItemsProtected)
+    {
+        var mixResult = success ? itemLink.ItemRequirement.SuccessResult : itemLink.ItemRequirement.FailResult;
+        if (referencedItemsProtected && itemLink.ItemRequirement.Reference > 0)
+        {
+            mixResult = MixResult.StaysAsIs;
+        }
+>>>>>>> origin/slave
 
         switch (mixResult)
         {
             case MixResult.Disappear:
+<<<<<<< HEAD
+=======
+            case MixResult.DisappearAndProtectReferencedItems:
+>>>>>>> origin/slave
                 var point = player.GameContext.PlugInManager.GetPlugInPoint<IItemDestroyedPlugIn>();
                 foreach (var item in itemLink.Items)
                 {

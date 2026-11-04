@@ -41,7 +41,11 @@ public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
         await connection.SendCharacterInformationAsync(
             this._player.Position.X,
             this._player.Position.Y,
+<<<<<<< HEAD
             this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
+=======
+            (byte)this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
+>>>>>>> origin/slave
             (ulong)this._player.SelectedCharacter.Experience,
             (ulong)this._player.GameServerContext.ExperienceTable[(int)this._player.Attributes![Stats.Level] + 1],
             (ushort)Math.Max(0, this._player.SelectedCharacter.LevelUpPoints),
@@ -65,7 +69,12 @@ public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
             (ushort)this._player.Attributes[Stats.BaseLeadership],
             (ushort)this._player.SelectedCharacter.UsedNegFruitPoints,
             this._player.SelectedCharacter.GetMaximumFruitPoints(),
+<<<<<<< HEAD
             (byte)this._player.SelectedCharacter.InventoryExtensions)
+=======
+            (byte)this._player.SelectedCharacter.InventoryExtensions,
+            direction: this._player.Rotation.ToPacketByte())
+>>>>>>> origin/slave
             .ConfigureAwait(false);
 
         if (this._player.SelectedCharacter.CharacterClass!.IsMasterClass)

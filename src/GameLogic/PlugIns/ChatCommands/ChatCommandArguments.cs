@@ -53,6 +53,11 @@ public static class ChatCommandArguments
                 property.PropertyType,
                 property.GetCustomAttribute<ArgumentAttribute>(inherit: true),
                 property.GetCustomAttribute<ValidValuesAttribute>(inherit: true),
+<<<<<<< HEAD
+=======
+                property.GetCustomAttribute<RangeAttribute>(inherit: true),
+                property.GetCustomAttribute<ValueReferenceAttribute>(inherit: true),
+>>>>>>> origin/slave
                 property.SetValue))
             .ToList();
     }

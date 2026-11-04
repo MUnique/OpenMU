@@ -108,11 +108,14 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private string? NameFilter { get; set; }
 
+<<<<<<< HEAD
     /// <summary>
     /// Gets a value indicating whether at least one entry has a number which can be displayed and used for sorting.
     /// </summary>
     private bool HasNumbers => this._viewModels?.Any(viewModel => viewModel.Number is not null) ?? false;
 
+=======
+>>>>>>> origin/slave
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
@@ -178,11 +181,15 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
         this._viewModels = data.OfType<object>()
             .Select(o => new ViewModel(o))
+<<<<<<< HEAD
             // Objects with a number, like monsters, are ordered by it; the name is only the fallback
             // for objects without a number, and for entries which share the same number.
             .OrderBy(o => o.Number is null)
             .ThenBy(o => o.Number)
             .ThenBy(o => o.Name)
+=======
+            .OrderBy(o => o.Name)
+>>>>>>> origin/slave
             .ToList();
 
         await this.InvokeAsync(async () =>
@@ -480,7 +487,10 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         {
             this.Parent = parent;
             this.Id = parent.GetId();
+<<<<<<< HEAD
             this.Number = parent.GetNumber();
+=======
+>>>>>>> origin/slave
             this.Name = parent.GetName();
         }
 
@@ -496,11 +506,14 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         public Guid Id { get; set; }
 
         /// <summary>
+<<<<<<< HEAD
         /// Gets or sets the number of the object, e.g. the number of a monster or an item, if it has one.
         /// </summary>
         public int? Number { get; set; }
 
         /// <summary>
+=======
+>>>>>>> origin/slave
         /// Gets or sets the name of the object.
         /// </summary>
         [System.ComponentModel.DataAnnotations.Display(Name = nameof(Resources.ConfigurationEntryName), ResourceType = typeof(Resources))]

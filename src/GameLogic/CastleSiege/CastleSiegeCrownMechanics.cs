@@ -96,7 +96,11 @@ public static class CastleSiegeCrownMechanics
         CastleSiegeJoinSide capturingSide)
     {
         if (crownUser.GuildStatus is not { } guildStatus
+<<<<<<< HEAD
             || !context.FinalGuildList.TryGetValue(guildStatus.GuildId, out var capturingGuild)
+=======
+            || context.GetFinalGuild(guildStatus.GuildId) is not { } capturingGuild
+>>>>>>> origin/slave
             || !IsAttackingSide(capturingSide)
             || capturingGuild.Side != capturingSide)
         {
@@ -108,7 +112,11 @@ public static class CastleSiegeCrownMechanics
         var winnerGuild = context.FinalGuildList.Values
             .FirstOrDefault(guild => guild.Side == capturingSide && guild.IsAllianceMaster)
             ?? capturingGuild;
+<<<<<<< HEAD
         context.MiddleOwnerGuildId = winnerGuild.GuildId;
+=======
+        context.MiddleOwnerGuildId = winnerGuild.PersistentGuildId;
+>>>>>>> origin/slave
         foreach (var guild in context.FinalGuildList.Values)
         {
             if (guild.Side == capturingSide)
@@ -164,6 +172,7 @@ public static class CastleSiegeCrownMechanics
     /// <returns>A task that represents the asynchronous result operation.</returns>
     internal static async ValueTask CheckResultAsync(CastleSiegeContext context)
     {
+<<<<<<< HEAD
         CastleSiegeGuildParticipant? winner = null;
         if (context.MiddleOwnerGuildId is { } middleOwnerGuildId)
         {
@@ -179,6 +188,16 @@ public static class CastleSiegeCrownMechanics
                         "The intermediate Castle Siege owner {guildId} is not in the selected guild list. The persisted owner is retained.",
                         middleOwnerGuildId);
             }
+=======
+        var winner = context.GetBattleOwner();
+        if (winner is null && context.MiddleOwnerGuildId is { } middleOwnerGuildId)
+        {
+            context.GameContext.LoggerFactory
+                .CreateLogger(typeof(CastleSiegeCrownMechanics))
+                .LogWarning(
+                    "The intermediate Castle Siege owner {guildId} is not in the selected guild list. The persisted owner is retained.",
+                    middleOwnerGuildId);
+>>>>>>> origin/slave
         }
 
         var ownershipChanged = winner is not null && ApplyOwner(context, winner.PersistentGuildId);
@@ -311,9 +330,13 @@ public static class CastleSiegeCrownMechanics
             return null;
         }
 
+<<<<<<< HEAD
         var selectedOwner = context.FinalGuildList.Values
             .FirstOrDefault(guild => guild.PersistentGuildId == ownerGuildId);
         if (selectedOwner is not null)
+=======
+        if (context.FinalGuildList.TryGetValue(ownerGuildId, out var selectedOwner))
+>>>>>>> origin/slave
         {
             return selectedOwner.GuildName;
         }

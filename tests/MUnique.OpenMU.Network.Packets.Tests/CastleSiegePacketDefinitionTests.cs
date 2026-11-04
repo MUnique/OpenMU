@@ -8,8 +8,17 @@ using System.IO;
 using System.Xml.Linq;
 
 /// <summary>
+<<<<<<< HEAD
 /// Verifies the packed Castle Siege wire layouts which are consumed and produced by MuMain.
 /// </summary>
+=======
+/// Verifies the Castle Siege wire layouts which are consumed and produced by MuMain.
+/// </summary>
+/// <remarks>
+/// MuMain reads most Castle Siege responses through structs with natural alignment (no <c>#pragma pack</c>):
+/// an integer after the one-byte result starts at offset 8, and array elements are padded to a multiple of 4.
+/// </remarks>
+>>>>>>> origin/slave
 [TestFixture]
 public class CastleSiegePacketDefinitionTests
 {
@@ -109,23 +118,39 @@ public class CastleSiegePacketDefinitionTests
         "4:Byte:Result;5:String:GuildName[8];13:IntegerBigEndian:GuildMarkCount;"
         + "17:Boolean:IsGivingUp;18:Byte:RegistrationRank")]
     [TestCase("CastleSiegeMarkRegistrationResponse", "C1HeaderWithSubCode", "B2", "04", "17", "4:Byte:Result;5:String:GuildName[8];13:IntegerBigEndian:GuildMarkCount")]
+<<<<<<< HEAD
     [TestCase("CastleSiegeDefenseBuyResponse", "C1HeaderWithSubCode", "B2", "05", "13", "4:Byte:Result;5:IntegerLittleEndian:NpcNumber;9:IntegerLittleEndian:NpcIndex")]
+=======
+    [TestCase("CastleSiegeDefenseBuyResponse", "C1HeaderWithSubCode", "B2", "05", "16", "4:Byte:Result;8:IntegerLittleEndian:NpcNumber;12:IntegerLittleEndian:NpcIndex")]
+>>>>>>> origin/slave
     [TestCase(
         "CastleSiegeDefenseRepairResponse",
         "C1HeaderWithSubCode",
         "B2",
         "06",
+<<<<<<< HEAD
         "21",
         "4:Byte:Result;5:IntegerLittleEndian:NpcNumber;9:IntegerLittleEndian:NpcIndex;"
         + "13:IntegerLittleEndian:CurrentHp;17:IntegerLittleEndian:MaxHp")]
+=======
+        "24",
+        "4:Byte:Result;8:IntegerLittleEndian:NpcNumber;12:IntegerLittleEndian:NpcIndex;"
+        + "16:IntegerLittleEndian:CurrentHp;20:IntegerLittleEndian:MaxHp")]
+>>>>>>> origin/slave
     [TestCase(
         "CastleSiegeDefenseUpgradeResponse",
         "C1HeaderWithSubCode",
         "B2",
         "07",
+<<<<<<< HEAD
         "21",
         "4:Byte:Result;5:IntegerLittleEndian:NpcNumber;9:IntegerLittleEndian:NpcIndex;"
         + "13:IntegerLittleEndian:NpcUpgradeType;17:IntegerLittleEndian:NpcUpgradeValue")]
+=======
+        "24",
+        "4:Byte:Result;8:IntegerLittleEndian:NpcNumber;12:IntegerLittleEndian:NpcIndex;"
+        + "16:IntegerLittleEndian:NpcUpgradeType;20:IntegerLittleEndian:NpcUpgradeValue")]
+>>>>>>> origin/slave
     [TestCase("CastleSiegeTaxInfoResponse", "C1HeaderWithSubCode", "B2", "08", "15", "4:Byte:Result;5:Byte:TaxRateChaosMachine;6:Byte:TaxRateNormal;7:LongBigEndian:Treasury")]
     [TestCase("CastleSiegeTaxChangeResponse", "C1HeaderWithSubCode", "B2", "09", "10", "4:Byte:Result;5:Enum:TaxType;6:IntegerBigEndian:TaxValue")]
     [TestCase("CastleSiegeTributeWithdrawResponse", "C1HeaderWithSubCode", "B2", "10", "13", "4:Byte:Result;5:LongBigEndian:Money")]
@@ -133,7 +158,11 @@ public class CastleSiegePacketDefinitionTests
     [TestCase("CastleSiegeGateOperateResponse", "C1HeaderWithSubCode", "B2", "12", "8", "4:Byte:Result;5:Boolean:IsOpen;6:ShortBigEndian:GateIndex")]
     [TestCase("CastleSiegeGateStateNotification", "C1HeaderWithSubCode", "B2", "13", "7", "4:Boolean:IsOpen;5:ShortBigEndian:GateIndex")]
     [TestCase("CastleSiegeCrownSwitchState", "C1HeaderWithSubCode", "B2", "14", "9", "4:ShortBigEndian:SwitchIndex;6:ShortBigEndian:PlayerIndex;8:Enum:State")]
+<<<<<<< HEAD
     [TestCase("CastleSiegeCrownAccessState", "C1HeaderWithSubCode", "B2", "15", "9", "4:Enum:State;5:IntegerLittleEndian:AccumulatedTimeMs")]
+=======
+    [TestCase("CastleSiegeCrownAccessState", "C1HeaderWithSubCode", "B2", "15", "12", "4:Enum:State;8:IntegerLittleEndian:AccumulatedTimeMs")]
+>>>>>>> origin/slave
     [TestCase("CastleSiegeCrownStateUpdate", "C1HeaderWithSubCode", "B2", "16", "5", "4:Enum:State")]
     [TestCase("CastleSiegeBattleStartEnd", "C1HeaderWithSubCode", "B2", "17", "5", "4:Boolean:IsStarted")]
     [TestCase("CastleSiegeBattleProcess", "C1HeaderWithSubCode", "B2", "18", "13", "4:Enum:State;5:String:GuildName[8]")]
@@ -144,9 +173,15 @@ public class CastleSiegePacketDefinitionTests
     [TestCase("CastleSiegeRemainingTime", "C1HeaderWithSubCode", "B2", "1E", "6", "4:Byte:Hour;5:Byte:Minute")]
     [TestCase("CastleSiegeHuntingZoneEntranceSettingResponse", "C1HeaderWithSubCode", "B2", "1F", "6", "4:Byte:Result;5:Boolean:IsPublic")]
     [TestCase("CastleSiegeSwitchInfo", "C1HeaderWithSubCode", "B2", "20", "27", "4:ShortBigEndian:SwitchIndex;6:Boolean:IsOccupied;7:Enum:JoinSide;8:String:GuildName[8];16:String:UserName[11]")]
+<<<<<<< HEAD
     [TestCase("CastleSiegeNpcList", "C2Header", "B3", "", "", "4:Byte:Result;5:IntegerLittleEndian:NpcCount;9:Structure[]:NpcList")]
     [TestCase("CastleSiegeRegisteredGuildList", "C2Header", "B4", "", "", "4:Byte:Result;5:IntegerLittleEndian:GuildCount;9:Structure[]:Guilds")]
     [TestCase("CastleSiegeGuildList", "C2Header", "B5", "", "", "4:Byte:Result;5:IntegerLittleEndian:GuildCount;9:Structure[]:Guilds")]
+=======
+    [TestCase("CastleSiegeNpcList", "C2Header", "B3", "", "", "4:Byte:Result;8:IntegerLittleEndian:NpcCount;12:Structure[]:NpcList")]
+    [TestCase("CastleSiegeRegisteredGuildList", "C2Header", "B4", "", "", "4:Byte:Result;8:IntegerLittleEndian:GuildCount;12:Structure[]:Guilds")]
+    [TestCase("CastleSiegeGuildList", "C2Header", "B5", "", "", "4:Byte:Result;8:IntegerLittleEndian:GuildCount;12:Structure[]:Guilds")]
+>>>>>>> origin/slave
     [TestCase("CastleSiegeMiniMapPlayerPositions", "C2Header", "B6", "", "", "4:IntegerLittleEndian:PlayerCount;8:Structure[]:Players")]
     [TestCase("CastleSiegeMachineInterface", "C1HeaderWithSubCode", "B7", "00", "8", "4:Byte:Result;5:Enum:MachineType;6:ShortBigEndian:NpcIndex")]
     [TestCase("CastleSiegeMachineUseResult", "C1HeaderWithSubCode", "B7", "01", "10", "4:Byte:Result;5:ShortBigEndian:NpcIndex;7:Enum:MachineType;8:Byte:TargetX;9:Byte:TargetY")]
@@ -158,9 +193,15 @@ public class CastleSiegePacketDefinitionTests
         "C1HeaderWithSubCode",
         "B9",
         "03",
+<<<<<<< HEAD
         "18",
         "4:Byte:Result;5:Boolean:IsEnabled;6:IntegerLittleEndian:CurrentPrice;"
         + "10:IntegerLittleEndian:MaxPrice;14:IntegerLittleEndian:UnitPrice")]
+=======
+        "20",
+        "4:Byte:Result;5:Boolean:IsEnabled;8:IntegerLittleEndian:CurrentPrice;"
+        + "12:IntegerLittleEndian:MaxPrice;16:IntegerLittleEndian:UnitPrice")]
+>>>>>>> origin/slave
     [TestCase("CastleSiegeHuntingZoneEnterResponse", "C1HeaderWithSubCode", "B9", "05", "5", "4:Byte:Result")]
     [TestCase("CastleSiegeMiniMapNpcPositions", "C2Header", "BB", "", "", "4:Byte:NpcCount;5:Structure[]:Npcs")]
     [TestCase("GuildRelationshipRequest", "C1Header", "E5", "", "7", "3:Enum:RelationshipType;4:Enum:RequestType;5:ShortBigEndian:SenderId")]
@@ -195,13 +236,21 @@ public class CastleSiegePacketDefinitionTests
     [TestCase(
         "CastleSiegeNpcList",
         "CastleSiegeNpcInfo",
+<<<<<<< HEAD
         "27",
+=======
+        "28",
+>>>>>>> origin/slave
         "0:IntegerLittleEndian:NpcNumber;4:IntegerLittleEndian:NpcIndex;"
         + "8:IntegerLittleEndian:DefenseUpgradeLevel;12:IntegerLittleEndian:RegenerationLevel;"
         + "16:IntegerLittleEndian:MaxHp;20:IntegerLittleEndian:CurrentHp;"
         + "24:Byte:PositionX;25:Byte:PositionY;26:Boolean:IsAlive")]
     [TestCase("CastleSiegeRegisteredGuildList", "RegisteredGuildEntry", "14", "0:String:GuildName[8];8:IntegerBigEndian:GuildMarkCount;12:Boolean:IsGivingUp;13:Byte:SequenceNumber")]
+<<<<<<< HEAD
     [TestCase("CastleSiegeGuildList", "CastleSiegeGuildEntry", "14", "0:Enum:Side;1:Boolean:IsInvolved;2:String:GuildName[8];10:IntegerLittleEndian:Score")]
+=======
+    [TestCase("CastleSiegeGuildList", "CastleSiegeGuildEntry", "16", "0:Enum:Side;1:Boolean:IsInvolved;2:String:GuildName[8];12:IntegerLittleEndian:Score")]
+>>>>>>> origin/slave
     [TestCase("CastleSiegeMiniMapPlayerPositions", "MiniMapPlayerPosition", "2", "0:Byte:PositionX;1:Byte:PositionY")]
     [TestCase("CastleSiegeMiniMapNpcPositions", "MiniMapNpcPosition", "3", "0:Enum:NpcType;1:Byte:PositionX;2:Byte:PositionY")]
     [TestCase("AllianceList", "AllianceGuildEntry", "41", "0:Byte:MemberCount;1:Binary:Logo[32];33:String:GuildName[8]")]

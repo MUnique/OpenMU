@@ -84,6 +84,12 @@ public class FruitConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             {
                 player.Attributes![statAttribute] -= randomPoints;
                 player.SelectedCharacter.UsedNegFruitPoints += randomPoints;
+<<<<<<< HEAD
+=======
+
+                // The removed points can be spent again, like the client shows it.
+                player.SelectedCharacter.LevelUpPoints += randomPoints;
+>>>>>>> origin/slave
                 await player.InvokeViewPlugInAsync<IFruitConsumptionResponsePlugIn>(p => p.ShowResponseAsync(FruitConsumptionResult.MinusSuccess, randomPoints, statAttribute)).ConfigureAwait(false);
             }
         }

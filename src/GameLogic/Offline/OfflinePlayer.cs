@@ -139,6 +139,16 @@ public class OfflinePlayer : Player
     internal Bots.PendingPartyInvite? PendingPartyInvite { get; set; }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets or sets the hunting ground or target this bot has claimed, or <c>null</c> if it has none.
+    /// Maintained by <see cref="Bots.BotNavigator"/>; independent bots use it to avoid farming each
+    /// other's spot. The claim survives short errands such as shopping, so the bot can return to it.
+    /// </summary>
+    internal Bots.HuntingSpot? HuntingSpot { get; set; }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Gets or sets a value indicating whether the bot is currently on a shopping trip (walking to
     /// or trading with a merchant), maintained by <see cref="Bots.BotNavigator"/>. While on an errand
     /// the bot declines party invitations, like a busy player would.

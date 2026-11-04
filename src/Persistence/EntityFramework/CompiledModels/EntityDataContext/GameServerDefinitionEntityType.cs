@@ -22,7 +22,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.GameServerDefinition),
                 baseEntityType,
                 propertyCount: 7,
+<<<<<<< HEAD
                 navigationCount: 3,
+=======
+                navigationCount: 4,
+>>>>>>> origin/slave
                 foreignKeyCount: 2,
                 unnamedIndexCount: 2,
                 keyCount: 1);

@@ -75,9 +75,20 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeGuildRegistration> RegisteredGuilds { get; } = new();
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets the selected guilds keyed by their runtime guild identifier.
     /// </summary>
     public System.Collections.Concurrent.ConcurrentDictionary<uint, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
+=======
+    /// Gets the selected guilds keyed by their persistent guild identifier.
+    /// </summary>
+    /// <remarks>
+    /// The runtime guild identifier changes when a guild is loaded again by the guild server, e.g. after all members
+    /// were offline. Keying by the persistent identifier keeps a guild in this list while its runtime identifier
+    /// is updated, so concurrent readers never miss it. Use <see cref="GetFinalGuild"/> to find a guild by its runtime identifier.
+    /// </remarks>
+    public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeGuildParticipant> FinalGuildList { get; } = new();
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the assigned join sides keyed by persistent character identifier.
@@ -90,9 +101,19 @@ public class CastleSiegeContext : IEventStateProvider
     public System.Collections.Concurrent.ConcurrentDictionary<Guid, CastleSiegeParticipant> ParticipantTracking { get; } = new();
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets or sets the runtime identifier of the guild which currently owns the castle during the battle.
     /// </summary>
     public uint? MiddleOwnerGuildId { get; set; }
+=======
+    /// Gets or sets the persistent identifier of the guild which currently owns the castle during the battle.
+    /// </summary>
+    /// <remarks>
+    /// This is the persistent and not the runtime guild identifier, because the runtime identifier
+    /// of a guild changes when it is loaded again by the guild server, e.g. after all members were offline.
+    /// </remarks>
+    public Guid? MiddleOwnerGuildId { get; set; }
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the active Castle Siege NPCs.
@@ -617,10 +638,41 @@ public class CastleSiegeContext : IEventStateProvider
         this.MiddleOwnerGuildId = this.FinalGuildList.Values
                                       .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense
                                                                && guild.PersistentGuildId == this.SiegeData.OwnerGuildId)
+<<<<<<< HEAD
                                       ?.GuildId
                                   ?? this.FinalGuildList.Values
                                       .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
                                       ?.GuildId;
+=======
+                                      ?.PersistentGuildId
+                                  ?? this.FinalGuildList.Values
+                                      .FirstOrDefault(guild => guild.Side == CastleSiegeJoinSide.Defense && guild.IsAllianceMaster)
+                                      ?.PersistentGuildId;
+    }
+
+    /// <summary>
+    /// Gets the selected guild which currently owns the castle during the battle.
+    /// </summary>
+    /// <returns>The current battle owner, or <see langword="null"/> if there is none or it is not selected.</returns>
+    internal CastleSiegeGuildParticipant? GetBattleOwner()
+    {
+        return this.MiddleOwnerGuildId is { } ownerGuildId
+            ? this.FinalGuildList.GetValueOrDefault(ownerGuildId)
+            : null;
+    }
+
+    /// <summary>
+    /// Gets the selected guild with the specified runtime identifier.
+    /// </summary>
+    /// <param name="runtimeGuildId">The runtime guild identifier, e.g. of <see cref="Player.GuildStatus"/>.</param>
+    /// <returns>The selected guild, or <see langword="null"/> if no selected guild has this runtime identifier.</returns>
+    /// <remarks>
+    /// A linear search is sufficient, because only a few guilds are selected for a battle.
+    /// </remarks>
+    internal CastleSiegeGuildParticipant? GetFinalGuild(uint runtimeGuildId)
+    {
+        return this.FinalGuildList.Values.FirstOrDefault(guild => guild.GuildId == runtimeGuildId);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -637,7 +689,11 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         return player.GuildStatus is { } guildStatus
+<<<<<<< HEAD
                && this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participatingGuild)
+=======
+               && this.GetFinalGuild(guildStatus.GuildId) is { } participatingGuild
+>>>>>>> origin/slave
             ? participatingGuild.Side
             : CastleSiegeJoinSide.None;
     }
@@ -994,7 +1050,11 @@ public class CastleSiegeContext : IEventStateProvider
                 continue;
             }
 
+<<<<<<< HEAD
             this.FinalGuildList[runtimeGuildId] = new CastleSiegeGuildParticipant
+=======
+            this.FinalGuildList[guild.GuildId] = new CastleSiegeGuildParticipant
+>>>>>>> origin/slave
             {
                 GuildId = runtimeGuildId,
                 PersistentGuildId = guild.GuildId,
@@ -1015,7 +1075,11 @@ public class CastleSiegeContext : IEventStateProvider
             return CastleSiegeJoinSide.None;
         }
 
+<<<<<<< HEAD
         if (this.FinalGuildList.TryGetValue(guildStatus.GuildId, out var runtimeGuild))
+=======
+        if (this.GetFinalGuild(guildStatus.GuildId) is { } runtimeGuild)
+>>>>>>> origin/slave
         {
             return runtimeGuild.Side;
         }
@@ -1028,13 +1092,18 @@ public class CastleSiegeContext : IEventStateProvider
             return CastleSiegeJoinSide.None;
         }
 
+<<<<<<< HEAD
         var persistedEntry = this.FinalGuildList.FirstOrDefault(
             entry => entry.Value.PersistentGuildId == persistentGuildId);
         if (persistedEntry.Value is null)
+=======
+        if (!this.FinalGuildList.TryGetValue(persistentGuildId, out var persistedGuild))
+>>>>>>> origin/slave
         {
             return CastleSiegeJoinSide.None;
         }
 
+<<<<<<< HEAD
         this.FinalGuildList.TryRemove(persistedEntry.Key, out _);
         persistedEntry.Value.GuildId = guildStatus.GuildId;
         this.FinalGuildList[guildStatus.GuildId] = persistedEntry.Value;
@@ -1045,5 +1114,10 @@ public class CastleSiegeContext : IEventStateProvider
         }
 
         return persistedEntry.Value.Side;
+=======
+        // The guild got a new runtime identifier. It stays in the list, so concurrent readers don't miss it.
+        persistedGuild.GuildId = guildStatus.GuildId;
+        return persistedGuild.Side;
+>>>>>>> origin/slave
     }
 }

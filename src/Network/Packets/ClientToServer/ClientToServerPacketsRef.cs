@@ -95,6 +95,18 @@ public readonly ref struct PingRef
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets or sets the magic speed.
+    /// </summary>
+    public ushort MagicSpeed
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Performs an implicit conversion from a Span of bytes to a <see cref="Ping"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
@@ -1141,7 +1153,11 @@ public readonly ref struct PlayerShopOpenRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 30;
+=======
+    public static int Length => 40;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -1153,8 +1169,13 @@ public readonly ref struct PlayerShopOpenRef
     /// </summary>
     public string StoreName
     {
+<<<<<<< HEAD
         get => this._data.ExtractString(4, 26, System.Text.Encoding.UTF8);
         set => this._data.Slice(4, 26).WriteString(value, System.Text.Encoding.UTF8);
+=======
+        get => this._data.ExtractString(4, 36, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 36).WriteString(value, System.Text.Encoding.UTF8);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -6430,7 +6451,11 @@ public readonly ref struct CashShopItemGiftRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 234;
+=======
+    public static int Length => 238;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -6469,8 +6494,13 @@ public readonly ref struct CashShopItemGiftRequestRef
     /// </summary>
     public ushort ItemIndex
     {
+<<<<<<< HEAD
         get => ReadUInt16LittleEndian(this._data[16..]);
         set => WriteUInt16LittleEndian(this._data[16..], value);
+=======
+        get => ReadUInt16LittleEndian(this._data[20..]);
+        set => WriteUInt16LittleEndian(this._data[20..], value);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -6478,8 +6508,13 @@ public readonly ref struct CashShopItemGiftRequestRef
     /// </summary>
     public uint CoinIndex
     {
+<<<<<<< HEAD
         get => ReadUInt32LittleEndian(this._data[18..]);
         set => WriteUInt32LittleEndian(this._data[18..], value);
+=======
+        get => ReadUInt32LittleEndian(this._data[22..]);
+        set => WriteUInt32LittleEndian(this._data[22..], value);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -6487,8 +6522,13 @@ public readonly ref struct CashShopItemGiftRequestRef
     /// </summary>
     public byte MileageFlag
     {
+<<<<<<< HEAD
         get => this._data[22];
         set => this._data[22] = value;
+=======
+        get => this._data[26];
+        set => this._data[26] = value;
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -6496,8 +6536,13 @@ public readonly ref struct CashShopItemGiftRequestRef
     /// </summary>
     public string GiftReceiverName
     {
+<<<<<<< HEAD
         get => this._data.ExtractString(23, 11, System.Text.Encoding.UTF8);
         set => this._data.Slice(23, 11).WriteString(value, System.Text.Encoding.UTF8);
+=======
+        get => this._data.ExtractString(27, 11, System.Text.Encoding.UTF8);
+        set => this._data.Slice(27, 11).WriteString(value, System.Text.Encoding.UTF8);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -6505,8 +6550,13 @@ public readonly ref struct CashShopItemGiftRequestRef
     /// </summary>
     public string GiftText
     {
+<<<<<<< HEAD
         get => this._data.ExtractString(34, 200, System.Text.Encoding.UTF8);
         set => this._data.Slice(34, 200).WriteString(value, System.Text.Encoding.UTF8);
+=======
+        get => this._data.ExtractString(38, 200, System.Text.Encoding.UTF8);
+        set => this._data.Slice(38, 200).WriteString(value, System.Text.Encoding.UTF8);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -6674,7 +6724,11 @@ public readonly ref struct CashShopDeleteStorageItemRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 234;
+=======
+    public static int Length => 13;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -6977,7 +7031,11 @@ public readonly ref struct UnlockVaultRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 7;
+=======
+    public static int Length => 26;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -6994,6 +7052,18 @@ public readonly ref struct UnlockVaultRef
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets or sets the password.
+    /// </summary>
+    public string Password
+    {
+        get => this._data.ExtractString(6, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(6, 20).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Performs an implicit conversion from a Span of bytes to a <see cref="UnlockVault"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
@@ -7063,7 +7133,11 @@ public readonly ref struct SetVaultPinRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 27;
+=======
+    public static int Length => 26;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -7158,7 +7232,11 @@ public readonly ref struct RemoveVaultPinRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 27;
+=======
+    public static int Length => 26;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -8413,7 +8491,11 @@ public readonly ref struct DeleteCharacterRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 24;
+=======
+    public static int Length => 34;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -8430,12 +8512,21 @@ public readonly ref struct DeleteCharacterRef
     }
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets or sets a security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes.
     /// </summary>
     public string SecurityCode
     {
         get => this._data.ExtractString(14, this._data.Length - 14, System.Text.Encoding.UTF8);
         set => this._data.Slice(14).WriteString(value, System.Text.Encoding.UTF8);
+=======
+    /// Gets or sets a security code (7 bytes long). Some game clients/servers also expect to transmit the account password (up to 20 bytes long) here. In OpenMU, we work with the security here, but are not limiting to a length of 7 bytes. The 1.04d client always sends 20 bytes.
+    /// </summary>
+    public string SecurityCode
+    {
+        get => this._data.ExtractString(14, 20, System.Text.Encoding.UTF8);
+        set => this._data.Slice(14, 20).WriteString(value, System.Text.Encoding.UTF8);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -8451,6 +8542,7 @@ public readonly ref struct DeleteCharacterRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(DeleteCharacterRef packet) => packet._data; 
+<<<<<<< HEAD
 
     /// <summary>
     /// Calculates the size of the packet for the specified field content.
@@ -8463,6 +8555,8 @@ public readonly ref struct DeleteCharacterRef
     /// </summary>
     /// <param name="contentLength">The content length in bytes of the variable 'SecurityCode' field from which the size will be calculated.</param>
     public static int GetRequiredSize(int contentLength) => contentLength + 1 + 14;
+=======
+>>>>>>> origin/slave
 }
 
 
@@ -9019,7 +9113,11 @@ public readonly ref struct AddMasterSkillPointRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 6;
+=======
+    public static int Length => 8;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -9027,7 +9125,11 @@ public readonly ref struct AddMasterSkillPointRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
+<<<<<<< HEAD
     /// Gets or sets the skill id.
+=======
+    /// Gets or sets the client sends the skill id as 32-bit value; the upper 16 bits are 0.
+>>>>>>> origin/slave
     /// </summary>
     public ushort SkillId
     {
@@ -12694,7 +12796,11 @@ public readonly ref struct ItemRepairRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 4;
+=======
+    public static int Length => 5;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -12711,6 +12817,18 @@ public readonly ref struct ItemRepairRef
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets or sets the is self repair.
+    /// </summary>
+    public bool IsSelfRepair
+    {
+        get => this._data[4..].GetBoolean();
+        set => this._data[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemRepair"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
@@ -13405,7 +13523,11 @@ public readonly ref struct ChatRoomInvitationRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 19;
+=======
+    public static int Length => 20;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -13426,8 +13548,13 @@ public readonly ref struct ChatRoomInvitationRequestRef
     /// </summary>
     public ushort RoomId
     {
+<<<<<<< HEAD
         get => ReadUInt16BigEndian(this._data[13..]);
         set => WriteUInt16BigEndian(this._data[13..], value);
+=======
+        get => ReadUInt16LittleEndian(this._data[14..]);
+        set => WriteUInt16LittleEndian(this._data[14..], value);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -13435,8 +13562,13 @@ public readonly ref struct ChatRoomInvitationRequestRef
     /// </summary>
     public uint RequestId
     {
+<<<<<<< HEAD
         get => ReadUInt32BigEndian(this._data[15..]);
         set => WriteUInt32BigEndian(this._data[15..], value);
+=======
+        get => ReadUInt32LittleEndian(this._data[16..]);
+        set => WriteUInt32LittleEndian(this._data[16..], value);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -13956,7 +14088,11 @@ public readonly ref struct IllusionTempleSkillRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 8;
+=======
+    public static int Length => 9;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -13975,10 +14111,17 @@ public readonly ref struct IllusionTempleSkillRequestRef
     /// <summary>
     /// Gets or sets the target object index.
     /// </summary>
+<<<<<<< HEAD
     public byte TargetObjectIndex
     {
         get => this._data[6];
         set => this._data[6] = value;
+=======
+    public ushort TargetObjectIndex
+    {
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -13986,8 +14129,13 @@ public readonly ref struct IllusionTempleSkillRequestRef
     /// </summary>
     public byte Distance
     {
+<<<<<<< HEAD
         get => this._data[7];
         set => this._data[7] = value;
+=======
+        get => this._data[8];
+        set => this._data[8] = value;
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -17152,8 +17300,13 @@ public readonly ref struct DuelStartResponseRef
     /// </summary>
     public ushort PlayerId
     {
+<<<<<<< HEAD
         get => ReadUInt16LittleEndian(this._data[5..]);
         set => WriteUInt16LittleEndian(this._data[5..], value);
+=======
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
+>>>>>>> origin/slave
     }
 
     /// <summary>
@@ -17398,7 +17551,11 @@ public readonly ref struct DuelChannelQuitRequestRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
+<<<<<<< HEAD
     public static int Length => 4;
+=======
+    public static int Length => 5;
+>>>>>>> origin/slave
 
     /// <summary>
     /// Gets the header of this packet.
@@ -17406,6 +17563,18 @@ public readonly ref struct DuelChannelQuitRequestRef
     public C3HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets or sets the channel id.
+    /// </summary>
+    public byte ChannelId
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Performs an implicit conversion from a Span of bytes to a <see cref="DuelChannelQuitRequest"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
@@ -17727,3 +17896,444 @@ public readonly ref struct DiscordUnlinkRequestRef
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(DiscordUnlinkRequestRef packet) => packet._data; 
 }
+<<<<<<< HEAD
+=======
+
+
+/// <summary>
+/// Is sent by the client when: The player wants to rename a character in the character selection.
+/// Causes reaction on server side: The server renames the character and answers with CharacterRenameResult (F3 16).
+/// </summary>
+public readonly ref struct CharacterRenameRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterRenameRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterRenameRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterRenameRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CharacterRenameRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF3;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x16;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 24;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the old name.
+    /// </summary>
+    public string OldName
+    {
+        get => this._data.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the new name.
+    /// </summary>
+    public string NewName
+    {
+        get => this._data.ExtractString(14, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(14, 10).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CharacterRenameRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CharacterRenameRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CharacterRenameRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CharacterRenameRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The player (un)equips an item which is used inside the inventory.
+/// Causes reaction on server side: The server answers with InventoryItemEquipResult (BF 20).
+/// </summary>
+public readonly ref struct InventoryItemEquipRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InventoryItemEquipRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public InventoryItemEquipRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InventoryItemEquipRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private InventoryItemEquipRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x20;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the inventory slot.
+    /// </summary>
+    public byte InventorySlot
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    public byte Value
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="InventoryItemEquipRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator InventoryItemEquipRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="InventoryItemEquipRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(InventoryItemEquipRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: Sent by the 1.04d client; its purpose is not identified yet.
+/// Causes reaction on server side: Unknown.
+/// </summary>
+public readonly ref struct RequestD000Ref
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequestD000Ref"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public RequestD000Ref(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RequestD000Ref"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private RequestD000Ref(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xD0;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="RequestD000"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator RequestD000Ref(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="RequestD000"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(RequestD000Ref packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: Sent when the player confirms the game server channel message box.
+/// Causes reaction on server side: The server answers with GameServerChannelResult (F1 06).
+/// </summary>
+public readonly ref struct GameServerChannelRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameServerChannelRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GameServerChannelRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameServerChannelRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GameServerChannelRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x06;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    public byte Value
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GameServerChannelRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GameServerChannelRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GameServerChannelRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GameServerChannelRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The client answers the GameGuardAuthRequest (C3 73).
+/// Causes reaction on server side: The server can verify the GameGuard answer.
+/// </summary>
+public readonly ref struct GameGuardAuthResponseRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameGuardAuthResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GameGuardAuthResponseRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameGuardAuthResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GameGuardAuthResponseRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x73;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x00;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 20;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the data.
+    /// </summary>
+    public Span<byte> Data
+    {
+        get => this._data.Slice(4, 16);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GameGuardAuthResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GameGuardAuthResponseRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GameGuardAuthResponse"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GameGuardAuthResponseRef packet) => packet._data; 
+}
+>>>>>>> origin/slave

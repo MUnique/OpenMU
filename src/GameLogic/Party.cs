@@ -387,6 +387,10 @@ public sealed class Party : AsyncDisposable
             var exp = await ApplyExperienceCalculationPlugInsAsync(player, killed, true, masterExperience).ConfigureAwait(false);
 
             await player.AddMasterExperienceAsync(exp, killed).ConfigureAwait(false);
+<<<<<<< HEAD
+=======
+            await NotifyGainedExperienceAsync(player, exp, killed, true).ConfigureAwait(false);
+>>>>>>> origin/slave
             return exp;
         }
 
@@ -399,6 +403,10 @@ public sealed class Party : AsyncDisposable
         if (!isAtMaxLevel)
         {
             await player.AddExperienceAsync(normalExperience, killed).ConfigureAwait(false);
+<<<<<<< HEAD
+=======
+            await NotifyGainedExperienceAsync(player, normalExperience, killed, false).ConfigureAwait(false);
+>>>>>>> origin/slave
         }
 
         // At the maximum level without the master quest no experience is awarded, but the amount is
@@ -424,6 +432,23 @@ public sealed class Party : AsyncDisposable
         return (int)experience;
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Lets the <see cref="IPlayerGainedExperiencePlugIn"/>s know about the experience of a party member,
+    /// as it's done for a solo kill (see <see cref="PlayerExperience.AddAfterKillAsync"/>).
+    /// Otherwise, e.g. the trainable pets of the Dark Lord wouldn't gain experience in a party.
+    /// </summary>
+    private static async ValueTask NotifyGainedExperienceAsync(Player player, int experience, IAttackable killed, bool isMasterExperience)
+    {
+        if (experience > 0
+            && player.GameContext.PlugInManager.GetPlugInPoint<IPlayerGainedExperiencePlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.PlayerGainedExperienceAsync(player, experience, killed, isMasterExperience).ConfigureAwait(false);
+        }
+    }
+
+>>>>>>> origin/slave
     private async ValueTask ExitPartyAsync(IPartyMember member, byte index)
     {
         bool shouldDispose;

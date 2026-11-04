@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @using MUnique.OpenMU.Web.Shared.Services
 @inject ModalService ModalService
 @implements IDisposable
@@ -53,11 +54,22 @@
     private ElementReference _modalRef;
     private int _visibleCount;
 
+=======
+@ChildContent
+
+@* The modals render in their own component, which re-renders when a modal is shown or closed. Re-rendering this
+   container would render its child content again, and an AuthorizeRouteView in it would authorize the routed page
+   again, which can recreate the page and lose its state (see MUnique/OpenMU#1338). *@
+<ModalStack />
+
+@code {
+>>>>>>> origin/slave
     /// <summary>
     /// Gets or sets the child content.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+<<<<<<< HEAD
 
     /// <inheritdoc />
     protected override void OnInitialized()
@@ -150,4 +162,6 @@
     {
         this.ModalService.StateChanged -= this.OnStateChanged;
     }
+=======
+>>>>>>> origin/slave
 }

@@ -13,6 +13,7 @@ The client shows the result of the upgrade request and the new upgrade values.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
+<<<<<<< HEAD
 | 1 | 1 |    Byte   |   21   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x07  | Packet header - sub packet type identifier |
@@ -21,3 +22,13 @@ The client shows the result of the upgrade request and the new upgrade values.
 | 9 | 4 | IntegerLittleEndian |  | NpcIndex |
 | 13 | 4 | IntegerLittleEndian |  | NpcUpgradeType |
 | 17 | 4 | IntegerLittleEndian |  | NpcUpgradeValue |
+=======
+| 1 | 1 |    Byte   |   24   | Packet header - length of the packet |
+| 2 | 1 |    Byte   | 0xB2  | Packet header - packet type identifier |
+| 3 | 1 |    Byte   | 0x07  | Packet header - sub packet type identifier |
+| 4 | 1 | Byte |  | Result |
+| 8 | 4 | IntegerLittleEndian |  | NpcNumber |
+| 12 | 4 | IntegerLittleEndian |  | NpcIndex |
+| 16 | 4 | IntegerLittleEndian |  | NpcUpgradeType |
+| 20 | 4 | IntegerLittleEndian |  | NpcUpgradeValue |
+>>>>>>> origin/slave

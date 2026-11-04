@@ -2948,12 +2948,20 @@ public static class ConnectionExtensions
     /// <param name="skillIndex">The skill index.</param>
     /// <param name="skillNumber">The skill number.</param>
     /// <param name="skillLevel">The skill level.</param>
+<<<<<<< HEAD
+=======
+    /// <param name="listType">0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</param>
+>>>>>>> origin/slave
     /// <param name="flag">The flag.</param>
     /// <remarks>
     /// Is sent by the server when: After a skill got added to the skill list, e.g. by equipping an item or learning a skill.
     /// Causes reaction on client side: The skill is added to the skill list on client side.
     /// </remarks>
+<<<<<<< HEAD
     public static async ValueTask SendSkillAddedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @skillLevel, byte @flag = 0xFE)
+=======
+    public static async ValueTask SendSkillAddedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @skillLevel, byte @listType = 0, byte @flag = 0xFE)
+>>>>>>> origin/slave
     {
         if (connection is null)
         {
@@ -2965,6 +2973,10 @@ public static class ConnectionExtensions
             var length = SkillAddedRef.Length;
             var packet = new SkillAddedRef(connection.Output.GetSpan(length)[..length]);
             packet.Flag = @flag;
+<<<<<<< HEAD
+=======
+            packet.ListType = @listType;
+>>>>>>> origin/slave
             packet.SkillIndex = @skillIndex;
             packet.SkillNumber = @skillNumber;
             packet.SkillLevel = @skillLevel;
@@ -2981,12 +2993,20 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="skillIndex">The skill index.</param>
     /// <param name="skillNumber">The skill number.</param>
+<<<<<<< HEAD
+=======
+    /// <param name="listType">0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</param>
+>>>>>>> origin/slave
     /// <param name="flag">The flag.</param>
     /// <remarks>
     /// Is sent by the server when: After a skill got removed from the skill list, e.g. by removing an equipped item.
     /// Causes reaction on client side: The skill is added to the skill list on client side.
     /// </remarks>
+<<<<<<< HEAD
     public static async ValueTask SendSkillRemovedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @flag = 0xFF)
+=======
+    public static async ValueTask SendSkillRemovedAsync(this IConnection? connection, byte @skillIndex, ushort @skillNumber, byte @listType = 0, byte @flag = 0xFF)
+>>>>>>> origin/slave
     {
         if (connection is null)
         {
@@ -2998,6 +3018,10 @@ public static class ConnectionExtensions
             var length = SkillRemovedRef.Length;
             var packet = new SkillRemovedRef(connection.Output.GetSpan(length)[..length]);
             packet.Flag = @flag;
+<<<<<<< HEAD
+=======
+            packet.ListType = @listType;
+>>>>>>> origin/slave
             packet.SkillIndex = @skillIndex;
             packet.SkillNumber = @skillNumber;
 
@@ -3342,11 +3366,19 @@ public static class ConnectionExtensions
     /// <param name="usedNegativeFruitPoints">The used negative fruit points.</param>
     /// <param name="maxNegativeFruitPoints">The max negative fruit points.</param>
     /// <param name="inventoryExtensions">The inventory extensions.</param>
+<<<<<<< HEAD
+=======
+    /// <param name="direction">The direction the character faces (the client rotates by (Direction - 1) * 45 degrees).</param>
+>>>>>>> origin/slave
     /// <remarks>
     /// Is sent by the server when: After the character was selected by the player and entered the game.
     /// Causes reaction on client side: The characters enters the game world.
     /// </remarks>
+<<<<<<< HEAD
     public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, ushort @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions)
+=======
+    public static async ValueTask SendCharacterInformationAsync(this IConnection? connection, byte @x, byte @y, byte @mapId, ulong @currentExperience, ulong @experienceForNextLevel, ushort @levelUpPoints, ushort @strength, ushort @agility, ushort @vitality, ushort @energy, ushort @currentHealth, ushort @maximumHealth, ushort @currentMana, ushort @maximumMana, ushort @currentShield, ushort @maximumShield, ushort @currentAbility, ushort @maximumAbility, uint @money, CharacterHeroState @heroState, CharacterStatus @status, ushort @usedFruitPoints, ushort @maxFruitPoints, ushort @leadership, ushort @usedNegativeFruitPoints, ushort @maxNegativeFruitPoints, byte @inventoryExtensions, byte @direction = 0)
+>>>>>>> origin/slave
     {
         if (connection is null)
         {
@@ -3360,6 +3392,10 @@ public static class ConnectionExtensions
             packet.X = @x;
             packet.Y = @y;
             packet.MapId = @mapId;
+<<<<<<< HEAD
+=======
+            packet.Direction = @direction;
+>>>>>>> origin/slave
             packet.CurrentExperience = @currentExperience;
             packet.ExperienceForNextLevel = @experienceForNextLevel;
             packet.LevelUpPoints = @levelUpPoints;
@@ -5303,11 +5339,19 @@ public static class ConnectionExtensions
     /// Sends a <see cref="DuelHealthBarInit" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+<<<<<<< HEAD
+=======
+    /// <param name="flag">The client resets the health and shield bars only if this is 0.</param>
+>>>>>>> origin/slave
     /// <remarks>
     /// Is sent by the server when: When the duel starts, after the DuelInit message.
     /// Causes reaction on client side: The client updates the displayed health and shield bars.
     /// </remarks>
+<<<<<<< HEAD
     public static async ValueTask SendDuelHealthBarInitAsync(this IConnection? connection)
+=======
+    public static async ValueTask SendDuelHealthBarInitAsync(this IConnection? connection, byte @flag = 0)
+>>>>>>> origin/slave
     {
         if (connection is null)
         {
@@ -5318,6 +5362,11 @@ public static class ConnectionExtensions
         {
             var length = DuelHealthBarInitRef.Length;
             var packet = new DuelHealthBarInitRef(connection.Output.GetSpan(length)[..length]);
+<<<<<<< HEAD
+=======
+            packet.Flag = @flag;
+
+>>>>>>> origin/slave
             return packet.Header.Length;
         }
 
@@ -5885,6 +5934,39 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Sends a <see cref="IllusionTempleEventState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="templeNumber">The temple number.</param>
+    /// <param name="state">The state.</param>
+    /// <remarks>
+    /// Is sent by the server when: The state of an illusion temple event changed, e.g. when the battle starts.
+    /// Causes reaction on client side: The client shows or hides the user interface of the event - the score board, the timer and the mini map - and applies the barriers of the arena, which are hardcoded at client side.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleEventStateAsync(this IConnection? connection, byte @templeNumber, IllusionTempleEventState.EventState @state)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleEventStateRef.Length;
+            var packet = new IllusionTempleEventStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.TempleNumber = @templeNumber;
+            packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Sends a <see cref="IllusionTempleSkillEnd" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -7152,12 +7234,22 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="result">The result.</param>
     /// <param name="registeredCount">The registered count.</param>
+<<<<<<< HEAD
     /// <param name="remainingInventoryCount">The remaining inventory count.</param>
+=======
+    /// <param name="remainingInventoryCount">For the Lena event (Result = 1), the client interprets this as the first lottery (muto) number.</param>
+    /// <param name="mutoNumber2">The second lottery (muto) number for the Lena event; -1 if not available.</param>
+    /// <param name="mutoNumber3">The third lottery (muto) number for the Lena event; -1 if not available.</param>
+>>>>>>> origin/slave
     /// <remarks>
     /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
     /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
     /// </remarks>
+<<<<<<< HEAD
     public static async ValueTask SendEventChipRegistrationResultAsync(this IConnection? connection, byte @result, uint @registeredCount, ushort @remainingInventoryCount)
+=======
+    public static async ValueTask SendEventChipRegistrationResultAsync(this IConnection? connection, byte @result, uint @registeredCount, ushort @remainingInventoryCount, ushort @mutoNumber2 = 0xFFFF, ushort @mutoNumber3 = 0xFFFF)
+>>>>>>> origin/slave
     {
         if (connection is null)
         {
@@ -7171,6 +7263,11 @@ public static class ConnectionExtensions
             packet.Result = @result;
             packet.RegisteredCount = @registeredCount;
             packet.RemainingInventoryCount = @remainingInventoryCount;
+<<<<<<< HEAD
+=======
+            packet.MutoNumber2 = @mutoNumber2;
+            packet.MutoNumber3 = @mutoNumber3;
+>>>>>>> origin/slave
 
             return packet.Header.Length;
         }
@@ -9052,4 +9149,1385 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+<<<<<<< HEAD
+=======
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ChecksumRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="key">The key.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server requests a checksum of the client executable.
+    /// Causes reaction on client side: The client calculates the checksum for the given key and answers with a ChecksumResponse (C3 03).
+    /// </remarks>
+    public static async ValueTask SendChecksumRequestAsync(this IConnection? connection, ushort @key)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ChecksumRequestRef.Length;
+            var packet = new ChecksumRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Key = @key;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="WhisperResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="success">The success.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a whisper message could not be delivered.
+    /// Causes reaction on client side: If Success is false, the client shows a message that the receiver is not online.
+    /// </remarks>
+    public static async ValueTask SendWhisperResultAsync(this IConnection? connection, bool @success)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = WhisperResultRef.Length;
+            var packet = new WhisperResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Success = @success;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="Notification2B" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="flag">The flag.</param>
+    /// <remarks>
+    /// Is sent by the server when: Unidentified notification; the client only evaluates one flag.
+    /// Causes reaction on client side: The client shows one of two messages, depending on the flag.
+    /// </remarks>
+    public static async ValueTask SendNotification2BAsync(this IConnection? connection, bool @flag)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = Notification2BRef.Length;
+            var packet = new Notification2BRef(connection.Output.GetSpan(length)[..length]);
+            packet.Flag = @flag;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemRepairResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="money">The money of the player after the repair. 0 means the repair failed.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player repaired an item.
+    /// Causes reaction on client side: If Money is not 0, the client sets the inventory money to this value and plays the repair sound.
+    /// </remarks>
+    public static async ValueTask SendItemRepairResponseAsync(this IConnection? connection, uint @money)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemRepairResponseRef.Length;
+            var packet = new ItemRepairResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Money = @money;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerShopTitleChanged" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="shopTitle">The shop title.</param>
+    /// <param name="playerName">The player name.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player changed the title of his personal store.
+    /// Causes reaction on client side: The client updates the shop title above the player.
+    /// </remarks>
+    public static async ValueTask SendPlayerShopTitleChangedAsync(this IConnection? connection, ushort @playerId, string @shopTitle, string @playerName)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlayerShopTitleChangedRef.Length;
+            var packet = new PlayerShopTitleChangedRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.ShopTitle = @shopTitle;
+            packet.PlayerName = @playerName;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PartyRequestResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a party request could not be fulfilled or a party action finished.
+    /// Causes reaction on client side: The client shows a message depending on the result (0 to 8).
+    /// </remarks>
+    public static async ValueTask SendPartyRequestResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PartyRequestResultRef.Length;
+            var packet = new PartyRequestResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PartyMemberItemPickedUp" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="itemInfo">Bits 0-12: item number (group * 512 + number); bit 13: excellent; bit 14: ancient; bit 15: 380 option; bit 16/17: further option flags evaluated by the client.</param>
+    /// <param name="itemLevel">The item level.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a party member picked up an item.
+    /// Causes reaction on client side: The client shows a message with the item name.
+    /// </remarks>
+    public static async ValueTask SendPartyMemberItemPickedUpAsync(this IConnection? connection, ushort @playerId, uint @itemInfo, byte @itemLevel)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PartyMemberItemPickedUpRef.Length;
+            var packet = new PartyMemberItemPickedUpRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.ItemInfo = @itemInfo;
+            packet.ItemLevel = @itemLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ViewportPreviewObjects" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="objectCount">The object count.</param>
+    /// <param name="objects">Entries of variable size, 25 + BuffCount bytes each: Kind (1 = player, 2/3 = monster/NPC) @0, class (player) or monster number (BE, monster/NPC) @1-2, object id (BE, highest bit masked) @3-4, X @5, Y @6, appearance (17 bytes, player) @7, BuffCount @24, buff ids @25.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends preview objects (e.g. players or monsters of an event map) to be shown.
+    /// Causes reaction on client side: The client adds the objects to the scene.
+    /// </remarks>
+    public static async ValueTask SendViewportPreviewObjectsAsync(this IConnection? connection, byte @objectCount, Memory<byte> @objects)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ViewportPreviewObjectsRef.GetRequiredSize(objects.Length);
+            var packet = new ViewportPreviewObjectsRef(connection.Output.GetSpan(length)[..length]);
+            packet.ObjectCount = @objectCount;
+            @objects.Span.CopyTo(packet.Objects);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PingRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server checks if the client is still responsive.
+    /// Causes reaction on client side: The client answers immediately with C1 71.
+    /// </remarks>
+    public static async ValueTask SendPingRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PingRequestRef.Length;
+            var packet = new PingRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GameGuardAuthRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="data">The data.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends an authentication query of the anti cheat system (nProtect GameGuard).
+    /// Causes reaction on client side: The client passes the data to GameGuard; the answer is sent as C3 73 00.
+    /// </remarks>
+    public static async ValueTask SendGameGuardAuthRequestAsync(this IConnection? connection, Memory<byte> @data)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GameGuardAuthRequestRef.GetRequiredSize(data.Length);
+            var packet = new GameGuardAuthRequestRef(connection.Output.GetSpan(length)[..length]);
+            @data.Span.CopyTo(packet.Data);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MapMoveChecksumKey" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="key">The key.</param>
+    /// <remarks>
+    /// Is sent by the server when: After entering the game, the server sends the key for the map move (warp) command.
+    /// Causes reaction on client side: The client stores the key and uses it for the WarpCommandRequest.
+    /// </remarks>
+    public static async ValueTask SendMapMoveChecksumKeyAsync(this IConnection? connection, uint @key)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapMoveChecksumKeyRef.Length;
+            var packet = new MapMoveChecksumKeyRef(connection.Output.GetSpan(length)[..length]);
+            packet.Key = @key;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MapMoveResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a warp command request.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendMapMoveResponseAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapMoveResponseRef.Length;
+            var packet = new MapMoveResponseRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventChipCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="count">-1 keeps the current value.</param>
+    /// <remarks>
+    /// Is sent by the server when: After event chips were registered.
+    /// Causes reaction on client side: The client updates the shown count of registered event chips.
+    /// </remarks>
+    public static async ValueTask SendEventChipCountAsync(this IConnection? connection, uint @count)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventChipCountRef.Length;
+            var packet = new EventChipCountRef(connection.Output.GetSpan(length)[..length]);
+            packet.Count = @count;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MutoNumbers" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="number1">The number 1.</param>
+    /// <param name="number2">The number 2.</param>
+    /// <param name="number3">The number 3.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server sends the lottery (muto) numbers of the Lena event.
+    /// Causes reaction on client side: The client stores the numbers if none of them is -1.
+    /// </remarks>
+    public static async ValueTask SendMutoNumbersAsync(this IConnection? connection, ushort @number1, ushort @number2, ushort @number3)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MutoNumbersRef.Length;
+            var packet = new MutoNumbersRef(connection.Output.GetSpan(length)[..length]);
+            packet.Number1 = @number1;
+            packet.Number2 = @number2;
+            packet.Number3 = @number3;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ServerImmigrationResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a server immigration (transfer) request.
+    /// Causes reaction on client side: The client shows a message depending on the result.
+    /// </remarks>
+    public static async ValueTask SendServerImmigrationResponseAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ServerImmigrationResponseRef.Length;
+            var packet = new ServerImmigrationResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ExperienceGainedLarge" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="killedObjectId">The killed object id.</param>
+    /// <param name="addedExperienceHigh">The upper 16 bits of the added experience.</param>
+    /// <param name="addedExperienceLow">The lower 16 bits of the added experience.</param>
+    /// <param name="damageOfLastHit">The damage of last hit.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a player gained experience which does not fit into 16 bits.
+    /// Causes reaction on client side: The client adds the experience and shows the damage of the last hit.
+    /// </remarks>
+    public static async ValueTask SendExperienceGainedLargeAsync(this IConnection? connection, ushort @killedObjectId, ushort @addedExperienceHigh, ushort @addedExperienceLow, ushort @damageOfLastHit)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ExperienceGainedLargeRef.Length;
+            var packet = new ExperienceGainedLargeRef(connection.Output.GetSpan(length)[..length]);
+            packet.KilledObjectId = @killedObjectId;
+            packet.AddedExperienceHigh = @addedExperienceHigh;
+            packet.AddedExperienceLow = @addedExperienceLow;
+            packet.DamageOfLastHit = @damageOfLastHit;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlaySoundEffect" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="effectNumber">The effect number.</param>
+    /// <remarks>
+    /// Is sent by the server when: The server wants the client to play a sound effect.
+    /// Causes reaction on client side: The client plays the sound effect.
+    /// </remarks>
+    public static async ValueTask SendPlaySoundEffectAsync(this IConnection? connection, ushort @effectNumber)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlaySoundEffectRef.Length;
+            var packet = new PlaySoundEffectRef(connection.Output.GetSpan(length)[..length]);
+            packet.EffectNumber = @effectNumber;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MiniGameEventCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The event type.</param>
+    /// <param name="remainingEnterCount">The remaining enter count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the remaining entry count of a mini game event.
+    /// Causes reaction on client side: The client shows the remaining entry count.
+    /// </remarks>
+    public static async ValueTask SendMiniGameEventCountAsync(this IConnection? connection, byte @eventType, byte @remainingEnterCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MiniGameEventCountRef.Length;
+            var packet = new MiniGameEventCountRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.RemainingEnterCount = @remainingEnterCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="DuelChannelQuitResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to leave a duel channel as spectator.
+    /// Causes reaction on client side: If Result is 0, the client closes the duel spectator view.
+    /// </remarks>
+    public static async ValueTask SendDuelChannelQuitResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = DuelChannelQuitResultRef.Length;
+            var packet = new DuelChannelQuitResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MapServerChangeInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="ipAddress">The ip address.</param>
+    /// <param name="port">The port.</param>
+    /// <param name="serverGroup">The server group.</param>
+    /// <param name="authenticationCode1">The authentication code 1.</param>
+    /// <param name="authenticationCode2">The authentication code 2.</param>
+    /// <param name="authenticationCode3">The authentication code 3.</param>
+    /// <param name="authenticationCode4">The authentication code 4.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the player has to change to another game server, e.g. for a map which is hosted on another server.
+    /// Causes reaction on client side: The client connects to the given server and authenticates with ServerChangeAuthentication (B1 01). Port 0 means the change failed.
+    /// </remarks>
+    public static async ValueTask SendMapServerChangeInfoAsync(this IConnection? connection, string @ipAddress, ushort @port, ushort @serverGroup, uint @authenticationCode1, uint @authenticationCode2, uint @authenticationCode3, uint @authenticationCode4)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapServerChangeInfoRef.Length;
+            var packet = new MapServerChangeInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.IpAddress = @ipAddress;
+            packet.Port = @port;
+            packet.ServerGroup = @serverGroup;
+            packet.AuthenticationCode1 = @authenticationCode1;
+            packet.AuthenticationCode2 = @authenticationCode2;
+            packet.AuthenticationCode3 = @authenticationCode3;
+            packet.AuthenticationCode4 = @authenticationCode4;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MapServerChangeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the authentication at the new game server.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendMapServerChangeResultAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MapServerChangeResultRef.Length;
+            var packet = new MapServerChangeResultRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KillCountUpdate" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="killCount">The kill count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the kill count of the character changed.
+    /// Causes reaction on client side: The client stores the kill count (0 resets it).
+    /// </remarks>
+    public static async ValueTask SendKillCountUpdateAsync(this IConnection? connection, byte @killCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KillCountUpdateRef.Length;
+            var packet = new KillCountUpdateRef(connection.Output.GetSpan(length)[..length]);
+            packet.KillCount = @killCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LahapJewelMixResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to combine jewels at Lahap.
+    /// Causes reaction on client side: The client shows a message depending on the result.
+    /// </remarks>
+    public static async ValueTask SendLahapJewelMixResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LahapJewelMixResultRef.Length;
+            var packet = new LahapJewelMixResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LahapJewelUnmixResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to split a jewel bundle at Lahap.
+    /// Causes reaction on client side: The client shows a message depending on the result.
+    /// </remarks>
+    public static async ValueTask SendLahapJewelUnmixResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LahapJewelUnmixResultRef.Length;
+            var packet = new LahapJewelUnmixResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LuckyCoinCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="count">The count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the count of registered lucky coins.
+    /// Causes reaction on client side: The client shows the count.
+    /// </remarks>
+    public static async ValueTask SendLuckyCoinCountAsync(this IConnection? connection, uint @count)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LuckyCoinCountRef.Length;
+            var packet = new LuckyCoinCountRef(connection.Output.GetSpan(length)[..length]);
+            packet.Count = @count;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LuckyCoinRegistrationResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="count">The count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player registered a lucky coin.
+    /// Causes reaction on client side: The client shows the result and the new count.
+    /// </remarks>
+    public static async ValueTask SendLuckyCoinRegistrationResultAsync(this IConnection? connection, byte @result, uint @count)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LuckyCoinRegistrationResultRef.Length;
+            var packet = new LuckyCoinRegistrationResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Count = @count;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LuckyCoinExchangeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to exchange lucky coins.
+    /// Causes reaction on client side: The client shows a message depending on the result.
+    /// </remarks>
+    public static async ValueTask SendLuckyCoinExchangeResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LuckyCoinExchangeResultRef.Length;
+            var packet = new LuckyCoinExchangeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="InventoryItemEquipResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="inventorySlot">The inventory slot.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to (un)equip an item which is used inside the inventory (BF 20).
+    /// Causes reaction on client side: The client updates the state of the item.
+    /// </remarks>
+    public static async ValueTask SendInventoryItemEquipResultAsync(this IConnection? connection, byte @inventorySlot, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = InventoryItemEquipResultRef.Length;
+            var packet = new InventoryItemEquipResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.InventorySlot = @inventorySlot;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="KanturuRefineryState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="detailState">The detail state.</param>
+    /// <remarks>
+    /// Is sent by the server when: During the kanturu event.
+    /// Causes reaction on client side: The client updates the state of the third kanturu stage.
+    /// </remarks>
+    public static async ValueTask SendKanturuRefineryStateAsync(this IConnection? connection, byte @state, byte @detailState)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = KanturuRefineryStateRef.Length;
+            var packet = new KanturuRefineryStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.State = @state;
+            packet.DetailState = @detailState;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopSendCashGiftResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a cash gift was sent.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendCashShopSendCashGiftResultAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopSendCashGiftResultRef.Length;
+            var packet = new CashShopSendCashGiftResultRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopBuyPossibilityResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a cash shop buy check.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendCashShopBuyPossibilityResultAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopBuyPossibilityResultRef.Length;
+            var packet = new CashShopBuyPossibilityResultRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopItemLeftCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a request of the remaining count of a limited item.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendCashShopItemLeftCountAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopItemLeftCountRef.Length;
+            var packet = new CashShopItemLeftCountRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PeriodItemListCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: Before the list of period (time limited) items.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendPeriodItemListCountAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PeriodItemListCountRef.Length;
+            var packet = new PeriodItemListCountRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PeriodItemInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="itemSlot">The item slot.</param>
+    /// <param name="expirationDate">The expiration date.</param>
+    /// <remarks>
+    /// Is sent by the server when: For each period (time limited) item of the character.
+    /// Causes reaction on client side: The client stores the expiration date for the item at the given slot (inventory slots below 12 are equipped items).
+    /// </remarks>
+    public static async ValueTask SendPeriodItemInfoAsync(this IConnection? connection, ushort @itemSlot, uint @expirationDate)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PeriodItemInfoRef.Length;
+            var packet = new PeriodItemInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.ItemSlot = @itemSlot;
+            packet.ExpirationDate = @expirationDate;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopEventItemListCount" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="count">The count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the event item list.
+    /// Causes reaction on client side: The client prepares the event item list.
+    /// </remarks>
+    public static async ValueTask SendCashShopEventItemListCountAsync(this IConnection? connection, ushort @count)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopEventItemListCountRef.Length;
+            var packet = new CashShopEventItemListCountRef(connection.Output.GetSpan(length)[..length]);
+            packet.Count = @count;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CashShopEventItemList" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: For the event item list of the cash shop.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendCashShopEventItemListAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CashShopEventItemListRef.Length;
+            var packet = new CashShopEventItemListRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GuildRoleAssignResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a guild master requested to assign a role (e.g. battle master) to a guild member.
+    /// Causes reaction on client side: The client shows a message depending on type and result.
+    /// </remarks>
+    public static async ValueTask SendGuildRoleAssignResponseAsync(this IConnection? connection, byte @type, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuildRoleAssignResponseRef.Length;
+            var packet = new GuildRoleAssignResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AccountPasswordQuestion" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="question">The question.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested the security question of the account.
+    /// Causes reaction on client side: If Result is 1, the client shows the question.
+    /// </remarks>
+    public static async ValueTask SendAccountPasswordQuestionAsync(this IConnection? connection, byte @result, string @question)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AccountPasswordQuestionRef.Length;
+            var packet = new AccountPasswordQuestionRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Question = @question;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AccountPasswordAnswerResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="text">The text.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player answered the security question of the account.
+    /// Causes reaction on client side: If Result is 1, the client shows the returned text.
+    /// </remarks>
+    public static async ValueTask SendAccountPasswordAnswerResultAsync(this IConnection? connection, byte @result, string @text)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AccountPasswordAnswerResultRef.Length;
+            var packet = new AccountPasswordAnswerResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Text = @text;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AccountPasswordChangeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to change the account password.
+    /// Causes reaction on client side: The client shows a message depending on the result (0 to 3).
+    /// </remarks>
+    public static async ValueTask SendAccountPasswordChangeResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AccountPasswordChangeResultRef.Length;
+            var packet = new AccountPasswordChangeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GameServerChannelResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="value">The value.</param>
+    /// <remarks>
+    /// Is sent by the server when: Answer to the client packet C1 F1 06 which is sent from the game server channel message box. Purpose not fully identified.
+    /// Causes reaction on client side: If Result is 1, the client continues with the given value.
+    /// </remarks>
+    public static async ValueTask SendGameServerChannelResultAsync(this IConnection? connection, byte @result, byte @value)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GameServerChannelResultRef.Length;
+            var packet = new GameServerChannelResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Value = @value;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PlayerEquipment" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="appearance">Same encoding as the appearance in the character list; the first (class) byte is not evaluated.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the equipment of a player in the viewport changed.
+    /// Causes reaction on client side: The client updates the appearance of the player.
+    /// </remarks>
+    public static async ValueTask SendPlayerEquipmentAsync(this IConnection? connection, ushort @playerId, Memory<byte> @appearance)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PlayerEquipmentRef.Length;
+            var packet = new PlayerEquipmentRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            @appearance.Span.CopyTo(packet.Appearance);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterRenameResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="oldName">The old name.</param>
+    /// <param name="newName">The new name.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to rename a character.
+    /// Causes reaction on client side: If Result is 0, the client renames the character to NewName; otherwise it shows an error.
+    /// </remarks>
+    public static async ValueTask SendCharacterRenameResultAsync(this IConnection? connection, string @oldName, string @newName, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterRenameResultRef.Length;
+            var packet = new CharacterRenameResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.OldName = @oldName;
+            packet.NewName = @newName;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SoccerMatchResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="type">The type.</param>
+    /// <param name="team1Name">The team 1 name.</param>
+    /// <param name="team1Score">The team 1 score.</param>
+    /// <param name="team2Name">The team 2 name.</param>
+    /// <param name="team2Score">The team 2 score.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a battle soccer match ended.
+    /// Causes reaction on client side: The client shows the result.
+    /// </remarks>
+    public static async ValueTask SendSoccerMatchResultAsync(this IConnection? connection, byte @type, string @team1Name, ushort @team1Score, string @team2Name, ushort @team2Score)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SoccerMatchResultRef.Length;
+            var packet = new SoccerMatchResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Type = @type;
+            packet.Team1Name = @team1Name;
+            packet.Team1Score = @team1Score;
+            packet.Team2Name = @team2Name;
+            packet.Team2Score = @team2Score;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SoccerGoal" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a goal in battle soccer.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendSoccerGoalAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SoccerGoalRef.Length;
+            var packet = new SoccerGoalRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestEventLimitResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a quest request was limited by an event condition.
+    /// Causes reaction on client side: If Result is 1, the client shows a message.
+    /// </remarks>
+    public static async ValueTask SendQuestEventLimitResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = QuestEventLimitResultRef.Length;
+            var packet = new QuestEventLimitResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="QuestStartedByItem" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="questIndex">Quest number in the lower and group in the upper 16 bits.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player used an item which starts a quest.
+    /// Causes reaction on client side: The client requests the quest (QuestSelectRequest, F6 0A) with the given quest index.
+    /// </remarks>
+    public static async ValueTask SendQuestStartedByItemAsync(this IConnection? connection, uint @questIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = QuestStartedByItemRef.Length;
+            var packet = new QuestStartedByItemRef(connection.Output.GetSpan(length)[..length]);
+            packet.QuestIndex = @questIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ActiveQuestListReady" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the server when: Before the active quest list.
+    /// Causes reaction on client side: The 1.04d client does not read any payload of this packet.
+    /// </remarks>
+    public static async ValueTask SendActiveQuestListReadyAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ActiveQuestListReadyRef.Length;
+            var packet = new ActiveQuestListReadyRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+>>>>>>> origin/slave
     }}

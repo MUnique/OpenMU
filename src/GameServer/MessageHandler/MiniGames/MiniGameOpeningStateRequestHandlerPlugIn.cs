@@ -52,6 +52,12 @@ internal class MiniGameOpeningStateRequestHandlerPlugIn : IPacketHandlerPlugIn
             Network.Packets.MiniGameType.DevilSquare => MiniGameType.DevilSquare,
             Network.Packets.MiniGameType.BloodCastle => MiniGameType.BloodCastle,
             Network.Packets.MiniGameType.IllusionTemple => MiniGameType.IllusionTemple,
+<<<<<<< HEAD
+=======
+
+            // The Season 6 client asks with the cursed temple type when a Scroll of Blood is right-clicked.
+            Network.Packets.MiniGameType.CursedTemple => MiniGameType.IllusionTemple,
+>>>>>>> origin/slave
             Network.Packets.MiniGameType.Doppelganger => MiniGameType.Doppelganger,
             _ => throw new ArgumentOutOfRangeException($"Unknown mini game type {type}", nameof(type)),
         };

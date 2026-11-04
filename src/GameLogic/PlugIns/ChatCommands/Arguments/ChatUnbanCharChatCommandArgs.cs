@@ -13,5 +13,9 @@ public class ChatUnbanCharChatCommandArgs : ArgumentsBase
     /// Gets or sets the character name.
     /// </summary>
     [Argument("characterName")]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
     public string? CharacterName { get; set; }
 }

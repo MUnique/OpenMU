@@ -40,6 +40,7 @@ internal class IllusionTemple6 : BaseMapInitializer
     protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
+<<<<<<< HEAD
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
         // NPCs:
@@ -54,6 +55,29 @@ internal class IllusionTemple6 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(108, this.NpcDictionary[666], 203, 067, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Captured Stone Statue (8)
         yield return this.CreateMonsterSpawn(109, this.NpcDictionary[667], 133, 121, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Captured Stone Statue (9)
         yield return this.CreateMonsterSpawn(110, this.NpcDictionary[668], 206, 048, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Captured Stone Statue (10)
+=======
+    protected override byte SafezoneMapNumber => Devias.Number;
+
+    /// <inheritdoc/>
+    protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
+    {
+        // NPCs:
+        // Pool of Stone Statue (380) positions - only one of them is active at a time, randomly picked
+        // from these two by the game logic. Positions confirmed against a working Season 6 Episode 3
+        // server's spawn list.
+        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[380], 207, 047, Direction.Undefined, SpawnTrigger.ManuallyForEvent);
+        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[380], 134, 121, Direction.Undefined, SpawnTrigger.ManuallyForEvent);
+
+        // Team guardians (decorative).
+        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[381], 139, 046, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // MU Allies General
+        yield return this.CreateMonsterSpawn(111, this.NpcDictionary[382], 194, 123, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Illusion Elder
+
+        // Relic delivery targets - the team which carries the relic here scores a point.
+        yield return this.CreateMonsterSpawn(112, this.NpcDictionary[383], 141, 059, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Alliance Item Storage
+        yield return this.CreateMonsterSpawn(113, this.NpcDictionary[384], 194, 113, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Illusion Item Storage
+
+        // Temple 6 has no roaming "Illusion Sorc. Spirit" monsters.
+>>>>>>> origin/slave
     }
 
     /// <inheritdoc/>

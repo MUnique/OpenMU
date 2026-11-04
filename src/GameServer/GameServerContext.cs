@@ -7,6 +7,10 @@ namespace MUnique.OpenMU.GameServer;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
+<<<<<<< HEAD
+=======
+using MUnique.OpenMU.DataModel.Configuration.Items;
+>>>>>>> origin/slave
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.Interfaces;
@@ -108,6 +112,12 @@ public class GameServerContext : GameContext, IGameServerContext
     /// <inheritdoc/>
     public IMapHostLocator? MapHostLocator { get; }
 
+<<<<<<< HEAD
+=======
+    /// <inheritdoc/>
+    public IEnumerable<AttributeRequirement> JoinRequirements => this._gameServerDefinition.JoinRequirements ?? Enumerable.Empty<AttributeRequirement>();
+
+>>>>>>> origin/slave
     /// <inheritdoc />
     public override float ExperienceRate => base.ExperienceRate * this._gameServerDefinition.ExperienceRate;
 

@@ -13,7 +13,11 @@ The vault pin is removed. VaultProtectionInformation is sent as response.
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
 | 0 | 1 |   Byte   | 0xC1  | [Packet type](PacketTypes.md) |
+<<<<<<< HEAD
 | 1 | 1 |    Byte   |   27   | Packet header - length of the packet |
+=======
+| 1 | 1 |    Byte   |   26   | Packet header - length of the packet |
+>>>>>>> origin/slave
 | 2 | 1 |    Byte   | 0x83  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0x02  | Packet header - sub packet type identifier |
 | 6 | 20 | String |  | Password; The password of the account, which is required to remove the vault pin. |

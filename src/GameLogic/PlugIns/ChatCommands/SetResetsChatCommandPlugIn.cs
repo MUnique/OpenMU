@@ -83,11 +83,19 @@ public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCom
         /// <summary>
         /// Gets or sets the resets to set.
         /// </summary>
+<<<<<<< HEAD
+=======
+        [Range(0, int.MaxValue)]
+>>>>>>> origin/slave
         public int Resets { get; set; }
 
         /// <summary>
         /// Gets or sets the character name to set resets for (GM only).
         /// </summary>
+<<<<<<< HEAD
+=======
+        [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
         public string? CharacterName { get; set; }
     }
 }

@@ -194,6 +194,20 @@ public class Account
     [MemberOfAggregate]
     public virtual ICollection<StatAttribute> Attributes { get; protected set; } = null!;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Gets or sets the attribute values which are granted to the account, optionally until a point in time,
+    /// e.g. a VIP status.
+    /// </summary>
+    /// <remarks>
+    /// Valid grants are added to the attributes of every character of the account and count for the
+    /// <see cref="GameServerDefinition.JoinRequirements"/> of the game servers.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<AccountAttributeGrant> AttributeGrants { get; protected set; } = null!;
+
+>>>>>>> origin/slave
     /// <inheritdoc />
     public override string ToString()
     {

@@ -13,11 +13,19 @@ public class ChatBanCharChatCommandArgs : ArgumentsBase
     /// Gets or sets the character name.
     /// </summary>
     [Argument("characterName")]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
     public string? CharacterName { get; set; }
 
     /// <summary>
     /// Gets or sets the duration.
     /// </summary>
     [Argument("durationMinutes")]
+<<<<<<< HEAD
+=======
+    [Range(1, int.MaxValue)]
+>>>>>>> origin/slave
     public int DurationMinutes { get; set; }
 }

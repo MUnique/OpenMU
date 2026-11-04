@@ -6,6 +6,10 @@ namespace MUnique.OpenMU.GameServer;
 
 using System.IO.Pipelines;
 using System.Net;
+<<<<<<< HEAD
+=======
+using System.Threading;
+>>>>>>> origin/slave
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -17,12 +21,26 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// A game server listener that listens on a TCP port.
+<<<<<<< HEAD
 /// To be visible in the server list, this listener also registers the game server at the connect server.
+=======
+/// To be visible in the server list, this listener also registers the game server at the connect server,
+/// and keeps it informed about the number of logged in players.
+>>>>>>> origin/slave
 /// </summary>
 public class DefaultTcpGameServerListener : IGameServerListener
 {
     private readonly ILogger<DefaultTcpGameServerListener> _logger;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// The lock for reading and reporting the number of logged in players, so that the last report
+    /// has the latest number, also when it changes on several threads at the same time.
+    /// </summary>
+    private readonly Lock _reportLock = new();
+
+>>>>>>> origin/slave
     private readonly GameServerEndpoint _endPoint;
     private readonly ServerInfo _gameServerInfo;
 
@@ -35,6 +53,14 @@ public class DefaultTcpGameServerListener : IGameServerListener
     private Listener? _listener;
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// The number of connections which were refused since a connection was accepted the last time.
+    /// </summary>
+    private int _refusedConnections;
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Initializes a new instance of the <see cref="DefaultTcpGameServerListener" /> class.
     /// </summary>
     /// <param name="endPoint">The endpoint to which this listener is listening.</param>
@@ -123,6 +149,14 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
 
         this._listener.Start();
+<<<<<<< HEAD
+=======
+
+        // Only after the start succeeded, so that a failed start doesn't leave a subscription
+        // behind, which a following start would add a second time.
+        this._gameContext.LoggedInPlayerCountChanged += this.OnLoggedInPlayerCountChanged;
+        this.ReportLoggedInPlayerCount();
+>>>>>>> origin/slave
         this._logger.LogInformation("Server listener started.");
     }
 
@@ -135,6 +169,10 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
 
         var port = this.ListenerPort;
+<<<<<<< HEAD
+=======
+        this._gameContext.LoggedInPlayerCountChanged -= this.OnLoggedInPlayerCountChanged;
+>>>>>>> origin/slave
         this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
         this._logger.LogInformation($"Stopping listener on port {port}.");
         if (this._listener is null || !this._listener.IsBound)
@@ -164,6 +202,10 @@ public class DefaultTcpGameServerListener : IGameServerListener
 
             this._stateObserver.UnregisterGameServer(this._gameServerInfo.Id);
             this._stateObserver.RegisterGameServer(this._gameServerInfo, new IPEndPoint(newAddress, this.PublishedPort));
+<<<<<<< HEAD
+=======
+            this.ReportLoggedInPlayerCount();
+>>>>>>> origin/slave
         }
         catch (Exception ex)
         {
@@ -185,6 +227,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
             : new PipelinedDecryptor(arg);
     }
 
+<<<<<<< HEAD
     private async ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
     {
         if (this._gameContext.PlayerCount >= this._gameContext.ServerConfiguration.MaximumPlayers)
@@ -195,12 +238,72 @@ public class DefaultTcpGameServerListener : IGameServerListener
         }
     }
 
+=======
+    private void OnLoggedInPlayerCountChanged(object? sender, EventArgs e)
+    {
+        this.ReportLoggedInPlayerCount();
+    }
+
+    private void ReportLoggedInPlayerCount()
+    {
+        lock (this._reportLock)
+        {
+            this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.LoggedInPlayerCount);
+        }
+    }
+
+    /// <summary>
+    /// Refuses a connection when as many connections wait for their login as players may log in.
+    /// </summary>
+    /// <param name="e">The event args of the accepting socket.</param>
+    /// <returns>The completed task.</returns>
+    /// <remarks>
+    /// Only logged in players take a place, so a full server refuses the login (see LoginAction).
+    /// Connections which didn't log in yet don't take a place, but each of them holds a player
+    /// with its resources. They are limited by the maximum players as well, so that connections
+    /// which never log in can't use up the memory of the server.
+    /// </remarks>
+    private ValueTask OnClientAcceptingAsync(ClientAcceptingEventArgs e)
+    {
+        var maximum = this._gameContext.ServerConfiguration.MaximumPlayers;
+        var waitingForLogin = this._gameContext.WaitingForLoginCount;
+        if (waitingForLogin >= maximum)
+        {
+            e.Cancel = true;
+
+            // Only the first refusal is logged at the Information level, so that a flood of connections doesn't flood the log.
+            if (Interlocked.Increment(ref this._refusedConnections) == 1)
+            {
+                this.Log(l => l.LogInformation(
+                    "Connection of {RemoteEndPoint} refused, because {WaitingConnections} connections are waiting for their login already, which is the maximum of {Maximum}. Further refusals are logged at the Debug level, until a connection is accepted again.",
+                    e.AcceptingSocket.RemoteEndPoint,
+                    waitingForLogin,
+                    maximum));
+            }
+            else
+            {
+                this.Log(l => l.LogDebug("Connection of {RemoteEndPoint} refused, because {WaitingConnections} connections are waiting for their login already.", e.AcceptingSocket.RemoteEndPoint, waitingForLogin));
+            }
+
+            return ValueTask.CompletedTask;
+        }
+
+        if (Interlocked.Exchange(ref this._refusedConnections, 0) is var refused and > 0)
+        {
+            this.Log(l => l.LogInformation("Connections are accepted again, after {RefusedConnections} were refused because too many connections were waiting for their login.", refused));
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+>>>>>>> origin/slave
     private async ValueTask OnClientAcceptedAsync(ClientAcceptedEventArgs e)
     {
         var connection = e.AcceptedConnection;
         var remoteEndPoint = connection.EndPoint as IPEndPoint;
         this.Log(l => l.LogDebug($"Game Client connected, Address {remoteEndPoint}"));
 
+<<<<<<< HEAD
         var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
         connection.Disconnected += async () =>
         {
@@ -208,6 +311,10 @@ public class DefaultTcpGameServerListener : IGameServerListener
             this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
         };
 
+=======
+        // The remote player disconnects itself when the connection gets disconnected.
+        var remotePlayer = new RemotePlayer(this._gameContext, connection, this.ClientVersion);
+>>>>>>> origin/slave
         await this.OnPlayerConnectedAsync(remotePlayer).ConfigureAwait(false);
 
         // we don't want to await the call.
@@ -225,8 +332,11 @@ public class DefaultTcpGameServerListener : IGameServerListener
         {
             this.Log(l => l.LogError($"Event {nameof(this.PlayerConnected)} was not handled."));
         }
+<<<<<<< HEAD
 
         this._stateObserver.CurrentConnectionsChanged(this._gameContext.Id, this._gameContext.PlayerCount);
+=======
+>>>>>>> origin/slave
     }
 
     private void Log(Action<ILogger<DefaultTcpGameServerListener>> logAction)

@@ -77,7 +77,11 @@ internal static class CastleSiegeGuildResolver
     public static CastleSiegeGuildParticipant? ResolveParticipatingAllianceMaster(Player player, CastleSiegeContext context)
     {
         if (player.GuildStatus is not { Position: GuildPosition.GuildMaster } guildStatus
+<<<<<<< HEAD
             || !context.FinalGuildList.TryGetValue(guildStatus.GuildId, out var participant)
+=======
+            || context.GetFinalGuild(guildStatus.GuildId) is not { } participant
+>>>>>>> origin/slave
             || !participant.IsAllianceMaster)
         {
             return null;

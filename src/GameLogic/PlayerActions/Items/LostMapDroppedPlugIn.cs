@@ -5,12 +5,18 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using System.Runtime.InteropServices;
+<<<<<<< HEAD
 using MUnique.OpenMU.GameLogic.NPC;
+=======
+>>>>>>> origin/slave
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
+<<<<<<< HEAD
 using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
+=======
+>>>>>>> origin/slave
 
 /// <summary>
 /// This plugin transforms a stack of symbol of kundun into a lost map.
@@ -21,10 +27,13 @@ using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 [Guid("F6DB10E0-AE7F-4BC6-914F-B858763C5CF7")]
 public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 {
+<<<<<<< HEAD
     private const byte GateNpcStartNumber = 152;
 
     private static readonly int[] KalimaMapNumbers = [24, 25, 26, 27, 28, 29, 36];
 
+=======
+>>>>>>> origin/slave
     /// <inheritdoc />
     public async ValueTask HandleItemDropAsync(Player player, Item item, Point target, IItemDropPlugIn.ItemDropArguments cancelArgs)
     {
@@ -34,18 +43,27 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
         }
 
         cancelArgs.WasHandled = true;
+<<<<<<< HEAD
         var currentMap = player.CurrentMap;
         if (currentMap is null)
+=======
+        if (player.CurrentMap is null)
+>>>>>>> origin/slave
         {
             return;
         }
 
+<<<<<<< HEAD
         if (item.Level is < 1 or > 7)
+=======
+        if (item.Level is < 1 or > KalimaGate.MaximumLevel)
+>>>>>>> origin/slave
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidLostMap)).ConfigureAwait(false);
             return;
         }
 
+<<<<<<< HEAD
         if (player.CurrentMiniGame is not null)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NoKalimaGateOnEventMap)).ConfigureAwait(false);
@@ -90,5 +108,8 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
         gate.Initialize();
         await currentMap.AddAsync(gate).ConfigureAwait(false);
         cancelArgs.Success = true;
+=======
+        cancelArgs.Success = await KalimaGate.TryOpenAsync(player, item.Level, target).ConfigureAwait(false);
+>>>>>>> origin/slave
     }
 }

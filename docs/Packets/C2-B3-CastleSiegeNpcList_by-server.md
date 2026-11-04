@@ -16,14 +16,23 @@ The client shows the list of castle siege NPCs with their current status.
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xB3  | Packet header - packet type identifier |
 | 4 | 1 | Byte |  | Result |
+<<<<<<< HEAD
 | 5 | 4 | IntegerLittleEndian |  | NpcCount |
 | 9 | CastleSiegeNpcInfo.Length * NpcCount | Array of CastleSiegeNpcInfo |  | NpcList |
+=======
+| 8 | 4 | IntegerLittleEndian |  | NpcCount |
+| 12 | CastleSiegeNpcInfo.Length * NpcCount | Array of CastleSiegeNpcInfo |  | NpcList |
+>>>>>>> origin/slave
 
 ### CastleSiegeNpcInfo Structure
 
 Information about one castle siege NPC (gate or statue).
 
+<<<<<<< HEAD
 Length: 27 Bytes
+=======
+Length: 28 Bytes
+>>>>>>> origin/slave
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|

@@ -91,7 +91,11 @@ public class KanturuMayaWideAttackerTests
 
     private Monster CreateMonster(short number, bool initialize)
     {
+<<<<<<< HEAD
         var definition = new MonsterDefinition { ObjectKind = NpcObjectKind.Monster, Number = number };
+=======
+        var definition = new MonsterDefinition { Id = Guid.NewGuid(), ObjectKind = NpcObjectKind.Monster, Number = number };
+>>>>>>> origin/slave
         definition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1000 });
         var spawnArea = new MonsterSpawnArea
         {

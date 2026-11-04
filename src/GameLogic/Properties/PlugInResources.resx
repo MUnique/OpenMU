@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
+=======
+﻿<?xml version="1.0" encoding="utf-8"?>
+>>>>>>> origin/slave
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -285,6 +289,45 @@
   <data name="FruitConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the fruit consumption.</value>
   </data>
+<<<<<<< HEAD
+=======
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Strength Consume Handler</value>
+  </data>
+  <data name="StrengthResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of strength, which takes back invested strength points and returns them as level up points.</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Agility Consume Handler</value>
+  </data>
+  <data name="AgilityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of agility, which takes back invested agility points and returns them as level up points.</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Vitality Consume Handler</value>
+  </data>
+  <data name="VitalityResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of vitality, which takes back invested vitality points and returns them as level up points.</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Energy Consume Handler</value>
+  </data>
+  <data name="EnergyResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of energy, which takes back invested energy points and returns them as level up points.</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Reset Fruit of Command Consume Handler</value>
+  </data>
+  <data name="CommandResetFruitConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the reset fruit of command, which takes back invested command points and returns them as level up points.</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name" xml:space="preserve">
+    <value>Points per durability</value>
+  </data>
+  <data name="ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description" xml:space="preserve">
+    <value>The number of stat points which one durability of a reset fruit takes back.</value>
+  </data>
+>>>>>>> origin/slave
   <data name="HarmonyJewelConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Harmony Jewel Consume Handler</value>
   </data>
@@ -735,6 +778,15 @@
   <data name="StartChaosCastleEventChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/startcc'. Starts the chaos castle event at the next possible time.</value>
   </data>
+<<<<<<< HEAD
+=======
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Illusion Temple Event Chat Command</value>
+  </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startit'. Starts the illusion temple event at the next possible time.</value>
+  </data>
+>>>>>>> origin/slave
   <data name="StartDevilSquareEventChatCommandPlugIn_Name" xml:space="preserve">
     <value>Start Devil Square Event Chat Command</value>
   </data>
@@ -1362,6 +1414,11 @@
   <data name="BotFeaturePlugIn_Description" xml:space="preserve"><value>Spawns server-side bots which hunt monsters on the maps. Configure the accounts to animate and enable the feature.</value></data>
   <data name="MaximumConnectionsPerIpPlugIn_Name" xml:space="preserve"><value>Maximum Connections Per IP</value></data>
   <data name="MaximumConnectionsPerIpPlugIn_Description" xml:space="preserve"><value>Limits the maximum number of parallel connections from the same IP address.</value></data>
+<<<<<<< HEAD
+=======
+  <data name="LoginTimeoutPlugIn_Name" xml:space="preserve"><value>Login Timeout</value></data>
+  <data name="LoginTimeoutPlugIn_Description" xml:space="preserve"><value>Disconnects clients which don't log in within the configured time after they connected.</value></data>
+>>>>>>> origin/slave
   <data name="SpeedHackDetectPlugIn_Name" xml:space="preserve"><value>Speedhack Anti-Cheat</value></data>
   <data name="SpeedHackDetectPlugIn_Description" xml:space="preserve"><value>Detects and prevents player walk and attack speedhacking.</value></data>
   <data name="KanturuGatewayPlugIn_Name" xml:space="preserve"><value>KanturuGatewayPlugIn</value></data>
@@ -1424,6 +1481,10 @@
   <data name="MonsterAttributeScalerConfiguration_DamagePercentage_Caption" xml:space="preserve"><value>Damage Percentage</value></data>
   <data name="MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption" xml:space="preserve"><value>Scale All Percentage</value></data>
   <data name="MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption" xml:space="preserve"><value>Maximum Connections Per Ip</value></data>
+<<<<<<< HEAD
+=======
+  <data name="LoginTimeoutPlugInConfiguration_Timeout_Caption" xml:space="preserve"><value>Timeout</value></data>
+>>>>>>> origin/slave
   <data name="SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption" xml:space="preserve"><value>Attack Speed Min Interval Ms</value></data>
   <data name="SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption" xml:space="preserve"><value>Attack Speed Scaling Factor</value></data>
   <data name="SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption" xml:space="preserve"><value>Attack Speed Base Delay Ms</value></data>
@@ -1528,6 +1589,21 @@
   <data name="GensRelationshipRulesPlugIn_Description" xml:space="preserve">
     <value>The rules of the gens for parties, guilds and alliances: no party between different gens and in the battle zone, guilds and alliances only within a gens.</value>
   </data>
+<<<<<<< HEAD
+=======
+  <data name="KalimaTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Kalima Ticket Consume Handler</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Opens a gate to the level of Kalima which fits the level of the character. Each use takes one of the ticket's usages.</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name" xml:space="preserve">
+    <value>Minimum levels of the Kalima levels</value>
+  </data>
+  <data name="KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name" xml:space="preserve">
+    <value>Minimum levels of the Kalima levels for special characters</value>
+  </data>
+>>>>>>> origin/slave
   <data name="SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name" xml:space="preserve">
     <value>Potion of Bless effect number</value>
   </data>
@@ -1540,6 +1616,27 @@
   <data name="BloodCastleArchangelTalkPlugIn_Description" xml:space="preserve">
     <value>Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event.</value>
   </data>
+<<<<<<< HEAD
+=======
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Stone Statue</value>
+  </data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Stone Statue in the illusion temple event, where players pick up the sacred relic.</value>
+  </data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Alliance Item Storage</value>
+  </data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Alliance Item Storage in the illusion temple event, to which the allied forces carry the sacred relic to score a point.</value>
+  </data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple Illusion Item Storage</value>
+  </data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Illusion Item Storage in the illusion temple event, to which the illusion forces carry the sacred relic to score a point.</value>
+  </data>
+>>>>>>> origin/slave
   <data name="NpcTalkPlugInConfiguration_Npc_Name" xml:space="preserve">
     <value>NPC</value>
   </data>
@@ -1741,6 +1838,7 @@
   <data name="DiscordIntegrationFeaturePlugIn_Description" xml:space="preserve">
     <value>Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such.</value>
   </data>
+<<<<<<< HEAD
   <data name="LifeJewelConsumeHandlerPlugInConfiguration_SuccessChance_Name" xml:space="preserve">
     <value>Success chance</value>
   </data>
@@ -1752,5 +1850,30 @@
   </data>
   <data name="LifeJewelConsumeHandlerPlugInConfiguration_FailResult_Description" xml:space="preserve">
     <value>What happens to the option when the random check fails: nothing, the option is set back to its base level, or the option is removed. The original behaviour removes the option.</value>
+=======
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="EliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite healing potion consumption. It recovers the health immediately.</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite Mana Potion Consume Handler</value>
+  </data>
+  <data name="EliteManaPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite mana potion consumption. It recovers the mana immediately.</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Elite SD Potion Consume Handler</value>
+  </data>
+  <data name="EliteShieldPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the elite SD potion consumption. It recovers the shield immediately.</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Medium Elite Healing Potion Consume Handler</value>
+  </data>
+  <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+>>>>>>> origin/slave
   </data>
 </root>

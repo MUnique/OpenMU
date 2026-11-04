@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // <copyright file="ItemConsumptionTest.cs" company="MUnique">
+=======
+﻿// <copyright file="ItemConsumptionTest.cs" company="MUnique">
+>>>>>>> origin/slave
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +18,10 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.Views;
+<<<<<<< HEAD
 using MUnique.OpenMU.PlugIns;
+=======
+>>>>>>> origin/slave
 
 /// <summary>
 /// Tests the item consumption action.
@@ -159,7 +166,12 @@ public class ItemConsumptionTest
     [TestCase(5, false)]
     public async ValueTask JewelOfLifeAsync(int numberOfOptions, bool consumptionExpectation)
     {
+<<<<<<< HEAD
         var consumeHandler = CreateLifeJewelHandler(1);
+=======
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = 1;
+>>>>>>> origin/slave
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         var upgradableItemSlot = (byte)(ItemSlot + 1);
@@ -191,7 +203,12 @@ public class ItemConsumptionTest
     [TestCase(3)]
     public async ValueTask JewelOfLifeFailRemovesOptionAsync(int numberOfOptions)
     {
+<<<<<<< HEAD
         var consumeHandler = CreateLifeJewelHandler(1);
+=======
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = 1;
+>>>>>>> origin/slave
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption();
         var upgradableItemSlot = (byte)(ItemSlot + 1);
@@ -209,7 +226,11 @@ public class ItemConsumptionTest
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
 
         // then adding fails, so option needs to be removed
+<<<<<<< HEAD
         consumeHandler.Configuration = new LifeJewelConsumeHandlerPlugInConfiguration { SuccessChance = 0 };
+=======
+        consumeHandler.Configuration.SuccessChance = 0;
+>>>>>>> origin/slave
         var jol2 = this.GetItem();
         await player.Inventory.AddItemAsync(ItemSlot, jol2).ConfigureAwait(false);
         jol2.Durability = 1;
@@ -220,6 +241,7 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
+<<<<<<< HEAD
     /// Tests that the Jewel of Life provides a default configuration which matches the
     /// behaviour it had before it became configurable.
     /// </summary>
@@ -321,6 +343,8 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
+=======
+>>>>>>> origin/slave
     /// Tests that a Jewel of Life doesn't add an option without level-dependent values, like the options of the Horn of Dinorant.
     /// </summary>
     /// <param name="successChance">The success chance of the jewel.</param>
@@ -328,7 +352,12 @@ public class ItemConsumptionTest
     [TestCase(0.0)]
     public async ValueTask JewelOfLifeDoesNotAddFixedOptionAsync(double successChance)
     {
+<<<<<<< HEAD
         var consumeHandler = CreateLifeJewelHandler(successChance);
+=======
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = successChance;
+>>>>>>> origin/slave
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption(false);
         await player.Inventory!.AddItemAsync((byte)(ItemSlot + 1), upgradeableItem).ConfigureAwait(false);
@@ -351,7 +380,12 @@ public class ItemConsumptionTest
     public async ValueTask JewelOfLifeDoesNotChangeFixedOptionAsync(double successChance)
     {
         const int optionLevel = 2;
+<<<<<<< HEAD
         var consumeHandler = CreateLifeJewelHandler(successChance);
+=======
+        var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = successChance;
+>>>>>>> origin/slave
         var player = await this.GetPlayerAsync().ConfigureAwait(false);
         var upgradeableItem = this.GetItemWithPossibleOption(false);
         var fixedOption = upgradeableItem.Definition!.PossibleItemOptions.Single().PossibleOptions.Single();
@@ -607,6 +641,7 @@ public class ItemConsumptionTest
         };
     }
 
+<<<<<<< HEAD
     private static LifeJewelConsumeHandlerPlugIn CreateLifeJewelHandler(
         double successChance,
         ItemUpgradeConsumeHandlerPlugIn.ItemFailResult failResult = ItemUpgradeConsumeHandlerPlugIn.ItemFailResult.RemoveOption)
@@ -621,6 +656,8 @@ public class ItemConsumptionTest
         };
     }
 
+=======
+>>>>>>> origin/slave
     private Item GetItem()
     {
         return new()

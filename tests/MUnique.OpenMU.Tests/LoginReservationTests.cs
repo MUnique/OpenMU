@@ -30,6 +30,11 @@ public class LoginReservationTests
 
     private readonly List<string> _calls = new();
 
+<<<<<<< HEAD
+=======
+    private readonly List<GameServerContext> _contexts = new();
+
+>>>>>>> origin/slave
     private Mock<ILoginServer> _loginServer = null!;
 
     private Mock<IEventPublisher> _eventPublisher = null!;
@@ -59,6 +64,24 @@ public class LoginReservationTests
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Disposes the game server contexts of the test, which stops their timers.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        foreach (var context in this._contexts)
+        {
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        this._contexts.Clear();
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// The account is reserved first and loaded afterwards.
     /// </summary>
     [Test]
@@ -147,6 +170,7 @@ public class LoginReservationTests
 
     private async ValueTask<Player> CreatePlayerAtLoginScreenAsync()
     {
+<<<<<<< HEAD
         var gameConfiguration = new Persistence.BasicModel.GameConfiguration();
         gameConfiguration.Maps.Add(new Persistence.BasicModel.GameMapDefinition());
         var persistence = new Mock<IPersistenceContextProvider> { DefaultValue = DefaultValue.Mock };
@@ -167,10 +191,15 @@ public class LoginReservationTests
         mapInitializer.PlugInManager = gameServer.PlugInManager;
         mapInitializer.PathFinderPool = gameServer.PathFinderPool;
 
+=======
+        var gameServer = LoginTestSetup.CreateGameServerContext(LoginTestSetup.CreatePersistence(this._playerContext.Object), this._loginServer.Object, this._eventPublisher.Object);
+        this._contexts.Add(gameServer);
+>>>>>>> origin/slave
         var player = new LoginTestPlayer(gameServer);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         return player;
     }
+<<<<<<< HEAD
 
     private sealed class LoginTestPlayer : Player
     {
@@ -184,4 +213,6 @@ public class LoginReservationTests
             return new MockViewPlugInContainer();
         }
     }
+=======
+>>>>>>> origin/slave
 }

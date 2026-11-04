@@ -120,7 +120,11 @@ public class CastleSiegeMiniMapTests
         var ally = await fixture.CreatePlayerAsync(2, isMaster: false).ConfigureAwait(false);
         var enemy = await fixture.CreatePlayerAsync(3, CastleSiegeJoinSide.Defense, false).ConfigureAwait(false);
         fixture.Context.PlayerJoinSides[issuer.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack1;
+<<<<<<< HEAD
         fixture.Context.FinalGuildList[1].Side = CastleSiegeJoinSide.Defense;
+=======
+        fixture.Context.GetSelectedGuild(1).Side = CastleSiegeJoinSide.Defense;
+>>>>>>> origin/slave
 
         await IssueAsync(fixture, issuer).ConfigureAwait(false);
 
@@ -156,13 +160,21 @@ public class CastleSiegeMiniMapTests
                 issuer.GuildStatus = new GuildMemberStatus(1, GuildPosition.NormalMember);
                 break;
             case "allied-master":
+<<<<<<< HEAD
                 fixture.Context.FinalGuildList[1].IsAllianceMaster = false;
+=======
+                fixture.Context.GetSelectedGuild(1).IsAllianceMaster = false;
+>>>>>>> origin/slave
                 break;
             case "unselected":
                 fixture.Context.FinalGuildList.Clear();
                 break;
             case "no-side":
+<<<<<<< HEAD
                 fixture.Context.FinalGuildList[1].Side = CastleSiegeJoinSide.None;
+=======
+                fixture.Context.GetSelectedGuild(1).Side = CastleSiegeJoinSide.None;
+>>>>>>> origin/slave
                 break;
             case "off-map":
                 issuer.SetCurrentMapSilently(null);
@@ -316,7 +328,11 @@ public class CastleSiegeMiniMapTests
         var enemy = await fixture.CreatePlayerAsync(3, CastleSiegeJoinSide.Defense, false).ConfigureAwait(false);
         var spectator = await fixture.CreatePlayerAsync(4, CastleSiegeJoinSide.None).ConfigureAwait(false);
         fixture.Context.PlayerJoinSides[commander.SelectedCharacter!.Id] = CastleSiegeJoinSide.Attack1;
+<<<<<<< HEAD
         fixture.Context.FinalGuildList[1].Side = CastleSiegeJoinSide.Defense;
+=======
+        fixture.Context.GetSelectedGuild(1).Side = CastleSiegeJoinSide.Defense;
+>>>>>>> origin/slave
         fixture.Context.ActiveNpcs.Add(CreateStructure(CastleSiegeGate.MonsterNumber, true));
         fixture.Context.ActiveNpcs.Add(CreateStructure(CastleSiegeStatue.MonsterNumber, true));
         fixture.Context.ActiveNpcs.Add(CreateStructure(CastleSiegeStatue.MonsterNumber, false));
@@ -398,7 +414,17 @@ public class CastleSiegeMiniMapTests
             player.GuildStatus = new GuildMemberStatus(guildId, isMaster ? GuildPosition.GuildMaster : GuildPosition.NormalMember);
             player.Position = new Point((byte)guildId, 20);
             player.SetCurrentMapSilently(this.Map);
+<<<<<<< HEAD
             this.Context.FinalGuildList[guildId] = new CastleSiegeGuildParticipant { GuildId = guildId, Side = side, IsAllianceMaster = true };
+=======
+            this.Context.AddSelectedGuild(new CastleSiegeGuildParticipant
+            {
+                GuildId = guildId,
+                PersistentGuildId = this.Context.GetFinalGuild(guildId)?.PersistentGuildId ?? Guid.NewGuid(),
+                Side = side,
+                IsAllianceMaster = true,
+            });
+>>>>>>> origin/slave
             this.Context.TrackPlayer(player, this.Map);
             return player;
         }

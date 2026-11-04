@@ -4,6 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+<<<<<<< HEAD
+=======
+using MUnique.OpenMU.DataModel.Configuration.Items;
+>>>>>>> origin/slave
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -58,6 +62,15 @@ public interface IGameServerContext : IGameContext
     IMapHostLocator? MapHostLocator { get; }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Gets the requirements which an account has to fulfill to join this game server,
+    /// see <see cref="GameServerDefinition.JoinRequirements"/>.
+    /// </summary>
+    IEnumerable<AttributeRequirement> JoinRequirements => [];
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Stops the periodic tasks of this context (the per-second plug-in tasks and the recovery
     /// timer), so that no periodic plug-in runs concurrently with a subsequent teardown, such as
     /// the player disconnect loop of a shutting-down game server.

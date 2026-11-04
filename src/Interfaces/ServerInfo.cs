@@ -12,5 +12,11 @@ public record ServerInfo(ushort Id, string Description, int CurrentConnections, 
     /// <summary>
     /// Gets or sets the count of current connections.
     /// </summary>
+<<<<<<< HEAD
+=======
+    /// <remarks>
+    /// For a game server, these are the logged in players, which are limited by <see cref="MaximumConnections"/>.
+    /// </remarks>
+>>>>>>> origin/slave
     public int CurrentConnections { get; set; } = CurrentConnections;
 }

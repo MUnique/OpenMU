@@ -1,8 +1,12 @@
 @inherits EditBase
 
+<<<<<<< HEAD
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Entities
 @using MUnique.OpenMU.Web.AdminPanel.Components.Configuration
+=======
+@using MUnique.OpenMU.DataModel.Entities
+>>>>>>> origin/slave
 @using MUnique.OpenMU.Web.AdminPanel.Components.Layout
 @using MUnique.OpenMU.Web.Shared.Components.ItemEdit
 
@@ -13,11 +17,14 @@
     }
     else if (this.AutoFormType is not null)
     {
+<<<<<<< HEAD
         @if (this.Model is GameConfiguration gameConfiguration)
         {
             <MoneyRateEditor Configuration="gameConfiguration" OnSave="this.SaveChangesAsync" />
         }
 
+=======
+>>>>>>> origin/slave
         <DynamicComponent Type="@this.AutoFormType" Parameters="@this.AutoFormParameters" />
     }
 </EditShell>

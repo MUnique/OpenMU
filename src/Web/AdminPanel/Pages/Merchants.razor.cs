@@ -21,6 +21,7 @@ using MUnique.OpenMU.Web.Shared.Services;
 /// <summary>
 /// Razor page which shows objects of the specified type in a grid.
 /// </summary>
+<<<<<<< HEAD
 public partial class Merchants : ComponentBase, IAsyncDisposable
 {
     private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
@@ -28,6 +29,14 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
 
     private Task? _loadTask;
     private CancellationTokenSource? _disposeCts;
+=======
+public partial class Merchants : ComponentBase, IDisposable
+{
+    private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
+    private readonly PaginationState _itemPagination = new() { ItemsPerPage = 20 };
+    private readonly CancellationTokenSource _disposeCts = new();
+
+>>>>>>> origin/slave
     private List<MerchantStorageViewModel>? _viewModels;
     private MerchantStorageViewModel? _selectedMerchant;
     private IContext? _persistenceContext;
@@ -78,11 +87,16 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
     private IQueryable<MerchantStorageViewModel>? ViewModels => this._viewModels?.AsQueryable();
 
     /// <inheritdoc />
+<<<<<<< HEAD
     public async ValueTask DisposeAsync()
+=======
+    public void Dispose()
+>>>>>>> origin/slave
     {
         this._navigationLockDisposable?.Dispose();
         this._navigationLockDisposable = null;
 
+<<<<<<< HEAD
         await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
         this._disposeCts?.Dispose();
         this._disposeCts = null;
@@ -115,6 +129,21 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         this._disposeCts = cts;
         this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token));
         await base.OnParametersSetAsync().ConfigureAwait(true);
+=======
+        this._disposeCts.Cancel();
+        this._disposeCts.Dispose();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync().ConfigureAwait(true);
+        this._navigationLockDisposable = this.NavigationManager.RegisterLocationChangingHandler(this.OnBeforeInternalNavigationAsync);
+
+        // Awaited within the component lifecycle, so Blazor renders the loading state first and
+        // re-renders on completion - and ignores the completion if the component is gone by then.
+        await this.LoadDataAsync(this._disposeCts.Token).ConfigureAwait(true);
+>>>>>>> origin/slave
     }
 
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
@@ -155,13 +184,23 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
                 .Select(o => new MerchantStorageViewModel(o))
                 .OrderBy(o => o.Name)
                 .ToList();
+<<<<<<< HEAD
 
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+=======
+>>>>>>> origin/slave
         }
         catch (OperationCanceledException)
         {
             // Expected when navigating away - ignore
         }
+<<<<<<< HEAD
+=======
+        catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The component (and its circuit) got disposed while loading - ignore
+        }
+>>>>>>> origin/slave
         catch (Exception ex)
         {
             this.Logger.LogError(ex, "Error loading merchant data");
@@ -202,7 +241,11 @@ public partial class Merchants : ComponentBase, IAsyncDisposable
         {
             var previousMerchantId = this._selectedMerchant?.Id;
             await this.DataSource.DiscardChangesAsync().ConfigureAwait(true);
+<<<<<<< HEAD
             await this.LoadDataAsync(this._disposeCts?.Token ?? default).ConfigureAwait(true);
+=======
+            await this.LoadDataAsync(this._disposeCts.Token).ConfigureAwait(true);
+>>>>>>> origin/slave
             if (previousMerchantId is { } id && this._viewModels is not null)
             {
                 this._selectedMerchant = this._viewModels.FirstOrDefault(vm => vm.Id == id);

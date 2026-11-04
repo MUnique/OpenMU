@@ -13,5 +13,9 @@ public class GuildDisconnectChatCommandArgs : ArgumentsBase
     /// Gets or sets the guild name.
     /// </summary>
     [Argument("guild")]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.GuildName)]
+>>>>>>> origin/slave
     public string? GuildName { get; set; }
 }

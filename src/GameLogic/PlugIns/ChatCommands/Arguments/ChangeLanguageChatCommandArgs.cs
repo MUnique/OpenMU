@@ -13,5 +13,9 @@ public class ChangeLanguageChatCommandArgs : ArgumentsBase
     /// Gets or sets the iso 2/3 language code of the requested language.
     /// </summary>
     [Argument("isoCode")]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.LanguageIsoCode)]
+>>>>>>> origin/slave
     public string? IsoLanguageCode { get; set; }
 }

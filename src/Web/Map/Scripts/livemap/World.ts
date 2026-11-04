@@ -3,12 +3,20 @@
 import { Attacks } from "./Attack";
 import { createTerrainShader } from "./TerrainShader";
 import { Player } from "./Player";
+<<<<<<< HEAD
 import { Attackable, attackableAlphaMapTexture } from "./Attackable";
+=======
+import { Attackable, attackableAlphaMapTexture, getDisplayName } from "./Attackable";
+>>>>>>> origin/slave
 import { GameObject } from "./GameObject";
 import { NonPlayerCharacter as NPC } from "./NonPlayerCharacter";
 import { logDebug } from "./Debug";
 
+<<<<<<< HEAD
 import { NpcData, PlayerData, ObjectData, Step } from "./Types";
+=======
+import { MonsterFilterMatch, MonsterFilterMode, NpcData, PlayerData, ObjectData, Step } from "./Types";
+>>>>>>> origin/slave
 
 export class World extends THREE.Object3D {
     private static readonly sideLength: number = 256;
@@ -24,6 +32,13 @@ export class World extends THREE.Object3D {
     private terrainTexture: THREE.Texture | null = null;
     private lastLabelObjectId: number | null = null;
     private isDisposed: boolean = false;
+<<<<<<< HEAD
+=======
+    private monsterFilterMode: MonsterFilterMode = MonsterFilterMode.Contains;
+
+    /* The lower-cased text of the monster filter; empty when no filter is set. */
+    private monsterFilterText: string = "";
+>>>>>>> origin/slave
 
     /**
      * Constructs a new World object. Automatically initializes and updates
@@ -94,6 +109,10 @@ export class World extends THREE.Object3D {
         } else {
             logDebug("Updating npc", npcData);
             obj.respawn(npcData);
+<<<<<<< HEAD
+=======
+            this.applyMonsterFilter(obj);
+>>>>>>> origin/slave
         }
     }
 
@@ -228,6 +247,47 @@ export class World extends THREE.Object3D {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Sets the monster filter: while its text isn't empty, only the monsters whose name matches it
+     * are visible. Players and the other NPCs stay visible. The comparison ignores the case.
+     * @param mode - How the name is compared with the text.
+     * @param text - The text; an empty one shows all monsters again.
+     */
+    public setMonsterFilter(mode: MonsterFilterMode, text: string): void {
+        this.monsterFilterMode = mode;
+        this.monsterFilterText = (text ?? "").trim().toLowerCase();
+        for (const id in this.objects) {
+            if (this.objects.hasOwnProperty(id)) {
+                this.applyMonsterFilter(this.objects[id]);
+            }
+        }
+    }
+
+    /**
+     * Gets the monsters which match the monster filter, sorted by name.
+     * @returns The matching monsters; empty when no filter is set.
+     */
+    public getMonsterFilterMatches(): MonsterFilterMatch[] {
+        const matches: MonsterFilterMatch[] = [];
+        if (this.monsterFilterText === "") {
+            return matches;
+        }
+
+        for (const id in this.objects) {
+            if (this.objects.hasOwnProperty(id)) {
+                const obj = this.objects[id];
+                if (obj instanceof NPC && obj.isMonster() && obj.visible) {
+                    matches.push({ id: obj.data.id, name: getDisplayName(obj.data), x: obj.data.x, y: obj.data.y });
+                }
+            }
+        }
+
+        return matches.sort((a, b) => a.name.localeCompare(b.name) || a.id - b.id);
+    }
+
+    /**
+>>>>>>> origin/slave
      * Highlights a player by their character name.
      * @param playerName - The character name to search for.
      * @returns True if the player was found and highlighted, false otherwise.
@@ -311,6 +371,10 @@ export class World extends THREE.Object3D {
         const npc = new NPC(data);
         this.addObjectMesh(npc);
         npc.respawn(data);
+<<<<<<< HEAD
+=======
+        this.applyMonsterFilter(npc);
+>>>>>>> origin/slave
     }
 
     /**
@@ -367,6 +431,36 @@ export class World extends THREE.Object3D {
         return this.objects[objectId];
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Shows or hides a monster according to the monster filter. Other objects are left alone.
+     * @param obj - The object.
+     */
+    private applyMonsterFilter(obj: GameObject): void {
+        if (!(obj instanceof NPC) || !obj.isMonster()) {
+            return;
+        }
+
+        obj.visible = this.monsterFilterText === "" || this.matchesMonsterFilter(getDisplayName(obj.data));
+        if (!obj.visible && this.lastLabelObjectId === obj.data.id) {
+            this.hideLastLabel();
+        }
+    }
+
+    private matchesMonsterFilter(name: string): boolean {
+        const lowerName = name.toLowerCase();
+        switch (this.monsterFilterMode) {
+            case MonsterFilterMode.StartsWith:
+                return lowerName.startsWith(this.monsterFilterText);
+            case MonsterFilterMode.EndsWith:
+                return lowerName.endsWith(this.monsterFilterText);
+            default:
+                return lowerName.includes(this.monsterFilterText);
+        }
+    }
+
+>>>>>>> origin/slave
     private addObjectMesh(mesh: GameObject): void {
         this.add(mesh);
         this.objects[mesh.data.id] = mesh;

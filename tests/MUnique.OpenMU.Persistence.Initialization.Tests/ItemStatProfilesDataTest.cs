@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // <copyright file="ItemStatProfilesDataTest.cs" company="MUnique">
+=======
+﻿// <copyright file="ItemStatProfilesDataTest.cs" company="MUnique">
+>>>>>>> origin/slave
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -202,9 +206,15 @@ internal class ItemStatProfilesDataTest
             .Select(group => $"{group.Key}: {group.Count()}");
         Assert.That(counts, Is.EqualTo(new[]
         {
+<<<<<<< HEAD
             "armor: 274",
             "book: 3",
             "default: 173",
+=======
+            "armor: 327",
+            "book: 3",
+            "default: 233",
+>>>>>>> origin/slave
             "firstTierWing: 4",
             "helper: 27",
             "orb: 12",

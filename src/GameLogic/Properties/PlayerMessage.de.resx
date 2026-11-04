@@ -219,6 +219,12 @@
   <data name="NoKalimaGateOnEventMap" xml:space="preserve">
     <value>Auf einer Event-Karte kann kein Kalima-Tor erstellt werden.</value>
   </data>
+<<<<<<< HEAD
+=======
+  <data name="NoKalimaGateInKalima" xml:space="preserve">
+    <value>In Kalima kann kein Kalima-Tor erstellt werden.</value>
+  </data>
+>>>>>>> origin/slave
   <data name="NoKalimaGateInSafezone" xml:space="preserve">
     <value>In der sicheren Zone kann kein Kalima-Tor erstellt werden.</value>
   </data>

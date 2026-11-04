@@ -67,6 +67,10 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new HarmonyOptions(this.Context, this.GameConfiguration).Initialize();
         new GuardianOptions(this.Context, this.GameConfiguration).Initialize();
         new Armors(this.Context, this.GameConfiguration).Initialize();
+<<<<<<< HEAD
+=======
+        new LuckyItems(this.Context, this.GameConfiguration).Initialize();
+>>>>>>> origin/slave
         new Weapons(this.Context, this.GameConfiguration).Initialize();
         new Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewels(this.Context, this.GameConfiguration).Initialize();
@@ -84,6 +88,10 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         this.WireRenaDropToEventMaps();
         new SocketSystem(this.Context, this.GameConfiguration).Initialize();
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
+<<<<<<< HEAD
+=======
+        new CraftingTalismans(this.Context, this.GameConfiguration).Initialize();
+>>>>>>> origin/slave
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new Quest(this.Context, this.GameConfiguration).Initialize();
         new Quests(this.Context, this.GameConfiguration).Initialize();
@@ -93,9 +101,18 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new CastleSiegeInitializer(this.Context, this.GameConfiguration).Initialize();
         new KanturuInitializer(this.Context, this.GameConfiguration).Initialize();
         new DoppelgangerInitializer(this.Context, this.GameConfiguration).Initialize();
+<<<<<<< HEAD
         new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
         new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
         new CashShopItems(this.Context, this.GameConfiguration).Initialize();
+=======
+        new IllusionTempleInitializer(this.Context, this.GameConfiguration).Initialize();
+        new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
+        new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
+        EventTicketItems.AssignFreeTicketItems(this.GameConfiguration);
+        new CashShopItems(this.Context, this.GameConfiguration).Initialize();
+        new BuffItems(this.Context, this.GameConfiguration).Initialize();
+>>>>>>> origin/slave
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();

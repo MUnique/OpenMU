@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // <copyright file="MiniGameManager.cs" company="MUnique">
+=======
+﻿// <copyright file="MiniGameManager.cs" company="MUnique">
+>>>>>>> origin/slave
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -88,6 +92,12 @@ public sealed class MiniGameManager : IMiniGameManager
                 case MiniGameType.Kanturu:
                     miniGameContext = new KanturuContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;
+<<<<<<< HEAD
+=======
+                case MiniGameType.IllusionTemple:
+                    miniGameContext = new IllusionTempleContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
+                    break;
+>>>>>>> origin/slave
                 case MiniGameType.ImperialGuardian:
                     miniGameContext = new ImperialGuardianContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;

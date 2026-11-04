@@ -28,7 +28,11 @@ public class FruitConsumptionResultPlugIn : IFruitConsumptionResponsePlugIn
     public FruitConsumptionResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
+<<<<<<< HEAD
     public async ValueTask ShowResponseAsync(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute)
+=======
+    public async ValueTask ShowResponseAsync(FruitConsumptionResult result, ushort statPoints, AttributeDefinition statAttribute)
+>>>>>>> origin/slave
     {
         await this._player.Connection.SendFruitConsumptionResponseAsync(Convert(result), statPoints, Convert(statAttribute)).ConfigureAwait(false);
     }
@@ -44,6 +48,10 @@ public class FruitConsumptionResultPlugIn : IFruitConsumptionResponsePlugIn
             FruitConsumptionResult.MinusFailed => FruitConsumptionResponse.FruitConsumptionResult.MinusFailed,
             FruitConsumptionResult.MinusPrevented => FruitConsumptionResponse.FruitConsumptionResult.MinusPrevented,
             FruitConsumptionResult.MinusSuccessCashShopFruit => FruitConsumptionResponse.FruitConsumptionResult.MinusSuccessCashShopFruit,
+<<<<<<< HEAD
+=======
+            FruitConsumptionResult.PreventedByEquippedItems => FruitConsumptionResponse.FruitConsumptionResult.PreventedByEquippedItems,
+>>>>>>> origin/slave
             FruitConsumptionResult.PlusPreventedByMaximum => FruitConsumptionResponse.FruitConsumptionResult.PlusPreventedByMaximum,
             FruitConsumptionResult.MinusPreventedByMaximum => FruitConsumptionResponse.FruitConsumptionResult.MinusPreventedByMaximum,
             FruitConsumptionResult.MinusPreventedByDefault => FruitConsumptionResponse.FruitConsumptionResult.MinusPreventedByDefault,

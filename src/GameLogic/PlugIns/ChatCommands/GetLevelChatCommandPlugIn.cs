@@ -57,6 +57,10 @@ public class GetLevelChatCommandPlugIn : ChatCommandPlugInBase<GetLevelChatComma
         /// <summary>
         /// Gets or sets the character name to get level for.
         /// </summary>
+<<<<<<< HEAD
+=======
+        [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
         public string? CharacterName { get; set; }
     }
 }

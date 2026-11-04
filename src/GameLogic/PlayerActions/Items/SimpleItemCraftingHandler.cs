@@ -31,6 +31,10 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     {
         successRate = 0;
         int rate = this._settings.SuccessPercent;
+<<<<<<< HEAD
+=======
+        int addedRateByFixedPercentage = 0;
+>>>>>>> origin/slave
         long totalCraftingPrice = 0;
         items = new List<CraftingRequiredItemLink>(this._settings.RequiredItems.Count);
         var storage = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
@@ -52,7 +56,20 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
 
             if (this._settings.NpcPriceDivisor > 0)
             {
+<<<<<<< HEAD
                 totalCraftingPrice += foundItems.Sum(this._priceCalculator.CalculateFinalOldBuyingPrice);
+=======
+                // An item which adds a fixed percentage per piece, like the Talisman of Luck, adds it on top
+                // of the rate which is based on the price of the other items.
+                if (requiredItem.AddPercentage > 0)
+                {
+                    addedRateByFixedPercentage += (int)(requiredItem.AddPercentage * (itemCount - requiredItem.MinimumAmount));
+                }
+                else
+                {
+                    totalCraftingPrice += foundItems.Sum(this._priceCalculator.CalculateFinalOldBuyingPrice);
+                }
+>>>>>>> origin/slave
             }
             else
             {
@@ -113,6 +130,10 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             rate = (byte)Math.Min(byte.MaxValue, totalCraftingPrice / this._settings.NpcPriceDivisor);
         }
 
+<<<<<<< HEAD
+=======
+        rate += addedRateByFixedPercentage;
+>>>>>>> origin/slave
         if (this._settings.MaximumSuccessPercent > 0)
         {
             rate = Math.Min(this._settings.MaximumSuccessPercent, rate);

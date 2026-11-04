@@ -40,4 +40,10 @@ Defines from or to which item storage an item is moved.
 | 11 | SeedCrafting | The storage of the seed crafting dialog. |
 | 12 | SeedSphereCrafting | The storage of the seed sphere crafting dialog. |
 | 13 | SeedMountCrafting | The storage of the seed sphere mount dialog. |
+<<<<<<< HEAD
 | 14 | SeedUnmountCrafting | The storage of the seed sphere unmount dialog. |
+=======
+| 14 | SeedUnmountCrafting | The storage of the seed sphere unmount dialog. |
+| 15 | LuckyItemTrade | The storage of the lucky item exchange dialog of the david npc. |
+| 16 | LuckyItemRefinery | The storage of the lucky item refinery dialog of the david npc. |
+>>>>>>> origin/slave

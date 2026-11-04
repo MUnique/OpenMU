@@ -92,11 +92,19 @@ public class CastleSiegeGuildSelectionTests
 
         Assert.Multiple(() =>
         {
+<<<<<<< HEAD
             Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(AlphaGuildId));
             Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(AlphaAllianceGuildId));
             Assert.That(fixture.Context.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(fixture.Context.FinalGuildList[BravoGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
             Assert.That(fixture.Context.FinalGuildList[DeltaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack3));
+=======
+            Assert.That(fixture.Context.GetFinalGuild(AlphaGuildId), Is.Null);
+            Assert.That(fixture.Context.GetFinalGuild(AlphaAllianceGuildId), Is.Null);
+            Assert.That(fixture.Context.GetSelectedGuild(CharlieGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.GetSelectedGuild(BravoGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+            Assert.That(fixture.Context.GetSelectedGuild(DeltaGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack3));
+>>>>>>> origin/slave
         });
     }
 
@@ -120,8 +128,13 @@ public class CastleSiegeGuildSelectionTests
         Assert.Multiple(() =>
         {
             Assert.That(fixture.Context.FinalGuildList.Values.Count(guild => guild.IsAllianceMaster && guild.Side != CastleSiegeJoinSide.Defense), Is.EqualTo(expectedAttackers));
+<<<<<<< HEAD
             Assert.That(fixture.Context.FinalGuildList[DefenseGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
             Assert.That(fixture.Context.FinalGuildList[DefenseAllianceGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+=======
+            Assert.That(fixture.Context.GetSelectedGuild(DefenseGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+            Assert.That(fixture.Context.GetSelectedGuild(DefenseAllianceGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+>>>>>>> origin/slave
         });
     }
 
@@ -138,6 +151,7 @@ public class CastleSiegeGuildSelectionTests
         Assert.Multiple(() =>
         {
             Assert.That(fixture.Context.FinalGuildList, Has.Count.EqualTo(6));
+<<<<<<< HEAD
             Assert.That(fixture.Context.FinalGuildList[DefenseGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
             Assert.That(fixture.Context.FinalGuildList[DefenseAllianceGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
             Assert.That(fixture.Context.FinalGuildList[AlphaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
@@ -148,6 +162,18 @@ public class CastleSiegeGuildSelectionTests
             Assert.That(fixture.Context.FinalGuildList[BravoGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack3));
             Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(DeltaGuildId));
             Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(DefenseGuildId));
+=======
+            Assert.That(fixture.Context.GetSelectedGuild(DefenseGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+            Assert.That(fixture.Context.GetSelectedGuild(DefenseAllianceGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Defense));
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaGuildId).Score, Is.EqualTo(177));
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaAllianceGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaAllianceGuildId).Score, Is.Zero);
+            Assert.That(fixture.Context.GetSelectedGuild(CharlieGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+            Assert.That(fixture.Context.GetSelectedGuild(BravoGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack3));
+            Assert.That(fixture.Context.GetFinalGuild(DeltaGuildId), Is.Null);
+            Assert.That(fixture.Context.MiddleOwnerGuildId, Is.EqualTo(fixture.Context.GetSelectedGuild(DefenseGuildId).PersistentGuildId));
+>>>>>>> origin/slave
         });
         fixture.GuildServer.Verify(
             server => server.GetGuildIdByNameAsync(It.IsAny<string>()),
@@ -170,9 +196,15 @@ public class CastleSiegeGuildSelectionTests
         Assert.Multiple(() =>
         {
             Assert.That(restartedContext.FinalGuildList, Has.Count.EqualTo(6));
+<<<<<<< HEAD
             Assert.That(restartedContext.FinalGuildList[AlphaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(restartedContext.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
             Assert.That(restartedContext.MiddleOwnerGuildId, Is.EqualTo(DefenseGuildId));
+=======
+            Assert.That(restartedContext.GetSelectedGuild(AlphaGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(restartedContext.GetSelectedGuild(CharlieGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+            Assert.That(restartedContext.MiddleOwnerGuildId, Is.EqualTo(restartedContext.GetSelectedGuild(DefenseGuildId).PersistentGuildId));
+>>>>>>> origin/slave
         });
     }
 
@@ -197,10 +229,17 @@ public class CastleSiegeGuildSelectionTests
 
         Assert.Multiple(() =>
         {
+<<<<<<< HEAD
             Assert.That(fixture.Context.FinalGuildList[AlphaGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(fixture.Context.FinalGuildList[AlphaGuildId].IsAllianceMaster, Is.True);
             Assert.That(fixture.Context.FinalGuildList[AlphaAllianceGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
             Assert.That(fixture.Context.FinalGuildList[CharlieGuildId].Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+=======
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaGuildId).IsAllianceMaster, Is.True);
+            Assert.That(fixture.Context.GetSelectedGuild(AlphaAllianceGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack1));
+            Assert.That(fixture.Context.GetSelectedGuild(CharlieGuildId).Side, Is.EqualTo(CastleSiegeJoinSide.Attack2));
+>>>>>>> origin/slave
         });
     }
 
@@ -264,21 +303,84 @@ public class CastleSiegeGuildSelectionTests
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
         fixture.Context.CurrentState = CastleSiegeState.Start;
+<<<<<<< HEAD
         fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
         await CreateSiegePlayerAsync(fixture, ReconnectedAlphaGuildId, "Fighter").ConfigureAwait(false);
 
         await fixture.Context.SetPlayerJoinSideAsync().ConfigureAwait(false);
         var ownerAfterReconnect = fixture.Context.MiddleOwnerGuildId;
+=======
+        fixture.Context.MiddleOwnerGuildId = fixture.AlphaPersistentGuildId;
+        await CreateSiegePlayerAsync(fixture, ReconnectedAlphaGuildId, "Fighter").ConfigureAwait(false);
+
+        await fixture.Context.SetPlayerJoinSideAsync().ConfigureAwait(false);
+        var ownerAfterReconnect = fixture.Context.GetBattleOwner();
+>>>>>>> origin/slave
         await CastleSiegeCrownMechanics.CheckResultAsync(fixture.Context).ConfigureAwait(false);
 
         Assert.Multiple(() =>
         {
+<<<<<<< HEAD
             Assert.That(ownerAfterReconnect, Is.EqualTo(ReconnectedAlphaGuildId));
+=======
+            Assert.That(ownerAfterReconnect?.GuildId, Is.EqualTo(ReconnectedAlphaGuildId));
+>>>>>>> origin/slave
             Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.AlphaPersistentGuildId));
         });
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Verifies that a guild stays in the final guild list with the same entry while it gets a new runtime identifier,
+    /// so the rewards and the result which are decided while the reconnect is still running find the battle owner.
+    /// </summary>
+    [Test]
+    public async ValueTask BattleOwnerStaysSelectedWhileGuildReconnectsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
+        fixture.Context.CurrentState = CastleSiegeState.Start;
+        fixture.Context.MiddleOwnerGuildId = fixture.AlphaPersistentGuildId;
+        var selectedGuilds = fixture.Context.FinalGuildList.ToDictionary(pair => pair.Key, pair => pair.Value);
+        var persistentGuildIdLookup = new TaskCompletionSource<Guid?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        fixture.GuildServer
+            .Setup(server => server.GetPersistentGuildIdAsync(ReconnectedAlphaGuildId))
+            .Returns(() => new ValueTask<Guid?>(persistentGuildIdLookup.Task));
+        await CreateSiegePlayerAsync(fixture, ReconnectedAlphaGuildId, "Fighter").ConfigureAwait(false);
+
+        var reconnect = fixture.Context.SetPlayerJoinSideAsync().AsTask();
+        var reconnectPendingDuringRewards = !reconnect.IsCompleted;
+        var ownerDuringReconnect = fixture.Context.GetBattleOwner();
+        await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
+        persistentGuildIdLookup.SetResult(fixture.AlphaPersistentGuildId);
+        await reconnect.ConfigureAwait(false);
+        var ownerAfterReconnect = fixture.Context.GetBattleOwner();
+        await CastleSiegeCrownMechanics.CheckResultAsync(fixture.Context).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(reconnectPendingDuringRewards, Is.True);
+            Assert.That(ownerDuringReconnect, Is.SameAs(selectedGuilds[fixture.AlphaPersistentGuildId]));
+            Assert.That(ownerAfterReconnect, Is.SameAs(ownerDuringReconnect));
+            Assert.That(ownerAfterReconnect?.GuildId, Is.EqualTo(ReconnectedAlphaGuildId));
+            Assert.That(fixture.Context.FinalGuildList, Is.EquivalentTo(selectedGuilds));
+            Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.AlphaPersistentGuildId));
+        });
+        fixture.GuildServer.Verify(
+            server => server.IncreaseGuildScoreAsync(
+                AlphaGuildId,
+                fixture.CastleSiegeConfiguration.GuildScoreCastleSiege),
+            Times.Once);
+        fixture.GuildServer.Verify(
+            server => server.IncreaseGuildScoreAsync(
+                AlphaAllianceGuildId,
+                fixture.CastleSiegeConfiguration.GuildScoreCastleSiegeMembers),
+            Times.Once);
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Verifies join-side notification, reconnect mapping, magic effects, and participant accumulation.
     /// </summary>
     [Test]
@@ -296,8 +398,13 @@ public class CastleSiegeGuildSelectionTests
         Assert.Multiple(() =>
         {
             Assert.That(fixture.Context.GetPlayerJoinSide(player), Is.EqualTo(CastleSiegeJoinSide.Attack1));
+<<<<<<< HEAD
             Assert.That(fixture.Context.FinalGuildList, Does.ContainKey(ReconnectedAlphaGuildId));
             Assert.That(fixture.Context.FinalGuildList, Does.Not.ContainKey(AlphaGuildId));
+=======
+            Assert.That(fixture.Context.GetFinalGuild(ReconnectedAlphaGuildId), Is.Not.Null);
+            Assert.That(fixture.Context.GetFinalGuild(AlphaGuildId), Is.Null);
+>>>>>>> origin/slave
             Assert.That(
                 player.MagicEffectList.GetActiveEffectsSnapshot().Select(effect => effect.Id),
                 Does.Contain((short)CastleSiegeMagicEffectNumber.Attack1));
@@ -395,7 +502,11 @@ public class CastleSiegeGuildSelectionTests
         await CastleSiegeGuildSelector.SelectGuildsAsync(fixture.Context).ConfigureAwait(false);
         var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "Winner").ConfigureAwait(false);
         var itemAppearView = player.ViewPlugIns.GetPlugIn<IItemAppearPlugIn>()!;
+<<<<<<< HEAD
         fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
+=======
+        fixture.Context.MiddleOwnerGuildId = fixture.AlphaPersistentGuildId;
+>>>>>>> origin/slave
         fixture.Context.ParticipantTracking[player.SelectedCharacter!.Id] = new CastleSiegeParticipant
         {
             CharacterId = player.SelectedCharacter.Id,
@@ -513,7 +624,11 @@ public class CastleSiegeGuildSelectionTests
         var firstPlayer = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "ReconnectA").ConfigureAwait(false);
         var secondPlayer = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "ReconnectB").ConfigureAwait(false);
         secondPlayer.SelectedCharacter!.Id = firstPlayer.SelectedCharacter!.Id;
+<<<<<<< HEAD
         fixture.Context.MiddleOwnerGuildId = AlphaGuildId;
+=======
+        fixture.Context.MiddleOwnerGuildId = fixture.AlphaPersistentGuildId;
+>>>>>>> origin/slave
         fixture.Context.ParticipantTracking[firstPlayer.SelectedCharacter.Id] = new CastleSiegeParticipant
         {
             CharacterId = firstPlayer.SelectedCharacter.Id,

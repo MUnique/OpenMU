@@ -476,16 +476,24 @@ internal sealed class BotGenerator
         try
         {
             // Load the account again, this time with its whole graph: the paging query returns the
+<<<<<<< HEAD
             // accounts untracked and without their characters, and deleting such a shallow account
             // leaves its item storages behind. A character's inventory is referenced by the character,
             // so no delete cascade ever reaches it - those storages, and every item lying in them, would
             // stay in the database forever as unreachable rows.
+=======
+            // accounts untracked and without their characters, and only a loaded member of the
+            // aggregate can be deleted with it. DeleteAsync goes through the whole graph now, so the
+            // item storages (the vault and the inventories of the characters) are deleted with the
+            // account - they are referenced BY their owner, so no delete cascade reaches them.
+>>>>>>> origin/slave
             account = await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
             if (account is null)
             {
                 return BotAccountDeleteOutcome.NotFound;
             }
 
+<<<<<<< HEAD
             foreach (var character in account.Characters)
             {
                 if (character.Inventory is { } inventory)
@@ -499,6 +507,8 @@ internal sealed class BotGenerator
                 await context.DeleteAsync(vault).ConfigureAwait(false);
             }
 
+=======
+>>>>>>> origin/slave
             var deleteQueued = await context.DeleteAsync(account).ConfigureAwait(false);
 
             // Save per account, so a single failure does not roll back the accounts already deleted.

@@ -22,18 +22,30 @@ public class MoveChatCommandArgs : ArgumentsBase
     /// Gets or sets the name or id of the map.
     /// </summary>
     [Argument("mapIdOrName", false)]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.Map)]
+>>>>>>> origin/slave
     public string? MapIdOrName { get; set; }
 
     /// <summary>
     /// Gets or sets the coordinate X.
     /// </summary>
     [Argument("x", false)]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.MapCoordinateX)]
+>>>>>>> origin/slave
     public byte X { get; set; }
 
     /// <summary>
     /// Gets or sets the coordinate Y.
     /// </summary>
     [Argument("y", false)]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.MapCoordinateY)]
+>>>>>>> origin/slave
     public byte Y { get; set; }
 
     /// <summary>

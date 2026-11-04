@@ -2,7 +2,11 @@ import * as THREE from "three";
 import TWEEN from "tween";
 import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
+<<<<<<< HEAD
 import { ObjectData } from "./Types";
+=======
+import { MonsterFilterMatch, MonsterFilterMode, ObjectData } from "./Types";
+>>>>>>> origin/slave
 
 /**
  * Class for a Map application which is shown on the whole browser page.
@@ -72,6 +76,26 @@ export class MapApp {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Sets the monster filter, see World.setMonsterFilter.
+     * @param mode - How the name is compared with the text.
+     * @param text - The text; an empty one shows all monsters again.
+     */
+    public setMonsterFilter(mode: MonsterFilterMode, text: string): void {
+        this.world.setMonsterFilter(mode, text);
+    }
+
+    /**
+     * Gets the monsters which match the monster filter, see World.getMonsterFilterMatches.
+     * @returns The matching monsters; empty when no filter is set.
+     */
+    public getMonsterFilterMatches(): MonsterFilterMatch[] {
+        return this.world.getMonsterFilterMatches();
+    }
+
+    /**
+>>>>>>> origin/slave
      * Selects the object with the specified id, as if it was clicked on the map.
      * @param objectId - The id of the object to select.
      * @returns True if the object was found and selected, false otherwise.

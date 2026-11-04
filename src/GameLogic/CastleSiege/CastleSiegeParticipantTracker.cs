@@ -75,7 +75,11 @@ public static class CastleSiegeParticipantTracker
         }
 
         if (context.GameContext is not IGameServerContext gameServerContext
+<<<<<<< HEAD
             || GetWinningGuild(context) is not { } ownerGuild)
+=======
+            || context.GetBattleOwner() is not { } ownerGuild)
+>>>>>>> origin/slave
         {
             return;
         }
@@ -177,6 +181,7 @@ public static class CastleSiegeParticipantTracker
                 };
             });
     }
+<<<<<<< HEAD
 
     private static CastleSiegeGuildParticipant? GetWinningGuild(CastleSiegeContext context)
     {
@@ -184,4 +189,6 @@ public static class CastleSiegeParticipantTracker
             ? context.FinalGuildList.GetValueOrDefault(runtimeGuildId)
             : null;
     }
+=======
+>>>>>>> origin/slave
 }

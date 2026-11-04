@@ -25,6 +25,26 @@ public class LoginServerRegistrationTest
     private const string LoginName = "owner";
     private const string Password = "password";
 
+<<<<<<< HEAD
+=======
+    private readonly List<GameServerContext> _contexts = new();
+
+    /// <summary>
+    /// Disposes the game server contexts of the test, which stops their timers.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [TearDown]
+    public async Task TearDownAsync()
+    {
+        foreach (var context in this._contexts)
+        {
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        this._contexts.Clear();
+    }
+
+>>>>>>> origin/slave
     /// <summary>
     /// Tests that a player which disconnects after the login server accepted its login, but before
     /// the account was assigned, still has its registration, so that it's logged off.
@@ -45,8 +65,13 @@ public class LoginServerRegistrationTest
                 disconnect = Task.Run(() => player!.DisconnectAsync().AsTask());
                 return Task.FromResult(true);
             });
+<<<<<<< HEAD
         var gameContext = await CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
         player = new TestPlayer(gameContext);
+=======
+        var gameContext = await this.CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
+        player = new LoginTestPlayer(gameContext);
+>>>>>>> origin/slave
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         string? releasedAtDisconnect = null;
         player.PlayerDisconnected += disconnectedPlayer =>
@@ -70,7 +95,11 @@ public class LoginServerRegistrationTest
     {
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(server => server.TryLoginAsync(LoginName, It.IsAny<byte>())).ReturnsAsync(true);
+<<<<<<< HEAD
         var gameContext = await CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
+=======
+        var gameContext = await this.CreateGameServerContextAsync(loginServer.Object).ConfigureAwait(false);
+>>>>>>> origin/slave
         var player = new FailingLoginPlayer(gameContext);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
 
@@ -80,7 +109,11 @@ public class LoginServerRegistrationTest
         Assert.That(player.ReleaseLoginServerRegistration(), Is.Null);
     }
 
+<<<<<<< HEAD
     private static async ValueTask<GameServerContext> CreateGameServerContextAsync(ILoginServer loginServer)
+=======
+    private async ValueTask<GameServerContext> CreateGameServerContextAsync(ILoginServer loginServer)
+>>>>>>> origin/slave
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();
         using (var context = persistenceContextProvider.CreateNewContext())
@@ -91,6 +124,7 @@ public class LoginServerRegistrationTest
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
+<<<<<<< HEAD
         var gameConfiguration = new BasicModel.GameConfiguration();
         var map = new BasicModel.GameMapDefinition { TerrainData = new byte[ushort.MaxValue + 3] };
         gameConfiguration.Maps.Add(map);
@@ -134,6 +168,17 @@ public class LoginServerRegistrationTest
     /// A player whose login fails after the login server accepted it, because assigning the account fails.
     /// </summary>
     private sealed class FailingLoginPlayer : TestPlayer
+=======
+        var gameServerContext = LoginTestSetup.CreateGameServerContext(persistenceContextProvider, loginServer);
+        this._contexts.Add(gameServerContext);
+        return gameServerContext;
+    }
+
+    /// <summary>
+    /// A player whose login fails after the login server accepted it, because assigning the account fails.
+    /// </summary>
+    private sealed class FailingLoginPlayer : LoginTestPlayer
+>>>>>>> origin/slave
     {
         public FailingLoginPlayer(IGameContext gameContext)
             : base(gameContext)

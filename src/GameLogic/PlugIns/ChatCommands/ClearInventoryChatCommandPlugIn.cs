@@ -124,6 +124,10 @@ public class ClearInventoryChatCommandPlugIn : ChatCommandPlugInBase<ClearInvent
         /// <summary>
         /// Gets or sets the character name to clear inventory for (GM only).
         /// </summary>
+<<<<<<< HEAD
+=======
+        [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
         public string? CharacterName { get; set; }
     }
 

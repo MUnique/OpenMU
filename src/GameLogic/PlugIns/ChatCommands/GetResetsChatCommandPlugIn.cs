@@ -65,6 +65,10 @@ public class GetResetsChatCommandPlugIn : ChatCommandPlugInBase<GetResetsChatCom
         /// <summary>
         /// Gets or sets the character name to get resets for.
         /// </summary>
+<<<<<<< HEAD
+=======
+        [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
         public string? CharacterName { get; set; }
     }
 }

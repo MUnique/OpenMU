@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
+=======
+﻿<?xml version="1.0" encoding="utf-8"?>
+>>>>>>> origin/slave
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2704,6 +2708,7 @@
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Save or discard the pending changes first.</value>
   </data>
+<<<<<<< HEAD
   <data name="Rates" xml:space="preserve">
     <value>Rates</value>
   </data>
@@ -2716,4 +2721,6 @@
   <data name="MoneyRateMissing" xml:space="preserve">
     <value>The configuration has no global "Money Drop Amount Rate" attribute value, so the money rate can't be edited here. Add it in the full configuration under "Global base attribute values".</value>
   </data>
+=======
+>>>>>>> origin/slave
 </root>

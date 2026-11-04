@@ -17,5 +17,9 @@ public interface IFruitConsumptionResponsePlugIn : IViewPlugIn
     /// <param name="result">The result.</param>
     /// <param name="statPoints">The stat points.</param>
     /// <param name="statAttribute">The stat attribute.</param>
+<<<<<<< HEAD
     ValueTask ShowResponseAsync(FruitConsumptionResult result, byte statPoints, AttributeDefinition statAttribute);
+=======
+    ValueTask ShowResponseAsync(FruitConsumptionResult result, ushort statPoints, AttributeDefinition statAttribute);
+>>>>>>> origin/slave
 }

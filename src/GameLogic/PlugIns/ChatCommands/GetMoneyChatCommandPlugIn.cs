@@ -56,6 +56,10 @@ public class GetMoneyChatCommandPlugIn : ChatCommandPlugInBase<GetMoneyChatComma
         /// <summary>
         /// Gets or sets the character name to get money for.
         /// </summary>
+<<<<<<< HEAD
+=======
+        [ValueReference(ChatCommandValueReference.CharacterName)]
+>>>>>>> origin/slave
         public string? CharacterName { get; set; }
     }
 }

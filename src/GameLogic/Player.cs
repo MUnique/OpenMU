@@ -87,6 +87,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly MapPowerUps _mapPowerUps = new();
 
+<<<<<<< HEAD
+=======
+    private readonly AccountAttributeGrantPowerUps _accountAttributeGrantPowerUps = new();
+
+>>>>>>> origin/slave
     private CancellationTokenSource? _respawnAfterDeathCts;
 
     private Character? _selectedCharacter;
@@ -141,7 +146,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         this.MagicEffectList = new MagicEffectsList(this);
         this._appearanceData = new PlayerAppearanceData(this);
+<<<<<<< HEAD
         this.PlayerState.StateChanged += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
+=======
+        this.PlayerState.StateChanged += async args =>
+        {
+            // The game context counts its players first, so that the plugins already see the new numbers.
+            this.GameContext.OnPlayerStateChanged(this, args.PreviousState, args.CurrentStateState);
+            await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
+        };
+>>>>>>> origin/slave
         this.PlayerState.StateChanges += async args => await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangingPlugIn>()?.PlayerStateChangingAsync(this, args) ?? ValueTask.CompletedTask).ConfigureAwait(false);
         this._observerToWorldViewAdapter = new ObserverToWorldViewAdapter(this, this.InfoRange);
         this._muHelperLazy = new Lazy<MuHelper.MuHelper>(() => new MuHelper.MuHelper(this));
@@ -1939,6 +1953,36 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+<<<<<<< HEAD
+=======
+    /// Moves the character to the safezone of a mini game map, if it was saved on one and doesn't
+    /// rejoin a running game. E.g. the winners of the Illusion Temple stay on its map until they close the
+    /// result dialog; a character which left the game there would otherwise log in on the empty event map.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void MoveOutOfMiniGameMap(Character character)
+    {
+        if (character.CurrentMap is not { } map
+            || this.GameContext.Configuration.MiniGameDefinitions?.Any(definition => Equals(definition.Entrance?.Map, map)) is not true)
+        {
+            return;
+        }
+
+        var targetMap = this.GameContext.Configuration.GetActiveSpawnMap(map.SafezoneMap, character.CharacterClass?.HomeMap);
+        if (targetMap?.GetSafezoneGate() is not { } spawnGate)
+        {
+            this.Logger.LogWarning("Character {character} is on the mini game map {map}, but there is no safezone to move it to.", character, map);
+            return;
+        }
+
+        this.Logger.LogInformation("Character {character} is on the mini game map {map} without a running game, moving it to {targetMap}.", character, map, targetMap);
+        character.CurrentMap = targetMap;
+        character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2 + 1);
+        character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2 + 1);
+    }
+
+    /// <summary>
+>>>>>>> origin/slave
     /// Releases the attribute system of the character which was in the game.
     /// </summary>
     /// <remarks>
@@ -1949,6 +1993,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private void ReleaseAttributeSystem()
     {
         this._mapPowerUps.Remove();
+<<<<<<< HEAD
+=======
+        this._accountAttributeGrantPowerUps.Remove();
+>>>>>>> origin/slave
         if (this.Attributes is { } attributes)
         {
             // The ammunition amount of some classes is a stat attribute, which belongs to the character.
@@ -2071,12 +2119,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
         this.MoveOutOfInactiveMap(selectedCharacter);
+<<<<<<< HEAD
         await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
+=======
+        if (!await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false))
+        {
+            this.MoveOutOfMiniGameMap(selectedCharacter);
+        }
+
+>>>>>>> origin/slave
         this.AddMissingStatAttributes();
 
         // The previous character of this connection may still hold its attribute system.
         this.ReleaseAttributeSystem();
         this.Attributes = new ItemAwareAttributeSystem(this.Account!, selectedCharacter, this.GameContext.Configuration);
+<<<<<<< HEAD
+=======
+        this._accountAttributeGrantPowerUps.Apply(this.Account!, this.Attributes);
+>>>>>>> origin/slave
         this.Attributes[Stats.NearbyPartyMemberCount] = 0;
         this.Attributes[Stats.IsResting] = 0;
         this.LogInvalidInventoryItems();

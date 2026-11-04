@@ -5825,6 +5825,16 @@
           <DefaultValue>0xFE</DefaultValue>
         </Field>
         <Field>
+<<<<<<< HEAD
+=======
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ListType</Name>
+          <Description>0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
+>>>>>>> origin/slave
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>SkillIndex</Name>
@@ -5858,6 +5868,16 @@
           <DefaultValue>0xFF</DefaultValue>
         </Field>
         <Field>
+<<<<<<< HEAD
+=======
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ListType</Name>
+          <Description>0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
+>>>>>>> origin/slave
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>SkillIndex</Name>
@@ -5885,6 +5905,16 @@
           <Description>Mixed usage: Skill list count (when list). 0xFE when adding a skill, 0xFF when removing a Skill.</Description>
         </Field>
         <Field>
+<<<<<<< HEAD
+=======
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ListType</Name>
+          <Description>0 = the client clears the skill list before adding the skills; 2 = the skills are removed; otherwise the skills are added.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
+>>>>>>> origin/slave
           <Index>6</Index>
           <Type>Structure[]</Type>
           <TypeName>SkillEntry</TypeName>
@@ -6298,10 +6328,24 @@
         </Field>
         <Field>
           <Index>6</Index>
+<<<<<<< HEAD
           <Type>ShortLittleEndian</Type>
           <Name>MapId</Name>
         </Field>
         <Field>
+=======
+          <Type>Byte</Type>
+          <Name>MapId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Direction</Name>
+          <Description>The direction the character faces (the client rotates by (Direction - 1) * 45 degrees).</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+        <Field>
+>>>>>>> origin/slave
           <Index>8</Index>
           <Type>LongBigEndian</Type>
           <Name>CurrentExperience</Name>
@@ -6957,13 +7001,21 @@
       <Code>F3</Code>
       <SubCode>22</SubCode>
       <Name>GuildSoccerTimeUpdate</Name>
+<<<<<<< HEAD
       <Length>6</Length>
+=======
+      <Length>8</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>Every second during a guild soccer match.</SentWhen>
       <CausedReaction>The time is updated on the user interface.</CausedReaction>
       <Fields>
         <Field>
+<<<<<<< HEAD
           <Index>4</Index>
+=======
+          <Index>6</Index>
+>>>>>>> origin/slave
           <Type>ShortLittleEndian</Type>
           <Name>Seconds</Name>
         </Field>
@@ -8405,6 +8457,20 @@
               <Name>Role</Name>
             </Field>
             <Field>
+<<<<<<< HEAD
+=======
+              <Index>5</Index>
+              <Type>Byte</Type>
+              <Name>GuildType</Name>
+            </Field>
+            <Field>
+              <Index>6</Index>
+              <Type>Byte</Type>
+              <Name>GuildRelationship</Name>
+              <Description>The relationship (union/rival) of the guild to the guild of the receiving player.</Description>
+            </Field>
+            <Field>
+>>>>>>> origin/slave
               <Index>7</Index>
               <LeftShifted>7</LeftShifted>
               <Type>Boolean</Type>
@@ -9252,7 +9318,11 @@
       <Fields>
         <Field>
           <Index>4</Index>
+<<<<<<< HEAD
           <Type>ShortLittleEndian</Type>
+=======
+          <Type>ShortBigEndian</Type>
+>>>>>>> origin/slave
           <Name>RequesterId</Name>
         </Field>
         <Field>
@@ -9465,11 +9535,25 @@
       <Code>AA</Code>
       <SubCode>0D</SubCode>
       <Name>DuelHealthBarInit</Name>
+<<<<<<< HEAD
       <Length>4</Length>
+=======
+      <Length>5</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>When the duel starts, after the DuelInit message.</SentWhen>
       <CausedReaction>The client updates the displayed health and shield bars.</CausedReaction>
       <Fields>
+<<<<<<< HEAD
+=======
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flag</Name>
+          <Description>The client resets the health and shield bars only if this is 0.</Description>
+          <DefaultValue>0</DefaultValue>
+        </Field>
+>>>>>>> origin/slave
       </Fields>
     </Packet>
     <Packet>
@@ -9582,7 +9666,11 @@
 			<Fields>
 				<Field>
 					<Index>3</Index>
+<<<<<<< HEAD
 					<Type>ShortLittleEndian</Type>
+=======
+					<Type>ShortBigEndian</Type>
+>>>>>>> origin/slave
 					<Name>ObjectId</Name>
 				</Field>
 				<Field>
@@ -10015,7 +10103,11 @@
       <Name>IllusionTempleState</Name>
       <Direction>ServerToClient</Direction>
       <SentWhen>The player is in the illusion temple event and the server sends a cyclic update.</SentWhen>
+<<<<<<< HEAD
       <CausedReaction>The client shows the state in the user interface.</CausedReaction>
+=======
+      <CausedReaction>The client shows the score board, the remaining time, and the carrier of the holy relic and the own team mates on its mini map.</CausedReaction>
+>>>>>>> origin/slave
       <Fields>
         <Field>
           <Index>4</Index>
@@ -10023,6 +10115,7 @@
           <Name>RemainingSeconds</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>PlayerIndex</Name>
@@ -10036,25 +10129,43 @@
           <Index>7</Index>
           <Type>Byte</Type>
           <Name>PositionY</Name>
+=======
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RelicCarrierId</Name>
+>>>>>>> origin/slave
         </Field>
         <Field>
           <Index>8</Index>
           <Type>Byte</Type>
+<<<<<<< HEAD
           <Name>Team1Points</Name>
+=======
+          <Name>PositionX</Name>
+>>>>>>> origin/slave
         </Field>
         <Field>
           <Index>9</Index>
           <Type>Byte</Type>
+<<<<<<< HEAD
           <Name>Team2Points</Name>
+=======
+          <Name>PositionY</Name>
+>>>>>>> origin/slave
         </Field>
         <Field>
           <Index>10</Index>
           <Type>Byte</Type>
+<<<<<<< HEAD
           <Name>MyTeam</Name>
+=======
+          <Name>AlliedForcesPoints</Name>
+>>>>>>> origin/slave
         </Field>
         <Field>
           <Index>11</Index>
           <Type>Byte</Type>
+<<<<<<< HEAD
           <Name>PartyCount</Name>
         </Field>
         <Field>
@@ -10062,13 +10173,38 @@
           <Type>Structure[]</Type>
           <TypeName>IllusionTemplePartyEntry</TypeName>
           <Name>PartyMembers</Name>
+=======
+          <Name>IllusionForcesPoints</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>MyTeam</Name>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Byte</Type>
+          <Name>PartyCount</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Structure[]</Type>
+          <TypeName>IllusionTempleTeamMate</TypeName>
+          <Name>TeamMates</Name>
+>>>>>>> origin/slave
         </Field>
       </Fields>
       <Structures>
         <Structure>
+<<<<<<< HEAD
           <Name>IllusionTemplePartyEntry</Name>
           <Description>Contains the info about a party member in illusion temple.</Description>
           <Length>5</Length>
+=======
+          <Name>IllusionTempleTeamMate</Name>
+          <Description>Contains the info about a team mate in the illusion temple, so that the client can show him on its mini map. Only PartyCount entries are sent - there are no unused/zeroed slots.</Description>
+          <Length>6</Length>
+>>>>>>> origin/slave
           <Fields>
             <Field>
               <Index>0</Index>
@@ -10077,7 +10213,11 @@
             </Field>
             <Field>
               <Index>2</Index>
+<<<<<<< HEAD
               <Type>ShortLittleEndian</Type>
+=======
+              <Type>Byte</Type>
+>>>>>>> origin/slave
               <Name>MapNumber</Name>
             </Field>
             <Field>
@@ -10099,7 +10239,11 @@
       <Code>BF</Code>
       <SubCode>02</SubCode>
       <Name>IllusionTempleSkillUsageResult</Name>
+<<<<<<< HEAD
       <Length>11</Length>
+=======
+      <Length>12</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>A player requested to use a specific skill in the illusion temple event.</SentWhen>
       <CausedReaction>The client shows the result.</CausedReaction>
@@ -10115,12 +10259,20 @@
           <Name>SkillNumber</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>7</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>ShortLittleEndian</Type>
           <Name>SourceObjectId</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>10</Index>
+>>>>>>> origin/slave
           <Type>ShortLittleEndian</Type>
           <Name>TargetObjectId</Name>
         </Field>
@@ -10193,7 +10345,11 @@
           <Name>PlayerCount</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>10</Index>
+=======
+          <Index>7</Index>
+>>>>>>> origin/slave
           <Type>Structure[]</Type>
           <TypeName>PlayerResult</TypeName>
           <Name>Players</Name>
@@ -10204,12 +10360,20 @@
         <Structure>
           <Name>PlayerResult</Name>
           <Description>Contains the result of a player in the event.</Description>
+<<<<<<< HEAD
           <Length>17</Length>
+=======
+          <Length>20</Length>
+>>>>>>> origin/slave
           <Fields>
             <Field>
               <Index>0</Index>
               <Type>String</Type>
               <Name>Name</Name>
+<<<<<<< HEAD
+=======
+              <Length>10</Length>
+>>>>>>> origin/slave
             </Field>
             <Field>
               <Index>10</Index>
@@ -10226,8 +10390,17 @@
               <Type>Byte</Type>
               <Name>Class</Name>
             </Field>
+<<<<<<< HEAD
             <Field>
               <Index>13</Index>
+=======
+            <!-- Bytes 13-15 are unused padding - the original client (compiled with a C struct where an
+                 int must be 4-byte aligned) expects 3 padding bytes here before AddedExperience. Leaving
+                 this gap out entirely (as a plain 17-byte struct) makes the client misread every entry
+                 after the first, since it always advances by 20 bytes per player. -->
+            <Field>
+              <Index>16</Index>
+>>>>>>> origin/slave
               <Type>IntegerLittleEndian</Type>
               <Name>AddedExperience</Name>
             </Field>
@@ -10293,12 +10466,70 @@
           <Index>6</Index>
           <Type>String</Type>
           <Name>Name</Name>
+<<<<<<< HEAD
+=======
+          <Length>10</Length>
+>>>>>>> origin/slave
         </Field>
       </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>BF</Code>
+<<<<<<< HEAD
+=======
+      <SubCode>09</SubCode>
+      <Name>IllusionTempleEventState</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The state of an illusion temple event changed, e.g. when the battle starts.</SentWhen>
+      <CausedReaction>The client shows or hides the user interface of the event - the score board, the timer and the mini map - and applies the barriers of the arena, which are hardcoded at client side.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TempleNumber</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Enum</Type>
+          <TypeName>EventState</TypeName>
+          <Name>State</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>EventState</Name>
+          <Description>Defines the state of an illusion temple event.</Description>
+          <Values>
+            <EnumValue>
+              <Name>WaitingRoom</Name>
+              <Description>The player entered the event and waits for it to start. It's only sent to the entering player, not to all participants.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Preparation</Name>
+              <Description>The preparation started: the players have been moved into the arena and assigned to their teams. The client opens the event interface with the score board, the timer and the mini map.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>BattleStarted</Name>
+              <Description>The battle started: the statues are up and the barriers of the arena are removed, so that the players can reach the cursed statue.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Ended</Name>
+              <Description>The battle ended - the client closes the event interface.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+>>>>>>> origin/slave
       <SubCode>07</SubCode>
       <Name>IllusionTempleSkillEnd</Name>
       <Length>6</Length>
@@ -10895,7 +11126,11 @@
       <HeaderType>C3Header</HeaderType>
       <Code>C6</Code>
       <Name>AddLetter</Name>
+<<<<<<< HEAD
       <Length>79</Length>
+=======
+      <Length>107</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>After a letter has been received or after the player entered the game with a character.</SentWhen>
       <CausedReaction>The letter appears in the letter list.</CausedReaction>
@@ -10921,10 +11156,17 @@
           <Index>46</Index>
           <Type>String</Type>
           <Name>Subject</Name>
+<<<<<<< HEAD
           <Length>32</Length>
         </Field>
         <Field>
           <Index>78</Index>
+=======
+          <Length>60</Length>
+        </Field>
+        <Field>
+          <Index>106</Index>
+>>>>>>> origin/slave
           <Type>Enum</Type>
           <TypeName>LetterState</TypeName>
           <Name>State</Name>
@@ -11220,6 +11462,14 @@
           <Name>RewardCount</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
+=======
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>RandomRewardCount</Name>
+        </Field>
+        <Field>
+>>>>>>> origin/slave
           <Index>11</Index>
           <Type>Structure[]</Type>
           <TypeName>QuestCondition</TypeName><!-- Each 26 bytes -->
@@ -12418,7 +12668,11 @@
         <Structure>
           <Name>ChatCommandParameter</Name>
           <Description>Describes one parameter of a chat command, so that a user interface can offer an input for it.</Description>
+<<<<<<< HEAD
           <Length>102</Length>
+=======
+          <Length>152</Length>
+>>>>>>> origin/slave
           <Fields>
             <Field>
               <Index>0</Index>
@@ -12453,6 +12707,41 @@
               <Length>48</Length>
               <Description>The accepted values, separated by a pipe. It's empty when the parameter isn't limited to a set of values.</Description>
             </Field>
+<<<<<<< HEAD
+=======
+            <Field>
+              <Index>102</Index>
+              <Type>Enum</Type>
+              <TypeName>ChatCommandValueReference</TypeName>
+              <Name>ValueReference</Name>
+              <Description>The kind of object which the value refers to, so that a fitting picker can be offered. It's a hint, never a constraint: a raw value can always be entered, because the data of the client may not match the configuration of the server.</Description>
+            </Field>
+            <Field>
+              <Index>103</Index>
+              <Type>Boolean</Type>
+              <Name>HasRange</Name>
+              <Description>Defines if the parameter is numeric and the fields Minimum and Maximum describe its accepted range.</Description>
+            </Field>
+            <Field>
+              <Index>104</Index>
+              <Type>LongLittleEndian</Type>
+              <Name>Minimum</Name>
+              <Description>The smallest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).</Description>
+            </Field>
+            <Field>
+              <Index>112</Index>
+              <Type>LongLittleEndian</Type>
+              <Name>Maximum</Name>
+              <Description>The largest accepted value, if HasRange is set. It's a signed 64-bit integer (two's complement).</Description>
+            </Field>
+            <Field>
+              <Index>120</Index>
+              <Type>String</Type>
+              <Name>ValueReferenceGroupWith</Name>
+              <Length>32</Length>
+              <Description>The name of the other parameter which identifies the referenced object together with this one, e.g. the item group for the item number, so that one picker can fill both. It's empty when the value identifies the object on its own.</Description>
+            </Field>
+>>>>>>> origin/slave
           </Fields>
         </Structure>
       </Structures>
@@ -12655,7 +12944,11 @@
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>
+<<<<<<< HEAD
       <Length>10</Length>
+=======
+      <Length>14</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.</SentWhen>
       <CausedReaction>The client updates the Golden Archer interface with total registered count and remaining count in inventory.</CausedReaction>
@@ -12674,6 +12967,24 @@
           <Index>8</Index>
           <Type>ShortLittleEndian</Type>
           <Name>RemainingInventoryCount</Name>
+<<<<<<< HEAD
+=======
+          <Description>For the Lena event (Result = 1), the client interprets this as the first lottery (muto) number.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MutoNumber2</Name>
+          <Description>The second lottery (muto) number for the Lena event; -1 if not available.</Description>
+          <DefaultValue>0xFFFF</DefaultValue>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MutoNumber3</Name>
+          <Description>The third lottery (muto) number for the Lena event; -1 if not available.</Description>
+          <DefaultValue>0xFFFF</DefaultValue>
+>>>>>>> origin/slave
         </Field>
       </Fields>
     </Packet>
@@ -12914,7 +13225,11 @@
       <Code>B2</Code>
       <SubCode>05</SubCode>
       <Name>CastleSiegeDefenseBuyResponse</Name>
+<<<<<<< HEAD
       <Length>13</Length>
+=======
+      <Length>16</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>After the player requested to buy a castle siege defense structure (gate or statue).</SentWhen>
       <CausedReaction>The client shows the result of the buy request.</CausedReaction>
@@ -12925,12 +13240,20 @@
           <Name>Result</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcNumber</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcIndex</Name>
         </Field>
@@ -12941,7 +13264,11 @@
       <Code>B2</Code>
       <SubCode>06</SubCode>
       <Name>CastleSiegeDefenseRepairResponse</Name>
+<<<<<<< HEAD
       <Length>21</Length>
+=======
+      <Length>24</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>After the player requested to repair a castle siege defense structure (gate or statue).</SentWhen>
       <CausedReaction>The client shows the result of the repair request.</CausedReaction>
@@ -12952,22 +13279,38 @@
           <Name>Result</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcNumber</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcIndex</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>13</Index>
+=======
+          <Index>16</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>CurrentHp</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>17</Index>
+=======
+          <Index>20</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>MaxHp</Name>
         </Field>
@@ -12978,7 +13321,11 @@
       <Code>B2</Code>
       <SubCode>07</SubCode>
       <Name>CastleSiegeDefenseUpgradeResponse</Name>
+<<<<<<< HEAD
       <Length>21</Length>
+=======
+      <Length>24</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>After the player requested to upgrade a castle siege defense structure (gate or statue).</SentWhen>
       <CausedReaction>The client shows the result of the upgrade request and the new upgrade values.</CausedReaction>
@@ -12989,22 +13336,38 @@
           <Name>Result</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcNumber</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcIndex</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>13</Index>
+=======
+          <Index>16</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcUpgradeType</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>17</Index>
+=======
+          <Index>20</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcUpgradeValue</Name>
         </Field>
@@ -13198,7 +13561,11 @@
       <Code>B2</Code>
       <SubCode>15</SubCode>
       <Name>CastleSiegeCrownAccessState</Name>
+<<<<<<< HEAD
       <Length>9</Length>
+=======
+      <Length>12</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>The server updates the access state of the castle crown during the siege.</SentWhen>
       <CausedReaction>The client updates the crown access state and accumulated time display.</CausedReaction>
@@ -13210,7 +13577,11 @@
           <Name>State</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>AccumulatedTimeMs</Name>
         </Field>
@@ -13467,12 +13838,20 @@
           <Name>Result</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>NpcCount</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>Structure[]</Type>
           <TypeName>CastleSiegeNpcInfo</TypeName>
           <Name>NpcList</Name>
@@ -13483,7 +13862,11 @@
         <Structure>
           <Name>CastleSiegeNpcInfo</Name>
           <Description>Information about one castle siege NPC (gate or statue).</Description>
+<<<<<<< HEAD
           <Length>27</Length>
+=======
+          <Length>28</Length>
+>>>>>>> origin/slave
           <Fields>
             <Field>
               <Index>0</Index>
@@ -13548,12 +13931,20 @@
           <Name>Result</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>GuildCount</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>Structure[]</Type>
           <TypeName>RegisteredGuildEntry</TypeName>
           <Name>Guilds</Name>
@@ -13605,12 +13996,20 @@
           <Name>Result</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>5</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>GuildCount</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>9</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>Structure[]</Type>
           <TypeName>CastleSiegeGuildEntry</TypeName>
           <Name>Guilds</Name>
@@ -13621,7 +14020,11 @@
         <Structure>
           <Name>CastleSiegeGuildEntry</Name>
           <Description>Information about one guild in the castle siege.</Description>
+<<<<<<< HEAD
           <Length>14</Length>
+=======
+          <Length>16</Length>
+>>>>>>> origin/slave
           <Fields>
             <Field>
               <Index>0</Index>
@@ -13641,7 +14044,11 @@
               <Length>8</Length>
             </Field>
             <Field>
+<<<<<<< HEAD
               <Index>10</Index>
+=======
+              <Index>12</Index>
+>>>>>>> origin/slave
               <Type>IntegerLittleEndian</Type>
               <Name>Score</Name>
             </Field>
@@ -13830,7 +14237,11 @@
       <Code>B9</Code>
       <SubCode>03</SubCode>
       <Name>CastleSiegeHuntingZoneGuardInfo</Name>
+<<<<<<< HEAD
       <Length>18</Length>
+=======
+      <Length>20</Length>
+>>>>>>> origin/slave
       <Direction>ServerToClient</Direction>
       <SentWhen>The server sends information about the hunting zone guard configuration.</SentWhen>
       <CausedReaction>The client shows the hunting zone entrance configuration.</CausedReaction>
@@ -13846,17 +14257,29 @@
           <Name>IsEnabled</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>6</Index>
+=======
+          <Index>8</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>CurrentPrice</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>10</Index>
+=======
+          <Index>12</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>MaxPrice</Name>
         </Field>
         <Field>
+<<<<<<< HEAD
           <Index>14</Index>
+=======
+          <Index>16</Index>
+>>>>>>> origin/slave
           <Type>IntegerLittleEndian</Type>
           <Name>UnitPrice</Name>
         </Field>
@@ -15384,6 +15807,1033 @@
         </Field>
       </Fields>
     </Packet>
+<<<<<<< HEAD
+=======
+  <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>03</Code>
+      <Name>ChecksumRequest</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server requests a checksum of the client executable.</SentWhen>
+      <CausedReaction>The client calculates the checksum for the given key and answers with a ChecksumResponse (C3 03).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Key</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>0C</Code>
+      <Name>WhisperResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a whisper message could not be delivered.</SentWhen>
+      <CausedReaction>If Success is false, the client shows a message that the receiver is not online.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>1A</Code>
+      <Name>SkillTargetsAnimation</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player used a skill which hits several targets at a position.</SentWhen>
+      <CausedReaction>The client plays the skill animation of the player and the hit animation for each target.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>SkillId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PositionX</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>PositionY</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>TargetCount</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SkillTarget</TypeName>
+          <Name>Targets</Name>
+          <ItemCountField>TargetCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>SkillTarget</Name>
+          <Description>The id of a target which was hit by the skill.</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>TargetId</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>2B</Code>
+      <Name>Notification2B</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Unidentified notification; the client only evaluates one flag.</SentWhen>
+      <CausedReaction>The client shows one of two messages, depending on the flag.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>Flag</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>34</Code>
+      <Name>ItemRepairResponse</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player repaired an item.</SentWhen>
+      <CausedReaction>If Money is not 0, the client sets the inventory money to this value and plays the repair sound.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Money</Name>
+          <Description>The money of the player after the repair. 0 means the repair failed.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>3F</Code>
+      <SubCode>10</SubCode>
+      <Name>PlayerShopTitleChanged</Name>
+      <Length>52</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player changed the title of his personal store.</SentWhen>
+      <CausedReaction>The client updates the shop title above the player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>ShopTitle</Name>
+          <Length>36</Length>
+        </Field>
+        <Field>
+          <Index>42</Index>
+          <Type>String</Type>
+          <Name>PlayerName</Name>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>41</Code>
+      <Name>PartyRequestResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a party request could not be fulfilled or a party action finished.</SentWhen>
+      <CausedReaction>The client shows a message depending on the result (0 to 8).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>47</Code>
+      <Name>PartyMemberItemPickedUp</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a party member picked up an item.</SentWhen>
+      <CausedReaction>The client shows a message with the item name.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ItemInfo</Name>
+          <Description>Bits 0-12: item number (group * 512 + number); bit 13: excellent; bit 14: ancient; bit 15: 380 option; bit 16/17: further option flags evaluated by the client.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>67</Code>
+      <Name>GuildUnionViewportInfo</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After players of a guild union came into view or the union relationship changed.</SentWhen>
+      <CausedReaction>The client updates the union name and relationship of the players.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PlayerCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>UnionPlayerInfo</TypeName>
+          <Name>Players</Name>
+          <ItemCountField>PlayerCount</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>UnionPlayerInfo</Name>
+          <Description>The union information of a player.</Description>
+          <Length>20</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortBigEndian</Type>
+              <Name>PlayerId</Name>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>GuildId</Name>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>Byte</Type>
+              <Name>Relationship</Name>
+            </Field>
+            <Field>
+              <Index>9</Index>
+              <Type>String</Type>
+              <Name>UnionName</Name>
+              <Length>8</Length>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C2Header</HeaderType>
+      <Code>68</Code>
+      <Name>ViewportPreviewObjects</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server sends preview objects (e.g. players or monsters of an event map) to be shown.</SentWhen>
+      <CausedReaction>The client adds the objects to the scene.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ObjectCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>Objects</Name>
+          <Description>Entries of variable size, 25 + BuffCount bytes each: Kind (1 = player, 2/3 = monster/NPC) @0, class (player) or monster number (BE, monster/NPC) @1-2, object id (BE, highest bit masked) @3-4, X @5, Y @6, appearance (17 bytes, player) @7, BuffCount @24, buff ids @25.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>71</Code>
+      <Name>PingRequest</Name>
+      <Length>3</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server checks if the client is still responsive.</SentWhen>
+      <CausedReaction>The client answers immediately with C1 71.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C3Header</HeaderType>
+      <Code>73</Code>
+      <Name>GameGuardAuthRequest</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server sends an authentication query of the anti cheat system (nProtect GameGuard).</SentWhen>
+      <CausedReaction>The client passes the data to GameGuard; the answer is sent as C3 73 00.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>Data</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>8E</Code>
+      <SubCode>01</SubCode>
+      <Name>MapMoveChecksumKey</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After entering the game, the server sends the key for the map move (warp) command.</SentWhen>
+      <CausedReaction>The client stores the key and uses it for the WarpCommandRequest.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Key</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>8E</Code>
+      <SubCode>03</SubCode>
+      <Name>MapMoveResponse</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a warp command request.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>95</Code>
+      <Name>EventChipCount</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After event chips were registered.</SentWhen>
+      <CausedReaction>The client updates the shown count of registered event chips.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+          <Description>-1 keeps the current value.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>96</Code>
+      <Name>MutoNumbers</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server sends the lottery (muto) numbers of the Lena event.</SentWhen>
+      <CausedReaction>The client stores the numbers if none of them is -1.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Number1</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Number2</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Number3</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>99</Code>
+      <Name>ServerImmigrationResponse</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a server immigration (transfer) request.</SentWhen>
+      <CausedReaction>The client shows a message depending on the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9C</Code>
+      <Name>ExperienceGainedLarge</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a player gained experience which does not fit into 16 bits.</SentWhen>
+      <CausedReaction>The client adds the experience and shows the damage of the last hit.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>KilledObjectId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AddedExperienceHigh</Name>
+          <Description>The upper 16 bits of the added experience.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AddedExperienceLow</Name>
+          <Description>The lower 16 bits of the added experience.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>DamageOfLastHit</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9E</Code>
+      <Name>PlaySoundEffect</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The server wants the client to play a sound effect.</SentWhen>
+      <CausedReaction>The client plays the sound effect.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EffectNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>9F</Code>
+      <Name>MiniGameEventCount</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested the remaining entry count of a mini game event.</SentWhen>
+      <CausedReaction>The client shows the remaining entry count.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>EventType</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>RemainingEnterCount</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>AA</Code>
+      <SubCode>09</SubCode>
+      <Name>DuelChannelQuitResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to leave a duel channel as spectator.</SentWhen>
+      <CausedReaction>If Result is 0, the client closes the duel spectator view.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B1</Code>
+      <SubCode>00</SubCode>
+      <Name>MapServerChangeInfo</Name>
+      <Length>40</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the player has to change to another game server, e.g. for a map which is hosted on another server.</SentWhen>
+      <CausedReaction>The client connects to the given server and authenticates with ServerChangeAuthentication (B1 01). Port 0 means the change failed.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>IpAddress</Name>
+          <Length>16</Length>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Port</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ServerGroup</Name>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AuthenticationCode1</Name>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AuthenticationCode2</Name>
+        </Field>
+        <Field>
+          <Index>32</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AuthenticationCode3</Name>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AuthenticationCode4</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B1</Code>
+      <SubCode>01</SubCode>
+      <Name>MapServerChangeResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the authentication at the new game server.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>B8</Code>
+      <SubCode>01</SubCode>
+      <Name>KillCountUpdate</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the kill count of the character changed.</SentWhen>
+      <CausedReaction>The client stores the kill count (0 resets it).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>KillCount</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BC</Code>
+      <SubCode>00</SubCode>
+      <Name>LahapJewelMixResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to combine jewels at Lahap.</SentWhen>
+      <CausedReaction>The client shows a message depending on the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BC</Code>
+      <SubCode>01</SubCode>
+      <Name>LahapJewelUnmixResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to split a jewel bundle at Lahap.</SentWhen>
+      <CausedReaction>The client shows a message depending on the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0B</SubCode>
+      <Name>LuckyCoinCount</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested the count of registered lucky coins.</SentWhen>
+      <CausedReaction>The client shows the count.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0C</SubCode>
+      <Name>LuckyCoinRegistrationResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player registered a lucky coin.</SentWhen>
+      <CausedReaction>The client shows the result and the new count.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0D</SubCode>
+      <Name>LuckyCoinExchangeResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to exchange lucky coins.</SentWhen>
+      <CausedReaction>The client shows a message depending on the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>20</SubCode>
+      <Name>InventoryItemEquipResult</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to (un)equip an item which is used inside the inventory (BF 20).</SentWhen>
+      <CausedReaction>The client updates the state of the item.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>InventorySlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D1</Code>
+      <SubCode>02</SubCode>
+      <Name>KanturuRefineryState</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>During the kanturu event.</SentWhen>
+      <CausedReaction>The client updates the state of the third kanturu stage.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>State</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>DetailState</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>07</SubCode>
+      <Name>CashShopSendCashGiftResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a cash gift was sent.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>08</SubCode>
+      <Name>CashShopBuyPossibilityResult</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a cash shop buy check.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>09</SubCode>
+      <Name>CashShopItemLeftCount</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a request of the remaining count of a limited item.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>11</SubCode>
+      <Name>PeriodItemListCount</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Before the list of period (time limited) items.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>12</SubCode>
+      <Name>PeriodItemInfo</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>For each period (time limited) item of the character.</SentWhen>
+      <CausedReaction>The client stores the expiration date for the item at the given slot (inventory slots below 12 are equipped items).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemSlot</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ExpirationDate</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>13</SubCode>
+      <Name>CashShopEventItemListCount</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested the event item list.</SentWhen>
+      <CausedReaction>The client prepares the event item list.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>D2</Code>
+      <SubCode>14</SubCode>
+      <Name>CashShopEventItemList</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>For the event item list of the cash shop.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>E1</Code>
+      <Name>GuildRoleAssignResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a guild master requested to assign a role (e.g. battle master) to a guild member.</SentWhen>
+      <CausedReaction>The client shows a message depending on type and result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>03</SubCode>
+      <Name>AccountPasswordQuestion</Name>
+      <Length>35</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested the security question of the account.</SentWhen>
+      <CausedReaction>If Result is 1, the client shows the question.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Question</Name>
+          <Length>30</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>04</SubCode>
+      <Name>AccountPasswordAnswerResult</Name>
+      <Length>25</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player answered the security question of the account.</SentWhen>
+      <CausedReaction>If Result is 1, the client shows the returned text.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Text</Name>
+          <Length>20</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>05</SubCode>
+      <Name>AccountPasswordChangeResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to change the account password.</SentWhen>
+      <CausedReaction>The client shows a message depending on the result (0 to 3).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
+      <SubCode>06</SubCode>
+      <Name>GameServerChannelResult</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Answer to the client packet C1 F1 06 which is sent from the game server channel message box. Purpose not fully identified.</SentWhen>
+      <CausedReaction>If Result is 1, the client continues with the given value.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Value</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>13</SubCode>
+      <Name>PlayerEquipment</Name>
+      <Length>24</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the equipment of a player in the viewport changed.</SentWhen>
+      <CausedReaction>The client updates the appearance of the player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Binary</Type>
+          <Name>Appearance</Name>
+          <Description>Same encoding as the appearance in the character list; the first (class) byte is not evaluated.</Description>
+          <Length>18</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>16</SubCode>
+      <Name>CharacterRenameResult</Name>
+      <Length>25</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to rename a character.</SentWhen>
+      <CausedReaction>If Result is 0, the client renames the character to NewName; otherwise it shows an error.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>OldName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>String</Type>
+          <Name>NewName</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>24</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>24</SubCode>
+      <Name>SoccerMatchResult</Name>
+      <Length>30</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a battle soccer match ended.</SentWhen>
+      <CausedReaction>The client shows the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Type</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>String</Type>
+          <Name>Team1Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Team1Score</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>String</Type>
+          <Name>Team2Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>28</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Team2Score</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F3</Code>
+      <SubCode>25</SubCode>
+      <Name>SoccerGoal</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a goal in battle soccer.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>00</SubCode>
+      <Name>QuestEventLimitResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a quest request was limited by an event condition.</SentWhen>
+      <CausedReaction>If Result is 1, the client shows a message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>04</SubCode>
+      <Name>QuestStartedByItem</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player used an item which starts a quest.</SentWhen>
+      <CausedReaction>The client requests the quest (QuestSelectRequest, F6 0A) with the given quest index.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>QuestIndex</Name>
+          <Description>Quest number in the lower and group in the upper 16 bits.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F6</Code>
+      <SubCode>20</SubCode>
+      <Name>ActiveQuestListReady</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Before the active quest list.</SentWhen>
+      <CausedReaction>The 1.04d client does not read any payload of this packet.</CausedReaction>
+      <Fields />
+    </Packet>
+>>>>>>> origin/slave
   </Packets>
   <Enums>
     <Enum>
@@ -15996,6 +17446,80 @@
       </Values>
     </Enum>
     <Enum>
+<<<<<<< HEAD
+=======
+      <Name>ChatCommandValueReference</Name>
+      <Description>The kind of object which the value of a chat command parameter refers to.</Description>
+      <Values>
+        <EnumValue>
+          <Name>None</Name>
+          <Description>The value doesn't refer to any known kind of object.</Description>
+          <Value>0</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>CharacterName</Name>
+          <Description>The value is the name of a character.</Description>
+          <Value>1</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>AccountName</Name>
+          <Description>The value is the login name of an account.</Description>
+          <Value>2</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>GuildName</Name>
+          <Description>The value is the name of a guild.</Description>
+          <Value>3</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>Map</Name>
+          <Description>The value is the number or the name of a map.</Description>
+          <Value>4</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MapCoordinateX</Name>
+          <Description>The value is a x-coordinate on a map.</Description>
+          <Value>5</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MapCoordinateY</Name>
+          <Description>The value is a y-coordinate on a map.</Description>
+          <Value>6</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemGroup</Name>
+          <Description>The value is the group of an item.</Description>
+          <Value>7</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ItemNumber</Name>
+          <Description>The value is the number of an item within its group.</Description>
+          <Value>8</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>MonsterNumber</Name>
+          <Description>The value is the number of a monster, which also identifies its model.</Description>
+          <Value>9</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>ObjectId</Name>
+          <Description>The value is the id of an object which is currently in the scope of the player.</Description>
+          <Value>10</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>SkillNumber</Name>
+          <Description>The value is the number of a skill.</Description>
+          <Value>11</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LanguageIsoCode</Name>
+          <Description>The value is the ISO 639-1 code of a language, e.g. 'en'.</Description>
+          <Value>12</Value>
+        </EnumValue>
+      </Values>
+    </Enum>
+    <Enum>
+>>>>>>> origin/slave
       <Name>CastleSiegeState</Name>
       <Description>Defines the scheduled state of the Castle Siege event.</Description>
       <Values>

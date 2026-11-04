@@ -50,6 +50,10 @@ internal sealed class BasicModelConverter
             IncreasableItemOption value => this.Convert(value),
             ItemDropItemGroup value => this.Convert(value),
             Account value => this.Convert(value),
+<<<<<<< HEAD
+=======
+            AccountAttributeGrant value => this.Convert(value),
+>>>>>>> origin/slave
             AccountExternalLink value => this.Convert(value),
             AppearanceData value => this.Convert(value),
             AreaSkillSettings value => this.Convert(value),
@@ -211,6 +215,33 @@ internal sealed class BasicModelConverter
             }
         }
 
+<<<<<<< HEAD
+=======
+        if (source.AttributeGrants is { } attributeGrantsItems)
+        {
+            foreach (var item in attributeGrantsItems)
+            {
+                target.AttributeGrants.Add((MUnique.OpenMU.DataModel.Entities.AccountAttributeGrant)this.ConvertObject(item)!);
+            }
+        }
+
+        return target;
+    }
+
+    private BasicModel.AccountAttributeGrant Convert(AccountAttributeGrant source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.AccountAttributeGrant)converted;
+        }
+
+        var target = new BasicModel.AccountAttributeGrant();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Attribute = (MUnique.OpenMU.AttributeSystem.AttributeDefinition)this.ConvertObject(source.Attribute)!;
+        target.Value = source.Value;
+        target.ValidUntil = source.ValidUntil;
+>>>>>>> origin/slave
         return target;
     }
 
@@ -1591,6 +1622,17 @@ internal sealed class BasicModelConverter
             }
         }
 
+<<<<<<< HEAD
+=======
+        if (source.JoinRequirements is { } joinRequirementsItems)
+        {
+            foreach (var item in joinRequirementsItems)
+            {
+                target.JoinRequirements.Add((MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement)this.ConvertObject(item)!);
+            }
+        }
+
+>>>>>>> origin/slave
         return target;
     }
 
@@ -2611,6 +2653,10 @@ internal sealed class BasicModelConverter
         target.GameDuration = source.GameDuration;
         target.ExitDuration = source.ExitDuration;
         target.MaximumPlayerCount = source.MaximumPlayerCount;
+<<<<<<< HEAD
+=======
+        target.MinimumPlayerCount = source.MinimumPlayerCount;
+>>>>>>> origin/slave
         target.SaveRankingStatistics = source.SaveRankingStatistics;
         target.RequiresMasterClass = source.RequiresMasterClass;
         target.MinimumCharacterLevel = source.MinimumCharacterLevel;
@@ -2623,6 +2669,10 @@ internal sealed class BasicModelConverter
         target.AllowParty = source.AllowParty;
         target.Entrance = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Entrance)!;
         target.TicketItem = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.TicketItem)!;
+<<<<<<< HEAD
+=======
+        target.FreeTicketItem = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.FreeTicketItem)!;
+>>>>>>> origin/slave
         if (source.Rewards is { } rewardsItems)
         {
             foreach (var item in rewardsItems)

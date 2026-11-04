@@ -25,10 +25,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition),
                 baseEntityType,
+<<<<<<< HEAD
                 propertyCount: 25,
                 navigationCount: 5,
                 foreignKeyCount: 3,
                 unnamedIndexCount: 3,
+=======
+                propertyCount: 27,
+                navigationCount: 6,
+                foreignKeyCount: 4,
+                unnamedIndexCount: 4,
+>>>>>>> origin/slave
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -101,6 +108,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 sentinel: new TimeSpan(0, 0, 0, 0, 0));
             exitDuration.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+<<<<<<< HEAD
+=======
+            var freeTicketItemId = runtimeEntityType.AddProperty(
+                "FreeTicketItemId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition).GetProperty("FreeTicketItemId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition).GetField("<FreeTicketItemId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            freeTicketItemId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+>>>>>>> origin/slave
             var gameConfigurationId = runtimeEntityType.AddProperty(
                 "GameConfigurationId",
                 typeof(Guid?),
@@ -179,6 +197,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 sentinel: 0);
             minimumCharacterLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+<<<<<<< HEAD
+=======
+            var minimumPlayerCount = runtimeEntityType.AddProperty(
+                "MinimumPlayerCount",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetProperty("MinimumPlayerCount", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition).GetField("<MinimumPlayerCount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            minimumPlayerCount.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+>>>>>>> origin/slave
             var minimumSpecialCharacterLevel = runtimeEntityType.AddProperty(
                 "MinimumSpecialCharacterLevel",
                 typeof(int),
@@ -246,9 +275,18 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 new[] { entranceId });
 
             var index0 = runtimeEntityType.AddIndex(
+<<<<<<< HEAD
                 new[] { gameConfigurationId });
 
             var index1 = runtimeEntityType.AddIndex(
+=======
+                new[] { freeTicketItemId });
+
+            var index1 = runtimeEntityType.AddIndex(
+                new[] { gameConfigurationId });
+
+            var index2 = runtimeEntityType.AddIndex(
+>>>>>>> origin/slave
                 new[] { ticketItemId });
 
             return runtimeEntityType;
@@ -271,6 +309,24 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
         public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
+<<<<<<< HEAD
+=======
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("FreeTicketItemId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawFreeTicketItem = declaringEntityType.AddNavigation("RawFreeTicketItem",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition).GetProperty("RawFreeTicketItem", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+>>>>>>> origin/slave
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("GameConfigurationId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
                 principalEntityType,
@@ -286,7 +342,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             return runtimeForeignKey;
         }
 
+<<<<<<< HEAD
         public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+=======
+        public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+>>>>>>> origin/slave
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("TicketItemId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),

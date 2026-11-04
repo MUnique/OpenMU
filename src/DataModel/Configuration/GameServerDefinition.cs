@@ -6,6 +6,11 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 
 using System.Globalization;
 using MUnique.OpenMU.Annotations;
+<<<<<<< HEAD
+=======
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
+>>>>>>> origin/slave
 
 /// <summary>
 /// Defines the configuration of a game server.
@@ -53,6 +58,21 @@ public partial class GameServerDefinition
     [MemberOfAggregate]
     public virtual ICollection<GameServerEndpoint> Endpoints { get; protected set; } = null!;
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Gets or sets the requirements which an account has to fulfill to join this game server,
+    /// e.g. a VIP status.
+    /// </summary>
+    /// <remarks>
+    /// They are checked at the login, before a character is selected. That's why only the
+    /// <see cref="Account.Attributes"/> and the valid <see cref="Account.AttributeGrants"/> of the account
+    /// count, but no attributes of characters. Without requirements, every account can join.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRequirement> JoinRequirements { get; protected set; } = null!;
+
+>>>>>>> origin/slave
     /// <inheritdoc/>
     public override string ToString()
     {

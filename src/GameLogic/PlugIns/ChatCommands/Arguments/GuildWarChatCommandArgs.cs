@@ -13,5 +13,9 @@ public class GuildWarChatCommandArgs : ArgumentsBase
     /// Gets or sets the guild name.
     /// </summary>
     [Argument("guildname")]
+<<<<<<< HEAD
+=======
+    [ValueReference(ChatCommandValueReference.GuildName)]
+>>>>>>> origin/slave
     public string GuildName { get; set; } = string.Empty;
 }

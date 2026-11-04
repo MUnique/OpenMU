@@ -107,6 +107,35 @@ internal partial class MiniGameDefinition : MUnique.OpenMU.DataModel.Configurati
         }
     }
 
+<<<<<<< HEAD
+=======
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="FreeTicketItem"/>.
+    /// </summary>
+    public Guid? FreeTicketItemId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="FreeTicketItem" />.
+    /// </summary>
+    [ForeignKey(nameof(FreeTicketItemId))]
+    public ItemDefinition RawFreeTicketItem
+    {
+        get => base.FreeTicketItem as ItemDefinition;
+        set => base.FreeTicketItem = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition FreeTicketItem
+    {
+        get => base.FreeTicketItem;set
+        {
+            base.FreeTicketItem = value;
+            this.FreeTicketItemId = this.RawFreeTicketItem?.Id;
+        }
+    }
+
+>>>>>>> origin/slave
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {
