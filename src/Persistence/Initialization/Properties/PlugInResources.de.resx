@@ -308,6 +308,12 @@
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert die Diskriminatoren einiger antiker Gegenstände.</value>
   </data>
+  <data name="FixExcellentLevelRequirementPlugIn_Name" xml:space="preserve">
+    <value>Level-Anforderung exzellenter Gegenstände korrigieren</value>
+  </data>
+  <data name="FixExcellentLevelRequirementPlugIn_Description" xml:space="preserve">
+    <value>Lässt die exzellente Version der 380er-Gegenstände und des Horns des Fenrir dasselbe Level benötigen wie die normale.</value>
+  </data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve">
     <value>Buff-Fähigkeiten des Beschwörers hinzufügen</value>
   </data>

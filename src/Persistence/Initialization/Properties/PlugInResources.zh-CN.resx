@@ -187,6 +187,8 @@
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>为 Season 6 游戏配置添加 MaximumAllianceSize 全局基础属性，默认值为 5。</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>修正套装物品识别值</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>修正部分套装物品的识别值。</value></data>
+  <data name="FixExcellentLevelRequirementPlugIn_Name" xml:space="preserve"><value>修正卓越物品的等级需求</value></data>
+  <data name="FixExcellentLevelRequirementPlugIn_Description" xml:space="preserve"><value>让 380 物品和炎狼兽的角的卓越版本与普通版本需要相同的等级。</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>添加召唤术师辅助技能</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>添加昏睡术、破御阵、伤害反射和虚弱阵，并修正三代翅膀的完全反射属性。</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>补充魔法师与格斗家技能</value></data>
