@@ -337,6 +337,7 @@ only talks about what it could actually do:
 | An invasion (White Wizard, Golden, Red Dragon) started | `/post` | a bot which may warp to the invaded map |
 | A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
 | A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
+| A player leveled up or made a reset | normal chat, "gz", `{player}`, `{level}`, `{resets}` | the nearest bot which sees the player — 30 % chance, once per player in 10 minutes |
 | The bot accepted a player's party invitation | party chat, `{player}` | the bot |
 | An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |

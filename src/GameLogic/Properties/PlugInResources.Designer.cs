@@ -5364,5 +5364,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_MerchantLines_Description text.</summary>
         public static string BotChatConfiguration_MerchantLines_Description => ResourceManager.GetString("BotChatConfiguration_MerchantLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_CongratulationChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_CongratulationChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_CongratulationChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_CongratulationChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_CongratulationChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_CongratulationChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_CongratulationCooldown_Name text.</summary>
+        public static string BotChatConfiguration_CongratulationCooldown_Name => ResourceManager.GetString("BotChatConfiguration_CongratulationCooldown_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_CongratulationCooldown_Description text.</summary>
+        public static string BotChatConfiguration_CongratulationCooldown_Description => ResourceManager.GetString("BotChatConfiguration_CongratulationCooldown_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_CongratulationLines_Name text.</summary>
+        public static string BotChatConfiguration_CongratulationLines_Name => ResourceManager.GetString("BotChatConfiguration_CongratulationLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_CongratulationLines_Description text.</summary>
+        public static string BotChatConfiguration_CongratulationLines_Description => ResourceManager.GetString("BotChatConfiguration_CongratulationLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ResetCongratulationLines_Name text.</summary>
+        public static string BotChatConfiguration_ResetCongratulationLines_Name => ResourceManager.GetString("BotChatConfiguration_ResetCongratulationLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ResetCongratulationLines_Description text.</summary>
+        public static string BotChatConfiguration_ResetCongratulationLines_Description => ResourceManager.GetString("BotChatConfiguration_ResetCongratulationLines_Description", resourceCulture)!;
+
     }
 }

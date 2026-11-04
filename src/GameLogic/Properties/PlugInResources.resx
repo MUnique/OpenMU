@@ -1943,4 +1943,12 @@
   <data name="BotChatConfiguration_MerchantTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot advertises when the interval is over. 0 (default) = never: the lines are meant for a future merchant bot.</value></data>
   <data name="BotChatConfiguration_MerchantLines_Name" xml:space="preserve"><value>Merchant adverts</value></data>
   <data name="BotChatConfiguration_MerchantLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot standing in a safezone, like a merchant advertising. Off by default. Placeholders: {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_CongratulationChancePercent_Name" xml:space="preserve"><value>Congratulation chance (%)</value></data>
+  <data name="BotChatConfiguration_CongratulationChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot congratulates a player on a level-up or a reset in the normal chat ("gz"). 0 = never.</value></data>
+  <data name="BotChatConfiguration_CongratulationCooldown_Name" xml:space="preserve"><value>Congratulation cooldown per player</value></data>
+  <data name="BotChatConfiguration_CongratulationCooldown_Description" xml:space="preserve"><value>Minimum time between two congratulations of the same player on a level-up (and, separately, on a reset).</value></data>
+  <data name="BotChatConfiguration_CongratulationLines_Name" xml:space="preserve"><value>Congratulations: level-up</value></data>
+  <data name="BotChatConfiguration_CongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player leveled up. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
+  <data name="BotChatConfiguration_ResetCongratulationLines_Name" xml:space="preserve"><value>Congratulations: reset</value></data>
+  <data name="BotChatConfiguration_ResetCongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player made a reset. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
 </root>

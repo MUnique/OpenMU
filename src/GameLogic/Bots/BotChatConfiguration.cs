@@ -107,6 +107,21 @@ public class BotChatConfiguration
     public int PartyChatChancePercent { get; set; } = 70;
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that the nearest bot congratulates a player on a level-up
+    /// or a reset - "gz".
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_CongratulationChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_CongratulationChancePercent_Description))]
+    public int CongratulationChancePercent { get; set; } = 30;
+
+    /// <summary>
+    /// Gets or sets the minimum time between two congratulations of the same player on a level-up
+    /// (and, separately, on a reset) - with a high experience rate, a player levels up every minute.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_CongratulationCooldown_Name), Description = nameof(PlugInResources.BotChatConfiguration_CongratulationCooldown_Description))]
+    public TimeSpan CongratulationCooldown { get; set; } = TimeSpan.FromMinutes(10);
+
+    /// <summary>
     /// Gets or sets how many bots answer a player's party search posted with <c>/post</c>, e.g.
     /// "party 300-350 bk" (see <see cref="BotPartyRequest"/>); 0 switches it off. The same search
     /// posted again is answered by other bots.
@@ -246,6 +261,24 @@ public class BotChatConfiguration
     [ScaffoldColumn(true)]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventFinishedLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventFinishedLines_Description))]
     public ICollection<BotChatLine> EventFinishedLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines with which the nearest bot congratulates a player on a level-up.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c> and <c>{resets}</c> of the player, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_CongratulationLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_CongratulationLines_Description))]
+    public ICollection<BotChatLine> CongratulationLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines with which the nearest bot congratulates a player on a reset.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c> and <c>{resets}</c> of the player, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Description))]
+    public ICollection<BotChatLine> ResetCongratulationLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Gets or sets the whispers with which a bot answers a player's party search.
@@ -408,6 +441,17 @@ public class BotChatConfiguration
             ("trade? whisper me, i'm at {location}", "handel? pisz pw, stoję w {location}"),
             ("buying wings, paying well", "kupię skrzydła, dobrze płacę"),
             ("jewels for sale, come to {location}", "jewele na sprzedaż, zapraszam do {location}"));
+        Add(
+            configuration.CongratulationLines,
+            ("gz", "gz"),
+            ("gz {player}", "gratki {player}"),
+            ("nice, {level}!", "nieźle, {level}!"),
+            ("grats :)", "gratulacje :)"));
+        Add(
+            configuration.ResetCongratulationLines,
+            ("gz on the reset!", "gratki resetu!"),
+            ("reset {resets}, nice {player}", "reset {resets}, nieźle {player}"),
+            ("another reset? gz", "kolejny reset? gz"));
         Add(
             configuration.PartyVolunteerLines,
             ("me? {level} {class}", "ja? {level} {class}"),

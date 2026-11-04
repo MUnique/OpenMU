@@ -122,6 +122,23 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A reset is noticed by the grown reset count of a character - not when the character is seen
+    /// for the first time, and not when an admin lowered the count.
+    /// </summary>
+    [Test]
+    public void NoticesAGrownResetCount()
+    {
+        var throttle = new BotChatThrottle();
+
+        Assert.That(throttle.TryUpdateKnownResets("Hero", 3), Is.False);
+        Assert.That(throttle.TryUpdateKnownResets("Hero", 3), Is.False);
+        Assert.That(throttle.TryUpdateKnownResets("Hero", 4), Is.True);
+        Assert.That(throttle.TryUpdateKnownResets("Hero", 4), Is.False);
+        Assert.That(throttle.TryUpdateKnownResets("Hero", 1), Is.False);
+        Assert.That(throttle.TryUpdateKnownResets("Hero", 2), Is.True);
+    }
+
+    /// <summary>
     /// The chat and whisper reply cooldowns belong to one bot; another bot may still talk, and the
     /// two cooldowns don't block each other.
     /// </summary>
