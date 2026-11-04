@@ -452,6 +452,10 @@ talking (three normal chat messages within 30 seconds, by default), it says
 nothing unasked — no conversation, greeting, congratulation or comment. It
 still answers a player who talks to it.
 
+A game master can make a bot talk with `/botsay <bot> <text>` - for staged
+scenes of an event, or to spark a conversation. The text is said as typed in
+the normal chat, to the players who see the bot; only bots can be made to talk.
+
 The limits keep a large population from flooding the chat. All bots of a game
 server share one gap between two posts (`Minimum time between posts`, 3 minutes),
 each opened event type or started invasion is announced at most once, and each

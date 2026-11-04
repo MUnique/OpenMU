@@ -5514,5 +5514,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_FriendLines_Description text.</summary>
         public static string BotChatConfiguration_FriendLines_Description => ResourceManager.GetString("BotChatConfiguration_FriendLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotSayChatCommandPlugIn_Name text.</summary>
+        public static string BotSayChatCommandPlugIn_Name => ResourceManager.GetString("BotSayChatCommandPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotSayChatCommandPlugIn_Description text.</summary>
+        public static string BotSayChatCommandPlugIn_Description => ResourceManager.GetString("BotSayChatCommandPlugIn_Description", resourceCulture)!;
+
     }
 }
