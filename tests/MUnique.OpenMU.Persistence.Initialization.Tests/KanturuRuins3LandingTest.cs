@@ -4,10 +4,8 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
-using System.Reflection;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
-using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using IIdentifiable = MUnique.OpenMU.Persistence.IIdentifiable;
 
@@ -48,7 +46,7 @@ internal class KanturuRuins3LandingTest
         gate.IsSpawnGate = true;
         var terrainData = map.TerrainData!.ToArray();
         var placements = CapturePlacementData(gameConfiguration, gate);
-        var oldPoints = GetPossibleLandingPoints(gate).ToArray();
+        var oldPoints = gate.GetPossibleLandingPoints().ToArray();
         var terrain = new GameMapTerrain(map);
         Assert.That(oldPoints, Has.Length.EqualTo(64));
         Assert.That(oldPoints.Count(point => !terrain.WalkMap[point.X, point.Y]), Is.EqualTo(19));
@@ -244,7 +242,7 @@ internal class KanturuRuins3LandingTest
         Assert.That(map.TerrainData, Is.Not.Null.And.Not.Empty);
 
         var terrain = new GameMapTerrain(map);
-        var possiblePoints = GetPossibleLandingPoints(gate).ToArray();
+        var possiblePoints = gate.GetPossibleLandingPoints().ToArray();
         var blockedPoints = possiblePoints.Where(point => !terrain.WalkMap[point.X, point.Y]).ToArray();
 
         Assert.That(possiblePoints, Has.Length.EqualTo(42));
@@ -301,15 +299,5 @@ internal class KanturuRuins3LandingTest
             gate.Y2,
         });
         return maps.Concat(warps).Concat(exits).Concat(entrances).ToArray();
-    }
-
-    private static IEnumerable<Point> GetPossibleLandingPoints(ExitGate gate)
-    {
-        // Use the actual random-placement domain rather than duplicating its upper-bound convention.
-        var points = typeof(ExitGateExtensions)
-            .GetMethod("GetPossibleLandingPoints", BindingFlags.Static | BindingFlags.NonPublic)?
-            .Invoke(null, [gate]);
-        return points as IEnumerable<Point>
-            ?? throw new InvalidOperationException("The exit gate landing-point enumerator was not found.");
     }
 }
