@@ -51,9 +51,12 @@ public static class ItemExchangeExport
     public static int MaximumNumber { get; } = 511;
 
     /// <summary>
-    /// Gets the item fields the file carries, in the order the client writes them: the size (the
-    /// cells the item takes in an item grid).
+    /// Gets the item fields the file carries, in the order the client writes them.
     /// </summary>
+    /// <remarks>
+    /// A field has the client's key and meaning, e.g. the size, <c>width</c> and <c>height</c>, is
+    /// the cells the item takes in an item grid.
+    /// </remarks>
     internal static IReadOnlyList<ItemExchangeField> Fields { get; } =
     [
         NumberField("width", item => item.Width),
