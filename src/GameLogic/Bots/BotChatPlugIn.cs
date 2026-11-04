@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.Offline;
@@ -47,6 +48,7 @@ public class BotChatPlugIn
     IMiniGameEndedPlugIn,
     IAttackableGotKilledPlugIn,
     IChatMessageSentPlugIn,
+    IPeriodicTaskPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -97,6 +99,12 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) KilledDelaySeconds = (1, 2);
 
     private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
+
+    /// <summary>
+    /// The number of calls of <see cref="ForceStart"/>; a server which didn't see the current number
+    /// yet makes its small talk without waiting for the interval.
+    /// </summary>
+    private int _forceStartCount;
 
     /// <inheritdoc />
     public BotChatConfiguration? Configuration { get; set; }
@@ -332,6 +340,43 @@ public class BotChatPlugIn
             () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line, values) : ValueTask.CompletedTask);
     }
 
+    /// <inheritdoc />
+    public async ValueTask ExecuteTaskAsync(GameContext gameContext)
+    {
+        if (this.Configuration is not { SmallTalkChancePercent: > 0 } configuration
+            || !this.GetThrottle(gameContext).TryStartSmallTalk(DateTime.UtcNow, configuration.SmallTalkInterval, Volatile.Read(ref this._forceStartCount))
+            || !Rand.NextRandomBool(configuration.SmallTalkChancePercent))
+        {
+            return;
+        }
+
+        var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var candidates = new List<Player>();
+        foreach (var bot in players.Where(p => IsBot(p) && IsAvailable(p) && IsInSafezone(p)))
+        {
+            // Talking to nobody would be wasted: only a bot which a player sees may talk.
+            if (await HasHumanObserverAsync(bot).ConfigureAwait(false))
+            {
+                candidates.Add(bot);
+            }
+        }
+
+        if (candidates.Count == 0
+            || PickLine(configuration, BotChatSituation.SmallTalk) is not { } line)
+        {
+            return;
+        }
+
+        var speaker = candidates[Rand.NextInt(0, candidates.Count)];
+        if (this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
+        {
+            await BotChatSpeaker.SayAsync(speaker, line, CreateBotValues(speaker)).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    public void ForceStart() => Interlocked.Increment(ref this._forceStartCount);
+
     /// <summary>
     /// Determines whether the bot may warp to the map according to the warp list - the same rule the
     /// bots' navigation follows (the plain level against the class-reduced warp requirement) - and the
@@ -396,6 +441,22 @@ public class BotChatPlugIn
         => bot.PlayerState.CurrentState == PlayerState.EnteredWorld
            && bot.IsAlive
            && bot.CurrentMiniGame is null;
+
+    private static bool IsInSafezone(Player bot)
+        => bot.CurrentMap is { } map && map.Terrain.SafezoneMap[bot.Position.X, bot.Position.Y];
+
+    private static async ValueTask<bool> HasHumanObserverAsync(Player bot)
+    {
+        var seen = false;
+        await bot.ForEachObservingAsync<Player>(
+            observer =>
+            {
+                seen |= observer is not OfflinePlayer;
+                return ValueTask.CompletedTask;
+            },
+            false).ConfigureAwait(false);
+        return seen;
+    }
 
     private static int GetLevel(Player player) => (int)(player.Attributes?[Stats.Level] ?? 0);
 

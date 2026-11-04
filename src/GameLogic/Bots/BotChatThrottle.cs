@@ -19,11 +19,23 @@ using System.Threading;
 /// </remarks>
 internal sealed class BotChatThrottle
 {
+    /// <summary>
+    /// The shortest gap between two small talks, so an interval of zero doesn't make the bots talk
+    /// every second.
+    /// </summary>
+    private static readonly TimeSpan MinimumSmallTalkInterval = TimeSpan.FromSeconds(10);
+
     private readonly ConcurrentDictionary<string, DateTime> _occasions = new();
 
     private readonly ConditionalWeakTable<Player, BotCooldowns> _bots = new();
 
+    private readonly Lock _smallTalkLock = new();
+
     private long _nextPostTicks;
+
+    private DateTime _nextSmallTalkUtc;
+
+    private int _handledForceStartCount;
 
     /// <summary>
     /// Reserves the right to announce an occasion (e.g. "Blood Castle opened") for the given time
@@ -83,6 +95,35 @@ internal sealed class BotChatThrottle
     /// <returns><c>true</c>, if the bot may reply now.</returns>
     public bool TryReserveWhisperReply(Player bot, DateTime now, TimeSpan cooldown)
         => TryReserve(ref this._bots.GetOrCreateValue(bot).NextWhisperReplyTicks, now, cooldown);
+
+    /// <summary>
+    /// Determines whether the next small talk of this server is due, and if so, schedules the one
+    /// after it. A forced start (from the admin panel) makes it due at once.
+    /// </summary>
+    /// <param name="now">The current time.</param>
+    /// <param name="interval">The configured interval between two small talks.</param>
+    /// <param name="forceStartCount">The current number of forced starts of the plugin.</param>
+    /// <returns><c>true</c>, if a bot may make small talk now.</returns>
+    public bool TryStartSmallTalk(DateTime now, TimeSpan interval, int forceStartCount)
+    {
+        lock (this._smallTalkLock)
+        {
+            if (this._nextSmallTalkUtc == default)
+            {
+                // A freshly started server waits one interval first - the bots are just logging in.
+                this._nextSmallTalkUtc = now + interval;
+            }
+
+            if (now < this._nextSmallTalkUtc && forceStartCount == this._handledForceStartCount)
+            {
+                return false;
+            }
+
+            this._handledForceStartCount = forceStartCount;
+            this._nextSmallTalkUtc = now + (interval > MinimumSmallTalkInterval ? interval : MinimumSmallTalkInterval);
+            return true;
+        }
+    }
 
     private static bool TryReserve(ref long nextAllowedTicks, DateTime now, TimeSpan gap)
     {

@@ -112,6 +112,19 @@ public class BotChatConfiguration
     public int KilledByPlayerChancePercent { get; set; } = 70;
 
     /// <summary>
+    /// Gets or sets how often a bot in a safezone may make small talk, per game server.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_SmallTalkInterval_Name), Description = nameof(PlugInResources.BotChatConfiguration_SmallTalkInterval_Description))]
+    public TimeSpan SmallTalkInterval { get; set; } = TimeSpan.FromMinutes(10);
+
+    /// <summary>
+    /// Gets or sets the chance, in percent, that a bot makes small talk when the interval is over.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_SmallTalkChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_SmallTalkChancePercent_Description))]
+    public int SmallTalkChancePercent { get; set; } = 50;
+
+    /// <summary>
     /// Gets or sets the lines the bots choose from. A situation without lines stays silent.
     /// </summary>
     [MemberOfAggregate]
@@ -182,6 +195,14 @@ public class BotChatConfiguration
             "ok ok, i leave",
             "{player} pls stop",
             "enough, im out");
+        Add(
+            BotChatSituation.SmallTalk,
+            "lf party {map}",
+            "lag?",
+            "need a party for exp",
+            "anyone up for bc later?",
+            "so many people today",
+            "gm online?");
         AddReplies("how are you, how r u, how are u, hru, how's it going, how is it going", "fine, thanks for asking", "good, you?", "all good, just grinding");
         AddReplies("hi, hello, hey, yo, hiho, sup", "hi, what's up?", "hey :)", "hello");
         AddReplies("level, lvl, what level", "{level} now", "lvl {level}");
