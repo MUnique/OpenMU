@@ -56,6 +56,8 @@ internal sealed class BotChatThrottle
 
     private readonly ConcurrentDictionary<string, int> _knownResets = new();
 
+    private readonly ConditionalWeakTable<Player, Dictionary<object, object>> _lastLines = new();
+
     private long _nextPlayerScanTicks;
 
     private long _nextPostTicks;
@@ -294,6 +296,36 @@ internal sealed class BotChatThrottle
             var drawn = unused[pickIndex(unused.Count)];
             this._usedConversations.Add(drawn);
             return drawn;
+        }
+    }
+
+    /// <summary>
+    /// Gets the line of the list which the bots said last to the player.
+    /// </summary>
+    /// <param name="player">The player the line was said to.</param>
+    /// <param name="list">The list of the line, e.g. the whisper replies.</param>
+    /// <returns>The line, or <c>null</c> when none of the list was said to the player yet.</returns>
+    public object? GetLastLine(Player player, object list)
+    {
+        var lines = this._lastLines.GetOrCreateValue(player);
+        lock (lines)
+        {
+            return lines.GetValueOrDefault(list);
+        }
+    }
+
+    /// <summary>
+    /// Remembers the line of the list which the bots said to the player, so the next one differs.
+    /// </summary>
+    /// <param name="player">The player the line was said to.</param>
+    /// <param name="list">The list of the line, e.g. the whisper replies.</param>
+    /// <param name="line">The line.</param>
+    public void SetLastLine(Player player, object list, object line)
+    {
+        var lines = this._lastLines.GetOrCreateValue(player);
+        lock (lines)
+        {
+            lines[list] = line;
         }
     }
 

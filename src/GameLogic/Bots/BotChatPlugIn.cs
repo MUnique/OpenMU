@@ -232,7 +232,7 @@ public class BotChatPlugIn
             || !IsBot(receiver)
             || sender is OfflinePlayer
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, count => Rand.NextInt(0, count)) is not { } line
+            || this.PickReplyFor(sender, configuration.WhisperReplies, message) is not { } line
             || !this.GetThrottle(receiver.GameContext).TryReserveWhisperReply(receiver, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
@@ -336,7 +336,7 @@ public class BotChatPlugIn
         {
             // Read after the delay: the revenge plugin registers the death in the same notification.
             var lines = bot.GetRecentDeathCount(killerPlayer) >= OfflinePlayer.RepeatedKillThreshold ? configuration.KilledAgainLines : configuration.KilledLines;
-            if (PickLine(lines) is not { } line)
+            if (this.PickLineFor(killerPlayer, lines) is not { } line)
             {
                 return ValueTask.CompletedTask;
             }
@@ -376,7 +376,7 @@ public class BotChatPlugIn
 
         if (mentionedBots.FirstOrDefault(IsAvailable) is not { } bot
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, count => Rand.NextInt(0, count)) is not { } line
+            || this.PickReplyFor(sender, configuration.WhisperReplies, message) is not { } line
             || !this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
@@ -698,6 +698,36 @@ public class BotChatPlugIn
     private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
 
     /// <summary>
+    /// Picks a line said to the player, other than the one of this list the player got last time.
+    /// </summary>
+    private BotChatLine? PickLineFor(Player listener, ICollection<BotChatLine> lines)
+    {
+        var throttle = this.GetThrottle(listener.GameContext);
+        var line = BotChatComposer.PickLine(lines, count => Rand.NextInt(0, count), throttle.GetLastLine(listener, lines));
+        if (line is not null)
+        {
+            throttle.SetLastLine(listener, lines, line);
+        }
+
+        return line;
+    }
+
+    /// <summary>
+    /// Picks the reply to the player's message, other than the reply the player got last time.
+    /// </summary>
+    private BotChatReply? PickReplyFor(Player listener, ICollection<BotChatReply> replies, string message)
+    {
+        var throttle = this.GetThrottle(listener.GameContext);
+        var reply = BotChatComposer.PickWhisperReply(replies, message, count => Rand.NextInt(0, count), throttle.GetLastLine(listener, replies));
+        if (reply is not null)
+        {
+            throttle.SetLastLine(listener, replies, reply);
+        }
+
+        return reply;
+    }
+
+    /// <summary>
     /// Answers the whisper in which a player, whose party search the bot answered, names the meeting
     /// place: "devias 215 40", or "here" for where the player stands. A bot which may go there sets
     /// off and waits for the invitation (see <see cref="BotEventMeeting"/>); a place it may not go to
@@ -722,7 +752,7 @@ public class BotChatPlugIn
         if (place is not { } found)
         {
             if (throttle.TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown)
-                && PickLine(configuration.PartyAskWhereLines) is { } askLine)
+                && this.PickLineFor(requester, configuration.PartyAskWhereLines) is { } askLine)
             {
                 this.WhisperLater(bot, requester, askLine, values);
             }
@@ -907,7 +937,7 @@ public class BotChatPlugIn
             var throttle = this.GetThrottle(player.GameContext);
             var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
             if (FindGreeter(players, player, map) is not { } bot
-                || PickLine(lines) is not { } line
+                || this.PickLineFor(player, lines) is not { } line
                 || !throttle.TryReserveOccasion(occasionKey, now, configuration.CongratulationCooldown)
                 || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
             {
@@ -936,7 +966,7 @@ public class BotChatPlugIn
         var now = DateTime.UtcNow;
         var throttle = this.GetThrottle(player.GameContext);
         if (bot is null
-            || PickLine(configuration.GreetingLines) is not { } line
+            || this.PickLineFor(player, configuration.GreetingLines) is not { } line
             || !throttle.TryReserveOccasion($"greeting {playerName}", now, configuration.GreetingCooldown)
             || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
         {

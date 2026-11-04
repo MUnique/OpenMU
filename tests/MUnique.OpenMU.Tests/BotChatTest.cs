@@ -260,6 +260,28 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A player who asks the same twice doesn't get the very same answer twice - unless there is no
+    /// other answer.
+    /// </summary>
+    [Test]
+    public void DoesNotRepeatTheLastAnswer()
+    {
+        var replies = new List<BotChatReply>
+        {
+            new() { Text = "fine", Keywords = "how are you" },
+            new() { Text = "good, you?", Keywords = "how are you" },
+            new() { Text = "only one", Keywords = "level" },
+        };
+
+        var first = BotChatComposer.PickWhisperReply(replies, "how are you", _ => 0);
+        var second = BotChatComposer.PickWhisperReply(replies, "how are you", _ => 0, first);
+        var only = BotChatComposer.PickWhisperReply(replies, "level", _ => 0, replies[2]);
+
+        Assert.That(second, Is.Not.SameAs(first));
+        Assert.That(only, Is.SameAs(replies[2]));
+    }
+
+    /// <summary>
     /// A bot feels addressed when its name is in a chat message as a whole word - not when it is only
     /// a part of a longer word.
     /// </summary>
