@@ -8,6 +8,7 @@ using System.Globalization;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// Tests the bot chat (<see cref="BotChatPlugIn"/>): the limits which keep a large bot population
@@ -135,6 +136,17 @@ public class BotChatTest
     public void KeepsUnknownPlaceholders()
     {
         Assert.That(BotChatComposer.Render("{lvl} done", CultureInfo.InvariantCulture, NoValues), Is.EqualTo("{lvl} done"));
+    }
+
+    /// <summary>
+    /// A place is written the way players write it - the map, then the coordinates - and without
+    /// coordinates it's the map alone.
+    /// </summary>
+    [Test]
+    public void FormatsALocationLikePlayersDo()
+    {
+        Assert.That(BotChatComposer.FormatLocation("Devias", new Point(215, 40)), Is.EqualTo("Devias 215, 40"));
+        Assert.That(BotChatComposer.FormatLocation("Devias", null), Is.EqualTo("Devias"));
     }
 
     /// <summary>

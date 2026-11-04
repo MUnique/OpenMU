@@ -129,7 +129,8 @@ public class BotChatConfiguration
     /// <summary>
     /// Gets or sets the lines a bot posts with <c>/post</c> when the entrance of a Blood Castle, Devil Square
     /// or Chaos Castle opened, before it waits for players at the meeting point (see <see cref="BotEventMeeting"/>).
-    /// Placeholders: <c>{event}</c>, <c>{map}</c> (the map of the meeting point), <c>{level}</c>.
+    /// Placeholders: <c>{event}</c>, <c>{map}</c> (the map of the meeting point), <c>{location}</c>
+    /// (the meeting point with its coordinates), <c>{level}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -138,7 +139,7 @@ public class BotChatConfiguration
 
     /// <summary>
     /// Gets or sets the lines a bot posts with <c>/post</c> when an invasion (White Wizard, Golden, Red Dragon)
-    /// started. Placeholders: <c>{event}</c>, <c>{map}</c>, <c>{level}</c>.
+    /// started. Placeholders: <c>{event}</c>, <c>{map}</c>, <c>{location}</c> (the map alone), <c>{level}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -147,7 +148,7 @@ public class BotChatConfiguration
 
     /// <summary>
     /// Gets or sets the lines a bot says in the normal chat when it reached a level milestone
-    /// (see <see cref="LevelMilestoneStep"/>). Placeholders: <c>{level}</c>, <c>{map}</c>.
+    /// (see <see cref="LevelMilestoneStep"/>). Placeholders: <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -157,7 +158,7 @@ public class BotChatConfiguration
     /// <summary>
     /// Gets or sets the answers of a bot to a player who whispered to it, or mentioned its name in the normal
     /// chat next to it. The bot answers the same way: by whisper, or in the normal chat.
-    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -166,7 +167,7 @@ public class BotChatConfiguration
 
     /// <summary>
     /// Gets or sets the lines the nearest bot greets a player with who entered the game.
-    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -175,7 +176,7 @@ public class BotChatConfiguration
 
     /// <summary>
     /// Gets or sets the lines a bot says in the party chat after it accepted a player's party invitation.
-    /// Placeholders: <c>{player}</c> (the inviter), <c>{level}</c>, <c>{map}</c>.
+    /// Placeholders: <c>{player}</c> (the inviter), <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -193,7 +194,7 @@ public class BotChatConfiguration
 
     /// <summary>
     /// Gets or sets the lines a bot says in the normal chat when a player killed it outside of an event, right
-    /// before it respawns. Placeholders: <c>{player}</c> (the killer), <c>{level}</c>, <c>{map}</c>.
+    /// before it respawns. Placeholders: <c>{player}</c> (the killer), <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -212,7 +213,7 @@ public class BotChatConfiguration
 
     /// <summary>
     /// Gets or sets the lines a bot standing in a safezone says now and then in the normal chat (see
-    /// <see cref="SmallTalkInterval"/>) - only when a player sees it. Placeholders: <c>{level}</c>, <c>{map}</c>.
+    /// <see cref="SmallTalkInterval"/>) - only when a player sees it. Placeholders: <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -309,8 +310,8 @@ public class BotChatConfiguration
             ("lvl {level}", "lvl {level}"));
         AddReplies(
             "where are you, where r u, where, gdzie jestes, gdzie jesteś, gdzie",
-            ("{map}", "{map}"),
-            ("in {map}", "w {map}"));
+            ("{location}", "{location}"),
+            ("in {location}", "w {location}"));
         AddReplies(
             "party, pt, grupa, grupe, grupę, do grupy",
             ("sure, invite me", "jasne, zaproś mnie"),
