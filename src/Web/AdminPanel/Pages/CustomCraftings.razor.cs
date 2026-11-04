@@ -1,4 +1,4 @@
-// <copyright file="CustomCraftings.razor.cs" company="MUnique">
+﻿// <copyright file="CustomCraftings.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.QuickGrid;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
-using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -72,19 +71,19 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
 
     private bool SelectedRequiredItemIsStackable => this.SelectedRequiredItem is { } item && this.IsStackable(item);
 
-    private string RequiredMinimumAmountLabel => this.Text(this.SelectedRequiredItemIsStackable ? "CustomCraftingsMinimumStackQuantityShort" : "CustomCraftingsMinimumItemCountShort");
+    private string RequiredMinimumAmountLabel => this.GetResource(this.SelectedRequiredItemIsStackable ? "CustomCraftingsMinimumStackQuantityShort" : "CustomCraftingsMinimumItemCountShort");
 
-    private string RequiredMaximumAmountLabel => this.Text(this.SelectedRequiredItemIsStackable ? "CustomCraftingsMaximumStackQuantityShort" : "CustomCraftingsMaximumItemCountShort");
+    private string RequiredMaximumAmountLabel => this.GetResource(this.SelectedRequiredItemIsStackable ? "CustomCraftingsMaximumStackQuantityShort" : "CustomCraftingsMaximumItemCountShort");
 
-    private string RequiredAmountHint => this.Text(this.SelectedRequiredItemIsStackable ? "CustomCraftingsRequiredStackAmountHint" : "CustomCraftingsRequiredItemAmountHint");
+    private string RequiredAmountHint => this.GetResource(this.SelectedRequiredItemIsStackable ? "CustomCraftingsRequiredStackAmountHint" : "CustomCraftingsRequiredItemAmountHint");
 
     private string ResultQuantityOrDurabilityLabel => this.SelectedResultIsStackable
-        ? this.Text("CustomCraftingsStackQuantity")
-        : this.SelectedResultHasDurability ? this.Text("CustomCraftingsDurability") : this.Text("CustomCraftingsSingleItem");
+        ? Resources.CustomCraftingsStackQuantity
+        : this.SelectedResultHasDurability ? Resources.CustomCraftingsDurability : Resources.CustomCraftingsSingleItem;
 
     private string ResultQuantityOrDurabilityHint => this.SelectedResultIsStackable
-        ? string.Format(CultureInfo.CurrentCulture, this.Text("CustomCraftingsStackQuantityHint"), this.SelectedResultItem!.Durability)
-        : this.SelectedResultHasDurability ? this.Text("CustomCraftingsDurabilityHint") : this.Text("CustomCraftingsSingleItemHint");
+        ? string.Format(CultureInfo.CurrentCulture, Resources.CustomCraftingsStackQuantityHint, this.SelectedResultItem!.Durability)
+        : this.SelectedResultHasDurability ? Resources.CustomCraftingsDurabilityHint : Resources.CustomCraftingsSingleItemHint;
 
     private int ResultQuantityOrDurabilityMinimum => this.SelectedResultIsStackable ? 1 : 0;
 
@@ -163,18 +162,18 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
     private string CraftingRequirements(ItemCrafting crafting)
         => crafting.SimpleCraftingSettings is { } settings
             ? string.Join(", ", settings.RequiredItems.Select(requirement =>
-                $"{this.RequiredAmountSummary(requirement)} × {string.Join(" / ", requirement.PossibleItems.Select(item => this.LocalizedName(item.Name)).DefaultIfEmpty(this.Text("CustomCraftingsRandomItem")))}"))
+                $"{this.RequiredAmountSummary(requirement)} × {string.Join(" / ", requirement.PossibleItems.Select(item => this.LocalizedName(item.Name)).DefaultIfEmpty(Resources.CustomCraftingsRandomItem))}"))
             : "—";
 
     private string CraftingResults(ItemCrafting crafting)
         => crafting.SimpleCraftingSettings is { } settings
-            ? string.Join(", ", settings.ResultItems.Select(result => result.ItemDefinition is { } item ? this.LocalizedName(item.Name) : string.Format(CultureInfo.CurrentCulture, this.Text("CustomCraftingsReferencedResult"), result.Reference)))
+            ? string.Join(", ", settings.ResultItems.Select(result => result.ItemDefinition is { } item ? this.LocalizedName(item.Name) : string.Format(CultureInfo.CurrentCulture, Resources.CustomCraftingsReferencedResult, result.Reference)))
             : "—";
 
     private string RequirementItemName(RequirementForm requirement)
         => Guid.TryParse(requirement.ItemId, out var itemId) && this._items.FirstOrDefault(item => item.GetId() == itemId) is { } item
             ? this.LocalizedName(item.Name)
-            : this.Text("CustomCraftingsSelectItem");
+            : Resources.CustomCraftingsSelectItem;
 
     private string RequirementOptions(RequirementForm requirement)
         => string.Join(", ", requirement.OptionTypeIds
@@ -186,7 +185,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
     private string ResultItemName(ResultForm result)
         => this.FindItem(result.ItemId) is { } item
             ? this.LocalizedName(item.Name)
-            : this.Text("CustomCraftingsSelectItem");
+            : Resources.CustomCraftingsSelectItem;
 
     private string ResultQuantityOrDurabilitySummary(ResultForm result)
     {
@@ -194,16 +193,16 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
         {
             var item = this.FindItem(result.ItemId);
             return item is not null && this.IsStackable(item)
-                ? this.Text("CustomCraftingsDefaultStackQuantity")
-                : item?.ItemSlot is not null ? this.Text("CustomCraftingsDefaultDurability") : this.Text("CustomCraftingsSingleItem");
+                ? Resources.CustomCraftingsDefaultStackQuantity
+                : item?.ItemSlot is not null ? Resources.CustomCraftingsDefaultDurability : Resources.CustomCraftingsSingleItem;
         }
 
         var resultItem = this.FindItem(result.ItemId);
         return resultItem is not null && this.IsStackable(resultItem)
-            ? string.Format(CultureInfo.CurrentCulture, this.Text("CustomCraftingsStackQuantitySummary"), value)
+            ? string.Format(CultureInfo.CurrentCulture, Resources.CustomCraftingsStackQuantitySummary, value)
             : resultItem?.ItemSlot is not null
-                ? string.Format(CultureInfo.CurrentCulture, this.Text("CustomCraftingsDurabilitySummary"), value)
-                : this.Text("CustomCraftingsSingleItem");
+                ? string.Format(CultureInfo.CurrentCulture, Resources.CustomCraftingsDurabilitySummary, value)
+                : Resources.CustomCraftingsSingleItem;
     }
 
     private string RequiredAmountSummary(ItemCraftingRequiredItem requirement)
@@ -217,7 +216,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
         var summaryKey = item is not null && this.IsStackable(item)
             ? "CustomCraftingsStackAmountSummary"
             : "CustomCraftingsItemCountSummary";
-        var summary = string.Format(CultureInfo.CurrentCulture, this.Text(summaryKey), minimumAmount, maximumAmount);
+        var summary = string.Format(CultureInfo.CurrentCulture, this.GetResource(summaryKey), minimumAmount, maximumAmount);
         return summary;
     }
 
@@ -227,7 +226,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
     private string LocalizedName(LocalizedString name)
         => name.GetTranslation(CultureInfo.CurrentUICulture) ?? name.ValueInNeutralLanguage;
 
-    private string Text(string resourceKey) => Resources.ResourceManager.GetString(resourceKey, CultureInfo.CurrentUICulture) ?? resourceKey;
+    private string GetResource(string resourceKey) => Resources.ResourceManager.GetString(resourceKey, CultureInfo.CurrentUICulture) ?? resourceKey;
 
     private async Task ResetRecipePageAsync()
     {
@@ -248,7 +247,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
 
         var confirmation = string.Format(
             CultureInfo.CurrentCulture,
-            this.Text("CustomCraftingsDeleteConfirmation"),
+            Resources.CustomCraftingsDeleteConfirmation,
             this.LocalizedName(crafting.Name),
             this.LocalizedName(npc.Designation));
         if (!await this.JavaScript.InvokeAsync<bool>("window.confirm", confirmation).ConfigureAwait(true))
@@ -261,7 +260,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
         {
             await context.DeleteAsync(crafting).ConfigureAwait(true);
             await context.SaveChangesAsync().ConfigureAwait(true);
-            this.ToastService.ShowSuccess(this.Text("CustomCraftingsDeleted"));
+            this.ToastService.ShowSuccess(Resources.CustomCraftingsDeleted);
             await this.ResetRecipePageAsync().ConfigureAwait(true);
             await this.ResetAllRecipesPageAsync().ConfigureAwait(true);
         }
@@ -290,7 +289,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
             || this._requirementDraft.MaximumLevel is < 0 or > 15
             || this._requirementDraft.MinimumLevel > this._requirementDraft.MaximumLevel)
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsRequirementInvalid"));
+            this.ToastService.ShowError(Resources.CustomCraftingsRequirementInvalid);
             return;
         }
 
@@ -308,7 +307,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
             || this._resultDraft.MinimumLevel > this._resultDraft.MaximumLevel
             || !this.IsResultQuantityOrDurabilityValid(this._resultDraft, item))
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsResultInvalid"));
+            this.ToastService.ShowError(Resources.CustomCraftingsResultInvalid);
             return;
         }
 
@@ -322,7 +321,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
     {
         if (!editContext.Validate())
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsFormInvalid"));
+            this.ToastService.ShowError(Resources.CustomCraftingsFormInvalid);
             return;
         }
 
@@ -353,14 +352,14 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
     {
         if (this._context is not { } context || this._gameConfiguration is not { } gameConfiguration)
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsLoadFailed"));
+            this.ToastService.ShowError(Resources.CustomCraftingsLoadFailed);
             return;
         }
 
         if (!Guid.TryParse(this._selectedNpcId, out var npcId)
             || gameConfiguration.Monsters.FirstOrDefault(npc => npc.GetId() == npcId) is not { } npc)
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsSelectNpc"));
+            this.ToastService.ShowError(Resources.CustomCraftingsSelectNpc);
             return;
         }
 
@@ -374,7 +373,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
             || this._form.Requirements.Any(requirement => !Guid.TryParse(requirement.ItemId, out _) || requirement.MinimumAmount is < 1 or > byte.MaxValue || requirement.MaximumAmount is < 1 or > byte.MaxValue || requirement.MinimumAmount > requirement.MaximumAmount || requirement.MinimumLevel is < 0 or > 15 || requirement.MaximumLevel is < 0 or > 15 || requirement.MinimumLevel > requirement.MaximumLevel || requirement.OptionTypeIds.Any(id => !Guid.TryParse(id, out _)))
             || this._form.Results.Any(result => this.FindItem(result.ItemId) is not { } item || result.MinimumLevel is < 0 or > 15 || result.MaximumLevel is < 0 or > 15 || result.MinimumLevel > result.MaximumLevel || !this.IsResultQuantityOrDurabilityValid(result, item)))
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsValidationFailed"));
+            this.ToastService.ShowError(Resources.CustomCraftingsValidationFailed);
             return;
         }
 
@@ -382,7 +381,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
         var number = Enumerable.Range(1, byte.MaxValue).Select(value => (byte)value).FirstOrDefault(candidate => !usedNumbers.Contains(candidate));
         if (number == 0)
         {
-            this.ToastService.ShowError(this.Text("CustomCraftingsNoAvailableNumber"));
+            this.ToastService.ShowError(Resources.CustomCraftingsNoAvailableNumber);
             return;
         }
 
@@ -434,7 +433,7 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
 
             npc.ItemCraftings.Add(crafting);
             await context.SaveChangesAsync().ConfigureAwait(true);
-            this.ToastService.ShowSuccess(string.Format(CultureInfo.CurrentCulture, this.Text("CustomCraftingsCreated"), this._form.Name, number));
+            this.ToastService.ShowSuccess(string.Format(CultureInfo.CurrentCulture, Resources.CustomCraftingsCreated, this._form.Name, number));
             this.ResetForm();
         }
         catch (Exception exception)

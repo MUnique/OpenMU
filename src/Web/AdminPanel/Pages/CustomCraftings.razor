@@ -2,19 +2,15 @@
 @page "/edit-config/MUnique.OpenMU.Web.AdminPanel.Pages.CustomCraftingsDefinition/"
 @attribute [Authorize(Policy = AdminPolicies.Administrator)]
 
-@using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Configuration.ItemCrafting
-@using MUnique.OpenMU.DataModel.Configuration.Items
-@using MUnique.OpenMU.DataModel
 @using MUnique.OpenMU.Persistence
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 @using Microsoft.AspNetCore.Components.QuickGrid
-@using System.Globalization
 
-<PageTitle>OpenMU: @Text("CustomCraftings")</PageTitle>
-<Breadcrumb IsFirstFromRoot="true" Caption='@Text("CustomCraftings")' />
-<h1>@Text("CustomCraftings")</h1>
-<p class="text-muted">@Text("CustomCraftingsDescription")</p>
+<PageTitle>OpenMU: @Resources.CustomCraftings</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption='@Resources.CustomCraftings' />
+<h1>@Resources.CustomCraftings</h1>
+<p class="text-muted">@Resources.CustomCraftingsDescription</p>
 
 @if (this._loading)
 {
@@ -22,7 +18,7 @@
 }
 else if (this._gameConfiguration is null || this._context is null)
 {
-    <div class="alert alert-danger">@Text("CustomCraftingsLoadFailed")</div>
+    <div class="alert alert-danger">@Resources.CustomCraftingsLoadFailed</div>
 }
 else
 {
@@ -31,21 +27,21 @@ else
             <button type="button" role="tab" id="tab-available-recipes" aria-controls="panel-available-recipes" aria-selected="@(this._activeTab == ActiveTab.AvailableRecipes ? "true" : "false")"
                     class="nav-link @(this._activeTab == ActiveTab.AvailableRecipes ? "active" : null)"
                     @onclick="() => this._activeTab = ActiveTab.AvailableRecipes">
-                @Text("CustomCraftingsAvailableRecipes")
+                @Resources.CustomCraftingsAvailableRecipes
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button type="button" role="tab" id="tab-create-recipe" aria-controls="panel-create-recipe" aria-selected="@(this._activeTab == ActiveTab.CreateRecipe ? "true" : "false")"
                     class="nav-link @(this._activeTab == ActiveTab.CreateRecipe ? "active" : null)"
                     @onclick="() => this._activeTab = ActiveTab.CreateRecipe">
-                @Text("CustomCraftingsCreateRecipeTab")
+                @Resources.CustomCraftingsCreateRecipeTab
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button type="button" role="tab" id="tab-all-recipes" aria-controls="panel-all-recipes" aria-selected="@(this._activeTab == ActiveTab.AllRecipes ? "true" : "false")"
                     class="nav-link @(this._activeTab == ActiveTab.AllRecipes ? "active" : null)"
                     @onclick="() => this._activeTab = ActiveTab.AllRecipes">
-                @Text("CustomCraftingsAllRecipesTab")
+                @Resources.CustomCraftingsAllRecipesTab
             </button>
         </li>
     </ul>
@@ -56,9 +52,9 @@ else
         <div role="tabpanel" id="panel-available-recipes" aria-labelledby="tab-available-recipes">
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label" for="availableRecipesNpc">@Text("CustomCraftingsNpc")</label>
+                    <label class="form-label" for="availableRecipesNpc">@Resources.CustomCraftingsNpc</label>
                     <InputSelect id="availableRecipesNpc" class="form-select" @bind-Value="this._selectedNpcId" @bind-Value:after="this.ResetRecipePageAsync">
-                        <option value="">@Text("CustomCraftingsSelectNpc")</option>
+                        <option value="">@Resources.CustomCraftingsSelectNpc</option>
                         @foreach (var npc in this._npcs)
                         {
                             <option value="@npc.GetId()">@LocalizedName(npc.Designation) (@npc.Number)</option>
@@ -68,21 +64,21 @@ else
             </div>
             @if (this.SelectedNpc is { } selectedNpc)
             {
-                <h2 class="h4">@Text("CustomCraftingsRecipes") — @LocalizedName(selectedNpc.Designation)</h2>
+                <h2 class="h4">@Resources.CustomCraftingsRecipes — @LocalizedName(selectedNpc.Designation)</h2>
                 @if (selectedNpc.ItemCraftings.Count == 0)
                 {
-                    <p class="text-muted">@Text("CustomCraftingsNoRecipes")</p>
+                    <p class="text-muted">@Resources.CustomCraftingsNoRecipes</p>
                 }
                 else
                 {
                     <div class="table-responsive">
                         <QuickGrid Items="@selectedNpc.ItemCraftings.AsQueryable()" Pagination="@this._pagination" Theme="none" Class="table table-striped">
-                            <PropertyColumn Title="@Text("CustomCraftingsNumber")" Property="@(crafting => crafting.Number)" Sortable="true" />
+                            <PropertyColumn Title="@Resources.CustomCraftingsNumber" Property="@(crafting => crafting.Number)" Sortable="true" />
                             <TemplateColumn Title="@Resources.ConfigurationEntryName">@LocalizedName(context.Name)</TemplateColumn>
-                            <TemplateColumn Title="@Text("CustomCraftingsHandler")">@(string.IsNullOrEmpty(context.ItemCraftingHandlerClassName) ? "—" : context.ItemCraftingHandlerClassName)</TemplateColumn>
-                            <TemplateColumn Title="@Text("CustomCraftingsSuccessRate")">@CraftingSuccessRate(context)</TemplateColumn>
-                            <TemplateColumn Title="@Text("CustomCraftingsRequiredItems")">@CraftingRequirements(context)</TemplateColumn>
-                            <TemplateColumn Title="@Text("CustomCraftingsResults")">@CraftingResults(context)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsHandler">@(string.IsNullOrEmpty(context.ItemCraftingHandlerClassName) ? "—" : context.ItemCraftingHandlerClassName)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsSuccessRate">@CraftingSuccessRate(context)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsRequiredItems">@CraftingRequirements(context)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsResults">@CraftingResults(context)</TemplateColumn>
                             <TemplateColumn Title="@Resources.Action">
                                 @if (CanDeleteRecipe(context))
                                 {
@@ -111,13 +107,13 @@ else
             {
                 <div class="table-responsive">
                     <QuickGrid Items="@this.FilteredAllRecipes" Pagination="@this._allRecipesPagination" Theme="none" Class="table table-striped">
-                        <TemplateColumn Title="@Text("CustomCraftingsNpc")">@LocalizedName(context.Npc.Designation) (@context.Npc.Number)</TemplateColumn>
-                        <PropertyColumn Title="@Text("CustomCraftingsNumber")" Property="@(entry => entry.Crafting.Number)" Sortable="true" />
+                        <TemplateColumn Title="@Resources.CustomCraftingsNpc">@LocalizedName(context.Npc.Designation) (@context.Npc.Number)</TemplateColumn>
+                        <PropertyColumn Title="@Resources.CustomCraftingsNumber" Property="@(entry => entry.Crafting.Number)" Sortable="true" />
                         <TemplateColumn Title="@Resources.ConfigurationEntryName">@LocalizedName(context.Crafting.Name)</TemplateColumn>
-                        <TemplateColumn Title="@Text("CustomCraftingsHandler")">@(string.IsNullOrEmpty(context.Crafting.ItemCraftingHandlerClassName) ? "—" : context.Crafting.ItemCraftingHandlerClassName)</TemplateColumn>
-                        <TemplateColumn Title="@Text("CustomCraftingsSuccessRate")">@CraftingSuccessRate(context.Crafting)</TemplateColumn>
-                        <TemplateColumn Title="@Text("CustomCraftingsRequiredItems")">@CraftingRequirements(context.Crafting)</TemplateColumn>
-                        <TemplateColumn Title="@Text("CustomCraftingsResults")">@CraftingResults(context.Crafting)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsHandler">@(string.IsNullOrEmpty(context.Crafting.ItemCraftingHandlerClassName) ? "—" : context.Crafting.ItemCraftingHandlerClassName)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsSuccessRate">@CraftingSuccessRate(context.Crafting)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsRequiredItems">@CraftingRequirements(context.Crafting)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsResults">@CraftingResults(context.Crafting)</TemplateColumn>
                         <TemplateColumn Title="@Resources.Action">
                             @if (CanDeleteRecipe(context.Crafting))
                             {
@@ -134,7 +130,7 @@ else
             }
             else
             {
-                <p class="text-muted">@Text("CustomCraftingsNoRecipesAnywhere")</p>
+                <p class="text-muted">@Resources.CustomCraftingsNoRecipesAnywhere</p>
             }
         </div>
     }
@@ -145,9 +141,9 @@ else
         <DataAnnotationsValidator />
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label" for="craftingNpc">@Text("CustomCraftingsNpc")</label>
+                <label class="form-label" for="craftingNpc">@Resources.CustomCraftingsNpc</label>
                 <InputSelect id="craftingNpc" class="form-select" @bind-Value="this._selectedNpcId" @bind-Value:after="this.ResetRecipePageAsync">
-                    <option value="">@Text("CustomCraftingsSelectNpc")</option>
+                    <option value="">@Resources.CustomCraftingsSelectNpc</option>
                     @foreach (var npc in this._npcs)
                     {
                         <option value="@npc.GetId()">@LocalizedName(npc.Designation) (@npc.Number)</option>
@@ -155,28 +151,28 @@ else
                 </InputSelect>
             </div>
             <div class="col-md-6">
-                <label class="form-label" for="recipeName">@Text("CustomCraftingsName")</label>
+                <label class="form-label" for="recipeName">@Resources.CustomCraftingsName</label>
                 <InputText id="recipeName" class="form-control" @bind-Value="this._form.Name" />
             </div>
             <div class="col-md-3">
-                <label class="form-label" for="successRate">@Text("CustomCraftingsSuccessRate")</label>
+                <label class="form-label" for="successRate">@Resources.CustomCraftingsSuccessRate</label>
                 <InputNumber id="successRate" class="form-control" min="0" max="100" @bind-Value="this._form.SuccessPercent" />
             </div>
             <div class="col-md-3">
-                <label class="form-label" for="maximumSuccessRate">@Text("CustomCraftingsMaximumSuccessRate")</label>
+                <label class="form-label" for="maximumSuccessRate">@Resources.CustomCraftingsMaximumSuccessRate</label>
                 <InputNumber id="maximumSuccessRate" class="form-control" min="0" max="100" @bind-Value="this._form.MaximumSuccessPercent" />
             </div>
             <div class="col-md-3">
-                <label class="form-label" for="zenCost">@Text("CustomCraftingsZenCost")</label>
+                <label class="form-label" for="zenCost">@Resources.CustomCraftingsZenCost</label>
                 <InputNumber id="zenCost" class="form-control" min="0" @bind-Value="this._form.Money" />
             </div>
             <div class="col-md-3">
-                <label class="form-label" for="zenPerPercent">@Text("CustomCraftingsZenPerSuccessPercent")</label>
+                <label class="form-label" for="zenPerPercent">@Resources.CustomCraftingsZenPerSuccessPercent</label>
                 <InputNumber id="zenPerPercent" class="form-control" min="0" @bind-Value="this._form.MoneyPerFinalSuccessPercentage" />
             </div>
         </div>
 
-        <h2 class="h4 mt-4">@Text("CustomCraftingsRequiredItems")</h2>
+        <h2 class="h4 mt-4">@Resources.CustomCraftingsRequiredItems</h2>
         @if (this._form.Requirements.Count > 0)
         {
             <div class="table-responsive mb-3">
@@ -184,11 +180,11 @@ else
                     <thead>
                         <tr>
                             <th scope="col">@Resources.ConfigurationEntryName</th>
-                            <th scope="col">@Text("CustomCraftingsRequiredQuantity")</th>
-                            <th scope="col">@Text("CustomCraftingsLevelRange")</th>
-                            <th scope="col">@Text("CustomCraftingsRequiredOptionsShort")</th>
-                            <th scope="col">@Text("CustomCraftingsOnSuccess")</th>
-                            <th scope="col">@Text("CustomCraftingsOnFailure")</th>
+                            <th scope="col">@Resources.CustomCraftingsRequiredQuantity</th>
+                            <th scope="col">@Resources.CustomCraftingsLevelRange</th>
+                            <th scope="col">@Resources.CustomCraftingsRequiredOptionsShort</th>
+                            <th scope="col">@Resources.CustomCraftingsOnSuccess</th>
+                            <th scope="col">@Resources.CustomCraftingsOnFailure</th>
                             <th scope="col"><span class="visually-hidden">@Resources.Action</span></th>
                         </tr>
                     </thead>
@@ -200,8 +196,8 @@ else
                             <td>@RequiredAmountSummary(requirement)</td>
                             <td>+@(requirement.MinimumLevel)–+@(requirement.MaximumLevel)</td>
                             <td>@RequirementOptions(requirement)</td>
-                            <td>@Text("CustomCraftingsMixResult_" + requirement.SuccessResult)</td>
-                            <td>@Text("CustomCraftingsMixResult_" + requirement.FailResult)</td>
+                            <td>@GetResource("CustomCraftingsMixResult_" + requirement.SuccessResult)</td>
+                            <td>@GetResource("CustomCraftingsMixResult_" + requirement.FailResult)</td>
                             <td><button type="button" class="btn btn-sm btn-outline-danger" title="@Resources.Delete" @onclick="() => this.RemoveRequirement(requirement)">×</button></td>
                         </tr>
                     }
@@ -214,7 +210,7 @@ else
                 <div class="col-md-3">
                     <label class="form-label" for="requiredItem">@Resources.ConfigurationEntryName</label>
                     <InputSelect id="requiredItem" class="form-select form-select-sm" @bind-Value="this._requirementDraft.ItemId">
-                        <option value="">@Text("CustomCraftingsSelectItem")</option>
+                        <option value="">@Resources.CustomCraftingsSelectItem</option>
                         @foreach (var item in this._items)
                         {
                             <option value="@item.GetId()">@ItemCaption(item)</option>
@@ -230,15 +226,15 @@ else
                     <InputNumber id="requiredMaximumAmount" class="form-control form-control-sm" min="1" max="255" @bind-Value="this._requirementDraft.MaximumAmount" />
                 </div>
                 <div class="col-6 col-md-1">
-                    <label class="form-label" for="requiredMinimumLevel">@Text("CustomCraftingsMinimumLevelShort")</label>
+                    <label class="form-label" for="requiredMinimumLevel">@Resources.CustomCraftingsMinimumLevelShort</label>
                     <InputNumber id="requiredMinimumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._requirementDraft.MinimumLevel" />
                 </div>
                 <div class="col-6 col-md-1">
-                    <label class="form-label" for="requiredMaximumLevel">@Text("CustomCraftingsMaximumLevelShort")</label>
+                    <label class="form-label" for="requiredMaximumLevel">@Resources.CustomCraftingsMaximumLevelShort</label>
                     <InputNumber id="requiredMaximumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._requirementDraft.MaximumLevel" />
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label" for="requiredOptions">@Text("CustomCraftingsRequiredOptionsShort")</label>
+                    <label class="form-label" for="requiredOptions">@Resources.CustomCraftingsRequiredOptionsShort</label>
                     <InputSelect id="requiredOptions" class="form-select form-select-sm" size="3" multiple @bind-Value="this._requirementDraft.OptionTypeIds">
                         @foreach (var optionType in this._optionTypes)
                         {
@@ -249,38 +245,38 @@ else
             </div>
             <div class="row g-2 align-items-end mt-1">
                 <div class="col-md-3">
-                    <label class="form-label" for="requiredOnSuccess">@Text("CustomCraftingsOnSuccess")</label>
+                    <label class="form-label" for="requiredOnSuccess">@Resources.CustomCraftingsOnSuccess</label>
                     <InputSelect id="requiredOnSuccess" class="form-select form-select-sm" @bind-Value="this._requirementDraft.SuccessResult">
                         @foreach (var mixResult in Enum.GetValues<MixResult>())
                         {
-                            <option value="@mixResult">@Text("CustomCraftingsMixResult_" + mixResult)</option>
+                            <option value="@mixResult">@GetResource("CustomCraftingsMixResult_" + mixResult)</option>
                         }
                     </InputSelect>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label" for="requiredOnFailure">@Text("CustomCraftingsOnFailure")</label>
+                    <label class="form-label" for="requiredOnFailure">@Resources.CustomCraftingsOnFailure</label>
                     <InputSelect id="requiredOnFailure" class="form-select form-select-sm" @bind-Value="this._requirementDraft.FailResult">
                         @foreach (var mixResult in Enum.GetValues<MixResult>())
                         {
-                            <option value="@mixResult">@Text("CustomCraftingsMixResult_" + mixResult)</option>
+                            <option value="@mixResult">@GetResource("CustomCraftingsMixResult_" + mixResult)</option>
                         }
                     </InputSelect>
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-sm btn-success w-100" @onclick="this.AddRequirement">@Text("CustomCraftingsAddRequiredItem")</button>
+                    <button type="button" class="btn btn-sm btn-success w-100" @onclick="this.AddRequirement">@Resources.CustomCraftingsAddRequiredItem</button>
                 </div>
             </div>
             <div class="form-text mt-2">@RequiredAmountHint</div>
         </div>
 
-        <h2 class="h4 mt-4">@Text("CustomCraftingsResults")</h2>
+        <h2 class="h4 mt-4">@Resources.CustomCraftingsResults</h2>
         <div class="row g-2 mb-3 align-items-end">
             <div class="col-md-4">
-                <label class="form-label" for="resultSelection">@Text("CustomCraftingsResultSelection")</label>
+                <label class="form-label" for="resultSelection">@Resources.CustomCraftingsResultSelection</label>
                 <InputSelect id="resultSelection" class="form-select form-select-sm" @bind-Value="this._form.ResultItemSelection">
                     @foreach (var selection in Enum.GetValues<ResultItemSelection>())
                     {
-                        <option value="@selection">@Text("CustomCraftingsResultSelection_" + selection)</option>
+                        <option value="@selection">@GetResource("CustomCraftingsResultSelection_" + selection)</option>
                     }
                 </InputSelect>
             </div>
@@ -292,8 +288,8 @@ else
                     <thead>
                         <tr>
                             <th scope="col">@Resources.ConfigurationEntryName</th>
-                            <th scope="col">@Text("CustomCraftingsLevelRange")</th>
-                            <th scope="col">@Text("CustomCraftingsResultQuantityOrDurability")</th>
+                            <th scope="col">@Resources.CustomCraftingsLevelRange</th>
+                            <th scope="col">@Resources.CustomCraftingsResultQuantityOrDurability</th>
                             <th scope="col"><span class="visually-hidden">@Resources.Action</span></th>
                         </tr>
                     </thead>
@@ -316,7 +312,7 @@ else
                 <div class="col-md-5">
                     <label class="form-label" for="resultItem">@Resources.ConfigurationEntryName</label>
                     <InputSelect id="resultItem" class="form-select form-select-sm" @bind-Value="this._resultDraft.ItemId" @bind-Value:after="this.OnResultItemChanged">
-                        <option value="">@Text("CustomCraftingsSelectItem")</option>
+                        <option value="">@Resources.CustomCraftingsSelectItem</option>
                         @foreach (var item in this._items)
                         {
                             <option value="@item.GetId()">@ItemCaption(item)</option>
@@ -324,11 +320,11 @@ else
                     </InputSelect>
                 </div>
                 <div class="col-6 col-md-1">
-                    <label class="form-label" for="resultMinimumLevel">@Text("CustomCraftingsMinimumLevelShort")</label>
+                    <label class="form-label" for="resultMinimumLevel">@Resources.CustomCraftingsMinimumLevelShort</label>
                     <InputNumber id="resultMinimumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._resultDraft.MinimumLevel" />
                 </div>
                 <div class="col-6 col-md-1">
-                    <label class="form-label" for="resultMaximumLevel">@Text("CustomCraftingsMaximumLevelShort")</label>
+                    <label class="form-label" for="resultMaximumLevel">@Resources.CustomCraftingsMaximumLevelShort</label>
                     <InputNumber id="resultMaximumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._resultDraft.MaximumLevel" />
                 </div>
                 @if (this.SelectedResultIsStackable || this.SelectedResultHasDurability)
@@ -347,13 +343,13 @@ else
                     </div>
                 }
                 <div class="col-md-2 pt-4">
-                    <button type="button" class="btn btn-sm btn-success w-100" @onclick="this.AddResult">@Text("CustomCraftingsAddResult")</button>
+                    <button type="button" class="btn btn-sm btn-success w-100" @onclick="this.AddResult">@Resources.CustomCraftingsAddResult</button>
                 </div>
             </div>
         </div>
 
         <div class="mt-4">
-            <button type="submit" class="btn btn-primary" disabled="@this._saving">@Text("CustomCraftingsCreate")</button>
+            <button type="submit" class="btn btn-primary" disabled="@this._saving">@Resources.CustomCraftingsCreate</button>
             <button type="button" class="btn btn-secondary ms-2" @onclick="this.DiscardAsync" disabled="@this._saving">@Resources.DiscardChanges</button>
         </div>
     </EditForm>
