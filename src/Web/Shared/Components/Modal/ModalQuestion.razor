@@ -1,0 +1,27 @@
+﻿@using MUnique.OpenMU.Web.Shared.Components.Modal
+@using MUnique.OpenMU.Web.Shared.Properties
+
+<div>
+  <p><span>@Question</span></p>
+</div>
+
+<div class="float-end" role="toolbar" aria-label="@Resources.Toolbar">
+  <div class="btn-group" role="group" aria-label="@Resources.Yes">
+        <button type="button" class="btn btn-primary" @onclick="@(() => this.Modal.CloseAsync(ModalResult.Ok(true)))">@Resources.Yes</button>
+  </div>
+  <div class="btn-group" role="group" aria-label="@Resources.No">
+        <button type="button" class="btn btn-secondary" @onclick="@(() => this.Modal.CloseAsync(ModalResult.Ok(false)))">@Resources.No</button>
+  </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public ModalInstance Modal { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the text.
+    /// </summary>
+    [Parameter]
+    public string Question { get; set; } = string.Empty;
+}

@@ -1,0 +1,74 @@
+﻿// <copyright file="SkillExtensions.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Extensions.ModelBuilder;
+
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+/// <summary>
+/// Extensions for the <see cref="Skill"/>-related <see cref="EntityTypeBuilder"/>.
+/// </summary>
+internal static class SkillExtensions
+{
+    /// <summary>
+    /// Applies the settings for the <see cref="Skill"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<Skill> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="Skill"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<SkillComboDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="SkillEntry"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<SkillEntry> builder)
+    {
+        builder.Ignore(s => s.PowerUps);
+        builder.Ignore(s => s.PowerUpsPvp);
+        builder.Ignore(s => s.PowerUpDuration);
+        builder.Ignore(s => s.PowerUpDurationPvp);
+        builder.Ignore(s => s.PowerUpChance);
+        builder.Ignore(s => s.PowerUpChancePvp);
+        builder.Ignore(s => s.Attributes);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="MasterSkillRoot"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<MasterSkillRoot> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="MasterSkillDefinition"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<MasterSkillDefinition> builder)
+    {
+        builder.HasOne(s => s.RawRoot);
+    }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="MagicEffectDefinition"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<MagicEffectDefinition> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+    }
+}

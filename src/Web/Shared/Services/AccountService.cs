@@ -1,0 +1,202 @@
+// <copyright file="AccountService.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.Shared.Services;
+
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
+using MUnique.OpenMU.Web.Shared.Components;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Toast;
+using MUnique.OpenMU.Web.Shared.Properties;
+
+/// <summary>
+/// Service for <see cref="Account"/>s.
+/// </summary>
+public class AccountService : IDataService<Account>, ISupportDataChangedNotification, IDisposable
+{
+    private readonly AdminOperationExecutor _executor;
+    private readonly IToastService _toastService;
+
+    private readonly IDataSource<Account> _dataSource;
+    private readonly IModalService _modalService;
+    private readonly Debouncer _debouncer = new(300);
+
+    private string _searchFilter = string.Empty;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AccountService"/> class.
+    /// </summary>
+    /// <param name="dataSource">The player context.</param>
+    /// <param name="modalService">The modal service.</param>
+    /// <param name="executor">The shared audit executor.</param>
+    /// <param name="toastService">The error notifier.</param>
+    public AccountService(IDataSource<Account> dataSource, IModalService modalService, AdminOperationExecutor executor, IToastService toastService)
+    {
+        this._dataSource = dataSource;
+        this._executor = executor;
+        this._toastService = toastService;
+        this._modalService = modalService;
+    }
+
+    /// <inheritdoc />
+    public event EventHandler? DataChanged;
+
+    /// <summary>
+    /// Gets or sets the search filter query.
+    /// </summary>
+    public string SearchFilter
+    {
+        get => this._searchFilter;
+        set
+        {
+            var newValue = value ?? string.Empty;
+            if (this._searchFilter != newValue)
+            {
+                this._searchFilter = newValue;
+                if (string.IsNullOrEmpty(newValue))
+                {
+                    this._debouncer.Cancel();
+                    this.DataChanged?.Invoke(this, EventArgs.Empty);
+                }
+                else
+                {
+                    _ = this._debouncer.DebounceAsync(this.RaiseDataChangedAsync);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns a slice of the account list, defined by an offset and a count.
+    /// </summary>
+    /// <param name="offset">The offset.</param>
+    /// <param name="count">The count.</param>
+    /// <returns>A slice of the account list, defined by an offset and a count.</returns>
+    public async Task<List<Account>> GetAsync(int offset, int count)
+    {
+        try
+        {
+            var playerContext = (IPlayerContext)await this._dataSource.GetContextAsync().ConfigureAwait(false);
+            var filter = this.SearchFilter.Trim();
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                return (await playerContext.GetAccountsOrderedByLoginNameAsync(offset, count).ConfigureAwait(false)).ToList();
+            }
+
+            var results = (await playerContext.SearchAccountsAsync(filter, offset, count).ConfigureAwait(false)).ToList();
+            if (results.Count == 0 && offset > 0)
+            {
+                // The filter narrowed the result set down to less entries than the current page offset - show the first page instead.
+                results = (await playerContext.SearchAccountsAsync(filter, 0, count).ConfigureAwait(false)).ToList();
+            }
+
+            return results;
+        }
+        catch
+        {
+            return new List<Account>();
+        }
+    }
+
+    /// <summary>
+    /// Creates a new Account in a modal dialog.
+    /// </summary>
+    public async Task CreateNewInModalDialogAsync()
+    {
+        var accountParameters = new AccountCreationParameters();
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<AccountCreationParameters>.Item), accountParameters);
+        var options = new ModalOptions
+        {
+            DisableBackgroundCancel = true,
+        };
+
+        var modal = this._modalService.Show<ModalCreateNew<AccountCreationParameters>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.CreateType, MUnique.OpenMU.DataModel.ModelResourceProvider.GetTypeCaption<Account>()), parameters, options);
+        var result = await modal.Result.ConfigureAwait(false);
+        if (!result.Cancelled)
+        {
+            try
+            {
+                await this._executor.ExecuteAsync(
+                    AdminRoles.Operator,
+                    "accounts_create",
+                    new { accountParameters.LoginName, accountParameters.EMail, accountParameters.State },
+                    async _ =>
+                    {
+                        if (accountParameters.State is not (AccountState.Normal or AccountState.Banned or AccountState.TemporarilyBanned))
+                        {
+                            await this._executor.RequireAsync(AdminRoles.Administrator, default).ConfigureAwait(false);
+                        }
+
+                        var context = await this._dataSource.GetContextAsync().ConfigureAwait(false);
+                        await context.SaveChangesAsync().ConfigureAwait(false);
+                        var item = context.CreateNew<Account>();
+                        item.LoginName = accountParameters.LoginName;
+                        item.PasswordHash = BCrypt.Net.BCrypt.HashPassword(accountParameters.Password);
+                        item.EMail = accountParameters.EMail;
+                        item.State = accountParameters.State;
+                        item.SecurityCode = accountParameters.SecurityCode;
+                        item.RegistrationDate = DateTime.UtcNow;
+                        await context.SaveChangesAsync().ConfigureAwait(false);
+                        this.DataChanged?.Invoke(this, EventArgs.Empty);
+                        return true;
+                    },
+                    default).ConfigureAwait(false);
+            }
+            catch (AdminOperationException ex)
+            {
+                this._toastService.ShowError(ex.Message);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this._debouncer.Dispose();
+    }
+
+    private Task RaiseDataChangedAsync()
+    {
+        this.DataChanged?.Invoke(this, EventArgs.Empty);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Parameters for the account creation which is used for the user interface.
+    /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
+    private class AccountCreationParameters
+    {
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_LoginName_Name))]
+        [MaxLength(10)]
+        [MinLength(3)]
+        [Required]
+        public string LoginName { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_Password_Name))]
+        [MaxLength(20)]
+        [MinLength(3)]
+        [Required]
+        public string Password { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_SecurityCode_Name))]
+        [MaxLength(10)]
+        [MinLength(3)]
+        [Required]
+        public string SecurityCode { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_EMail_Name))]
+        public string EMail { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.AccountCreationParameters_State_Name))]
+        public AccountState State { get; set; }
+    }
+}

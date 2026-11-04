@@ -1,0 +1,17 @@
+{{- if not .Values.gameServer.appTokenSecret }}
+{{- $name := include "openmu.gameServerAppTokenSecret" . }}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace $name }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+type: Opaque
+data:
+  {{- if and $existing $existing.data (index $existing.data "token") }}
+  token: {{ index $existing.data "token" | quote }}
+  {{- else }}
+  token: {{ randAlphaNum 64 | b64enc | quote }}
+  {{- end }}
+{{- end }}

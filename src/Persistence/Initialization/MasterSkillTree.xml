@@ -1,0 +1,1093 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+  This is the SkillTree Definition File of OpenMU. 
+  The Name-Tag is not really used. Its just there for easier understanding of the File.
+  The IDs are from each Skill of the Skill.txt.
+  ReqID defines the Skill which is needed to be able to add points to this skill. Min Lvl of the needed skill is 10. If more than 1 ReqID is defined only one of this skills need to be lvl10.
+  Default Values:
+    MaxLevel = 20
+  
+  PowerUp Formula Variables:
+  {SkillLevel}
+  
+  PowerUp Restrictions:
+  WeaponType 0~5
+  public enum WeaponType
+    {
+        OneHand,
+        TwoHand,
+        Sword,
+        Mace,
+        Spear,
+        Axe,
+        Bow,
+        CrossBow,
+        Stick,
+        Book,
+        Scepter
+    }
+    
+  PowerUp-Element Structure:
+  <MasterPowerUp>
+    <PowerUpProperty>BaseDmg</PowerUpProperty> - mandatory
+    <AddStrategy>Absolute</AddStrategy> - mandatory
+    <DamageType>Physical</DamageType> - optional, Default = All
+    <Stage>Always</Stage> - optional, Default = Undefined
+    <WeaponType>OneHand</WeaponType> - optional
+    <Value></Value> - optional, Default = 0
+    <Formula></Formula> -optional, but if present it ignores the <Value>-Tag
+  </MasterPowerUp>
+-->
+<SkillTree>
+  <Root class="all">
+    <Name class="Blade Master">Protection</Name>
+    <Name class="High Elf">Blessing</Name>
+    <Name class="Dual Master">Solidity</Name>
+    <Name class="Lord Emperor">Determination</Name>
+    <Name class="Dimension Master">Guardian</Name>
+    <Name class="Grand Master">Peace</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>300</ID>
+      <Name>Durability Str 1</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>305</ID>
+      <Name>Durability Str 2</Name>
+      <ReqID>300</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>312</ID>
+      <Name>Durability Str 3</Name>
+      <ReqID>305</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>301</ID>
+      <Name>Pvp atk rate</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>302</ID>
+      <Name>Max SD Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>303</ID>
+      <Name>Mana Rec Increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>304</ID>
+      <Name>Poison Resistance</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>306</ID>
+      <Name>SD Rec Speed Inc</Name>
+      <ReqID>302</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>307</ID>
+      <Name>Health Rec increase</Name>
+      <ReqID>303</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>308</ID>
+      <Name>Light Resistance</Name>
+      <ReqID>304</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>309</ID>
+      <Name>Defense Increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>310</ID>
+      <Name>AG Rec increase</Name>
+      <ReqID>307</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>311</ID>
+      <Name>Ice Resistance</Name>
+      <ReqID>308</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>313</ID>
+      <Name>DR Inc</Name>
+      <ReqID>309</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Blade Master">
+    <Name>Bravery</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>325</ID>
+      <Name>Atk rate pvm</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>326</ID>
+      <Name>Cyclone Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>327</ID>
+      <Name>Slash Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>328</ID>
+      <Name>Falling Slash Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>329</ID>
+      <Name>Lunge Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>330</ID>
+      <Name>Twisting Slash Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>331</ID>
+      <Name>Rageful Blow Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>332</ID>
+      <Name>Twisting Slash mastery</Name>
+      <ReqID>330</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>333</ID>
+      <Name>Rageful Blow Mastery</Name>
+      <ReqID>331</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>334</ID>
+      <Name>Max Life Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>335</ID>
+      <Name>Weapon Mastery</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>336</ID>
+      <Name>Death Stab Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>337</ID>
+      <Name>Strike of Destruction Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>338</ID>
+      <Name>Max Mana Increase</Name>
+      <ReqID>334</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Blade Master">
+    <Name>Anger</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>347</ID>
+      <Name>Atk Rate PVP</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>348</ID>
+      <Name>Two hand sword str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>349</ID>
+      <Name>One hand sword str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>350</ID>
+      <Name>Mace Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>351</ID>
+      <Name>Spear Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>352</ID>
+      <Name>Two hand sword mastery</Name>
+      <ReqID>348</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>353</ID>
+      <Name>One hand sword mastery</Name>
+      <MaxLevel>10</MaxLevel>
+      <ReqID>349</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>354</ID>
+      <Name>mace mastery</Name>
+      <ReqID>350</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>355</ID>
+      <Name>Spear mastery</Name>
+      <ReqID>351</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>356</ID>
+      <Name>Swell Life Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>357</ID>
+      <Name>Mana Reduction</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>358</ID>
+      <Name>Monster SD Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>359</ID>
+      <Name>Monster HP Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>360</ID>
+      <Name>Swell Life Profiency</Name>
+      <ReqID>356</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>361</ID>
+      <Name>min dmg increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>362</ID>
+      <Name>Monster Mana Recover</Name>
+      <ReqID>359</ReqID>
+    </Skill>
+  </Root>
+  <Root class="High Elf">
+    <Name>Salvation</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>325</ID>
+      <Name>Atk rate pvm</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>413</ID>
+      <Name>Heal Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>414</ID>
+      <Name>Tripe Shot Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>415</ID>
+      <Name>Summon Str 1</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>416</ID>
+      <Name>Penetration Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>417</ID>
+      <Name>Greater Def Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>418</ID>
+      <Name>Triple Shot Mastery</Name>
+      <ReqID>414</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>419</ID>
+      <Name>Summon Str 2</Name>
+      <ReqID>415</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>420</ID>
+      <Name>Attack Increase Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>421</ID>
+      <Name>Weapon Mastery</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>334</ID>
+      <Name>Max Life Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>422</ID>
+      <Name>Attack Increase Mastery</Name>
+      <ReqID>420</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>423</ID>
+      <Name>Defense Increase Mastery</Name>
+      <ReqID>417</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>424</ID>
+      <Name>Ice Arrow Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>338</ID>
+      <Name>Max Mana Increase</Name>
+      <ReqID>334</ReqID>
+    </Skill>
+  </Root>
+  <Root class="High Elf">
+    <Name>Storm</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>347</ID>
+      <Name>atk rate increase pvp</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>435</ID>
+      <Name>Bow Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>436</ID>
+      <Name>Crossbow Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>437</ID>
+      <Name>Shield Clothing Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>438</ID>
+      <Name>Bow Mastery</Name>
+      <ReqID>435</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>439</ID>
+      <Name>Crossbow Mastery</Name>
+      <ReqID>436</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>440</ID>
+      <Name>Shield CLothing Mastery</Name>
+      <ReqID>437</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>357</ID>
+      <Name>Mana Reduction</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>358</ID>
+      <Name>Monster SD Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>359</ID>
+      <Name>Monster HP Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>441</ID>
+      <Name>Infinity Arrow Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>361</ID>
+      <Name>min dmg increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>362</ID>
+      <Name>Monster Mana Recover</Name>
+      <ReqID>359</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Dual Master">
+    <Name>Fighting Spirit</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>325</ID>
+      <Name>Atk rate pvm</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>479</ID>
+      <Name>Cyclone Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>480</ID>
+      <Name>Lightning Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>481</ID>
+      <Name>Twisting Slash Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>482</ID>
+      <Name>Power Slash Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>483</ID>
+      <Name>Flame Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>484</ID>
+      <Name>Cometfall Str</Name>
+      <ReqID>480</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>485</ID>
+      <Name>Weapon Mastery</Name>
+      <ReqID>481</ReqID>
+      <ReqID>482</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>486</ID>
+      <Name>Inferno Str</Name>
+      <ReqID>483</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>487</ID>
+      <Name>Evil Spirit Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>488</ID>
+      <Name>Magic Mastery</Name>
+      <ReqID>487</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>334</ID>
+      <Name>Max Life Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>489</ID>
+      <Name>Ice Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>490</ID>
+      <Name>Fire Slash Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>338</ID>
+      <Name>Max Mana Increase</Name>
+      <ReqID>334</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Dual Master">
+    <Name>Ultimatum</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>347</ID>
+      <Name>Atk Rate PVP</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>348</ID>
+      <Name>Two hand sword str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>349</ID>
+      <Name>One hand sword str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>397</ID>
+      <Name>One hand staff str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>398</ID>
+      <Name>Two hand staff str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>352</ID>
+      <Name>Two hand sword mastery</Name>
+      <ReqID>348</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>353</ID>
+      <Name>One hand sword mastery</Name>
+      <MaxLevel>10</MaxLevel>
+      <ReqID>349</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>400</ID>
+      <Name>One hand staff mastery</Name>
+      <ReqID>397</ReqID>
+      <MaxLevel>10</MaxLevel>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>401</ID>
+      <Name>Two hand staff mastery</Name>
+      <ReqID>398</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>357</ID>
+      <Name>Mana Reduction</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>358</ID>
+      <Name>Monster SD Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>359</ID>
+      <Name>Monster HP Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>405</ID>
+      <Name>Minimum Wiz Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>361</ID>
+      <Name>min dmg increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>362</ID>
+      <Name>Monster Mana Recover</Name>
+      <ReqID>359</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Lord Emperor">
+    <Name>Justice</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>325</ID>
+      <Name>atk rate inc pvm</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>508</ID>
+      <Name>Fire Burst Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>509</ID>
+      <Name>Force Wave Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>510</ID>
+      <Name>Dark Horse Str 1</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>511</ID>
+      <Name>Crit Dmg Str 1</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>512</ID>
+      <Name>Earthquake Str</Name>
+      <ReqID>510</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>513</ID>
+      <Name>Weapon Mastery</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>514</ID>
+      <Name>Fire Burst Mastery</Name>
+      <ReqID>508</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>515</ID>
+      <Name>Crit Dmg Str 2</Name>
+      <ReqID>511</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>516</ID>
+      <Name>Earthquake Mastery</Name>
+      <ReqID>512</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>334</ID>
+      <Name>Max Life Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>517</ID>
+      <Name>Crit Dmg Str 3</Name>
+      <ReqID>515</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>518</ID>
+      <Name>Fire Scream Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>338</ID>
+      <Name>Max Mana Increase</Name>
+      <ReqID>334</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Lord Emperor">
+    <Name>Conquer</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>347</ID>
+      <Name>atk rate inc pvp</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>526</ID>
+      <Name>Dark Spirit Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>527</ID>
+      <Name>Scepter Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>528</ID>
+      <Name>Shield Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>529</ID>
+      <Name>Scepter: Pet Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>530</ID>
+      <Name>Dark Spirit Str 2</Name>
+      <ReqID>526</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>531</ID>
+      <Name>Scepter Mastery</Name>
+      <ReqID>527</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>532</ID>
+      <Name>Shield Mastery</Name>
+      <ReqID>528</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>533</ID>
+      <Name>Command dmg str</Name>
+      <ReqID>529</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>357</ID>
+      <Name>Mana Reduction</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>358</ID>
+      <Name>Monster SD Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>359</ID>
+      <Name>Monster HP Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>534</ID>
+      <Name>Dark Spirit Str 3</Name>
+      <ReqID>530</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>535</ID>
+      <Name>Pet Duration</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>361</ID>
+      <Name>min dmg increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>362</ID>
+      <Name>Monster Mana Recover</Name>
+      <ReqID>359</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Dimension Master">
+    <Name>Chaos</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>325</ID>
+      <Name>atk rate inc pvm</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>448</ID>
+      <Name>Fire Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>449</ID>
+      <Name>Wind Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>450</ID>
+      <Name>Light Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>451</ID>
+      <Name>Fire Mastery</Name>
+      <ReqID>448</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>452</ID>
+      <Name>Wind Mastery</Name>
+      <ReqID>449</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>453</ID>
+      <Name>Light Mastery</Name>
+      <ReqID>450</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>454</ID>
+      <Name>Sleep Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>455</ID>
+      <Name>Chain Light Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>456</ID>
+      <Name>Light Shock Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>334</ID>
+      <Name>Max Life Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>457</ID>
+      <Name>Magic Mastery</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>458</ID>
+      <Name>Drain Life Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>338</ID>
+      <Name>Max Mana Increase</Name>
+      <ReqID>334</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Dimension Master">
+    <Name>Honor</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>347</ID>
+      <Name>atk rate inc pvp</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>465</ID>
+      <Name>Stick Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>466</ID>
+      <Name>Books Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>467</ID>
+      <Name>Stick Mastery</Name>
+      <ReqID>465</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>468</ID>
+      <Name>Book Mastery</Name>
+      <ReqID>466</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>469</ID>
+      <Name>Berserker Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>357</ID>
+      <Name>Mana Reduction</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>358</ID>
+      <Name>Monster SD Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>359</ID>
+      <Name>Monster HP Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>470</ID>
+      <Name>Berserker Str</Name>
+      <ReqID>469</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>471</ID>
+      <Name>Min Wiz/Curse Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>362</ID>
+      <Name>Monster Mana Recover</Name>
+      <ReqID>359</ReqID>
+    </Skill>
+  </Root>
+  <Root class="Grand Master">
+    <Name>Wisdom</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>325</ID>
+      <Name>atk rate inc pvm</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>378</ID>
+      <Name>Flame Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>379</ID>
+      <Name>Light Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>380</ID>
+      <Name>Expansion of wiz str</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>381</ID>
+      <Name>Inferno Str</Name>
+      <ReqID>378</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>382</ID>
+      <Name>Comet Str</Name>
+      <ReqID>379</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>383</ID>
+      <Name>Expansion of wiz mastery</Name>
+      <ReqID>380</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>384</ID>
+      <Name>Poison Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>334</ID>
+      <Name>Max Life Inc</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>385</ID>
+      <Name>Evil Spirits str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>386</ID>
+      <Name>Magic Mastery</Name>
+      <ReqID>385</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>387</ID>
+      <Name>Decay Str</Name>
+      <ReqID>384</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>338</ID>
+      <Name>Max Mana Increase</Name>
+      <ReqID>334</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>388</ID>
+      <Name>Hellfire Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>389</ID>
+      <Name>Ice Str</Name>
+    </Skill>
+  </Root>
+  <Root class="Grand Master">
+    <Name>Overcome</Name>
+    <Skill>
+      <Rank>1</Rank>
+      <ID>347</ID>
+      <Name>atk rate inc pvp</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>397</ID>
+      <Name>one hand staff str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>398</ID>
+      <Name>two hand staff str</Name>
+    </Skill>
+    <Skill>
+      <Rank>2</Rank>
+      <ID>399</ID>
+      <Name>Increment Shield</Name>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>400</ID>
+      <Name>one hand staff mastery</Name>
+      <ReqID>397</ReqID>
+      <MaxLevel>10</MaxLevel>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>401</ID>
+      <Name>two hand staff mastery</Name>
+      <ReqID>398</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>3</Rank>
+      <ID>402</ID>
+      <Name>Increment Shield Mastery</Name>
+      <ReqID>399</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>403</ID>
+      <Name>Soul Barrier Str</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>357</ID>
+      <Name>Mana Reduction</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>358</ID>
+      <Name>Monster SD Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>4</Rank>
+      <ID>359</ID>
+      <Name>Monster HP Recover</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>404</ID>
+      <Name>Soul Barrier Mastery</Name>
+      <ReqID>403</ReqID>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>405</ID>
+      <Name>min wiz dmg increase</Name>
+    </Skill>
+    <Skill>
+      <Rank>5</Rank>
+      <ID>362</ID>
+      <Name>Monster Mana Recover</Name>
+      <ReqID>359</ReqID>
+    </Skill>
+  </Root>
+</SkillTree>

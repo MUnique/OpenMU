@@ -1,0 +1,26 @@
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.dashboard-statistics {
+    grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+}
+
+.dashboard-main {
+    grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr));
+}
+
+.dashboard-details {
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+}
+
+.server-load {
+    height: 0.375rem;
+}

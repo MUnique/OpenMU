@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
+  "settings": {
+    "documentationRules": {
+      "companyName": "MUnique",
+      "copyrightText": "Licensed under the MIT License. See LICENSE file in the project root for full license information.",
+      "xmlHeader": true,
+      "documentExposedElements": true,
+      "documentInterfaces": true
+    }
+  }
+}

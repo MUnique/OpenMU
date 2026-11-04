@@ -1,0 +1,13 @@
+/* The badge is placed inside its input, so the containing element has to be the
+   positioned ancestor it refers to. Without this, the badge escapes to whatever
+   is positioned further up - inside a modal dialog, that's its content element,
+   which puts the badge into the corner of the dialog instead of into the input. */
+.localized-value {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}

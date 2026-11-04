@@ -1,0 +1,56 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@using System.Reflection
+@using MUnique.OpenMU.DataModel
+
+@typeparam TValue
+
+@if (!string.IsNullOrWhiteSpace(this._actualLabel))
+{
+    <label for="@this._fieldIdentifier.FieldName">
+        @this._actualLabel
+        @if (!string.IsNullOrWhiteSpace(this._description))
+        {
+            <details class="info-popup ms-2" @onclick:stopPropagation>
+                <summary></summary>
+                <div class="alert alert-secondary shadow me-3"><span class="oi oi-info" aria-hidden="true"></span> @this._description</div>
+            </details>
+        }
+    </label>
+}
+
+@code {
+    private string _actualLabel = null!;
+    private FieldIdentifier _fieldIdentifier;
+    private string? _description;
+
+    /// <summary>
+    /// Gets or sets the text.
+    /// </summary>
+    [Parameter]
+    public string? Text { get; set; }
+
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    [Parameter]
+    public Expression<Func<TValue>> ValueExpression { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this._fieldIdentifier = FieldIdentifier.Create(this.ValueExpression);
+        var type = this._fieldIdentifier.Model.GetType();
+        var property = type.GetProperty(this._fieldIdentifier.FieldName);
+        var displayAttribute = property?.GetCustomAttribute<DisplayAttribute>(true);
+        if (property is not null)
+        {
+            // Explicit captions take priority over display metadata and model resources.
+            this._actualLabel = string.IsNullOrEmpty(this.Text)
+                ? displayAttribute?.GetName() ?? type.GetPropertyCaption(property.Name)
+                : this.Text;
+            this._description = displayAttribute?.GetDescription() ?? type.GetPropertyDescription(property.Name);
+        }
+    }
+}

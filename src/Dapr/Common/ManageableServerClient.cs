@@ -1,0 +1,142 @@
+﻿// <copyright file="ManageableServerClient.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Dapr.Common;
+
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using global::Dapr.Client;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// A client to control a <seealso cref="IManageableServer"/>.
+/// </summary>
+/// <remarks>
+/// The commands are published to all processes, and only the process which hosts the server executes them.
+/// </remarks>
+/// <seealso cref="MUnique.OpenMU.Interfaces.IManageableServer" />
+public class ManageableServerClient : IManageableServer
+{
+    private ServerState _serverState;
+    private int _currentConnections;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ManageableServerClient"/> class.
+    /// </summary>
+    /// <param name="daprClient">The dapr client.</param>
+    /// <param name="serverData">The server data.</param>
+    public ManageableServerClient(DaprClient daprClient, ServerStateData serverData)
+    {
+        this.DaprClient = daprClient;
+        this.Id = serverData.Id;
+        this.Description = serverData.Description;
+        this.ConfigurationId = serverData.ConfigurationId;
+        this.CurrentConnections = serverData.CurrentConnections;
+        this.MaximumConnections = serverData.MaximumConnections;
+        this.ServerState = serverData.State;
+        this.Type = serverData.Type;
+        this.LastUpdate = DateTime.UtcNow;
+    }
+
+    /// <inheritdoc/>
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    /// <inheritdoc/>
+    public int Id { get; }
+
+    /// <inheritdoc/>
+    public Guid ConfigurationId { get; }
+
+    /// <inheritdoc/>
+    public string Description { get; }
+
+    /// <inheritdoc/>
+    public ServerType Type { get; }
+
+    /// <inheritdoc/>
+    public int MaximumConnections { get; }
+
+    /// <summary>
+    /// Gets the timestamp of the last update.
+    /// </summary>
+    public DateTime LastUpdate { get; private set; }
+
+    /// <inheritdoc/>
+    public ServerState ServerState
+    {
+        get => this._serverState;
+        set
+        {
+            if (this._serverState == value)
+            {
+                return;
+            }
+
+            this._serverState = value;
+            this.RaisePropertyChanged();
+        }
+    }
+
+    /// <inheritdoc/>
+    public int CurrentConnections
+    {
+        get => this._currentConnections;
+        set
+        {
+            if (this._currentConnections == value)
+            {
+                return;
+            }
+
+            this._currentConnections = value;
+            this.RaisePropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets the dapr client.
+    /// </summary>
+    protected DaprClient DaprClient { get; }
+
+    /// <inheritdoc/>
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        return this.DaprClient.PublishCommandAsync(ManageableServerController.CommandTopic, new ManageableServerCommandArguments(this.Id, nameof(IManageableServer.StartAsync)), cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask StartAsync()
+    {
+        await this.StartAsync(default).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return this.DaprClient.PublishCommandAsync(ManageableServerController.CommandTopic, new ManageableServerCommandArguments(this.Id, nameof(IManageableServer.ShutdownAsync)), cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask ShutdownAsync()
+    {
+        await this.StopAsync(default).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Updates the specified server data.
+    /// </summary>
+    /// <param name="serverData">The server data.</param>
+    public void Update(ServerStateData serverData)
+    {
+        this.ServerState = serverData.State;
+        this.CurrentConnections = serverData.CurrentConnections;
+        this.LastUpdate = DateTime.UtcNow;
+    }
+
+    private void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+    {
+        this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}

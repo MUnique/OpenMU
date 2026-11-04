@@ -1,0 +1,40 @@
+﻿// <copyright file="Exile.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization.Version075.Maps;
+
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// The initialization for the Exile map.
+/// </summary>
+internal class Exile : Initialization.BaseMapInitializer
+{
+    /// <summary>
+    /// The default number of the map.
+    /// </summary>
+    internal const byte Number = 5;
+
+    /// <summary>
+    /// The default name of the map.
+    /// </summary>
+    internal const string Name = "Exile";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Exile"/> class.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public Exile(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
+    {
+    }
+
+    /// <inheritdoc/>
+    protected override byte MapNumber => Number;
+
+    /// <inheritdoc/>
+    protected override LocalizedString MapName => LocalizedString.FromResource(() => MapNames.Exile);
+}

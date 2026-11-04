@@ -1,0 +1,53 @@
+@page "/alliance/{GuildId:guid}"
+@using MUnique.OpenMU.Web.Shared.Models;
+@using Resources = MUnique.OpenMU.Web.AdminPanel.Properties.Resources
+
+@if (this._alliance is null && !this._isLoading)
+{
+    <PageTitle>OpenMU: @Resources.Alliance</PageTitle>
+    <Breadcrumb IsFirstFromRoot="false" Caption="@Resources.Alliance" />
+    <div class="alert alert-warning" role="alert">@Resources.GuildNotFound</div>
+    <NavLink href="guilds" class="btn btn-secondary">&lt; @Resources.Back</NavLink>
+}
+else if (this._alliance is { } alliance)
+{
+    <PageTitle>OpenMU: @alliance.Master.Name</PageTitle>
+    <Breadcrumb IsFirstFromRoot="false" Caption="@alliance.Master.Name" />
+    <div class="d-flex flex-row align-items-center gap-3">
+        <NavLink href="guilds" class="btn btn-secondary">&lt; @Resources.Back</NavLink>
+        <GuildLogo Logo="@alliance.Master.Logo" Size="32" class="border rounded-1" />
+        <h1 class="mb-0">@Resources.Alliance: @alliance.Master.Name</h1>
+    </div>
+    <hr />
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>@Resources.Guild</th>
+                    <th>@Resources.Members</th>
+                    <th>@Resources.Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var guild in alliance.Guilds)
+                {
+                    <tr @key="guild.Id">
+                        <td>
+                            <span class="d-inline-flex align-items-center">
+                                <GuildLogo Logo="@guild.Logo" Size="20" class="me-2 border rounded-1" />
+                                <NavLink href="@($"guild/{guild.Id}")">@guild.Name</NavLink>
+                            </span>
+                        </td>
+                        <td>@guild.MemberCount</td>
+                        <td>@guild.Score</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <PageTitle>OpenMU: @Resources.Alliance</PageTitle>
+}

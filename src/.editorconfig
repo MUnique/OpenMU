@@ -1,0 +1,24 @@
+﻿[*.cs]
+
+dotnet_diagnostic.CS1998.severity = suggestion
+
+# SA1309: Field names should not begin with underscore
+dotnet_diagnostic.SA1309.severity = none
+
+# SA1516: Elements should be separated by blank line
+dotnet_diagnostic.SA1516.severity = none
+
+# SA1615: Element return value should be documented
+dotnet_diagnostic.SA1615.severity = suggestion
+
+# VSTHRD103: Call async methods when in an async method
+dotnet_diagnostic.VSTHRD103.severity = error
+
+# VSTHRD111: Use ConfigureAwait(bool)
+dotnet_diagnostic.VSTHRD111.severity = warning
+
+[*.xml]
+
+tab_width = 2
+indent_size = 2
+end_of_line = crlf

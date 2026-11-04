@@ -1,0 +1,5 @@
+.accordion {
+    /* The sessions scroll inside the sidebar, so the page doesn't grow with them. */
+    max-height: 40vh;
+    overflow-y: auto;
+}

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains all packet definitions for packets which are sent from game client to the connect server.</Description>
+  <Structures>
+  </Structures>
+  <Packets>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>03</SubCode>
+      <Name>ConnectionInfoRequest075</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client after the user clicked on an entry of the server list.</SentWhen>
+      <CausedReaction>The server will send a ConnectionInfo back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ServerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>03</SubCode>
+      <Name>ConnectionInfoRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client after the user clicked on an entry of the server list.</SentWhen>
+      <CausedReaction>The server will send a ConnectionInfo back to the client.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ServerId</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>03</SubCode>
+      <Name>ConnectionInfo</Name>
+      <Length>22</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after the client requested the connection information of a server. This happens after the user clicked on a server.</SentWhen>
+      <CausedReaction>The client will try to connect to the server with the specified information.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>IpAddress</Name>
+          <Length>16</Length>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Port</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>06</SubCode>
+      <Name>ServerListRequest</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client after it connected and received the 'Hello' message.</SentWhen>
+      <CausedReaction>The server will send a ServerListResponse back to the client.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>06</SubCode>
+      <Name>ServerListResponse</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after the client requested the current server list.</SentWhen>
+      <CausedReaction>The client shows the available servers with their load information.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ServerCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ServerLoadInfo</TypeName>
+          <Name>Servers</Name>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>ServerLoadInfo</Name>
+          <Description>Contains the id and the load of a server.</Description>
+          <Length>4</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>ServerId</Name>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>Byte</Type>
+              <Name>LoadPercentage</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>02</SubCode>
+      <Name>ServerListRequestOld</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client (below season 1) after it connected and received the 'Hello' message.</SentWhen>
+      <CausedReaction>The server will send a ServerListResponseOld back to the client.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F4</Code>
+      <SubCode>02</SubCode>
+      <Name>ServerListResponseOld</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server (below season 1) after the client requested the current server list.</SentWhen>
+      <CausedReaction>The client shows the available servers with their load information.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ServerCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ServerLoadInfo</TypeName>
+          <Name>Servers</Name>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>ServerLoadInfo</Name>
+          <Description>Contains the id and the load of a server.</Description>
+          <Length>2</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Byte</Type>
+              <Name>ServerId</Name>
+            </Field>
+            <Field>
+              <Index>1</Index>
+              <Type>Byte</Type>
+              <Name>LoadPercentage</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>00</Code>
+      <SubCode>01</SubCode>
+      <Name>Hello</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after the client connected to the server.</SentWhen>
+      <CausedReaction>A game client will request the server list. The launcher would request the patch state.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>02</Code>
+      <Name>PatchCheckRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>This packet is sent by the client (launcher) to check if the patch version is high enough to be able to connect to the server.</SentWhen>
+      <CausedReaction>The connect server will check the version and sends a 'PatchVersionOkay' or a 'ClientNeedsPatch' message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>MajorVersion</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>MinorVersion</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>PatchVersion</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
+      <Code>02</Code>
+      <Name>PatchVersionOkay</Name>
+      <Length>4</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after the client (launcher) requested the to check the patch version and it was high enough.</SentWhen>
+      <CausedReaction>The launcher will activate its start button.</CausedReaction>
+      <Fields>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>05</Code>
+      <SubCode>1</SubCode>
+      <Name>ClientNeedsPatch</Name>
+      <Length>138</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>This packet is sent by the server after the client (launcher) requested to check the patch version and it requires an update.</SentWhen>
+      <CausedReaction>The launcher will download the required patches and then activate the start button.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PatchVersion</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>String</Type>
+          <Name>PatchAddress</Name>
+          <Description>The patch address, usually to a ftp server. The address is usually "encrypted" with the 3-byte XOR key (FC CF AB).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+  </Packets>
+  <Enums>
+  </Enums>
+</PacketDefinitions>

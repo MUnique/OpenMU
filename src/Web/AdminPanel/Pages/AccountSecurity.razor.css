@@ -1,0 +1,4 @@
+.qr-code ::deep svg {
+    width: 12rem;
+    height: 12rem;
+}

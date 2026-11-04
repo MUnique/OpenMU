@@ -1,0 +1,520 @@
+﻿// <copyright file="AttackableNpcBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.NPC;
+
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// An abstract base class for an <see cref="IAttackable"/> <see cref="NonPlayerCharacter"/>.
+/// </summary>
+public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
+{
+    private const byte MaximumDropDistance = 2;
+    private const short IceSkillNumber = 7;
+
+    private readonly IEventStateProvider? _eventStateProvider;
+    private readonly IDropGenerator _dropGenerator;
+    private readonly PlugInManager _plugInManager;
+
+    private int _health;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AttackableNpcBase" /> class.
+    /// </summary>
+    /// <param name="spawnInfo">The spawn information.</param>
+    /// <param name="stats">The stats.</param>
+    /// <param name="map">The map.</param>
+    /// <param name="eventStateProvider">The event state provider.</param>
+    /// <param name="dropGenerator">The drop generator.</param>
+    /// <param name="plugInManager">The plug in manager.</param>
+    protected AttackableNpcBase(MonsterSpawnArea spawnInfo, MonsterDefinition stats, GameMap map, IEventStateProvider? eventStateProvider, IDropGenerator dropGenerator, PlugInManager plugInManager)
+        : base(spawnInfo, stats, map)
+    {
+        this._eventStateProvider = eventStateProvider;
+        this._dropGenerator = dropGenerator;
+        this._plugInManager = plugInManager;
+        this.MagicEffectList = new MagicEffectsList(this);
+        this.Attributes = new MonsterAttributeHolder(this);
+    }
+
+    /// <summary>
+    /// Occurs when this instance died.
+    /// </summary>
+    public event EventHandler<DeathInformation>? Died;
+
+    /// <inheritdoc />
+    public IAttributeSystem Attributes { get; }
+
+    /// <inheritdoc />
+    public MagicEffectsList MagicEffectList { get; }
+
+    /// <inheritdoc />
+    public bool IsAlive { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="IAttackable" /> is currently teleporting and can't be directly targeted.
+    /// It can still receive damage, if the teleport target coordinates are within an target skill area for area attacks.
+    /// </summary>
+    /// <value>
+    ///   <c>true</c> if teleporting; otherwise, <c>false</c>.
+    /// </value>
+    /// <remarks>Teleporting for monsters or npcs is not implemented yet.</remarks>
+    public bool IsTeleporting => false;
+
+    /// <inheritdoc />
+    public DeathInformation? LastDeath { get; protected set; }
+
+    /// <inheritdoc/>
+    public override Point Position
+    {
+        get => base.Position;
+        set
+        {
+            if (base.Position != value)
+            {
+                base.Position = value;
+                this._plugInManager?.GetPlugInPoint<IAttackableMovedPlugIn>()?.AttackableMoved(this);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the current health.
+    /// </summary>
+    public int Health
+    {
+        get => Math.Max(Volatile.Read(ref this._health), 0);
+        set => Interlocked.Exchange(ref this._health, value);
+    }
+
+    private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
+                                  || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringEvent && (this._eventStateProvider?.IsEventRunning ?? false))
+                                  || (this.SpawnArea.SpawnTrigger == SpawnTrigger.AutomaticDuringWave && (this._eventStateProvider?.IsSpawnWaveActive(this.SpawnArea.WaveNumber) ?? false));
+
+    /// <inheritdoc />
+    public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
+    {
+        if (this.Definition.ObjectKind == NpcObjectKind.Guard
+            || this.IsAttackBlockedBySafezone(attacker)
+            || !this.CanBeAttackedBy(attacker))
+        {
+            return null;
+        }
+
+        if (attacker is Player player_
+            && Rand.NextRandomBool(attacker.Attributes[Stats.CrystalSwordIceChance])
+            && player_.GameContext.Configuration.Skills.FirstOrDefault(s => s.Number == IceSkillNumber) is { } ice)
+        {
+            skill = new SkillEntry { Skill = ice };
+        }
+
+        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
+
+        if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
+        {
+            attacker.ApplyAmmunitionConsumption(hitInfo);
+        }
+
+        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
+
+        if (hitInfo.HealthDamage > 0)
+        {
+            if (this.Attributes[Stats.IsAsleep] > 0)
+            {
+                await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+            }
+
+            if (attacker is Player player)
+            {
+                await player.AfterHitTargetAsync(this.Attributes[Stats.DefensePvm], skill?.Skill?.DamageType).ConfigureAwait(false);
+
+                if (this.IsAlive && Rand.NextRandomBool(player.Attributes![Stats.MaceMasteryStunChance]))
+                {
+                    await player.ApplyMaceMasteryStunEffectAsync(this).ConfigureAwait(false);
+                }
+            }
+
+            if (attacker as IPlayerSurrogate is { } playerSurrogate)
+            {
+                await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
+            }
+        }
+
+        return hitInfo;
+    }
+
+    /// <inheritdoc />
+    public abstract ValueTask ReflectDamageAsync(IAttacker reflector, uint damage);
+
+    /// <inheritdoc />
+    public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <inheritdoc />
+    public abstract ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
+
+    /// <inheritdoc/>
+    public ValueTask KillInstantlyAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public override void Initialize()
+    {
+        base.Initialize();
+        this.Health = this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth];
+        this.IsAlive = true;
+    }
+
+    /// <summary>
+    /// Reloads the attributes from the <see cref="NonPlayerCharacter.Definition"/>, so that changes
+    /// to the monster definition take effect on this already spawned instance.
+    /// </summary>
+    public void ReloadAttributes()
+    {
+        (this.Attributes as MonsterAttributeHolder)?.ApplyChanges();
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool managed)
+    {
+        if (managed)
+        {
+            this.Died = null;
+            this.IsAlive = false;
+        }
+
+        base.Dispose(managed);
+    }
+
+    /// <summary>
+    /// Called when the object is removed from the map.
+    /// </summary>
+    protected virtual void OnRemoveFromMap()
+    {
+        // can be overwritten to do additional stuff.
+    }
+
+    /// <summary>
+    /// Hits this instance with the specified hit information.
+    /// </summary>
+    /// <param name="hitInfo">The hit information.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="skill">The skill.</param>
+    /// <param name="isFinalStreakHit">
+    ///     Not <c>null</c> when it's a rage fighter multiple hit skill:
+    ///     <c>true</c>, if it's the final hit;
+    ///     <c>false</c>, for other hits.
+    /// </param>
+    protected async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
+    {
+        if (!this.IsAlive)
+        {
+            return;
+        }
+
+        var killed = this.TryHit(hitInfo.TotalDamage, attacker);
+
+        var player = this.GetHitNotificationTarget(attacker);
+        if (player is not null)
+        {
+            if (isFinalStreakHit.HasValue)
+            {
+                hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+
+                if (isFinalStreakHit.Value || killed)
+                {
+                    hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+                }
+            }
+
+            await player.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
+            player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
+        }
+
+        if (killed)
+        {
+            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
+            await this.OnDeathAsync(attacker).ConfigureAwait(false);
+            this.Died?.Invoke(this, this.LastDeath);
+            if (!this.ShouldRespawn)
+            {
+                await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the target of a hit notification.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns>The target player of a hit notification.</returns>
+    protected virtual Player? GetHitNotificationTarget(IAttacker attacker)
+    {
+        return attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner;
+    }
+
+    /// <summary>
+    /// Determines whether the specified attacker may attack this NPC.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns><see langword="true"/> when the attack is allowed; otherwise, <see langword="false"/>.</returns>
+    protected virtual bool CanBeAttackedBy(IAttacker attacker) => true;
+
+    /// <summary>
+    /// Registers the hit.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    protected virtual void RegisterHit(IAttacker attacker)
+    {
+        // can be overwritten
+    }
+
+    /// <summary>
+    /// Atomically restores health without exceeding the specified maximum.
+    /// </summary>
+    /// <param name="amount">The maximum amount of health to restore.</param>
+    /// <param name="maximumHealth">The maximum health after the restoration.</param>
+    /// <returns>The restored health.</returns>
+    protected int RestoreHealth(int amount, int maximumHealth)
+    {
+        if (amount <= 0 || maximumHealth <= 0)
+        {
+            return 0;
+        }
+
+        while (true)
+        {
+            var currentHealth = Volatile.Read(ref this._health);
+            if (currentHealth <= 0 || currentHealth >= maximumHealth)
+            {
+                return 0;
+            }
+
+            var restoredHealth = Math.Min(amount, maximumHealth - currentHealth);
+            if (Interlocked.CompareExchange(
+                    ref this._health,
+                    currentHealth + restoredHealth,
+                    currentHealth) == currentHealth)
+            {
+                return restoredHealth;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called when this instance died.
+    /// </summary>
+    /// <param name="attacker">The attacker which killed this instance.</param>
+    protected virtual async ValueTask OnDeathAsync(IAttacker attacker)
+    {
+        if (this.ShouldRespawn)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(this.Definition.RespawnDelay).ConfigureAwait(false);
+                    await this.RespawnAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Debug.Fail($"Unexpected error during respawning the attackable npc {this}: {ex}", ex.StackTrace);
+                }
+            });
+        }
+
+        await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, attacker), true).ConfigureAwait(false);
+
+        var player = this.GetHitNotificationTarget(attacker);
+        if (player is { })
+        {
+            var experienceShares = player.Party is { } party
+                ? await party.DistributeExperienceAfterKillAsync(this, player).ConfigureAwait(false)
+                : [new ExperienceShare(player, await player.AddExpAfterKillAsync(this).ConfigureAwait(false))];
+            if (attacker == player)
+            {
+                await player.AfterKilledMonsterAsync().ConfigureAwait(false);
+            }
+
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.AttackableGotKilledAsync(this, attacker).ConfigureAwait(false);
+            }
+
+            if (!this.IsSummonedMonster && player.SelectedCharacter is { } selectedCharacter)
+            {
+                if (selectedCharacter.State > HeroState.Normal)
+                {
+                    // An outlaw can shorten its remaining state time by hunting monsters, on any map:
+                    // the level of the killed monster is subtracted in seconds.
+                    selectedCharacter.StateRemainingSeconds -= (int)this.Attributes[Stats.Level];
+                }
+
+                _ = this.DropItemDelayedAsync(player, experienceShares); // don't wait for completion.
+            }
+        }
+    }
+
+    private async ValueTask RemoveFromMapAndDisposeAsync()
+    {
+        await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
+        this.Dispose();
+        this.OnRemoveFromMap();
+    }
+
+    /// <summary>
+    /// Respawns this instance on the map.
+    /// </summary>
+    private async ValueTask RespawnAsync()
+    {
+        try
+        {
+            if (this.IsDisposed || this.IsDisposing)
+            {
+                // It got disposed while waiting for the respawn, e.g. because its spawn area was removed.
+                return;
+            }
+
+            if (!this.ShouldRespawn)
+            {
+                await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
+                return;
+            }
+
+            this.Initialize();
+            await this.CurrentMap.RespawnAsync(this).ConfigureAwait(false);
+            this.OnSpawn();
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
+        }
+    }
+
+    private bool TryHit(uint damage, IAttacker attacker)
+    {
+        if (damage > 0)
+        {
+            this.RegisterHit(attacker);
+        }
+
+        if (damage >= this.Health)
+        {
+            this.IsAlive = false;
+            this.Health = 0;
+            return true;
+        }
+
+        try
+        {
+            Interlocked.Add(ref this._health, -(int)damage);
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async ValueTask HandleMoneyDropAsync(uint amount, Player killer, IReadOnlyList<ExperienceShare> experienceShares)
+    {
+        // Each player gets the part of the money which matches the experience they gained from the kill,
+        // so that money follows the same distribution as the experience it is derived from.
+        var shares = MoneyDistribution.CreateShares(amount, experienceShares);
+
+        // We don't drop money in Devil Square, etc.
+        var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
+        if (!shouldDropMoney)
+        {
+            if (killer.Party is { } party)
+            {
+                await party.DistributeMoneyAfterKillAsync(this, killer, shares).ConfigureAwait(false);
+            }
+            else
+            {
+                _ = MoneyDistribution.TryPay(killer, amount);
+            }
+
+            return;
+        }
+
+        var droppedMoney = new DroppedMoney(amount, this.Position, this.CurrentMap, shares);
+        await this.CurrentMap.AddAsync(droppedMoney).ConfigureAwait(false);
+        await killer.GameContext.PlugInManager.NotifyPlugInsAsync<IMonsterMoneyDroppedPlugIn>(
+            p => p.MonsterMoneyDroppedAsync(this, killer, droppedMoney),
+            killer.Logger).ConfigureAwait(false);
+    }
+
+    private async ValueTask DropItemAsync(IReadOnlyList<ExperienceShare> experienceShares, Player killer)
+    {
+        var exp = 0;
+        foreach (var share in experienceShares)
+        {
+            exp += share.Experience;
+        }
+
+        var (generatedItems, droppedMoney) = await this._dropGenerator.GenerateItemDropsAsync(this.Definition, exp, killer).ConfigureAwait(false);
+        if (droppedMoney > 0)
+        {
+            await this.HandleMoneyDropAsync(droppedMoney.Value, killer, experienceShares).ConfigureAwait(false);
+        }
+
+        var firstItem = !droppedMoney.HasValue;
+        var plugInPoint = killer.GameContext.PlugInManager.GetPlugInPoint<IMonsterItemDropPlugIn>();
+        foreach (var item in generatedItems)
+        {
+            if (plugInPoint is not null)
+            {
+                var eventArgs = new CancelEventArgs();
+                plugInPoint.ItemDropping(this, killer, item, eventArgs);
+                if (eventArgs.Cancel)
+                {
+                    continue;
+                }
+            }
+
+            Point dropCoordinates;
+            if (firstItem)
+            {
+                dropCoordinates = this.Position;
+                firstItem = false;
+            }
+            else
+            {
+                dropCoordinates = this.CurrentMap.Terrain.GetRandomCoordinate(this.Position, MaximumDropDistance);
+            }
+
+            var owners = killer.Party?.PartyList.AsEnumerable() ?? killer.GetAsEnumerable();
+            var droppedItem = new DroppedItem(item, dropCoordinates, this.CurrentMap, null, owners);
+            await this.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
+            await killer.GameContext.PlugInManager.NotifyPlugInsAsync<IMonsterItemDroppedPlugIn>(
+                p => p.MonsterItemDroppedAsync(this, killer, droppedItem),
+                killer.Logger).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask DropItemDelayedAsync(Player player, IReadOnlyList<ExperienceShare> experienceShares)
+    {
+        try
+        {
+            await Task.Delay(1000).ConfigureAwait(false);
+            await this.DropItemAsync(experienceShares, player).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogDebug(ex, "Dropping an item failed after killing '{this}': {ex}", this, ex);
+        }
+    }
+}

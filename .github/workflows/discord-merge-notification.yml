@@ -1,0 +1,58 @@
+name: Discord merge notification
+
+# pull_request_target is used so that the webhook secret is also available for
+# pull requests from forks. This workflow never checks out or runs PR code.
+on:
+  pull_request_target:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  notify:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_MERGE_WEBHOOK_URL }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_AUTHOR_URL: ${{ github.event.pull_request.user.html_url }}
+          PR_AUTHOR_AVATAR: ${{ github.event.pull_request.user.avatar_url }}
+          MERGED_BY: ${{ github.event.pull_request.merged_by.login }}
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+          MERGED_AT: ${{ github.event.pull_request.merged_at }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+            echo "::warning::Secret DISCORD_MERGE_WEBHOOK_URL is not set, skipping notification."
+            exit 0
+          fi
+
+          payload=$(jq -n \
+            --arg title "#${PR_NUMBER}: ${PR_TITLE}" \
+            --arg url "$PR_URL" \
+            --arg author "$PR_AUTHOR" \
+            --arg authorUrl "$PR_AUTHOR_URL" \
+            --arg avatar "$PR_AUTHOR_AVATAR" \
+            --arg mergedBy "$MERGED_BY" \
+            --arg branch "$BASE_BRANCH" \
+            --arg timestamp "$MERGED_AT" \
+            --arg repo "$REPOSITORY" \
+            '{
+              username: "GitHub",
+              allowed_mentions: { parse: [] },
+              embeds: [{
+                title: ($title | .[0:256]),
+                url: $url,
+                color: 8540383,
+                author: { name: $author, url: $authorUrl, icon_url: $avatar },
+                description: ("Merged into `" + $branch + "` of " + $repo + " by " + $mergedBy),
+                timestamp: $timestamp
+              }]
+            }')
+
+          curl --fail-with-body -sS -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK_URL"

@@ -1,0 +1,33 @@
+﻿// <copyright file="ShowCharacterCreationFailedPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.Character;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IShowCharacterCreationFailedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.ShowCharacterCreationFailedPlugIn_Name), Description = nameof(PlugInResources.ShowCharacterCreationFailedPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("8fe59675-8625-4837-9872-e8d9c73471cd")]
+public class ShowCharacterCreationFailedPlugIn : IShowCharacterCreationFailedPlugIn
+{
+    private readonly RemotePlayer _player;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShowCharacterCreationFailedPlugIn"/> class.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public ShowCharacterCreationFailedPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public async ValueTask ShowCharacterCreationFailedAsync()
+    {
+        await this._player.Connection.SendCharacterCreationFailedAsync().ConfigureAwait(false);
+    }
+}

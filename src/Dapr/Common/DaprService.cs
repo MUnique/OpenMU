@@ -1,0 +1,60 @@
+﻿// <copyright file="DaprService.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Dapr.Common;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+using MUnique.OpenMU.Dapr.Common.HealthChecks;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.EntityFramework;
+using MUnique.OpenMU.Persistence.EntityFramework.Json;
+using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Telemetry;
+
+/// <summary>
+/// Helper class to create an <see cref="WebApplicationBuilder"/> which predefined common
+/// services for all of our service applications.
+/// </summary>
+public static class DaprService
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WebApplicationBuilder" /> class with preconfigured defaults.
+    /// </summary>
+    /// <param name="serviceName">Name of the service, used for the OpenAPI and OpenTelemetry.</param>
+    /// <param name="args">Command line arguments.</param>
+    /// <returns>
+    /// The <see cref="WebApplicationBuilder" />.
+    /// </returns>
+    public static WebApplicationBuilder CreateBuilder(string serviceName, string[] args)
+    {
+        JsonConverterRegistry.RegisterConverter(new LocalizedStringJsonConverter());
+        JsonConverterRegistry.RegisterConverter(new BinaryAsHexJsonConverter());
+
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.WebHost.UseUrls($"http://*:8080");
+
+        var services = builder.Services;
+        services.AddControllers();
+        services.AddDaprClient();
+
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = serviceName, Version = "v1" });
+        });
+
+        services.AddSingleton<IDatabaseConnectionSettingProvider, SecretStoreDatabaseConnectionSettingsProvider>();
+
+        services.AddDaprServiceHealthChecks();
+
+        builder.AddOpenTelemetry(serviceName);
+
+        return builder;
+    }
+}

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StaffRiseEven" xml:space="preserve">
+    <value>Stab-Steigerung (gerade)</value>
+  </data>
+  <data name="StaffRiseOdd" xml:space="preserve">
+    <value>Stab-Steigerung (ungerade)</value>
+  </data>
+  <data name="ScepterRiseEven" xml:space="preserve">
+    <value>Zepter-Steigerung (gerade)</value>
+  </data>
+  <data name="ScepterRiseOdd" xml:space="preserve">
+    <value>Zepter-Steigerung (ungerade)</value>
+  </data>
+  <data name="DamageIncreaseWeapons" xml:space="preserve">
+    <value>Schadenserhöhung (Waffen)</value>
+  </data>
+  <data name="DefenseRateIncreaseShields" xml:space="preserve">
+    <value>Erhöhung der Verteidigungsrate (Schilde)</value>
+  </data>
+  <data name="DefenseIncreaseShields" xml:space="preserve">
+    <value>Verteidigungserhöhung (Schilde)</value>
+  </data>
+  <data name="RunningMovementSpeed" xml:space="preserve">
+    <value>Laufgeschwindigkeit</value>
+  </data>
+  <data name="DefenseIncreaseArmors" xml:space="preserve">
+    <value>Verteidigungserhöhung (Rüstungen)</value>
+  </data>
+  <data name="TransformationRingSkinsTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsSkeletonTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Skelett-Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsPandaTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Panda-Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsSnowmanTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Schneemann-Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsGameMasterTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (GM-Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsChristmasTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Weihnachts-Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsJackOLanternTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Jack-O'Lantern-Verwandlungsring)</value>
+  </data>
+  <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
+    <value>Verwandlungsring-Skins (Elite-Skelett-Verwandlungsring)</value>
+  </data>
+  <data name="ElementalResistancesJewelery" xml:space="preserve">
+    <value>Elementarresistenzen (Schmuck)</value>
+  </data>
+  <data name="DamageIncrease1stAnd3rdWings" xml:space="preserve">
+    <value>Schadenserhöhung (Flügel der 1. und 3. Stufe)</value>
+  </data>
+  <data name="DefenseBonus1stAnd2ndWings" xml:space="preserve">
+    <value>Verteidigungsbonus (Flügel der 1. und 2. Stufe)</value>
+  </data>
+  <data name="WingAbsorb" xml:space="preserve">
+    <value>Flügelabsorption</value>
+  </data>
+  <data name="DamageIncreasePercentBoltsArrows" xml:space="preserve">
+    <value>Schadenserhöhung % (Bolzen/Pfeile)</value>
+  </data>
+  <data name="ManaLossAfterHitBoltsArrows" xml:space="preserve">
+    <value>Manaverlust nach Treffer (Bolzen/Pfeile)</value>
+  </data>
+  <data name="DefenseBonus3rdWings" xml:space="preserve">
+    <value>Verteidigungsbonus (Flügel der 3. Stufe)</value>
+  </data>
+  <data name="DamageIncrease2ndWings" xml:space="preserve">
+    <value>Schadenserhöhung (Flügel der 2. Stufe)</value>
+  </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>Transformationsring-Lebensbonus (Todeskuh)</value>
+  </data>
+</root>

@@ -1,0 +1,198 @@
+import * as THREE from "three";
+import TWEEN from "tween";
+import { WorldObjectPicker } from "./WorldObjectPicker";
+import { World } from "./World";
+import { ObjectData } from "./Types";
+
+/**
+ * Class for a Map application which is shown on the whole browser page.
+ */
+export class MapApp {
+    private stats: Stats;
+    private camera: THREE.Camera;
+    private world: World;
+    private scene: THREE.Scene;
+    private renderer: THREE.Renderer;
+    private container: HTMLElement;
+    private picker: WorldObjectPicker;
+    private lastHighlightedId: number | null = null;
+    private isDisposing: boolean = false;
+    private isDisposed: boolean = false;
+    private animationFrameId: number | null = null;
+    private resizeEventListener: () => void;
+    private readonly onPickObjectHandler: (data: ObjectData) => void;
+
+    constructor(
+        stats: Stats,
+        serverId: number,
+        mapId: string,
+        mapContainer: HTMLElement,
+        onPickObjectHandler: (data: ObjectData) => void) {
+        this.stats = stats;
+        this.container = mapContainer;
+        this.onPickObjectHandler = onPickObjectHandler;
+        this.renderer = new THREE.WebGLRenderer({ antialias: false });
+        this.scene = new THREE.Scene();
+        this.world = new World(serverId, mapId);
+        this.scene.add(this.world);
+        this.camera = this.createCamera();
+
+        this.renderer.setSize(window.innerHeight, window.innerHeight);
+        this.container.appendChild(this.renderer.domElement);
+        this.onWindowResize();
+        this.resizeEventListener = () => this.onWindowResize();
+        window.addEventListener("resize", this.resizeEventListener, false);
+
+        const hideInfo = () => {
+            const info = document.getElementById("selected_info");
+            if (info) {
+                info.style.display = "none";
+            }
+        };
+
+        this.picker = new WorldObjectPicker(
+            this.renderer.domElement,
+            this.world,
+            this.camera,
+            (data) => {
+                this.onObjectPicked(data);
+                if (data !== null) {
+                    onPickObjectHandler(data);
+                } else {
+                    hideInfo();
+                }
+            },
+            (data) => this.onObjectHovered(data));
+
+        this.animate(); //starts the rendering loop
+    }
+
+    public highlightByName(playerName: string): boolean {
+        return this.world.highlightPlayerByName(playerName);
+    }
+
+    /**
+     * Selects the object with the specified id, as if it was clicked on the map.
+     * @param objectId - The id of the object to select.
+     * @returns True if the object was found and selected, false otherwise.
+     */
+    public selectObject(objectId: number): boolean {
+        const data = this.world.getObjectById(objectId)?.data as ObjectData | undefined;
+        if (data === undefined) {
+            // The object isn't in the scene yet. Clear any stale selection so the
+            // previously highlighted object doesn't appear to still be selected.
+            this.onObjectPicked(null);
+            const info = document.getElementById("selected_info");
+            if (info) {
+                info.style.display = "none";
+            }
+
+            return false;
+        }
+
+        this.onObjectPicked(data);
+        this.onPickObjectHandler(data);
+        return true;
+    }
+
+    public dispose(): void {
+        if (this.isDisposing || this.isDisposed) {
+            return;
+        }
+
+        this.isDisposing = true;
+        window.removeEventListener("resize", this.resizeEventListener);
+        if (this.animationFrameId !== null) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+
+        this.picker.dispose();
+
+        this.scene.remove(this.world);
+        this.world.dispose();
+        this.world = null;
+
+        const canvas = this.renderer.domElement;
+        const webGlRenderer = this.renderer as THREE.WebGLRenderer;
+        if (webGlRenderer != null) {
+            webGlRenderer.dispose();
+
+            // Releases the WebGL context. Browsers only allow a limited number of them,
+            // so we don't want to keep it until it's garbage collected.
+            webGlRenderer.forceContextLoss();
+        }
+
+        if (canvas.parentNode !== null) {
+            canvas.parentNode.removeChild(canvas);
+        }
+
+        this.renderer = null;
+        this.isDisposing = false;
+        this.isDisposed = true;
+    }
+
+
+    private animate(time?: number): void {
+        if (this.isDisposing || this.isDisposed) {
+            return;
+        }
+
+        // request the next frame to be rendered, with the timestamp of that frame
+        this.animationFrameId = requestAnimationFrame((frameTime) => this.animate(frameTime));
+        this.stats?.update(); // updates the stats (fps and frametimes)
+        TWEEN.update(time); // updates all existing Tweens
+        this.world.update(); // update world and it's objects
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    /**
+     * Creates an orthographic camera which looks down to the map plane from the center.
+     */
+    private createCamera(): THREE.Camera {
+        const MAP_SIZE = 256;
+        const NEAR = 0.1, FAR = 10000;
+
+        const camera = new THREE.OrthographicCamera(
+            MAP_SIZE / -2,
+            MAP_SIZE / 2,
+            MAP_SIZE / 2,
+            MAP_SIZE / -2,
+            NEAR,
+            FAR);
+        camera.position.z = 1000;
+        return camera;
+    }
+
+    /**
+     * Handles the window resizing by updating the resolution of the renderer.
+     */
+    private onWindowResize(): void {
+        const margin = 50;
+        const preferredWidth = window.innerWidth - this.container.offsetLeft - margin;
+        const preferredHeigth = window.innerHeight - this.container.offsetTop - margin;
+        const newSize = Math.min(preferredWidth, preferredHeigth);
+        this.renderer.setSize(newSize, newSize);
+        this.world.onSizeChanged(newSize);
+    }
+
+    private onObjectPicked(data: ObjectData | null): void {
+        if (this.lastHighlightedId !== null) {
+            this.world.highlightOff(this.lastHighlightedId);
+            this.lastHighlightedId = null;
+        }
+
+        if (data !== null) {
+            this.world.highlightOn(data.id);
+            this.lastHighlightedId = data.id;
+        }
+    }
+
+    private onObjectHovered(data: ObjectData | null): void {
+        if (data !== null) {
+            this.world.showLabel(data.id);
+        } else {
+            this.world.hideLastLabel();
+        }
+    }
+}

@@ -1,0 +1,21 @@
+@using MUnique.OpenMU.DataModel
+
+@typeparam TValue where TValue : struct, Enum
+@inherits NotifyableInputBase<TValue>
+
+<div>
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <Typeahead TItem="TValue" TValue="TValue"
+               SearchMethod="@this.SearchAsync"
+               ValuesExpression="@(() => this.ValueAsSingleFlags)"
+               Values="@this.ValueAsSingleFlags"
+               EnableDropDown="true"
+               ValuesChanged="@this.OnValueChangedAsync"
+               ShowDropDownOnFocus="true"
+               Placeholder="@this.Placeholder"
+               Id="@this.FieldIdentifier.FieldName">
+        <SelectedTemplate Context="item">@item.GetEnumCaption()</SelectedTemplate>
+        <ResultTemplate Context="item">@item.GetEnumCaption()</ResultTemplate>
+    </Typeahead>
+    <ValidationMessage For=@this.ValueExpression />
+</div>

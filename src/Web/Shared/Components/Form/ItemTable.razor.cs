@@ -1,0 +1,217 @@
+﻿// <copyright file="ItemTable.razor.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.Shared.Components.Form;
+
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Linq.Expressions;
+using System.Reflection;
+using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Composition;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
+
+/// <summary>
+/// A component that shows a collection of <typeparamref name="TItem"/> in a table.
+/// </summary>
+/// <typeparam name="TItem">The type of the item.</typeparam>
+public partial class ItemTable<TItem>
+    where TItem : class
+{
+    /// <summary>
+    /// The properties of <typeparamref name="TItem"/> which are shown as additional columns,
+    /// because their <see cref="DisplayAttribute"/> has <see cref="DisplayAttribute.AutoGenerateField"/> set to <c>true</c>.
+    /// </summary>
+    private static readonly PropertyInfo[] AdditionalColumns = typeof(TItem).GetProperties()
+        .Select(p => (Property: p, Display: (DisplayAttribute?)Attribute.GetCustomAttribute(p, typeof(DisplayAttribute), true)))
+        .Where(c => c.Display?.GetAutoGenerateField() == true)
+        .OrderBy(c => c.Display!.GetOrder() ?? 0)
+        .Select(c => c.Property)
+        .ToArray();
+
+    private readonly int _searchThreshold = 10;
+
+    private bool _isEditable;
+
+    private bool _isInlineEditable;
+
+    private bool _isAddingSupported;
+
+    private bool _isCreatingSupported;
+
+    private bool _isStartingCollapsed;
+
+    private bool _isCollapsed;
+
+    private string? _searchTerm;
+
+    private bool _showSearch;
+
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter]
+    public IContext PersistenceContext { get; set; } = null!;
+
+    /// <summary>
+    /// Gets the filtered list of items based on the current search term.
+    /// </summary>
+    private IEnumerable<TItem> FilteredItems
+    {
+        get
+        {
+            var items = this.Value ?? Enumerable.Empty<TItem>();
+            if (string.IsNullOrWhiteSpace(this._searchTerm))
+            {
+                return items;
+            }
+
+            return items.Where(i => (i.GetName()?.Contains(this._searchTerm, StringComparison.OrdinalIgnoreCase) ?? false));
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this._isEditable = typeof(TItem).Namespace
+                              ?.StartsWith(nameof(MUnique), StringComparison.InvariantCulture)
+                          ?? false;
+        var isMemberOfAggregate = this.ValueExpression!.IsAccessToMemberOfAggregate();
+        this._isInlineEditable = this._isEditable && isMemberOfAggregate && this.ValueExpression!.ScaffoldColumn();
+        this._isAddingSupported = !isMemberOfAggregate;
+        this._isCreatingSupported = isMemberOfAggregate;
+        this._isStartingCollapsed = this.Value is not null && this.Value.Count > this._searchThreshold;
+        this._isCollapsed = this._isStartingCollapsed;
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        this._showSearch = this.Value is not null && this.Value.Count > this._searchThreshold;
+    }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out ICollection<TItem> result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static string GetColumnValue(PropertyInfo column, TItem item)
+    {
+        return column.GetValue(item) switch
+        {
+            null => string.Empty,
+            IFormattable formattable => formattable.ToString(null, CultureInfo.CurrentCulture),
+            string text => text,
+            var value => value.GetName(),
+        };
+    }
+
+    private void OnToggleCollapseClick()
+    {
+        this._isCollapsed = !this._isCollapsed;
+    }
+
+    private async Task OnAddClickAsync()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
+
+        var modal = this._modal.Show<ModalObjectMultiSelection<TItem>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.SelectType, typeof(TItem).GetTypeCaption()), parameters);
+        var result = await modal.Result.ConfigureAwait(false);
+        if (result.Cancelled || result.Data is not IList<TItem> items)
+        {
+            return;
+        }
+
+        this.Value ??= new List<TItem>();
+        foreach (var item in items)
+        {
+            this.Value.Add(item);
+        }
+
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+    }
+
+    private async Task OnCreateClickAsync()
+    {
+        TItem? item = null;
+        if (this._isInlineEditable)
+        {
+            item = this.PersistenceContext.IsSupporting(typeof(TItem)) ? this.PersistenceContext.CreateNew<TItem>() : Activator.CreateInstance<TItem>();
+            this.Value ??= new List<TItem>();
+            this.Value.Add(item);
+            return;
+        }
+
+        item ??= this.PersistenceContext.CreateNew<TItem>();
+
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<TItem>.Item), item);
+        parameters.Add(nameof(ModalCreateNew<TItem>.PersistenceContext), this.PersistenceContext);
+        var owner = this.GetOwnerFromValueExpression();
+        if (owner is not null)
+        {
+            parameters.Add(nameof(ModalCreateNew<TItem>.Owner), owner);
+        }
+
+        var options = new ModalOptions
+        {
+            DisableBackgroundCancel = true,
+        };
+
+        var modal = this._modal.Show<ModalCreateNew<TItem>>(string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.CreateType, typeof(TItem).GetTypeCaption()), parameters, options);
+        var result = await modal.Result.ConfigureAwait(false);
+        if (result.Cancelled)
+        {
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+        }
+        else
+        {
+            this.Value ??= new List<TItem>();
+            this.Value.Add(item);
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+    }
+
+    private async Task OnRemoveClickAsync(TItem item)
+    {
+        this.Value?.Remove(item);
+
+        if (this.ValueExpression?.Body is MemberExpression { Member: PropertyInfo propertyInfo }
+            && propertyInfo.GetCustomAttribute<MemberOfAggregateAttribute>() is not null
+            && this.PersistenceContext.IsSupporting(typeof(TItem)))
+        {
+            await this.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+            await this.PersistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+    }
+
+    private object? GetOwnerFromValueExpression()
+    {
+        // This handles the common case where the expression is a simple member access on a captured constant,
+        // e.g. () => character.LearnedSkills, as generated by CreatePropertyExpression.
+        // More complex expression trees (e.g. nested properties) are not supported and will return null.
+        if (this.ValueExpression?.Body is MemberExpression { Expression: ConstantExpression { Value: { } owner } })
+        {
+            return owner;
+        }
+
+        return null;
+    }
+}

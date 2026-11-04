@@ -1,0 +1,1226 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+System.register("Queue", [], function (exports_1, context_1) {
+    "use strict";
+    var INITIAL_HEAD_INDEX, Queue;
+    var __moduleName = context_1 && context_1.id;
+    return {
+        setters: [],
+        execute: function () {
+            INITIAL_HEAD_INDEX = 0;
+            Queue = (function () {
+                function Queue() {
+                    this.storage = [];
+                    this.headIndex = INITIAL_HEAD_INDEX;
+                }
+                Queue.prototype.size = function () {
+                    return this.storage.length - this.headIndex;
+                };
+                Queue.prototype.enqueue = function (data) {
+                    this.storage.push(data);
+                };
+                Queue.prototype.dequeue = function () {
+                    if (this.size() === 0) {
+                        return null;
+                    }
+                    var data = this.storage[this.headIndex];
+                    this.headIndex++;
+                    this.compactIfRequired();
+                    return data;
+                };
+                Queue.prototype.peek = function () {
+                    if (this.size() === 0) {
+                        return null;
+                    }
+                    return this.storage[this.headIndex];
+                };
+                Queue.prototype.compactIfRequired = function () {
+                    var compactionThresholdDivisor = 2;
+                    if (this.headIndex >= this.storage.length / compactionThresholdDivisor) {
+                        this.storage = this.storage.slice(this.headIndex);
+                        this.headIndex = INITIAL_HEAD_INDEX;
+                    }
+                };
+                return Queue;
+            }());
+            exports_1("Queue", Queue);
+        }
+    };
+});
+System.register("Types", [], function (exports_2, context_2) {
+    "use strict";
+    var Direction;
+    var __moduleName = context_2 && context_2.id;
+    return {
+        setters: [],
+        execute: function () {
+            (function (Direction) {
+                Direction[Direction["Undefined"] = 0] = "Undefined";
+                Direction[Direction["West"] = 1] = "West";
+                Direction[Direction["SouthWest"] = 2] = "SouthWest";
+                Direction[Direction["South"] = 3] = "South";
+                Direction[Direction["SouthEast"] = 4] = "SouthEast";
+                Direction[Direction["East"] = 5] = "East";
+                Direction[Direction["NorthEast"] = 6] = "NorthEast";
+                Direction[Direction["North"] = 7] = "North";
+                Direction[Direction["NorthWest"] = 8] = "NorthWest";
+            })(Direction || (exports_2("Direction", Direction = {})));
+        }
+    };
+});
+System.register("GameObject", [], function (exports_3, context_3) {
+    "use strict";
+    var __moduleName = context_3 && context_3.id;
+    return {
+        setters: [],
+        execute: function () {
+        }
+    };
+});
+System.register("Attack", ["three", "tween", "Queue"], function (exports_4, context_4) {
+    "use strict";
+    var THREE, tween_1, Queue_1, Attacks;
+    var __moduleName = context_4 && context_4.id;
+    return {
+        setters: [
+            function (THREE_1) {
+                THREE = THREE_1;
+            },
+            function (tween_1_1) {
+                tween_1 = tween_1_1;
+            },
+            function (Queue_1_1) {
+                Queue_1 = Queue_1_1;
+            }
+        ],
+        execute: function () {
+            Attacks = (function (_super) {
+                __extends(Attacks, _super);
+                function Attacks() {
+                    var _this = this;
+                    var pointsMaterial = new THREE.PointsMaterial({
+                        size: 2,
+                        sizeAttenuation: false,
+                        vertexColors: THREE.VertexColors,
+                    });
+                    pointsMaterial.needsUpdate = true;
+                    var colors = [];
+                    var maximumAnimatedPoints = 10000;
+                    var animatedPointsGeometry = new THREE.Geometry();
+                    var queue = new Queue_1.Queue();
+                    for (var i = 0; i < maximumAnimatedPoints; i++) {
+                        animatedPointsGeometry.vertices.push(new THREE.Vector3(0, 0, -Infinity));
+                        var color = new THREE.Color();
+                        color.setHex(0xEE0000);
+                        colors.push(color);
+                        queue.enqueue(i);
+                    }
+                    animatedPointsGeometry.colors = colors;
+                    animatedPointsGeometry.colorsNeedUpdate = true;
+                    animatedPointsGeometry.elementsNeedUpdate = true;
+                    _this = _super.call(this, animatedPointsGeometry, pointsMaterial) || this;
+                    _this.pointLifetimeInMs = Attacks.defaultPointsLifetimeMs;
+                    _this.freeAttackIndexes = queue;
+                    _this.geometry = animatedPointsGeometry;
+                    return _this;
+                }
+                Attacks.prototype.update = function () {
+                };
+                Attacks.prototype.dispose = function () {
+                    this.geometry.dispose();
+                    this.material.dispose();
+                };
+                Attacks.prototype.addAttack = function (attacker, target) {
+                    var _this = this;
+                    if (this.freeAttackIndexes.peek() === null) {
+                        return;
+                    }
+                    if (target === undefined || target === null
+                        || attacker === undefined || attacker === null) {
+                        return;
+                    }
+                    var newIndex = this.freeAttackIndexes.dequeue();
+                    if (newIndex === null) {
+                        return;
+                    }
+                    this.geometry.colors[newIndex].setHex(0xFF0000 + attacker.data.id);
+                    this.geometry.colorsNeedUpdate = true;
+                    var visibleZ = 0;
+                    var invisibleZ = -Infinity;
+                    var vertice = this.geometry.vertices[newIndex];
+                    vertice.set(attacker.position.x, attacker.position.y, visibleZ);
+                    var state = { x: vertice.x, y: vertice.y };
+                    var tween = new tween_1.default.Tween(state)
+                        .to({ x: target.position.x, y: target.position.y }, this.pointLifetimeInMs)
+                        .onUpdate(function () {
+                        vertice.set(state.x, state.y, visibleZ);
+                        _this.geometry.verticesNeedUpdate = true;
+                    })
+                        .onComplete(function () {
+                        vertice.z = invisibleZ;
+                        _this.geometry.verticesNeedUpdate = true;
+                        _this.freeAttackIndexes.enqueue(newIndex);
+                    })
+                        .start();
+                    this.geometry.verticesNeedUpdate = true;
+                };
+                Attacks.defaultPointsLifetimeMs = 500;
+                return Attacks;
+            }(THREE.Points));
+            exports_4("Attacks", Attacks);
+        }
+    };
+});
+System.register("NameLabel", ["three"], function (exports_5, context_5) {
+    "use strict";
+    var THREE, CANVAS_HEIGHT, LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z, CLEAR_X, CLEAR_Y, SCALE_MULTIPLIER, EMPTY_CANVAS_SIZE, NameLabel;
+    var __moduleName = context_5 && context_5.id;
+    return {
+        setters: [
+            function (THREE_2) {
+                THREE = THREE_2;
+            }
+        ],
+        execute: function () {
+            CANVAS_HEIGHT = 64;
+            LABEL_SCALE_X = 40;
+            LABEL_SCALE_Y = 6;
+            LABEL_SCALE_Z = 1;
+            CLEAR_X = 0;
+            CLEAR_Y = 0;
+            SCALE_MULTIPLIER = 8;
+            EMPTY_CANVAS_SIZE = 0;
+            NameLabel = (function (_super) {
+                __extends(NameLabel, _super);
+                function NameLabel() {
+                    var _this = _super.call(this, NameLabel.hiddenMaterial) || this;
+                    _this.canvas = null;
+                    _this.context = null;
+                    _this.texture = null;
+                    _this.labelMaterial = null;
+                    _this.scale.set(LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z);
+                    _this.visible = false;
+                    return _this;
+                }
+                NameLabel.prototype.raycast = function () {
+                };
+                NameLabel.prototype.show = function (name) {
+                    this.createCanvasIfRequired();
+                    this.renderLabel(name);
+                    this.visible = true;
+                };
+                NameLabel.prototype.hide = function () {
+                    this.visible = false;
+                };
+                NameLabel.prototype.dispose = function () {
+                    this.visible = false;
+                    this.material = NameLabel.hiddenMaterial;
+                    if (this.labelMaterial !== null) {
+                        this.labelMaterial.dispose();
+                        this.labelMaterial = null;
+                    }
+                    if (this.texture !== null) {
+                        this.texture.dispose();
+                        this.texture = null;
+                    }
+                    if (this.canvas !== null) {
+                        this.canvas.width = EMPTY_CANVAS_SIZE;
+                        this.canvas.height = EMPTY_CANVAS_SIZE;
+                        this.canvas = null;
+                    }
+                    this.context = null;
+                };
+                NameLabel.prototype.createCanvasIfRequired = function () {
+                    if (this.canvas !== null) {
+                        return;
+                    }
+                    var canvas = document.createElement("canvas");
+                    canvas.height = CANVAS_HEIGHT;
+                    var context = canvas.getContext("2d");
+                    if (!context) {
+                        throw new Error("Failed to get 2D context");
+                    }
+                    this.canvas = canvas;
+                    this.context = context;
+                    this.texture = new THREE.CanvasTexture(canvas);
+                    this.labelMaterial = new THREE.SpriteMaterial({ map: this.texture, transparent: true });
+                    this.material = this.labelMaterial;
+                };
+                NameLabel.prototype.renderLabel = function (name) {
+                    var ctx = this.context;
+                    var canvas = this.canvas;
+                    var texture = this.texture;
+                    if (ctx === null || canvas === null || texture === null) {
+                        return;
+                    }
+                    ctx.font = "bold 28px Consolas, monospace";
+                    var textWidth = ctx.measureText(name).width;
+                    var padding = 12;
+                    var labelWidth = textWidth + padding * 2;
+                    var labelHeight = 40;
+                    canvas.width = this.nextPowerOfTwo(labelWidth + padding * 2);
+                    canvas.height = labelHeight + padding * 2;
+                    ctx.font = "bold 28px Consolas, monospace";
+                    this.scale.set((canvas.width / canvas.height) * SCALE_MULTIPLIER, SCALE_MULTIPLIER, LABEL_SCALE_Z);
+                    ctx.clearRect(CLEAR_X, CLEAR_Y, canvas.width, canvas.height);
+                    var x = (canvas.width - labelWidth) / 2;
+                    var y = (canvas.height - labelHeight) / 2;
+                    var radius = 8;
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+                    ctx.beginPath();
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + labelWidth - radius, y);
+                    ctx.quadraticCurveTo(x + labelWidth, y, x + labelWidth, y + radius);
+                    ctx.lineTo(x + labelWidth, y + labelHeight - radius);
+                    ctx.quadraticCurveTo(x + labelWidth, y + labelHeight, x + labelWidth - radius, y + labelHeight);
+                    ctx.lineTo(x + radius, y + labelHeight);
+                    ctx.quadraticCurveTo(x, y + labelHeight, x, y + labelHeight - radius);
+                    ctx.lineTo(x, y + radius);
+                    ctx.quadraticCurveTo(x, y, x + radius, y);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = "#ffffff";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(name, canvas.width / 2, canvas.height / 2);
+                    texture.needsUpdate = true;
+                };
+                NameLabel.prototype.nextPowerOfTwo = function (value) {
+                    return Math.pow(2, Math.ceil(Math.log2(value)));
+                };
+                NameLabel.hiddenMaterial = new THREE.SpriteMaterial();
+                return NameLabel;
+            }(THREE.Sprite));
+            exports_5("NameLabel", NameLabel);
+        }
+    };
+});
+System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
+    "use strict";
+    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, Attackable, attackableAlphaMapTexture;
+    var __moduleName = context_6 && context_6.id;
+    return {
+        setters: [
+            function (THREE_3) {
+                THREE = THREE_3;
+            },
+            function (tween_2_1) {
+                tween_2 = tween_2_1;
+            },
+            function (NameLabel_1_1) {
+                NameLabel_1 = NameLabel_1_1;
+            }
+        ],
+        execute: function () {
+            NAME_LABEL_Z_POSITION = 200;
+            NAME_INDEX = 0;
+            Attackable = (function (_super) {
+                __extends(Attackable, _super);
+                function Attackable(data, geometry, material) {
+                    var _this = _super.call(this, geometry, material) || this;
+                    _this.moveTweens = [];
+                    _this.rotateTween = null;
+                    _this.scaleTween = null;
+                    _this.fadeTween = null;
+                    _this.data = data;
+                    _this.nameLabel = new NameLabel_1.NameLabel();
+                    _this.nameLabel.position.z = NAME_LABEL_Z_POSITION;
+                    _this.add(_this.nameLabel);
+                    return _this;
+                }
+                Attackable.prototype.showLabel = function () {
+                    this.nameLabel.show(this.data.name.split(" - Id:")[NAME_INDEX]);
+                };
+                Attackable.prototype.hideLabel = function () {
+                    this.nameLabel.hide();
+                };
+                Attackable.prototype.dispose = function () {
+                    this.stopTweens();
+                    this.remove(this.nameLabel);
+                    this.nameLabel.dispose();
+                    this.material.dispose();
+                };
+                Attackable.prototype.gotKilled = function () {
+                    var _this = this;
+                    var _a;
+                    var fadeOutDurationMs = 1000;
+                    var startingOpacity = 1;
+                    var fadedOutOpacity = 0.1;
+                    (_a = this.fadeTween) === null || _a === void 0 ? void 0 : _a.stop();
+                    var state = { opacity: startingOpacity };
+                    this.fadeTween = new tween_2.default.Tween(state)
+                        .to({ opacity: fadedOutOpacity }, fadeOutDurationMs)
+                        .onUpdate(function () { return _this.material.opacity = state.opacity; })
+                        .easing(tween_2.default.Easing.Circular.Out)
+                        .start();
+                };
+                Attackable.prototype.respawn = function (newData) {
+                    var _this = this;
+                    var _a, _b;
+                    var scaleUpDurationMs = 500;
+                    this.data = newData;
+                    this.material.opacity = 1.0;
+                    (_a = this.fadeTween) === null || _a === void 0 ? void 0 : _a.stop();
+                    this.fadeTween = null;
+                    (_b = this.scaleTween) === null || _b === void 0 ? void 0 : _b.stop();
+                    var state = { scale: 0 };
+                    this.scaleTween = new tween_2.default.Tween(state)
+                        .to({ scale: 1 }, scaleUpDurationMs)
+                        .onUpdate(function () { return _this.scale.setScalar(state.scale); })
+                        .easing(tween_2.default.Easing.Back.Out)
+                        .start();
+                    this.setObjectPositionOnMap(this.data.x, this.data.y);
+                    this.setRotation(this.data.direction);
+                };
+                Attackable.prototype.moveTo = function (newX, newY, moveType, walkDelay, steps) {
+                    var _this = this;
+                    var state = { x: this.data.x, y: this.data.y };
+                    this.data = Object.assign({}, this.data, { x: newX, y: newY });
+                    this.stopMoveTweens();
+                    var isWalking = moveType !== "Instant" && moveType !== 1
+                        && steps !== undefined && steps !== null && steps.length > 0;
+                    if (!isWalking) {
+                        var moveDurationMs = 300;
+                        var moveTween = new tween_2.default.Tween(state)
+                            .to({ x: newX, y: newY }, moveDurationMs)
+                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); })
+                            .easing(tween_2.default.Easing.Elastic.Out);
+                        this.moveTweens.push(moveTween);
+                        moveTween.start();
+                        return;
+                    }
+                    var previousTween = null;
+                    var _loop_1 = function (step) {
+                        var stepTween = new tween_2.default.Tween(state)
+                            .to({ x: step.x, y: step.y }, walkDelay)
+                            .onStart(function () { return _this.rotateTo(step.direction); })
+                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); });
+                        previousTween === null || previousTween === void 0 ? void 0 : previousTween.chain(stepTween);
+                        previousTween = stepTween;
+                        this_1.moveTweens.push(stepTween);
+                    };
+                    var this_1 = this;
+                    for (var _i = 0, steps_1 = steps; _i < steps_1.length; _i++) {
+                        var step = steps_1[_i];
+                        _loop_1(step);
+                    }
+                    this.moveTweens[0].start();
+                };
+                Attackable.prototype.rotateTo = function (rotation) {
+                    var _this = this;
+                    var _a;
+                    if (this.data !== undefined) {
+                        this.data = Object.assign({}, this.data, { direction: rotation });
+                    }
+                    var degreesOfOneTurn = 360;
+                    var numberOfDirectionValues = 8;
+                    var targetAngle = THREE.Math.degToRad((rotation * degreesOfOneTurn) / numberOfDirectionValues);
+                    var rotateDurationMs = 200;
+                    (_a = this.rotateTween) === null || _a === void 0 ? void 0 : _a.stop();
+                    var state = { z: this.rotation.z };
+                    this.rotateTween = new tween_2.default.Tween(state)
+                        .to({ z: targetAngle }, rotateDurationMs)
+                        .onUpdate(function () { return _this.rotation.z = state.z; })
+                        .easing(tween_2.default.Easing.Quadratic.Out)
+                        .start();
+                };
+                Attackable.prototype.stopTweens = function () {
+                    var _a, _b, _c;
+                    this.stopMoveTweens();
+                    (_a = this.rotateTween) === null || _a === void 0 ? void 0 : _a.stop();
+                    this.rotateTween = null;
+                    (_b = this.scaleTween) === null || _b === void 0 ? void 0 : _b.stop();
+                    this.scaleTween = null;
+                    (_c = this.fadeTween) === null || _c === void 0 ? void 0 : _c.stop();
+                    this.fadeTween = null;
+                };
+                Attackable.prototype.stopMoveTweens = function () {
+                    for (var _i = 0, _a = this.moveTweens; _i < _a.length; _i++) {
+                        var moveTween = _a[_i];
+                        moveTween.stop();
+                    }
+                    this.moveTweens = [];
+                };
+                Attackable.prototype.setRotation = function (value) {
+                    var degreesOfOneTurn = 360;
+                    var numberOfDirectionValues = 8;
+                    this.rotation.z = THREE.Math.degToRad((value * degreesOfOneTurn) / numberOfDirectionValues);
+                };
+                Attackable.prototype.setObjectPositionOnMap = function (newX, newY) {
+                    var offset = 128;
+                    this.position.y = offset - newX;
+                    this.position.x = newY - offset;
+                };
+                return Attackable;
+            }(THREE.Mesh));
+            exports_6("Attackable", Attackable);
+            new THREE.TextureLoader().load("_content/MUnique.OpenMU.Web.Map/img/attackable_alphamap.png", function (t) {
+                exports_6("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
+            });
+        }
+    };
+});
+System.register("Debug", [], function (exports_7, context_7) {
+    "use strict";
+    var __moduleName = context_7 && context_7.id;
+    function isDebugLoggingEnabled() {
+        return window.liveMapDebugLogging === true;
+    }
+    exports_7("isDebugLoggingEnabled", isDebugLoggingEnabled);
+    function logDebug(message) {
+        var parameters = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            parameters[_i - 1] = arguments[_i];
+        }
+        if (isDebugLoggingEnabled()) {
+            console.debug.apply(console, __spreadArray([message], parameters, false));
+        }
+    }
+    exports_7("logDebug", logDebug);
+    return {
+        setters: [],
+        execute: function () {
+        }
+    };
+});
+System.register("TerrainShader", ["three"], function (exports_8, context_8) {
+    "use strict";
+    var THREE, fragmentShader, vertexShader;
+    var __moduleName = context_8 && context_8.id;
+    function createTerrainShader() {
+        return {
+            fragmentShader: fragmentShader,
+            side: THREE.DoubleSide,
+            uniforms: {
+                tColor: { type: "t", value: 0 },
+                tPixelSize: { type: "f", value: 0.3 },
+            },
+            vertexShader: vertexShader,
+        };
+    }
+    exports_8("createTerrainShader", createTerrainShader);
+    return {
+        setters: [
+            function (THREE_4) {
+                THREE = THREE_4;
+            }
+        ],
+        execute: function () {
+            fragmentShader = [
+                "uniform sampler2D tColor;",
+                "uniform float tPixelSize;",
+                "varying vec2 vUv;",
+                "void main() {",
+                "vec4 texel = texture2D( tColor, vUv );",
+                "float multi = 0.1;",
+                "for(float x = -1.0; x <= 1.0; x++) {",
+                "for (float y = -1.0; y <= 1.0; y++) {",
+                "if (x == 0.0 && y == 0.0) continue;",
+                "vec4 neighborcolor = texture2D(tColor, vUv + vec2(x/256.0, y/256.0) * tPixelSize);",
+                "if (neighborcolor != texel) { multi = 1.0; }",
+                "}",
+                "}",
+                "gl_FragColor = texel * multi;",
+                "}"
+            ].join("\n");
+            vertexShader = [
+                "varying vec2 vUv;",
+                "void main() {",
+                "vUv = vec2(uv.x, uv.y);",
+                "gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+                "}"
+            ].join("\n");
+        }
+    };
+});
+System.register("Player", ["three", "Attackable"], function (exports_9, context_9) {
+    "use strict";
+    var THREE, Attackable_1, Player;
+    var __moduleName = context_9 && context_9.id;
+    return {
+        setters: [
+            function (THREE_5) {
+                THREE = THREE_5;
+            },
+            function (Attackable_1_1) {
+                Attackable_1 = Attackable_1_1;
+            }
+        ],
+        execute: function () {
+            Player = (function (_super) {
+                __extends(Player, _super);
+                function Player(data) {
+                    var _this = _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({
+                        alphaMap: Attackable_1.attackableAlphaMapTexture,
+                        color: Player.defaultColor,
+                        transparent: true,
+                    })) || this;
+                    _this.renderOrder = 1;
+                    return _this;
+                }
+                Player.prototype.update = function () {
+                    var highlightedScale = 1.5;
+                    var normalScale = 1.0;
+                    if (this.data.isHighlighted) {
+                        this.scale.setScalar(highlightedScale);
+                        this.material.color.setHex(Player.highlightedColor);
+                    }
+                    else {
+                        this.scale.setScalar(normalScale);
+                        this.material.color.setHex(Player.defaultColor);
+                    }
+                };
+                Player.size = 4;
+                Player.defaultColor = 0xBE88E0;
+                Player.highlightedColor = 0xFFFFFF;
+                Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
+                return Player;
+            }(Attackable_1.Attackable));
+            exports_9("Player", Player);
+            ;
+        }
+    };
+});
+System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_10, context_10) {
+    "use strict";
+    var THREE, Attackable_2, NpcObjectKind, NpcColors, NonPlayerCharacter;
+    var __moduleName = context_10 && context_10.id;
+    return {
+        setters: [
+            function (THREE_6) {
+                THREE = THREE_6;
+            },
+            function (Attackable_2_1) {
+                Attackable_2 = Attackable_2_1;
+            }
+        ],
+        execute: function () {
+            (function (NpcObjectKind) {
+                NpcObjectKind[NpcObjectKind["Monster"] = 0] = "Monster";
+                NpcObjectKind[NpcObjectKind["PassiveNpc"] = 1] = "PassiveNpc";
+                NpcObjectKind[NpcObjectKind["Guard"] = 2] = "Guard";
+                NpcObjectKind[NpcObjectKind["Trap"] = 3] = "Trap";
+                NpcObjectKind[NpcObjectKind["Gate"] = 4] = "Gate";
+                NpcObjectKind[NpcObjectKind["Statue"] = 5] = "Statue";
+                NpcObjectKind[NpcObjectKind["SoccerBall"] = 6] = "SoccerBall";
+                NpcObjectKind[NpcObjectKind["Destructible"] = 7] = "Destructible";
+            })(NpcObjectKind || (NpcObjectKind = {}));
+            (function (NpcColors) {
+                NpcColors[NpcColors["Monster"] = 13127760] = "Monster";
+                NpcColors[NpcColors["Passive"] = 5263560] = "Passive";
+                NpcColors[NpcColors["Default"] = 13158480] = "Default";
+            })(NpcColors || (NpcColors = {}));
+            NonPlayerCharacter = (function (_super) {
+                __extends(NonPlayerCharacter, _super);
+                function NonPlayerCharacter(data) {
+                    var color = NonPlayerCharacter.getColorForObjectKind(data.npcObjectKind);
+                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: color, alphaMap: Attackable_2.attackableAlphaMapTexture, transparent: true })) || this;
+                }
+                NonPlayerCharacter.getColorForObjectKind = function (kind) {
+                    switch (kind) {
+                        case NpcObjectKind.Monster:
+                            return 13127760;
+                        case NpcObjectKind.PassiveNpc:
+                        case NpcObjectKind.Guard:
+                            return 5263560;
+                        default:
+                            return 13158480;
+                    }
+                };
+                NonPlayerCharacter.size = 4;
+                NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
+                return NonPlayerCharacter;
+            }(Attackable_2.Attackable));
+            exports_10("NonPlayerCharacter", NonPlayerCharacter);
+            ;
+        }
+    };
+});
+System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter", "Debug"], function (exports_11, context_11) {
+    "use strict";
+    var THREE, Attack_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, Debug_1, World;
+    var __moduleName = context_11 && context_11.id;
+    return {
+        setters: [
+            function (THREE_7) {
+                THREE = THREE_7;
+            },
+            function (Attack_1_1) {
+                Attack_1 = Attack_1_1;
+            },
+            function (TerrainShader_1_1) {
+                TerrainShader_1 = TerrainShader_1_1;
+            },
+            function (Player_1_1) {
+                Player_1 = Player_1_1;
+            },
+            function (Attackable_3_1) {
+                Attackable_3 = Attackable_3_1;
+            },
+            function (NonPlayerCharacter_1_1) {
+                NonPlayerCharacter_1 = NonPlayerCharacter_1_1;
+            },
+            function (Debug_1_1) {
+                Debug_1 = Debug_1_1;
+            }
+        ],
+        execute: function () {
+            World = (function (_super) {
+                __extends(World, _super);
+                function World(serverId, mapId) {
+                    var _this = _super.call(this) || this;
+                    _this.terrainTexture = null;
+                    _this.lastLabelObjectId = null;
+                    _this.isDisposed = false;
+                    _this.objects = {};
+                    var attacksZ = 100;
+                    _this.attacks = new Attack_1.Attacks();
+                    _this.attacks.position.z = attacksZ;
+                    _this.add(_this.attacks);
+                    var segments = 1;
+                    _this.terrainMaterial = new THREE.ShaderMaterial(TerrainShader_1.createTerrainShader());
+                    _this.terrainMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), _this.terrainMaterial);
+                    _this.add(_this.terrainMesh);
+                    var textureLoader = new THREE.TextureLoader();
+                    textureLoader.load("terrain/" + serverId + "/" + mapId, function (texture) {
+                        if (_this.isDisposed) {
+                            texture.dispose();
+                            return;
+                        }
+                        texture.magFilter = THREE.NearestFilter;
+                        _this.terrainTexture = texture;
+                        _this.terrainMaterial.uniforms.tColor.value = texture;
+                    });
+                    return _this;
+                }
+                World.prototype.update = function () {
+                    this.attacks.update();
+                    var objects = this.objects;
+                    for (var o in objects) {
+                        if (objects.hasOwnProperty(o)) {
+                            var object = objects[o];
+                            if (object instanceof Player_1.Player) {
+                                object.update();
+                            }
+                        }
+                    }
+                };
+                World.prototype.addOrUpdateNpc = function (npcData) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var obj, waitTimeMs_1;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    obj = this.getObjectById(npcData.id);
+                                    if (!(obj === undefined || obj === null)) return [3, 4];
+                                    waitTimeMs_1 = 50;
+                                    _a.label = 1;
+                                case 1:
+                                    if (!(Attackable_3.attackableAlphaMapTexture === undefined)) return [3, 3];
+                                    return [4, new Promise(function (resolve) { return setTimeout(resolve, waitTimeMs_1); })];
+                                case 2:
+                                    _a.sent();
+                                    return [3, 1];
+                                case 3:
+                                    Debug_1.logDebug("Adding npc", npcData);
+                                    this.addNpc(npcData);
+                                    return [3, 5];
+                                case 4:
+                                    Debug_1.logDebug("Updating npc", npcData);
+                                    obj.respawn(npcData);
+                                    _a.label = 5;
+                                case 5: return [2];
+                            }
+                        });
+                    });
+                };
+                World.prototype.addOrUpdatePlayer = function (playerData) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var obj, waitTimeMs_2;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    obj = this.getObjectById(playerData.id);
+                                    if (!(obj === undefined || obj === null)) return [3, 4];
+                                    waitTimeMs_2 = 50;
+                                    _a.label = 1;
+                                case 1:
+                                    if (!(Attackable_3.attackableAlphaMapTexture === undefined)) return [3, 3];
+                                    return [4, new Promise(function (resolve) { return setTimeout(resolve, waitTimeMs_2); })];
+                                case 2:
+                                    _a.sent();
+                                    return [3, 1];
+                                case 3:
+                                    Debug_1.logDebug("Adding player", playerData);
+                                    this.addPlayer(playerData);
+                                    return [3, 5];
+                                case 4:
+                                    Debug_1.logDebug("Updating player", playerData, obj.data);
+                                    obj.respawn(playerData);
+                                    _a.label = 5;
+                                case 5: return [2];
+                            }
+                        });
+                    });
+                };
+                World.prototype.killObject = function (killedObjectId, killerObjectId) {
+                    var killedObject = this.getObjectById(killedObjectId);
+                    killedObject === null || killedObject === void 0 ? void 0 : killedObject.gotKilled();
+                };
+                World.prototype.objectMoved = function (id, newX, newY, moveType, walkDelay, steps) {
+                    var obj = this.getObjectById(id);
+                    obj === null || obj === void 0 ? void 0 : obj.moveTo(newX, newY, moveType, walkDelay, steps);
+                };
+                World.prototype.addSkillAnimation = function (playerId, targetId, skill) {
+                    var animating = this.getObjectById(playerId);
+                    var target = this.getObjectById(targetId);
+                    this.attacks.addAttack(animating, target);
+                };
+                World.prototype.addAreaSkillAnimation = function (playerId, skill, x, y, rotation) {
+                    var animating = this.getObjectById(playerId);
+                    if (animating !== undefined && animating !== null) {
+                        var rotationMultiplier = 0x10;
+                        animating.rotateTo(rotation / rotationMultiplier);
+                    }
+                };
+                World.prototype.addAnimation = function (animatingId, animation, targetId, direction) {
+                    var animating = this.getObjectById(animatingId);
+                    if (animating !== undefined && animating !== null) {
+                        if (animation === World.rotationAnimationId) {
+                            animating.rotateTo(direction);
+                        }
+                        else {
+                            var rotationMultiplier = 0x10;
+                            animating.rotateTo(direction / rotationMultiplier);
+                        }
+                    }
+                    if (targetId !== null) {
+                        var target = this.getObjectById(targetId);
+                        this.attacks.addAttack(animating, target);
+                    }
+                };
+                World.prototype.dispose = function () {
+                    var _a;
+                    if (this.isDisposed) {
+                        return;
+                    }
+                    this.isDisposed = true;
+                    this.lastLabelObjectId = null;
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            var object = this.objects[id];
+                            this.remove(object);
+                            object.dispose();
+                        }
+                    }
+                    this.objects = {};
+                    this.remove(this.attacks);
+                    this.attacks.dispose();
+                    this.remove(this.terrainMesh);
+                    this.terrainMesh.geometry.dispose();
+                    this.terrainMaterial.dispose();
+                    (_a = this.terrainTexture) === null || _a === void 0 ? void 0 : _a.dispose();
+                    this.terrainTexture = null;
+                };
+                World.prototype.highlightPlayerByName = function (playerName) {
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            var obj = this.objects[id];
+                            if (obj instanceof Player_1.Player && obj.data.name.includes("Character:[".concat(playerName, "]"))) {
+                                this.highlightOn(obj.data.id);
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+                World.prototype.highlightOn = function (objectId) {
+                    var player = this.getObjectById(objectId);
+                    if (player != null) {
+                        player.data = __assign(__assign({}, player.data), { isHighlighted: true });
+                    }
+                };
+                World.prototype.highlightOff = function (objectId) {
+                    var player = this.getObjectById(objectId);
+                    if (player != null) {
+                        player.data = __assign(__assign({}, player.data), { isHighlighted: false });
+                    }
+                };
+                World.prototype.showLabel = function (objectId) {
+                    this.hideLastLabel();
+                    var obj = this.getObjectById(objectId);
+                    if (obj) {
+                        obj.showLabel();
+                        this.lastLabelObjectId = objectId;
+                    }
+                };
+                World.prototype.hideLastLabel = function () {
+                    if (this.lastLabelObjectId !== null) {
+                        var obj = this.getObjectById(this.lastLabelObjectId);
+                        obj === null || obj === void 0 ? void 0 : obj.hideLabel();
+                        this.lastLabelObjectId = null;
+                    }
+                };
+                World.prototype.onSizeChanged = function (newSize) {
+                    this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / newSize;
+                };
+                World.prototype.addNpc = function (data) {
+                    if (this.isDisposed) {
+                        return;
+                    }
+                    var npc = new NonPlayerCharacter_1.NonPlayerCharacter(data);
+                    this.addObjectMesh(npc);
+                    npc.respawn(data);
+                };
+                World.prototype.addPlayer = function (data) {
+                    if (this.isDisposed) {
+                        return;
+                    }
+                    var player = new Player_1.Player(data);
+                    this.addObjectMesh(player);
+                    player.respawn(data);
+                };
+                World.prototype.removeObject = function (objectId) {
+                    var mesh = this.objects[objectId];
+                    if (mesh === undefined || mesh === null) {
+                        return;
+                    }
+                    Debug_1.logDebug("Removing object", mesh.data);
+                    this.remove(mesh);
+                    delete this.objects[objectId];
+                    if (this.lastLabelObjectId === objectId) {
+                        this.lastLabelObjectId = null;
+                    }
+                    mesh.dispose();
+                };
+                World.prototype.clear = function () {
+                    this.hideLastLabel();
+                    for (var _i = 0, _a = Object.keys(this.objects); _i < _a.length; _i++) {
+                        var objectId = _a[_i];
+                        this.removeObject(Number(objectId));
+                    }
+                };
+                World.prototype.getObjectById = function (objectId) {
+                    return this.objects[objectId];
+                };
+                World.prototype.addObjectMesh = function (mesh) {
+                    this.add(mesh);
+                    this.objects[mesh.data.id] = mesh;
+                };
+                World.sideLength = 256;
+                World.rotationAnimationId = 122;
+                return World;
+            }(THREE.Object3D));
+            exports_11("World", World);
+        }
+    };
+});
+System.register("WorldObjectPicker", ["three"], function (exports_12, context_12) {
+    "use strict";
+    var THREE, isGameObject, WorldObjectPicker;
+    var __moduleName = context_12 && context_12.id;
+    return {
+        setters: [
+            function (THREE_8) {
+                THREE = THREE_8;
+            }
+        ],
+        execute: function () {
+            isGameObject = function (obj) {
+                return obj.data !== undefined;
+            };
+            WorldObjectPicker = (function () {
+                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered) {
+                    this.worldCanvas = worldCanvas;
+                    this.worldMesh = worldMesh;
+                    this.camera = camera;
+                    this.raycaster = new THREE.Raycaster();
+                    this.mouse = new THREE.Vector2();
+                    this.isHoverRaycastPending = false;
+                    this.lastMouseX = 0;
+                    this.lastMouseY = 0;
+                    this.onObjectPicked = onObjectPicked;
+                    this.onObjectHovered = onObjectHovered;
+                    this.handleClick = this.onClick.bind(this);
+                    this.handleMouseMove = this.onMouseMove.bind(this);
+                    worldCanvas.addEventListener("click", this.handleClick, false);
+                    worldCanvas.addEventListener("mousemove", this.handleMouseMove, false);
+                }
+                WorldObjectPicker.prototype.dispose = function () {
+                    this.worldCanvas.removeEventListener("click", this.handleClick);
+                    this.worldCanvas.removeEventListener("mousemove", this.handleMouseMove);
+                };
+                WorldObjectPicker.prototype.onClick = function (e) {
+                    var data = this.pickAt(e.offsetX, e.offsetY);
+                    this.onObjectPicked(data);
+                };
+                WorldObjectPicker.prototype.onMouseMove = function (e) {
+                    var _this = this;
+                    if (!this.onObjectHovered) {
+                        return;
+                    }
+                    var dx = e.offsetX - this.lastMouseX;
+                    var dy = e.offsetY - this.lastMouseY;
+                    if (dx * dx + dy * dy < WorldObjectPicker.hoverThresholdSquared) {
+                        return;
+                    }
+                    if (!this.isHoverRaycastPending) {
+                        this.isHoverRaycastPending = true;
+                        this.lastMouseX = e.offsetX;
+                        this.lastMouseY = e.offsetY;
+                        var offsetX_1 = e.offsetX;
+                        var offsetY_1 = e.offsetY;
+                        var onObjectHovered_1 = this.onObjectHovered;
+                        requestAnimationFrame(function () {
+                            _this.isHoverRaycastPending = false;
+                            onObjectHovered_1(_this.pickAt(offsetX_1, offsetY_1));
+                        });
+                    }
+                };
+                WorldObjectPicker.prototype.pickAt = function (offsetX, offsetY) {
+                    this.mouse.x = (offsetX / this.worldCanvas.clientWidth) * 2 - 1;
+                    this.mouse.y = -(offsetY / this.worldCanvas.clientHeight) * 2 + 1;
+                    this.raycaster.setFromCamera(this.mouse, this.camera);
+                    var intersects = this.raycaster.intersectObjects(this.worldMesh.children, true);
+                    return intersects.length ? this.extractObjectData(intersects[0]) : null;
+                };
+                WorldObjectPicker.prototype.extractObjectData = function (intersection) {
+                    var obj = intersection.object;
+                    while (obj) {
+                        if (isGameObject(obj) && obj.data.id !== undefined) {
+                            return obj.data;
+                        }
+                        obj = obj.parent;
+                    }
+                    return null;
+                };
+                WorldObjectPicker.hoverThresholdSquared = 16;
+                return WorldObjectPicker;
+            }());
+            exports_12("WorldObjectPicker", WorldObjectPicker);
+        }
+    };
+});
+System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_13, context_13) {
+    "use strict";
+    var THREE, tween_3, WorldObjectPicker_1, World_1, MapApp;
+    var __moduleName = context_13 && context_13.id;
+    return {
+        setters: [
+            function (THREE_9) {
+                THREE = THREE_9;
+            },
+            function (tween_3_1) {
+                tween_3 = tween_3_1;
+            },
+            function (WorldObjectPicker_1_1) {
+                WorldObjectPicker_1 = WorldObjectPicker_1_1;
+            },
+            function (World_1_1) {
+                World_1 = World_1_1;
+            }
+        ],
+        execute: function () {
+            MapApp = (function () {
+                function MapApp(stats, serverId, mapId, mapContainer, onPickObjectHandler) {
+                    var _this = this;
+                    this.lastHighlightedId = null;
+                    this.isDisposing = false;
+                    this.isDisposed = false;
+                    this.animationFrameId = null;
+                    this.stats = stats;
+                    this.container = mapContainer;
+                    this.onPickObjectHandler = onPickObjectHandler;
+                    this.renderer = new THREE.WebGLRenderer({ antialias: false });
+                    this.scene = new THREE.Scene();
+                    this.world = new World_1.World(serverId, mapId);
+                    this.scene.add(this.world);
+                    this.camera = this.createCamera();
+                    this.renderer.setSize(window.innerHeight, window.innerHeight);
+                    this.container.appendChild(this.renderer.domElement);
+                    this.onWindowResize();
+                    this.resizeEventListener = function () { return _this.onWindowResize(); };
+                    window.addEventListener("resize", this.resizeEventListener, false);
+                    var hideInfo = function () {
+                        var info = document.getElementById("selected_info");
+                        if (info) {
+                            info.style.display = "none";
+                        }
+                    };
+                    this.picker = new WorldObjectPicker_1.WorldObjectPicker(this.renderer.domElement, this.world, this.camera, function (data) {
+                        _this.onObjectPicked(data);
+                        if (data !== null) {
+                            onPickObjectHandler(data);
+                        }
+                        else {
+                            hideInfo();
+                        }
+                    }, function (data) { return _this.onObjectHovered(data); });
+                    this.animate();
+                }
+                MapApp.prototype.highlightByName = function (playerName) {
+                    return this.world.highlightPlayerByName(playerName);
+                };
+                MapApp.prototype.selectObject = function (objectId) {
+                    var _a;
+                    var data = (_a = this.world.getObjectById(objectId)) === null || _a === void 0 ? void 0 : _a.data;
+                    if (data === undefined) {
+                        this.onObjectPicked(null);
+                        var info = document.getElementById("selected_info");
+                        if (info) {
+                            info.style.display = "none";
+                        }
+                        return false;
+                    }
+                    this.onObjectPicked(data);
+                    this.onPickObjectHandler(data);
+                    return true;
+                };
+                MapApp.prototype.dispose = function () {
+                    if (this.isDisposing || this.isDisposed) {
+                        return;
+                    }
+                    this.isDisposing = true;
+                    window.removeEventListener("resize", this.resizeEventListener);
+                    if (this.animationFrameId !== null) {
+                        cancelAnimationFrame(this.animationFrameId);
+                        this.animationFrameId = null;
+                    }
+                    this.picker.dispose();
+                    this.scene.remove(this.world);
+                    this.world.dispose();
+                    this.world = null;
+                    var canvas = this.renderer.domElement;
+                    var webGlRenderer = this.renderer;
+                    if (webGlRenderer != null) {
+                        webGlRenderer.dispose();
+                        webGlRenderer.forceContextLoss();
+                    }
+                    if (canvas.parentNode !== null) {
+                        canvas.parentNode.removeChild(canvas);
+                    }
+                    this.renderer = null;
+                    this.isDisposing = false;
+                    this.isDisposed = true;
+                };
+                MapApp.prototype.animate = function (time) {
+                    var _this = this;
+                    var _a;
+                    if (this.isDisposing || this.isDisposed) {
+                        return;
+                    }
+                    this.animationFrameId = requestAnimationFrame(function (frameTime) { return _this.animate(frameTime); });
+                    (_a = this.stats) === null || _a === void 0 ? void 0 : _a.update();
+                    tween_3.default.update(time);
+                    this.world.update();
+                    this.renderer.render(this.scene, this.camera);
+                };
+                MapApp.prototype.createCamera = function () {
+                    var MAP_SIZE = 256;
+                    var NEAR = 0.1, FAR = 10000;
+                    var camera = new THREE.OrthographicCamera(MAP_SIZE / -2, MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / -2, NEAR, FAR);
+                    camera.position.z = 1000;
+                    return camera;
+                };
+                MapApp.prototype.onWindowResize = function () {
+                    var margin = 50;
+                    var preferredWidth = window.innerWidth - this.container.offsetLeft - margin;
+                    var preferredHeigth = window.innerHeight - this.container.offsetTop - margin;
+                    var newSize = Math.min(preferredWidth, preferredHeigth);
+                    this.renderer.setSize(newSize, newSize);
+                    this.world.onSizeChanged(newSize);
+                };
+                MapApp.prototype.onObjectPicked = function (data) {
+                    if (this.lastHighlightedId !== null) {
+                        this.world.highlightOff(this.lastHighlightedId);
+                        this.lastHighlightedId = null;
+                    }
+                    if (data !== null) {
+                        this.world.highlightOn(data.id);
+                        this.lastHighlightedId = data.id;
+                    }
+                };
+                MapApp.prototype.onObjectHovered = function (data) {
+                    if (data !== null) {
+                        this.world.showLabel(data.id);
+                    }
+                    else {
+                        this.world.hideLastLabel();
+                    }
+                };
+                return MapApp;
+            }());
+            exports_13("MapApp", MapApp);
+        }
+    };
+});
+//# sourceMappingURL=MUnique.OpenMU.Web.Map.js.map

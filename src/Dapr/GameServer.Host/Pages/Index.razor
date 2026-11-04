@@ -1,0 +1,35 @@
+﻿@page "/"
+
+@using MUnique.OpenMU.Web.Map
+@using MUnique.OpenMU.Web.Map.Components
+@using MUnique.OpenMU.GameLogic
+
+@inject IObservableGameServer _gameServer;
+@inject IGameServerContext _gameServerContext;
+
+<p>
+    <h3>
+        <span class="badge badge-secondary">
+            GameServer Id: <span class="badge badge-light">@this._gameServer.Id</span>
+        </span>
+        <span class="badge badge-primary">
+            Players: <span class="badge badge-light">@_gameServerContext.PlayerCount / @_gameServerContext.ServerConfiguration.MaximumPlayers</span>
+        </span>
+        <span class="badge badge-primary">
+            Hosted Maps: <span class="badge badge-light">@_gameServer.Maps.Count</span>
+        </span>
+        <span class="badge badge-primary">
+            Experience Rate: <span class="badge badge-light">@_gameServerContext.ExperienceRate</span>
+        </span>
+        <span class="badge badge-primary">
+            PVP Enabled: <span class="badge badge-light">@_gameServerContext.PvpEnabled</span>
+        </span>
+    </h3>
+</p>
+
+<p>
+    <h2>Hosted Maps</h2>
+    <CascadingValue Name="@nameof(MapCard.LiveMapRoute)" TValue="string" Value="MapPage.LiveMapRoute">
+        <MapCards GameServer="@_gameServer" />
+    </CascadingValue>
+</p>

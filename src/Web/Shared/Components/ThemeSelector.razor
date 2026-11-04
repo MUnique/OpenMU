@@ -1,0 +1,20 @@
+@*
+    A simple toggle that switches the UI between the "light" and "dark" themes.
+    Persists the selection by calling the ThemeController (cookie-based, same pattern as CultureSelector).
+*@
+@using MUnique.OpenMU.Web.Shared.Properties
+
+<button type="button"
+        class="theme-selector btn btn-link p-0"
+        title="@(this.EffectiveIsDark ? Resources.SwitchToLightMode : Resources.SwitchToDarkMode)"
+        aria-label="@Resources.ToggleTheme"
+        @onclick="this.Toggle">
+    @if (this.EffectiveIsDark)
+    {
+        <span class="oi oi-sun theme-selector__icon" aria-hidden="true"></span>
+    }
+    else
+    {
+        <span class="oi oi-moon theme-selector__icon" aria-hidden="true"></span>
+    }
+</button>

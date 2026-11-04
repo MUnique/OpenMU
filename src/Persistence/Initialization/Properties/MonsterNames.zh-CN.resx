@@ -1,0 +1,851 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="BullFighter" xml:space="preserve"><value>牛怪</value></data>
+  <data name="Hound" xml:space="preserve"><value>猎犬怪</value></data>
+  <data name="BudgeDragon" xml:space="preserve"><value>幼龙</value></data>
+  <data name="Spider" xml:space="preserve"><value>蜘蛛</value></data>
+  <data name="EliteBullFighter" xml:space="preserve"><value>蛮牛怪</value></data>
+  <data name="HellHound" xml:space="preserve"><value>地狱猎犬怪</value></data>
+  <data name="Lich" xml:space="preserve"><value>黑巫师</value></data>
+  <data name="Giant" xml:space="preserve"><value>巨人</value></data>
+  <data name="PoisonBull" xml:space="preserve"><value>毒牛怪</value></data>
+  <data name="ThunderLich" xml:space="preserve"><value>死灵巫师</value></data>
+  <data name="DarkKnight" xml:space="preserve"><value>暗黑骑士</value></data>
+  <data name="Ghost" xml:space="preserve"><value>幽灵</value></data>
+  <data name="Larva" xml:space="preserve"><value>毒虫</value></data>
+  <data name="HellSpider" xml:space="preserve"><value>地狱蜘蛛</value></data>
+  <data name="SkeletonWarrior" xml:space="preserve"><value>骷髅兵</value></data>
+  <data name="SkeletonArcher" xml:space="preserve"><value>骷髅弓箭手</value></data>
+  <data name="EliteSkeleton" xml:space="preserve"><value>骷髅战士</value></data>
+  <data name="Cyclops" xml:space="preserve"><value>独眼巨人</value></data>
+  <data name="Gorgon" xml:space="preserve"><value>魔鬼戈登</value></data>
+  <data name="Yeti" xml:space="preserve"><value>雪人</value></data>
+  <data name="EliteYeti" xml:space="preserve"><value>雪人王</value></data>
+  <data name="Assassin" xml:space="preserve"><value>暗杀者</value></data>
+  <data name="IceMonster" xml:space="preserve"><value>寒冰魔</value></data>
+  <data name="Hommerd" xml:space="preserve"><value>蓝魔怪</value></data>
+  <data name="Worm" xml:space="preserve"><value>雪虫</value></data>
+  <data name="IceQueen" xml:space="preserve"><value>冰后</value></data>
+  <data name="Goblin" xml:space="preserve"><value>小哥布林</value></data>
+  <data name="ChainScorpion" xml:space="preserve"><value>勾尾蝎</value></data>
+  <data name="BeetleMonster" xml:space="preserve"><value>瓢虫怪</value></data>
+  <data name="Hunter" xml:space="preserve"><value>偷猎者</value></data>
+  <data name="ForestMonster" xml:space="preserve"><value>树妖</value></data>
+  <data name="Agon" xml:space="preserve"><value>亚昆</value></data>
+  <data name="StoneGolem" xml:space="preserve"><value>石巨人</value></data>
+  <data name="EliteGoblin" xml:space="preserve"><value>大哥布林</value></data>
+  <data name="CursedWizard" xml:space="preserve"><value>诅咒巫师</value></data>
+  <data name="DeathGorgon" xml:space="preserve"><value>死神戈登</value></data>
+  <data name="Shadow" xml:space="preserve"><value>鬼魅</value></data>
+  <data name="Devil" xml:space="preserve"><value>恶魔</value></data>
+  <data name="Balrog" xml:space="preserve"><value>魔王巴洛克</value></data>
+  <data name="PoisonShadow" xml:space="preserve"><value>剧毒鬼魅</value></data>
+  <data name="DeathKnight" xml:space="preserve"><value>死神骑士</value></data>
+  <data name="DeathCow" xml:space="preserve"><value>牛魔王</value></data>
+  <data name="Bahamut" xml:space="preserve"><value>小巴哈姆特</value></data>
+  <data name="Vepar" xml:space="preserve"><value>死亡美人鱼</value></data>
+  <data name="Valkyrie" xml:space="preserve"><value>蓝翼海怪</value></data>
+  <data name="LizardKing" xml:space="preserve"><value>巫师王</value></data>
+  <data name="Hydra" xml:space="preserve"><value>海魔希特拉</value></data>
+  <data name="GreatBahamut" xml:space="preserve"><value>大巴哈姆特</value></data>
+  <data name="SilverValkyrie" xml:space="preserve"><value>银弓海怪</value></data>
+  <data name="IronWheel" xml:space="preserve"><value>铁轮战士</value></data>
+  <data name="Tantallos" xml:space="preserve"><value>破坏骑士</value></data>
+  <data name="Zaikan" xml:space="preserve"><value>魔王扎坎</value></data>
+  <data name="BloodyWolf" xml:space="preserve"><value>铁脊怪</value></data>
+  <data name="BeamKnight" xml:space="preserve"><value>黑炎魔</value></data>
+  <data name="Mutant" xml:space="preserve"><value>巨齿兽</value></data>
+  <data name="DeathBeamKnight" xml:space="preserve"><value>炽炎魔</value></data>
+  <data name="Alquamos" xml:space="preserve"><value>阿卡摩斯</value></data>
+  <data name="QueenRainer" xml:space="preserve"><value>风后</value></data>
+  <data name="MegaCrust" xml:space="preserve"><value>恶灵</value></data>
+  <data name="PhantomKnight" xml:space="preserve"><value>幻影骑士</value></data>
+  <data name="Drakan" xml:space="preserve"><value>蓝魔龙</value></data>
+  <data name="AlphaCrust" xml:space="preserve"><value>恶灵王</value></data>
+  <data name="GreatDrakan" xml:space="preserve"><value>红魔龙</value></data>
+  <data name="DarkPhoenixShield" xml:space="preserve"><value>天魔菲尼斯（护盾阶段）</value></data>
+  <data name="DarkPhoenix" xml:space="preserve"><value>天魔菲尼斯</value></data>
+  <data name="DeathAngel1" xml:space="preserve"><value>死亡天使 1</value></data>
+  <data name="DeathCenturion1" xml:space="preserve"><value>狂武士 1</value></data>
+  <data name="BloodSoldier1" xml:space="preserve"><value>龙虾守卫 1</value></data>
+  <data name="Aegis1" xml:space="preserve"><value>阿卡斯 1</value></data>
+  <data name="RogueCenturion1" xml:space="preserve"><value>武士 1</value></data>
+  <data name="Necron1" xml:space="preserve"><value>暗黑巫师 1</value></data>
+  <data name="GateToKalima1OfPlayer" xml:space="preserve"><value>{0}的卡利玛1入口</value></data>
+  <data name="GateToKalima2OfPlayer" xml:space="preserve"><value>{0}的卡利玛2入口</value></data>
+  <data name="GateToKalima3OfPlayer" xml:space="preserve"><value>{0}的卡利玛3入口</value></data>
+  <data name="GateToKalima4OfPlayer" xml:space="preserve"><value>{0}的卡利玛4入口</value></data>
+  <data name="GateToKalima5OfPlayer" xml:space="preserve"><value>{0}的卡利玛5入口</value></data>
+  <data name="GateToKalima6OfPlayer" xml:space="preserve"><value>{0}的卡利玛6入口</value></data>
+  <data name="GateToKalima7OfPlayer" xml:space="preserve"><value>{0}的卡利玛7入口</value></data>
+  <data name="Schriker1" xml:space="preserve"><value>暗黑傀儡 1</value></data>
+  <data name="IllusionOfKundun1" xml:space="preserve"><value>昆顿幻影 1</value></data>
+  <data name="DeathAngel2" xml:space="preserve"><value>死亡天使 2</value></data>
+  <data name="DeathCenturion2" xml:space="preserve"><value>狂武士 2</value></data>
+  <data name="BloodSoldier2" xml:space="preserve"><value>龙虾守卫 2</value></data>
+  <data name="Aegis2" xml:space="preserve"><value>阿卡斯 2</value></data>
+  <data name="RogueCenturion2" xml:space="preserve"><value>武士 2</value></data>
+  <data name="Necron2" xml:space="preserve"><value>暗黑巫师 2</value></data>
+  <data name="Schriker2" xml:space="preserve"><value>暗黑傀儡 2</value></data>
+  <data name="IllusionOfKundun2" xml:space="preserve"><value>昆顿幻影 2</value></data>
+  <data name="DeathAngel3" xml:space="preserve"><value>死亡天使 3</value></data>
+  <data name="DeathCenturion3" xml:space="preserve"><value>狂武士 3</value></data>
+  <data name="BloodSoldier3" xml:space="preserve"><value>龙虾守卫 3</value></data>
+  <data name="Aegis3" xml:space="preserve"><value>阿卡斯 3</value></data>
+  <data name="RogueCenturion3" xml:space="preserve"><value>武士 3</value></data>
+  <data name="Necron3" xml:space="preserve"><value>暗黑巫师 3</value></data>
+  <data name="Schriker3" xml:space="preserve"><value>暗黑傀儡 3</value></data>
+  <data name="IllusionOfKundun3" xml:space="preserve"><value>昆顿幻影 3</value></data>
+  <data name="DeathAngel4" xml:space="preserve"><value>死亡天使 4</value></data>
+  <data name="DeathCenturion4" xml:space="preserve"><value>狂武士 4</value></data>
+  <data name="BloodSoldier4" xml:space="preserve"><value>龙虾守卫 4</value></data>
+  <data name="Aegis4" xml:space="preserve"><value>阿卡斯 4</value></data>
+  <data name="RogueCenturion4" xml:space="preserve"><value>武士 4</value></data>
+  <data name="Necron4" xml:space="preserve"><value>暗黑巫师 4</value></data>
+  <data name="Schriker4" xml:space="preserve"><value>暗黑傀儡 4</value></data>
+  <data name="IllusionOfKundun4" xml:space="preserve"><value>昆顿幻影 4</value></data>
+  <data name="WolfStatus" xml:space="preserve"><value>神狼雕像</value></data>
+  <data name="WolfAltar1" xml:space="preserve"><value>神狼护台1</value></data>
+  <data name="WolfAltar2" xml:space="preserve"><value>神狼护台2</value></data>
+  <data name="WolfAltar3" xml:space="preserve"><value>神狼护台3</value></data>
+  <data name="WolfAltar4" xml:space="preserve"><value>神狼护台4</value></data>
+  <data name="WolfAltar5" xml:space="preserve"><value>神狼护台5</value></data>
+  <data name="Senior" xml:space="preserve"><value>长老</value></data>
+  <data name="Guardsman" xml:space="preserve"><value>攻城卫兵</value></data>
+  <data name="PetTrainer" xml:space="preserve"><value>驯兽师</value></data>
+  <data name="Marlon" xml:space="preserve"><value>警卫队长摩伦</value></data>
+  <data name="MessengerOfArch" xml:space="preserve"><value>大天使的使者</value></data>
+  <data name="SevinaThePriestess" xml:space="preserve"><value>圣导士塞维娜</value></data>
+  <data name="Charon" xml:space="preserve"><value>卡隆</value></data>
+  <data name="ChaosGoblin" xml:space="preserve"><value>玛雅哥布林</value></data>
+  <data name="BazTheVaultKeeper" xml:space="preserve"><value>仓库使者赛佛特</value></data>
+  <data name="GuildMaster" xml:space="preserve"><value>战盟使者罗兰斯</value></data>
+  <data name="Lahap" xml:space="preserve"><value>赛尔维斯</value></data>
+  <data name="ElfSoldier" xml:space="preserve"><value>幻影导师</value></data>
+  <data name="DeathAngel5" xml:space="preserve"><value>死亡天使 5</value></data>
+  <data name="DeathCenturion5" xml:space="preserve"><value>狂武士 5</value></data>
+  <data name="BloodSoldier5" xml:space="preserve"><value>龙虾守卫 5</value></data>
+  <data name="Aegis5" xml:space="preserve"><value>阿卡斯 5</value></data>
+  <data name="RogueCenturion5" xml:space="preserve"><value>武士 5</value></data>
+  <data name="Necron5" xml:space="preserve"><value>暗黑巫师 5</value></data>
+  <data name="Schriker5" xml:space="preserve"><value>暗黑傀儡 5</value></data>
+  <data name="IllusionOfKundun5" xml:space="preserve"><value>昆顿幻影 5</value></data>
+  <data name="DeathAngel6" xml:space="preserve"><value>死亡天使 6</value></data>
+  <data name="DeathCenturion6" xml:space="preserve"><value>狂武士 6</value></data>
+  <data name="BloodSoldier6" xml:space="preserve"><value>龙虾守卫 6</value></data>
+  <data name="Aegis6" xml:space="preserve"><value>阿卡斯 6</value></data>
+  <data name="RogueCenturion6" xml:space="preserve"><value>武士 6</value></data>
+  <data name="Necron6" xml:space="preserve"><value>暗黑巫师 6</value></data>
+  <data name="Schriker6" xml:space="preserve"><value>暗黑傀儡 6</value></data>
+  <data name="IllusionOfKundun7" xml:space="preserve"><value>昆顿幻影 7</value></data>
+  <data name="CastleGate1" xml:space="preserve"><value>城门1</value></data>
+  <data name="LifeStone" xml:space="preserve"><value>生命之石</value></data>
+  <data name="GuardianStatue" xml:space="preserve"><value>守护石像</value></data>
+  <data name="CanonTower" xml:space="preserve"><value>巨弩发射器</value></data>
+  <data name="LizardWarrior" xml:space="preserve"><value>冷血变异者</value></data>
+  <data name="FireGolem" xml:space="preserve"><value>熔岩巨魔</value></data>
+  <data name="QueenBee" xml:space="preserve"><value>嗜血蜂后</value></data>
+  <data name="PoisonGolem" xml:space="preserve"><value>毒巨魔</value></data>
+  <data name="AxeWarrior" xml:space="preserve"><value>巨斧战士</value></data>
+  <data name="Erohim" xml:space="preserve"><value>炼狱魔王</value></data>
+  <data name="WitchQueen" xml:space="preserve"><value>丛林女巫师</value></data>
+  <data name="BlueGolem" xml:space="preserve"><value>丛林残暴者</value></data>
+  <data name="DeathRider" xml:space="preserve"><value>丛林暗杀者</value></data>
+  <data name="ForestOrc" xml:space="preserve"><value>丛林生命体</value></data>
+  <data name="DeathTree" xml:space="preserve"><value>丛林树精灵</value></data>
+  <data name="HellMaine" xml:space="preserve"><value>丛林召唤者</value></data>
+  <data name="HammerScout" xml:space="preserve"><value>刺锤侦察兵</value></data>
+  <data name="LanceScout" xml:space="preserve"><value>长矛侦察兵</value></data>
+  <data name="BowScout" xml:space="preserve"><value>魔弓侦察兵</value></data>
+  <data name="Werewolf" xml:space="preserve"><value>暗黑血狼人</value></data>
+  <data name="ScoutHero" xml:space="preserve"><value>英雄侦察兵</value></data>
+  <data name="WerewolfHero" xml:space="preserve"><value>英雄血狼人</value></data>
+  <data name="Balram" xml:space="preserve"><value>暗黑防御者</value></data>
+  <data name="Soram" xml:space="preserve"><value>暗黑扫荡者</value></data>
+  <data name="Aegis7" xml:space="preserve"><value>阿卡斯 7</value></data>
+  <data name="RogueCenturion7" xml:space="preserve"><value>武士 7</value></data>
+  <data name="BloodSoldier7" xml:space="preserve"><value>龙虾守卫 7</value></data>
+  <data name="DeathAngel7" xml:space="preserve"><value>死亡天使 7</value></data>
+  <data name="Necron7" xml:space="preserve"><value>暗黑巫师 7</value></data>
+  <data name="DeathCenturion7" xml:space="preserve"><value>狂武士 7</value></data>
+  <data name="Schriker7" xml:space="preserve"><value>暗黑傀儡 7</value></data>
+  <data name="IllusionOfKundun6" xml:space="preserve"><value>昆顿幻影 6</value></data>
+  <data name="Berserker" xml:space="preserve"><value>疯魔</value></data>
+  <data name="SplinterWolf" xml:space="preserve"><value>裂角狼</value></data>
+  <data name="IronRider" xml:space="preserve"><value>金甲兽</value></data>
+  <data name="Satyros" xml:space="preserve"><value>半兽人</value></data>
+  <data name="BladeHunter" xml:space="preserve"><value>刀刃猎手</value></data>
+  <data name="Kentauros" xml:space="preserve"><value>寒冰刺客</value></data>
+  <data name="Gigantis" xml:space="preserve"><value>狂巨人</value></data>
+  <data name="Genocider" xml:space="preserve"><value>屠杀者</value></data>
+  <data name="Persona" xml:space="preserve"><value>假面巫</value></data>
+  <data name="TwinTale" xml:space="preserve"><value>毒步妖</value></data>
+  <data name="Dreadfear" xml:space="preserve"><value>恐惧天使</value></data>
+  <data name="Nightmare" xml:space="preserve"><value>咒怨魔王</value></data>
+  <data name="MayaHandLeft" xml:space="preserve"><value>玛雅左手</value></data>
+  <data name="MayaHandRight" xml:space="preserve"><value>玛雅右手</value></data>
+  <data name="Maya" xml:space="preserve"><value>玛雅</value></data>
+  <data name="GatewayMachine" xml:space="preserve"><value>传送台</value></data>
+  <data name="Elphis" xml:space="preserve"><value>艾尔菲丝</value></data>
+  <data name="Osbourne" xml:space="preserve"><value>奥斯本</value></data>
+  <data name="Jerridon" xml:space="preserve"><value>杰瑞敦</value></data>
+  <data name="ChaosCardMaster" xml:space="preserve"><value>玛雅使者</value></data>
+  <data name="Mirage" xml:space="preserve"><value>弥拉邱</value></data>
+  <data name="PriestDevin" xml:space="preserve"><value>弟子黛彬</value></data>
+  <data name="WerewolfQuarrel" xml:space="preserve"><value>暗黑血狼人扩雷</value></data>
+  <data name="BalramTraineeSoldier" xml:space="preserve"><value>暗黑防御者（训练兵）</value></data>
+  <data name="DeathSpiritTraineeSoldier" xml:space="preserve"><value>暗黑咒术师（训练兵）</value></data>
+  <data name="SoramTraineeSoldier" xml:space="preserve"><value>暗黑扫荡者（训练兵）</value></data>
+  <data name="DarkElfTraineeSoldier" xml:space="preserve"><value>暗黑指挥官（训练兵）</value></data>
+  <data name="StrangeRabbit" xml:space="preserve"><value>怪异的兔子</value></data>
+  <data name="PollutedButterfly" xml:space="preserve"><value>污染之蝶</value></data>
+  <data name="HideousRabbit" xml:space="preserve"><value>疯狂的兔子</value></data>
+  <data name="Werewolf421" xml:space="preserve"><value>狼人</value></data>
+  <data name="CursedLich" xml:space="preserve"><value>诅咒巫师</value></data>
+  <data name="TotemGolem" xml:space="preserve"><value>图腾树人</value></data>
+  <data name="Grizzly" xml:space="preserve"><value>灰熊</value></data>
+  <data name="CaptainGrizzly" xml:space="preserve"><value>残暴的灰熊</value></data>
+  <data name="Gigantis434" xml:space="preserve"><value>狂巨人</value></data>
+  <data name="Berserk" xml:space="preserve"><value>疯魔</value></data>
+  <data name="BalramTrainee" xml:space="preserve"><value>暗黑防御者（训练兵）</value></data>
+  <data name="SoramTrainee" xml:space="preserve"><value>暗黑扫荡者（训练兵）</value></data>
+  <data name="Persona438" xml:space="preserve"><value>假面巫</value></data>
+  <data name="Dreadfear439" xml:space="preserve"><value>恐惧天使</value></data>
+  <data name="DarkElf" xml:space="preserve"><value>暗黑指挥官</value></data>
+  <data name="SapiUnus" xml:space="preserve"><value>树妖</value></data>
+  <data name="SapiDuo" xml:space="preserve"><value>毒树妖</value></data>
+  <data name="SapiTres" xml:space="preserve"><value>残忍的树妖</value></data>
+  <data name="ShadowPawn" xml:space="preserve"><value>暗影爪牙</value></data>
+  <data name="ShadowKnight" xml:space="preserve"><value>暗影骑士</value></data>
+  <data name="ShadowLook" xml:space="preserve"><value>暗影武士</value></data>
+  <data name="ThunderNapin" xml:space="preserve"><value>闪电巨人</value></data>
+  <data name="GhostNapin" xml:space="preserve"><value>幽灵巨人</value></data>
+  <data name="BlazeNapin" xml:space="preserve"><value>寒冰巨人</value></data>
+  <data name="SeedMaster" xml:space="preserve"><value>萤之石管理员</value></data>
+  <data name="SeedResearcher" xml:space="preserve"><value>萤之石研究员</value></data>
+  <data name="IceWalker" xml:space="preserve"><value>冰之魔犬</value></data>
+  <data name="GiantMammoth" xml:space="preserve"><value>冰之魔象</value></data>
+  <data name="IceGiant" xml:space="preserve"><value>冰之巨魔</value></data>
+  <data name="Coolutin" xml:space="preserve"><value>冰之魔蛛</value></data>
+  <data name="IronKnight" xml:space="preserve"><value>冰铁剑魂</value></data>
+  <data name="Selupan" xml:space="preserve"><value>冰霜巨蛛</value></data>
+  <data name="ZombieFighter" xml:space="preserve"><value>幽灵斗士</value></data>
+  <data name="ZombieFighter481" xml:space="preserve"><value>幽灵斗士</value></data>
+  <data name="ResurrectedGladiator" xml:space="preserve"><value>幽灵角斗士</value></data>
+  <data name="ResurrectedGladiator483" xml:space="preserve"><value>幽灵角斗士</value></data>
+  <data name="AshSlaughterer" xml:space="preserve"><value>幽灵屠杀者</value></data>
+  <data name="AshSlaughterer485" xml:space="preserve"><value>幽灵屠杀者</value></data>
+  <data name="BloodAssassin" xml:space="preserve"><value>幽灵暗杀者</value></data>
+  <data name="CruelBloodAssassin" xml:space="preserve"><value>幽灵残酷暗杀者</value></data>
+  <data name="CruelBloodAssassin488" xml:space="preserve"><value>幽灵残酷暗杀者</value></data>
+  <data name="BurningLavaGiant" xml:space="preserve"><value>幽灵巨人</value></data>
+  <data name="RuthlessLavaGiant" xml:space="preserve"><value>幽灵残酷巨人</value></data>
+  <data name="RuthlessLavaGiant491" xml:space="preserve"><value>幽灵残酷巨人</value></data>
+  <data name="MossTheMerchant" xml:space="preserve"><value>摩斯</value></data>
+  <data name="AdviserJerinteu" xml:space="preserve"><value>辅佐官杰林特</value></data>
+  <data name="TerribleButcher" xml:space="preserve"><value>愤怒的屠夫</value></data>
+  <data name="MadButcher" xml:space="preserve"><value>屠夫</value></data>
+  <data name="IceWalker531" xml:space="preserve"><value>冰之魔犬</value></data>
+  <data name="Larva532" xml:space="preserve"><value>毒虫（生魂广场）</value></data>
+  <data name="DoppelgangerElf" xml:space="preserve"><value>生魂弓箭手</value></data>
+  <data name="DoppelgangerKnight" xml:space="preserve"><value>生魂剑士</value></data>
+  <data name="DoppelgangerWizard" xml:space="preserve"><value>生魂魔法师</value></data>
+  <data name="DoppelgangerMagicGladiator" xml:space="preserve"><value>生魂魔剑士</value></data>
+  <data name="DoppelgangerDarkLord" xml:space="preserve"><value>生魂圣导师</value></data>
+  <data name="DoppelgangerSummoner" xml:space="preserve"><value>生魂召唤术师</value></data>
+  <data name="Lugard" xml:space="preserve"><value>陆迦德</value></data>
+  <data name="BloodyOrc" xml:space="preserve"><value>血腥丛林生命体</value></data>
+  <data name="BloodyDeathRider" xml:space="preserve"><value>血腥丛林暗杀者</value></data>
+  <data name="BloodyGolem" xml:space="preserve"><value>血腥丛林残暴者</value></data>
+  <data name="BloodyWitchQueen" xml:space="preserve"><value>血腥丛林女巫师</value></data>
+  <data name="BerserkerWarrior" xml:space="preserve"><value>疯魔战士</value></data>
+  <data name="KentaurosWarrior" xml:space="preserve"><value>寒冰刺客战士</value></data>
+  <data name="GigantisWarrior" xml:space="preserve"><value>狂巨人战士</value></data>
+  <data name="GenociderWarrior" xml:space="preserve"><value>屠杀者战士</value></data>
+  <data name="SapiQueen" xml:space="preserve"><value>树妖女王</value></data>
+  <data name="DarkMammoth" xml:space="preserve"><value>黑暗冰之魔象</value></data>
+  <data name="DarkGiant" xml:space="preserve"><value>黑暗冰之巨魔</value></data>
+  <data name="DarkCoolutin" xml:space="preserve"><value>黑暗冰之魔蛛</value></data>
+  <data name="DarkIronKnight" xml:space="preserve"><value>黑暗冰铁剑魂</value></data>
+  <data name="VenomousChainScorpion" xml:space="preserve"><value>剧毒勾尾蝎</value></data>
+  <data name="BoneScorpion" xml:space="preserve"><value>白骨勾尾蝎</value></data>
+  <data name="Orcus" xml:space="preserve"><value>黑暗独角猿</value></data>
+  <data name="Gollock" xml:space="preserve"><value>黑暗四臂猿</value></data>
+  <data name="Crypta" xml:space="preserve"><value>金甲勇士</value></data>
+  <data name="Crypos" xml:space="preserve"><value>黄蜂女王</value></data>
+  <data name="Condra" xml:space="preserve"><value>幽灵石巨人</value></data>
+  <data name="Narcondra" xml:space="preserve"><value>邪灵石巨人</value></data>
+  <data name="David" xml:space="preserve"><value>戴彼得</value></data>
+  <data name="MeteoriteTrap" xml:space="preserve">
+    <value>陨石陷阱</value>
+  </data>
+  <data name="CrossbowGuard" xml:space="preserve">
+    <value>弩箭守卫</value>
+  </data>
+  <data name="LanceTrap" xml:space="preserve">
+    <value>长矛陷阱</value>
+  </data>
+  <data name="FireTrap" xml:space="preserve">
+    <value>火焰陷阱</value>
+  </data>
+  <data name="IronStickTrap" xml:space="preserve">
+    <value>铁棒陷阱</value>
+  </data>
+  <data name="BerdyshGuard" xml:space="preserve">
+    <value>长柄斧守卫</value>
+  </data>
+  <data name="SeaWorm" xml:space="preserve">
+    <value>海虫</value>
+  </data>
+  <data name="Soccerball" xml:space="preserve">
+    <value>足球</value>
+  </data>
+  <data name="ArenaGuard" xml:space="preserve">
+    <value>竞技场守卫</value>
+  </data>
+  <data name="Bali" xml:space="preserve">
+    <value>巴里</value>
+  </data>
+  <data name="GoldenArcher" xml:space="preserve">
+    <value>黄金弓箭手</value>
+  </data>
+  <data name="CursedKing" xml:space="preserve">
+    <value>骷髅王</value>
+  </data>
+  <data name="EliteOrc" xml:space="preserve">
+    <value>精英兽人</value>
+  </data>
+  <data name="OrcArcher" xml:space="preserve">
+    <value>兽人弓箭手</value>
+  </data>
+  <data name="MetalBalrog" xml:space="preserve">
+    <value>金属巴洛克</value>
+  </data>
+  <data name="RedDragon" xml:space="preserve">
+    <value>火龙王</value>
+  </data>
+  <data name="GoldenTitan" xml:space="preserve">
+    <value>黄金泰坦</value>
+  </data>
+  <data name="GoldenSoldier" xml:space="preserve">
+    <value>黄金士兵</value>
+  </data>
+  <data name="GoldenBudgeDragon" xml:space="preserve">
+    <value>黄金幼龙</value>
+  </data>
+  <data name="LaserTrap" xml:space="preserve">
+    <value>激光陷阱</value>
+  </data>
+  <data name="CanonTrap" xml:space="preserve">
+    <value>火炮陷阱</value>
+  </data>
+  <data name="CherryBlossomTree" xml:space="preserve">
+    <value>樱花树</value>
+  </data>
+  <data name="CherryBlossomSpirit" xml:space="preserve">
+    <value>樱花精灵</value>
+  </data>
+  <data name="GensVanert" xml:space="preserve">
+    <value>巴内尔特家族管家</value>
+  </data>
+  <data name="SpiderEggs2" xml:space="preserve">
+    <value>蜘蛛卵 2</value>
+  </data>
+  <data name="SpiderEggs1" xml:space="preserve">
+    <value>蜘蛛卵 1</value>
+  </data>
+  <data name="SpiderEggs3" xml:space="preserve">
+    <value>蜘蛛卵 3</value>
+  </data>
+  <data name="WanderingMerchantZyro" xml:space="preserve">
+    <value>流浪商人杰罗</value>
+  </data>
+  <data name="FireworksGirl" xml:space="preserve">
+    <value>烟花少女</value>
+  </data>
+  <data name="MercenaryGuildFelicia" xml:space="preserve">
+    <value>佣兵公会菲莉西亚</value>
+  </data>
+  <data name="DelgadoLuckyCoins" xml:space="preserve">
+    <value>幸运币兑换员德尔加多</value>
+  </data>
+  <data name="AngelaTheSupplier" xml:space="preserve">
+    <value>物资管理员安吉拉</value>
+  </data>
+  <data name="PamelaTheSupplier" xml:space="preserve">
+    <value>物资管理员帕糜拉</value>
+  </data>
+  <data name="Guard" xml:space="preserve">
+    <value>守卫</value>
+  </data>
+  <data name="CrownSwitch2" xml:space="preserve">
+    <value>王座开关2</value>
+  </data>
+  <data name="CrownSwitch1" xml:space="preserve">
+    <value>王座开关1</value>
+  </data>
+  <data name="Crown" xml:space="preserve">
+    <value>王座</value>
+  </data>
+  <data name="MarketUnionMemberJulia" xml:space="preserve">
+    <value>市场传送师朱丽亚</value>
+  </data>
+  <data name="LeoTheHelper" xml:space="preserve">
+    <value>助手里奥</value>
+  </data>
+  <data name="GensDuprian" xml:space="preserve">
+    <value>多普瑞恩家族管家</value>
+  </data>
+  <data name="SlingshotDefense" xml:space="preserve">
+    <value>守城投石车</value>
+  </data>
+  <data name="SlingshotAttack" xml:space="preserve">
+    <value>攻城投石车</value>
+  </data>
+  <data name="CastleGateSwitch" xml:space="preserve">
+    <value>城门开关</value>
+  </data>
+  <data name="GatekeeperTitus" xml:space="preserve">
+    <value>角斗场守卫提图斯</value>
+  </data>
+  <data name="Trap" xml:space="preserve">
+    <value>陷阱</value>
+  </data>
+  <data name="Statue" xml:space="preserve">
+    <value>雕像</value>
+  </data>
+  <data name="RushGate" xml:space="preserve">
+    <value>冲锋门</value>
+  </data>
+  <data name="StarGate" xml:space="preserve">
+    <value>星门</value>
+  </data>
+  <data name="GayionTheGladiator" xml:space="preserve">
+    <value>角斗士盖伊昂</value>
+  </data>
+  <data name="Forsaker" xml:space="preserve">
+    <value>弃誓者</value>
+  </data>
+  <data name="Defender" xml:space="preserve">
+    <value>防御者</value>
+  </data>
+  <data name="EricTheGuard" xml:space="preserve">
+    <value>守卫埃里克</value>
+  </data>
+  <data name="Jerry" xml:space="preserve">
+    <value>杰瑞</value>
+  </data>
+  <data name="Raymond" xml:space="preserve">
+    <value>雷蒙德</value>
+  </data>
+  <data name="Lucas" xml:space="preserve">
+    <value>卢卡斯</value>
+  </data>
+  <data name="LionGate" xml:space="preserve">
+    <value>狮门</value>
+  </data>
+  <data name="EvilGate" xml:space="preserve">
+    <value>邪恶之门</value>
+  </data>
+  <data name="HeadMounter" xml:space="preserve">
+    <value>骑兵首领</value>
+  </data>
+  <data name="Banshee" xml:space="preserve">
+    <value>女妖</value>
+  </data>
+  <data name="OcelotTheLord" xml:space="preserve">
+    <value>领主奥赛洛特</value>
+  </data>
+  <data name="DualBerserker" xml:space="preserve">
+    <value>双刃狂战士</value>
+  </data>
+  <data name="DarkGhost" xml:space="preserve">
+    <value>黑暗幽灵</value>
+  </data>
+  <data name="AticlesHead" xml:space="preserve">
+    <value>阿提克尔首领</value>
+  </data>
+  <data name="Hammerize" xml:space="preserve">
+    <value>重锤战士</value>
+  </data>
+  <data name="DevilLord" xml:space="preserve">
+    <value>恶魔领主</value>
+  </data>
+  <data name="CombatInstructor" xml:space="preserve">
+    <value>战斗教官</value>
+  </data>
+  <data name="QuarterMaster" xml:space="preserve">
+    <value>军需官</value>
+  </data>
+  <data name="Fred" xml:space="preserve">
+    <value>弗雷德</value>
+  </data>
+  <data name="ChaosCastle14" xml:space="preserve">
+    <value>赤色要塞怪物 14</value>
+  </data>
+  <data name="ChaosCastle13" xml:space="preserve">
+    <value>赤色要塞怪物 13</value>
+  </data>
+  <data name="ChaosCastle12" xml:space="preserve">
+    <value>赤色要塞怪物 12</value>
+  </data>
+  <data name="ChaosCastle11" xml:space="preserve">
+    <value>赤色要塞怪物 11</value>
+  </data>
+  <data name="ChaosCastle10" xml:space="preserve">
+    <value>赤色要塞怪物 10</value>
+  </data>
+  <data name="ChaosCastle9" xml:space="preserve">
+    <value>赤色要塞怪物 9</value>
+  </data>
+  <data name="ChaosCastle8" xml:space="preserve">
+    <value>赤色要塞怪物 8</value>
+  </data>
+  <data name="ChaosCastle7" xml:space="preserve">
+    <value>赤色要塞怪物 7</value>
+  </data>
+  <data name="ChaosCastle6" xml:space="preserve">
+    <value>赤色要塞怪物 6</value>
+  </data>
+  <data name="ChaosCastle5" xml:space="preserve">
+    <value>赤色要塞怪物 5</value>
+  </data>
+  <data name="ChaosCastle4" xml:space="preserve">
+    <value>赤色要塞怪物 4</value>
+  </data>
+  <data name="ChaosCastle3" xml:space="preserve">
+    <value>赤色要塞怪物 3</value>
+  </data>
+  <data name="ChaosCastle2" xml:space="preserve">
+    <value>赤色要塞怪物 2</value>
+  </data>
+  <data name="ChaosCastle1" xml:space="preserve">
+    <value>赤色要塞怪物 1</value>
+  </data>
+  <data name="MagicSkeleton8" xml:space="preserve">
+    <value>骷髅巫师 8</value>
+  </data>
+  <data name="RedSkeletonKnight8" xml:space="preserve">
+    <value>红骷髅骑士 8</value>
+  </data>
+  <data name="GiantOgre8" xml:space="preserve">
+    <value>巨型食人魔 8</value>
+  </data>
+  <data name="DarkSkullSoldier8" xml:space="preserve">
+    <value>暗黑骷髅士兵 8</value>
+  </data>
+  <data name="ChiefSkeletonArcher8" xml:space="preserve">
+    <value>骷髅弓箭手队长 8</value>
+  </data>
+  <data name="ChiefSkeletonWarrior8" xml:space="preserve">
+    <value>骷髅战士队长 8</value>
+  </data>
+  <data name="Archangel" xml:space="preserve">
+    <value>大天使</value>
+  </data>
+  <data name="CastleGate" xml:space="preserve">
+    <value>城门</value>
+  </data>
+  <data name="StatueOfSaint" xml:space="preserve">
+    <value>圣天使雕像</value>
+  </data>
+  <data name="MagicSkeleton7" xml:space="preserve">
+    <value>骷髅巫师 7</value>
+  </data>
+  <data name="RedSkeletonKnight7" xml:space="preserve">
+    <value>红骷髅骑士 7</value>
+  </data>
+  <data name="GiantOgre7" xml:space="preserve">
+    <value>巨型食人魔 7</value>
+  </data>
+  <data name="DarkSkullSoldier7" xml:space="preserve">
+    <value>暗黑骷髅士兵 7</value>
+  </data>
+  <data name="ChiefSkeletonArcher7" xml:space="preserve">
+    <value>骷髅弓箭手队长 7</value>
+  </data>
+  <data name="ChiefSkeletonWarrior7" xml:space="preserve">
+    <value>骷髅战士队长 7</value>
+  </data>
+  <data name="MagicSkeleton6" xml:space="preserve">
+    <value>骷髅巫师 6</value>
+  </data>
+  <data name="RedSkeletonKnight6" xml:space="preserve">
+    <value>红骷髅骑士 6</value>
+  </data>
+  <data name="GiantOgre6" xml:space="preserve">
+    <value>巨型食人魔 6</value>
+  </data>
+  <data name="DarkSkullSoldier6" xml:space="preserve">
+    <value>暗黑骷髅士兵 6</value>
+  </data>
+  <data name="ChiefSkeletonArcher6" xml:space="preserve">
+    <value>骷髅弓箭手队长 6</value>
+  </data>
+  <data name="ChiefSkeletonWarrior6" xml:space="preserve">
+    <value>骷髅战士队长 6</value>
+  </data>
+  <data name="MagicSkeleton5" xml:space="preserve">
+    <value>骷髅巫师 5</value>
+  </data>
+  <data name="RedSkeletonKnight5" xml:space="preserve">
+    <value>红骷髅骑士 5</value>
+  </data>
+  <data name="GiantOgre5" xml:space="preserve">
+    <value>巨型食人魔 5</value>
+  </data>
+  <data name="DarkSkullSoldier5" xml:space="preserve">
+    <value>暗黑骷髅士兵 5</value>
+  </data>
+  <data name="ChiefSkeletonArcher5" xml:space="preserve">
+    <value>骷髅弓箭手队长 5</value>
+  </data>
+  <data name="ChiefSkeletonWarrior5" xml:space="preserve">
+    <value>骷髅战士队长 5</value>
+  </data>
+  <data name="MagicSkeleton4" xml:space="preserve">
+    <value>骷髅巫师 4</value>
+  </data>
+  <data name="RedSkeletonKnight4" xml:space="preserve">
+    <value>红骷髅骑士 4</value>
+  </data>
+  <data name="GiantOgre4" xml:space="preserve">
+    <value>巨型食人魔 4</value>
+  </data>
+  <data name="DarkSkullSoldier4" xml:space="preserve">
+    <value>暗黑骷髅士兵 4</value>
+  </data>
+  <data name="ChiefSkeletonArcher4" xml:space="preserve">
+    <value>骷髅弓箭手队长 4</value>
+  </data>
+  <data name="ChiefSkeletonWarrior4" xml:space="preserve">
+    <value>骷髅战士队长 4</value>
+  </data>
+  <data name="MagicSkeleton3" xml:space="preserve">
+    <value>骷髅巫师 3</value>
+  </data>
+  <data name="RedSkeletonKnight3" xml:space="preserve">
+    <value>红骷髅骑士 3</value>
+  </data>
+  <data name="GiantOgre3" xml:space="preserve">
+    <value>巨型食人魔 3</value>
+  </data>
+  <data name="DarkSkullSoldier3" xml:space="preserve">
+    <value>暗黑骷髅士兵 3</value>
+  </data>
+  <data name="ChiefSkeletonArcher3" xml:space="preserve">
+    <value>骷髅弓箭手队长 3</value>
+  </data>
+  <data name="ChiefSkeletonWarrior3" xml:space="preserve">
+    <value>骷髅战士队长 3</value>
+  </data>
+  <data name="MagicSkeleton2" xml:space="preserve">
+    <value>骷髅巫师 2</value>
+  </data>
+  <data name="RedSkeletonKnight2" xml:space="preserve">
+    <value>红骷髅骑士 2</value>
+  </data>
+  <data name="GiantOgre2" xml:space="preserve">
+    <value>巨型食人魔 2</value>
+  </data>
+  <data name="DarkSkullSoldier2" xml:space="preserve">
+    <value>暗黑骷髅士兵 2</value>
+  </data>
+  <data name="ChiefSkeletonArcher2" xml:space="preserve">
+    <value>骷髅弓箭手队长 2</value>
+  </data>
+  <data name="ChiefSkeletonWarrior2" xml:space="preserve">
+    <value>骷髅战士队长 2</value>
+  </data>
+  <data name="MagicSkeleton1" xml:space="preserve">
+    <value>骷髅巫师 1</value>
+  </data>
+  <data name="RedSkeletonKnight1" xml:space="preserve">
+    <value>红骷髅骑士 1</value>
+  </data>
+  <data name="GiantOgre1" xml:space="preserve">
+    <value>巨型食人魔 1</value>
+  </data>
+  <data name="DarkSkullSoldier1" xml:space="preserve">
+    <value>暗黑骷髅士兵 1</value>
+  </data>
+  <data name="ChiefSkeletonArcher1" xml:space="preserve">
+    <value>骷髅弓箭手队长 1</value>
+  </data>
+  <data name="ChiefSkeletonWarrior1" xml:space="preserve">
+    <value>骷髅战士队长 1</value>
+  </data>
+  <data name="Doppelganger" xml:space="preserve">
+    <value>生魂分身</value>
+  </data>
+  <data name="ShadowMaster" xml:space="preserve">
+    <value>暗影大师</value>
+  </data>
+  <data name="IceNapin" xml:space="preserve">
+    <value>冰巨人</value>
+  </data>
+  <data name="DestructiveOgreArcher" xml:space="preserve">
+    <value>破坏兽人弓箭手</value>
+  </data>
+  <data name="DestructiveOgreSoldier" xml:space="preserve">
+    <value>破坏兽人士兵</value>
+  </data>
+  <data name="WhiteWizard" xml:space="preserve">
+    <value>白魔法师</value>
+  </data>
+  <data name="GoldenTantallos" xml:space="preserve">
+    <value>黄金破坏骑士</value>
+  </data>
+  <data name="GoldenWheel" xml:space="preserve">
+    <value>黄金铁轮战士</value>
+  </data>
+  <data name="GoldenLizardKing" xml:space="preserve">
+    <value>黄金巫师王</value>
+  </data>
+  <data name="GoldenVepar" xml:space="preserve">
+    <value>黄金美人鱼</value>
+  </data>
+  <data name="GoldenDragon" xml:space="preserve">
+    <value>黄金火龙王</value>
+  </data>
+  <data name="GoldenGoblin" xml:space="preserve">
+    <value>黄金哥布林</value>
+  </data>
+  <data name="CapturedStoneStatue10" xml:space="preserve">
+    <value>已占领石像（10）</value>
+  </data>
+  <data name="CapturedStoneStatue9" xml:space="preserve">
+    <value>已占领石像（9）</value>
+  </data>
+  <data name="CapturedStoneStatue8" xml:space="preserve">
+    <value>已占领石像（8）</value>
+  </data>
+  <data name="CapturedStoneStatue7" xml:space="preserve">
+    <value>已占领石像（7）</value>
+  </data>
+  <data name="CapturedStoneStatue6" xml:space="preserve">
+    <value>已占领石像（6）</value>
+  </data>
+  <data name="CapturedStoneStatue5" xml:space="preserve">
+    <value>已占领石像（5）</value>
+  </data>
+  <data name="CapturedStoneStatue4" xml:space="preserve">
+    <value>已占领石像（4）</value>
+  </data>
+  <data name="CapturedStoneStatue3" xml:space="preserve">
+    <value>已占领石像（3）</value>
+  </data>
+  <data name="CapturedStoneStatue2" xml:space="preserve">
+    <value>已占领石像（2）</value>
+  </data>
+  <data name="CapturedStoneStatue1" xml:space="preserve">
+    <value>已占领石像（1）</value>
+  </data>
+  <data name="CursedStatue" xml:space="preserve">
+    <value>诅咒雕像</value>
+  </data>
+  <data name="JewelerRaul" xml:space="preserve">
+    <value>宝石商人劳尔</value>
+  </data>
+  <data name="ChristineTheGeneralGoodsMerchant" xml:space="preserve">
+    <value>杂货商人克里斯丁</value>
+  </data>
+  <data name="GoldenCompensationBox" xml:space="preserve">
+    <value>黄金奖励宝箱</value>
+  </data>
+  <data name="CompensationBox" xml:space="preserve">
+    <value>奖励宝箱</value>
+  </data>
+  <data name="TransformedSnowman" xml:space="preserve">
+    <value>变异雪人</value>
+  </data>
+  <data name="CursedSanta" xml:space="preserve">
+    <value>诅咒圣诞老人</value>
+  </data>
+  <data name="LittleSantaPink" xml:space="preserve">
+    <value>粉色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaOrange" xml:space="preserve">
+    <value>橙色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaBlack" xml:space="preserve">
+    <value>黑色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaWhite" xml:space="preserve">
+    <value>白色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaBlue" xml:space="preserve">
+    <value>蓝色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaRed" xml:space="preserve">
+    <value>红色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaGreen" xml:space="preserve">
+    <value>绿色小圣诞老人</value>
+  </data>
+  <data name="LittleSantaYellow" xml:space="preserve">
+    <value>黄色小圣诞老人</value>
+  </data>
+  <data name="Snowman" xml:space="preserve">
+    <value>雪人</value>
+  </data>
+  <data name="Gatekeeper" xml:space="preserve">
+    <value>守门人</value>
+  </data>
+  <data name="IllusionSorcerer" xml:space="preserve">
+    <value>幻影术士</value>
+  </data>
+  <data name="MUAllies" xml:space="preserve">
+    <value>奇迹盟军</value>
+  </data>
+  <data name="BattleGuard2" xml:space="preserve">
+    <value>战斗守卫2</value>
+  </data>
+  <data name="BattleGuard1" xml:space="preserve">
+    <value>战斗守卫1</value>
+  </data>
+  <data name="Guardian" xml:space="preserve">
+    <value>守护者</value>
+  </data>
+  <data name="Shield" xml:space="preserve">
+    <value>防护盾</value>
+  </data>
+  <data name="IllusionItemStorage" xml:space="preserve">
+    <value>幻影物品仓库</value>
+  </data>
+  <data name="AllianceItemStorage" xml:space="preserve">
+    <value>盟军物品仓库</value>
+  </data>
+  <data name="IllusionElder" xml:space="preserve">
+    <value>幻影长老</value>
+  </data>
+  <data name="MUAlliesGeneral" xml:space="preserve">
+    <value>奇迹盟军将军</value>
+  </data>
+  <data name="StoneStatue" xml:space="preserve">
+    <value>石像</value>
+  </data>
+  <data name="EliteSkillSoldier" xml:space="preserve">
+    <value>精英技能士兵</value>
+  </data>
+  <data name="GameMaster" xml:space="preserve">
+    <value>游戏管理员</value>
+  </data>
+  <data name="Soldier" xml:space="preserve">
+    <value>士兵</value>
+  </data>
+  <data name="DarkElf340" xml:space="preserve">
+    <value>暗黑指挥官</value>
+  </data>
+  <data name="DeathSpirit" xml:space="preserve">
+    <value>暗黑咒术师</value>
+  </data>
+  <data name="Tanker" xml:space="preserve">
+    <value>暗黑重装兵</value>
+  </data>
+  <data name="Balgass" xml:space="preserve">
+    <value>巴尔盖斯</value>
+  </data>
+</root>

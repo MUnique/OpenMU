@@ -1,0 +1,61 @@
+﻿// <copyright file="MoveChatCommandPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// A chat command plugin which handles move commands.
+/// </summary>
+[Guid("4564AE2B-4819-4155-B5B2-FE2ED0CF7A7F")]
+[PlugIn]
+[Display(Name = nameof(PlugInResources.MoveChatCommandPlugIn_Name), Description = nameof(PlugInResources.MoveChatCommandPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[ChatCommandHelp(Command, typeof(MoveChatCommandArgs), CharacterStatus.Normal)]
+public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
+{
+    private const string Command = "/move";
+
+    /// <inheritdoc />
+    public override string Key => Command;
+
+    /// <inheritdoc/>
+    public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
+
+    /// <inheritdoc />
+    protected override async ValueTask DoHandleCommandAsync(Player sender, MoveChatCommandArgs arguments)
+    {
+        var senderIsGameMaster = sender.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster;
+        var isGameMasterWarpingCharacter = senderIsGameMaster && !string.IsNullOrWhiteSpace(arguments.MapIdOrName);
+
+        if (isGameMasterWarpingCharacter)
+        {
+            var targetPlayer = await this.GetPlayerByCharacterNameAsync(sender, arguments.Target!).ConfigureAwait(false);
+            var exitGate = await this.GetExitGateAsync(sender, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
+            if (targetPlayer is null || exitGate is null)
+            {
+                return;
+            }
+
+            await targetPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
+
+            if (!targetPlayer.Name.Equals(sender.Name))
+            {
+                await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
+                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name.GetTranslation(sender.Culture), targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            var warpInfo = this.GetWarpInfo(sender, arguments.Target!);
+            if (warpInfo != null)
+            {
+                await new WarpAction().WarpToAsync(sender, warpInfo).ConfigureAwait(false);
+            }
+        }
+    }
+}

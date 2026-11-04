@@ -1,0 +1,24 @@
+﻿@using MUnique.OpenMU.Web.Shared.Services
+@inject LoadingOverlayService LoadingService
+@implements IDisposable
+
+<LoadingOverlay Visible="@this.LoadingService.IsVisible" />
+
+@code {
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        this.LoadingService.StateChanged += this.OnStateChanged;
+    }
+
+    private void OnStateChanged()
+    {
+        this.InvokeAsync(this.StateHasChanged);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.LoadingService.StateChanged -= this.OnStateChanged;
+    }
+}

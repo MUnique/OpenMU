@@ -1,0 +1,538 @@
+﻿// <copyright file="GameContext.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic;
+
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Globalization;
+using System.Threading;
+using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
+using org.mariuszgromada.math.mxparser;
+
+/// <summary>
+/// The game context which holds all data of the game together.
+/// </summary>
+public class GameContext : AsyncDisposable, IGameContext
+{
+    private const string DefaultExperienceFormula = "if(level == 0, 0, if(level < 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))";
+    private const string DefaultMasterExperienceFormula = "(505 * level * level * level) + (35278500 * level) + (228045 * level * level)";
+
+    private static readonly Meter Meter = new(MeterName);
+
+    private static readonly Counter<int> PlayerCounter = Meter.CreateCounter<int>("PlayerCount");
+
+    private static readonly Counter<int> MapCounter = Meter.CreateCounter<int>("MapCount");
+
+    private static readonly IObjectPool<PathFinder> PathFinderPoolInstance = new LimitedObjectPool<PathFinder>(new PathFinderPoolingPolicy());
+
+    private readonly Dictionary<ushort, GameMap> _mapList = new();
+
+    private readonly Timer _recoverTimer;
+
+    private readonly IMapInitializer _mapInitializer;
+
+    private readonly AsyncLock _mapInitializerLock = new();
+
+    private readonly Timer _tasksTimer;
+
+    private readonly AsyncReaderWriterLock _playerListLock = new();
+
+    /// <summary>
+    /// Keeps the list of all players.
+    /// </summary>
+    private readonly List<Player> _playerList = new();
+
+    private readonly IDisposable _configChangeHandlerRegistration;
+
+    private int _periodicTasksStopped;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameContext" /> class.
+    /// </summary>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    /// <param name="mapInitializer">The map initializer.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="plugInManager">The plug in manager.</param>
+    /// <param name="dropGenerator">The drop generator.</param>
+    /// <param name="changeMediator">The cange mediator.</param>
+    public GameContext(GameConfiguration configuration, IPersistenceContextProvider persistenceContextProvider, IMapInitializer mapInitializer, ILoggerFactory loggerFactory, PlugInManager plugInManager, IDropGenerator dropGenerator, IConfigurationChangeMediator changeMediator)
+    {
+        try
+        {
+            this.Configuration = configuration;
+            this.PersistenceContextProvider = persistenceContextProvider;
+            this.PlugInManager = plugInManager;
+            this._mapInitializer = mapInitializer;
+            this.LoggerFactory = loggerFactory;
+            this.DropGenerator = dropGenerator;
+            this.ConfigurationChangeMediator = changeMediator;
+            this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>(), configuration);
+            this.PartyManager = new PartyManager(configuration.MaximumPartySize, loggerFactory.CreateLogger<Party>());
+            this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
+            this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);
+            this.FeaturePlugIns = new FeaturePlugInContainer(this.PlugInManager);
+            this.MiniGames = new MiniGameManager(this, mapInitializer);
+            this.MiniGames.GameMapCreated += (_, map) => this.GameMapCreated?.Invoke(this, map);
+            this.MiniGames.GameMapRemoved += (_, map) => this.GameMapRemoved?.Invoke(this, map);
+            this._configChangeHandlerRegistration = this.ConfigurationChangeMediator.RegisterObject(this.Configuration, this, this.OnGameConfigurationChangeAsync);
+            this.DuelRoomManager = new DuelRoomManager(this.Configuration.DuelConfiguration!);
+            this.ExperienceTable = CreateExpTable(this.Configuration.ExperienceFormula ?? DefaultExperienceFormula, this.Configuration.MaximumLevel);
+            this.MasterExperienceTable = CreateExpTable(this.Configuration.MasterExperienceFormula ?? DefaultMasterExperienceFormula, this.Configuration.MaximumMasterLevel);
+        }
+        catch (Exception ex)
+        {
+            loggerFactory.CreateLogger<GameContext>().LogError(ex, "Unexpected error in constructor of GameContext.");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Occurs when a game map got created.
+    /// </summary>
+    public event EventHandler<GameMap>? GameMapCreated;
+
+    /// <summary>
+    /// Occurs when a game map got removed.
+    /// </summary>
+    /// <remarks>
+    /// Currently, maps are never removed.
+    /// It may make sense to remove unused maps after a certain period.
+    /// </remarks>
+    public event EventHandler<GameMap>? GameMapRemoved;
+
+    /// <inheritdoc />
+    public virtual float ExperienceRate => this.Configuration.ExperienceRate;
+
+    /// <inheritdoc />
+    public virtual float MasterExperienceRate => this.Configuration.MasterExperienceRate;
+
+    /// <inheritdoc />
+    public virtual bool PvpEnabled { get; }
+
+    /// <inheritdoc/>
+    public GameConfiguration Configuration { get; }
+
+    /// <inheritdoc/>
+    public TimeZoneInfo ServerTimeZone { get; set; } = TimeZoneInfo.Utc;
+
+    /// <inheritdoc/>
+    public long[] ExperienceTable { get; private set; }
+
+    /// <inheritdoc/>
+    public long[] MasterExperienceTable { get; private set; }
+
+    /// <inheritdoc/>
+    public IConfigurationChangeMediator ConfigurationChangeMediator { get; }
+
+    /// <inheritdoc/>
+    public PlugInManager PlugInManager { get; }
+
+    /// <inheritdoc/>
+    public IDropGenerator DropGenerator { get; }
+
+    /// <inheritdoc />
+    public IMiniGameManager MiniGames { get; }
+
+    /// <inheritdoc />
+    public FeaturePlugInContainer FeaturePlugIns { get; }
+
+    /// <inheritdoc />
+    public Offline.OfflinePlayerManager OfflinePlayerManager { get; } = new();
+
+    /// <inheritdoc/>
+    public IItemPowerUpFactory ItemPowerUpFactory { get; }
+
+    /// <inheritdoc/>
+    public IPersistenceContextProvider PersistenceContextProvider { get; }
+
+    /// <summary>
+    /// Gets the players by character name dictionary.
+    /// </summary>
+    public ConcurrentDictionary<string, Player> PlayersByCharacterName { get; } = new ConcurrentDictionary<string, Player>(StringComparer.OrdinalIgnoreCase);
+
+    /// <inheritdoc />
+    public DuelRoomManager DuelRoomManager { get; set; }
+
+    /// <inheritdoc />
+    public ConcurrentDictionary<(Player Attacker, Player Defender), DateTime> SelfDefenseState { get; } = new();
+
+    /// <inheritdoc />
+    public IPartyManager PartyManager { get; }
+
+    /// <inheritdoc />
+    public ILoggerFactory LoggerFactory { get; }
+
+    /// <summary>
+    /// Gets the path finder pool.
+    /// </summary>
+    public IObjectPool<PathFinder> PathFinderPool => PathFinderPoolInstance;
+
+    /// <inheritdoc />
+    public int PlayerCount => this._playerList.Count;
+
+    /// <summary>
+    /// Gets a value indicating whether the periodic tasks of this context have been stopped,
+    /// e.g. because the hosting server is shutting down. Once stopped, <see cref="ExecutePeriodicTasks"/>
+    /// no longer runs any periodic plug-ins.
+    /// </summary>
+    public bool ArePeriodicTasksStopped => Volatile.Read(ref this._periodicTasksStopped) != 0;
+
+    /// <summary>
+    /// Gets the name of the meter of this class.
+    /// </summary>
+    internal static string MeterName => typeof(GameContext).FullName ?? nameof(GameContext);
+
+    /// <summary>
+    /// Gets a value indicating whether a periodic task pass may run right now. It may not once the
+    /// context is being (or has been) disposed or its periodic tasks have been stopped, e.g. because
+    /// the hosting server is shutting down and a pass would race the shutdown's disconnect loop.
+    /// </summary>
+    internal bool ShouldExecutePeriodicTasks => !this.IsDisposed && !this.IsDisposing && !this.ArePeriodicTasksStopped;
+
+    /// <summary>
+    /// Stops the periodic tasks of this context (the per-second plug-in tasks and the recovery
+    /// timer), so that no periodic plug-in runs concurrently with a subsequent teardown, such as
+    /// the player disconnect loop of a shutting-down game server. The timers are also stopped on
+    /// disposal; calling this earlier only closes the race window between the shutdown start and
+    /// the disposal.
+    /// </summary>
+    public void StopPeriodicTasks()
+    {
+        if (Interlocked.Exchange(ref this._periodicTasksStopped, 1) == 0)
+        {
+            this._tasksTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            this._recoverTimer.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+    }
+
+    /// <summary>
+    /// Gets the initialized maps which are hosted on this context.
+    /// </summary>
+    public async ValueTask<IEnumerable<GameMap>> GetMapsAsync()
+    {
+        using var l = await this._mapInitializerLock.LockAsync().ConfigureAwait(false);
+        return this._mapList.Values.Concat(this.MiniGames.Maps).ToList();
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<GameMap?> GetMapAsync(ushort mapId, bool createIfNotExists = true)
+    {
+        if (this._mapList.TryGetValue(mapId, out var map))
+        {
+            return map;
+        }
+
+        if (!createIfNotExists)
+        {
+            return null;
+        }
+
+        GameMap? createdMap;
+        using (await this._mapInitializerLock.LockAsync().ConfigureAwait(false))
+        {
+            if (this._mapList.TryGetValue(mapId, out map))
+            {
+                return map;
+            }
+
+            createdMap = this._mapInitializer.CreateGameMap(mapId);
+            if (createdMap is null)
+            {
+                return null;
+            }
+
+            this._mapList.Add(mapId, createdMap);
+            createdMap.ObjectAdded += async args =>
+            {
+                if (this.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>() is { } plugInPoint)
+                {
+                    await plugInPoint.ObjectAddedToMapAsync(args.Map, args.Object).ConfigureAwait(false);
+                }
+            };
+            createdMap.ObjectRemoved += async args =>
+            {
+                if (this.PlugInManager.GetPlugInPoint<IObjectRemovedFromMapPlugIn>() is { } plugInPoint)
+                {
+                    await plugInPoint.ObjectRemovedFromMapAsync(args.Map, args.Object).ConfigureAwait(false);
+                }
+            };
+        }
+
+        // ReSharper disable once InconsistentlySynchronizedField it's desired behavior to initialize the map outside the lock to keep locked timespan short.
+        await this._mapInitializer.InitializeStateAsync(createdMap).ConfigureAwait(false);
+        this.GameMapCreated?.Invoke(this, createdMap);
+        MapCounter.Add(1);
+
+        return createdMap;
+    }
+
+    /// <summary>
+    /// Adds the player to the game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public virtual async ValueTask AddPlayerAsync(Player player)
+    {
+        player.PlayerLeftWorld += this.PlayerLeftWorldAsync;
+        player.PlayerEnteredWorld += this.PlayerEnteredWorldAsync;
+        player.PlayerDisconnected += this.RemovePlayerAsync;
+
+        using (await this._playerListLock.WriterLockAsync().ConfigureAwait(false))
+        {
+            this._playerList.Add(player);
+        }
+
+        PlayerCounter.Add(1);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IList<Player>> GetPlayersAsync()
+    {
+        using var l = await this._playerListLock.ReaderLockAsync().ConfigureAwait(false);
+        if (this._playerList.Count == 0)
+        {
+            return [];
+        }
+
+        return this._playerList.ToList();
+    }
+
+    /// <summary>
+    /// Removes the player from the game.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public virtual async ValueTask RemovePlayerAsync(Player player)
+    {
+        bool removed;
+        using (await this._playerListLock.WriterLockAsync().ConfigureAwait(false))
+        {
+            removed = this._playerList.Remove(player);
+        }
+
+        if (!removed)
+        {
+            return;
+        }
+
+        PlayerCounter.Add(-1);
+        if (player.SelectedCharacter != null)
+        {
+            this.PlayersByCharacterName.TryRemove(player.SelectedCharacter.Name, out _);
+        }
+
+        if (player.CurrentMap is { } currentMap)
+        {
+            // Awaited and guarded: discarding the ValueTask left the removal running in the
+            // background - racing the player's own disposal on the dispose-without-disconnect
+            // paths - with any exception lost, while this method has to stay exception-free for
+            // the teardown paths which call it right before the dispose.
+            try
+            {
+                await currentMap.RemoveAsync(player).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Error while removing player {Player} from its map.", player);
+            }
+        }
+
+        player.PlayerDisconnected -= this.RemovePlayerAsync;
+        player.PlayerEnteredWorld -= this.PlayerEnteredWorldAsync;
+        player.PlayerLeftWorld -= this.PlayerLeftWorldAsync;
+    }
+
+    /// <summary>
+    /// Gets the player by the character name.
+    /// </summary>
+    /// <param name="name">The character name.</param>
+    /// <returns>The player by character name.</returns>
+    public Player? GetPlayerByCharacterName(string name)
+    {
+        this.PlayersByCharacterName.TryGetValue(name, out var player);
+        return player;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ForEachPlayerAsync(Func<Player, Task> action)
+    {
+        if (this._playerList.Count == 0)
+        {
+            return;
+        }
+
+        var playerList = await this.GetPlayersAsync().ConfigureAwait(false);
+        await playerList.Select(action).WhenAll().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Executes the specified action for each player, grouped by their culture.
+    /// </summary>
+    /// <param name="stateFactory">The state factory which creates a state for each culture group.</param>
+    /// <param name="action">The action to execute for each player and culture state.</param>
+    /// <typeparam name="TCultureState">The type of the culture state.</typeparam>
+    public async ValueTask ForEachPlayerGroupedByCultureAsync<TCultureState>(Func<CultureInfo, TCultureState> stateFactory, Func<Player, TCultureState, Task> action)
+    {
+        if (this._playerList.Count == 0)
+        {
+            return;
+        }
+
+        var playerList = await this.GetPlayersAsync().ConfigureAwait(false);
+        await playerList
+            .GroupBy(p => p.Culture)
+            .SelectMany(g =>
+            {
+                var state = stateFactory(g.Key);
+                return g.Select(player => action(player, state));
+            })
+            .WhenAll().ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask ShowGlobalLocalizedMessageAsync(MessageType messageType, string messageKey, params object?[] formatArguments)
+    {
+        await this.ForEachPlayerGroupedByCultureAsync<string>(
+            cultureInfo =>
+            {
+                if (formatArguments.Length > 0)
+                {
+                    return string.Format(PlayerMessage.ResourceManager.GetString(messageKey, cultureInfo) ?? string.Empty, formatArguments);
+                }
+
+                return PlayerMessage.ResourceManager.GetString(messageKey, cultureInfo) ?? string.Empty;
+            },
+            (player, message) => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask())
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask SendGlobalMessageAsync(string message, MessageType messageType)
+    {
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(message, messageType)).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask SendGlobalChatMessageAsync(string sender, string message, ChatMessageType messageType)
+    {
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IChatViewPlugIn>(p => p.ChatMessageAsync(message, sender, messageType)).AsTask()).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask SendGlobalNotificationAsync(string message)
+    {
+        var sendingMessage = message.TrimStart('!');
+        await this.SendGlobalMessageAsync(sendingMessage, MessageType.GoldenCenter).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask SendGlobalNotificationAsync(LocalizedString message, params object?[] formatArguments)
+    {
+        await this.ForEachPlayerGroupedByCultureAsync(
+            cultureInfo =>
+            {
+                var text = message.GetTranslation(cultureInfo) ?? string.Empty;
+                return formatArguments.Length > 0 ? string.Format(cultureInfo, text, formatArguments) : text;
+            },
+            (player, text) => player.InvokeViewPlugInAsync<IShowMessagePlugIn>(p => p.ShowMessageAsync(text, MessageType.GoldenCenter)).AsTask())
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        this.StopPeriodicTasks();
+        this._configChangeHandlerRegistration.Dispose();
+        await this._recoverTimer.DisposeAsync().ConfigureAwait(false);
+        await this._tasksTimer.DisposeAsync().ConfigureAwait(false);
+        await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    private static long[] CreateExpTable(string experienceFormula, short maximumLevel)
+    {
+        var argument = new Argument("level");
+        var expression = new Expression(experienceFormula);
+        expression.addArguments(argument);
+
+        return Enumerable.Range(0, maximumLevel + 2)
+            .Select(level =>
+            {
+                argument.setArgumentValue(level);
+                return (long)expression.calculate();
+            })
+            .ToArray();
+    }
+
+    private ValueTask OnGameConfigurationChangeAsync(Action unregisterAction, GameConfiguration gameConfiguration, GameContext context)
+    {
+        this._recoverTimer.Change(gameConfiguration.RecoveryInterval, gameConfiguration.RecoveryInterval);
+        this.ExperienceTable = CreateExpTable(gameConfiguration.ExperienceFormula ?? DefaultExperienceFormula, gameConfiguration.MaximumLevel);
+        this.MasterExperienceTable = CreateExpTable(gameConfiguration.MasterExperienceFormula ?? DefaultMasterExperienceFormula, gameConfiguration.MaximumMasterLevel);
+        return ValueTask.CompletedTask;
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void ExecutePeriodicTasks(object? state)
+    {
+        if (!this.ShouldExecutePeriodicTasks)
+        {
+            return;
+        }
+
+        try
+        {
+            if (this.PlugInManager.GetPlugInPoint<IPeriodicTaskPlugIn>() is { } plugInPoint)
+            {
+                await plugInPoint.ExecuteTaskAsync(this).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.Fail(ex.Message, ex.StackTrace);
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void RecoverTimerElapsed(object? state)
+    {
+        try
+        {
+            await this.ForEachPlayerAsync(player =>
+            {
+                if (player.SelectedCharacter != null && !player.PlayerState.CurrentState.IsDisconnectedOrFinished())
+                {
+                    return player.RegenerateAsync();
+                }
+
+                return Task.CompletedTask;
+            }).ConfigureAwait(false);
+        }
+        catch
+        {
+            // This should never happen as we already handle Exceptions in player.RegenerateAsync.
+            // However, if the player disconnects in the meantime, it could happen :-).
+        }
+    }
+
+    private ValueTask PlayerEnteredWorldAsync(Player player)
+    {
+        this.PlayersByCharacterName.TryAdd(player.SelectedCharacter!.Name, player);
+        return ValueTask.CompletedTask;
+    }
+
+    private ValueTask PlayerLeftWorldAsync(Player player)
+    {
+        this.PlayersByCharacterName.TryRemove(player.SelectedCharacter!.Name, out _);
+        return ValueTask.CompletedTask;
+    }
+}

@@ -1,0 +1,13 @@
+@typeparam TValue
+@inherits NotifyableInputBase<TValue>
+
+<select @attributes="this.AdditionalAttributes"
+        class="@this.CssClass"
+        id="@this.FieldIdentifier.FieldName"
+        value="@this.CurrentValueAsString"
+        @onchange="@(EventCallback.Factory.CreateBinder<string>(this, value => this.CurrentValueAsString = value, this.CurrentValueAsString ?? string.Empty))">
+@foreach (var enumValue in Enum.GetValues(typeof(TValue)))
+{
+    <option value="@enumValue.ToString()" selected="@this.IsSelected(enumValue)">@this.GetCaption(enumValue)</option>
+}
+</select>

@@ -1,0 +1,210 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Arrows" xml:space="preserve">
+    <value>Arrows</value>
+  </data>
+  <data name="Bolts" xml:space="preserve">
+    <value>Bolts</value>
+  </data>
+  <data name="JewelOfBless" xml:space="preserve">
+    <value>Jewel of Bless</value>
+  </data>
+  <data name="JewelOfSoul" xml:space="preserve">
+    <value>Jewel of Soul</value>
+  </data>
+  <data name="JewelOfChaos" xml:space="preserve">
+    <value>Jewel of Chaos</value>
+  </data>
+  <data name="JewelOfLife" xml:space="preserve">
+    <value>Jewel of Life</value>
+  </data>
+  <data name="JewelOfCreation" xml:space="preserve">
+    <value>Jewel of Creation</value>
+  </data>
+  <data name="JewelOfGuardian" xml:space="preserve">
+    <value>Jewel of Guardian</value>
+  </data>
+  <data name="GemstoneHarmonyAndRefineStones" xml:space="preserve">
+    <value>Gemstone, Jewel of Harmony and Refine Stones</value>
+  </data>
+  <data name="PackedJewelOfBless" xml:space="preserve">
+    <value>Packed Jewel of Bless</value>
+  </data>
+  <data name="PackedJewelOfSoul" xml:space="preserve">
+    <value>Packed Jewel of Soul</value>
+  </data>
+  <data name="PackedJewelOfChaos" xml:space="preserve">
+    <value>Packed Jewel of Chaos</value>
+  </data>
+  <data name="PackedJewelOfLife" xml:space="preserve">
+    <value>Packed Jewel of Life</value>
+  </data>
+  <data name="PackedJewelOfCreation" xml:space="preserve">
+    <value>Packed Jewel of Creation</value>
+  </data>
+  <data name="PackedJewelOfGuardian" xml:space="preserve">
+    <value>Packed Jewel of Guardian</value>
+  </data>
+  <data name="PackedGemstoneHarmonyAndRefineStones" xml:space="preserve">
+    <value>Packed Gemstone, Jewel of Harmony and Refine Stones</value>
+  </data>
+  <data name="Fruits" xml:space="preserve">
+    <value>Fruits</value>
+  </data>
+  <data name="LochsFeather" xml:space="preserve">
+    <value>Loch's Feather</value>
+  </data>
+  <data name="LargeHealingAndManaPotion" xml:space="preserve">
+    <value>Large Healing and Mana Potion</value>
+  </data>
+  <data name="SiegePotion" xml:space="preserve">
+    <value>Siege Potion</value>
+  </data>
+  <data name="OrderGuardianLifeStone" xml:space="preserve">
+    <value>Order (Guardian/Life Stone)</value>
+  </data>
+  <data name="ContractSummon" xml:space="preserve">
+    <value>Contract (Summon)</value>
+  </data>
+  <data name="SplinterOfArmor" xml:space="preserve">
+    <value>Splinter of Armor</value>
+  </data>
+  <data name="BlessOfGuardian" xml:space="preserve">
+    <value>Bless of Guardian</value>
+  </data>
+  <data name="ClawOfBeast" xml:space="preserve">
+    <value>Claw of Beast</value>
+  </data>
+  <data name="FragmentOfHorn" xml:space="preserve">
+    <value>Fragment of Horn</value>
+  </data>
+  <data name="BrokenHorn" xml:space="preserve">
+    <value>Broken Horn</value>
+  </data>
+  <data name="HornOfFenrir" xml:space="preserve">
+    <value>Horn of Fenrir</value>
+  </data>
+  <data name="SmallShieldPotion" xml:space="preserve">
+    <value>Small Shield Potion</value>
+  </data>
+  <data name="ShieldPotion" xml:space="preserve">
+    <value>Shield Potion</value>
+  </data>
+  <data name="LargeShieldPotion" xml:space="preserve">
+    <value>Large Shield Potion</value>
+  </data>
+  <data name="SmallComplexPotion" xml:space="preserve">
+    <value>Small Complex Potion</value>
+  </data>
+  <data name="ComplexPotion" xml:space="preserve">
+    <value>Complex Potion</value>
+  </data>
+  <data name="LargeComplexPotion" xml:space="preserve">
+    <value>Large Complex Potion</value>
+  </data>
+  <data name="HornOfDinorant" xml:space="preserve">
+    <value>Horn of Dinorant</value>
+  </data>
+  <data name="DevilsEye" xml:space="preserve">
+    <value>Devil's Eye</value>
+  </data>
+  <data name="DevilsKey" xml:space="preserve">
+    <value>Devil's Key</value>
+  </data>
+  <data name="DevilsInvitation" xml:space="preserve">
+    <value>Devil's Invitation</value>
+  </data>
+  <data name="RemedyOfLove" xml:space="preserve">
+    <value>Remedy of Love</value>
+  </data>
+  <data name="Rena" xml:space="preserve">
+    <value>Rena</value>
+  </data>
+  <data name="Ale" xml:space="preserve">
+    <value>Ale</value>
+  </data>
+  <data name="InvisibilityCloak" xml:space="preserve">
+    <value>Invisibility Cloak</value>
+  </data>
+  <data name="ScrollOfArchangel" xml:space="preserve">
+    <value>Scroll of Archangel</value>
+  </data>
+  <data name="BloodBone" xml:space="preserve">
+    <value>Blood Bone</value>
+  </data>
+  <data name="IllusionTempleTickets" xml:space="preserve">
+    <value>Illusion Temple tickets</value>
+  </data>
+  <data name="FlameAndFeatherOfCondor" xml:space="preserve">
+    <value>Flame and Feather of Condor</value>
+  </data>
+  <data name="ArmorOfGuardsman" xml:space="preserve">
+    <value>Armor of Guardsman</value>
+  </data>
+  <data name="WizardsRing" xml:space="preserve">
+    <value>Wizard's Ring</value>
+  </data>
+  <data name="Spirit" xml:space="preserve">
+    <value>Spirit</value>
+  </data>
+  <data name="LostMap" xml:space="preserve">
+    <value>Lost Map</value>
+  </data>
+  <data name="SymbolOfKundun" xml:space="preserve">
+    <value>Symbol of Kundun</value>
+  </data>
+  <data name="HalloweenItems" xml:space="preserve">
+    <value>Halloween items</value>
+  </data>
+  <data name="GemOfSecret" xml:space="preserve">
+    <value>Gem of Secret</value>
+  </data>
+  <data name="ImperialGuardianItems" xml:space="preserve">
+    <value>Imperial Guardian items</value>
+  </data>
+  <data name="ChristmasStarAndFirecracker" xml:space="preserve">
+    <value>Christmas Star and Firecracker</value>
+  </data>
+  <data name="CherryBlossomItems" xml:space="preserve">
+    <value>Cherry Blossom items</value>
+  </data>
+  <data name="FixedValue" xml:space="preserve">
+    <value>Fixed value</value>
+  </data>
+  <data name="Potions" xml:space="preserve">
+    <value>Potions</value>
+  </data>
+  <data name="ValueBased" xml:space="preserve">
+    <value>Value based</value>
+  </data>
+  <data name="Accessories" xml:space="preserve">
+    <value>Accessories</value>
+  </data>
+  <data name="DarkRaven" xml:space="preserve">
+    <value>Dark Raven</value>
+  </data>
+  <data name="DarkHorse" xml:space="preserve">
+    <value>Dark Horse</value>
+  </data>
+  <data name="OneHandedWeaponsAndShields" xml:space="preserve">
+    <value>One-handed weapons and shields</value>
+  </data>
+  <data name="OneHandedWeaponsWithSkillWithoutValue" xml:space="preserve">
+    <value>One-handed weapons with a skill without value</value>
+  </data>
+  <data name="EquipmentWithSkillWithoutValue" xml:space="preserve">
+    <value>Equipment with a skill without value</value>
+  </data>
+</root>

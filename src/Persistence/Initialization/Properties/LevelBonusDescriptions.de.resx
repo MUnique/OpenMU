@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StaffRiseEven" xml:space="preserve">
+    <value>Der Stab-Steigerungsbonus pro Gegenstandslevel für Stäbe mit gerader Magiekraft.</value>
+  </data>
+  <data name="StaffRiseOdd" xml:space="preserve">
+    <value>Der Stab-Steigerungsbonus pro Gegenstandslevel für Stäbe mit ungerader Magiekraft.</value>
+  </data>
+  <data name="ScepterRiseEven" xml:space="preserve">
+    <value>Der Zepter-Steigerungsbonus pro Gegenstandslevel für Zepter mit gerader Magiekraft.</value>
+  </data>
+  <data name="ScepterRiseOdd" xml:space="preserve">
+    <value>Der Zepter-Steigerungsbonus pro Gegenstandslevel für Zepter mit ungerader Magiekraft.</value>
+  </data>
+  <data name="WeaponDamageIncrease" xml:space="preserve">
+    <value>Die Schadenserhöhung pro Waffenlevel. Sie steigt um 3 pro Level und ab Level 10 um 1 mehr.</value>
+  </data>
+  <data name="ShieldDefenseRateIncrease" xml:space="preserve">
+    <value>Definiert die Erhöhung der Verteidigungsrate pro Gegenstandslevel für Schilde. Bis Level 9 sind es 3 pro Gegenstandslevel, danach jeweils 1 mehr pro Level.</value>
+  </data>
+  <data name="ShieldDefenseIncrease" xml:space="preserve">
+    <value>Definiert die Verteidigungserhöhung pro Gegenstandslevel für Schilde. Es ist immer 1 pro Gegenstandslevel.</value>
+  </data>
+  <data name="RunningMovementSpeed" xml:space="preserve">
+    <value>Definiert die Laufgeschwindigkeit für Stiefel und Unterwasser-Handschuhe ab Gegenstandslevel 5.</value>
+  </data>
+  <data name="ArmorDefenseIncrease" xml:space="preserve">
+    <value>Definiert die Verteidigungserhöhung pro Gegenstandslevel für Rüstungen. Bis Level 9 sind es 3 pro Gegenstandslevel, danach jeweils 1 mehr pro Level.</value>
+  </data>
+  <data name="TransformationRingSkinsTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsSkeletonTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Skelett-Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsPandaTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Panda-Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsSnowmanTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Schneemann-Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsGameMasterTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (GM-Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsChristmasTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Weihnachts-Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsJackOLanternTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Jack-O'Lantern-Verwandlungsring).</value>
+  </data>
+  <data name="TransformationRingSkinsEliteSkeletonTransformationRing" xml:space="preserve">
+    <value>Enthält die Skin-Nummern für die verschiedenen Level des Verwandlungsrings (Elite-Skelett-Verwandlungsring).</value>
+  </data>
+  <data name="JeweleryElementalResistances" xml:space="preserve">
+    <value>Definiert die Elementarresistenzen für Schmuck. Es ist 1 pro Gegenstandslevel.</value>
+  </data>
+  <data name="FirstAndThirdWingsDamageIncrease" xml:space="preserve">
+    <value>Definiert den Multiplikator der Schadenserhöhung für Flügel der 1. und 3. Stufe. Es sind 2 % pro Flügellevel.</value>
+  </data>
+  <data name="FirstAndSecondWingsDefenseBonus" xml:space="preserve">
+    <value>Definiert den Verteidigungsbonus pro Level für Flügel der 1. und 2. Stufe.</value>
+  </data>
+  <data name="WingDamageAbsorb" xml:space="preserve">
+    <value>Die Schadensabsorption von Flügeln pro Gegenstandslevel, 2 % weniger Schaden pro Level.</value>
+  </data>
+  <data name="AmmunitionDamageIncrease" xml:space="preserve">
+    <value>Die prozentuale Schadenserhöhung durch das Gegenstandslevel der Munition.</value>
+  </data>
+  <data name="AmmunitionManaLoss" xml:space="preserve">
+    <value>Der Manaverlust pro Fertigkeitstreffer pro Gegenstandslevel der Munition durch den Infinity-Arrow-Effekt.</value>
+  </data>
+  <data name="AmmunitionDamageIncreasePerLevel" xml:space="preserve">
+    <value>Die prozentuale Schadenserhöhung pro Gegenstandslevel der Munition.</value>
+  </data>
+  <data name="ThirdWingsDefenseBonus" xml:space="preserve">
+    <value>Definiert den Verteidigungsbonus pro Level für Flügel der 3. Stufe.</value>
+  </data>
+  <data name="SecondWingsDamageIncrease" xml:space="preserve">
+    <value>Definiert den Multiplikator der Schadenserhöhung für Flügel der 2. Stufe. Es ist 1 % pro Flügellevel.</value>
+  </data>
+  <data name="DeathCowTransformationRingHealthBonus" xml:space="preserve">
+    <value>Erhöht das maximale Leben auf Gegenstandsstufe 5 um 20%.</value>
+  </data>
+</root>

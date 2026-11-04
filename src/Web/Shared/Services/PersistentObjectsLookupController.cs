@@ -1,0 +1,100 @@
+// <copyright file="PersistentObjectsLookupController.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.Shared.Services;
+
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence;
+
+/// <summary>
+/// A <see cref="ILookupController"/> which will return persistent objects which
+/// start with or contain the specified text.
+/// </summary>
+public class PersistentObjectsLookupController : ILookupController
+{
+    private readonly IPersistenceContextProvider _contextProvider;
+    private readonly IDataSource<GameConfiguration> _gameConfigurationSource;
+    private readonly ILogger<PersistentObjectsLookupController> _logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PersistentObjectsLookupController" /> class.
+    /// </summary>
+    /// <param name="contextProvider">The persistence context provider.</param>
+    /// <param name="gameConfigurationSource">The game configuration provider.</param>
+    /// <param name="logger">The logger.</param>
+    public PersistentObjectsLookupController(
+        IPersistenceContextProvider contextProvider,
+        IDataSource<GameConfiguration> gameConfigurationSource,
+        ILogger<PersistentObjectsLookupController> logger)
+    {
+        this._contextProvider = contextProvider;
+        this._gameConfigurationSource = gameConfigurationSource;
+        this._logger = logger;
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> GetSuggestionsAsync<T>(string? text, IContext? persistenceContext)
+        where T : class
+    {
+        try
+        {
+            if (!typeof(T).IsConfigurationType())
+            {
+                // Only config data should be searchable
+                return Enumerable.Empty<T>();
+            }
+
+            var owner = await this._gameConfigurationSource.GetOwnerAsync().ConfigureAwait(true);
+            var gameConfigurationContext = await this._gameConfigurationSource.GetContextAsync().ConfigureAwait(true);
+            IEnumerable<T> values;
+
+            // When the context is the one of the game configuration source, its objects are already loaded,
+            // so we don't need to query the whole object graph from the database on every keystroke again.
+            if (this._gameConfigurationSource.IsSupporting(typeof(T))
+                && (ReferenceEquals(persistenceContext, gameConfigurationContext)
+                    || persistenceContext?.IsSupporting(typeof(T)) is not true))
+            {
+                values = this._gameConfigurationSource.GetAll<T>();
+            }
+            else
+            {
+                using var context = persistenceContext is null
+                    ? this._contextProvider.CreateNewContext(owner)
+                    : null;
+                var effectiveContext = persistenceContext ?? context;
+                if (effectiveContext is null || effectiveContext.IsSupporting(typeof(T)) is not true)
+                {
+                    // Not a persisted entity (e.g. a game-logic definition class whose
+                    // name merely contains "Definition"): nothing to suggest.
+                    return Enumerable.Empty<T>();
+                }
+
+                values = await effectiveContext.GetAsync<T>().ConfigureAwait(false);
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return values;
+            }
+
+            var searchWords = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var query = values;
+
+            foreach (var word in searchWords)
+            {
+                query = query.Where(v => v.GetName().Contains(word, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query.Distinct();
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error while searching for suggestions...");
+        }
+
+        return Enumerable.Empty<T>();
+    }
+}

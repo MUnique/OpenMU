@@ -1,0 +1,67 @@
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
+@implements IDisposable
+
+<section class="card h-100">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h2 class="h6 mb-0">@Resources.DashboardOnlineHistory</h2>
+        <small class="text-body-secondary">@string.Format(Resources.DashboardSampleInterval, (int)OnlinePlayerHistory.SampleInterval.TotalMinutes)</small>
+    </div>
+    <div class="card-body">
+        @if (OnlinePlayerChart.Create(this.History.GetSamples(), DateTime.UtcNow) is { } chart)
+        {
+            <svg class="online-chart" role="img" aria-label="@string.Format(Resources.DashboardOnlineHistoryDescription, chart.Current, chart.Peak, chart.Low)"
+                 viewBox="0 0 @OnlinePlayerChart.Width @OnlinePlayerChart.Height" preserveAspectRatio="none">
+                @for (var i = 1; i <= 3; i++)
+                {
+                    var y = OnlinePlayerChart.Height * i / 4;
+                    <line class="online-chart-grid" x1="0" y1="@y" x2="@OnlinePlayerChart.Width" y2="@y" vector-effect="non-scaling-stroke" />
+                }
+                <polygon class="online-chart-area" points="@chart.AreaPoints" />
+                <polyline class="online-chart-line" points="@chart.LinePoints" vector-effect="non-scaling-stroke" />
+            </svg>
+            <div class="d-flex justify-content-between small text-body-secondary" aria-hidden="true">
+                @for (var hoursAgo = (int)OnlinePlayerHistory.Window.TotalHours; hoursAgo > 0; hoursAgo -= 6)
+                {
+                    <span>@string.Format(Resources.DashboardHoursAgo, hoursAgo)</span>
+                }
+                <span>@Resources.DashboardNow</span>
+            </div>
+            <div class="d-flex flex-wrap gap-4 small text-body-secondary mt-2">
+                <span>@Resources.DashboardCurrent <strong class="text-body">@chart.Current</strong></span>
+                <span>@Resources.DashboardPeak <strong class="text-body">@chart.Peak</strong></span>
+                <span>@Resources.DashboardLow <strong class="text-body">@chart.Low</strong></span>
+            </div>
+        }
+        else
+        {
+            <p class="text-body-secondary mb-0">@Resources.DashboardCollectingData</p>
+        }
+    </div>
+</section>
+
+@code {
+    /// <summary>
+    /// Gets or sets the history of the online players.
+    /// </summary>
+    [Inject]
+    public OnlinePlayerHistory History { get; set; } = null!;
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.History.SampleAdded -= this.OnSampleAdded;
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this.History.SampleAdded += this.OnSampleAdded;
+    }
+
+    private void OnSampleAdded(object? sender, EventArgs e)
+    {
+        _ = this.InvokeAsync(this.StateHasChanged);
+    }
+}

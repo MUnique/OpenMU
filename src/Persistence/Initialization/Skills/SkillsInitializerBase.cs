@@ -1,0 +1,329 @@
+﻿// <copyright file="SkillsInitializerBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization.Skills;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+
+/// <summary>
+/// Base class for a skills initializer.
+/// </summary>
+internal abstract class SkillsInitializerBase : InitializerBase
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillsInitializerBase"/> class.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    protected SkillsInitializerBase(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
+    {
+    }
+
+    /// <summary>
+    /// Creates the skill.
+    /// </summary>
+    /// <param name="number">The number.</param>
+    /// <param name="name">The name of the skill.</param>
+    /// <param name="characterClasses">The character classes.</param>
+    /// <param name="damageType">Type of the damage.</param>
+    /// <param name="damage">The damage.</param>
+    /// <param name="distance">The distance.</param>
+    /// <param name="abilityConsumption">The ability consumption.</param>
+    /// <param name="manaConsumption">The mana consumption.</param>
+    /// <param name="levelRequirement">The level requirement.</param>
+    /// <param name="energyRequirement">The energy requirement.</param>
+    /// <param name="leadershipRequirement">The leadership requirement.</param>
+    /// <param name="elementalModifier">The elemental modifier.</param>
+    /// <param name="skillType">Type of the skill.</param>
+    /// <param name="skillTarget">The skill target.</param>
+    /// <param name="implicitTargetRange">The implicit target range.</param>
+    /// <param name="targetRestriction">The target restriction.</param>
+    /// <param name="movesToTarget">If set to <c>true</c>, the skill moves the player to the target.</param>
+    /// <param name="movesTarget">If set to <c>true</c>, it moves target randomly.</param>
+    /// <param name="cooldownMinutes">The cooldown minutes.</param>
+    /// <param name="hitsPerAttack">The number of hits per attack.</param>
+    protected void CreateSkill(
+        SkillNumber number,
+        LocalizedString name,
+        CharacterClasses characterClasses = CharacterClasses.None,
+        DamageType damageType = DamageType.None,
+        int damage = 0,
+        short distance = 0,
+        int abilityConsumption = 0,
+        int manaConsumption = 0,
+        int levelRequirement = 0,
+        int energyRequirement = 0,
+        int leadershipRequirement = 0,
+        ElementalType elementalModifier = ElementalType.Undefined,
+        SkillType skillType = SkillType.DirectHit,
+        SkillTarget skillTarget = SkillTarget.Explicit,
+        short implicitTargetRange = 0,
+        SkillTargetRestriction targetRestriction = SkillTargetRestriction.Undefined,
+        bool movesToTarget = false,
+        bool movesTarget = false,
+        int cooldownMinutes = 0,
+        byte hitsPerAttack = 1)
+    {
+        var skill = this.Context.CreateNew<Skill>();
+        this.GameConfiguration.Skills.Add(skill);
+        skill.Number = (short)number;
+        skill.Name = name;
+        skill.MovesToTarget = movesToTarget;
+        skill.MovesTarget = movesTarget;
+        skill.AttackDamage = damage;
+        skill.NumberOfHitsPerAttack = hitsPerAttack;
+
+        this.CreateSkillRequirementIfNeeded(skill, Stats.Level, levelRequirement);
+        this.CreateSkillRequirementIfNeeded(skill, Stats.TotalLeadership, leadershipRequirement);
+        this.CreateSkillRequirementIfNeeded(skill, Stats.TotalEnergy, energyRequirement);
+        this.CreateSkillConsumeRequirementIfNeeded(skill, Stats.CurrentMana, manaConsumption);
+        this.CreateSkillConsumeRequirementIfNeeded(skill, Stats.CurrentAbility, abilityConsumption);
+
+        skill.Range = distance;
+        skill.DamageType = damageType;
+        skill.SkillType = skillType;
+
+        skill.ImplicitTargetRange = implicitTargetRange;
+        skill.Target = skillTarget;
+        skill.TargetRestriction = targetRestriction;
+        var classes = this.GameConfiguration.DetermineCharacterClasses(characterClasses);
+        foreach (var characterClass in classes)
+        {
+            skill.QualifiedCharacters.Add(characterClass);
+        }
+
+        if (elementalModifier != ElementalType.Undefined)
+        {
+            this.ApplyElementalModifier(elementalModifier, skill);
+        }
+
+        skill.SetGuid(skill.Number);
+    }
+
+    /// <summary>
+    /// Adds the area skill settings for the specified skill.
+    /// </summary>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <param name="useFrustumFilter">If set to <c>true</c>, the skill should use a frustum filter.</param>
+    /// <param name="frustumStartWidth">Start width of the frustum.</param>
+    /// <param name="frustumEndWidth">End width of the frustum.</param>
+    /// <param name="frustumDistance">The frustum distance.</param>
+    /// <param name="useDeferredHits">If set to <c>true</c>, the skill should use deferred hits.</param>
+    /// <param name="delayPerOneDistance">The delay per one distance.</param>
+    /// <param name="delayBetweenHits">The delay between hits.</param>
+    /// <param name="minimumHitsPerTarget">The minimum hits per target.</param>
+    /// <param name="maximumHitsPerTarget">The maximum hits per target.</param>
+    /// <param name="minimumHitsPerAttack">The minimum hits per attack.</param>
+    /// <param name="maximumHitsPerAttack">The maximum hits per attack.</param>
+    /// <param name="hitChancePerDistanceMultiplier">The hit chance per distance multiplier.</param>
+    /// <param name="useTargetAreaFilter">If set to <c>true</c>, the skill should use a target area filter.</param>
+    /// <param name="targetAreaDiameter">The target area diameter.</param>
+    /// <param name="projectileCount">The number of projectiles/arrows. When greater than 1, they are evenly distributed within the frustum.</param>
+    /// <param name="effectRange">The effect range of the skill, from the target area center.</param>
+    protected void AddAreaSkillSettings(
+        SkillNumber skillNumber,
+        bool useFrustumFilter,
+        float frustumStartWidth,
+        float frustumEndWidth,
+        float frustumDistance,
+        bool useDeferredHits = false,
+        TimeSpan delayPerOneDistance = default,
+        TimeSpan delayBetweenHits = default,
+        int minimumHitsPerTarget = 1,
+        int maximumHitsPerTarget = 1,
+        int minimumHitsPerAttack = default,
+        int maximumHitsPerAttack = default,
+        float hitChancePerDistanceMultiplier = 1.0f,
+        bool useTargetAreaFilter = false,
+        float targetAreaDiameter = default,
+        int projectileCount = 1,
+        int effectRange = default)
+    {
+        var skill = this.GameConfiguration.Skills.First(s => s.Number == (short)skillNumber);
+        var areaSkillSettings = this.Context.CreateNew<AreaSkillSettings>();
+        skill.AreaSkillSettings = areaSkillSettings;
+
+        areaSkillSettings.UseFrustumFilter = useFrustumFilter;
+        areaSkillSettings.FrustumStartWidth = frustumStartWidth;
+        areaSkillSettings.FrustumEndWidth = frustumEndWidth;
+        areaSkillSettings.FrustumDistance = frustumDistance;
+        areaSkillSettings.UseTargetAreaFilter = useTargetAreaFilter;
+        areaSkillSettings.TargetAreaDiameter = targetAreaDiameter;
+        areaSkillSettings.UseDeferredHits = useDeferredHits;
+        areaSkillSettings.DelayPerOneDistance = delayPerOneDistance;
+        areaSkillSettings.DelayBetweenHits = delayBetweenHits;
+        areaSkillSettings.MinimumNumberOfHitsPerTarget = minimumHitsPerTarget;
+        areaSkillSettings.MaximumNumberOfHitsPerTarget = maximumHitsPerTarget;
+        areaSkillSettings.MinimumNumberOfHitsPerAttack = minimumHitsPerAttack;
+        areaSkillSettings.MaximumNumberOfHitsPerAttack = maximumHitsPerAttack;
+        areaSkillSettings.HitChancePerDistanceMultiplier = hitChancePerDistanceMultiplier;
+        areaSkillSettings.ProjectileCount = projectileCount;
+        areaSkillSettings.EffectRange = effectRange;
+    }
+
+    private void ApplyElementalModifier(ElementalType elementalModifier, Skill skill)
+    {
+        if ((SkillNumber)skill.Number is SkillNumber.IceArrow)
+        {
+            skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 5);
+            return;
+        }
+
+        if ((SkillNumber)skill.Number is SkillNumber.Pollution)
+        {
+            skill.ElementalModifierTarget = Stats.LightningResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 2);
+            return;
+        }
+
+        if ((SkillNumber)skill.Number is SkillNumber.ChainDrive)
+        {
+            skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Cold, Stats.IsIced, 10, 0.4f);
+            return;
+        }
+
+        if ((SkillNumber)skill.Number is SkillNumber.StrikeofDestruction)
+        {
+            skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+            skill.SkipElementalModifier = true;
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Cold, Stats.IsIced, 10);
+            return;
+        }
+
+        switch (elementalModifier)
+        {
+            case ElementalType.Ice:
+                skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
+                skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Iced, Stats.IsIced, 10);
+
+                break;
+            case ElementalType.Poison:
+                skill.ElementalModifierTarget = Stats.PoisonResistance.GetPersistent(this.GameConfiguration);
+
+                // Poison Skill applies damage 7 times, while decay three times. We assume that we apply each damage
+                // every 3 seconds. We leave one or two extra seconds, so that the damage is applied for sure.
+                var durationInSeconds = skill.Number == (short)SkillNumber.Poison ? 20 : 10;
+                skill.MagicEffectDef = this.CreateEffect(ElementalType.Poison, MagicEffectNumber.Poisoned, Stats.IsPoisoned, durationInSeconds);
+                break;
+            case ElementalType.Lightning:
+                skill.ElementalModifierTarget = Stats.LightningResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.LightningShock || (SkillNumber)skill.Number is SkillNumber.Earthshake)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
+                break;
+            case ElementalType.Fire:
+                skill.ElementalModifierTarget = Stats.FireResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.Explosion223)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
+                break;
+            case ElementalType.Earth:
+                skill.ElementalModifierTarget = Stats.EarthResistance.GetPersistent(this.GameConfiguration);
+                break;
+            case ElementalType.Wind:
+                skill.ElementalModifierTarget = Stats.WindResistance.GetPersistent(this.GameConfiguration);
+                if ((SkillNumber)skill.Number is SkillNumber.Requiem)
+                {
+                    skill.SkipElementalModifier = true;
+                }
+
+                break;
+            case ElementalType.Water:
+                skill.ElementalModifierTarget = Stats.WaterResistance.GetPersistent(this.GameConfiguration);
+                break;
+            default:
+                // None
+                break;
+        }
+    }
+
+    private MagicEffectDefinition CreateEffect(ElementalType type, MagicEffectNumber effectNumber, AttributeDefinition targetAttribute, float durationInSeconds, float chance = 0)
+    {
+        if (this.GameConfiguration.MagicEffects.FirstOrDefault(
+                e => e.Number == (short)effectNumber
+                     && e.SubType == (byte)(0xFF - type)
+                     && Equals(e.Duration?.ConstantValue.Value, durationInSeconds)
+                     && Equals(e.Chance?.ConstantValue.Value, chance)
+                     && e.PowerUpDefinitions.FirstOrDefault()?.TargetAttribute == targetAttribute) is { } existingEffect)
+        {
+            return existingEffect;
+        }
+
+        var effect = this.Context.CreateNew<MagicEffectDefinition>();
+        this.GameConfiguration.MagicEffects.Add(effect);
+        effect.Name = MagicEffectNames.ResourceManager.GetLocalizedString(effectNumber.ToString());
+        effect.InformObservers = true;
+        effect.Number = (short)effectNumber;
+        effect.StopByDeath = true;
+        effect.SubType = (byte)(0xFF - type);
+        effect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
+        effect.Duration.ConstantValue.Value = durationInSeconds;
+        var powerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        effect.PowerUpDefinitions.Add(powerUpDefinition);
+        powerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        powerUpDefinition.Boost.ConstantValue.Value = 1;
+        powerUpDefinition.TargetAttribute = targetAttribute.GetPersistent(this.GameConfiguration);
+        if (targetAttribute == Stats.IsIced)
+        {
+            var movementSpeedFactorPowerUp = this.Context.CreateNew<PowerUpDefinition>();
+            effect.PowerUpDefinitions.Add(movementSpeedFactorPowerUp);
+            movementSpeedFactorPowerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            movementSpeedFactorPowerUp.Boost.ConstantValue.AggregateType = AggregateType.Multiplicate;
+            movementSpeedFactorPowerUp.TargetAttribute = Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration);
+
+            if (effectNumber == MagicEffectNumber.Cold)
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.ColdMovementSpeedFactor;
+            }
+            else
+            {
+                movementSpeedFactorPowerUp.Boost.ConstantValue.Value = MovementSpeedConstants.IcedMovementSpeedFactor;
+            }
+        }
+
+        if (chance > 0)
+        {
+            effect.Chance = this.Context.CreateNew<PowerUpDefinitionValue>();
+            effect.Chance.ConstantValue.Value = chance;
+        }
+
+        return effect;
+    }
+
+    private void CreateSkillConsumeRequirementIfNeeded(Skill skill, AttributeDefinition attribute, int requiredValue)
+    {
+        if (requiredValue == 0)
+        {
+            return;
+        }
+
+        var requirement = this.CreateRequirement(attribute, requiredValue);
+        skill.ConsumeRequirements.Add(requirement);
+    }
+
+    private void CreateSkillRequirementIfNeeded(Skill skill, AttributeDefinition attribute, int requiredValue)
+    {
+        if (requiredValue == 0)
+        {
+            return;
+        }
+
+        var requirement = this.CreateRequirement(attribute, requiredValue);
+        skill.Requirements.Add(requirement);
+    }
+}

@@ -1,0 +1,51 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
+@inherits NotifyableInputBase<ICollection<int>>
+
+<div class="mb-3">
+    <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+    <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
+    <ValidationMessage For=@this.ValueExpression />
+</div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string Label { get; set; } = string.Empty;
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out ICollection<int> result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        result = null;
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            foreach (var intValue in value.Split(';', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (int.TryParse(intValue, out var parsedInt))
+                {
+                    (result ??= new List<int>()).Add(parsedInt);
+                }
+                else
+                {
+                    result = null;
+                    validationErrorMessage = Resources.IntegerListFormatError;
+                    return false;
+                }
+            }
+        }
+
+        result ??= new List<int>();
+        validationErrorMessage = null;
+        return true;
+    }
+
+    /// <inheritdoc />
+    protected override string FormatValueAsString(ICollection<int>? value)
+    {
+        return value is null ? string.Empty : string.Join(';', value);
+    }
+}

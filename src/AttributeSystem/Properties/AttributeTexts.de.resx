@@ -1,0 +1,1245 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Name_AbilityrecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>Ausdauerregeneration nach Monstertötung, absolut</value>
+  </data>
+  <data name="Name_AbilityrecoverafterMonsterkillmultiplierofmaxability" xml:space="preserve">
+    <value>Ausdauerregeneration nach Monstertötung, Multiplikator der max. Ausdauer</value>
+  </data>
+  <data name="Name_AbilityRecoveryAbsoluteIncrease" xml:space="preserve">
+    <value>Absolute Erhöhung der Ausdauerregeneration</value>
+  </data>
+  <data name="Name_AbilityRecoveryMultiplier" xml:space="preserve">
+    <value>Multiplikator der Ausdauerregeneration</value>
+  </data>
+  <data name="Name_AbilityUsageReduction" xml:space="preserve">
+    <value>Verringerung des Ausdauerverbrauchs</value>
+  </data>
+  <data name="Description_AbilityUsageReduction" xml:space="preserve">
+    <value>Faktor (0~1), der beschreibt, wie viel der benötigten Ausdauer einer Fertigkeit nicht verbraucht wird.</value>
+  </data>
+  <data name="Name_AgilityRequirementreduction" xml:space="preserve">
+    <value>Verringerung der Beweglichkeitsanforderung</value>
+  </data>
+  <data name="Description_AgilityRequirementreduction" xml:space="preserve">
+    <value>Gegenstände mit dieser Option benötigen entsprechend dem Optionswert weniger Beweglichkeit.</value>
+  </data>
+  <data name="Name_AmmunitionDamageBonus" xml:space="preserve">
+    <value>Schadensbonus der Munition</value>
+  </data>
+  <data name="Description_AmmunitionDamageBonus" xml:space="preserve">
+    <value>Der (relative) Schadensbonus der Munition, der mit dem min./max. Basisschaden multipliziert wird.</value>
+  </data>
+  <data name="Name_Ammunitiondamageincrease" xml:space="preserve">
+    <value>Schadenserhöhung durch Munition</value>
+  </data>
+  <data name="Name_ArcheryAttackMode" xml:space="preserve">
+    <value>Fernkampf-Angriffsmodus</value>
+  </data>
+  <data name="Description_ArcheryAttackMode" xml:space="preserve">
+    <value>Der Schalter für den Fernkampf-Angriffsmodus der Elfe.</value>
+  </data>
+  <data name="Name_ArcheryMaximumDamage" xml:space="preserve">
+    <value>Maximaler Fernkampfschaden</value>
+  </data>
+  <data name="Description_ArcheryMaximumDamage" xml:space="preserve">
+    <value>Der maximale Fernkampfschaden der Elfe, der zu Angriffen mit Projektilwaffen addiert wird.</value>
+  </data>
+  <data name="Name_ArcheryMinimumDamage" xml:space="preserve">
+    <value>Minimaler Fernkampfschaden</value>
+  </data>
+  <data name="Description_ArcheryMinimumDamage" xml:space="preserve">
+    <value>Der minimale Fernkampfschaden der Elfe, der zu Angriffen mit Projektilwaffen addiert wird.</value>
+  </data>
+  <data name="Name_Aretwoweaponsequipped" xml:space="preserve">
+    <value>Sind zwei Waffen ausgerüstet</value>
+  </data>
+  <data name="Name_ArmorDamageDecrease" xml:space="preserve">
+    <value>Schadensverringerung durch Rüstung</value>
+  </data>
+  <data name="Description_ArmorDamageDecrease" xml:space="preserve">
+    <value>Der gesamte Multiplikator der Schadensverringerung durch exzellente, Harmonie- und Sockeloptionen, der mit dem Endschaden multipliziert und davon abgezogen wird.</value>
+  </data>
+  <data name="Name_AttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Multiplikator der Angriffsschadenserhöhung</value>
+  </data>
+  <data name="Name_Attackrateofthedarkraven" xml:space="preserve">
+    <value>Angriffsrate des Dunklen Raben.</value>
+  </data>
+  <data name="Name_AttackRatePvM" xml:space="preserve">
+    <value>Angriffsrate (PvM)</value>
+  </data>
+  <data name="Name_AttackRatePvP" xml:space="preserve">
+    <value>Angriffsrate (PvP)</value>
+  </data>
+  <data name="Name_AttackSpeed" xml:space="preserve">
+    <value>Angriffsgeschwindigkeit</value>
+  </data>
+  <data name="Name_AttackSpeedAny" xml:space="preserve">
+    <value>Angriffsgeschwindigkeit (beliebig)</value>
+  </data>
+  <data name="Description_AttackSpeedAny" xml:space="preserve">
+    <value>Die allgemeine Angriffsgeschwindigkeit, die sowohl zur Angriffs- als auch zur Zaubergeschwindigkeit beiträgt.</value>
+  </data>
+  <data name="Name_AttackSpeedbyWeapons" xml:space="preserve">
+    <value>Angriffsgeschwindigkeit durch Waffen</value>
+  </data>
+  <data name="Name_Attackspeedofthedarkraven" xml:space="preserve">
+    <value>Angriffsgeschwindigkeit des Dunklen Raben.</value>
+  </data>
+  <data name="Name_BaseAgility" xml:space="preserve">
+    <value>Basis-Beweglichkeit</value>
+  </data>
+  <data name="Description_BaseAgility" xml:space="preserve">
+    <value>Die Basis-Beweglichkeit des Charakters.</value>
+  </data>
+  <data name="Name_BaseDamageBonusphysicalandwizardryminandmax" xml:space="preserve">
+    <value>Basisschadensbonus (physisch und magisch, min. und max.)</value>
+  </data>
+  <data name="Description_BaseDamageBonusphysicalandwizardryminandmax" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung zum physischen und magischen min. und max. Basisschaden addiert wird.</value>
+  </data>
+  <data name="Name_BaseDefense" xml:space="preserve">
+    <value>Basisverteidigung</value>
+  </data>
+  <data name="Name_BaseEnergy" xml:space="preserve">
+    <value>Basis-Energie</value>
+  </data>
+  <data name="Name_BaseLeadership" xml:space="preserve">
+    <value>Basis-Führung</value>
+  </data>
+  <data name="Name_BaseMaxDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>Bonus auf max. Basisschaden (physisch und magisch)</value>
+  </data>
+  <data name="Description_BaseMaxDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung zum physischen und magischen max. Basisschaden addiert wird.</value>
+  </data>
+  <data name="Name_BaseMinDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>Bonus auf min. Basisschaden (physisch und magisch)</value>
+  </data>
+  <data name="Description_BaseMinDamageBonusphysicalandwizardry" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung zum physischen und magischen min. Basisschaden addiert wird.</value>
+  </data>
+  <data name="Name_BaseStrength" xml:space="preserve">
+    <value>Basis-Stärke</value>
+  </data>
+  <data name="Description_BaseStrength" xml:space="preserve">
+    <value>Die Basis-Stärke des Charakters.</value>
+  </data>
+  <data name="Name_BaseVitality" xml:space="preserve">
+    <value>Basis-Vitalität</value>
+  </data>
+  <data name="Name_BerserkerCurseMultiplierMST" xml:space="preserve">
+    <value>Berserker-Fluchmultiplikator (MST)</value>
+  </data>
+  <data name="Description_BerserkerCurseMultiplierMST" xml:space="preserve">
+    <value>Der Fluchschadensmultiplikator des Berserker Strengthener, der mit dem min./max. Basisschaden multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_BerserkerHealthDecrement" xml:space="preserve">
+    <value>Berserker-Lebensverringerung</value>
+  </data>
+  <data name="Description_BerserkerHealthDecrement" xml:space="preserve">
+    <value>Die Lebensverringerung durch Berserker, die höchstens -10% betragen sollte.</value>
+  </data>
+  <data name="Name_BerserkerManaMultiplier" xml:space="preserve">
+    <value>Berserker-Manamultiplikator</value>
+  </data>
+  <data name="Description_BerserkerManaMultiplier" xml:space="preserve">
+    <value>Der Manamultiplikator von Berserker, mit dem sowohl das Mana als auch der Schaden (jeder Art) des Anwenders erhöht wird.</value>
+  </data>
+  <data name="Name_BerserkerMaximumCurseDamageBonus" xml:space="preserve">
+    <value>Berserker-Bonus auf maximalen Fluchschaden</value>
+  </data>
+  <data name="Name_BerserkerMaximumPhysicalDamageBonus" xml:space="preserve">
+    <value>Berserker-Bonus auf maximalen physischen Schaden</value>
+  </data>
+  <data name="Name_BerserkerMaximumWizardryDamageBonus" xml:space="preserve">
+    <value>Berserker-Bonus auf maximalen magischen Schaden</value>
+  </data>
+  <data name="Name_BerserkerMinimumCurseDamageBonus" xml:space="preserve">
+    <value>Berserker-Bonus auf minimalen Fluchschaden</value>
+  </data>
+  <data name="Name_BerserkerMinimumPhysicalDamageBonus" xml:space="preserve">
+    <value>Berserker-Bonus auf minimalen physischen Schaden</value>
+  </data>
+  <data name="Name_BerserkerMinimumWizardryDamageBonus" xml:space="preserve">
+    <value>Berserker-Bonus auf minimalen magischen Schaden</value>
+  </data>
+  <data name="Name_BerserkerProficiencyMultiplierMST" xml:space="preserve">
+    <value>Berserker-Proficiency-Multiplikator (MST)</value>
+  </data>
+  <data name="Description_BerserkerProficiencyMultiplierMST" xml:space="preserve">
+    <value>Der Schadensmultiplikator von Berserker Proficiency, der zum magischen Multiplikator addiert, aber auch selbst mit dem magischen/Fluch-Endschaden multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_BerserkerWizardryMultiplier" xml:space="preserve">
+    <value>Berserker-Magiemultiplikator</value>
+  </data>
+  <data name="Description_BerserkerWizardryMultiplier" xml:space="preserve">
+    <value>Der magische Schadensmultiplikator von Berserker, der mit dem min./max. Basisschaden multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_BleedingDamageMultiplier" xml:space="preserve">
+    <value>Multiplikator für Blutungsschaden</value>
+  </data>
+  <data name="Name_BonusExperienceRate" xml:space="preserve">
+    <value>Bonus-Erfahrungsrate</value>
+  </data>
+  <data name="Description_BonusExperienceRate" xml:space="preserve">
+    <value>Die Bonus-Erfahrungsrate, die zum Multiplikator der Basis-Erfahrungsrate addiert wird.</value>
+  </data>
+  <data name="Name_BookBonusBaseDamageMST" xml:space="preserve">
+    <value>Bonus-Basisschaden für Bücher (MST)</value>
+  </data>
+  <data name="Name_BookRisePercentage" xml:space="preserve">
+    <value>Buch-Steigerung in Prozent</value>
+  </data>
+  <data name="Name_BowStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden durch Bow Strengthener (MST)</value>
+  </data>
+  <data name="Name_Chancetofullyrecoverhealthwhengettinghit" xml:space="preserve">
+    <value>Chance, bei einem erlittenen Treffer das Leben vollständig wiederherzustellen</value>
+  </data>
+  <data name="Description_Chancetofullyrecoverhealthwhengettinghit" xml:space="preserve">
+    <value>Option der Flügel der 3. Stufe</value>
+  </data>
+  <data name="Name_Chancetofullyrecovermanawhengettinghit" xml:space="preserve">
+    <value>Chance, bei einem erlittenen Treffer das Mana vollständig wiederherzustellen</value>
+  </data>
+  <data name="Description_Chancetofullyrecovermanawhengettinghit" xml:space="preserve">
+    <value>Option der Flügel der 3. Stufe</value>
+  </data>
+  <data name="Name_Chancetofullyreflectdamagewhengettinghit" xml:space="preserve">
+    <value>Chance, bei einem erlittenen Treffer den Schaden vollständig zu reflektieren</value>
+  </data>
+  <data name="Description_Chancetofullyreflectdamagewhengettinghit" xml:space="preserve">
+    <value>Option der Flügel der 3. Stufe</value>
+  </data>
+  <data name="Name_CharactertoMonstertransformation" xml:space="preserve">
+    <value>Verwandlung des Charakters in ein Monster</value>
+  </data>
+  <data name="Description_CharactertoMonstertransformation" xml:space="preserve">
+    <value>Dieser Wert ist &gt; 0, wenn der Charakter durch das Tragen eines Verwandlungsrings in ein Monster verwandelt wurde. Der Wert gibt den Monstertyp (Skin) an.</value>
+  </data>
+  <data name="Name_ComboBonus" xml:space="preserve">
+    <value>Kombo-Bonus</value>
+  </data>
+  <data name="Name_CriticalDamageBonus" xml:space="preserve">
+    <value>Bonus auf kritischen Schaden</value>
+  </data>
+  <data name="Description_CriticalDamageBonus" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung addiert wird, wenn kritischer Schaden zutrifft.</value>
+  </data>
+  <data name="Name_CriticalDamageChance" xml:space="preserve">
+    <value>Chance auf kritischen Schaden</value>
+  </data>
+  <data name="Name_CrossBowMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>PvP-Bonusschaden durch Crossbow Mastery (MST)</value>
+  </data>
+  <data name="Name_CrossBowStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden durch Crossbow Strengthener (MST)</value>
+  </data>
+  <data name="Name_CurrentAbility" xml:space="preserve">
+    <value>Aktuelle Ausdauer</value>
+  </data>
+  <data name="Name_CurrentHealth" xml:space="preserve">
+    <value>Aktuelles Leben</value>
+  </data>
+  <data name="Name_CurrentMana" xml:space="preserve">
+    <value>Aktuelles Mana</value>
+  </data>
+  <data name="Name_CurrentShield" xml:space="preserve">
+    <value>Aktueller Schild (SD)</value>
+  </data>
+  <data name="Name_CurseAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Multiplikator der Fluchschadenserhöhung</value>
+  </data>
+  <data name="Description_CurseAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Die Fluchschadenserhöhung, die mit dem min./max. Fluch-Basisschaden multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_CurseBaseDamageminandmax" xml:space="preserve">
+    <value>Fluch-Basisschaden (min. und max.)</value>
+  </data>
+  <data name="Name_DamageIncreaseBonusabsoluteWithequippedScepter" xml:space="preserve">
+    <value>Schadenserhöhungsbonus (absolut) mit ausgerüstetem Zepter</value>
+  </data>
+  <data name="Name_DamageIncreaseBonusabsoluteWithequippedScepterCommandDivisorMST" xml:space="preserve">
+    <value>Schadenserhöhungsbonus (absolut) mit ausgerüstetem Zepter, Führungsdivisor (MST)</value>
+  </data>
+  <data name="Name_DamageReceiveFromDarkHorseMultiplier" xml:space="preserve">
+    <value>Multiplikator für erlittenen Schaden durch das Dunkle Pferd</value>
+  </data>
+  <data name="Name_DamageReceiveMultiplier" xml:space="preserve">
+    <value>Multiplikator für erlittenen Schaden</value>
+  </data>
+  <data name="Name_DamageReflection" xml:space="preserve">
+    <value>Schadensreflexion</value>
+  </data>
+  <data name="Name_DarkHorseLevel" xml:space="preserve">
+    <value>Level des Dunklen Pferdes</value>
+  </data>
+  <data name="Name_DarkRavenBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden des Dunklen Raben (MST)</value>
+  </data>
+  <data name="Name_DarkRavenLevel" xml:space="preserve">
+    <value>Level des Dunklen Raben</value>
+  </data>
+  <data name="Name_DefenseDecrement" xml:space="preserve">
+    <value>Verteidigungsverringerung</value>
+  </data>
+  <data name="Description_DefenseDecrement" xml:space="preserve">
+    <value>Die Verteidigungsverringerung durch magische Effekte verschiedener Fertigkeiten, die mit der Endverteidigung multipliziert und davon abgezogen wird.</value>
+  </data>
+  <data name="Name_DefenseIgnoreChance" xml:space="preserve">
+    <value>Chance, Verteidigung zu ignorieren</value>
+  </data>
+  <data name="Name_DefenseIncreaseBonusabsoluteWithequippedHorseMST" xml:space="preserve">
+    <value>Verteidigungserhöhungsbonus (absolut) mit ausgerüstetem Pferd (MST)</value>
+  </data>
+  <data name="Name_DefenseIncreaseBonusabsoluteWithequippedShieldMST" xml:space="preserve">
+    <value>Verteidigungserhöhungsbonus (absolut) mit ausgerüstetem Schild (MST)</value>
+  </data>
+  <data name="Name_DefenseIncreaseMultiplierWithEquippedShield" xml:space="preserve">
+    <value>Multiplikator der Verteidigungserhöhung mit ausgerüstetem Schild</value>
+  </data>
+  <data name="Name_DefensePvM" xml:space="preserve">
+    <value>Verteidigung (PvM)</value>
+  </data>
+  <data name="Name_DefensePvP" xml:space="preserve">
+    <value>Verteidigung (PvP)</value>
+  </data>
+  <data name="Name_DefenseRatePvM" xml:space="preserve">
+    <value>Verteidigungsrate (PvM)</value>
+  </data>
+  <data name="Name_DefenseRatePvMIncreaseBonusabsoluteWithequippedShieldMST" xml:space="preserve">
+    <value>Erhöhungsbonus der Verteidigungsrate (PvM) (absolut) mit ausgerüstetem Schild (MST)</value>
+  </data>
+  <data name="Name_DefenseRatePvP" xml:space="preserve">
+    <value>Verteidigungsrate (PvP)</value>
+  </data>
+  <data name="Name_DoubleDamageChance" xml:space="preserve">
+    <value>Chance auf doppelten Schaden</value>
+  </data>
+  <data name="Name_DoubleWieldWeaponCount" xml:space="preserve">
+    <value>Anzahl Waffen bei Doppelführung</value>
+  </data>
+  <data name="Name_DrainLifeStrengthenerBonusHealingMST" xml:space="preserve">
+    <value>Bonusheilung durch Drain Life Strengthener (MST)</value>
+  </data>
+  <data name="Name_DurabilityReductionFactor" xml:space="preserve">
+    <value>Faktor der Haltbarkeitsverringerung</value>
+  </data>
+  <data name="Name_EarthDamageBonus" xml:space="preserve">
+    <value>Erdschadensbonus</value>
+  </data>
+  <data name="Name_EarthResistance" xml:space="preserve">
+    <value>Erdresistenz</value>
+  </data>
+  <data name="Name_EnergyRequirementreduction" xml:space="preserve">
+    <value>Verringerung der Energieanforderung</value>
+  </data>
+  <data name="Description_EnergyRequirementreduction" xml:space="preserve">
+    <value>Gegenstände mit dieser Option benötigen entsprechend dem Optionswert weniger Energie.</value>
+  </data>
+  <data name="Name_EquippedWeaponCount" xml:space="preserve">
+    <value>Anzahl ausgerüsteter Waffen</value>
+  </data>
+  <data name="Name_ExcellentDamageBonus" xml:space="preserve">
+    <value>Bonus auf exzellenten Schaden</value>
+  </data>
+  <data name="Description_ExcellentDamageBonus" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung addiert wird, wenn exzellenter Schaden zutrifft.</value>
+  </data>
+  <data name="Name_ExcellentDamageChance" xml:space="preserve">
+    <value>Chance auf exzellenten Schaden</value>
+  </data>
+  <data name="Name_ExperienceRate" xml:space="preserve">
+    <value>Erfahrungsrate</value>
+  </data>
+  <data name="Description_ExperienceRate" xml:space="preserve">
+    <value>Definiert den Multiplikator der Erfahrungsrate eines Charakters. Standardmäßig ist er 1,0 und kann durch Siegel oder Ähnliches verändert werden.</value>
+  </data>
+  <data name="Name_ExplosionBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden von Explosion (MST)</value>
+  </data>
+  <data name="Description_ExplosionBonusDamageMST" xml:space="preserve">
+    <value>Der Bonusschaden der Fertigkeit Explosion (Buch des Samut), der mit Fire Tome Strengthener steigt und spät in der Berechnung addiert wird.</value>
+  </data>
+  <data name="Name_ExtraProjectiles" xml:space="preserve">
+    <value>Zusätzliche Projektile</value>
+  </data>
+  <data name="Description_ExtraProjectiles" xml:space="preserve">
+    <value>Die Anzahl der zusätzlichen Projektile, die zu jeder Mehrfachprojektil-Fertigkeit hinzugefügt werden, die sie verwendet.</value>
+  </data>
+  <data name="Name_FenrirBaseDamage" xml:space="preserve">
+    <value>Fenrir-Basisschaden</value>
+  </data>
+  <data name="Name_FinalBerserkerhealthdecrement" xml:space="preserve">
+    <value>Endgültige Berserker-Lebensverringerung</value>
+  </data>
+  <data name="Name_FinalDamageIncreasePvP" xml:space="preserve">
+    <value>Erhöhung des Endschadens (PvP)</value>
+  </data>
+  <data name="Name_FinalDefense" xml:space="preserve">
+    <value>Endverteidigung</value>
+  </data>
+  <data name="Name_FireDamageBonus" xml:space="preserve">
+    <value>Feuerschadensbonus</value>
+  </data>
+  <data name="Name_FireResistance" xml:space="preserve">
+    <value>Feuerresistenz</value>
+  </data>
+  <data name="Name_Flagifthecharacterislocatedinasafezoneofagamemap" xml:space="preserve">
+    <value>Kennzeichen, ob sich der Charakter in einer sicheren Zone einer Karte befindet</value>
+  </data>
+  <data name="Description_Flagifthecharacterislocatedinasafezoneofagamemap" xml:space="preserve">
+    <value>Charaktere in der sicheren Zone regenerieren zusätzlich Leben und Schild.</value>
+  </data>
+  <data name="Name_Flagifthecharacterislocatedonanunderwatergamemap" xml:space="preserve">
+    <value>Kennzeichen, ob sich der Charakter auf einer Unterwasserkarte befindet</value>
+  </data>
+  <data name="Description_Flagifthecharacterislocatedonanunderwatergamemap" xml:space="preserve">
+    <value>Charaktere auf Unterwasserkarten verwenden die Attribute für die Bewegungsgeschwindigkeit unter Wasser.</value>
+  </data>
+  <data name="Name_Flagifthecharacterisrestingsittingleaningorhanging" xml:space="preserve">
+    <value>Kennzeichen, ob der Charakter ruht (sitzt, lehnt oder hängt)</value>
+  </data>
+  <data name="Description_Flagifthecharacterisrestingsittingleaningorhanging" xml:space="preserve">
+    <value>Ruhende Charaktere regenerieren zusätzlich Leben und Mana.</value>
+  </data>
+  <data name="Name_GloveWeaponBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden für Handschuhwaffen (MST)</value>
+  </data>
+  <data name="Name_GloveWeaponMasteryDoubleDamageChanceMST" xml:space="preserve">
+    <value>Chance auf doppelten Schaden durch Glove Weapon Mastery (MST)</value>
+  </data>
+  <data name="Name_GreaterDamageBonus" xml:space="preserve">
+    <value>Greater-Damage-Bonus</value>
+  </data>
+  <data name="Name_GreaterDefenseBonus" xml:space="preserve">
+    <value>Greater-Defense-Bonus</value>
+  </data>
+  <data name="Name_HasDoubleWield" xml:space="preserve">
+    <value>Hat Doppelführung</value>
+  </data>
+  <data name="Description_HasDoubleWield" xml:space="preserve">
+    <value>Das Führen von zwei Waffen gewährt eine Erhöhung des physischen Schadens um 10%. Nur DK, MG und RF können zwei Waffen führen.</value>
+  </data>
+  <data name="Name_Healthlossafterhittingatarget" xml:space="preserve">
+    <value>Lebensverlust nach dem Treffen eines Ziels</value>
+  </data>
+  <data name="Description_Healthlossafterhittingatarget" xml:space="preserve">
+    <value>Verursacht durch das Tragen von Flügeln</value>
+  </data>
+  <data name="Name_HealthrecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>Lebensregeneration nach Monstertötung, absolut</value>
+  </data>
+  <data name="Name_HealthrecoverafterMonsterkillmultiplierofmaxhealth" xml:space="preserve">
+    <value>Lebensregeneration nach Monstertötung, Multiplikator des max. Lebens</value>
+  </data>
+  <data name="Name_HealthRecoveryAbsoluteIncrease" xml:space="preserve">
+    <value>Absolute Erhöhung der Lebensregeneration</value>
+  </data>
+  <data name="Name_HealthRecoveryMultiplier" xml:space="preserve">
+    <value>Multiplikator der Lebensregeneration</value>
+  </data>
+  <data name="Name_IceDamageBonus" xml:space="preserve">
+    <value>Eisschadensbonus</value>
+  </data>
+  <data name="Name_IceResistance" xml:space="preserve">
+    <value>Eisresistenz</value>
+  </data>
+  <data name="Name_IncreaseBlockBonus" xml:space="preserve">
+    <value>Increase-Block-Bonus</value>
+  </data>
+  <data name="Name_InnovationDefenseDecrement" xml:space="preserve">
+    <value>Verteidigungsverringerung durch Innovation</value>
+  </data>
+  <data name="Description_InnovationDefenseDecrement" xml:space="preserve">
+    <value>Die Verteidigungsverringerung durch den magischen Effekt der Fertigkeit Innovation, die mit der Endverteidigung multipliziert und davon abgezogen wird.</value>
+  </data>
+  <data name="Name_Isasleep" xml:space="preserve">
+    <value>Schläft</value>
+  </data>
+  <data name="Description_Isasleep" xml:space="preserve">
+    <value>Der Spieler schläft und kann sich nicht bewegen, bis er getroffen wird.</value>
+  </data>
+  <data name="Name_Isbleeding" xml:space="preserve">
+    <value>Blutet</value>
+  </data>
+  <data name="Description_Isbleeding" xml:space="preserve">
+    <value>Der Spieler erleidet eine Zeit lang jede Sekunde Schaden.</value>
+  </data>
+  <data name="Name_IsBookEquipped" xml:space="preserve">
+    <value>Buch ausgerüstet</value>
+  </data>
+  <data name="Name_IsBowEquipped" xml:space="preserve">
+    <value>Bogen ausgerüstet</value>
+  </data>
+  <data name="Name_IsCrossBowEquipped" xml:space="preserve">
+    <value>Armbrust ausgerüstet</value>
+  </data>
+  <data name="Name_IsDinorantEquipped" xml:space="preserve">
+    <value>Dinorant ausgerüstet</value>
+  </data>
+  <data name="Name_Isfrozen" xml:space="preserve">
+    <value>Ist eingefroren</value>
+  </data>
+  <data name="Description_Isfrozen" xml:space="preserve">
+    <value>Der Spieler kann sich nicht bewegen, weil er eingefroren ist (Ice Arrow).</value>
+  </data>
+  <data name="Name_IsGainHeroStatusQuestcompleted" xml:space="preserve">
+    <value>Ist die Quest 'Heldenstatus erlangen' abgeschlossen?</value>
+  </data>
+  <data name="Name_IsGloveWeaponEquipped" xml:space="preserve">
+    <value>Handschuhwaffe ausgerüstet</value>
+  </data>
+  <data name="Name_IsHorseEquipped" xml:space="preserve">
+    <value>Pferd ausgerüstet</value>
+  </data>
+  <data name="Name_Isiced" xml:space="preserve">
+    <value>Ist vereist</value>
+  </data>
+  <data name="Description_Isiced" xml:space="preserve">
+    <value>Der Spieler kann sich nur langsam bewegen</value>
+  </data>
+  <data name="Name_Isinvisible" xml:space="preserve">
+    <value>Ist unsichtbar</value>
+  </data>
+  <data name="Description_Isinvisible" xml:space="preserve">
+    <value>Dieser Wert ist &gt; 0, wenn der Charakter entweder ein Spielleiter ist, der den Hide-Befehl verwendet hat, oder wenn ein Spieler einem Duell zuschaut.</value>
+  </data>
+  <data name="Name_IsMaceEquipped" xml:space="preserve">
+    <value>Keule ausgerüstet</value>
+  </data>
+  <data name="Name_IsMUHelperactive" xml:space="preserve">
+    <value>MU Helper aktiv</value>
+  </data>
+  <data name="Name_IsOneHandedStaffEquipped" xml:space="preserve">
+    <value>Einhändiger Stab ausgerüstet</value>
+  </data>
+  <data name="Name_IsOneHandedSwordEquipped" xml:space="preserve">
+    <value>Einhandschwert ausgerüstet</value>
+  </data>
+  <data name="Name_IsPetSkeletonEquipped" xml:space="preserve">
+    <value>Skelett-Begleiter ausgerüstet</value>
+  </data>
+  <data name="Name_Ispoisoned" xml:space="preserve">
+    <value>Ist vergiftet</value>
+  </data>
+  <data name="Description_Ispoisoned" xml:space="preserve">
+    <value>Der Spieler ist vergiftet und verliert Leben</value>
+  </data>
+  <data name="Name_IsScepterEquipped" xml:space="preserve">
+    <value>Zepter ausgerüstet</value>
+  </data>
+  <data name="Name_IsShieldEquipped" xml:space="preserve">
+    <value>Schild ausgerüstet</value>
+  </data>
+  <data name="Name_IsShieldRecoveryActive" xml:space="preserve">
+    <value>SD-Regeneration aktiv</value>
+  </data>
+  <data name="Name_IsShieldRecoveryActiveEverwhere" xml:space="preserve">
+    <value>SD-Regeneration überall aktiv</value>
+  </data>
+  <data name="Description_IsShieldRecoveryActiveEverwhere" xml:space="preserve">
+    <value>Standardmäßig ist die SD-Regeneration auf die sichere Zone beschränkt. Mit diesem Attribut (Wert &gt;= 1) funktioniert die Regeneration überall auf einer Karte.</value>
+  </data>
+  <data name="Name_IsSkillComboAvailable" xml:space="preserve">
+    <value>Fertigkeitskombo verfügbar</value>
+  </data>
+  <data name="Name_IsSpearEquipped" xml:space="preserve">
+    <value>Speer ausgerüstet</value>
+  </data>
+  <data name="Name_IsStickEquipped" xml:space="preserve">
+    <value>Stock ausgerüstet</value>
+  </data>
+  <data name="Name_Isstunned" xml:space="preserve">
+    <value>Ist betäubt</value>
+  </data>
+  <data name="Description_Isstunned" xml:space="preserve">
+    <value>Der Spieler ist betäubt und kann sich nicht bewegen.</value>
+  </data>
+  <data name="Name_IsTwoHandedStaffEquipped" xml:space="preserve">
+    <value>Zweihändiger Stab ausgerüstet</value>
+  </data>
+  <data name="Name_IsTwoHandedSwordEquipped" xml:space="preserve">
+    <value>Zweihandschwert ausgerüstet</value>
+  </data>
+  <data name="Name_IsTwoHandedWeaponEquipped" xml:space="preserve">
+    <value>Zweihandwaffe ausgerüstet</value>
+  </data>
+  <data name="Name_IsVIP" xml:space="preserve">
+    <value>Ist VIP</value>
+  </data>
+  <data name="Description_IsVIP" xml:space="preserve">
+    <value>Das Kennzeichen, ob ein Konto VIP ist.</value>
+  </data>
+  <data name="Name_ItemDurationIncrease" xml:space="preserve">
+    <value>Erhöhung der Gegenstandshaltbarkeit</value>
+  </data>
+  <data name="Name_LateDamageBonusanytype" xml:space="preserve">
+    <value>Später Schadensbonus (jede Art)</value>
+  </data>
+  <data name="Description_LateDamageBonusanytype" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung zum Endschaden addiert wird.</value>
+  </data>
+  <data name="Name_LeadershipRequirementreduction" xml:space="preserve">
+    <value>Verringerung der Führungsanforderung</value>
+  </data>
+  <data name="Description_LeadershipRequirementreduction" xml:space="preserve">
+    <value>Gegenstände mit dieser Option benötigen entsprechend dem Optionswert weniger Führung.</value>
+  </data>
+  <data name="Description_Level" xml:space="preserve">
+    <value>Das Level des Charakters.</value>
+  </data>
+  <data name="Name_LightningDamageBonus" xml:space="preserve">
+    <value>Blitzschadensbonus</value>
+  </data>
+  <data name="Name_LightningResistance" xml:space="preserve">
+    <value>Blitzresistenz</value>
+  </data>
+  <data name="Name_MaceBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden für Keulen (MST)</value>
+  </data>
+  <data name="Name_MaceMasteryStunChanceMST" xml:space="preserve">
+    <value>Betäubungschance durch Mace Mastery (MST)</value>
+  </data>
+  <data name="Name_MagicSpeed" xml:space="preserve">
+    <value>Zaubergeschwindigkeit</value>
+  </data>
+  <data name="Name_ManarecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>Manaregeneration nach Monstertötung, absolut</value>
+  </data>
+  <data name="Name_ManarecoverafterMonsterkillmultiplierofmaxmana" xml:space="preserve">
+    <value>Manaregeneration nach Monstertötung, Multiplikator des max. Manas</value>
+  </data>
+  <data name="Name_ManaRecoveryAbsoluteIncrease" xml:space="preserve">
+    <value>Absolute Erhöhung der Manaregeneration</value>
+  </data>
+  <data name="Name_ManaRecoveryMultiplier" xml:space="preserve">
+    <value>Multiplikator der Manaregeneration</value>
+  </data>
+  <data name="Name_ManaUsageReduction" xml:space="preserve">
+    <value>Verringerung des Manaverbrauchs</value>
+  </data>
+  <data name="Description_ManaUsageReduction" xml:space="preserve">
+    <value>Faktor (0~1), der beschreibt, wie viel des benötigten Manas einer Fertigkeit nicht verbraucht wird.</value>
+  </data>
+  <data name="Name_MasterExperienceRate" xml:space="preserve">
+    <value>Master-Erfahrungsrate</value>
+  </data>
+  <data name="Name_MasterLevel" xml:space="preserve">
+    <value>Master-Level</value>
+  </data>
+  <data name="Description_MasterLevel" xml:space="preserve">
+    <value>Das Master-Level des Charakters.</value>
+  </data>
+  <data name="Name_MasterpointspermasterLevelup" xml:space="preserve">
+    <value>Master-Punkte pro Master-Level-Aufstieg</value>
+  </data>
+  <data name="Description_MasterpointspermasterLevelup" xml:space="preserve">
+    <value>Definiert die Master-Level-up-Punkte pro erreichtem Master-Level.</value>
+  </data>
+  <data name="Name_MasterSkillPhysicalBonusDamageMST" xml:space="preserve">
+    <value>Physischer Bonusschaden durch Meisterfähigkeiten (MST)</value>
+  </data>
+  <data name="Description_MasterSkillPhysicalBonusDamageMST" xml:space="preserve">
+    <value>Ein allgemeines Attribut für physischen Bonusschaden im Meisterbaum, das als Sammelwert für späten physischen Bonusschaden dient.</value>
+  </data>
+  <data name="Name_MasteryMoveTargetChanceMST" xml:space="preserve">
+    <value>Mastery-Chance, das Ziel zu verschieben (MST)</value>
+  </data>
+  <data name="Description_MasteryMoveTargetChanceMST" xml:space="preserve">
+    <value>Ein allgemeines Attribut im Meisterbaum für die Chance, das Ziel zu verschieben, das als Sammelwert für „Mastery“-Fertigkeiten dient.</value>
+  </data>
+  <data name="Name_MasteryStunChanceMST" xml:space="preserve">
+    <value>Mastery-Betäubungschance (MST)</value>
+  </data>
+  <data name="Description_MasteryStunChanceMST" xml:space="preserve">
+    <value>Ein allgemeines Attribut im Meisterbaum für die Betäubungschance, das als Sammelwert für „Mastery“-Fertigkeiten dient.</value>
+  </data>
+  <data name="Name_MaximumAbility" xml:space="preserve">
+    <value>Maximale Ausdauer</value>
+  </data>
+  <data name="Name_MaximumAllianceSize" xml:space="preserve">
+    <value>Maximale Allianzgröße</value>
+  </data>
+  <data name="Name_MaximumCurseBaseDamage" xml:space="preserve">
+    <value>Maximaler Fluch-Basisschaden</value>
+  </data>
+  <data name="Name_Maximumdamageofthedarkraven" xml:space="preserve">
+    <value>Maximaler Schaden des Dunklen Raben.</value>
+  </data>
+  <data name="Name_MaximumGuildSize" xml:space="preserve">
+    <value>Maximale Gildengröße</value>
+  </data>
+  <data name="Name_MaximumHealth" xml:space="preserve">
+    <value>Maximales Leben</value>
+  </data>
+  <data name="Name_MaximumMana" xml:space="preserve">
+    <value>Maximales Mana</value>
+  </data>
+  <data name="Name_MaximumPhysicalBaseDamage" xml:space="preserve">
+    <value>Maximaler physischer Basisschaden</value>
+  </data>
+  <data name="Name_MaximumPhysicalBaseDamageByRightWeapon" xml:space="preserve">
+    <value>Maximaler physischer Basisschaden durch rechte Waffe</value>
+  </data>
+  <data name="Name_MaximumPhysicalBaseDamageByWeapon" xml:space="preserve">
+    <value>Maximaler physischer Basisschaden durch Waffe</value>
+  </data>
+  <data name="Name_MaximumShield" xml:space="preserve">
+    <value>Maximaler Schild (SD)</value>
+  </data>
+  <data name="Name_Maximumshieldlevelpowintermediate" xml:space="preserve">
+    <value>Zwischenwert für maximalen Schild (Level-Potenz)</value>
+  </data>
+  <data name="Description_Maximumshieldlevelpowintermediate" xml:space="preserve">
+    <value>Zwischenwert für den maximalen Schild</value>
+  </data>
+  <data name="Name_MaximumWizardryBaseDamage" xml:space="preserve">
+    <value>Maximaler magischer Basisschaden</value>
+  </data>
+  <data name="Name_MeleeAttackMode" xml:space="preserve">
+    <value>Nahkampf-Angriffsmodus</value>
+  </data>
+  <data name="Description_MeleeAttackMode" xml:space="preserve">
+    <value>Der Schalter für den Nahkampf-Angriffsmodus der Elfe.</value>
+  </data>
+  <data name="Name_MeleeMaximumDamage" xml:space="preserve">
+    <value>Maximaler Nahkampfschaden</value>
+  </data>
+  <data name="Description_MeleeMaximumDamage" xml:space="preserve">
+    <value>Der maximale Nahkampfschaden der Elfe, der zu Angriffen auf kurze Distanz addiert wird.</value>
+  </data>
+  <data name="Name_MeleeMinimumDamage" xml:space="preserve">
+    <value>Minimaler Nahkampfschaden</value>
+  </data>
+  <data name="Description_MeleeMinimumDamage" xml:space="preserve">
+    <value>Der minimale Nahkampfschaden der Elfe, der zu Angriffen auf kurze Distanz addiert wird.</value>
+  </data>
+  <data name="Name_MinBerserkerhealthdecrement" xml:space="preserve">
+    <value>Min. Berserker-Lebensverringerung</value>
+  </data>
+  <data name="Name_MinimumCurseBaseDamage" xml:space="preserve">
+    <value>Minimaler Fluch-Basisschaden</value>
+  </data>
+  <data name="Name_Minimumdamageofthedarkraven" xml:space="preserve">
+    <value>Minimaler Schaden des Dunklen Raben.</value>
+  </data>
+  <data name="Name_MinimumPhysicalBaseDamage" xml:space="preserve">
+    <value>Minimaler physischer Basisschaden</value>
+  </data>
+  <data name="Name_MinimumPhysicalBaseDamageByRightWeapon" xml:space="preserve">
+    <value>Minimaler physischer Basisschaden durch rechte Waffe</value>
+  </data>
+  <data name="Name_MinimumPhysicalBaseDamageByWeapon" xml:space="preserve">
+    <value>Minimaler physischer Basisschaden durch Waffe</value>
+  </data>
+  <data name="Name_MinimumWizardryAndCurseBaseDamageBonusMST" xml:space="preserve">
+    <value>Bonus auf minimalen magischen und Fluch-Basisschaden (MST)</value>
+  </data>
+  <data name="Name_MinimumWizardryBaseDamage" xml:space="preserve">
+    <value>Minimaler magischer Basisschaden</value>
+  </data>
+  <data name="Name_MoneyDropAmountRate" xml:space="preserve">
+    <value>Rate der Geld-Drop-Menge</value>
+  </data>
+  <data name="Description_MoneyDropAmountRate" xml:space="preserve">
+    <value>Definiert einen Multiplikator für die Menge eines Geld-Drops.</value>
+  </data>
+  <data name="Name_MovementSpeed" xml:space="preserve">
+    <value>Bewegungsgeschwindigkeit</value>
+  </data>
+  <data name="Description_MovementSpeed" xml:space="preserve">
+    <value>Die Bewegungsgeschwindigkeit eines Charakters auf normalem Gelände.</value>
+  </data>
+  <data name="Name_MovementSpeedFactor" xml:space="preserve">
+    <value>Faktor der Bewegungsgeschwindigkeit</value>
+  </data>
+  <data name="Description_MovementSpeedFactor" xml:space="preserve">
+    <value>Der Faktor, der auf die endgültige Bewegungsgeschwindigkeit eines Charakters angewendet wird.</value>
+  </data>
+  <data name="Name_Nearbypartymembercount" xml:space="preserve">
+    <value>Anzahl naher Gruppenmitglieder</value>
+  </data>
+  <data name="Description_Nearbypartymembercount" xml:space="preserve">
+    <value>Definiert, wie viele Gruppenmitglieder sich aktuell in der Nähe befinden.</value>
+  </data>
+  <data name="Name_NovaStageDamage" xml:space="preserve">
+    <value>Schaden der Nova-Stufe</value>
+  </data>
+  <data name="Description_NovaStageDamage" xml:space="preserve">
+    <value>Der aktuell erreichte Bonus der Nova-Stufe, der von der Dauer der Fertigkeit abhängt.</value>
+  </data>
+  <data name="Name_OneHandedStaffBonusBaseDamageMST" xml:space="preserve">
+    <value>Bonus-Basisschaden für einhändige Stäbe (MST)</value>
+  </data>
+  <data name="Name_OneHandedSwordBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden für Einhandschwerter (MST)</value>
+  </data>
+  <data name="Name_PetDurationIncrease" xml:space="preserve">
+    <value>Erhöhung der Begleiterhaltbarkeit</value>
+  </data>
+  <data name="Name_PhysicalBaseDamageIncrease" xml:space="preserve">
+    <value>Erhöhung des physischen Basisschadens</value>
+  </data>
+  <data name="Name_PhysicalBaseDamageminandmax" xml:space="preserve">
+    <value>Physischer Basisschaden (min. und max.)</value>
+  </data>
+  <data name="Name_PointsperLevelup" xml:space="preserve">
+    <value>Punkte pro Level-Aufstieg</value>
+  </data>
+  <data name="Description_PointsperLevelup" xml:space="preserve">
+    <value>Definiert die Level-up-Punkte pro erreichtem Level.</value>
+  </data>
+  <data name="Name_PointsPerReset" xml:space="preserve">
+    <value>Punkte pro Reset</value>
+  </data>
+  <data name="Description_PointsPerReset" xml:space="preserve">
+    <value>Die Anzahl der Punkte, die der Spieler für einen Reset erhält; überschreibt den Standardwert 'PointsPerReset' der Reset-Konfiguration.</value>
+  </data>
+  <data name="Name_PoisonDamageBonus" xml:space="preserve">
+    <value>Giftschadensbonus</value>
+  </data>
+  <data name="Name_PoisonDamageMultiplier" xml:space="preserve">
+    <value>Multiplikator für Giftschaden</value>
+  </data>
+  <data name="Name_PoisonResistance" xml:space="preserve">
+    <value>Giftresistenz</value>
+  </data>
+  <data name="Name_PollutionBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden von Pollution (MST)</value>
+  </data>
+  <data name="Description_PollutionBonusDamageMST" xml:space="preserve">
+    <value>Der Bonusschaden der Fertigkeit Pollution (Buch des Lagle), der mit Lightning Tome Strengthener steigt und spät in der Berechnung addiert wird.</value>
+  </data>
+  <data name="Name_RagefulBlowMasteryDurabilityDecreaseChanceMST" xml:space="preserve">
+    <value>Chance auf Haltbarkeitsverringerung durch Rageful Blow Mastery (MST)</value>
+  </data>
+  <data name="Name_RandomExperienceMaxMultiplier" xml:space="preserve">
+    <value>Max. Multiplikator für zufällige Erfahrung</value>
+  </data>
+  <data name="Description_RandomExperienceMaxMultiplier" xml:space="preserve">
+    <value>Definiert den maximalen Multiplikator für den zufälligen Erfahrungsgewinn.</value>
+  </data>
+  <data name="Name_RandomExperienceMinMultiplier" xml:space="preserve">
+    <value>Min. Multiplikator für zufällige Erfahrung</value>
+  </data>
+  <data name="Description_RandomExperienceMinMultiplier" xml:space="preserve">
+    <value>Definiert den minimalen Multiplikator für den zufälligen Erfahrungsgewinn.</value>
+  </data>
+  <data name="Name_RavenAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Multiplikator der Angriffsschadenserhöhung des Raben</value>
+  </data>
+  <data name="Description_RavenAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Die Schadenserhöhung des Raben, die mit dem min./max. Basisschaden des Raben multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_Ravencriticaldamagechance" xml:space="preserve">
+    <value>Chance auf kritischen Schaden des Raben</value>
+  </data>
+  <data name="Name_Ravenexcdamagechance" xml:space="preserve">
+    <value>Chance auf exzellenten Schaden des Raben</value>
+  </data>
+  <data name="Name_RegisteredRenas" xml:space="preserve">
+    <value>Registrierte Renas</value>
+  </data>
+  <data name="Description_RegisteredRenas" xml:space="preserve">
+    <value>Fortschritt bis zur nächsten Belohnung für Gegenstandsregistrierung</value>
+  </data>
+  <data name="Name_RequiemBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden von Requiem (MST)</value>
+  </data>
+  <data name="Description_RequiemBonusDamageMST" xml:space="preserve">
+    <value>Der Bonusschaden der Fertigkeit Requiem (Buch des Neil), der mit Wind Tome Strengthener steigt und spät in der Berechnung addiert wird.</value>
+  </data>
+  <data name="Name_RequirementoftheIcarusmap" xml:space="preserve">
+    <value>Anforderung der Karte Ikarus.</value>
+  </data>
+  <data name="Description_RequirementoftheIcarusmap" xml:space="preserve">
+    <value>Ikarus kann nur mit Flügeln, Dinorant oder Fenrir betreten werden.</value>
+  </data>
+  <data name="Name_RequirementoftheKanturuEventMapduringtheevent" xml:space="preserve">
+    <value>Anforderung der Kanturu-Eventkarte während des Events.</value>
+  </data>
+  <data name="Description_RequirementoftheKanturuEventMapduringtheevent" xml:space="preserve">
+    <value>Das Kanturu-Event kann nur mit einem ausgerüsteten Mondsteinanhänger betreten werden.</value>
+  </data>
+  <data name="Description_Resets" xml:space="preserve">
+    <value>Anzahl der Resets des aktuellen Charakters</value>
+  </data>
+  <data name="Name_ScepterMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>PvP-Bonusschaden durch Scepter Mastery (MST)</value>
+  </data>
+  <data name="Name_ScepterPetBonusDamageMST" xml:space="preserve">
+    <value>Begleiter-Bonusschaden mit Zepter (MST)</value>
+  </data>
+  <data name="Name_ScepterRisePercentage" xml:space="preserve">
+    <value>Zepter-Steigerung in Prozent</value>
+  </data>
+  <data name="Name_ScepterStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden durch Scepter Strengthener (MST)</value>
+  </data>
+  <data name="Name_SDdecreaserateincrease" xml:space="preserve">
+    <value>Erhöhung der SD-Verringerungsrate</value>
+  </data>
+  <data name="Description_SDdecreaserateincrease" xml:space="preserve">
+    <value>Der vom Schild des Gegners im PvP absorbierte Schaden wird entsprechend dem eingestellten Wert direkt in LP-Schaden umgewandelt.</value>
+  </data>
+  <data name="Name_SDRateIncrease" xml:space="preserve">
+    <value>Erhöhung der SD-Rate</value>
+  </data>
+  <data name="Description_SDRateIncrease" xml:space="preserve">
+    <value>Erhöht die Schadensabsorptionsrate des Schilds im PvP entsprechend dem eingestellten Wert.</value>
+  </data>
+  <data name="Name_ShieldBypassChance" xml:space="preserve">
+    <value>Chance, den Schild (SD) zu umgehen</value>
+  </data>
+  <data name="Name_ShieldDefenseitem" xml:space="preserve">
+    <value>Schildverteidigung (Gegenstand)</value>
+  </data>
+  <data name="Name_ShieldItemDefenseIncreaseMultiplier" xml:space="preserve">
+    <value>Multiplikator der Verteidigungserhöhung des Schildgegenstands</value>
+  </data>
+  <data name="Name_ShieldrecoverafterMonsterkillabsolute" xml:space="preserve">
+    <value>SD-Regeneration nach Monstertötung, absolut</value>
+  </data>
+  <data name="Name_ShieldrecoverafterMonsterkillmultiplierofmaxshield" xml:space="preserve">
+    <value>SD-Regeneration nach Monstertötung, Multiplikator des max. Schilds</value>
+  </data>
+  <data name="Name_ShieldRecoveryAbsolute" xml:space="preserve">
+    <value>Absolute SD-Regeneration</value>
+  </data>
+  <data name="Name_ShieldRecoveryHiatus" xml:space="preserve">
+    <value>Unterbrechung der SD-Regeneration</value>
+  </data>
+  <data name="Description_ShieldRecoveryHiatus" xml:space="preserve">
+    <value>Die Sekunden seit der letzten Unterbrechung der SD-Regeneration, entweder durch Verlassen einer sicheren Zone, Schaden am Schild oder Erreichen des Maximums.</value>
+  </data>
+  <data name="Name_ShieldRecoveryMultiplier" xml:space="preserve">
+    <value>Multiplikator der SD-Regeneration</value>
+  </data>
+  <data name="Name_ShieldRecoveryRampFactor" xml:space="preserve">
+    <value>Steigerungsfaktor der SD-Regeneration</value>
+  </data>
+  <data name="Description_ShieldRecoveryRampFactor" xml:space="preserve">
+    <value>Der Faktor, um den die SD-Regeneration zunimmt. Steigt linear mit der ununterbrochenen Dauer der SD-Regeneration.</value>
+  </data>
+  <data name="Name_SkillBaseDamageBonusskillattribute" xml:space="preserve">
+    <value>Bonus auf Fertigkeits-Basisschaden (Fertigkeitsattribut)</value>
+  </data>
+  <data name="Name_SkillBaseDamageMultiplierskillattribute" xml:space="preserve">
+    <value>Multiplikator des Fertigkeits-Basisschadens (Fertigkeitsattribut)</value>
+  </data>
+  <data name="Name_SkillDamageBonus" xml:space="preserve">
+    <value>Fertigkeitsschadensbonus</value>
+  </data>
+  <data name="Description_SkillDamageBonus" xml:space="preserve">
+    <value>Ein Bonuswert, der bei der Schadensberechnung addiert wird, wenn der Schaden mit einer Fertigkeit berechnet wird.</value>
+  </data>
+  <data name="Name_SkillDamageMultiplier" xml:space="preserve">
+    <value>Multiplikator des Fertigkeitsschadens</value>
+  </data>
+  <data name="Name_Skillextramanacost" xml:space="preserve">
+    <value>Zusätzliche Manakosten der Fertigkeit</value>
+  </data>
+  <data name="Description_Skillextramanacost" xml:space="preserve">
+    <value>Verursacht durch den Infinity-Arrow-Effekt</value>
+  </data>
+  <data name="Name_SkillExtraProjectiles" xml:space="preserve">
+    <value>Zusätzliche Projektile der Fertigkeit</value>
+  </data>
+  <data name="Description_SkillExtraProjectiles" xml:space="preserve">
+    <value>Die Anzahl der zusätzlichen Projektile, die eine Mehrfachprojektil-Fertigkeit tatsächlich abschießt.</value>
+  </data>
+  <data name="Name_SkillFinalDamageBonusskillattribute" xml:space="preserve">
+    <value>Bonus auf Fertigkeits-Endschaden (Fertigkeitsattribut)</value>
+  </data>
+  <data name="Name_SkillFinalDamageMultiplierskillattribute" xml:space="preserve">
+    <value>Multiplikator des Fertigkeits-Endschadens (Fertigkeitsattribut)</value>
+  </data>
+  <data name="Name_Skilllevel" xml:space="preserve">
+    <value>Fertigkeitslevel</value>
+  </data>
+  <data name="Description_Skilllevel" xml:space="preserve">
+    <value>Definiert das Level einer Fertigkeit.</value>
+  </data>
+  <data name="Name_SleepStrengthenerBonusChanceMST" xml:space="preserve">
+    <value>Bonuschance durch Sleep Strengthener (MST)</value>
+  </data>
+  <data name="Name_SoulBarrierDamageReceiveDecrement" xml:space="preserve">
+    <value>Verringerung des erlittenen Schadens durch Soul Barrier</value>
+  </data>
+  <data name="Description_SoulBarrierDamageReceiveDecrement" xml:space="preserve">
+    <value>Der Multiplikator für erlittenen Schaden der Fertigkeit Soul Barrier, der mit dem Endschaden multipliziert und davon abgezogen wird.</value>
+  </data>
+  <data name="Name_SoulBarrierManaTollPerReceivedHit" xml:space="preserve">
+    <value>Manakosten von Soul Barrier pro erlittenem Treffer</value>
+  </data>
+  <data name="Description_SoulBarrierManaTollPerReceivedHit" xml:space="preserve">
+    <value>Eine Manaanforderung, die für die Schadensverringerung durch Soul Barrier erfüllt sein muss.</value>
+  </data>
+  <data name="Name_SpearBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden für Speere (MST)</value>
+  </data>
+  <data name="Name_SpearMasteryDoubleDamageChanceMST" xml:space="preserve">
+    <value>Chance auf doppelten Schaden durch Spear Mastery (MST)</value>
+  </data>
+  <data name="Name_StaffRisePercentage" xml:space="preserve">
+    <value>Stab-Steigerung in Prozent</value>
+  </data>
+  <data name="Name_Statsdefense" xml:space="preserve">
+    <value>Verteidigung durch Werte</value>
+  </data>
+  <data name="Name_Statsmaxwizandcursebasedmg" xml:space="preserve">
+    <value>Max. magischer und Fluch-Basisschaden durch Werte</value>
+  </data>
+  <data name="Name_Statsminwizandcursebasedmg" xml:space="preserve">
+    <value>Min. magischer und Fluch-Basisschaden durch Werte</value>
+  </data>
+  <data name="Name_StickBonusBaseDamageMST" xml:space="preserve">
+    <value>Bonus-Basisschaden für Stöcke (MST)</value>
+  </data>
+  <data name="Name_StickMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>PvP-Bonusschaden durch Stick Mastery (MST)</value>
+  </data>
+  <data name="Name_StrengthRequirementreduction" xml:space="preserve">
+    <value>Verringerung der Stärkeanforderung</value>
+  </data>
+  <data name="Description_StrengthRequirementreduction" xml:space="preserve">
+    <value>Gegenstände mit dieser Option benötigen entsprechend dem Optionswert weniger Stärke.</value>
+  </data>
+  <data name="Name_SummonedMonsterDefenseIncrease" xml:space="preserve">
+    <value>Verteidigungserhöhung beschworener Monster</value>
+  </data>
+  <data name="Name_SummonedMonsterHealthIncrease" xml:space="preserve">
+    <value>Lebenserhöhung beschworener Monster %</value>
+  </data>
+  <data name="Name_SwellLifeHealthIncrease" xml:space="preserve">
+    <value>Lebenserhöhung durch Swell Life</value>
+  </data>
+  <data name="Name_SwellLifeManaIncrease" xml:space="preserve">
+    <value>Manaerhöhung durch Swell Life</value>
+  </data>
+  <data name="Name_TempDefenseBonusmultiplierwithShield" xml:space="preserve">
+    <value>Temp. Verteidigungsbonus-Multiplikator mit Schild</value>
+  </data>
+  <data name="Name_TempHalfweaponattackspeed" xml:space="preserve">
+    <value>Temp. halbe Waffen-Angriffsgeschwindigkeit</value>
+  </data>
+  <data name="Name_TempInnovationdefensedecrement" xml:space="preserve">
+    <value>Temp. Verteidigungsverringerung durch Innovation</value>
+  </data>
+  <data name="Name_Theamountofammowhichisequipped" xml:space="preserve">
+    <value>Die Menge der ausgerüsteten Munition.</value>
+  </data>
+  <data name="Description_Theamountofammowhichisequipped" xml:space="preserve">
+    <value>Bestimmte Fertigkeiten können nur ausgeführt werden, wenn genug Munition vorhanden ist oder die Munitionsverbrauchsrate 0 ist.</value>
+  </data>
+  <data name="Name_Theamountofammowhichisrequiredtoperformcertainskills" xml:space="preserve">
+    <value>Die Menge an Munition, die für bestimmte Fertigkeiten benötigt wird.</value>
+  </data>
+  <data name="Description_Theamountofammowhichisrequiredtoperformcertainskills" xml:space="preserve">
+    <value>Bestimmte Fertigkeiten können nur ausgeführt werden, wenn genug Munition vorhanden ist oder diese Rate 0 ist.</value>
+  </data>
+  <data name="Name_TotalAgility" xml:space="preserve">
+    <value>Gesamte Beweglichkeit</value>
+  </data>
+  <data name="Description_TotalAgility" xml:space="preserve">
+    <value>Die gesamte Beweglichkeit des Charakters.</value>
+  </data>
+  <data name="Name_TotalAgilityRequirementValue" xml:space="preserve">
+    <value>Gesamtanforderungswert Beweglichkeit</value>
+  </data>
+  <data name="Description_TotalAgilityRequirementValue" xml:space="preserve">
+    <value>Der Gesamtanforderungswert für Beweglichkeit eines Gegenstands, mit dem die benötigte gesamte Beweglichkeit eines Charakters zum Ausrüsten berechnet wird. Sie hängt von den Optionen, dem Drop-Level und dem Level des Gegenstands ab.</value>
+  </data>
+  <data name="Name_TotalEnergy" xml:space="preserve">
+    <value>Gesamte Energie</value>
+  </data>
+  <data name="Name_TotalEnergyminus15" xml:space="preserve">
+    <value>Gesamte Energie minus 15</value>
+  </data>
+  <data name="Description_TotalEnergyminus15" xml:space="preserve">
+    <value>Gesamte Energie minus 15</value>
+  </data>
+  <data name="Name_TotalEnergyRequirementValue" xml:space="preserve">
+    <value>Gesamtanforderungswert Energie</value>
+  </data>
+  <data name="Description_TotalEnergyRequirementValue" xml:space="preserve">
+    <value>Der Gesamtanforderungswert für Energie eines Gegenstands, mit dem die benötigte gesamte Energie eines Charakters zum Ausrüsten berechnet wird. Sie hängt von den Optionen, dem Drop-Level und dem Level des Gegenstands ab.</value>
+  </data>
+  <data name="Name_TotalLeadership" xml:space="preserve">
+    <value>Gesamte Führung</value>
+  </data>
+  <data name="Name_TotalLeadershipRequirementValue" xml:space="preserve">
+    <value>Gesamtanforderungswert Führung</value>
+  </data>
+  <data name="Description_TotalLeadershipRequirementValue" xml:space="preserve">
+    <value>Der Gesamtanforderungswert für Führung eines Gegenstands, mit dem die benötigte gesamte Führung eines Charakters zum Ausrüsten berechnet wird. Sie hängt von den Optionen, dem Drop-Level und dem Level des Gegenstands ab.</value>
+  </data>
+  <data name="Name_TotalLevel" xml:space="preserve">
+    <value>Gesamtlevel</value>
+  </data>
+  <data name="Description_TotalLevel" xml:space="preserve">
+    <value>Das Level plus das Master-Level des Charakters.</value>
+  </data>
+  <data name="Name_TotalRegisteredRenas" xml:space="preserve">
+    <value>Insgesamt registrierte Renas</value>
+  </data>
+  <data name="Description_TotalRegisteredRenas" xml:space="preserve">
+    <value>Insgesamt registrierte Gegenstände (Gesamtzähler)</value>
+  </data>
+  <data name="Name_TotalStrength" xml:space="preserve">
+    <value>Gesamte Stärke</value>
+  </data>
+  <data name="Description_TotalStrength" xml:space="preserve">
+    <value>Die gesamte Stärke des Charakters, bestehend aus der Basis-Stärke und zusätzlichen Stärke-Verstärkungen</value>
+  </data>
+  <data name="Name_TotalStrengthandAgility" xml:space="preserve">
+    <value>Gesamte Stärke und Beweglichkeit</value>
+  </data>
+  <data name="Name_TotalStrengthRequirementValue" xml:space="preserve">
+    <value>Gesamtanforderungswert Stärke</value>
+  </data>
+  <data name="Description_TotalStrengthRequirementValue" xml:space="preserve">
+    <value>Der Gesamtanforderungswert für Stärke eines Gegenstands, mit dem die benötigte gesamte Stärke eines Charakters zum Ausrüsten berechnet wird. Sie hängt von den Optionen, dem Drop-Level und dem Level des Gegenstands ab.</value>
+  </data>
+  <data name="Name_TotalVitality" xml:space="preserve">
+    <value>Gesamte Vitalität</value>
+  </data>
+  <data name="Name_TotalVitalityRequirementValue" xml:space="preserve">
+    <value>Gesamtanforderungswert Vitalität</value>
+  </data>
+  <data name="Description_TotalVitalityRequirementValue" xml:space="preserve">
+    <value>Der Gesamtanforderungswert für Vitalität eines Gegenstands, mit dem die benötigte gesamte Vitalität eines Charakters zum Ausrüsten berechnet wird. Sie hängt von den Optionen, dem Drop-Level und dem Level des Gegenstands ab.</value>
+  </data>
+  <data name="Name_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>Zusätzliche Projektile des Triple Shots</value>
+  </data>
+  <data name="Description_TripleShotExtraProjectiles" xml:space="preserve">
+    <value>Die Anzahl der zusätzlichen Projektile, die von der Triple-Shot-Meisterschaft gewährt wird.</value>
+  </data>
+  <data name="Name_TwoHandedStaffBonusBaseDamageMST" xml:space="preserve">
+    <value>Bonus-Basisschaden für zweihändige Stäbe (MST)</value>
+  </data>
+  <data name="Name_TwoHandedStaffMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>PvP-Bonusschaden durch Two-Handed Staff Mastery (MST)</value>
+  </data>
+  <data name="Name_TwoHandedSwordMasteryPvPBonusDamageMST" xml:space="preserve">
+    <value>PvP-Bonusschaden durch Two-Handed Sword Mastery (MST)</value>
+  </data>
+  <data name="Name_TwoHandedSwordStrengthenerBonusDamageMST" xml:space="preserve">
+    <value>Bonusschaden durch Two-Handed Sword Strengthener (MST)</value>
+  </data>
+  <data name="Name_TwoHandedWeaponPhysicalDamageIncreaseAncientOption" xml:space="preserve">
+    <value>Physische Schadenserhöhung mit Zweihandwaffe (Ancient-Option)</value>
+  </data>
+  <data name="Description_TwoHandedWeaponPhysicalDamageIncreaseAncientOption" xml:space="preserve">
+    <value>Die physische Schadenserhöhung, die bei Verwendung einer Zweihandwaffe mit dem Endschaden multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_UnderwaterMovementSpeed" xml:space="preserve">
+    <value>Bewegungsgeschwindigkeit unter Wasser</value>
+  </data>
+  <data name="Description_UnderwaterMovementSpeed" xml:space="preserve">
+    <value>Die Bewegungsgeschwindigkeit eines Charakters auf Unterwassergelände.</value>
+  </data>
+  <data name="Name_VitalityRequirementreduction" xml:space="preserve">
+    <value>Verringerung der Vitalitätsanforderung</value>
+  </data>
+  <data name="Description_VitalityRequirementreduction" xml:space="preserve">
+    <value>Gegenstände mit dieser Option benötigen entsprechend dem Optionswert weniger Vitalität.</value>
+  </data>
+  <data name="Name_VitalitySkillDamageMultiplier" xml:space="preserve">
+    <value>Multiplikator des Fertigkeitsschadens durch Vitalität</value>
+  </data>
+  <data name="Name_WalkSpeed" xml:space="preserve">
+    <value>Gehgeschwindigkeit</value>
+  </data>
+  <data name="Name_WaterDamageBonus" xml:space="preserve">
+    <value>Wasserschadensbonus</value>
+  </data>
+  <data name="Name_WaterResistance" xml:space="preserve">
+    <value>Wasserresistenz</value>
+  </data>
+  <data name="Name_WeaknessPhysicalDamageDecrement" xml:space="preserve">
+    <value>Verringerung des physischen Schadens durch Schwächung</value>
+  </data>
+  <data name="Description_WeaknessPhysicalDamageDecrement" xml:space="preserve">
+    <value>Die Verringerung des verursachten physischen Schadens durch die magischen Effekte der Fertigkeiten Weakness oder Killing Blow, die mit dem Endschaden multipliziert und davon abgezogen wird.</value>
+  </data>
+  <data name="Name_WeaponMasteryBonusAttackSpeedMST" xml:space="preserve">
+    <value>Bonus-Angriffsgeschwindigkeit durch Weapon Mastery (MST)</value>
+  </data>
+  <data name="Description_WeaponMasteryBonusAttackSpeedMST" xml:space="preserve">
+    <value>Ein allgemeines Attribut für Bonus-Angriffsgeschwindigkeit im Meisterbaum, das als Sammelwert für „Mastery“-Fertigkeiten dient.</value>
+  </data>
+  <data name="Name_WindDamageBonus" xml:space="preserve">
+    <value>Windschadensbonus</value>
+  </data>
+  <data name="Name_WindResistance" xml:space="preserve">
+    <value>Windresistenz</value>
+  </data>
+  <data name="Name_WizardryAndCurseBaseDamageBonusminandmaxMST" xml:space="preserve">
+    <value>Bonus auf magischen und Fluch-Basisschaden (min. und max., MST)</value>
+  </data>
+  <data name="Name_WizardryAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Multiplikator der magischen Schadenserhöhung</value>
+  </data>
+  <data name="Description_WizardryAttackDamageIncreaseMultiplier" xml:space="preserve">
+    <value>Die magische Schadenserhöhung, die mit dem min./max. magischen Basisschaden multipliziert und dazu addiert wird.</value>
+  </data>
+  <data name="Name_WizardryBaseDamageIncrease" xml:space="preserve">
+    <value>Erhöhung des magischen Basisschadens</value>
+  </data>
+  <data name="Name_WizardryBaseDamageminandmax" xml:space="preserve">
+    <value>Magischer Basisschaden (min. und max.)</value>
+  </data>
+  <data name="AggregateType_AddRaw" xml:space="preserve">
+    <value>Basiswert addieren</value>
+  </data>
+  <data name="AggregateType_Multiplicate" xml:space="preserve">
+    <value>Multiplizieren</value>
+  </data>
+  <data name="AggregateType_AddFinal" xml:space="preserve">
+    <value>Endwert addieren</value>
+  </data>
+  <data name="Name_ShieldRecoveryActiveEverywhere" xml:space="preserve">
+    <value>SD-Regeneration überall aktiv</value>
+  </data>
+  <data name="Description_ShieldRecoveryActiveEverywhere" xml:space="preserve">
+    <value>Standardmäßig ist die SD-Regeneration auf die sichere Zone beschränkt. Mit diesem Attribut (Wert &gt;= 1) funktioniert die Regeneration überall auf einer Karte.</value>
+  </data>
+  <data name="Name_WeaponAndArmorDurationIncreaseMST" xml:space="preserve">
+    <value>Erhöhung der Haltbarkeit von Waffen und Rüstungen (MST)</value>
+  </data>
+  <data name="Name_JewelryAndWingsDurationIncreaseMST" xml:space="preserve">
+    <value>Erhöhung der Haltbarkeit von Schmuck und Flügeln (MST)</value>
+  </data>
+  <data name="Name_PetDurationIncreaseMST" xml:space="preserve">
+    <value>Erhöhung der Begleiterhaltbarkeit (MST)</value>
+  </data>
+  <data name="Name_TrainablePetDurationIncreaseMST" xml:space="preserve">
+    <value>Erhöhung der Haltbarkeit trainierbarer Begleiter (MST)</value>
+  </data>
+  <data name="Name_WeaponDurationIncrease" xml:space="preserve">
+    <value>Erhöhung der Waffenhaltbarkeit</value>
+  </data>
+  <data name="Name_SkillFinalDamageMultiplierPvEskillattribute" xml:space="preserve">
+    <value>Multiplikator des Fertigkeits-Endschadens (PvE) (Fertigkeitsattribut)</value>
+  </data>
+  <data name="Name_MasterSkillValueskillattribute" xml:space="preserve">
+    <value>Wert der Meisterfertigkeit (Fertigkeitsattribut)</value>
+  </data>
+</root>

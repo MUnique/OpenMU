@@ -1,0 +1,69 @@
+﻿// <copyright file="ConstValueAttribute.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// An attribute with a constant value.
+/// </summary>
+public class ConstValueAttribute : IAttribute
+{
+    private AttributeDefinition _definition = null!;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConstValueAttribute" /> class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="definition">The definition.</param>
+    /// <param name="aggregateType">The aggregate type.</param>
+    public ConstValueAttribute(float value, AttributeDefinition definition, AggregateType aggregateType = AggregateType.AddRaw)
+    {
+        this.Value = value;
+        this._definition = definition;
+        this.AggregateType = aggregateType;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class.
+    /// </summary>
+    protected ConstValueAttribute()
+    {
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>Empty implementation, because the value can't change.</remarks>
+    public event EventHandler? ValueChanged
+    {
+#pragma warning disable S3237 //Empty implementation, because the value can't change.
+        add
+        {
+            // no action required
+        }
+
+        remove
+        {
+            // no action required
+        }
+#pragma warning restore S3237
+    }
+
+    /// <inheritdoc/>
+    public virtual AttributeDefinition Definition
+    {
+        get => this._definition;
+        protected set => this._definition = value;
+    }
+
+    /// <inheritdoc/>
+    public float Value { get; protected set; }
+
+    /// <inheritdoc/>
+    public AggregateType AggregateType { get; protected set; }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{this.Definition.Designation}: {this.Value} ({this.AggregateType})";
+    }
+}

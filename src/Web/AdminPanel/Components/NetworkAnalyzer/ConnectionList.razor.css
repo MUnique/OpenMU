@@ -1,0 +1,5 @@
+.accordion {
+    /* The connections scroll inside the sidebar, so the page doesn't grow with them. */
+    max-height: 60vh;
+    overflow-y: auto;
+}

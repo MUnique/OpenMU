@@ -1,0 +1,87 @@
+/* Terrain editor: scrollable pixelated canvas with optional tile grid, rectangle preview and tool panel. */
+.terrain-editor-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.terrain-column {
+  flex-shrink: 0;
+}
+
+.terrain-tool-column {
+  flex: 1;
+  min-width: 280px;
+  max-width: 440px;
+}
+
+.terrain-host-container {
+  position: relative;
+  display: inline-block;
+}
+
+.terrain-host {
+  position: relative;
+  width: 768px;
+  max-width: calc(100vw - 32px);
+  height: 768px;
+  max-height: 80vh;
+  overflow: auto;
+  user-select: none;
+  cursor: crosshair;
+  background-color: #1a1a2e;
+  border: 2px solid #333;
+  border-radius: 4px;
+}
+
+.terrain-host.panning {
+  cursor: grabbing;
+}
+
+.terrain-content {
+  position: relative;
+  display: inline-block;
+}
+
+.terrain-content canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.terrain-grid {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: var(--tile-size) var(--tile-size);
+}
+
+.terrain-host.show-grid .terrain-grid {
+  display: block;
+}
+
+.terrain-selection {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  border: 1px dashed #fff;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.terrain-status {
+  min-height: 1.5em;
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+.terrain-swatch {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border: 1px solid #888;
+  vertical-align: middle;
+}

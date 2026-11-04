@@ -1,0 +1,275 @@
+﻿// <copyright file="ItemDefinition.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.DataModel.Configuration.Items;
+
+using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Defines an item.
+/// </summary>
+[Cloneable]
+public partial class ItemDefinition
+{
+    /// <summary>
+    /// Gets or sets the (Sub-)Id of this item. Must be unique in an item group.
+    /// </summary>
+    [Display(AutoGenerateField = true)]
+    public short Number { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item slot where it can get equipped.
+    /// </summary>
+    public virtual ItemSlotType? ItemSlot { get; set; }
+
+    /// <summary>
+    /// Gets or sets the stat profile: the item formulas of this item.
+    /// Without one, the item has the formulas of the profile "default". A new configuration and the update which adds
+    /// the profiles give each item the profile of its kind.
+    /// </summary>
+    public virtual ItemStatProfile? StatProfile { get; set; }
+
+    /// <summary>
+    /// Gets or sets a fixed bonus which an excellent item of this kind gets on its damage and magic power,
+    /// instead of the excellent part of its stat profile. 0 means the excellent part applies.
+    /// </summary>
+    public byte ExcellentBonus { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether an excellent item of this kind needs a higher level,
+    /// by the <see cref="ItemStatProfile.ExcellentLevelAdd"/> of its stat profile.
+    /// </summary>
+    public bool ExcellentRaisesLevel { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the width of the Item.
+    /// </summary>
+    public byte Width { get; set; }
+
+    /// <summary>
+    /// Gets or sets the weight of the Item.
+    /// </summary>
+    public byte Height { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the item can be dropped by monsters.
+    /// </summary>
+    public bool DropsFromMonsters { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance acts as ammunition for another equipped weapon.
+    /// </summary>
+    public bool IsAmmunition { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind are bound to character.
+    /// That means, it can't be traded, moved to the vault/personal shop or picked up from the ground by other players.
+    /// </summary>
+    public bool IsBoundToCharacter { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind are quest items.
+    /// Quest items may additionally only be picked up from the ground by a character
+    /// which has an active quest that requires them, even if the character is a member
+    /// of the party which killed the monster that dropped it.
+    /// </summary>
+    public bool IsQuestItem { get; set; }
+
+    /// <summary>
+    /// Gets or sets the storage limit per character which is checked on pick-up.
+    /// A value of 0 means, that there is no limit.
+    /// A value 'n' above 0 means, that the inventory of the character can store
+    /// at most 'n' items of this kind.
+    /// </summary>
+    public int StorageLimitPerCharacter { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be put into a trade with another player.
+    /// </summary>
+    public bool IsTradable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be dropped to the ground.
+    /// </summary>
+    public bool IsDroppable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be stored in the vault.
+    /// </summary>
+    public bool IsStorable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be sold to an NPC merchant.
+    /// </summary>
+    public bool IsSellableToNpc { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be offered in a personal store.
+    /// </summary>
+    public bool IsPersonalStoreSellable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether items of this kind can be repaired the normal way:
+    /// by an NPC, or with the repair of the inventory.
+    /// Other ways to restore the durability don't depend on it, e.g. repairing a Horn of Fenrir
+    /// with a Jewel of Bless (see the repair target items of the jewel of bless consume handler).
+    /// </summary>
+    public bool IsRepairable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the name of the item.
+    /// </summary>
+    public LocalizedString Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this item is active in the game.
+    /// </summary>
+    /// <remarks>
+    /// Inactive items stay in the configuration, but are not available in the game,
+    /// e.g. they are not dropped by monsters and not sold by merchants.
+    /// This allows to restrict the game to the features of a certain game version, e.g. a season,
+    /// without having to delete them.
+    /// </remarks>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the version of the original game which introduced this item.
+    /// </summary>
+    /// <remarks>
+    /// It's informational and allows to activate or deactivate the content of certain game versions
+    /// in batches (see <see cref="IsActive"/>).
+    /// </remarks>
+    public GameVersion IntroducedIn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item drop level, which indicates the minimum monster lvl of which this item can be dropped.
+    /// </summary>
+    public byte DropLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum monster level at which this item can be dropped.
+    /// If no value is set, there is no upper limit.
+    /// </summary>
+    public byte? MaximumDropLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum item level.
+    /// </summary>
+    public byte MaximumItemLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum durability of this item at Level 0.
+    /// </summary>
+    public byte Durability { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item Group (0-15). TODO: Might change item groups to classes, and replace this by it.
+    /// </summary>
+    [Display(AutoGenerateField = true)]
+    public byte Group { get; set; }
+
+    /// <summary>
+    /// Gets or sets the value which defines the worth of an item in zen currency.
+    /// </summary>
+    public int Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the definition of how the price of this item is calculated.
+    /// When it's <c>null</c>, the price is calculated automatically, like for usual equipment.
+    /// </summary>
+    public virtual ItemPriceDefinition? PriceDefinition { get; set; }
+
+    /// <summary>
+    /// Gets or sets the formula to calculate the required experience for a specific pet level.
+    /// Only applies, if this item is actually a trainable pet.
+    /// The variable for the pet level is "level".
+    /// </summary>
+    public string? PetExperienceFormula { get; set; }
+
+    /// <summary>
+    /// Gets or sets the effect which is applied when this item is consumed.
+    /// Creating a consume handler plugin is not required when this effect definition is set.
+    /// </summary>
+    public virtual MagicEffectDefinition? ConsumeEffect { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of sockets an instance of this item can have.
+    /// </summary>
+    public int MaximumSockets { get; set; }
+
+    /// <summary>
+    /// Gets or sets the skill which this items adds to the skill list while wearing or which can be learned by consuming this item.
+    /// TODO: Split these two usages into different properties?.
+    /// </summary>
+    public virtual Skill? Skill { get; set; }
+
+    /// <summary>
+    /// Gets or sets the character classes which are qualified to wear this Item.
+    /// </summary>
+    public virtual ICollection<CharacterClass> QualifiedCharacters { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the possible item set groups.
+    /// </summary>
+    /// <remarks>
+    /// With this we can define a lot of things, for example:
+    ///   - double wear bonus of single swords
+    ///   - set bonus for defense rate
+    ///   - set bonus for defense, if level is greater than 9
+    ///   - ancient sets.
+    /// </remarks>
+    public virtual ICollection<ItemSetGroup> PossibleItemSetGroups { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the possible item options.
+    /// </summary>
+    public virtual ICollection<ItemOptionDefinition> PossibleItemOptions { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the requirements for wearing this item.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRequirement> Requirements { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the base PowerUps of this item, for example min/max damage for weapons.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemBasePowerUpDefinition> BasePowerUpAttributes { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the drop item groups (one per possible item level), which are used to
+    /// generate a new item when this item gets dropped by a player.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemDropItemGroup> DropItems { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.Name} ({this.Group}, {this.Number}) [{this.Width}x{this.Height}]";
+    }
+
+    /// <summary>
+    /// Gets the name for level.
+    /// </summary>
+    /// <param name="itemLevel">The item level.</param>
+    /// <returns>The name of the item of a certain level.</returns>
+    public string GetNameForLevel(byte itemLevel)
+    {
+        var itemName = this.Name.ToString();
+        if (itemName?.Contains(';') ?? false)
+        {
+            var tokens = itemName.Split(';');
+            if (tokens.Length > itemLevel)
+            {
+                itemName = tokens[itemLevel];
+            }
+        }
+
+        return itemName ?? string.Empty;
+    }
+}

@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile></DocumentationFile>
+    <!-- Set base path for static web assets to avoid conflicts when referenced by other web apps.
+         Required for .NET 10+ where WebApp-to-WebApp references are unsupported.
+         Also resolves asset path conflicts in .NET 9 when AdminPanel and Map both have wwwroot/css/site.css.
+         Note: Standalone Program.cs in this project won't serve assets correctly.
+         Use GameServer.Host project to run the map viewer. -->
+    <StaticWebAssetBasePath>_content/$(MSBuildProjectName)</StaticWebAssetBasePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nito.AsyncEx" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(ci)'!='true'">
+    <!-- We only run the transformation locally on our dev environment with visual studio.
+        The CI environment is identified by the parameter 'ci'. It's set in the azure pipelines and Dockerfile.
+        If you run into errors here under Linux/Mac OS, it might help to add this parameter, too. -->
+    <PackageReference Include="Microsoft.TypeScript.MSBuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\Shared\MUnique.OpenMU.Web.Shared.csproj" />
+  </ItemGroup>
+
+  <!-- Rewrites the SDK's root-relative scoped-css bundle @imports so they resolve
+       from this project's StaticWebAssetBasePath (and under UsePathBase).
+       See the shared targets file for the full explanation. -->
+  <Import Project="..\ScopedCssBundleImports.targets" />
+
+</Project>

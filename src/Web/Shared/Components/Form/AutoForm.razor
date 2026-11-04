@@ -1,0 +1,39 @@
+@typeparam T
+
+<div class="auto-form-container">
+    @if (ShowSearch)
+    {
+        <div class="mb-3 auto-form-search-group">
+            <input type="text"
+                   id="auto-form-search"
+                   class="form-control"
+                   placeholder="@($"{Resources.Search}...")"
+                   @bind="this._currentSearchTerm"
+                   @bind:event="oninput" />
+            <span class="oi oi-magnifying-glass search-icon"></span>
+        </div>
+    }
+
+    <EditForm Model="@Model" OnValidSubmit="OnValidSubmit" class="auto-form">
+        <DataAnnotationsValidator />
+        <AutoFields HideCollections="@this.HideCollections" SearchTerm="@this._currentSearchTerm" />
+        <ValidationSummary />
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" disabled="@this.IsProcessing">
+                @if (this.IsProcessing)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                }
+                @Resources.Save
+            </button>
+            @if (this.OnRefresh != null)
+            {
+                <button type="button" class="btn btn-secondary" @onclick="this.OnRefresh.Value" >@Resources.Refresh</button>
+            }
+            @if (this.OnCancel != null)
+            {
+                <button type="button" class="btn btn-secondary" @onclick="this.OnCancel.Value">@Resources.Cancel</button>
+            }
+        </div>
+    </EditForm>
+</div>

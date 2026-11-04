@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="Pet" xml:space="preserve">
+    <value>Begleiter</value>
+  </data>
+  <data name="LeftHand" xml:space="preserve">
+    <value>Linke Hand</value>
+  </data>
+  <data name="RightHand" xml:space="preserve">
+    <value>Rechte Hand</value>
+  </data>
+  <data name="Boots" xml:space="preserve">
+    <value>Stiefel</value>
+  </data>
+  <data name="Gloves" xml:space="preserve">
+    <value>Handschuhe</value>
+  </data>
+  <data name="Pants" xml:space="preserve">
+    <value>Hose</value>
+  </data>
+  <data name="Armor" xml:space="preserve">
+    <value>Rüstung</value>
+  </data>
+  <data name="LeftOrRightHand" xml:space="preserve">
+    <value>Linke oder rechte Hand</value>
+  </data>
+  <data name="Pendant" xml:space="preserve">
+    <value>Anhänger</value>
+  </data>
+  <data name="Wings" xml:space="preserve">
+    <value>Flügel</value>
+  </data>
+</root>

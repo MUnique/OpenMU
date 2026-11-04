@@ -1,0 +1,123 @@
+﻿// <copyright file="MagicEffectDefinition.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.DataModel.Configuration;
+
+using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Magic Effect Definition. It can be an effect from a consumed item, a buff, or the result of an attack skill.
+/// </summary>
+[Cloneable]
+public partial class MagicEffectDefinition
+{
+    /// <summary>
+    /// Gets or sets the number.
+    /// </summary>
+    /// <remarks>
+    /// This number is a reference for the game client.
+    /// Negative numbers are for internal usage and their effects are not meant to be exposed to the game client.
+    /// </remarks>
+    public short Number { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public LocalizedString Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets the sub type.
+    /// Same sub type = cant stack. Adding a magic effect with the same sub type will cause the existing magic effect to disappear.
+    /// </summary>
+    public byte SubType { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the effect change is sent to observers.
+    /// </summary>
+    /// <remarks>
+    /// Some effects are not externally visible, but only to the player himself.
+    /// </remarks>
+    public bool InformObservers { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the effect gets stopped by a death of the player.
+    /// </summary>
+    public bool StopByDeath { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the duration of the effect should be sent.
+    /// </summary>
+    public bool SendDuration { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the duration of the effect depends on the target's level.
+    /// </summary>
+    public bool DurationDependsOnTargetLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value by which the effect target's (monster) level should be divided in case <see cref="DurationDependsOnTargetLevel"/> is <c>true</c>.
+    /// </summary>
+    public float MonsterTargetLevelDivisor { get; set; } = 1f;
+
+    /// <summary>
+    /// Gets or sets a value by which the effect target's (player) level should be divided in case <see cref="DurationDependsOnTargetLevel"/> is <c>true</c>.
+    /// </summary>
+    public float PlayerTargetLevelDivisor { get; set; } = 1f;
+
+    /// <summary>
+    /// Gets or sets the chance of applying the effect, in decimals.
+    /// </summary>
+    /// <remarks>
+    /// Results in a value of 1.0 if not set.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual PowerUpDefinitionValue? Chance { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chance of applying the effect in PvP, in decimals.
+    /// </summary>
+    /// <remarks>
+    /// Results in the same value as <see cref="Chance"/> if not set.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual PowerUpDefinitionValue? ChancePvp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply, in seconds.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual PowerUpDefinitionValue? Duration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration which describes how long the <see cref="PowerUpDefinitions"/> apply to PvP, in seconds.
+    /// </summary>
+    /// <remarks>
+    /// Results in the same value as <see cref="Duration"/> if not set.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual PowerUpDefinitionValue? DurationPvp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the power up definitions which are used to create the actual power up element.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<PowerUpDefinition> PowerUpDefinitions { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the power up definitions which are used to create the actual power up element for PvP.
+    /// </summary>
+    /// <remarks>
+    /// Results in the same collection as <see cref="PowerUpDefinitions"/> if not set.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<PowerUpDefinition> PowerUpDefinitionsPvp { get; protected set; } = null!;
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return $"{this.Name} ({this.Number})";
+    }
+}

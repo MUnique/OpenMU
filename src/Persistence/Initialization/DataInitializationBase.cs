@@ -1,0 +1,371 @@
+﻿// <copyright file="DataInitializationBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization;
+
+using System.ComponentModel.Design;
+using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
+using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
+using MUnique.OpenMU.GameLogic.Resets;
+using MUnique.OpenMU.GameServer.MessageHandler;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Class to manage data initialization.
+/// </summary>
+public abstract class DataInitializationBase : IDataInitializationPlugIn
+{
+    private readonly IPersistenceContextProvider _persistenceContextProvider;
+
+    private readonly ILoggerFactory _loggerFactory;
+    private GameConfiguration? _gameConfiguration;
+    private IContext? _context;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DataInitializationBase" /> class.
+    /// </summary>
+    /// <param name="persistenceContextProvider">The persistence context provider.</param>
+    /// <param name="loggerFactory">The logger factory.</param>
+    protected DataInitializationBase(IPersistenceContextProvider persistenceContextProvider, ILoggerFactory loggerFactory)
+    {
+        this._persistenceContextProvider = persistenceContextProvider;
+        this._loggerFactory = loggerFactory;
+    }
+
+    /// <inheritdoc />
+    public abstract string Key { get; }
+
+    /// <inheritdoc />
+    public abstract string Caption { get; }
+
+    /// <summary>
+    /// Gets or sets the game configuration.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">not initialized yet.</exception>
+    protected GameConfiguration GameConfiguration
+    {
+        get => this._gameConfiguration ?? throw new InvalidOperationException("not initialized yet.");
+        set => this._gameConfiguration = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the context.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">not initialized yet.</exception>
+    protected IContext Context
+    {
+        get => this._context ?? throw new InvalidOperationException("not initialized yet.");
+        set => this._context = value;
+    }
+
+    /// <summary>
+    /// Gets the game configuration initializer.
+    /// </summary>
+    protected abstract IInitializer GameConfigurationInitializer { get; }
+
+    /// <summary>
+    /// Gets the maps initializer.
+    /// </summary>
+    protected abstract IGameMapsInitializer GameMapsInitializer { get; }
+
+    /// <summary>
+    /// Gets the test accounts initializer.
+    /// </summary>
+    protected abstract IInitializer? TestAccountsInitializer { get; }
+
+    /// <summary>
+    /// Creates the initial data for a server.
+    /// </summary>
+    /// <param name="numberOfGameServers">The number of game servers.</param>
+    /// <param name="createTestAccounts">If set to <c>true</c>, test accounts should be created.</param>
+    public async Task CreateInitialDataAsync(byte numberOfGameServers, bool createTestAccounts)
+    {
+        BaseMapInitializer.ClearDefaultDropItemGroups();
+        using (var temporaryContext = this._persistenceContextProvider.CreateNewContext())
+        {
+            this.GameConfiguration = temporaryContext.CreateNew<GameConfiguration>();
+            this.GameConfiguration.SetGuid(1);
+            this.CreateSystemConfiguration(temporaryContext);
+            using var tempSuspension = temporaryContext.SuspendChangeNotifications();
+            await temporaryContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        using var contextWithConfiguration = this._persistenceContextProvider.CreateNewContext(this.GameConfiguration);
+        using var notificationSuspension = contextWithConfiguration.SuspendChangeNotifications();
+        this.Context = contextWithConfiguration;
+        this.CreateGameClientDefinition();
+        await this.CreateChatServerDefinitionAsync().ConfigureAwait(false);
+        this.GameConfigurationInitializer.Initialize();
+        IntroducedGameVersions.Apply(this.GameConfiguration);
+
+        // After all items exist, for every version.
+        ItemStatProfiles.Apply(this.Context, this.GameConfiguration);
+
+        var gameServerConfiguration = this.CreateGameServerConfiguration(this.GameConfiguration.Maps);
+        await this.CreateGameServerDefinitionsAsync(gameServerConfiguration, numberOfGameServers).ConfigureAwait(false);
+        await this.CreateConnectServerDefinitionAsync().ConfigureAwait(false);
+        await this.Context.SaveChangesAsync().ConfigureAwait(false);
+
+        this.GameMapsInitializer.SetSafezoneMaps();
+
+        if (createTestAccounts)
+        {
+            this.TestAccountsInitializer?.Initialize();
+        }
+
+        if (!AppDomain.CurrentDomain.GetAssemblies().Contains(typeof(GameServer.GameServer).Assembly))
+        {
+            // should never happen, but the access to the GameServer type is a trick to load the assembly into the current domain.
+        }
+
+        var dataSource = new GameConfigurationDataSource(this._loggerFactory.CreateLogger<GameConfigurationDataSource>(), this._persistenceContextProvider);
+        await dataSource.GetOwnerAsync(this.GameConfiguration.GetId()).ConfigureAwait(false);
+        var referenceHandler = new ByDataSourceReferenceHandler(dataSource);
+        var serviceContainer = new ServiceContainer();
+        serviceContainer.AddService(typeof(IPersistenceContextProvider), this._persistenceContextProvider);
+        var plugInManager = new PlugInManager(null, this._loggerFactory, serviceContainer, referenceHandler);
+        plugInManager.DiscoverAndRegisterPlugIns();
+        plugInManager.KnownPlugInTypes.ForEach(plugInType =>
+        {
+            var plugInConfiguration = this.Context.CreateNew<PlugInConfiguration>();
+            plugInConfiguration.SetGuid(plugInType.GUID);
+            plugInConfiguration.TypeId = plugInType.GUID;
+            plugInConfiguration.IsActive = !plugInType.IsAssignableTo(typeof(IDisabledByDefault));
+            this.GameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+
+            if (plugInType.GetInterfaces().Contains(typeof(ISupportDefaultCustomConfiguration)))
+            {
+                this.CreateDefaultPlugInConfiguration(plugInType, plugInConfiguration, referenceHandler);
+            }
+
+            if (plugInType == typeof(BlessJewelConsumeHandlerPlugIn))
+            {
+                var config = new BlessJewelConsumeHandlerPlugInConfiguration
+                {
+                    MaximumLevel = 5,
+                    MinimumLevel = 0,
+                    SuccessRatePercentage = 100,
+                    SuccessRateBonusWithLuckPercentage = 0,
+                    ResetToLevel0WhenFailMinLevel = 0,
+                };
+
+                if (this.GameConfiguration.Items.FirstOrDefault(item => item is { Group: 13, Number: 37 }) is { } fenrir)
+                {
+                    config.RepairTargetItems.Add(fenrir);
+                }
+
+                plugInConfiguration.SetConfiguration(config, referenceHandler);
+            }
+
+            if (plugInType == typeof(PlayerShopCurrenciesFeaturePlugIn))
+            {
+                // The default configuration of the plug-in can't reference the items, because it's created without a game configuration.
+                plugInConfiguration.SetConfiguration(this.CreatePlayerShopCurrenciesConfiguration(), referenceHandler);
+            }
+
+            if (plugInType.IsAssignableTo(typeof(NpcTalkPlugInBase)))
+            {
+                // The default configuration of the plug-in can't reference the NPC, because it's created without a game configuration.
+                var npcTalkPlugIn = (NpcTalkPlugInBase)Activator.CreateInstance(plugInType)!;
+                plugInConfiguration.SetConfiguration(npcTalkPlugIn.CreateDefaultConfig(this.GameConfiguration), referenceHandler);
+            }
+
+            if (plugInType == typeof(DoppelgangerFeaturePlugIn))
+            {
+                // The default configuration of the plug-in can't reference the monsters of the
+                // event, because it's created without a game configuration.
+                plugInConfiguration.SetConfiguration(DoppelgangerEventDefinition.CreateDefault(this.GameConfiguration), referenceHandler);
+            }
+
+            if (plugInType == typeof(KanturuStartPlugIn))
+            {
+                // The default configuration of the plug-in can't reference the monsters of the
+                // event, because it's created without a game configuration.
+                var config = KanturuStartConfiguration.Default;
+                config.EventDefinition = KanturuEventDefinition.CreateDefault(this.GameConfiguration);
+                plugInConfiguration.SetConfiguration(config, referenceHandler);
+            }
+
+            // We don't move the player anymore by his request. This was usually requested after a player performed a skill.
+            // However, it adds way for cheaters to move through the map.
+            // The plugin is therefore deactivated by default.
+            if (plugInType.IsAssignableTo(typeof(CharacterMoveBaseHandlerPlugIn)))
+            {
+                plugInConfiguration.IsActive = false;
+            }
+
+            // Disable plugins marked as disabled by default.
+            if (plugInType.IsAssignableTo(typeof(IDisabledByDefault)))
+            {
+                plugInConfiguration.IsActive = false;
+            }
+        });
+
+        await this.AddAllUpdateEntriesAsync(plugInManager).ConfigureAwait(false);
+
+        await this.Context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates the game client definition.
+    /// </summary>
+    protected abstract void CreateGameClientDefinition();
+
+    private PlayerShopCurrenciesConfiguration CreatePlayerShopCurrenciesConfiguration()
+    {
+        var configuration = new PlayerShopCurrenciesConfiguration();
+        ItemIdentifier[] jewels =
+        [
+            ItemConstants.JewelOfBless,
+            ItemConstants.JewelOfSoul,
+            ItemConstants.JewelOfChaos,
+            ItemConstants.JewelOfCreation,
+            ItemConstants.JewelOfLife,
+        ];
+
+        foreach (var jewel in jewels)
+        {
+            if (this.GameConfiguration.Items.FirstOrDefault(item => item.Group == jewel.Group && item.Number == jewel.Number) is { } definition)
+            {
+                configuration.PriceItems.Add(definition);
+            }
+        }
+
+        return configuration;
+    }
+
+    private void CreateDefaultPlugInConfiguration(Type plugInType, PlugInConfiguration plugInConfiguration, ReferenceHandler referenceHandler)
+    {
+        try
+        {
+            var plugin = (ISupportDefaultCustomConfiguration)Activator.CreateInstance(plugInType)!;
+            var defaultConfig = plugin.CreateDefaultConfig();
+            plugInConfiguration.SetConfiguration(defaultConfig, referenceHandler);
+        }
+        catch (Exception ex)
+        {
+            this._loggerFactory.CreateLogger(this.GetType()).LogWarning(ex, "Could not create custom default configuration for plugin type {plugInType}", plugInType);
+        }
+    }
+
+    /// <summary>
+    /// Installs the updates of this version on the new database (<see cref="NewDatabaseUpdates"/>).
+    /// </summary>
+    private async ValueTask AddAllUpdateEntriesAsync(PlugInManager plugInManager)
+    {
+        var updates = plugInManager.GetStrategyProvider<Guid, IConfigurationUpdatePlugIn>()
+                          ?.AvailableStrategies.Where(up => up.DataInitializationKey == this.Key)
+                          .ToList();
+        if (updates is not { Count: > 0 })
+        {
+            return;
+        }
+
+        await NewDatabaseUpdates.InstallAsync(this.Context, this.GameConfiguration, updates).ConfigureAwait(false);
+
+        var updateState = this.Context.CreateNew<ConfigurationUpdateState>();
+        updateState.InitializationKey = this.Key;
+    }
+
+    private async ValueTask CreateConnectServerDefinitionAsync()
+    {
+        var port = 44405;
+        byte serverId = 0;
+        var clients = await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false);
+        foreach (var client in clients.OrderBy(c => c.Season))
+        {
+            var connectServer = this.Context.CreateNew<ConnectServerDefinition>();
+            connectServer.InitializeDefaults();
+            connectServer.SetGuid(client.Season, client.Episode);
+
+            // The server id is part of the id of the manageable server, so it has to be unique.
+            connectServer.ServerId = serverId;
+            connectServer.Client = client;
+            connectServer.ClientListenerPort = port;
+            connectServer.Description = $"Connect Server ({client.Description})";
+            port++;
+            serverId++;
+        }
+    }
+
+    private async ValueTask CreateGameServerDefinitionsAsync(GameServerConfiguration gameServerConfiguration, int numberOfServers)
+    {
+        var port = 45901;
+        for (int i = 0; i < numberOfServers; i++)
+        {
+            var server = this.Context!.CreateNew<GameServerDefinition>();
+            server.SetGuid((short)i);
+            server.ServerID = (byte)i;
+            server.Description = $"Server {i}";
+            server.ExperienceRate = 1.0f;
+            server.GameConfiguration = this.GameConfiguration;
+            server.ServerConfiguration = gameServerConfiguration;
+
+            foreach (var client in await this.Context.GetAsync<GameClientDefinition>().ConfigureAwait(false))
+            {
+                var endPoint = this.Context.CreateNew<GameServerEndpoint>();
+                endPoint.SetGuid((short)i, (short)server.Endpoints.Count);
+                endPoint.Client = client;
+                endPoint.NetworkPort = port;
+                server.Endpoints.Add(endPoint);
+                port++;
+            }
+        }
+    }
+
+    private async ValueTask CreateChatServerDefinitionAsync()
+    {
+        var server = this.Context!.CreateNew<ChatServerDefinition>();
+        server.SetGuid(0);
+        server.ServerId = 0;
+        server.Description = "Chat Server";
+
+        var client = (await this.Context!.GetAsync<GameClientDefinition>().ConfigureAwait(false)).First();
+        var endPoint = this.Context.CreateNew<ChatServerEndpoint>();
+        server.SetGuid(0);
+        endPoint.Client = client;
+        endPoint.NetworkPort = 45980;
+        server.Endpoints.Add(endPoint);
+    }
+
+    private GameServerConfiguration CreateGameServerConfiguration(ICollection<GameMapDefinition> maps)
+    {
+        var gameServerConfiguration = this.Context.CreateNew<GameServerConfiguration>();
+        gameServerConfiguration.SetGuid(0);
+        gameServerConfiguration.MaximumPlayers = 1000;
+
+        // by default we add every map to a server configuration
+        foreach (var map in maps)
+        {
+            gameServerConfiguration.Maps.Add(map);
+        }
+
+        return gameServerConfiguration;
+    }
+
+    private void CreateSystemConfiguration(IContext context)
+    {
+        var systemConfiguration = context.CreateNew<SystemConfiguration>();
+        systemConfiguration.SetGuid(0);
+        systemConfiguration.AutoStart = true;
+        systemConfiguration.AutoUpdateSchema = true;
+        systemConfiguration.ReadConsoleInput = false;
+
+        var (type, param) = IpAddressResolverFactory.DetermineBestFittingResolver(Environment.GetCommandLineArgs());
+        systemConfiguration.IpResolver = type;
+        systemConfiguration.IpResolverParameter = param;
+    }
+}

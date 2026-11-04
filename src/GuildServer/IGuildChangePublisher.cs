@@ -1,0 +1,58 @@
+﻿// <copyright file="IGuildChangePublisher.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GuildServer;
+
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Interface for a publisher of guild related events.
+/// </summary>
+public interface IGuildChangePublisher
+{
+    /// <summary>
+    /// Notifies the game server that a guild member got removed from a guild.
+    /// </summary>
+    /// <param name="playerName">Name of the player which got removed from a guild.</param>
+    ValueTask GuildPlayerKickedAsync(string playerName);
+
+    /// <summary>
+    /// Notifies the game server that a guild got deleted.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    ValueTask GuildDeletedAsync(uint guildId);
+
+    /// <summary>
+    /// Assigns a guild to a player.
+    /// </summary>
+    /// <param name="serverId">The server identifier.</param>
+    /// <param name="characterName">Name of the character.</param>
+    /// <param name="status">The status.</param>
+    ValueTask AssignGuildToPlayerAsync(byte serverId, string characterName, GuildMemberStatus status);
+
+    /// <summary>
+    /// Notifies game servers that an alliance was created (or a guild was added to an existing alliance).
+    /// </summary>
+    /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
+    /// <param name="memberGuildId">The identifier of the newly added member guild.</param>
+    ValueTask AllianceCreatedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies game servers that a guild was removed from an alliance.
+    /// When master and member guild are the same, the whole alliance got disbanded.
+    /// </summary>
+    /// <param name="masterGuildId">The identifier of the alliance master guild.</param>
+    /// <param name="memberGuildId">The identifier of the removed member guild.</param>
+    ValueTask AllianceDisbandedAsync(uint masterGuildId, uint memberGuildId);
+
+    /// <summary>
+    /// Notifies game servers that the hostility between two guilds (or alliances) has changed.
+    /// </summary>
+    /// <param name="guildIdA">The identifier of the first guild.</param>
+    /// <param name="allianceGuildIdsA">The affected guild IDs on the first side, including all alliance members for a direct hostility change.</param>
+    /// <param name="guildIdB">The identifier of the second guild.</param>
+    /// <param name="allianceGuildIdsB">The affected guild IDs on the second side. Membership reconciliation may send a single changed pair.</param>
+    /// <param name="created"><c>true</c> if the hostility was created; <c>false</c> if it was removed.</param>
+    ValueTask GuildHostilityChangedAsync(uint guildIdA, IReadOnlyList<uint> allianceGuildIdsA, uint guildIdB, IReadOnlyList<uint> allianceGuildIdsB, bool created);
+}

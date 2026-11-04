@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.Persistence.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.Persistence.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="EntityFramework\**" />
+    <Compile Remove="EntityFramework.DesignTime\**" />
+    <Compile Remove="Initialization\**" />
+    <Compile Remove="InMemory\**" />
+    <Compile Remove="SourceGenerator\**" />
+    <EmbeddedResource Remove="EntityFramework\**" />
+    <EmbeddedResource Remove="EntityFramework.DesignTime\**" />
+    <EmbeddedResource Remove="Initialization\**" />
+    <EmbeddedResource Remove="InMemory\**" />
+    <EmbeddedResource Remove="SourceGenerator\**" />
+    <None Remove="EntityFramework\**" />
+    <None Remove="EntityFramework.DesignTime\**" />
+    <None Remove="Initialization\**" />
+    <None Remove="InMemory\**" />
+    <None Remove="SourceGenerator\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Persistence.Generators\MUnique.OpenMU.Persistence.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <!-- The PreBuild target runs the source generator without building it, so it has to be built before by the project reference. -->
+  <ItemGroup Condition="'$(ci)'!='true'">
+    <ProjectReference Include="SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveProjectReferences" Condition="'$(ci)'!='true'">
+    <Exec Command="dotnet run --project SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj -c:$(ConfigurationName) MUnique.OpenMU.Persistence &quot;$(ProjectDir)BasicModel&quot; --no-build" />
+  </Target>
+
+</Project>

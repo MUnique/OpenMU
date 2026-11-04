@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="AGBoostAura" xml:space="preserve">
+    <value>最大AG提升光环</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>紫水晶指环</value>
+  </data>
+  <data name="BloodCastleTicket" xml:space="preserve">
+    <value>血色城堡入场券</value>
+  </data>
+  <data name="BlueGoldChannelPackage" xml:space="preserve">
+    <value>[蓝色] 黄金频道礼包</value>
+  </data>
+  <data name="BonusGPGoldChannelTicket30Day" xml:space="preserve">
+    <value>[+GP][黄金频道入场券（30天）]</value>
+  </data>
+  <data name="BonusGPGoldChannelTicket7Day" xml:space="preserve">
+    <value>[+GP][黄金频道入场券（7天）]</value>
+  </data>
+  <data name="BonusGPMasterSealofAscension30Day" xml:space="preserve">
+    <value>[+GP][大师等级经验印章（30天）]</value>
+  </data>
+  <data name="BonusGPMasterSealofAscension7Day" xml:space="preserve">
+    <value>[+GP][大师等级经验印章（7天）]</value>
+  </data>
+  <data name="BonusGPMasterSealofWealth30Day" xml:space="preserve">
+    <value>[+GP][大师等级神圣印章（30天）]</value>
+  </data>
+  <data name="BonusGPMasterSealofWealth7Day" xml:space="preserve">
+    <value>[+GP][大师等级神圣印章（7天）]</value>
+  </data>
+  <data name="BonusGPSealofAscension30Day" xml:space="preserve">
+    <value>[+GP][经验印章（30天）]</value>
+  </data>
+  <data name="BonusGPSealofAscension7Day" xml:space="preserve">
+    <value>[+GP][经验印章（7天）]</value>
+  </data>
+  <data name="BonusGPSealofWealth30Day" xml:space="preserve">
+    <value>[+GP][神圣印章（30天）]</value>
+  </data>
+  <data name="BonusGPSealofWealth7Day" xml:space="preserve">
+    <value>[+GP][神圣印章（7天）]</value>
+  </data>
+  <data name="BracketedAGBoostAura" xml:space="preserve">
+    <value>[最大AG提升光环]</value>
+  </data>
+  <data name="BracketedAmethystRing" xml:space="preserve">
+    <value>[紫水晶指环]</value>
+  </data>
+  <data name="BracketedBloodCastleTicket" xml:space="preserve">
+    <value>[血色城堡入场券]</value>
+  </data>
+  <data name="BracketedChaosCardGold" xml:space="preserve">
+    <value>[黄金玛雅卡片]</value>
+  </data>
+  <data name="BracketedChaosCardMini" xml:space="preserve">
+    <value>[迷你玛雅卡片]</value>
+  </data>
+  <data name="BracketedCriticalRingofWizard" xml:space="preserve">
+    <value>[巫师致命指环]</value>
+  </data>
+  <data name="BracketedDemon" xml:space="preserve">
+    <value>[恶魔]</value>
+  </data>
+  <data name="BracketedDevilSquareTicket" xml:space="preserve">
+    <value>[恶魔广场入场券]</value>
+  </data>
+  <data name="BracketedEliteHealingPotion" xml:space="preserve">
+    <value>[精华治疗药水]</value>
+  </data>
+  <data name="BracketedEliteManaPotion" xml:space="preserve">
+    <value>[精华魔力药水]</value>
+  </data>
+  <data name="BracketedEliteSDPotion" xml:space="preserve">
+    <value>[精华SD药水]</value>
+  </data>
+  <data name="BracketedEmeraldNecklace" xml:space="preserve">
+    <value>[绿宝石项链]</value>
+  </data>
+  <data name="BracketedGladiatorPackage" xml:space="preserve">
+    <value>[角斗士礼包]</value>
+  </data>
+  <data name="BracketedGoldChannelTicket" xml:space="preserve">
+    <value>[黄金频道入场券]</value>
+  </data>
+  <data name="BracketedGoldKey" xml:space="preserve">
+    <value>[黄金钥匙]</value>
+  </data>
+  <data name="BracketedGoldenOakCharm" xml:space="preserve">
+    <value>[黄金橡木护符]</value>
+  </data>
+  <data name="BracketedIllusionTempleTicket" xml:space="preserve">
+    <value>[幻影寺院入场券]</value>
+  </data>
+  <data name="BracketedKalimaTicket" xml:space="preserve">
+    <value>[卡利玛入场券]</value>
+  </data>
+  <data name="BracketedLevelupMaster" xml:space="preserve">
+    <value>[升级礼包（大师）]</value>
+  </data>
+  <data name="BracketedLevelupnormal" xml:space="preserve">
+    <value>[升级礼包（普通）]</value>
+  </data>
+  <data name="BracketedLittleWarriorsCloak" xml:space="preserve">
+    <value>[小武者披风]</value>
+  </data>
+  <data name="BracketedMagicBackpack" xml:space="preserve">
+    <value>[魔法背包]</value>
+  </data>
+  <data name="BracketedMasterSealofAscension" xml:space="preserve">
+    <value>[大师等级经验印章]</value>
+  </data>
+  <data name="BracketedMasterSealofWealth" xml:space="preserve">
+    <value>[大师等级神圣印章]</value>
+  </data>
+  <data name="BracketedOakCharm" xml:space="preserve">
+    <value>[橡木护符]</value>
+  </data>
+  <data name="BracketedOpenAccessTickettoVarka7" xml:space="preserve">
+    <value>[帝国要塞7自由入场券]</value>
+  </data>
+  <data name="BracketedPandaRing" xml:space="preserve">
+    <value>[熊猫变身指环]</value>
+  </data>
+  <data name="BracketedPetPanda" xml:space="preserve">
+    <value>[熊猫]</value>
+  </data>
+  <data name="BracketedPetSkeleton" xml:space="preserve">
+    <value>[幼龙骨架]</value>
+  </data>
+  <data name="BracketedPetUnicorn" xml:space="preserve">
+    <value>[独角兽]</value>
+  </data>
+  <data name="BracketedRageFighterCharacterCard" xml:space="preserve">
+    <value>[格斗家角色卡]</value>
+  </data>
+  <data name="BracketedResetFruitControl" xml:space="preserve">
+    <value>[统率洗点果实]</value>
+  </data>
+  <data name="BracketedResetFruitEnergy" xml:space="preserve">
+    <value>[智力洗点果实]</value>
+  </data>
+  <data name="BracketedResetFruitHealth" xml:space="preserve">
+    <value>[体力洗点果实]</value>
+  </data>
+  <data name="BracketedResetFruitQuickness" xml:space="preserve">
+    <value>[敏捷洗点果实]</value>
+  </data>
+  <data name="BracketedResetFruitStrength" xml:space="preserve">
+    <value>[力量洗点果实]</value>
+  </data>
+  <data name="BracketedRubyNecklace" xml:space="preserve">
+    <value>[红宝石项链]</value>
+  </data>
+  <data name="BracketedRubyRing" xml:space="preserve">
+    <value>[红宝石指环]</value>
+  </data>
+  <data name="BracketedSDBoostAura" xml:space="preserve">
+    <value>[最大SD提升光环]</value>
+  </data>
+  <data name="BracketedSapphireNecklace" xml:space="preserve">
+    <value>[蓝宝石项链]</value>
+  </data>
+  <data name="BracketedSapphireRing" xml:space="preserve">
+    <value>[蓝宝石指环]</value>
+  </data>
+  <data name="BracketedScrollPackageA" xml:space="preserve">
+    <value>[卷轴礼包A]</value>
+  </data>
+  <data name="BracketedScrollPackageB" xml:space="preserve">
+    <value>[卷轴礼包B]</value>
+  </data>
+  <data name="BracketedScrollPackageC" xml:space="preserve">
+    <value>[卷轴礼包C]</value>
+  </data>
+  <data name="BracketedScrollPackageD" xml:space="preserve">
+    <value>[卷轴礼包D]</value>
+  </data>
+  <data name="BracketedScrollofBattle" xml:space="preserve">
+    <value>[幸运一击卷轴]</value>
+  </data>
+  <data name="BracketedScrollofHealth" xml:space="preserve">
+    <value>[生命卷轴]</value>
+  </data>
+  <data name="BracketedScrollofMana" xml:space="preserve">
+    <value>[魔法卷轴]</value>
+  </data>
+  <data name="BracketedScrollofProtection" xml:space="preserve">
+    <value>[防御卷轴]</value>
+  </data>
+  <data name="BracketedScrollofQuickness" xml:space="preserve">
+    <value>[速度卷轴]</value>
+  </data>
+  <data name="BracketedScrollofStrengthener" xml:space="preserve">
+    <value>[卓越一击卷轴]</value>
+  </data>
+  <data name="BracketedScrollofWizardry" xml:space="preserve">
+    <value>[魔力卷轴]</value>
+  </data>
+  <data name="BracketedScrollofWrath" xml:space="preserve">
+    <value>[攻击卷轴]</value>
+  </data>
+  <data name="BracketedSealofAscension" xml:space="preserve">
+    <value>[经验印章]</value>
+  </data>
+  <data name="BracketedSealofDivinity" xml:space="preserve">
+    <value>[神性印章]</value>
+  </data>
+  <data name="BracketedSealofHealing" xml:space="preserve">
+    <value>[恢复印章]</value>
+  </data>
+  <data name="BracketedSealofSustenance" xml:space="preserve">
+    <value>[持续印章]</value>
+  </data>
+  <data name="BracketedSealofWealth" xml:space="preserve">
+    <value>[神圣印章]</value>
+  </data>
+  <data name="BracketedSilverKey" xml:space="preserve">
+    <value>[白银钥匙]</value>
+  </data>
+  <data name="BracketedSkeletonTransformationRing" xml:space="preserve">
+    <value>[骨架变身指环]</value>
+  </data>
+  <data name="BracketedSkillbookpackageforDarkKnight" xml:space="preserve">
+    <value>[剑士技能书礼包]</value>
+  </data>
+  <data name="BracketedSkillbookpackageforDarkWizard" xml:space="preserve">
+    <value>[魔法师技能书礼包]</value>
+  </data>
+  <data name="BracketedSkillbookpackageforFairyElf" xml:space="preserve">
+    <value>[弓箭手技能书礼包]</value>
+  </data>
+  <data name="BracketedSkillbookpackageforMagicGladiator" xml:space="preserve">
+    <value>[魔剑士技能书礼包]</value>
+  </data>
+  <data name="BracketedSkillbookpackageforRageFighter" xml:space="preserve">
+    <value>[格斗家技能书礼包]</value>
+  </data>
+  <data name="BracketedSkillbookpackageforSummoner" xml:space="preserve">
+    <value>[召唤术师技能书礼包]</value>
+  </data>
+  <data name="BracketedSmallWingsofDisaster" xml:space="preserve">
+    <value>[小灾难之翼]</value>
+  </data>
+  <data name="BracketedSmallWingsofFairy" xml:space="preserve">
+    <value>[小精灵之翼]</value>
+  </data>
+  <data name="BracketedSmallWingsofHeaven" xml:space="preserve">
+    <value>[小天使之翼]</value>
+  </data>
+  <data name="BracketedSmallWingsofSatan" xml:space="preserve">
+    <value>[小恶魔之翼]</value>
+  </data>
+  <data name="BracketedSpiritofGuardian" xml:space="preserve">
+    <value>[守护精灵]</value>
+  </data>
+  <data name="BracketedStatueofGoral" xml:space="preserve">
+    <value>[斑羚雕像]</value>
+  </data>
+  <data name="BracketedStatueofHawk" xml:space="preserve">
+    <value>[鹰雕像]</value>
+  </data>
+  <data name="BracketedSummonerCharacterCard" xml:space="preserve">
+    <value>[召唤术师角色卡]</value>
+  </data>
+  <data name="BracketedTalismanofLuck" xml:space="preserve">
+    <value>[幸运符咒]</value>
+  </data>
+  <data name="BracketedTalismanofMobility" xml:space="preserve">
+    <value>[移动符咒]</value>
+  </data>
+  <data name="BracketedTalismanofResurrection" xml:space="preserve">
+    <value>[复活符咒]</value>
+  </data>
+  <data name="BracketedTopazRing" xml:space="preserve">
+    <value>[黄宝石指环]</value>
+  </data>
+  <data name="BracketedVaultExpansionCertificate" xml:space="preserve">
+    <value>[仓库扩展证书]</value>
+  </data>
+  <data name="BracketedWizardRing" xml:space="preserve">
+    <value>[巫师指环]</value>
+  </data>
+  <data name="BracketedWornHorseshoe" xml:space="preserve">
+    <value>[磨损的马蹄铁]</value>
+  </data>
+  <data name="BundleofJewelofBless30" xml:space="preserve">
+    <value>祝福宝石组合（30颗）</value>
+  </data>
+  <data name="BundleofJewelofHarmony10" xml:space="preserve">
+    <value>再生宝石组合（10颗）</value>
+  </data>
+  <data name="BundleofJewelofSoul30" xml:space="preserve">
+    <value>灵魂宝石组合（30颗）</value>
+  </data>
+  <data name="CherryBlossomPetal" xml:space="preserve">
+    <value>樱花花瓣</value>
+  </data>
+  <data name="CherryBlossomRiceCake" xml:space="preserve">
+    <value>樱花年糕</value>
+  </data>
+  <data name="CherryBlossomWine" xml:space="preserve">
+    <value>樱花酒</value>
+  </data>
+  <data name="CriticalRingofWizard" xml:space="preserve">
+    <value>巫师致命指环</value>
+  </data>
+  <data name="Demon" xml:space="preserve">
+    <value>恶魔</value>
+  </data>
+  <data name="DevilSquareTicket" xml:space="preserve">
+    <value>恶魔广场入场券</value>
+  </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>精华治疗药水</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>精华魔力药水</value>
+  </data>
+  <data name="EliteSDPotion" xml:space="preserve">
+    <value>精华SD药水</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>绿宝石项链</value>
+  </data>
+  <data name="FirstLuckyArmorTicket" xml:space="preserve">
+    <value>一代幸运装备兑换券（铠）</value>
+  </data>
+  <data name="FirstLuckyBootsTicket" xml:space="preserve">
+    <value>一代幸运装备兑换券（靴）</value>
+  </data>
+  <data name="FirstLuckyGlovesTicket" xml:space="preserve">
+    <value>一代幸运装备兑换券（护手）</value>
+  </data>
+  <data name="FirstLuckyHelmTicket" xml:space="preserve">
+    <value>一代幸运装备兑换券（盔）</value>
+  </data>
+  <data name="FirstLuckyPantsTicket" xml:space="preserve">
+    <value>一代幸运装备兑换券（护腿）</value>
+  </data>
+  <data name="FivePlusOneChaosCardGold" xml:space="preserve">
+    <value>[5+1][黄金玛雅卡片]</value>
+  </data>
+  <data name="FivePlusOneChaosCardMini" xml:space="preserve">
+    <value>[5+1][迷你玛雅卡片]</value>
+  </data>
+  <data name="GPBoxofKundunPlus1" xml:space="preserve">
+    <value>[GP]昆顿宝箱 +1</value>
+  </data>
+  <data name="GPBoxofkundunPlus2" xml:space="preserve">
+    <value>[GP]昆顿宝箱 +2</value>
+  </data>
+  <data name="GPBoxofkundunPlus3" xml:space="preserve">
+    <value>[GP]昆顿宝箱 +3</value>
+  </data>
+  <data name="GPBoxofkundunPlus4" xml:space="preserve">
+    <value>[GP]昆顿宝箱 +4</value>
+  </data>
+  <data name="GPBoxofkundunPlus5" xml:space="preserve">
+    <value>[GP]昆顿宝箱 +5</value>
+  </data>
+  <data name="GladiatorPackage" xml:space="preserve">
+    <value>角斗士礼包</value>
+  </data>
+  <data name="GoldChannelTicket" xml:space="preserve">
+    <value>黄金频道入场券</value>
+  </data>
+  <data name="GoldenOakCharm" xml:space="preserve">
+    <value>黄金橡木护符</value>
+  </data>
+  <data name="IllusionTempleTicket" xml:space="preserve">
+    <value>幻影寺院入场券</value>
+  </data>
+  <data name="JewelofChaosBundle10" xml:space="preserve">
+    <value>玛雅之石组合（10颗）</value>
+  </data>
+  <data name="JewelofLifeBundle10" xml:space="preserve">
+    <value>生命宝石组合（10颗）</value>
+  </data>
+  <data name="KalimaTicket" xml:space="preserve">
+    <value>卡利玛入场券</value>
+  </data>
+  <data name="LittleWarriorsCloak" xml:space="preserve">
+    <value>小武者披风</value>
+  </data>
+  <data name="MagicBackpack" xml:space="preserve">
+    <value>魔法背包</value>
+  </data>
+  <data name="MasterSealofAscension" xml:space="preserve">
+    <value>大师等级经验印章</value>
+  </data>
+  <data name="MasterSealofWealth" xml:space="preserve">
+    <value>大师等级神圣印章</value>
+  </data>
+  <data name="MastereX700OBTCelebrationPackage" xml:space="preserve">
+    <value>[大师] eX700公测庆典礼包</value>
+  </data>
+  <data name="NormaleX700OBTCelebrationPackage" xml:space="preserve">
+    <value>[普通] eX700公测庆典礼包</value>
+  </data>
+  <data name="OakCharm" xml:space="preserve">
+    <value>橡木护符</value>
+  </data>
+  <data name="OpenAccessTickettoVarka7" xml:space="preserve">
+    <value>帝国要塞7自由入场券</value>
+  </data>
+  <data name="PandaRing" xml:space="preserve">
+    <value>熊猫变身指环</value>
+  </data>
+  <data name="PetPanda" xml:space="preserve">
+    <value>熊猫</value>
+  </data>
+  <data name="PetSkeleton" xml:space="preserve">
+    <value>幼龙骨架</value>
+  </data>
+  <data name="PetUnicorn" xml:space="preserve">
+    <value>独角兽</value>
+  </data>
+  <data name="PlatinumGoldChannelPackage" xml:space="preserve">
+    <value>[白金] 黄金频道礼包</value>
+  </data>
+  <data name="PremiumService" xml:space="preserve">
+    <value>高级服务</value>
+  </data>
+  <data name="RageFighterCharacterCard" xml:space="preserve">
+    <value>格斗家角色卡</value>
+  </data>
+  <data name="RareItemTicket11" xml:space="preserve">
+    <value>稀有物品兑换券11</value>
+  </data>
+  <data name="RareItemTicket8" xml:space="preserve">
+    <value>稀有物品兑换券8</value>
+  </data>
+  <data name="ResetFruitControl" xml:space="preserve">
+    <value>统率洗点果实</value>
+  </data>
+  <data name="ResetFruitEnergy" xml:space="preserve">
+    <value>智力洗点果实</value>
+  </data>
+  <data name="ResetFruitHealth" xml:space="preserve">
+    <value>体力洗点果实</value>
+  </data>
+  <data name="ResetFruitQuickness" xml:space="preserve">
+    <value>敏捷洗点果实</value>
+  </data>
+  <data name="ResetFruitStrength" xml:space="preserve">
+    <value>力量洗点果实</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>红宝石项链</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>红宝石指环</value>
+  </data>
+  <data name="SDBoostAura" xml:space="preserve">
+    <value>最大SD提升光环</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>蓝宝石项链</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>蓝宝石指环</value>
+  </data>
+  <data name="ScrollPackageA" xml:space="preserve">
+    <value>卷轴礼包A</value>
+  </data>
+  <data name="ScrollPackageB" xml:space="preserve">
+    <value>卷轴礼包B</value>
+  </data>
+  <data name="ScrollPackageC" xml:space="preserve">
+    <value>卷轴礼包C</value>
+  </data>
+  <data name="ScrollPackageD" xml:space="preserve">
+    <value>卷轴礼包D</value>
+  </data>
+  <data name="ScrollofBattle" xml:space="preserve">
+    <value>幸运一击卷轴</value>
+  </data>
+  <data name="ScrollofBattle7Day" xml:space="preserve">
+    <value>幸运一击卷轴（7天）</value>
+  </data>
+  <data name="ScrollofHealth" xml:space="preserve">
+    <value>生命卷轴</value>
+  </data>
+  <data name="ScrollofHealth7Day" xml:space="preserve">
+    <value>生命卷轴（7天）</value>
+  </data>
+  <data name="ScrollofMana" xml:space="preserve">
+    <value>魔法卷轴</value>
+  </data>
+  <data name="ScrollofMana7Day" xml:space="preserve">
+    <value>魔法卷轴（7天）</value>
+  </data>
+  <data name="ScrollofProtection" xml:space="preserve">
+    <value>防御卷轴</value>
+  </data>
+  <data name="ScrollofProtection7Day" xml:space="preserve">
+    <value>防御卷轴（7天）</value>
+  </data>
+  <data name="ScrollofQuickness" xml:space="preserve">
+    <value>速度卷轴</value>
+  </data>
+  <data name="ScrollofQuickness7Day" xml:space="preserve">
+    <value>速度卷轴（7天）</value>
+  </data>
+  <data name="ScrollofStrengthener" xml:space="preserve">
+    <value>卓越一击卷轴</value>
+  </data>
+  <data name="ScrollofStrengthener7Day" xml:space="preserve">
+    <value>卓越一击卷轴（7天）</value>
+  </data>
+  <data name="ScrollofWizardry" xml:space="preserve">
+    <value>魔力卷轴</value>
+  </data>
+  <data name="ScrollofWizardry7Day" xml:space="preserve">
+    <value>魔力卷轴（7天）</value>
+  </data>
+  <data name="ScrollofWrath" xml:space="preserve">
+    <value>攻击卷轴</value>
+  </data>
+  <data name="ScrollofWrath7Day" xml:space="preserve">
+    <value>攻击卷轴（7天）</value>
+  </data>
+  <data name="SealofAscension" xml:space="preserve">
+    <value>经验印章</value>
+  </data>
+  <data name="SealofDivinity" xml:space="preserve">
+    <value>神性印章</value>
+  </data>
+  <data name="SealofHealing" xml:space="preserve">
+    <value>恢复印章</value>
+  </data>
+  <data name="SealofSustenance" xml:space="preserve">
+    <value>持续印章</value>
+  </data>
+  <data name="SealofWealth" xml:space="preserve">
+    <value>神圣印章</value>
+  </data>
+  <data name="SecondLuckyArmorTicket" xml:space="preserve">
+    <value>二代幸运装备兑换券（铠）</value>
+  </data>
+  <data name="SecondLuckyBootsTicket" xml:space="preserve">
+    <value>二代幸运装备兑换券（靴）</value>
+  </data>
+  <data name="SecondLuckyGlovesTicket" xml:space="preserve">
+    <value>二代幸运装备兑换券（护手）</value>
+  </data>
+  <data name="SecondLuckyHelmTicket" xml:space="preserve">
+    <value>二代幸运装备兑换券（盔）</value>
+  </data>
+  <data name="SecondLuckyPantsTicket" xml:space="preserve">
+    <value>二代幸运装备兑换券（护腿）</value>
+  </data>
+  <data name="SkeletonTransformationRing" xml:space="preserve">
+    <value>骨架变身指环</value>
+  </data>
+  <data name="SmallWingsofDisaster" xml:space="preserve">
+    <value>小灾难之翼</value>
+  </data>
+  <data name="SmallWingsofFairy" xml:space="preserve">
+    <value>小精灵之翼</value>
+  </data>
+  <data name="SmallWingsofHeaven" xml:space="preserve">
+    <value>小天使之翼</value>
+  </data>
+  <data name="SmallWingsofSatan" xml:space="preserve">
+    <value>小恶魔之翼</value>
+  </data>
+  <data name="SpiritofGuardian" xml:space="preserve">
+    <value>守护精灵</value>
+  </data>
+  <data name="StatueofGoral" xml:space="preserve">
+    <value>斑羚雕像</value>
+  </data>
+  <data name="StatueofHawk" xml:space="preserve">
+    <value>鹰雕像</value>
+  </data>
+  <data name="SummonerCharacterCard" xml:space="preserve">
+    <value>召唤术师角色卡</value>
+  </data>
+  <data name="TalismanofLuck" xml:space="preserve">
+    <value>幸运符咒</value>
+  </data>
+  <data name="TalismanofLuck10Percent" xml:space="preserve">
+    <value>幸运符咒10%</value>
+  </data>
+  <data name="TalismanofMobility" xml:space="preserve">
+    <value>移动符咒</value>
+  </data>
+  <data name="TalismanofResurrection" xml:space="preserve">
+    <value>复活符咒</value>
+  </data>
+  <data name="TenPlusThreeChaosCardGold" xml:space="preserve">
+    <value>[10+3][黄金玛雅卡片]</value>
+  </data>
+  <data name="TenPlusThreeChaosCardMini" xml:space="preserve">
+    <value>[10+3][迷你玛雅卡片]</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>黄宝石指环</value>
+  </data>
+  <data name="VaultExpansionCertificate" xml:space="preserve">
+    <value>仓库扩展证书</value>
+  </data>
+  <data name="WizardRing" xml:space="preserve">
+    <value>巫师指环</value>
+  </data>
+  <data name="WornHorseshoe" xml:space="preserve">
+    <value>磨损的马蹄铁</value>
+  </data>
+</root>

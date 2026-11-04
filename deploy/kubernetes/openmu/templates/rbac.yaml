@@ -1,0 +1,33 @@
+# The dapr sidecars read the connection strings from the Kubernetes secret store
+# with the service account of their pod.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "openmu.fullname" . }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "openmu.fullname" . }}-secret-reader
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "openmu.fullname" . }}-secret-reader
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "openmu.fullname" . }}
+roleRef:
+  kind: Role
+  name: {{ include "openmu.fullname" . }}-secret-reader
+  apiGroup: rbac.authorization.k8s.io

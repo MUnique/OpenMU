@@ -1,0 +1,1122 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="SecretOfTheDarkStone" xml:space="preserve">
+    <value>Secret of the 'Dark Stone'</value>
+  </data>
+  <data name="GainHeroStatusBloodySummoner" xml:space="preserve">
+    <value>Gain Hero Status (Bloody Summoner)</value>
+  </data>
+  <data name="GainHeroStatusMuseElf" xml:space="preserve">
+    <value>Gain Hero Status (Muse Elf)</value>
+  </data>
+  <data name="GainHeroStatusSoulMaster" xml:space="preserve">
+    <value>Gain Hero Status (Soul Master)</value>
+  </data>
+  <data name="GainHeroStatusBladeKnight" xml:space="preserve">
+    <value>Gain Hero Status (Blade Knight)</value>
+  </data>
+  <data name="RandomQuest3" xml:space="preserve">
+    <value>Random Quest (3)</value>
+  </data>
+  <data name="RandomQuest2" xml:space="preserve">
+    <value>Random Quest (2)</value>
+  </data>
+  <data name="RandomQuest1" xml:space="preserve">
+    <value>Random Quest (1)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6Summoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6BloodySummoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Bloody Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6FairyElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Fairy Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6MuseElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Muse Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6DarkWizard" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Dark Wizard)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6SoulMaster" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Soul Master)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6DarkKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Dark Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep6BladeKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (6) (Blade Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5Summoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5BloodySummoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Bloody Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5FairyElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Fairy Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5MuseElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Muse Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5DarkWizard" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Dark Wizard)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5SoulMaster" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Soul Master)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5DarkKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Dark Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep5BladeKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (5) (Blade Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4Summoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4BloodySummoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Bloody Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4FairyElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Fairy Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4MuseElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Muse Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4DarkWizard" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Dark Wizard)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4SoulMaster" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Soul Master)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4DarkKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Dark Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep4BladeKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (4) (Blade Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3Summoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3BloodySummoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Bloody Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3FairyElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Fairy Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3MuseElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Muse Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3DarkWizard" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Dark Wizard)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3SoulMaster" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Soul Master)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3DarkKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Dark Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep3BladeKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (3) (Blade Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2Summoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2BloodySummoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Bloody Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2FairyElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Fairy Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2MuseElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Muse Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2DarkWizard" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Dark Wizard)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2SoulMaster" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Soul Master)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2DarkKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Dark Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep2BladeKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (2) (Blade Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1Summoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1BloodySummoner" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Bloody Summoner)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1FairyElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Fairy Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1MuseElf" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Muse Elf)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1DarkWizard" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Dark Wizard)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1SoulMaster" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Soul Master)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1DarkKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Dark Knight)</value>
+  </data>
+  <data name="PutTheLostTowerToSleep1BladeKnight" xml:space="preserve">
+    <value>Put the Lost Tower to Sleep! (1) (Blade Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4Summoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4BloodySummoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Bloody Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4FairyElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Fairy Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4MuseElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Muse Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4DarkWizard" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Dark Wizard)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4SoulMaster" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Soul Master)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4DarkKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Dark Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops4BladeKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (4) (Blade Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3Summoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3BloodySummoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Bloody Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3FairyElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Fairy Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3MuseElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Muse Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3DarkWizard" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Dark Wizard)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3SoulMaster" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Soul Master)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3DarkKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Dark Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops3BladeKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (3) (Blade Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2Summoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2BloodySummoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Bloody Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2FairyElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Fairy Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2MuseElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Muse Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2DarkWizard" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Dark Wizard)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2SoulMaster" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Soul Master)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2DarkKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Dark Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops2BladeKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (2) (Blade Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1Summoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1BloodySummoner" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Bloody Summoner)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1FairyElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Fairy Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1MuseElf" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Muse Elf)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1DarkWizard" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Dark Wizard)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1SoulMaster" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Soul Master)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1DarkKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Dark Knight)</value>
+  </data>
+  <data name="TheMissionOfReconnaissanceTroops1BladeKnight" xml:space="preserve">
+    <value>The mission of reconnaissance troops (1) (Blade Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon6Summoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon6BloodySummoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Bloody Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon6FairyElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Fairy Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon6MuseElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Muse Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon6DarkWizard" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Dark Wizard)</value>
+  </data>
+  <data name="ConquerTheDungeon6SoulMaster" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Soul Master)</value>
+  </data>
+  <data name="ConquerTheDungeon6DarkKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Dark Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon6BladeKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (6) (Blade Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon5Summoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon5BloodySummoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Bloody Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon5FairyElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Fairy Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon5MuseElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Muse Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon5DarkWizard" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Dark Wizard)</value>
+  </data>
+  <data name="ConquerTheDungeon5SoulMaster" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Soul Master)</value>
+  </data>
+  <data name="ConquerTheDungeon5DarkKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Dark Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon5BladeKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (5) (Blade Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon4Summoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon4BloodySummoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Bloody Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon4FairyElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Fairy Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon4MuseElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Muse Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon4DarkWizard" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Dark Wizard)</value>
+  </data>
+  <data name="ConquerTheDungeon4SoulMaster" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Soul Master)</value>
+  </data>
+  <data name="ConquerTheDungeon4DarkKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Dark Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon4BladeKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (4) (Blade Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon3Summoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (3) (Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon3FairyElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (3) (Fairy Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon3DarkWizard" xml:space="preserve">
+    <value>Conquer the Dungeon! (3) (Dark Wizard)</value>
+  </data>
+  <data name="ConquerTheDungeon3DarkKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (3) (Dark Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon2Summoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (2) (Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon2FairyElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (2) (Fairy Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon2DarkWizard" xml:space="preserve">
+    <value>Conquer the Dungeon! (2) (Dark Wizard)</value>
+  </data>
+  <data name="ConquerTheDungeon2DarkKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (2) (Dark Knight)</value>
+  </data>
+  <data name="ConquerTheDungeon1Summoner" xml:space="preserve">
+    <value>Conquer the Dungeon! (1) (Summoner)</value>
+  </data>
+  <data name="ConquerTheDungeon1FairyElf" xml:space="preserve">
+    <value>Conquer the Dungeon! (1) (Fairy Elf)</value>
+  </data>
+  <data name="ConquerTheDungeon1DarkWizard" xml:space="preserve">
+    <value>Conquer the Dungeon! (1) (Dark Wizard)</value>
+  </data>
+  <data name="ConquerTheDungeon1DarkKnight" xml:space="preserve">
+    <value>Conquer the Dungeon! (1) (Dark Knight)</value>
+  </data>
+  <data name="TheBeginningOfRequestsDarkKnight" xml:space="preserve">
+    <value>The Beginning of Requests (Dark Knight)</value>
+  </data>
+  <data name="TheBeginningOfRequestsDarkWizard" xml:space="preserve">
+    <value>The Beginning of Requests (Dark Wizard)</value>
+  </data>
+  <data name="TheBeginningOfRequestsSummoner" xml:space="preserve">
+    <value>The Beginning of Requests (Summoner)</value>
+  </data>
+  <data name="TheBeginningOfRequestsFairyElf" xml:space="preserve">
+    <value>The Beginning of Requests (Fairy Elf)</value>
+  </data>
+  <data name="RoadToFloatingCastle3RageFighter" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Rage Fighter)</value>
+  </data>
+  <data name="RoadToFloatingCastle3DarkLord" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Dark Lord)</value>
+  </data>
+  <data name="RoadToFloatingCastle3MagicGladiator" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Magic Gladiator)</value>
+  </data>
+  <data name="RoadToFloatingCastle3Summoner" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Summoner)</value>
+  </data>
+  <data name="RoadToFloatingCastle3BloodySummoner" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Bloody Summoner)</value>
+  </data>
+  <data name="RoadToFloatingCastle3FairyElf" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Fairy Elf)</value>
+  </data>
+  <data name="RoadToFloatingCastle3MuseElf" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Muse Elf)</value>
+  </data>
+  <data name="RoadToFloatingCastle3DarkKnight" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Dark Knight)</value>
+  </data>
+  <data name="RoadToFloatingCastle3BladeKnight" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Blade Knight)</value>
+  </data>
+  <data name="RoadToFloatingCastle3DarkWizard" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Dark Wizard)</value>
+  </data>
+  <data name="RoadToFloatingCastle3SoulMaster" xml:space="preserve">
+    <value>Road to Floating Castle (3) (Soul Master)</value>
+  </data>
+  <data name="RoadToFloatingCastle2Summoner" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Summoner)</value>
+  </data>
+  <data name="RoadToFloatingCastle2BloodySummoner" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Bloody Summoner)</value>
+  </data>
+  <data name="RoadToFloatingCastle2FairyElf" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Fairy Elf)</value>
+  </data>
+  <data name="RoadToFloatingCastle2MuseElf" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Muse Elf)</value>
+  </data>
+  <data name="RoadToFloatingCastle2DarkKnight" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Dark Knight)</value>
+  </data>
+  <data name="RoadToFloatingCastle2BladeKnight" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Blade Knight)</value>
+  </data>
+  <data name="RoadToFloatingCastle2DarkWizard" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Dark Wizard)</value>
+  </data>
+  <data name="RoadToFloatingCastle2SoulMaster" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Soul Master)</value>
+  </data>
+  <data name="RoadToFloatingCastle2RageFighter" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Rage Fighter)</value>
+  </data>
+  <data name="RoadToFloatingCastle2DarkLord" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Dark Lord)</value>
+  </data>
+  <data name="RoadToFloatingCastle2MagicGladiator" xml:space="preserve">
+    <value>Road to Floating Castle (2) (Magic Gladiator)</value>
+  </data>
+  <data name="RoadToFloatingCastle1" xml:space="preserve">
+    <value>Road to Floating Castle (1)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty3" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (3)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2Summoner" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Summoner)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2BloodySummoner" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Bloody Summoner)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2FairyElf" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Fairy Elf)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2MuseElf" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Muse Elf)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2DarkKnight" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Dark Knight)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2BladeKnight" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Blade Knight)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2DarkWizard" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Dark Wizard)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2SoulMaster" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Soul Master)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2RageFighter" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Rage Fighter)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2DarkLord" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Dark Lord)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty2MagicGladiator" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (2) (Magic Gladiator)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1RageFighter" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Rage Fighter)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1DarkLord" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Dark Lord)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1MagicGladiator" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Magic Gladiator)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1Summoner" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Summoner)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1BloodySummoner" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Bloody Summoner)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1FairyElf" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Fairy Elf)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1MuseElf" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Muse Elf)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1DarkKnight" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Dark Knight)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1BladeKnight" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Blade Knight)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1DarkWizard" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Dark Wizard)</value>
+  </data>
+  <data name="AdvancementOfTheReconnaissanceParty1SoulMaster" xml:space="preserve">
+    <value>Advancement of the Reconnaissance Party (1) (Soul Master)</value>
+  </data>
+  <data name="ClearingAPathToIcarusSummoner" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Summoner)</value>
+  </data>
+  <data name="ClearingAPathToIcarusBloodySummoner" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Bloody Summoner)</value>
+  </data>
+  <data name="ClearingAPathToIcarusFairyElf" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Fairy Elf)</value>
+  </data>
+  <data name="ClearingAPathToIcarusMuseElf" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Muse Elf)</value>
+  </data>
+  <data name="ClearingAPathToIcarusDarkKnight" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Dark Knight)</value>
+  </data>
+  <data name="ClearingAPathToIcarusBladeKnight" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Blade Knight)</value>
+  </data>
+  <data name="ClearingAPathToIcarusDarkWizard" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Dark Wizard)</value>
+  </data>
+  <data name="ClearingAPathToIcarusSoulMaster" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Soul Master)</value>
+  </data>
+  <data name="ClearingAPathToIcarusRageFighter" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Rage Fighter)</value>
+  </data>
+  <data name="ClearingAPathToIcarusDarkLord" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Dark Lord)</value>
+  </data>
+  <data name="ClearingAPathToIcarusMagicGladiator" xml:space="preserve">
+    <value>Clearing a Path to Icarus (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3Summoner" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Summoner)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3BloodySummoner" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3FairyElf" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3MuseElf" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3DarkKnight" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3BladeKnight" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3DarkWizard" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3SoulMaster" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Soul Master)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3RageFighter" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3DarkLord" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers3MagicGladiator" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (3) (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2Summoner" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Summoner)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2BloodySummoner" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2FairyElf" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2MuseElf" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2DarkKnight" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2BladeKnight" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2DarkWizard" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2SoulMaster" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Soul Master)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2RageFighter" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2DarkLord" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers2MagicGladiator" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (2) (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1Summoner" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Summoner)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1BloodySummoner" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1FairyElf" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1MuseElf" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1DarkKnight" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1BladeKnight" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1DarkWizard" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1SoulMaster" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Soul Master)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1RageFighter" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1DarkLord" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingAttacksOnBarriers1MagicGladiator" xml:space="preserve">
+    <value>Continuing Attacks on Barriers (1) (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4Summoner" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4BloodySummoner" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4FairyElf" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4MuseElf" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4DarkKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4BladeKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4DarkWizard" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4SoulMaster" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Soul Master)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4RageFighter" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4DarkLord" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp4MagicGladiator" xml:space="preserve">
+    <value>Continuing Requests for Help (4) (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3Summoner" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3BloodySummoner" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3FairyElf" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3MuseElf" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3DarkKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3BladeKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3DarkWizard" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3SoulMaster" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Soul Master)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3RageFighter" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3DarkLord" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp3MagicGladiator" xml:space="preserve">
+    <value>Continuing Requests for Help (3) (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2Summoner" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2BloodySummoner" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2FairyElf" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2MuseElf" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2DarkKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2BladeKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2DarkWizard" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2SoulMaster" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Soul Master)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2RageFighter" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2DarkLord" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp2MagicGladiator" xml:space="preserve">
+    <value>Continuing Requests for Help (2) (Magic Gladiator)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1Summoner" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1BloodySummoner" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Bloody Summoner)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1FairyElf" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Fairy Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1MuseElf" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Muse Elf)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1DarkKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Dark Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1BladeKnight" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Blade Knight)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1DarkWizard" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Dark Wizard)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1SoulMaster" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Soul Master)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1RageFighter" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Rage Fighter)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1DarkLord" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Dark Lord)</value>
+  </data>
+  <data name="ContinuingRequestsForHelp1MagicGladiator" xml:space="preserve">
+    <value>Continuing Requests for Help (1) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon6Summoner" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon6BloodySummoner" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Bloody Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon6FairyElf" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Fairy Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon6MuseElf" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Muse Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon6DarkKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Dark Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon6BladeKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Blade Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon6DarkWizard" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Dark Wizard)</value>
+  </data>
+  <data name="SituationAtTheDungeon6SoulMaster" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Soul Master)</value>
+  </data>
+  <data name="SituationAtTheDungeon6RageFighter" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Rage Fighter)</value>
+  </data>
+  <data name="SituationAtTheDungeon6DarkLord" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Dark Lord)</value>
+  </data>
+  <data name="SituationAtTheDungeon6MagicGladiator" xml:space="preserve">
+    <value>Situation at the Dungeon (6) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon5Summoner" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon5FairyElf" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Fairy Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon5DarkKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Dark Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon5DarkWizard" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Dark Wizard)</value>
+  </data>
+  <data name="SituationAtTheDungeon5RageFighter" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Rage Fighter)</value>
+  </data>
+  <data name="SituationAtTheDungeon5DarkLord" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Dark Lord)</value>
+  </data>
+  <data name="SituationAtTheDungeon5MagicGladiator" xml:space="preserve">
+    <value>Situation at the Dungeon (5) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon4Summoner" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon4FairyElf" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Fairy Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon4DarkKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Dark Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon4DarkWizard" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Dark Wizard)</value>
+  </data>
+  <data name="SituationAtTheDungeon4RageFighter" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Rage Fighter)</value>
+  </data>
+  <data name="SituationAtTheDungeon4DarkLord" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Dark Lord)</value>
+  </data>
+  <data name="SituationAtTheDungeon4MagicGladiator" xml:space="preserve">
+    <value>Situation at the Dungeon (4) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon3Summoner" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon3FairyElf" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Fairy Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon3DarkKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Dark Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon3DarkWizard" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Dark Wizard)</value>
+  </data>
+  <data name="SituationAtTheDungeon3RageFighter" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Rage Fighter)</value>
+  </data>
+  <data name="SituationAtTheDungeon3DarkLord" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Dark Lord)</value>
+  </data>
+  <data name="SituationAtTheDungeon3MagicGladiator" xml:space="preserve">
+    <value>Situation at the Dungeon (3) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon2Summoner" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon2FairyElf" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Fairy Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon2DarkKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Dark Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon2DarkWizard" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Dark Wizard)</value>
+  </data>
+  <data name="SituationAtTheDungeon2RageFighter" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Rage Fighter)</value>
+  </data>
+  <data name="SituationAtTheDungeon2DarkLord" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Dark Lord)</value>
+  </data>
+  <data name="SituationAtTheDungeon2MagicGladiator" xml:space="preserve">
+    <value>Situation at the Dungeon (2) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon1RageFighter" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Rage Fighter)</value>
+  </data>
+  <data name="SituationAtTheDungeon1DarkLord" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Dark Lord)</value>
+  </data>
+  <data name="SituationAtTheDungeon1MagicGladiator" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Magic Gladiator)</value>
+  </data>
+  <data name="SituationAtTheDungeon1Summoner" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Summoner)</value>
+  </data>
+  <data name="SituationAtTheDungeon1FairyElf" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Fairy Elf)</value>
+  </data>
+  <data name="SituationAtTheDungeon1DarkKnight" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Dark Knight)</value>
+  </data>
+  <data name="SituationAtTheDungeon1DarkWizard" xml:space="preserve">
+    <value>Situation at the Dungeon (1) (Dark Wizard)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeRageFighter" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Rage Fighter)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeDarkLord" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Dark Lord)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeMagicGladiator" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Magic Gladiator)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeFairyElf" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Fairy Elf)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeDarkKnight" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Dark Knight)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeDarkWizard" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Dark Wizard)</value>
+  </data>
+  <data name="AndAskedTheEldersOfTheElbeSummoner" xml:space="preserve">
+    <value>and asked the elders of the Elbe! (Summoner)</value>
+  </data>
+  <data name="DungeonSweepSummoner" xml:space="preserve">
+    <value>Dungeon Sweep! (Summoner)</value>
+  </data>
+  <data name="DungeonSweepFairyElf" xml:space="preserve">
+    <value>Dungeon Sweep! (Fairy Elf)</value>
+  </data>
+  <data name="DungeonSweepDarkKnight" xml:space="preserve">
+    <value>Dungeon Sweep! (Dark Knight)</value>
+  </data>
+  <data name="DungeonSweepDarkWizard" xml:space="preserve">
+    <value>Dungeon Sweep! (Dark Wizard)</value>
+  </data>
+  <data name="DungeonSweepRageFighter" xml:space="preserve">
+    <value>Dungeon Sweep! (Rage Fighter)</value>
+  </data>
+  <data name="DungeonSweepDarkLord" xml:space="preserve">
+    <value>Dungeon Sweep! (Dark Lord)</value>
+  </data>
+  <data name="DungeonSweepMagicGladiator" xml:space="preserve">
+    <value>Dungeon Sweep! (Magic Gladiator)</value>
+  </data>
+  <data name="InlandSupplyRouteSummoner" xml:space="preserve">
+    <value>Inland Supply Route! (Summoner)</value>
+  </data>
+  <data name="InlandSupplyRouteFairyElf" xml:space="preserve">
+    <value>Inland Supply Route! (Fairy Elf)</value>
+  </data>
+  <data name="InlandSupplyRouteDarkKnight" xml:space="preserve">
+    <value>Inland Supply Route! (Dark Knight)</value>
+  </data>
+  <data name="InlandSupplyRouteDarkWizard" xml:space="preserve">
+    <value>Inland Supply Route! (Dark Wizard)</value>
+  </data>
+  <data name="InlandSupplyRouteRageFighter" xml:space="preserve">
+    <value>Inland Supply Route! (Rage Fighter)</value>
+  </data>
+  <data name="InlandSupplyRouteDarkLord" xml:space="preserve">
+    <value>Inland Supply Route! (Dark Lord)</value>
+  </data>
+  <data name="InlandSupplyRouteMagicGladiator" xml:space="preserve">
+    <value>Inland Supply Route! (Magic Gladiator)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsSummoner" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Summoner)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsFairyElf" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Fairy Elf)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsDarkKnight" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Dark Knight)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsDarkWizard" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Dark Wizard)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsRageFighter" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Rage Fighter)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsDarkLord" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Dark Lord)</value>
+  </data>
+  <data name="AttackOnTheSupplyCorpsMagicGladiator" xml:space="preserve">
+    <value>Attack on the Supply Corps! (Magic Gladiator)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasSummoner" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Summoner)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasFairyElf" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Fairy Elf)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasDarkKnight" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Dark Knight)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasDarkWizard" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Dark Wizard)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasRageFighter" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Rage Fighter)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasDarkLord" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Dark Lord)</value>
+  </data>
+  <data name="MonsterSupplyRouteInDeviasMagicGladiator" xml:space="preserve">
+    <value>Monster Supply Route in Devias! (Magic Gladiator)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentSummoner" xml:space="preserve">
+    <value>Boss of predator treatment! (Summoner)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentFairyElf" xml:space="preserve">
+    <value>Boss of predator treatment! (Fairy Elf)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentDarkKnight" xml:space="preserve">
+    <value>Boss of predator treatment! (Dark Knight)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentDarkWizard" xml:space="preserve">
+    <value>Boss of predator treatment! (Dark Wizard)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentRageFighter" xml:space="preserve">
+    <value>Boss of predator treatment! (Rage Fighter)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentDarkLord" xml:space="preserve">
+    <value>Boss of predator treatment! (Dark Lord)</value>
+  </data>
+  <data name="BossOfPredatorTreatmentMagicGladiator" xml:space="preserve">
+    <value>Boss of predator treatment! (Magic Gladiator)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersSummoner" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Summoner)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersFairyElf" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Fairy Elf)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersRageFighter" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Rage Fighter)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersDarkLord" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Dark Lord)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersMagicGladiator" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Magic Gladiator)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersDarkKnight" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Dark Knight)</value>
+  </data>
+  <data name="DisposeOfTheTownPlunderersDarkWizard" xml:space="preserve">
+    <value>Dispose of the Town Plunderers! (Dark Wizard)</value>
+  </data>
+  <data name="SpiderHunt" xml:space="preserve">
+    <value>Spider Hunt!</value>
+  </data>
+  <data name="IntoTheDarknessZone" xml:space="preserve">
+    <value>Into the 'Darkness' Zone</value>
+  </data>
+  <data name="InfiltrateTheBarracksOfBalgass" xml:space="preserve">
+    <value>Infiltrate The Barracks of Balgass</value>
+  </data>
+  <data name="EvidenceOfStrength" xml:space="preserve">
+    <value>Evidence of Strength</value>
+  </data>
+  <data name="TreasuresOfMUSummoner" xml:space="preserve">
+    <value>Treasures of MU (Summoner)</value>
+  </data>
+  <data name="TreasuresOfMUDarkWizard" xml:space="preserve">
+    <value>Treasures of MU (Dark Wizard)</value>
+  </data>
+  <data name="TreasuresOfMUFairyElf" xml:space="preserve">
+    <value>Treasures of MU (Fairy Elf)</value>
+  </data>
+  <data name="TreasuresOfMUDarkKnight" xml:space="preserve">
+    <value>Treasures of MU (Dark Knight)</value>
+  </data>
+  <data name="FindTheScrollOfEmperorSummoner" xml:space="preserve">
+    <value>Find the 'Scroll of Emperor' (Summoner)</value>
+  </data>
+  <data name="FindTheScrollOfEmperorDarkWizard" xml:space="preserve">
+    <value>Find the 'Scroll of Emperor' (Dark Wizard)</value>
+  </data>
+  <data name="FindTheScrollOfEmperorFairyElf" xml:space="preserve">
+    <value>Find the 'Scroll of Emperor' (Fairy Elf)</value>
+  </data>
+  <data name="FindTheScrollOfEmperorDarkKnight" xml:space="preserve">
+    <value>Find the 'Scroll of Emperor' (Dark Knight)</value>
+  </data>
+</root>

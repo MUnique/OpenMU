@@ -1,0 +1,19 @@
+﻿@if (this.SupportedUICultures.Any())
+{
+  <div class="culture-selector">
+    <span class="oi oi-globe culture-selector-icon"></span>
+    <InputSelect class="form-select form-select-sm" @bind-Value="this.SelectedCultureCode">
+      @foreach (var culture in this.SupportedUICultures)
+      {
+        if (object.Equals(culture.Name, this.SelectedCultureCode))
+        {
+          <option value="@culture.Name" selected="selected">@(culture.Name == "zh-CN" ? "简体中文" : culture.NativeName)</option>
+        }
+        else
+        {
+          <option value="@culture.Name">@(culture.Name == "zh-CN" ? "简体中文" : culture.NativeName)</option>
+        }
+      }
+    </InputSelect>
+  </div>
+}

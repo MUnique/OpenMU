@@ -1,0 +1,58 @@
+@page "/login"
+@layout MUnique.OpenMU.Web.AdminPanel.Components.Layout.LoginLayout
+@attribute [AllowAnonymous]
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.Login</PageTitle>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        @if (this._step == LoginStep.Password)
+        {
+            <h2 class="h5 card-title mb-3">@Resources.Login</h2>
+            <EditForm Model="@this._passwordInput" OnValidSubmit="@this.OnPasswordSubmittedAsync" FormName="admin-login">
+                <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label class="form-label" for="login-name">@Resources.LoginName</label>
+                    <InputText id="login-name" class="form-control" autocomplete="username" @bind-Value="@this._passwordInput.LoginName" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="login-password">@Resources.Password</label>
+                    <InputText id="login-password" type="password" class="form-control" autocomplete="current-password" @bind-Value="@this._passwordInput.Password" />
+                </div>
+                <div class="form-check mb-3">
+                    <InputCheckbox id="login-remember" class="form-check-input" @bind-Value="@this._passwordInput.RememberMe" />
+                    <label class="form-check-label" for="login-remember">@Resources.RememberMe</label>
+                </div>
+                @if (this._errorMessage is { } passwordError)
+                {
+                    <div class="alert alert-danger py-2" role="alert">@passwordError</div>
+                }
+                <button type="submit" class="btn btn-primary w-100" disabled="@this._isBusy">@Resources.SignIn</button>
+            </EditForm>
+        }
+        else
+        {
+            <h2 class="h5 card-title mb-1">@Resources.TwoFactorTitle</h2>
+            <p class="text-secondary small mb-3">@Resources.TwoFactorPrompt</p>
+            <EditForm Model="@this._twoFactorInput" OnValidSubmit="@this.OnTwoFactorSubmittedAsync" FormName="admin-login-2fa">
+                <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label class="form-label" for="login-code">
+                        @(this._twoFactorInput.UseRecoveryCode ? Resources.RecoveryCode : Resources.AuthenticatorCode)
+                    </label>
+                    <InputText id="login-code" class="form-control" autocomplete="one-time-code" inputmode="@(this._twoFactorInput.UseRecoveryCode ? "text" : "numeric")" @bind-Value="@this._twoFactorInput.Code" />
+                </div>
+                @if (this._errorMessage is { } codeError)
+                {
+                    <div class="alert alert-danger py-2" role="alert">@codeError</div>
+                }
+                <button type="submit" class="btn btn-primary w-100 mb-2" disabled="@this._isBusy">@Resources.Verify</button>
+            </EditForm>
+            <button type="button" class="btn btn-link btn-sm p-0" @onclick="@this.ToggleRecoveryCode">
+                @(this._twoFactorInput.UseRecoveryCode ? Resources.UseAuthenticatorCode : Resources.UseRecoveryCode)
+            </button>
+            <button type="button" class="btn btn-link btn-sm p-0 float-end" @onclick="@this.BackToPasswordStep">@Resources.Back</button>
+        }
+    </div>
+</div>

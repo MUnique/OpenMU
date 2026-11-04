@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DocumentationFile>..\..\bin\Debug\MUnique.OpenMU.GameServer.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+	<DocumentationFile>..\..\bin\Release\MUnique.OpenMU.GameServer.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\GameLogic\MUnique.OpenMU.GameLogic.csproj" />
+    <ProjectReference Include="..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\Network\MUnique.OpenMU.Network.csproj" />
+    <ProjectReference Include="..\Network\Analyzer\MUnique.OpenMU.Network.Analyzer.csproj" />
+    <ProjectReference Include="..\Network\Packets\MUnique.OpenMU.Network.Packets.csproj" />
+    <ProjectReference Include="..\Pathfinding\MUnique.OpenMU.Pathfinding.csproj" />
+    <ProjectReference Include="..\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\PlugInResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PlugInResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\PlugInResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>PlugInResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlugIns.Generators\MUnique.OpenMU.PlugIns.Generators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>

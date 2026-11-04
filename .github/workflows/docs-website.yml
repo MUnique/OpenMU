@@ -1,0 +1,39 @@
+name: Documentation website
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs-website/**'
+      - '.github/workflows/docs-website.yml'
+  pull_request:
+    paths:
+      - 'docs-website/**'
+      - '.github/workflows/docs-website.yml'
+
+jobs:
+  build:
+    name: Build the documentation site
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs-website
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: docs-website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The build is configured to fail on broken links, broken anchors and
+      # broken image references, so this is the link check as well.
+      - name: Build
+        run: npm run build

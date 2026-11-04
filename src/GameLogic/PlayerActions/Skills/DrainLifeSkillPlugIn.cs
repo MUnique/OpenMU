@@ -1,0 +1,51 @@
+﻿// <copyright file="DrainLifeSkillPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Handles the drain life skill of the summoner class. Additionally to the attacked target, it regains life for damage dealt.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DrainLifeSkillPlugIn_Name), Description = nameof(PlugInResources.DrainLifeSkillPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("9A5A5671-3A8C-4C01-984F-1A8F8E0E7BDA")]
+public class DrainLifeSkillPlugIn : IAreaSkillPlugIn
+{
+    /// <inheritdoc/>
+    public short Key => 214;
+
+    /// <inheritdoc/>
+    public async ValueTask AfterTargetGotAttackedAsync(IAttacker attacker, IAttackable target, SkillEntry skillEntry, Point targetAreaCenter, HitInfo? hitInfo)
+    {
+        var isMiss = hitInfo is { HealthDamage: 0, ShieldDamage: 0 };
+        if (attacker is not Player attackerPlayer
+            || attackerPlayer.Attributes is not { } playerAttributes
+            || hitInfo is not { } hit
+            || isMiss)
+        {
+            return;
+        }
+
+        var restoreHealth = playerAttributes[Stats.DrainLifeStrBonusHealing];
+
+        if (target is Player)
+        {
+            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 23) + (hit.TotalDamage * 0.1f);
+        }
+        else
+        {
+            restoreHealth += (attackerPlayer.Attributes[Stats.TotalEnergy] / 15) + (target.Attributes[Stats.Level] / 2.5f);
+        }
+
+        playerAttributes[Stats.CurrentHealth] = (uint)Math.Min(
+            playerAttributes[Stats.MaximumHealth],
+            playerAttributes[Stats.CurrentHealth] + restoreHealth);
+    }
+}

@@ -1,0 +1,24 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "centralServer": "StartDebugging",
+        "centralServer-dapr": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging",
+        "database": "StartWithoutDebugging",
+        "gameServer1": "StartDebugging",
+        "gameServer1-dapr": "StartWithoutDebugging",
+        "rabbit": "StartWithoutDebugging",
+        "adminPanel": "StartDebugging",
+        "adminPanel-dapr": "StartWithoutDebugging",
+        "nginx-80": "StartWithoutDebugging",
+        "otel-lgtm": "StartWithoutDebugging",
+        "gameServer0": "StartWithoutDebugging",
+        "gameServer0-dapr": "StartWithoutDebugging",
+        "redis-state": "StartWithoutDebugging"
+      }
+    }
+  }
+}

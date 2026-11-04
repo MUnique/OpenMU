@@ -1,0 +1,79 @@
+﻿@using MUnique.OpenMU.Web.AdminPanel.Properties
+<div>
+@if (this.SelectedVersion is null)
+{
+    <span>@Resources.Loading</span>
+}
+else if (this.IsInstalling)
+{
+    <span>@Resources.InstallingPleaseWait</span>
+}
+else if (this.IsInstalled)
+{
+    <p>@Resources.FinishedHaveFun</p>
+    if (!AdminPanelEnvironment.IsHostingEmbedded)
+    {
+        <p>@Resources.PleaseRestartTheConnectAndGameServerContainers</p>
+    }
+
+    <button class="btn btn-primary" @onclick="async () => await this.InstallationFinished.InvokeAsync()">@Resources.OK</button>
+}
+else
+{
+    if (this.ErrorMessage is { } errorMessage)
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    if (this.CurrentConnections > 0)
+    {
+        <div class="alert alert-danger" role="alert">
+            @Resources.FirstCloseAllConnectionsToTheServer
+        </div>
+    }
+
+    <p>
+        <h2>@Resources.SelectTheGameVersion</h2>
+
+        <div>
+        @foreach (var initializer in this.SetupService.Versions)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="version" id="@initializer.Key" checked="@(this.SelectedVersion == initializer)" @onclick="() => this.OnSelectVersion(initializer.Key)">
+                <label class="form-check-label" for="@initializer.Key">@initializer.Caption</label>
+            </div>
+        }
+        </div>
+    </p>
+    <p>
+        <h2>@Resources.HowManyGameServersQuestion</h2>
+        <div>
+            <label for="gameServerCount" class="form-label">@Resources.GameServerCount (@this.GameServerCount)</label>
+            <input type="range" class="form-range" min="1" max="10" value="@this.GameServerCount" id="gameServerCount" @oninput="this.OnGameServerCountChange">
+        </div>
+    </p>
+    <p>
+        <h2>@Resources.TestAccountsQuestion</h2>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="testAccountsCheck" checked="@this.CreateTestAccounts" @oninput="this.OnTestAccountsChange">
+            <label class="form-check-label" for="testAccountsCheck">
+                @Resources.YesCreateTestAccounts
+            </label>
+        </div>
+    </p>
+
+    <p>
+        @if (this.CurrentConnections == 0)
+        {
+            <button class="btn btn-primary" @onclick="this.StartInstallationAsync">@Resources.StartInstall</button>
+        }
+        else
+        {
+            <button class="btn btn-primary disabled">@Resources.StartInstall</button>
+        }
+    </p>
+}
+
+</div>

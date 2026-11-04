@@ -1,0 +1,169 @@
+﻿// <copyright file="WingsInitializerBase.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Base class for wing data initializing.
+/// </summary>
+public abstract class WingsInitializerBase : InitializerBase
+{
+    private static readonly float[] DefenseIncreaseByLevel = { 0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 31, 36, 42, 49, 57, 66 };
+    private static readonly float[] DefenseIncreaseByLevelThirdWings = { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 41, 47, 54, 62, 71, 81 };
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WingsInitializerBase"/> class.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    protected WingsInitializerBase(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
+    {
+    }
+
+    /// <summary>
+    /// The option type for wings.
+    /// </summary>
+    protected enum OptionType
+    {
+        /// <summary>
+        /// Health recover option.
+        /// </summary>
+        HealthRecover,
+
+        /// <summary>
+        /// Physical damage option.
+        /// </summary>
+        PhysDamage,
+
+        /// <summary>
+        /// Wizardry damage option.
+        /// </summary>
+        WizDamage,
+
+        /// <summary>
+        /// Curse damage option.
+        /// </summary>
+        CurseDamage,
+
+        /// <summary>
+        /// Defense option.
+        /// </summary>
+        Defense,
+    }
+
+    /// <summary>
+    /// Gets the maximum item level.
+    /// </summary>
+    protected abstract int MaximumItemLevel { get; }
+
+    /// <summary>
+    /// Builds the options based on the given parameters.
+    /// </summary>
+    /// <remarks>
+    /// Some wings can possibly have different item options of <see cref="ItemOptionTypes.Option"/>, depending on the outcome of consumption of the 'Jewel of Life'.
+    /// Since webzen did a "great" job defining different numbers (representations in their transmitted item data) for the same options,
+    /// we have to build <see cref="IncreasableItemOption"/>s for each item separately.
+    /// We don't want to handle this stuff per-item in our <see cref="ItemSerializer"/> since we want a generic solution.
+    /// </remarks>
+    /// <param name="optionsWithNumbers">The tuples of option type with their number.</param>
+    /// <returns>The built <see cref="IncreasableItemOption"/>s.</returns>
+    protected IEnumerable<IncreasableItemOption> BuildOptions(params (int, OptionType)[] optionsWithNumbers)
+    {
+        foreach (var tuple in optionsWithNumbers)
+        {
+            switch (tuple.Item2)
+            {
+                case OptionType.CurseDamage:
+                    yield return this.CreateItemOption(tuple.Item1, Stats.CurseBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingCurse);
+                    break;
+                case OptionType.Defense:
+                    yield return this.CreateItemOption(tuple.Item1, Stats.DefenseBase, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingDefense);
+                    break;
+                case OptionType.HealthRecover:
+                    yield return this.CreateItemOption(tuple.Item1, Stats.HealthRecoveryMultiplier, 0, AggregateType.AddRaw, 0.01f, ItemOptionDefinitionNumbers.WingHealthRecover);
+                    break;
+                case OptionType.PhysDamage:
+                    yield return this.CreateItemOption(tuple.Item1, Stats.PhysicalBaseDmg, 0, AggregateType.AddFinal, 4f, ItemOptionDefinitionNumbers.WingPhysical);
+                    break;
+                case OptionType.WizDamage:
+                    yield return this.CreateItemOption(tuple.Item1, Stats.WizardryBaseDmg, 0, AggregateType.AddRaw, 4f, ItemOptionDefinitionNumbers.WingWizardry);
+                    break;
+                default:
+                    throw new ArgumentException("unknown OptionType");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Creates the absorb bonus per level table.
+    /// </summary>
+    protected ItemLevelBonusTable CreateAbsorbBonusPerLevel()
+    {
+        IEnumerable<float> Generate()
+        {
+            for (int level = 0; level <= this.MaximumItemLevel; level++)
+            {
+                yield return -0.02f * level;
+            }
+        }
+
+        return this.CreateItemBonusTable(Generate().ToArray(), LocalizedString.FromResource(() => LevelBonusNames.WingAbsorb), LocalizedString.FromResource(() => LevelBonusDescriptions.WingDamageAbsorb));
+    }
+
+    /// <summary>
+    /// Creates the damage increase bonus per level table for first and third wings.
+    /// </summary>
+    protected ItemLevelBonusTable CreateDamageIncreaseBonusPerLevelFirstAndThirdWings()
+    {
+        IEnumerable<float> Generate()
+        {
+            for (int level = 0; level <= this.MaximumItemLevel; level++)
+            {
+                yield return 0.02f * level;
+            }
+        }
+
+        return this.CreateItemBonusTable(Generate().ToArray(), LocalizedString.FromResource(() => LevelBonusNames.DamageIncrease1stAnd3rdWings), LocalizedString.FromResource(() => LevelBonusDescriptions.FirstAndThirdWingsDamageIncrease));
+    }
+
+    /// <summary>
+    /// Creates the damage increase bonus per level table for second wings.
+    /// </summary>
+    protected ItemLevelBonusTable CreateDamageIncreaseBonusPerLevelSecondWings()
+    {
+        IEnumerable<float> Generate()
+        {
+            for (int level = 0; level <= this.MaximumItemLevel; level++)
+            {
+                yield return 0.01f * level;
+            }
+        }
+
+        return this.CreateItemBonusTable(Generate().ToArray(), LocalizedString.FromResource(() => LevelBonusNames.DamageIncrease2ndWings), LocalizedString.FromResource(() => LevelBonusDescriptions.SecondWingsDamageIncrease));
+    }
+
+    /// <summary>
+    /// Creates the bonus defense per level table.
+    /// </summary>
+    protected ItemLevelBonusTable CreateBonusDefensePerLevel()
+    {
+        return this.CreateItemBonusTable(DefenseIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DefenseBonus1stAnd2ndWings), LocalizedString.FromResource(() => LevelBonusDescriptions.FirstAndSecondWingsDefenseBonus));
+    }
+
+    /// <summary>
+    /// Creates the bonus defense per level table for third wings.
+    /// </summary>
+    protected ItemLevelBonusTable CreateBonusDefensePerLevelThirdWings()
+    {
+        return this.CreateItemBonusTable(DefenseIncreaseByLevelThirdWings, LocalizedString.FromResource(() => LevelBonusNames.DefenseBonus3rdWings), LocalizedString.FromResource(() => LevelBonusDescriptions.ThirdWingsDefenseBonus));
+    }
+}

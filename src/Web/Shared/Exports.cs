@@ -1,0 +1,64 @@
+// <copyright file="Exports.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.Shared;
+
+using System.Collections.Immutable;
+
+/// <summary>
+/// Class that holds the script exports of this project.
+/// </summary>
+/// <remarks>
+/// TODO: Instead of a static class, create an interface, so we can inject an instance into the layout.
+///       For example, we could further add some common Components which render the Scripts, Stylesheets, etc.
+/// </remarks>
+public static class Exports
+{
+    /// <summary>
+    /// Gets the scripts.
+    /// </summary>
+    public static ImmutableList<string> Scripts { get; } = SharedScripts.ToImmutableList();
+
+    /// <summary>
+    /// Gets the script mappings.
+    /// </summary>
+    public static ImmutableList<(string Key, string Path)> ScriptMappings { get; } = [];
+
+    /// <summary>
+    /// Gets the stylesheets.
+    /// </summary>
+    public static ImmutableList<string> Stylesheets { get; } = SharedStylesheets.ToImmutableList();
+
+    private static IEnumerable<string> SharedScripts
+    {
+        get
+        {
+            yield return "_content/BlazorInputFile/inputfile.js";
+        }
+    }
+
+    private static IEnumerable<string> SharedStylesheets
+    {
+        get
+        {
+            var prefix = GetPrefix();
+            yield return $"{prefix}/css/bootstrap.min.css";
+            yield return $"{prefix}/css/open-iconic/font/css/open-iconic-bootstrap.min.css";
+            yield return $"{prefix}/css/theme.css";
+            yield return $"{prefix}/css/navigation.css";
+            yield return $"{prefix}/css/main.css";
+            yield return $"{prefix}/css/forms.css";
+            yield return $"{prefix}/css/tables.css";
+            yield return $"{prefix}/css/common.css";
+            yield return $"{prefix}/css/log.css";
+            yield return $"{prefix}/css/map-editor.css";
+            yield return $"{prefix}/css/terrain-editor.css";
+        }
+    }
+
+    /// <summary>
+    /// Gets the url prefix to the scripts of this project.
+    /// </summary>
+    private static string GetPrefix() => $"_content/{typeof(Exports).Namespace}";
+}

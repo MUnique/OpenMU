@@ -1,0 +1,99 @@
+﻿// <copyright file="RepositoryProvider.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.EntityFramework;
+
+using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// A repository provider that does not use caching.
+/// </summary>
+internal class RepositoryProvider : BaseRepositoryProvider, IContextAwareRepositoryProvider
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RepositoryProvider" /> class.
+    /// </summary>
+    /// <param name="loggerFactory">The logger factory.</param>
+    /// <param name="changeListener">The change publisher.</param>
+    /// <param name="contextStack">The context stack.</param>
+    public RepositoryProvider(ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener, IContextStack contextStack)
+    {
+        this.LoggerFactory = loggerFactory;
+        this.ChangeListener = changeListener;
+        this.ContextStack = contextStack;
+    }
+
+    /// <summary>
+    /// Gets the context stack. When loading an object, the current context should be pushed onto the stack.
+    /// </summary>
+    public IContextStack ContextStack { get; }
+
+    /// <summary>
+    /// Gets the logger factory.
+    /// </summary>
+    protected ILoggerFactory LoggerFactory { get; }
+
+    /// <summary>
+    /// Gets the change publisher.
+    /// </summary>
+    protected IConfigurationChangeListener? ChangeListener { get; }
+
+    /// <summary>
+    /// Creates the generic repository for the specified type.
+    /// </summary>
+    /// <param name="entityType">Type of the entity.</param>
+    /// <param name="repositoryProvider">The repository provider.</param>
+    /// <returns>The created repository.</returns>
+    protected virtual IRepository CreateGenericRepository(Type entityType, IContextAwareRepositoryProvider repositoryProvider)
+    {
+        if (entityType.Assembly.FindPersistentType(entityType) is { } persistentType)
+        {
+            return persistentType.Accept(new GenericRepositoryFactory(repositoryProvider, this.LoggerFactory, this.ChangeListener));
+        }
+
+        var repositoryType = typeof(GenericRepository<>).MakeGenericType(entityType);
+        return (IRepository)Activator.CreateInstance(repositoryType, repositoryProvider, this.LoggerFactory, this.ChangeListener)!;
+    }
+
+    /// <summary>
+    /// Registers the repository. Adapts the type so that the base type gets registered.
+    /// </summary>
+    /// <param name="type">The generic type that the repository handles.</param>
+    /// <param name="repository">The repository.</param>
+    protected override void RegisterRepository(Type type, IRepository repository)
+    {
+        if (type.Assembly.Equals(this.GetType().Assembly) && type.BaseType != typeof(object))
+        {
+            base.RegisterRepository(type.BaseType!, repository);
+        }
+        else
+        {
+            base.RegisterRepository(type, repository);
+        }
+    }
+
+    /// <summary>
+    /// Creates the <see cref="GenericRepository{T}"/> of a persistent type.
+    /// </summary>
+    private sealed class GenericRepositoryFactory : IPersistentTypeVisitor<IRepository>
+    {
+        private readonly IContextAwareRepositoryProvider _repositoryProvider;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly IConfigurationChangeListener? _changeListener;
+
+        public GenericRepositoryFactory(IContextAwareRepositoryProvider repositoryProvider, ILoggerFactory loggerFactory, IConfigurationChangeListener? changeListener)
+        {
+            this._repositoryProvider = repositoryProvider;
+            this._loggerFactory = loggerFactory;
+            this._changeListener = changeListener;
+        }
+
+        public IRepository Visit<T>()
+            where T : class
+        {
+            return new GenericRepository<T>(this._repositoryProvider, this._loggerFactory, this._changeListener);
+        }
+    }
+}

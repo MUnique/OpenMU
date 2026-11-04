@@ -1,0 +1,243 @@
+// <copyright file="ApiKeyManagementService.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.AdminPanel.Services;
+
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared;
+using MUnique.OpenMU.Web.Shared.Components.Form.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Modal;
+using MUnique.OpenMU.Web.Shared.Components.Toast;
+
+/// <summary>
+/// Manages the API keys with which external applications use the public API.
+/// </summary>
+public class ApiKeyManagementService
+{
+    private readonly IApiKeyRepository _repository;
+    private readonly IModalService _modalService;
+    private readonly IToastService _toastService;
+    private readonly AdminPanelSetupMode _setupMode;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ApiKeyManagementService"/> class.
+    /// </summary>
+    /// <param name="repository">The repository of the stored keys.</param>
+    /// <param name="modalService">The modal service.</param>
+    /// <param name="toastService">The toast service.</param>
+    /// <param name="setupMode">The setup mode, which knows whether the admin panel has a user.</param>
+    public ApiKeyManagementService(IApiKeyRepository repository, IModalService modalService, IToastService toastService, AdminPanelSetupMode setupMode)
+    {
+        this._repository = repository;
+        this._modalService = modalService;
+        this._toastService = toastService;
+        this._setupMode = setupMode;
+    }
+
+    /// <summary>
+    /// Gets all stored keys.
+    /// </summary>
+    /// <returns>All stored keys.</returns>
+    public async Task<IList<ApiKey>> GetKeysAsync()
+    {
+        return await this._repository.GetAllAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates a new key, asking for its name and role in a modal dialog.
+    /// </summary>
+    /// <returns>
+    /// The generated key in plain text, so it can be shown to the user exactly once;
+    /// <c>null</c>, if no key has been created.
+    /// </returns>
+    /// <remarks>
+    /// No key is created while the admin panel has no user. In that initial setup mode, anybody
+    /// who reaches the admin panel could create one, and the key would keep working after the
+    /// first user exists. It's checked again right before the key is stored, because the dialog
+    /// can stay open for a long time.
+    /// </remarks>
+    public async Task<string?> CreateNewInModalDialogAsync()
+    {
+        if (await this.RefuseInSetupModeAsync().ConfigureAwait(false))
+        {
+            return null;
+        }
+
+        var input = new ApiKeyCreationParameters();
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<ApiKeyCreationParameters>.Item), input);
+        var modal = this._modalService.Show<ModalCreateNew<ApiKeyCreationParameters>>(Resources.CreateApiKey, parameters, new ModalOptions { DisableBackgroundCancel = true });
+        var result = await modal.Result.ConfigureAwait(false);
+        if (result.Cancelled)
+        {
+            return null;
+        }
+
+        if (!AdminToolGroups.IsValid(input.AllowedToolGroups))
+        {
+            this._toastService.ShowError(ApiKeyToolGroupResources.Caption);
+            return null;
+        }
+
+        var generatedKey = ApiKeyGenerator.GenerateKey();
+        var apiKey = new ApiKey
+        {
+            Id = Guid.NewGuid(),
+            Name = input.Name,
+            KeyHash = ApiKeyGenerator.Hash(generatedKey),
+            KeyPrefix = ApiKeyGenerator.GetVisiblePrefix(generatedKey),
+            Roles = input.Role.ToString(),
+            AllowedToolGroups = input.AllowedToolGroups.Trim(),
+        };
+
+        try
+        {
+            if (await this.RefuseInSetupModeAsync().ConfigureAwait(false))
+            {
+                return null;
+            }
+
+            await this._repository.AddAsync(apiKey).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._toastService.ShowError(ex.Message);
+            return null;
+        }
+
+        this._toastService.ShowSuccess(Resources.ApiKeyCreated);
+        return generatedKey;
+    }
+
+    /// <summary>Edits an existing key's optional MCP allowlist without changing its secret or role.</summary>
+    /// <param name="apiKey">The stored key.</param>
+    /// <returns>Whether the restriction was saved.</returns>
+    public async ValueTask<bool> EditToolGroupsAsync(ApiKey apiKey)
+    {
+        var input = new ApiKeyToolGroupParameters { AllowedToolGroups = apiKey.AllowedToolGroups };
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<ApiKeyToolGroupParameters>.Item), input);
+        var modal = this._modalService.Show<ModalCreateNew<ApiKeyToolGroupParameters>>(Resources.ApiKeys, parameters, new ModalOptions { DisableBackgroundCancel = true });
+        var result = await modal.Result.ConfigureAwait(false);
+        if (result.Cancelled)
+        {
+            return false;
+        }
+
+        if (!AdminToolGroups.IsValid(input.AllowedToolGroups))
+        {
+            this._toastService.ShowError(ApiKeyToolGroupResources.Caption);
+            return false;
+        }
+
+        var previous = apiKey.AllowedToolGroups;
+        apiKey.AllowedToolGroups = input.AllowedToolGroups.Trim();
+        try
+        {
+            await this._repository.UpdateAsync(apiKey).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            apiKey.AllowedToolGroups = previous;
+            this._toastService.ShowError(exception.Message);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Enables or disables the specified key.
+    /// </summary>
+    /// <param name="apiKey">The key.</param>
+    /// <param name="isDisabled">If set to <c>true</c>, the key is rejected from now on.</param>
+    public async Task SetDisabledAsync(ApiKey apiKey, bool isDisabled)
+    {
+        apiKey.IsDisabled = isDisabled;
+        try
+        {
+            await this._repository.UpdateAsync(apiKey).ConfigureAwait(false);
+            this._toastService.ShowSuccess(isDisabled ? Resources.ApiKeyDisabled : Resources.ApiKeyEnabled);
+        }
+        catch (Exception ex)
+        {
+            this._toastService.ShowError(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Deletes the specified key, after asking for a confirmation.
+    /// </summary>
+    /// <param name="apiKey">The key.</param>
+    /// <returns><c>true</c>, if the key has been deleted; otherwise, <c>false</c>.</returns>
+    public async Task<bool> DeleteAsync(ApiKey apiKey)
+    {
+        var confirmed = await this._modalService
+            .ShowQuestionAsync(Resources.DeleteApiKey, string.Format(Resources.DeleteApiKeyQuestion, apiKey.Name))
+            .ConfigureAwait(false);
+        if (!confirmed)
+        {
+            return false;
+        }
+
+        try
+        {
+            await this._repository.DeleteAsync(apiKey).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._toastService.ShowError(ex.Message);
+            return false;
+        }
+
+        this._toastService.ShowSuccess(Resources.ApiKeyDeleted);
+        return true;
+    }
+
+    /// <summary>
+    /// Refuses to create a key while the admin panel has no user, and tells why.
+    /// </summary>
+    /// <returns><c>true</c>, if the admin panel has no user and no key may be created; otherwise, <c>false</c>.</returns>
+    private async ValueTask<bool> RefuseInSetupModeAsync()
+    {
+        if (!await this._setupMode.IsActiveAsync().ConfigureAwait(false))
+        {
+            return false;
+        }
+
+        this._toastService.ShowError(Resources.ApiKeyNeedsAUser);
+        return true;
+    }
+
+    private sealed class ApiKeyToolGroupParameters
+    {
+        [Display(ResourceType = typeof(ApiKeyToolGroupResources), Name = nameof(ApiKeyToolGroupResources.Caption))]
+        [MaxLength(1000)]
+        public string AllowedToolGroups { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// The parameters to create a new API key.
+    /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
+    private class ApiKeyCreationParameters
+    {
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.ApiKeyName))]
+        [MaxLength(100)]
+        [MinLength(3)]
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(ApiKeyToolGroupResources), Name = nameof(ApiKeyToolGroupResources.Caption))]
+        [MaxLength(1000)]
+        public string AllowedToolGroups { get; set; } = string.Empty;
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.Role))]
+        [Required]
+        public ApiKeyRole Role { get; set; } = ApiKeyRole.Viewer;
+    }
+}

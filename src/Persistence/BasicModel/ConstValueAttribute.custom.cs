@@ -1,0 +1,70 @@
+﻿// <copyright file="ConstValueAttribute.custom.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.BasicModel;
+
+using System.Text.Json.Serialization;
+using MUnique.OpenMU.AttributeSystem;
+
+/// <summary>
+/// A plain implementation of <see cref="MUnique.OpenMU.AttributeSystem.ConstValueAttribute"/>.
+/// </summary>
+public partial class ConstValueAttribute : MUnique.OpenMU.DataModel.IAssignable
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class
+    /// using the default <see cref="AggregateType.AddRaw"/> aggregation mode.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="definition">The attribute definition.</param>
+    public ConstValueAttribute(float value, AttributeDefinition definition)
+        : base(value, definition)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConstValueAttribute"/> class.
+    /// </summary>
+    public ConstValueAttribute()
+    {
+    }
+
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    /// <remarks>
+    /// Required, because we need a setter for the json deserialization.
+    /// Because we just can't add a setter to an existing property, we have to add a new one.
+    /// </remarks>
+    [JsonPropertyName(nameof(Value))]
+    public float RawValue
+    {
+        get => base.Value;
+        set => base.Value = value;
+    }
+
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
+    /// <remarks>
+    /// Reintroduced to mark it with the <see cref="JsonIgnoreAttribute"/>.
+    /// </remarks>
+    [JsonIgnore]
+    public new float Value => base.Value;
+
+    /// <inheritdoc />
+    public void AssignValuesOf(object other, MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
+    {
+        if (other is not MUnique.OpenMU.AttributeSystem.ConstValueAttribute value)
+        {
+            throw new ArgumentException("Expected a constant attribute.", nameof(other));
+        }
+
+        var definition = gameConfiguration.Attributes.SingleOrDefault(a => a.Id == value.Definition.Id)
+            ?? throw new ArgumentException("The attribute definition must belong to the target configuration.", nameof(gameConfiguration));
+        this.Definition = definition;
+        base.Value = value.Value;
+        this.AggregateType = value.AggregateType;
+    }
+}

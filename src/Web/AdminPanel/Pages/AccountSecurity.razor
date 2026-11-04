@@ -1,0 +1,80 @@
+﻿@page "/account/security"
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.AccountSecurity</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.AccountSecurity" />
+<h1>@Resources.AccountSecurity</h1>
+
+@if (this._isLoading)
+{
+    <p>@Resources.Loading</p>
+}
+else if (this._user is null)
+{
+    @* Nobody is signed in and no user exists yet - there is no own account to secure. *@
+    <div class="alert alert-warning" style="max-width: 40rem;" role="alert">
+        <p class="mb-2">@Resources.NoAdminUserWarning</p>
+        <a class="btn btn-primary btn-sm" href="@AdminUsers.CreateUserUrl">@Resources.CreateFirstUser</a>
+    </div>
+}
+else
+{
+    <div class="card mb-3" style="max-width: 40rem;">
+        <div class="card-body">
+            <h2 class="h5 card-title">@Resources.TwoFactorAuthentication</h2>
+
+            @if (this._setup is { } setup)
+            {
+                <p>@Resources.ScanQrCode</p>
+                <div class="qr-code my-3">@((MarkupString)setup.QrCodeSvg)</div>
+                <p class="mb-1 small text-secondary">@Resources.ManualKeyHint</p>
+                <p><code>@setup.SharedKey</code></p>
+                <p class="small text-secondary">@Resources.ConfirmSetupHint</p>
+                <div class="input-group mb-2" style="max-width: 20rem;">
+                    <input type="text" class="form-control" inputmode="numeric" autocomplete="one-time-code"
+                           placeholder="@Resources.AuthenticatorCode" @bind="@this._confirmationCode" />
+                    <button class="btn btn-primary" type="button" disabled="@this._isBusy" @onclick="@this.ConfirmSetupAsync">@Resources.Verify</button>
+                </div>
+                @if (this._errorMessage is { } setupError)
+                {
+                    <div class="alert alert-danger py-2" role="alert">@setupError</div>
+                }
+                <button class="btn btn-link btn-sm p-0" type="button" @onclick="@this.CancelSetup">@Resources.Cancel</button>
+            }
+            else if (this._user.IsTwoFactorEnabled)
+            {
+                <p class="text-success mb-2">
+                    <span class="oi oi-shield" aria-hidden="true"></span> @Resources.TwoFactorEnabled
+                </p>
+                <p class="small text-secondary">@Resources.RemainingRecoveryCodes: @this._remainingRecoveryCodes</p>
+                <button class="btn btn-secondary btn-sm me-2" type="button" disabled="@this._isBusy" @onclick="@this.GenerateRecoveryCodesAsync">@Resources.GenerateNewRecoveryCodes</button>
+                <button class="btn btn-outline-danger btn-sm" type="button" disabled="@this._isBusy" @onclick="@this.DisableTwoFactorAsync">@Resources.DisableTwoFactor</button>
+            }
+            else
+            {
+                <p class="text-secondary mb-2">@Resources.TwoFactorDisabled</p>
+                @if (this._isTwoFactorRequired)
+                {
+                    <div class="alert alert-warning py-2" role="alert">@Resources.TwoFactorRequiredDescription</div>
+                }
+                <button class="btn btn-primary btn-sm" type="button" disabled="@this._isBusy" @onclick="@this.BeginSetupAsync">@Resources.SetUpAuthenticator</button>
+            }
+        </div>
+    </div>
+
+    @if (this._recoveryCodes is { Count: > 0 } recoveryCodes)
+    {
+        <div class="card border-warning" style="max-width: 40rem;">
+            <div class="card-body">
+                <h2 class="h5 card-title">@Resources.RecoveryCodes</h2>
+                <p class="small">@Resources.RecoveryCodesHint</p>
+                <ul class="list-unstyled mb-0">
+                    @foreach (var recoveryCode in recoveryCodes)
+                    {
+                        <li><code>@recoveryCode</code></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+}

@@ -1,0 +1,63 @@
+﻿// <copyright file="DroppedItemsDisappearedPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.World;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="IDroppedItemsDisappearedPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.DroppedItemsDisappearedPlugIn_Name), Description = nameof(PlugInResources.DroppedItemsDisappearedPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("ecd14e95-33be-44f7-bb9b-1429a57a7a94")]
+public class DroppedItemsDisappearedPlugIn : IDroppedItemsDisappearedPlugIn
+{
+    private readonly RemotePlayer _player;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DroppedItemsDisappearedPlugIn"/> class.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public DroppedItemsDisappearedPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public async ValueTask DroppedItemsDisappearedAsync(IEnumerable<ushort> disappearedItemIds)
+    {
+        var connection = this._player.Connection;
+        if (connection is null)
+        {
+            return;
+        }
+
+        ////C2 00 07 21 01 00 0C
+        int count = disappearedItemIds.Count();
+
+        int Write()
+        {
+            var size = ItemDropRemovedRef.GetRequiredSize(count);
+            var span = connection.Output.GetSpan(size)[..size];
+            var message = new ItemDropRemovedRef(span)
+            {
+                ItemCount = (byte)count,
+            };
+
+            int i = 0;
+            foreach (var dropId in disappearedItemIds)
+            {
+                var drop = message[i];
+                drop.Id = dropId;
+                i++;
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+}

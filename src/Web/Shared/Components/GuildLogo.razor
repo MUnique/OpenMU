@@ -1,0 +1,66 @@
+@if (this.Logo is { Length: >= 32 })
+{
+    <svg viewBox="0 0 8 8" width="@this.Size" height="@this.Size" class="guild-logo @this.Class" style="shape-rendering: crispEdges; flex-shrink: 0;" aria-hidden="true">
+        @for (var y = 0; y < 8; y++)
+        {
+            @for (var x = 0; x < 8; x++)
+            {
+                var byteIndex = (y * 4) + (x / 2);
+                var colorIndex = (x % 2 == 0)
+                    ? (this.Logo[byteIndex] >> 4) & 0x0F
+                    : this.Logo[byteIndex] & 0x0F;
+
+                if (colorIndex > 0 && colorIndex < Palette.Length)
+                {
+                    <rect x="@x" y="@y" width="1" height="1" fill="@Palette[colorIndex]" />
+                }
+            }
+        }
+    </svg>
+}
+else
+{
+    <svg viewBox="0 0 8 8" width="@this.Size" height="@this.Size" class="guild-logo guild-logo-placeholder @this.Class" style="shape-rendering: crispEdges; flex-shrink: 0;" aria-hidden="true">
+        <rect x="0" y="0" width="8" height="8" fill="#dee2e6" />
+    </svg>
+}
+
+@code {
+    private static readonly string[] Palette =
+    [
+        "transparent", // 0: Transparent
+        "#000000",     // 1: Black
+        "#8c8a8d",     // 2: Gray
+        "#ffffff",     // 3: White
+        "#fe0000",     // 4: Red
+        "#ff8a00",     // 5: Orange
+        "#ffff00",     // 6: Yellow
+        "#8cff01",     // 7: Light Green
+        "#00ff00",     // 8: Green
+        "#01ff8d",     // 9: Teal
+        "#00ffff",     // 10: Cyan
+        "#008aff",     // 11: Light Blue
+        "#0000fe",     // 12: Dark Blue
+        "#8c00ff",     // 13: Purple
+        "#ff00fe",     // 14: Magenta
+        "#ff008c",     // 15: Pink
+    ];
+
+    /// <summary>
+    /// Gets or sets the raw 8x8 16-color logo bitmap data.
+    /// </summary>
+    [Parameter]
+    public byte[]? Logo { get; set; }
+
+    /// <summary>
+    /// Gets or sets the display size in pixels. Defaults to 20.
+    /// </summary>
+    [Parameter]
+    public int Size { get; set; } = 20;
+
+    /// <summary>
+    /// Gets or sets optional CSS classes.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+}

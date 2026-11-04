@@ -1,0 +1,57 @@
+﻿@page "/gameServer/{gameServerId:int}/"
+
+@implements IDisposable
+
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.Map.Components
+@using MUnique.OpenMU.Web.Map
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.GameLogic
+
+@if (this._gameServer is not null)
+{
+    <PageTitle>OpenMU: @Resources.GameServer @this._gameServer.Id</PageTitle>
+    <Breadcrumb Caption=@($"{Resources.GameServer} {this._gameServer.Id}") />
+    <CascadingValue Value="@_liveMapRoute" Name="LiveMapRoute">
+    <CascadingValue Value="@_gameServer">
+        <MapCards GameServer="@_gameServer"></MapCards>
+    </CascadingValue>
+    </CascadingValue>
+}
+
+@code {
+    private string _liveMapRoute = string.Empty;
+
+    private IObservableGameServer? _gameServer;
+
+    /// <summary>
+    /// Gets or sets the server id on which the map is hosted.
+    /// </summary>
+    [Inject]
+    public IList<IManageableServer> Servers { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the 0-based game server id/index.
+    /// </summary>
+    [Parameter]
+    public int GameServerId { get; set; }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        (this._gameServer as IDisposable)?.Dispose();
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnInitializedAsync()
+    {
+        var gameServer = this.Servers.OfType<IGameServer>().First(gs => gs.Id == this.GameServerId);
+        var context = (gameServer as IGameServerContextProvider)?.Context ?? throw new InvalidOperationException("This map page just works in an All-In-One deployment.");
+        var adapter = new ObservableGameServerAdapter(context);
+        await adapter.InitializeAsync();
+
+        this._gameServer = adapter;
+        this._liveMapRoute = $"gameServer/{this.GameServerId}/map/";
+        await base.OnInitializedAsync();
+    }
+}

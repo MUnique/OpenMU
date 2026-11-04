@@ -1,0 +1,238 @@
+﻿// <copyright file="MonsterAttributeHolder.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.Attributes;
+
+using System.Collections.Concurrent;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.NPC;
+
+/// <summary>
+/// The attribute system for monsters, which is considering monster definitions.
+/// </summary>
+public class MonsterAttributeHolder : IAttributeSystem
+{
+    private static readonly IDictionary<AttributeDefinition, Func<AttackableNpcBase, float>> StatMapping =
+        new Dictionary<AttributeDefinition, Func<AttackableNpcBase, float>>
+        {
+            { Stats.CurrentHealth, m => m.Health },
+            { Stats.DefensePvm, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) * (1 + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0)) },
+            { Stats.DefensePvp, m => m.Attributes.GetValueOfAttribute(Stats.DefenseBase) * (1 + ((m as Monster)?.SummonedBy?.Attributes?[Stats.SummonedMonsterDefenseIncrease] ?? 0)) },
+            { Stats.DamageReceiveDecrement, m => 1.0f },
+            { Stats.AttackDamageIncrease, m => 1.0f },
+            { Stats.MovementSpeedFactor, m => 1.0f },
+            { Stats.ShieldBypassChance, m => 1.0f },
+            { Stats.DefenseDecrement, m => 1.0f - m.Attributes.GetValueOfAttribute(Stats.InnovationDefDecrement) },
+        };
+
+    private static readonly IDictionary<AttributeDefinition, Action<AttackableNpcBase, float>> SetterMapping =
+        new Dictionary<AttributeDefinition, Action<AttackableNpcBase, float>>
+        {
+            { Stats.CurrentHealth, (m, v) => m.Health = (int)v },
+        };
+
+    private static readonly ConcurrentDictionary<MonsterDefinition, IDictionary<AttributeDefinition, float>> MonsterStatAttributesCache = new();
+
+    private readonly AttackableNpcBase _monster;
+
+    private readonly object _attributesLock = new();
+
+    private IDictionary<AttributeDefinition, float> _statAttributes;
+
+    /// <summary>
+    /// Attribute dictionary of a monster instance.
+    /// Most monster instances don't have additional attributes, so we just instantiate one if needed.
+    /// </summary>
+    private IDictionary<AttributeDefinition, IComposableAttribute>? _attributes;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MonsterAttributeHolder"/> class.
+    /// </summary>
+    /// <param name="monster">The monster.</param>
+    public MonsterAttributeHolder(AttackableNpcBase monster)
+    {
+        this._monster = monster;
+        this._statAttributes = GetStatAttributeOfMonster(monster.Definition);
+    }
+
+    /// <inheritdoc/>
+    public float this[AttributeDefinition attributeDefinition]
+    {
+        get => this.GetValueOfAttribute(attributeDefinition);
+
+        set
+        {
+            if (SetterMapping.TryGetValue(attributeDefinition, out var setAction))
+            {
+                setAction(this._monster, value);
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public float GetValueOfAttribute(AttributeDefinition attributeDefinition)
+    {
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
+        {
+            attributes = this._attributes;
+        }
+
+        if (attributes is not null
+            && attributes.TryGetValue(attributeDefinition, out var attribute))
+        {
+            return attribute.Value;
+        }
+
+        // A spawn area can override the maximum health of its npc (e.g. the blood castle gate
+        // and statue, or summoned monsters). AttackableNpcBase.Initialize starts them off with
+        // that health, so the maximum has to be reported accordingly. Otherwise every
+        // percentage-based readout divides the real health by the unrelated, usually much higher
+        // value of the monster definition.
+        if (attributeDefinition == Stats.MaximumHealth
+            && this._monster.SpawnArea.MaximumHealthOverride is { } maximumHealthOverride)
+        {
+            return maximumHealthOverride;
+        }
+
+        if (this._statAttributes.TryGetValue(attributeDefinition, out float value))
+        {
+            return value;
+        }
+
+        if (StatMapping.TryGetValue(attributeDefinition, out var mappingFunction))
+        {
+            return mappingFunction(this._monster);
+        }
+
+        return 0;
+    }
+
+    /// <inheritdoc/>
+    public void AddElement(IElement element, AttributeDefinition targetAttribute)
+    {
+        var attributeDictionary = this.GetAttributeDictionary();
+        if (!attributeDictionary.TryGetValue(targetAttribute, out var attribute))
+        {
+            attribute = new ComposableAttribute(targetAttribute);
+            var attrValue = this.GetValueOfAttribute(targetAttribute);
+            var nullValue = element.AggregateType == AggregateType.Multiplicate ? 1 : 0;
+            attrValue = Math.Abs(attrValue) < 0.01f ? nullValue : attrValue;
+            attribute.AddElement(new SimpleElement { Value = attrValue });
+            attributeDictionary.Add(targetAttribute, attribute);
+        }
+
+        attribute.AddElement(element);
+    }
+
+    /// <inheritdoc/>
+    public void RemoveElement(IElement element, AttributeDefinition targetAttribute)
+    {
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
+        {
+            attributes = this._attributes;
+        }
+
+        if (attributes is null)
+        {
+            return;
+        }
+
+        if (attributes.TryGetValue(targetAttribute, out var attribute))
+        {
+            attribute.RemoveElement(element);
+            if (!attribute.Elements.Skip(1).Any())
+            {
+                attributes.Remove(targetAttribute);
+            }
+        }
+
+        if (attributes.Count == 0)
+        {
+            lock (this._attributesLock)
+            {
+                this._attributes = null;
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void AddAttributeRelationship(AttributeRelationship combination, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// This is required when a monster attacks with a skill which has attribute relationships, e.g. a skill
+    /// damage multiplier which depends on the <see cref="Stats.SkillMultiplier"/> of the monster.
+    /// The stats of a monster are fixed, so they're returned as constant. Attributes which got elements added,
+    /// e.g. by a magic effect, are returned as they are, so that they stay up to date.
+    /// Note that the constant is a snapshot: a relationship which is created from it doesn't see elements
+    /// which are added to the same attribute later. So it shouldn't be used for stats which change at runtime.
+    /// </remarks>
+    public IElement GetOrCreateAttribute(AttributeDefinition attributeDefinition)
+    {
+        IDictionary<AttributeDefinition, IComposableAttribute>? attributes;
+        lock (this._attributesLock)
+        {
+            attributes = this._attributes;
+        }
+
+        if (attributes is not null && attributes.TryGetValue(attributeDefinition, out var attribute))
+        {
+            return attribute;
+        }
+
+        return new ConstantElement(this.GetValueOfAttribute(attributeDefinition));
+    }
+
+    /// <summary>
+    /// Reloads the stat attributes from the (possibly changed) <see cref="MonsterDefinition"/>,
+    /// so that configuration changes take effect on the running game server.
+    /// </summary>
+    public void ApplyChanges()
+    {
+        // When many instances of the same monster are spawned, all of them get notified about the
+        // same change. The first one rebuilds the shared cache; the others just adopt the new one.
+        if (MonsterStatAttributesCache.TryGetValue(this._monster.Definition, out var cached)
+            && !ReferenceEquals(cached, this._statAttributes))
+        {
+            this._statAttributes = cached;
+            return;
+        }
+
+        var statAttributes = BuildStatAttributes(this._monster.Definition);
+        MonsterStatAttributesCache[this._monster.Definition] = statAttributes;
+        this._statAttributes = statAttributes;
+    }
+
+    private static IDictionary<AttributeDefinition, float> GetStatAttributeOfMonster(MonsterDefinition monsterDefinition)
+    {
+        return MonsterStatAttributesCache.GetOrAdd(monsterDefinition, BuildStatAttributes);
+    }
+
+    private static IDictionary<AttributeDefinition, float> BuildStatAttributes(MonsterDefinition monsterDefinition)
+    {
+        return monsterDefinition.Attributes.ToDictionary(
+            m => m.AttributeDefinition ?? throw Error.NotInitializedProperty(m, nameof(m.AttributeDefinition)),
+            m => m.Value);
+    }
+
+    private IDictionary<AttributeDefinition, IComposableAttribute> GetAttributeDictionary()
+    {
+        lock (this._attributesLock)
+        {
+            var attributes = this._attributes;
+            if (attributes is null)
+            {
+                attributes = new Dictionary<AttributeDefinition, IComposableAttribute>();
+                this._attributes = attributes;
+            }
+
+            return attributes;
+        }
+    }
+}

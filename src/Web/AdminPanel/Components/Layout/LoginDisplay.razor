@@ -1,0 +1,26 @@
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<AuthorizeView>
+    <Authorized>
+        @if (context.User.Identity?.IsAuthenticated is true)
+        {
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-secondary" title="@Resources.AccountSecurity"
+                        @onclick="@this.OpenAccountSecurity">
+                    <span class="oi oi-person" aria-hidden="true"></span> @context.User.Identity.Name
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="@this.LogoutAsync">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> @Resources.Logout
+                </button>
+            </div>
+        }
+        else
+        {
+            @* Nobody is signed in and no user exists yet - the panel is in its initial setup mode. *@
+            <button type="button" class="btn btn-sm btn-warning" title="@Resources.NoAdminUserWarning"
+                    @onclick="@this.OpenUserCreation">
+                <span class="oi oi-warning" aria-hidden="true"></span> @Resources.CreateFirstUser
+            </button>
+        }
+    </Authorized>
+</AuthorizeView>

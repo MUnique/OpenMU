@@ -1,0 +1,78 @@
+.creation-panel {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: 100vh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    background-color: var(--omu-surface-2);
+    color: var(--omu-text);
+    border-left: var(--bs-border-width) solid var(--omu-border);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    z-index: 2;
+}
+
+.creation-panel.collapsed {
+    width: 1.75rem;
+}
+
+.collapse-toggle {
+    flex-shrink: 0;
+    width: 1.75rem;
+    padding: 0;
+    border: none;
+    border-right: var(--bs-border-width) solid var(--omu-border);
+    background-color: var(--omu-surface-muted);
+    cursor: pointer;
+    color: var(--omu-text);
+}
+
+.collapse-toggle:hover {
+    background-color: var(--omu-surface-hover);
+}
+
+.creation-panel-body {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem 1.25rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.creation-panel-body h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    word-break: break-word;
+}
+
+.creation-panel-body ::deep form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.creation-panel-body ::deep .form-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    background-color: var(--omu-surface-2);
+    margin: 1rem -1.5rem -1rem -1.5rem;
+    padding: 1rem 1.25rem;
+    border-top: var(--bs-border-width) solid var(--omu-border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+
+/* Let the form controls fill the wider panel so the space is actually used. */
+.creation-panel-body ::deep input:not([type="checkbox"]):not([type="radio"]),
+.creation-panel-body ::deep select,
+.creation-panel-body ::deep textarea {
+    width: 100%;
+    box-sizing: border-box;
+}

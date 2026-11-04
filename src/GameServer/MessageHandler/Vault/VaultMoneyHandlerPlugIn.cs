@@ -1,0 +1,54 @@
+﻿// <copyright file="VaultMoneyHandlerPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.MessageHandler.Vault;
+
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Properties;
+using MUnique.OpenMU.GameLogic.Views.Vault;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
+using MUnique.OpenMU.PlugIns;
+using PlugInResources = MUnique.OpenMU.GameServer.Properties.PlugInResources;
+
+/// <summary>
+/// Handler for warehouse money packets.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.VaultMoneyHandlerPlugIn_Name), Description = nameof(PlugInResources.VaultMoneyHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("e365f3f2-55c8-4890-9f6b-26fd39822b71")]
+internal class VaultMoneyHandlerPlugIn : IPacketHandlerPlugIn
+{
+    /// <inheritdoc/>
+    public bool IsEncryptionExpected => false;
+
+    /// <inheritdoc/>
+    public byte Key => VaultMoveMoneyRequest.Code;
+
+    /// <inheritdoc/>
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
+    {
+        VaultMoveMoneyRequest request = packet;
+        switch (request.Direction)
+        {
+            case VaultMoveMoneyRequest.VaultMoneyMoveDirection.InventoryToVault:
+                player.TryDepositVaultMoney(request.Amount);
+                break;
+            case VaultMoveMoneyRequest.VaultMoneyMoveDirection.VaultToInventory:
+                if (player.IsVaultLocked)
+                {
+                    await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TheVaultIsLocked)).ConfigureAwait(false);
+                    break;
+                }
+
+                player.TryTakeVaultMoney(request.Amount);
+                break;
+            default:
+                throw new InvalidEnumArgumentException($"The direction {request.Direction} is not a valid value.");
+        }
+
+        await player.InvokeViewPlugInAsync<IUpdateVaultMoneyPlugIn>(p => p.UpdateVaultMoneyAsync(true)).ConfigureAwait(false);
+    }
+}

@@ -1,0 +1,378 @@
+﻿// <copyright file="GameConfiguration.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.DataModel.Configuration;
+
+using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Defines the game configuration.
+/// A game configuration contains the whole configuration of a game, directly or indirectly.
+/// </summary>
+[AggregateRoot]
+[Cloneable]
+public partial class GameConfiguration
+{
+    /// <summary>
+    /// Gets or sets the maximum reachable level.
+    /// </summary>
+    /// <remarks>Default value is 400.</remarks>
+    public short MaximumLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum reachable master level.
+    /// </summary>
+    /// <remarks>Default value is 200.</remarks>
+    public short MaximumMasterLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the experience rate of the game.
+    /// </summary>
+    /// <remarks>Default value is 1.0.</remarks>
+    public float ExperienceRate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the master experience rate of the game.
+    /// </summary>
+    public float MasterExperienceRate { get; set; } = 1.0f;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether experience overflow should be prevented.
+    /// </summary>
+    /// <remarks>
+    /// When <c>true</c>, if gaining experience would exceed the amount needed for the next level,
+    /// only the necessary experience for the next level is gained, and the overflow is discarded.
+    /// When <c>false</c>, excess experience is applied to subsequent levels (default behavior).
+    /// Default value is <c>false</c>.
+    /// </remarks>
+    public bool PreventExperienceOverflow { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum monster level which are required to be killed
+    /// in order to gain master experience for master character classes.
+    /// </summary>
+    /// <remarks>Default value is 95.</remarks>
+    public byte MinimumMonsterLevelForMasterExperience { get; set; }
+
+    /// <summary>
+    /// Gets or sets the information range. This defines how far players can see other game objects.
+    /// </summary>
+    /// <remarks>Default value is 12.</remarks>
+    public byte InfoRange { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether area skills hit players.
+    /// </summary>
+    /// <remarks>
+    /// Usually false, during castle siege this might be true.
+    /// Default value is <c>false</c>.
+    /// </remarks>
+    public bool AreaSkillHitsPlayer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum inventory money value.
+    /// </summary>
+    /// <remarks>Default value is 2147483647.</remarks>
+    public int MaximumInventoryMoney { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum vault money value.
+    /// </summary>
+    /// <remarks>Default value is 2147483647.</remarks>
+    public int MaximumVaultMoney { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether money pickup should be clamped to the maximum inventory money limit instead of failing when the limit would be exceeded.
+    /// </summary>
+    /// <remarks>
+    /// When <c>true</c>, if picking up money would exceed the maximum inventory money, the player will receive as much as possible (up to the limit) instead of the pickup failing completely.
+    /// When <c>false</c>, the pickup will fail if it would exceed the maximum.
+    /// Default value is <c>false</c>.
+    /// </remarks>
+    public bool ClampMoneyOnPickup { get; set; }
+
+    /// <summary>
+    /// Gets or sets the level delta used to determine the pool of items eligible for excellent drops.
+    /// A monster must be at least this many levels above an item's DropLevel for the item to be eligible as excellent.
+    /// </summary>
+    /// <remarks>Default value is 25.</remarks>
+    public byte ExcellentItemDropLevelDelta { get; set; }
+
+    /// <summary>
+    /// Gets or sets what the item formulas add to the drop level of an excellent item:
+    /// for its requirements when it isn't ancient (see <see cref="ItemRequirementFormula"/>). The price doesn't use it,
+    /// it keeps its own increase of 25. It isn't about which items drop as excellent (see <see cref="ExcellentItemDropLevelDelta"/>).
+    /// </summary>
+    /// <remarks>Default value is 25, as in the game client.</remarks>
+    public byte ExcellentDropLevelBonus { get; set; } = 25;
+
+    /// <summary>
+    /// Gets or sets what the item formulas add to the drop level of an ancient item:
+    /// for its requirements (see <see cref="ItemRequirementFormula"/>), and for its ancient parts (see <see cref="ItemStatTerms"/>).
+    /// </summary>
+    /// <remarks>Default value is 30, as in the game client.</remarks>
+    public byte AncientDropLevelBonus { get; set; } = 30;
+
+    /// <summary>
+    /// Gets or sets the experience formula per level. The variable name for the level is "level".
+    /// </summary>
+    /// <remarks>Default value is <c>if(level == 0, 0, if(level &lt; 256, 10 * (level + 8) * (level - 1) * (level - 1), (10 * (level + 8) * (level - 1) * (level - 1)) + (1000 * (level - 247) * (level - 256) * (level - 256))))</c>.</remarks>
+    public string? ExperienceFormula { get; set; }
+
+    /// <summary>
+    /// Gets or sets the experience formula per master level. The variable name for the level is "level".
+    /// </summary>
+    /// <remarks>Default value is <c>(505 * level * level * level) + (35278500 * level) + (228045 * level * level)</c>.</remarks>
+    public string? MasterExperienceFormula { get; set; }
+
+    /// <summary>
+    /// Gets or sets the interval for attribute recoveries. See also MUnique.OpenMU.GameLogic.Attributes.Stats.Regeneration.
+    /// </summary>
+    /// <remarks>Default value is 3000.</remarks>
+    public int RecoveryInterval { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum numbers of letters a player can have in his inbox.
+    /// </summary>
+    /// <remarks>Default value is 50.</remarks>
+    public int MaximumLetters { get; set; }
+
+    /// <summary>
+    /// Gets or sets the price of sending a letter.
+    /// </summary>
+    /// <remarks>Default value is 1000.</remarks>
+    public int LetterSendPrice { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of characters per account.
+    /// </summary>
+    /// <remarks>Default value is 5.</remarks>
+    public byte MaximumCharactersPerAccount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the character name regex.
+    /// </summary>
+    /// <remarks>
+    /// "^[a-zA-Z0-9]{3,10}$";.
+    /// </remarks>
+    public string? CharacterNameRegex { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum length of the password.
+    /// </summary>
+    /// <remarks>Default value is 20.</remarks>
+    public int MaximumPasswordLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum size of parties.
+    /// </summary>
+    /// <remarks>Default value is 5.</remarks>
+    public byte MaximumPartySize { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether if a monster should drop or adds money to the character directly.
+    /// </summary>
+    /// <remarks>Default value is <c>true</c>.</remarks>
+    public bool ShouldDropMoney { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration of item drops on the ground.
+    /// </summary>
+    /// <remarks>Default value is 60.</remarks>
+    public TimeSpan ItemDropDuration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum droppable item option level.
+    /// </summary>
+    /// <remarks>Default value is 3.</remarks>
+    public byte MaximumItemOptionLevelDrop { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a defending item by 1.
+    /// </summary>
+    /// <remarks>Default value is 69.</remarks>
+    public double DamagePerOneItemDurability { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accumulated damage which needs to be done to decrease <see cref="Item.Durability"/> of a pet item by 1.
+    /// </summary>
+    /// <remarks>Default value is 100.</remarks>
+    public double DamagePerOnePetDurability { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of hits which needs to be done to decrease the <see cref="Item.Durability"/> of an offensive item by 1.
+    /// Also the number of seconds which must elapse to decrease the <see cref="Item.Durability"/> of time-decaying items, like jewelry and wings, by 1.
+    /// </summary>
+    /// <remarks>Default value is 564.</remarks>
+    public double HitsPerOneItemDurability { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duel configuration.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual DuelConfiguration? DuelConfiguration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the possible jewel mixes.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<JewelMix> JewelMixes { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the warp list.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<WarpInfo> WarpList { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the drop item groups which can be assigned to maps and characters.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the skills of this game configuration.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<Skill> Skills { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the character classes.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<CharacterClass> CharacterClasses { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item definitions.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemDefinition> Items { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item level bonus tables.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemLevelBonusTable> ItemLevelBonusTables { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item stat profiles: the item formulas which the <see cref="Items"/> refer to.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemStatProfile> ItemStatProfiles { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item price definitions, which are referenced by <see cref="ItemDefinition.PriceDefinition"/>.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemPriceDefinition> ItemPriceDefinitions { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item slot types.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemSlotType> ItemSlotTypes { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item option definitions.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemOptionDefinition> ItemOptions { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item option types.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemOptionType> ItemOptionTypes { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item set groups.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemSetGroup> ItemSetGroups { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the item option combination bonuses.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ItemOptionCombinationBonus> ItemOptionCombinationBonuses { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the map definitions.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<GameMapDefinition> Maps { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the monster definitions.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<MonsterDefinition> Monsters { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the attributes.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeDefinition> Attributes { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the magic effects.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<MagicEffectDefinition> MagicEffects { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the master skill roots.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<MasterSkillRoot> MasterSkillRoots { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the attribute combinations.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRelationship> GlobalAttributeCombinations { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the base attribute values.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<ConstValueAttribute> GlobalBaseAttributeValues { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the plug in configurations.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<PlugInConfiguration> PlugInConfigurations { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the event definitions.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<MiniGameDefinition> MiniGameDefinitions { get; protected set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the castle siege configuration.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual CastleSiegeConfiguration? CastleSiegeConfiguration { get; set; }
+
+    /// <summary>
+    /// Gets or sets the cash shop configuration.
+    /// </summary>
+    /// <remarks>
+    /// If it's not set, the cash shop is not available.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual CashShopConfiguration? CashShopConfiguration { get; set; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return typeof(GameConfiguration).GetTypeCaption();
+    }
+}

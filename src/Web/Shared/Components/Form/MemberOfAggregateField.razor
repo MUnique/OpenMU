@@ -1,0 +1,51 @@
+﻿@typeparam TObject
+@using System.ComponentModel.DataAnnotations
+@using System.Diagnostics.CodeAnalysis
+@using MUnique.OpenMU.Persistence
+@inherits NotifyableInputBase<TObject>
+
+    <div class="card mb-3">
+        <h5 class="card-header">
+            <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        </h5>
+        <div class="card-body card-text">
+            @if (this.CurrentValue is null)
+            {
+                <button type="button" class="btn btn-primary" @onclick="this.OnCreateClick">@Resources.Create</button>
+            }
+            else
+            {
+                <EditForm Model="@this.Value">
+                    <DataAnnotationsValidator />
+                    <AutoFields />
+                    <ValidationSummary />
+                </EditForm>
+            }
+        </div>
+    </div>
+@code {
+
+    /// <summary>
+    /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
+    /// Name defined in the <see cref="DisplayAttribute"/>. If there is no Name in a <see cref="DisplayAttribute"/>, it shows the property name instead.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Gets or sets the persistence context.
+    /// </summary>
+    [CascadingParameter]
+    public IContext PersistentContext { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TObject result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void OnCreateClick()
+    {
+        this.CurrentValue = this.PersistentContext.CreateNew<TObject>();
+    }
+}

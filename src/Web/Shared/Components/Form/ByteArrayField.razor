@@ -1,0 +1,90 @@
+﻿@using System.Globalization
+@using System.IO
+@using MUnique.OpenMU.Network
+@using MUnique.OpenMU.Persistence
+@using System.Diagnostics.CodeAnalysis
+
+@inherits NotifyableInputBase<byte[]>
+
+@inject IModalService _modalService
+
+    <div class="mb-3">
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        @if (this.Value != null)
+        {
+            @if (this.Value.Length > 32)
+            {
+                <p>@string.Format(Resources.CurrentByteSize, this.Value.Length) (<a href="download/@this.EditContext.Model.GetType()/@this.EditContext.Model.GetId()/@this.FieldIdentifier.FieldName">@Resources.Download</a>)</p>
+                <p>@Resources.LoadFile: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+            }
+            else
+            {
+                <input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" />
+            }
+        }
+        else
+        {
+            <p><input @bind="CurrentValueAsString" id="@this.FieldIdentifier.FieldName" class="form-control @CssClass" placeholder="@Resources.EmptyBinaryValue" /></p>
+            <p>@Resources.LoadFile: <BlazorInputFile.InputFile id="@this.FieldIdentifier.FieldName" OnChange="@this.OnSelectedFile" /></p>
+        }
+
+    </div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the label.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <inheritdoc />
+    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out byte[] result, [NotNullWhen(false)] out string? validationErrorMessage)
+    {
+        if (value is null)
+        {
+            result = [];
+            validationErrorMessage = null;
+            return true;
+        }
+
+        var values = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        result = new byte[values.Length];
+        int i = 0;
+        foreach (var strValue in values)
+        {
+            if (byte.TryParse(strValue, NumberStyles.HexNumber, null, out var parsedByte))
+            {
+                result[i] = parsedByte;
+                i++;
+            }
+            else
+            {
+                result = null;
+                validationErrorMessage = Resources.HexFormatError;
+                return false;
+            }
+        }
+
+        validationErrorMessage = null;
+        return true;
+    }
+
+    /// <inheritdoc />
+    protected override string? FormatValueAsString(byte[]? value)
+    {
+        return value?.AsString();
+    }
+
+    private async Task OnSelectedFile(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            await using var memoryStream = new MemoryStream();
+            await file.Data.CopyToAsync(memoryStream);
+            this.CurrentValue = memoryStream.ToArray();
+            await this._modalService.ShowMessageAsync(FieldCaption.Get(this.FieldIdentifier), string.Format(Resources.FileLoaded, file.Name, this.CurrentValue.Length));
+        }
+    }
+}

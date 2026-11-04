@@ -1,0 +1,30 @@
+﻿<div class='resizers'>
+    <div class='resizer top-left' @onmousedown="OnTopLeftStartResize"></div>
+    <div class='resizer top-right' @onmousedown="OnTopRightStartResize"></div>
+    <div class='resizer bottom-left' @onmousedown="OnBottomLeftStartResize"></div>
+    <div class='resizer bottom-right' @onmousedown="OnBottomRightStartResize"></div>
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets an <see cref="EventCallback"/> which gets called to start resizing.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ResizerPosition?> ResizeStart { get; set; }
+
+    private Task OnTopLeftStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.TopLeft);
+
+    private Task OnTopRightStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.TopRight);
+
+    private Task OnBottomLeftStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.BottomLeft);
+
+    private Task OnBottomRightStartResize(MouseEventArgs args) => this.ResizeStart.InvokeAsync(ResizerPosition.BottomRight);
+
+    public enum ResizerPosition
+    {
+        TopLeft,
+        TopRight,
+        BottomRight,
+        BottomLeft,
+    }
+}

@@ -1,0 +1,35 @@
+services:
+  database:
+    ports:
+      - "5433:5432"
+  otel-lgtm:
+    ports:
+      # OTLP endpoints for services which are started from the IDE, outside of docker.
+      - "4317:4317"
+      - "4318:4318"
+
+  redis-state:
+    ports:
+      - "6379:6379"
+  
+  gameServer0:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "127.0.0.1:81:8080"
+
+  gameServer1:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "127.0.0.1:82:8080"
+
+  centralServer:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+
+  adminPanel:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "127.0.0.1:88:8080"

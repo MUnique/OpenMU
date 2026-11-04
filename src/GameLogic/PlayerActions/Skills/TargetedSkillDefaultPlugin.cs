@@ -1,0 +1,322 @@
+﻿// <copyright file="TargetedSkillDefaultPlugin.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Action to perform a skill which is explicitly aimed to a target.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.TargetedSkillDefaultPlugin_Name), Description = nameof(PlugInResources.TargetedSkillDefaultPlugin_Description), ResourceType = typeof(PlugInResources))]
+[Guid("eb2949fb-5ed2-407e-a4e8-e3015ed5692b")]
+public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
+{
+    private static readonly Dictionary<short, short> SummonSkillToMonsterMapping = new()
+    {
+        { 30, 26 }, // Goblin
+        { 31, 32 }, // Stone Golem
+        { 32, 21 }, // Assassin
+        { 33, 20 }, // Elite Yeti
+        { 34, 10 }, // Dark Knight
+        { 35, 150 }, // Bali
+        { 36, 151 }, // Soldier
+    };
+
+    /// <inheritdoc/>
+    public override short Key => 0;
+
+    /// <summary>
+    /// Performs the skill.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="target">The target.</param>
+    /// <param name="skillId">The skill identifier.</param>
+    public override async ValueTask PerformSkillAsync(Player player, IAttackable target, ushort skillId)
+    {
+        using var loggerScope = player.Logger.BeginScope(this.GetType());
+
+        if (target is null)
+        {
+            return;
+        }
+
+        if (AttackActionValidator.IsIncapacitated(player))
+        {
+            return;
+        }
+
+        var skillEntry = player.SkillList?.GetSkill(skillId);
+        if (skillEntry?.Skill is not { } skill || skill.SkillType == SkillType.PassiveBoost)
+        {
+            return;
+        }
+
+        bool isAttackSkill = AttackActionValidator.IsAttackSkill(skill);
+
+        var miniGame = player.CurrentMiniGame;
+        var inMiniGame = miniGame is { };
+        var isBuff = skill.SkillType is SkillType.Buff or SkillType.Regeneration;
+        if (player.IsAtSafezone() && !(inMiniGame && isBuff))
+        {
+            return;
+        }
+
+        if (inMiniGame && !miniGame!.IsSkillAllowed(skill, player, target))
+        {
+            return;
+        }
+
+        if (!target.IsActive())
+        {
+            return;
+        }
+
+        if (!target.CheckSkillTargetRestrictions(player, skill))
+        {
+            return;
+        }
+
+        if (!player.IsInRange(target.Position, skill.Range + 2))
+        {
+            // target position might be out of sync so we send the current coordinates to the client again.
+            if (!(target is ISupportWalk { IsWalking: true }))
+            {
+                await player.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(target, MoveType.Instant)).ConfigureAwait(false);
+            }
+
+            return;
+        }
+
+        if (skill.SkillType == SkillType.SummonMonster && player.Summon is { })
+        {
+            await player.RemoveSummonAsync().ConfigureAwait(false);
+            return;
+        }
+
+        if (isAttackSkill && !await AttackActionValidator.CanAttackAsync(player, skill).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        // Enough mana, AG etc? Validated last, so a rejected attack doesn't consume resources.
+        if (!await player.TryConsumeForSkillAsync(skillEntry).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        if (skill.MovesToTarget)
+        {
+            await player.MoveAsync(target.Position).ConfigureAwait(false);
+        }
+
+        if (skill.MovesTarget)
+        {
+            await target.MoveRandomlyAsync().ConfigureAwait(false);
+        }
+
+        (bool Success, Skill Skill, IAttackable Target) appliedSkill = (false, skill, target);
+        if (skill.SkillType == SkillType.SummonMonster)
+        {
+            if (SummonSkillToMonsterMapping.TryGetValue(skill.Number, out var monsterNumber)
+                && player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is { } monsterDefinition)
+            {
+                await player.CreateSummonedMonsterAsync(monsterDefinition).ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            appliedSkill = await this.ApplySkillAsync(player, target, skillEntry).ConfigureAwait(false);
+        }
+
+        await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, appliedSkill.Target, appliedSkill.Skill, appliedSkill.Success), true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether the skill directly hits its targets with damage.
+    /// It can be overridden by derived classes which always hit, regardless of the configured skill type.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if the skill directly hits its targets; otherwise, <c>false</c>.</returns>
+    protected virtual bool IsDirectHitSkill(Skill skill)
+    {
+        return skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill;
+    }
+
+    /// <summary>
+    /// Determines the targets of the skill. It can be overridden by derived classes to provide custom target selection logic.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="targetedTarget">The skill target.</param>
+    /// <param name="skill">The skill.</param>
+    /// <returns>The list of targets.</returns>
+    protected virtual IEnumerable<IAttackable> DetermineTargets(Player player, IAttackable targetedTarget, Skill skill)
+    {
+        if (skill.Target == SkillTarget.ImplicitPlayer)
+        {
+            return player.GetAsEnumerable();
+        }
+
+        if (skill.Target == SkillTarget.ImplicitParty)
+        {
+            if (player.Party != null)
+            {
+                return player.Party.PartyList.OfType<IAttackable>().Where(p => player.Observers.Contains((IWorldObserver)p));
+            }
+
+            return player.GetAsEnumerable();
+        }
+
+        if (skill.Target == SkillTarget.Explicit)
+        {
+            return targetedTarget.GetAsEnumerable();
+        }
+
+        if (skill.Target == SkillTarget.ExplicitWithImplicitInRange)
+        {
+            if (player.GameContext.PlugInManager.GetStrategy<short, IAreaSkillTargetFilter>(skill.Number) is { } filterPlugin)
+            {
+                var rotationToTarget = AreaSkillTargetSelector.ConvertAngleToRotation((float)player.Position.GetAngleDegreeTo(targetedTarget.Position));
+                var attackablesInRange =
+                    player.CurrentMap?
+                        .GetAttackablesInRange(player.Position, skill.Range)
+                        .Where(a => a != player)
+                        .Where(a => player.GameContext.Configuration.AreaSkillHitsPlayer || a is NonPlayerCharacter)
+                        .Where(a => !a.IsAtSafezone())
+                        .Where(a => filterPlugin.IsTargetWithinBounds(player, a, player.Position, rotationToTarget))
+                        .ToList();
+                if (attackablesInRange is not null)
+                {
+                    if (!attackablesInRange.Contains(targetedTarget))
+                    {
+                        attackablesInRange.Add(targetedTarget);
+                    }
+
+                    return attackablesInRange;
+                }
+            }
+            else if (skill.ImplicitTargetRange > 0)
+            {
+                var targetsOfTarget = targetedTarget.CurrentMap?.GetAttackablesInRange(targetedTarget.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
+                if (!player.GameContext.Configuration.AreaSkillHitsPlayer && targetedTarget is Monster)
+                {
+                    return targetsOfTarget.OfType<Monster>();
+                }
+
+                return targetsOfTarget;
+            }
+            else
+            {
+                // do nothing.
+            }
+
+            return targetedTarget.GetAsEnumerable();
+        }
+
+        var targets = player.CurrentMap?.GetAttackablesInRange(player.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
+
+        if (skill.Target == SkillTarget.ImplicitAllInRange)
+        {
+            return targets;
+        }
+
+        if (skill.Target == SkillTarget.ImplicitPlayersInRange)
+        {
+            return targets.OfType<Player>();
+        }
+
+        if (skill.Target == SkillTarget.ImplicitNpcsInRange)
+        {
+            return targets.OfType<Monster>();
+        }
+
+        return Enumerable.Empty<IAttackable>();
+    }
+
+    private async ValueTask<(bool Success, Skill Skill, IAttackable Target)> ApplySkillAsync(Player player, IAttackable targetedTarget, SkillEntry skillEntry)
+    {
+        skillEntry.ThrowNotInitializedProperty(skillEntry.Skill is null, nameof(skillEntry.Skill));
+        var skill = skillEntry.Skill;
+        var success = false;
+        Skill? animatedSkill = null;
+        var targets = this.DetermineTargets(player, targetedTarget, skill);
+        bool isCombo = false;
+        if (skill.SkillType is SkillType.DirectHit or SkillType.CastleSiegeSkill
+            && player.ComboState is { } comboState
+            && !targetedTarget.IsAtSafezone()
+            && !player.IsAtSafezone()
+            && targetedTarget.IsActive()
+            && player.IsActive())
+        {
+            isCombo = await comboState.RegisterSkillAsync(skill).ConfigureAwait(false);
+        }
+
+        foreach (var target in targets)
+        {
+            if (this.IsDirectHitSkill(skill))
+            {
+                if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
+                {
+                    var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
+                    player.LastAttackedTarget.SetTarget(target);
+                    success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false) || success;
+
+                    for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
+                    {
+                        await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+                    }
+
+                    if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
+                    {
+                        // The hit generated a different skill (e.g. ice) than the one originally casted.
+                        animatedSkill = hitInfo.Value.SkillEntry.Skill;
+                        targetedTarget = target;
+                    }
+                }
+            }
+            else if (skill.MagicEffectDef != null)
+            {
+                // Buffs are allowed in the Safezone of Blood Castle.
+                var canDoBuff = !player.IsAtSafezone() || player.CurrentMiniGame is { };
+                if (!canDoBuff)
+                {
+                    player.Logger.LogWarning("Can't apply magic effect when being in the safe-zone. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
+                    break;
+                }
+
+                if (skill.SkillType == SkillType.Buff)
+                {
+                    await target.ApplyMagicEffectAsync(player, skillEntry).ConfigureAwait(false);
+                    success = true;
+                }
+                else if (skill.SkillType == SkillType.Regeneration)
+                {
+                    await target.ApplyRegenerationAsync(player, skillEntry).ConfigureAwait(false);
+                    success = true;
+                }
+                else
+                {
+                    player.Logger.LogWarning("Skill.MagicEffectDef isn't null, but it's not a buff or regeneration skill. skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
+                }
+            }
+            else
+            {
+                player.Logger.LogWarning("Skill.MagicEffectDef is null, skill: {SkillName} ({SkillNumber}), skillType: {SkillType}.", skill.Name, skill.Number, skill.SkillType);
+            }
+        }
+
+        if (isCombo)
+        {
+            await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowComboAnimationAsync(player, targetedTarget), true).ConfigureAwait(false);
+        }
+
+        return (success, animatedSkill ?? skill, targetedTarget);
+    }
+}

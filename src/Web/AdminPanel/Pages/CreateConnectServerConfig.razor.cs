@@ -1,0 +1,216 @@
+﻿// <copyright file="CreateConnectServerConfig.razor.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Web.AdminPanel.Pages;
+
+using System.ComponentModel.DataAnnotations;
+using System.Threading;
+using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Properties;
+using MUnique.OpenMU.Web.Shared.Components.Toast;
+using MUnique.OpenMU.Web.Shared.Services;
+
+/// <summary>
+/// Razor page which shows objects of the specified type in a grid.
+/// </summary>
+public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
+{
+    private Task? _loadTask;
+    private CancellationTokenSource? _disposeCts;
+
+    private ConnectServerViewModel? _viewModel;
+    private bool _isProcessing;
+
+    /// <summary>
+    /// Gets or sets the context provider.
+    /// </summary>
+    [Inject]
+    public IPersistenceContextProvider ContextProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the server initializer.
+    /// </summary>
+    [Inject]
+    public IConnectServerInstanceManager ServerInstanceManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the data source.
+    /// </summary>
+    [Inject]
+    public IDataSource<GameConfiguration> DataSource { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the toast service.
+    /// </summary>
+    [Inject]
+    public IToastService ToastService { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the navigation manager.
+    /// </summary>
+    [Inject]
+    public NavigationManager NavigationManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the loading overlay service.
+    /// </summary>
+    [Inject]
+    public LoadingOverlayService LoadingService { get; set; } = null!;
+
+    /// <inheritdoc />
+    public async ValueTask DisposeAsync()
+    {
+        await (this._disposeCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(false);
+        this._disposeCts?.Dispose();
+        this._disposeCts = null;
+
+        try
+        {
+            await (this._loadTask ?? Task.CompletedTask).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // we can ignore that ...
+        }
+        catch
+        {
+            // and we should not throw exceptions in the dispose method ...
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        var cts = new CancellationTokenSource();
+        this._disposeCts = cts;
+        this._loadTask = Task.Run(() => this.LoadDataAsync(cts.Token), cts.Token);
+        await base.OnParametersSetAsync().ConfigureAwait(true);
+    }
+
+    private async Task LoadDataAsync(CancellationToken cancellationToken)
+    {
+        using var loading = this.LoadingService.ShowLoadingIndicator();
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var gameConfiguration = await this.DataSource.GetOwnerAsync(default, cancellationToken).ConfigureAwait(true);
+        using var persistenceContext = this.ContextProvider.CreateNewContext(gameConfiguration);
+
+        var clients = (await persistenceContext.GetAsync<GameClientDefinition>(cancellationToken).ConfigureAwait(false)).ToList();
+        var existingServerDefinitions = (await persistenceContext.GetAsync<ConnectServerDefinition>(cancellationToken).ConfigureAwait(false)).ToList();
+
+        var nextServerId = 0;
+        var networkPort = 44405;
+        if (existingServerDefinitions.Count > 0)
+        {
+            nextServerId = existingServerDefinitions.Max(s => s.ServerId) + 1;
+            networkPort = existingServerDefinitions.Max(s => s.ClientListenerPort) + 1;
+        }
+
+        var unusedClient = clients.FirstOrDefault(c => !existingServerDefinitions.Any(s => object.Equals(s.Client, c)));
+
+        this._viewModel = new ConnectServerViewModel
+        {
+            ServerId = (byte)nextServerId,
+            NetworkPort = networkPort,
+            Client = unusedClient ?? clients.FirstOrDefault(),
+        };
+
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+    }
+
+    private async ValueTask<ConnectServerDefinition> CreateDefinitionByViewModelAsync(IContext context)
+    {
+        if (this._viewModel is null)
+        {
+            throw new InvalidOperationException("View model not initialized.");
+        }
+
+        var result = context.CreateNew<ConnectServerDefinition>();
+        result.InitializeDefaults();
+        result.ServerId = this._viewModel.ServerId;
+        result.Description = this._viewModel.Description;
+        result.Client = this._viewModel.Client!;
+        result.ClientListenerPort = this._viewModel.NetworkPort;
+        return result;
+    }
+
+    private async Task OnSaveButtonClickAsync()
+    {
+        try
+        {
+            this._isProcessing = true;
+            var gameConfiguration = await this.DataSource.GetOwnerAsync().ConfigureAwait(true);
+            using var saveContext = this.ContextProvider.CreateNewTypedContext(typeof(DataModel.Configuration.ConnectServerDefinition), true, gameConfiguration);
+
+            var existingServerDefinitions = (await saveContext.GetAsync<ConnectServerDefinition>().ConfigureAwait(true)).ToList();
+            if (existingServerDefinitions.Any(def => def.ServerId == this._viewModel?.ServerId))
+            {
+                this.ToastService.ShowError(string.Format(Resources.ServerWithIdAlreadyExists, this._viewModel?.ServerId));
+                return;
+            }
+
+            if (existingServerDefinitions.Any(def => def.ClientListenerPort == this._viewModel?.NetworkPort))
+            {
+                this.ToastService.ShowError(string.Format(Resources.ServerWithPortAlreadyExists, this._viewModel?.NetworkPort));
+                return;
+            }
+
+            var connectServerDefinition = await this.CreateDefinitionByViewModelAsync(saveContext).ConfigureAwait(true);
+            var success = await saveContext.SaveChangesAsync().ConfigureAwait(true);
+
+            if (success)
+            {
+                this.ToastService.ShowSuccess(Resources.ConnectionServerConfigurationSaved);
+                await this.ServerInstanceManager.InitializeConnectServerAsync(connectServerDefinition.ConfigurationId).ConfigureAwait(true);
+                this.NavigationManager.NavigateTo("servers");
+                return;
+            }
+
+            this.ToastService.ShowError(Resources.NoChangesSaved);
+        }
+        catch (Exception ex)
+        {
+            this.ToastService.ShowError(string.Format(Resources.UnexpectedErrorOccurred, ex.Message));
+        }
+        finally
+        {
+            this._isProcessing = false;
+        }
+    }
+
+    /// <summary>
+    /// The view model for a <see cref="ConnectServerDefinition"/>.
+    /// </summary>
+    public class ConnectServerViewModel
+    {
+        /// <summary>
+        /// Gets or sets the server identifier.
+        /// </summary>
+        [Display(Name = nameof(Resources.CreateConnectServer_ServerId), ResourceType = typeof(Resources))]
+        public byte ServerId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        [Display(Name = nameof(Resources.CreateConnectServer_Description), ResourceType = typeof(Resources))]
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the client which is expected to connect.
+        /// </summary>
+        [Required]
+        [Display(Name = nameof(Resources.CreateConnectServer_Client), ResourceType = typeof(Resources))]
+        public GameClientDefinition? Client { get; set; }
+
+        /// <summary>
+        /// Gets or sets the network port on which the server is listening.
+        /// </summary>
+        [Range(1, ushort.MaxValue)]
+        [Display(Name = nameof(Resources.CreateConnectServer_NetworkPort), ResourceType = typeof(Resources))]
+        public int NetworkPort { get; set; }
+    }
+}

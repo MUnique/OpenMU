@@ -1,0 +1,850 @@
+﻿// <copyright file="AncientSets.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
+
+/// <summary>
+/// Initialization code for ancient sets.
+/// </summary>
+public class AncientSets : InitializerBase
+{
+    private readonly IDictionary<AttributeDefinition, IncreasableItemOption> _bonusOptions = new Dictionary<AttributeDefinition, IncreasableItemOption>();
+    private readonly ItemOptionType _ancientBonusOptionType;
+    private readonly ItemOptionType _ancientOptionType;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AncientSets"/> class.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public AncientSets(IContext context, GameConfiguration gameConfiguration)
+        : base(context, gameConfiguration)
+    {
+        this._ancientBonusOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientBonus);
+        this._ancientOptionType = this.GameConfiguration.ItemOptionTypes.First(iot => iot == ItemOptionTypes.AncientOption);
+
+        // When sets are added to an existing configuration by an update, reuse its bonus options.
+        foreach (var option in this.GameConfiguration.ItemOptions.SelectMany(o => o.PossibleOptions).Where(o => o.OptionType == this._ancientBonusOptionType))
+        {
+            if (option.PowerUpDefinition?.TargetAttribute is { } attribute)
+            {
+                this._bonusOptions.TryAdd(attribute, option);
+            }
+        }
+    }
+
+    /// <inheritdoc />
+    public override void Initialize()
+    {
+        var warrior = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Warrior),
+            LocalizedString.FromResource(() => ItemOptionNames.WarriorAncientSet), // Leather
+            1,
+            (Stats.TotalStrength, 10.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
+            (Stats.MaximumAbility, 20.0f, AggregateType.AddRaw),
+            (Stats.AbilityRecoveryAbsolute, 5.0f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 20.0f, AggregateType.AddFinal),
+            (Stats.TotalAgility, 10.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.TotalStrength, 25.0f, AggregateType.AddRaw));
+        warrior.SetGuid(5, 1);
+        this.AddItems(
+            warrior,
+            (5, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (5, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (5, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (5, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (5, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (1, ItemGroups.Scepters, Stats.TotalStrength, 1), // Morning Star
+            (8, ItemGroups.Misc1, Stats.TotalAgility, 1)); // Ring of Ice
+
+        var anonymous = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Anonymous),
+            LocalizedString.FromResource(() => ItemOptionNames.AnonymousAncientSet), // Leather
+            2,
+            (Stats.MaximumHealth, 50.0f),
+            (Stats.TotalAgility, 50.0f),
+            (Stats.DefenseIncreaseWithEquippedShield, 0.25f),
+            (Stats.FinalDamageBonus, 30.0f));
+        anonymous.SetGuid(5, 2);
+        this.AddItems(
+            anonymous,
+            (5, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (5, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (5, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (0, ItemGroups.Shields, Stats.TotalVitality, 1)); // Small Shield
+
+        var hyperion = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Hyperion),
+            LocalizedString.FromResource(() => ItemOptionNames.HyperionAncientSet), // Bronze
+            3,
+            (Stats.TotalEnergy, 15.0f),
+            (Stats.TotalAgility, 15.0f),
+            (Stats.SkillDamageBonus, 20.0f),
+            (Stats.MaximumMana, 30.0f));
+        hyperion.SetGuid(0, 1);
+        this.AddItems(
+            hyperion,
+            (0, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (0, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (0, ItemGroups.Armor, Stats.TotalVitality, 1));
+
+        var mist = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Mist),
+            LocalizedString.FromResource(() => ItemOptionNames.MistAncientSet), // Bronze
+            4,
+            (Stats.TotalVitality, 20.0f),
+            (Stats.SkillDamageBonus, 30.0f),
+            (Stats.DoubleDamageChance, 0.1f),
+            (Stats.TotalAgility, 20.0f));
+        mist.SetGuid(0, 2);
+        this.AddItems(
+            mist,
+            (0, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (0, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (0, ItemGroups.Helm, Stats.TotalVitality, 1));
+
+        var eplete = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Eplete),
+            LocalizedString.FromResource(() => ItemOptionNames.EpleteAncientSet), // Scale
+            5,
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.05f, AggregateType.Multiplicate),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.MaximumAbility, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw));
+        eplete.SetGuid(6, 1);
+        this.AddItems(
+            eplete,
+            (6, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (6, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (6, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (9, ItemGroups.Shields, Stats.TotalVitality, 1), // Plate Shield
+            (12, ItemGroups.Misc1, Stats.TotalEnergy, 1)); // Pendant of Lightning
+
+        var berserker = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Berserker),
+            LocalizedString.FromResource(() => ItemOptionNames.BerserkerAncientSet), // Scale
+            6,
+            (Stats.MaximumPhysBaseDmg, 10.0f),
+            (Stats.MaximumPhysBaseDmg, 20.0f),
+            (Stats.MaximumPhysBaseDmg, 30.0f),
+            (Stats.MaximumPhysBaseDmg, 40.0f),
+            (Stats.SkillDamageBonus, 50.0f),
+            (Stats.TotalStrength, 40.0f));
+        berserker.SetGuid(6, 2);
+        this.AddItems(
+            berserker,
+            (6, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (6, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (6, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (6, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (6, ItemGroups.Boots, Stats.TotalVitality, 1));
+
+        var garuda = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Garuda),
+            LocalizedString.FromResource(() => ItemOptionNames.GarudaAncientSet), // Brass
+            7,
+            (Stats.MaximumAbility, 30.0f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.15f, AggregateType.Multiplicate));
+        garuda.SetGuid(8, 1);
+        this.AddItems(
+            garuda,
+            (8, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (8, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (8, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (8, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (13, ItemGroups.Misc1, Stats.TotalStrength, 1)); // Pendant of Fire
+
+        var cloud = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Cloud),
+            LocalizedString.FromResource(() => ItemOptionNames.CloudAncientSet), // Brass
+            8,
+            (Stats.CriticalDamageChance, 0.20f),
+            (Stats.CriticalDamageBonus, 50.0f));
+        cloud.SetGuid(8, 2);
+        this.AddItems(
+            cloud,
+            (8, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (8, ItemGroups.Helm, Stats.TotalVitality, 1));
+
+        var kantata = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Kantata),
+            LocalizedString.FromResource(() => ItemOptionNames.KantataAncientSet), // Plate
+            9,
+            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 30.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.TotalStrength, 15.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 10.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        kantata.SetGuid(9, 1);
+        this.AddItems(
+            kantata,
+            (9, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (9, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (9, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (23, ItemGroups.Misc1, Stats.TotalAgility, 1), // Ring of Wind
+            (9, ItemGroups.Misc1, Stats.TotalVitality, 1)); // Ring of Poison
+
+        var rave = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Rave),
+            LocalizedString.FromResource(() => ItemOptionNames.RaveAncientSet), // Plate
+            10,
+            (Stats.SkillDamageBonus, 20.0f),
+            (Stats.DoubleDamageChance, 0.10f),
+            (Stats.TwoHandedWeaponDamageIncrease, 0.30f),
+            (Stats.DefenseIgnoreChance, 0.05f));
+        rave.SetGuid(9, 2);
+        this.AddItems(
+            rave,
+            (9, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (9, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (9, ItemGroups.Armor, Stats.TotalVitality, 2));
+
+        var hyon = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Hyon),
+            LocalizedString.FromResource(() => ItemOptionNames.HyonAncientSet), // Dragon
+            11,
+            (Stats.DefenseBase, 25, AggregateType.AddFinal),
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 20, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 20f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20f, AggregateType.AddRaw));
+        hyon.SetGuid(1, 1);
+        this.AddItems(
+            hyon,
+            (14, ItemGroups.Swords, Stats.TotalStrength, 1), // Lightning Sword
+            (1, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (1, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (1, ItemGroups.Gloves, Stats.TotalVitality, 1));
+
+        var vicious = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Vicious),
+            LocalizedString.FromResource(() => ItemOptionNames.ViciousAncientSet), // Dragon
+            12,
+            (Stats.SkillDamageBonus, 15.0f),
+            (Stats.FinalDamageBonus, 15.0f),
+            (Stats.DoubleDamageChance, 0.10f),
+            (Stats.MinimumPhysBaseDmg, 20f),
+            (Stats.MaximumPhysBaseDmg, 30f),
+            (Stats.DefenseIgnoreChance, 0.05f));
+        vicious.SetGuid(1, 2);
+        this.AddItems(
+            vicious,
+            (22, ItemGroups.Misc1, Stats.TotalStrength, 2), // Ring of Earth
+            (1, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (1, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (1, ItemGroups.Armor, Stats.TotalVitality, 2));
+
+        var apollo = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Apollo),
+            LocalizedString.FromResource(() => ItemOptionNames.ApolloAncientSet), // Pad
+            13,
+            (Stats.TotalEnergy, 10.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.05f, AggregateType.Multiplicate),
+            (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 30.0f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 30.0f, AggregateType.AddRaw),
+            (Stats.MaximumAbility, 20.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw));
+        apollo.SetGuid(2, 1);
+        this.AddItems(
+            apollo,
+            (0, ItemGroups.Staff, Stats.TotalEnergy, 1), // Skull Staff
+            (2, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (2, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (2, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (2, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (25, ItemGroups.Misc1, Stats.TotalStrength, 1), // Pendant of Ice
+            (24, ItemGroups.Misc1, Stats.TotalEnergy, 1)); // Ring of Magic
+
+        var barnake = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Barnake),
+            LocalizedString.FromResource(() => ItemOptionNames.BarnakeAncientSet), // Pad
+            14,
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.TotalEnergy, 20.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 100.0f, AggregateType.AddRaw));
+        barnake.SetGuid(2, 2);
+        this.AddItems(
+            barnake,
+            (2, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (2, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (2, ItemGroups.Boots, Stats.TotalVitality, 1));
+
+        var evis = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Evis),
+            LocalizedString.FromResource(() => ItemOptionNames.EvisAncientSet), // Bone
+            15,
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 20.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.AbilityRecoveryAbsolute, 5.0f, AggregateType.AddRaw));
+        evis.SetGuid(4, 1);
+        this.AddItems(
+            evis,
+            (4, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (4, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (4, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (26, ItemGroups.Misc1, Stats.TotalAgility, 1)); // Pendant of Wind
+
+        var sylion = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Sylion),
+            LocalizedString.FromResource(() => ItemOptionNames.SylionAncientSet), // Bone
+            16,
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 20.0f, AggregateType.AddFinal),
+            (Stats.TotalStrength, 50.0f, AggregateType.AddRaw),
+            (Stats.TotalAgility, 50.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 50.0f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 50.0f, AggregateType.AddRaw));
+        sylion.SetGuid(4, 2);
+        this.AddItems(
+            sylion,
+            (4, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (4, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (4, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (4, ItemGroups.Helm, Stats.TotalVitality, 1));
+
+        var heras = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Heras),
+            LocalizedString.FromResource(() => ItemOptionNames.HerasAncientSet), // Sphinx
+            17,
+            (Stats.TotalStrength, 15.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DefenseIncreaseWithEquippedShield, 0.05f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 15.0f, AggregateType.AddRaw),
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 50.0f, AggregateType.AddRaw));
+        heras.SetGuid(7, 1);
+        this.AddItems(
+            heras,
+            (6, ItemGroups.Shields, Stats.TotalVitality, 1), // Skull Shield
+            (7, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (7, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (7, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (7, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (7, ItemGroups.Boots, Stats.TotalVitality, 1));
+
+        var minet = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Minet),
+            LocalizedString.FromResource(() => ItemOptionNames.MinetAncientSet), // Sphinx
+            18,
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 30.0f, AggregateType.AddFinal),
+            (Stats.MaximumMana, 100.0f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw));
+        minet.SetGuid(7, 2);
+        this.AddItems(
+            minet,
+            (7, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (7, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (7, ItemGroups.Boots, Stats.TotalVitality, 2));
+
+        var anubis = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Anubis),
+            LocalizedString.FromResource(() => ItemOptionNames.AnubisAncientSet), // Legendary
+            19,
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 50.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 20.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        anubis.SetGuid(3, 1);
+        this.AddItems(
+            anubis,
+            (3, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (3, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (3, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (21, ItemGroups.Misc1, Stats.TotalEnergy, 1)); // Ring of Fire
+
+        var enis = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Enis),
+            LocalizedString.FromResource(() => ItemOptionNames.EnisAncientSet), // Legendary
+            20,
+            (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw));
+        enis.SetGuid(3, 2);
+        this.AddItems(
+            enis,
+            (3, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (3, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (3, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (3, ItemGroups.Pants, Stats.TotalVitality, 2));
+
+        var ceto = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Ceto),
+            LocalizedString.FromResource(() => ItemOptionNames.CetoAncientSet), // Vine
+            21,
+            (Stats.TotalAgility, 10.0f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 20.0f, AggregateType.AddFinal),
+            (Stats.DefenseIncreaseWithEquippedShield, 0.05f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 10.0f, AggregateType.AddRaw),
+            (Stats.MaximumHealth, 50.0f, AggregateType.AddRaw),
+            (Stats.TotalStrength, 20.0f, AggregateType.AddRaw));
+        ceto.SetGuid(10, 1);
+        this.AddItems(
+            ceto,
+            (10, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (10, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (10, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (10, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (2, ItemGroups.Swords, Stats.TotalStrength, 1), // Rapier
+            (22, ItemGroups.Misc1, Stats.TotalStrength, 1)); // Ring of Earth
+
+        var drake = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Drake),
+            LocalizedString.FromResource(() => ItemOptionNames.DrakeAncientSet), // Vine
+            22,
+            (Stats.TotalAgility, 20.0f, AggregateType.AddRaw),
+            (Stats.FinalDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.20f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 40.0f, AggregateType.AddFinal),
+            (Stats.CriticalDamageChance, 0.10f, AggregateType.AddRaw));
+        drake.SetGuid(10, 2);
+        this.AddItems(
+            drake,
+            (10, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (10, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (10, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (10, ItemGroups.Pants, Stats.TotalVitality, 2));
+
+        var gaia = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Gaia),
+            LocalizedString.FromResource(() => ItemOptionNames.GaiaAncientSet), // Silk
+            23,
+            (Stats.SkillDamageBonus, 10.0f),
+            (Stats.MaximumMana, 25.0f),
+            (Stats.TotalStrength, 10.0f),
+            (Stats.DoubleDamageChance, 0.05f),
+            (Stats.TotalAgility, 30.0f),
+            (Stats.ExcellentDamageChance, 0.10f),
+            (Stats.ExcellentDamageBonus, 10.0f));
+        gaia.SetGuid(11, 1);
+        this.AddItems(
+            gaia,
+            (11, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (11, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (11, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (11, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (9, ItemGroups.Bows, Stats.TotalAgility, 1)); // Golden Crossbow
+
+        var fase = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Fase),
+            LocalizedString.FromResource(() => ItemOptionNames.FaseAncientSet), // Silk
+            24,
+            (Stats.MaximumHealth, 100.0f, AggregateType.AddRaw),
+            (Stats.MaximumMana, 100.0f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 100.0f, AggregateType.AddFinal));
+        fase.SetGuid(11, 2);
+        this.AddItems(
+            fase,
+            (11, ItemGroups.Gloves, Stats.TotalVitality, 2),
+            (11, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (11, ItemGroups.Boots, Stats.TotalVitality, 1));
+
+        var odin = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Odin),
+            LocalizedString.FromResource(() => ItemOptionNames.OdinAncientSet), // Wind
+            25,
+            (Stats.TotalEnergy, 15.0f),
+            (Stats.MaximumHealth, 50.0f),
+            (Stats.AttackRatePvm, 50.0f),
+            (Stats.TotalAgility, 30.0f),
+            (Stats.MaximumMana, 50.0f),
+            (Stats.DefenseIgnoreChance, 0.05f),
+            (Stats.MaximumAbility, 50.0f));
+        odin.SetGuid(12, 1);
+        this.AddItems(
+            odin,
+            (12, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (12, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (12, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (12, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (12, ItemGroups.Boots, Stats.TotalVitality, 1));
+
+        var elvian = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Elvian),
+            LocalizedString.FromResource(() => ItemOptionNames.ElvianAncientSet), // Wind
+            26,
+            (Stats.TotalAgility, 30.0f),
+            (Stats.DefenseIgnoreChance, 0.05f));
+        elvian.SetGuid(12, 2);
+        this.AddItems(
+            elvian,
+            (12, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (12, ItemGroups.Boots, Stats.TotalVitality, 2));
+
+        var argo = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Argo),
+            LocalizedString.FromResource(() => ItemOptionNames.ArgoAncientSet), // Spirit
+            27,
+            (Stats.MaximumPhysBaseDmg, 20.0f),
+            (Stats.SkillDamageBonus, 25.0f),
+            (Stats.MaximumAbility, 50.0f),
+            (Stats.DoubleDamageChance, 0.05f));
+        argo.SetGuid(13, 1);
+        this.AddItems(
+            argo,
+            (13, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (13, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (13, ItemGroups.Pants, Stats.TotalVitality, 1));
+
+        var karis = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Karis),
+            LocalizedString.FromResource(() => ItemOptionNames.KarisAncientSet), // Spirit
+            28,
+            (Stats.SkillDamageBonus, 15.0f),
+            (Stats.DoubleDamageChance, 0.10f),
+            (Stats.CriticalDamageChance, 0.10f),
+            (Stats.TotalAgility, 40f));
+        karis.SetGuid(13, 2);
+        this.AddItems(
+            karis,
+            (13, ItemGroups.Helm, Stats.TotalVitality, 2),
+            (13, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (13, ItemGroups.Pants, Stats.TotalVitality, 2));
+
+        var gywen = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Gywen),
+            LocalizedString.FromResource(() => ItemOptionNames.GywenAncientSet), // Guardian
+            29,
+            (Stats.TotalAgility, 30.0f, AggregateType.AddRaw),
+            (Stats.MinimumPhysBaseDmg, 20.0f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 20.0f, AggregateType.AddFinal),
+            (Stats.MaximumPhysBaseDmg, 20.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 20.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        gywen.SetGuid(14, 1);
+        this.AddItems(
+            gywen,
+            (14, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (14, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (14, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (5, ItemGroups.Bows, Stats.TotalAgility, 1), // Silver Bow
+            (28, ItemGroups.Misc1, null, 1)); // Pendant of Ability
+
+        var aruan = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Aruan),
+            LocalizedString.FromResource(() => ItemOptionNames.AruanAncientSet), // Guardian
+            30,
+            (Stats.FinalDamageBonus, 10.0f),
+            (Stats.DoubleDamageChance, 0.10f),
+            (Stats.SkillDamageBonus, 20.0f),
+            (Stats.CriticalDamageChance, 0.15f),
+            (Stats.ExcellentDamageChance, 0.15f),
+            (Stats.DefenseIgnoreChance, 0.05f));
+        aruan.SetGuid(14, 2);
+        this.AddItems(
+            aruan,
+            (14, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (14, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (14, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (14, ItemGroups.Helm, Stats.TotalVitality, 2));
+
+        var gaion = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Gaion),
+            LocalizedString.FromResource(() => ItemOptionNames.GaionAncientSet), // Storm Crow
+            31,
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 15.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.TotalStrength, 30.0f, AggregateType.AddRaw));
+        gaion.SetGuid(15, 1);
+        this.AddItems(
+            gaion,
+            (15, ItemGroups.Boots, Stats.TotalVitality, 1),
+            (15, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (15, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (27, ItemGroups.Misc1, Stats.TotalVitality, 1)); // Pendant of Water
+
+        var muren = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Muren),
+            LocalizedString.FromResource(() => ItemOptionNames.MurenAncientSet), // Storm Crow
+            32,
+            (Stats.SkillDamageBonus, 10.0f, AggregateType.AddRaw),
+            (Stats.WizardryBaseDmgIncrease, 1.10f, AggregateType.Multiplicate),
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 25f, AggregateType.AddFinal),
+            (Stats.TwoHandedWeaponDamageIncrease, 0.20f, AggregateType.AddRaw));
+        muren.SetGuid(15, 2);
+        this.AddItems(
+            muren,
+            (15, ItemGroups.Gloves, Stats.TotalVitality, 2),
+            (15, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (15, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (21, ItemGroups.Misc1, Stats.TotalVitality, 2)); // Ring of Fire
+
+        var agnis = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Agnis),
+            LocalizedString.FromResource(() => ItemOptionNames.AgnisAncientSet), // Adamantine
+            33,
+            (Stats.DoubleDamageChance, 0.10f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 40.0f, AggregateType.AddFinal),
+            (Stats.SkillDamageBonus, 20.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 20.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        agnis.SetGuid(26, 1);
+        this.AddItems(
+            agnis,
+            (26, ItemGroups.Armor, Stats.TotalVitality, 1),
+            (26, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (26, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (9, ItemGroups.Misc1, Stats.TotalVitality, 2)); // Ring of Poison
+
+        var broy = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Broy),
+            LocalizedString.FromResource(() => ItemOptionNames.BroyAncientSet), // Adamantine
+            34,
+            (Stats.FinalDamageBonus, 20.0f),
+            (Stats.SkillDamageBonus, 20.0f),
+            (Stats.TotalEnergy, 30.0f),
+            (Stats.CriticalDamageChance, 0.15f),
+            (Stats.ExcellentDamageChance, 0.15f),
+            (Stats.DefenseIgnoreChance, 0.05f),
+            (Stats.TotalLeadership, 30.0f));
+        broy.SetGuid(26, 2);
+        this.AddItems(
+            broy,
+            (26, ItemGroups.Pants, Stats.TotalVitality, 2),
+            (26, ItemGroups.Gloves, Stats.TotalVitality, 2),
+            (26, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (25, ItemGroups.Misc1, Stats.TotalStrength, 2)); // Pendant of Ice
+
+        var chrono = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Chrono),
+            LocalizedString.FromResource(() => ItemOptionNames.ChronoAncientSet), // Red Wing
+            35,
+            (Stats.DoubleDamageChance, 0.20f, AggregateType.AddRaw),
+            (Stats.DefenseBase, 60.0f, AggregateType.AddFinal),
+            (Stats.SkillDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 20.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        chrono.SetGuid(40, 1);
+        this.AddItems(
+            chrono,
+            (40, ItemGroups.Helm, Stats.TotalVitality, 1),
+            (40, ItemGroups.Pants, Stats.TotalVitality, 1),
+            (40, ItemGroups.Gloves, Stats.TotalVitality, 1),
+            (24, ItemGroups.Misc1, Stats.TotalEnergy, 2)); // Ring of Magic
+
+        var semeden = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Semeden),
+            LocalizedString.FromResource(() => ItemOptionNames.SemedenAncientSet), // Red Wing
+            36,
+            (Stats.WizardryBaseDmgIncrease, 1.15f, AggregateType.Multiplicate),
+            (Stats.SkillDamageBonus, 25.0f, AggregateType.AddRaw),
+            (Stats.TotalEnergy, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw));
+        semeden.SetGuid(40, 2);
+        this.AddItems(
+            semeden,
+            (40, ItemGroups.Boots, Stats.TotalVitality, 2),
+            (40, ItemGroups.Gloves, Stats.TotalVitality, 2),
+            (40, ItemGroups.Armor, Stats.TotalVitality, 2),
+            (40, ItemGroups.Helm, Stats.TotalVitality, 2));
+
+        this.AddRageFighterSets();
+    }
+
+    /// <summary>
+    /// Adds the ancient sets of the rage fighter's Sacred items, as the season 6 client defines them
+    /// (<c>ItemSetType.bmd</c>, <c>ItemSetOption.bmd</c>): Vega and Chamer.
+    /// </summary>
+    internal void AddRageFighterSets()
+    {
+        var vega = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Vega),
+            LocalizedString.FromResource(() => ItemOptionNames.VegaAncientSet), // Sacred
+            37,
+            (Stats.AttackRatePvm, 50.0f, AggregateType.AddRaw),
+            (Stats.TotalVitality, 50.0f, AggregateType.AddRaw),
+            (Stats.MaximumPhysBaseDmg, 30.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.DefenseIgnoreChance, 0.05f, AggregateType.AddRaw));
+        vega.SetGuid(59, 1);
+        this.AddItems(
+            vega,
+            (32, ItemGroups.Swords, Stats.TotalStrength, 1), // Sacred Glove
+            (59, ItemGroups.Helm, Stats.TotalAgility, 1),
+            (59, ItemGroups.Armor, Stats.TotalStrength, 1),
+            (59, ItemGroups.Pants, Stats.TotalAgility, 1));
+
+        var chamer = this.AddAncientSet(
+            LocalizedString.FromResource(() => ItemSetNames.Chamer),
+            LocalizedString.FromResource(() => ItemOptionNames.ChamerAncientSet), // Sacred
+            38,
+            (Stats.DefenseBase, 50.0f, AggregateType.AddFinal),
+            (Stats.DoubleDamageChance, 0.05f, AggregateType.AddRaw),
+            (Stats.FinalDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.CriticalDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageChance, 0.15f, AggregateType.AddRaw),
+            (Stats.SkillDamageBonus, 30.0f, AggregateType.AddRaw),
+            (Stats.ExcellentDamageBonus, 20.0f, AggregateType.AddRaw));
+        chamer.SetGuid(59, 2);
+        this.AddItems(
+            chamer,
+            (32, ItemGroups.Swords, Stats.TotalStrength, 2), // Sacred Glove
+            (59, ItemGroups.Armor, Stats.TotalStrength, 2),
+            (59, ItemGroups.Pants, Stats.TotalAgility, 2),
+            (59, ItemGroups.Boots, Stats.TotalAgility, 1));
+    }
+
+    private void AddItems(ItemSetGroup set, params (short Number, ItemGroups Group, AttributeDefinition? BonusOption, int Discriminator)[] items)
+    {
+        foreach (var itemTuple in items)
+        {
+            var item = this.GameConfiguration.Items.First(i => i.Number == itemTuple.Number && i.Group == (byte)itemTuple.Group);
+            var itemOfSet = this.Context.CreateNew<ItemOfItemSet>();
+            itemOfSet.AncientSetDiscriminator = itemTuple.Discriminator;
+            itemOfSet.ItemDefinition = item;
+            itemOfSet.BonusOption = this.CreateAncientBonusOption(itemTuple.BonusOption);
+            itemOfSet.ItemSetGroup = set;
+            itemOfSet.SetGuid(item.Group, item.Number, (byte)itemTuple.Discriminator);
+            set.Items.Add(itemOfSet);
+            item.PossibleItemSetGroups.Add(set);
+        }
+    }
+
+    private ItemSetGroup AddAncientSet(LocalizedString name, LocalizedString optionName, short setNumber, params (AttributeDefinition Attribute, float Value)[] ancientOptions)
+    {
+        return this.AddAncientSet(name, optionName, setNumber, ancientOptions.Select(ancOpt => (ancOpt.Attribute, ancOpt.Value, AggregateType.AddRaw)).ToArray());
+    }
+
+    private ItemSetGroup AddAncientSet(LocalizedString name, LocalizedString optionName, short setNumber, params (AttributeDefinition Attribute, float Value, AggregateType AggregateType)[] ancientOptions)
+    {
+        var set = this.Context.CreateNew<ItemSetGroup>();
+        set.SetGuid(setNumber);
+        set.Name = name;
+        set.CountDistinct = true;
+        set.MinimumItemCount = 2;
+        int number = 1;
+        var options = this.Context.CreateNew<ItemOptionDefinition>();
+        options.SetGuid(ItemOptionDefinitionNumbers.AncientOption, setNumber, (byte)number);
+        options.Name = optionName;
+        set.Options = options;
+        foreach (var optionTuple in ancientOptions)
+        {
+            var option = this.Context.CreateNew<IncreasableItemOption>();
+            option.SetGuid(ItemOptionDefinitionNumbers.AncientOption, setNumber, (byte)number);
+            option.Number = number++;
+            option.OptionType = this._ancientOptionType;
+            option.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+            option.PowerUpDefinition.TargetAttribute = optionTuple.Attribute.GetPersistent(this.GameConfiguration);
+            option.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+            option.PowerUpDefinition.Boost.ConstantValue.AggregateType = optionTuple.AggregateType;
+            option.PowerUpDefinition.Boost.ConstantValue.Value = optionTuple.Value;
+            options.PossibleOptions.Add(option);
+        }
+
+        this.GameConfiguration.ItemSetGroups.Add(set);
+        this.GameConfiguration.ItemOptions.Add(options);
+        return set;
+    }
+
+    private IncreasableItemOption? CreateAncientBonusOption(AttributeDefinition? attribute)
+    {
+        if (attribute is null)
+        {
+            return null;
+        }
+
+        if (this._bonusOptions.TryGetValue(attribute, out var option))
+        {
+            return option;
+        }
+
+        var optionDefinition = this.Context.CreateNew<ItemOptionDefinition>();
+        optionDefinition.SetGuid(ItemOptionDefinitionNumbers.AncientBonus, attribute.Id.ExtractFirstTwoBytes());
+        optionDefinition.Name = attribute.Designation switch
+        {
+            "Total Strength" => LocalizedString.FromResource(() => ItemOptionNames.AncientBonusOfTotalStrength),
+            "Total Agility" => LocalizedString.FromResource(() => ItemOptionNames.AncientBonusOfTotalAgility),
+            "Total Energy" => LocalizedString.FromResource(() => ItemOptionNames.AncientBonusOfTotalEnergy),
+            "Total Vitality" => LocalizedString.FromResource(() => ItemOptionNames.AncientBonusOfTotalVitality),
+            _ => new LocalizedString($"Ancient Bonus of {attribute.Designation}"),
+        };
+        optionDefinition.AddsRandomly = false;
+        optionDefinition.MaximumOptionsPerItem = 1;
+        this.GameConfiguration.ItemOptions.Add(optionDefinition);
+
+        option = this.Context.CreateNew<IncreasableItemOption>();
+        option.SetGuid(ItemOptionDefinitionNumbers.AncientBonus, attribute.Id.ExtractFirstTwoBytes());
+        option.OptionType = this._ancientBonusOptionType;
+        option.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        option.PowerUpDefinition.TargetAttribute = attribute.GetPersistent(this.GameConfiguration);
+
+        var level1 = this.Context.CreateNew<ItemOptionOfLevel>();
+        level1.Level = 1;
+        level1.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        level1.PowerUpDefinition.TargetAttribute = attribute.GetPersistent(this.GameConfiguration);
+        level1.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        level1.PowerUpDefinition.Boost.ConstantValue.Value = 5;
+
+        var level2 = this.Context.CreateNew<ItemOptionOfLevel>();
+        level2.Level = 2;
+        level2.PowerUpDefinition = this.Context.CreateNew<PowerUpDefinition>();
+        level2.PowerUpDefinition.TargetAttribute = attribute.GetPersistent(this.GameConfiguration);
+        level2.PowerUpDefinition.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
+        level2.PowerUpDefinition.Boost.ConstantValue.Value = 10;
+
+        option.LevelDependentOptions.Add(level1);
+        option.LevelDependentOptions.Add(level2);
+
+        optionDefinition.PossibleOptions.Add(option);
+        this._bonusOptions.Add(attribute, option);
+        return option;
+    }
+}

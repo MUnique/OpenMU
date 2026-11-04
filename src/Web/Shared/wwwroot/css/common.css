@@ -1,0 +1,27 @@
+/* Shared page layout, base typography, links, and highlighted (mark) text. */
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .page {
+    flex-direction: row;
+    min-height: 100vh;
+  }
+}
+
+html, body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+  color: var(--omu-link);
+}
+
+mark, .mark {
+  font-weight: bold;
+  background: var(--omu-mark-bg);
+  padding: 0;
+}

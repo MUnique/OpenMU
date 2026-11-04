@@ -1,0 +1,29 @@
+﻿// <copyright file="UpdateIsInSafezoneAfterPlayerMoved.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.PlugIns;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// Updates the <see cref="Stats.IsInSafezone"/> and <see cref="Stats.IsResting"/> attributes.
+/// For example, these activate or increase shield, ability, health and mana recoveries.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Name), Description = nameof(PlugInResources.UpdateIsInSafezoneAfterPlayerMoved_Description), ResourceType = typeof(PlugInResources))]
+[Guid("396617CA-954A-45A1-A6DB-1AA65309A03D")]
+public class UpdateIsInSafezoneAfterPlayerMoved : IAttackableMovedPlugIn
+{
+    /// <inheritdoc />
+    public void AttackableMoved(IAttackable attackable)
+    {
+        if (attackable is Player player)
+        {
+            player.Attributes?.SetStatAttribute(Stats.IsInSafezone, attackable.IsAtSafezone() ? 1.0f : 0.0f);
+            player.Attributes?.SetStatAttribute(Stats.IsResting, 0.0f);
+        }
+    }
+}

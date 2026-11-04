@@ -1,0 +1,192 @@
+// <copyright file="HealingHandler.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.Offline;
+
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MuHelper;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
+using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// Handles health recovery for the offline player and their party.
+/// </summary>
+public sealed class HealingHandler
+{
+    /// <summary>
+    /// The health potions the offline player drinks, best first. Also the shopping list a bot restocks
+    /// from (see <c>BotShoppingHandler</c>): buying what it does not drink, or not buying what it does,
+    /// is how a bot ends up starving next to a full merchant.
+    /// </summary>
+    internal static readonly ItemIdentifier[] HealthPotionPriority =
+    [
+        ItemConstants.LargeHealingPotion,
+        ItemConstants.MediumHealingPotion,
+        ItemConstants.SmallHealingPotion,
+        ItemConstants.Apple,
+    ];
+
+    /// <summary>
+    /// The mana potions the offline player drinks, best first. <see cref="HealthPotionPriority"/>.
+    /// </summary>
+    internal static readonly ItemIdentifier[] ManaPotionPriority =
+    [
+        ItemConstants.LargeManaPotion,
+        ItemConstants.MediumManaPotion,
+        ItemConstants.SmallManaPotion,
+    ];
+
+    /// <summary>Drink a mana potion once mana falls below this share, so casters can keep casting.</summary>
+    private const int ManaThresholdPercent = 30;
+
+    private static readonly ItemConsumeAction ConsumeAction = new();
+
+    private readonly OfflinePlayer _player;
+    private readonly IMuHelperSettings? _config;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HealingHandler"/> class.
+    /// </summary>
+    /// <param name="player">The offline player.</param>
+    /// <param name="config">The MU helper settings.</param>
+    public HealingHandler(OfflinePlayer player, IMuHelperSettings? config)
+    {
+        this._player = player;
+        this._config = config;
+    }
+
+    /// <summary>
+    /// Performs health recovery actions for the player and their party.
+    /// </summary>
+    public async ValueTask PerformHealthRecoveryAsync()
+    {
+        if (this._config is null || this._player.Attributes is null)
+        {
+            return;
+        }
+
+        await this.PerformSelfHealingAsync().ConfigureAwait(false);
+
+        await this.PerformPartyHealingAsync().ConfigureAwait(false);
+    }
+
+    private async ValueTask PerformSelfHealingAsync()
+    {
+        if (this.IsHealthBelowThreshold(this._player, this._config!.HealThresholdPercent))
+        {
+            var healSkill = this.FindSkillByType(SkillType.Regeneration);
+            if (healSkill is not null && this._config.AutoHeal)
+            {
+                await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                    p => p.ShowSkillAnimationAsync(this._player, this._player, healSkill.Skill!, true),
+                    includeThis: true).ConfigureAwait(false);
+                await this._player.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
+                return;
+            }
+        }
+
+        if (this._config!.UseHealPotion && this.IsHealthBelowThreshold(this._player, this._config.PotionThresholdPercent))
+        {
+            await this.UseHealthPotionAsync().ConfigureAwait(false);
+            return;
+        }
+
+        if (this._config.UseManaPotion && this.IsManaBelowThreshold())
+        {
+            await this.UsePotionAsync(ManaPotionPriority).ConfigureAwait(false);
+        }
+    }
+
+    private bool IsManaBelowThreshold()
+    {
+        if (this._player.Attributes is not { } attributes)
+        {
+            return false;
+        }
+
+        double mana = attributes[Stats.CurrentMana];
+        double maxMana = attributes[Stats.MaximumMana];
+        return maxMana > 0 && (mana * 100.0 / maxMana) <= ManaThresholdPercent;
+    }
+
+    private async ValueTask PerformPartyHealingAsync()
+    {
+        if (!this._config!.AutoHealParty || this._player.Party is not { } party)
+        {
+            return;
+        }
+
+        var healSkill = this.FindSkillByType(SkillType.Regeneration);
+        if (healSkill is null)
+        {
+            return;
+        }
+
+        foreach (var member in party.PartyList.OfType<Player>())
+        {
+            if (member == this._player)
+            {
+                continue;
+            }
+
+            if (!member.IsActive() || !this._player.IsInRange(member, this._config!.HuntingRange))
+            {
+                continue;
+            }
+
+            if (this.IsHealthBelowThreshold(member, this._config.HealPartyThresholdPercent))
+            {
+                await this._player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(
+                    p => p.ShowSkillAnimationAsync(this._player, member, healSkill.Skill!, true),
+                    includeThis: true).ConfigureAwait(false);
+
+                await member.ApplyRegenerationAsync(this._player, healSkill).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private bool IsHealthBelowThreshold(IAttackable target, int thresholdPercent)
+    {
+        if (target.Attributes is not { } attributes)
+        {
+            return false;
+        }
+
+        double hp = attributes[Stats.CurrentHealth];
+        double maxHp = attributes[Stats.MaximumHealth];
+        return maxHp > 0 && (hp * 100.0 / maxHp) <= thresholdPercent;
+    }
+
+    private ValueTask UseHealthPotionAsync() => this.UsePotionAsync(HealthPotionPriority);
+
+    private async ValueTask UsePotionAsync(ItemIdentifier[] priority)
+    {
+        if (this._player.Inventory is null)
+        {
+            return;
+        }
+
+        foreach (var identifier in priority)
+        {
+            var potion = this._player.Inventory.Items
+                .FirstOrDefault(i => i.Definition?.Group == identifier.Group
+                                     && i.Definition.Number == identifier.Number);
+            if (potion is not null)
+            {
+                await ConsumeAction.HandleConsumeRequestAsync(
+                    this._player, potion.ItemSlot, potion.ItemSlot, FruitUsage.Undefined).ConfigureAwait(false);
+                return;
+            }
+        }
+    }
+
+    private SkillEntry? FindSkillByType(SkillType type)
+    {
+        return this._player.SkillList?.Skills.FirstOrDefault(s => s.Skill?.SkillType == type);
+    }
+}

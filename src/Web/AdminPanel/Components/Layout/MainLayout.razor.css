@@ -1,0 +1,80 @@
+.page {
+    display: flex;
+    flex-direction: row;
+}
+
+main {
+    flex: 1;
+    min-width: 0;
+}
+
+.sidebar {
+    background-image: var(--omu-sidebar-gradient);
+}
+
+.header-search {
+    max-width: 48rem;
+}
+
+.main-header {
+    top: 0;
+    z-index: 99;
+    position: sticky;
+}
+
+.breadcrumb-bar {
+    min-height: 2.5rem;
+    background-color: var(--omu-surface-2);
+}
+
+.breadcrumb-bar ::deep .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+}
+
+.breadcrumb-bar ::deep .breadcrumb {
+    margin-bottom: 0;
+    padding: 0.25rem 0;
+    background-color: transparent;
+}
+
+.breadcrumb-bar ::deep .btn-group {
+    margin-right: 1rem;
+}
+
+@media (max-width: 767.98px) {
+    .header-content {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+    }
+
+    .header-actions {
+        margin-left: 0 !important;
+        text-align: right;
+    }
+}
+
+#blazor-error-ui {
+    background: var(--omu-error-bg);
+    color: var(--omu-error-text);
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}

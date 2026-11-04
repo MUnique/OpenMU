@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="StageTerrainChangeEvent" xml:space="preserve">
+    <value>阶段地形变更事件</value>
+  </data>
+  <data name="StatueSpawnEvent" xml:space="preserve">
+    <value>石像生成事件</value>
+  </data>
+  <data name="KundunMinionsHaveBeenSubduedDestroyTheCrystalStatue" xml:space="preserve">
+    <value>昆顿的爪牙已被消灭！摧毁水晶石像！</value>
+  </data>
+  <data name="GateToggleEvent" xml:space="preserve">
+    <value>城门开关事件</value>
+  </data>
+  <data name="Level0HasDemolishedTheCastleGate" xml:space="preserve">
+    <value>{0} 已摧毁城门！</value>
+  </data>
+  <data name="BridgeToggleEvent" xml:space="preserve">
+    <value>桥梁开关事件</value>
+  </data>
+  <data name="EnoughMonsterKillsNowDestroyTheCastleGate" xml:space="preserve">
+    <value>击杀怪物数量已达标，立即摧毁城门！</value>
+  </data>
+  <data name="EntranceToggleEvent" xml:space="preserve">
+    <value>入口开关事件</value>
+  </data>
+</root>

@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DocumentationFile>..\..\..\bin\Debug\MUnique.OpenMU.Persistence.EntityFramework.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DocumentationFile>..\..\..\bin\Release\MUnique.OpenMU.Persistence.EntityFramework.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Persistence.Generators\MUnique.OpenMU.Persistence.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\..\AttributeSystem\MUnique.OpenMU.AttributeSystem.csproj" />
+    <ProjectReference Include="..\..\DataModel\MUnique.OpenMU.DataModel.csproj" />
+    <ProjectReference Include="..\..\Interfaces\MUnique.OpenMU.Interfaces.csproj" />
+    <ProjectReference Include="..\..\PlugIns\MUnique.OpenMU.PlugIns.csproj" />
+    <ProjectReference Include="..\MUnique.OpenMU.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ConnectionSettings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <!-- The PreBuild target runs the source generator without building it, so it has to be built before by the project reference. -->
+  <ItemGroup Condition="'$(ci)'!='true'">
+    <ProjectReference Include="..\SourceGenerator\MUnique.OpenMU.Persistence.SourceGenerator.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveProjectReferences" Condition="'$(ci)'!='true'">
+    <Exec Command="dotnet run --project ../SourceGenerator/MUnique.OpenMU.Persistence.SourceGenerator.csproj -c:$(ConfigurationName) MUnique.OpenMU.Persistence.EntityFramework &quot;$(ProjectDir)Model&quot; --no-build" />
+  </Target>
+
+</Project>

@@ -1,0 +1,152 @@
+﻿@page "/servers"
+
+@using System.ComponentModel
+@using Microsoft.Extensions.DependencyInjection
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@implements IDisposable;
+
+<PageTitle>OpenMU: @Resources.Servers</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Servers"/>
+<h1>@Resources.Servers</h1>
+
+@if (_servers == null)
+{
+    <p><em>@Resources.Loading</em></p>
+}
+else
+{
+@if (_gameServers is not null)
+{
+<div class="card mb-3">
+    <div class="card-body">
+        <GlobalMessageForm Servers="@_servers" />
+    </div>
+</div>
+}
+
+<div>
+  <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th></th>
+      <th class="col-sm-7">@Resources.ServerName</th>
+      <th class="col-sm-1">@Resources.PlayerCount</th>
+      <th class="col-sm-2">@Resources.CurrentState</th>
+      <th class="col-sm-2">@Resources.Action</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <TotalOnlineCounter Servers=@_servers />
+    </tfoot>
+    <tbody>
+    @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
+    {
+      <ServerItem Server=@server/>
+    }
+    
+    <tr>
+      <td></td>
+      <td>
+        <NavLink class="btn btn-primary me-1" href="create-game-server">
+          <span class="oi oi-plus"></span> @Resources.GameServer
+        </NavLink>
+        <NavLink class="btn btn-primary" href="create-connect-server">
+            <span class="oi oi-plus"></span> @Resources.ConnectServer
+        </NavLink>
+      </td>
+      <td></td>
+      <td></td>
+      <td>
+        @if (this.ServerInstanceManager is not null)
+        {
+          @if (this._isRestarting)
+          {
+            <button type="button" class="btn btn-warning btn-sm" disabled="disabled">
+              <div class="spinner-border text-secondary" role="status">
+              </div>
+            </button>
+          }
+          else
+          {
+            <button type="button" class="btn btn-warning btn-sm" @onclick="this.OnReloadAndRestartClickAsync">
+              <span class="oi oi-reload"></span>
+              @Resources.ReloadConfigurationAndRestartAllGameServers
+            </button>
+          }
+        }
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+}
+
+@code {
+    private IList<IManageableServer>? _servers;
+
+    private bool _isRestarting;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IServerProvider"/>.
+    /// </summary>
+    [Inject]
+    public IServerProvider ServerProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="IGameServerInstanceManager"/>.
+    /// </summary>
+    [Inject]
+    public IGameServerInstanceManager? ServerInstanceManager { get; set; }
+
+    /// <summary>
+    /// Gets or sets the service provider, used to optionally resolve the game server dictionary.
+    /// </summary>
+    [Inject]
+    public IServiceProvider ServiceProvider { get; set; } = null!;
+
+    /// <summary>
+    /// The game servers, resolved optionally: the dictionary is only registered in the
+    /// single-process host, so it is null on the distributed (Dapr) admin panel host. When
+    /// null, the global message card is not rendered (graceful degradation).
+    /// </summary>
+    private IDictionary<int, IGameServer>? _gameServers;
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.ServerProvider.PropertyChanged -= this.OnServersChanged;
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        this._servers = this.ServerProvider.Servers;
+        this._gameServers = this.ServiceProvider.GetService<IDictionary<int, IGameServer>>();
+        this.ServerProvider.PropertyChanged += this.OnServersChanged;
+    }
+
+    private void OnServersChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(IServerProvider.Servers))
+        {
+            this._servers = this.ServerProvider.Servers;
+            this.InvokeAsync(this.StateHasChanged);
+        }
+    }
+
+    private async Task OnReloadAndRestartClickAsync()
+    {
+      this._isRestarting = true;
+      try
+      {
+            await this.ServerInstanceManager!.RestartAllAsync(false);
+      }
+      finally
+      {
+        this._isRestarting = false;
+      }
+    }
+}

@@ -1,0 +1,106 @@
+﻿@page "/config-updates"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @typeof(ConfigurationUpdate).GetPluralizedTypeCaption()</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@typeof(ConfigurationUpdate).GetPluralizedTypeCaption()" />
+<h3>@typeof(ConfigurationUpdate).GetPluralizedTypeCaption()</h3>
+
+@if (!this.SetupService.IsInstalled || this.SetupService.IsUpdateRequired)
+{
+    <div class="alert alert-info" role="alert"><NavLink href="setup">@Resources.PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage</NavLink></div>
+    return;
+}
+@if (!this._availableUpdates.Any())
+{
+    <div class="alert alert-success" role="alert">@Resources.NoConfigurationDataUpdateAvailable</div>
+    return;
+}
+
+<div class="alert alert-light">
+    <p>@Resources.NewConfigurationUpdatesAvailable</p>
+    <p>@Resources.MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected</p>
+    <p>@Resources.TheUpdatesRequireARestartOfTheServerProcessToTakeEffect</p>
+</div>
+
+@foreach (var update in this._availableUpdates)
+{
+    <div class="alert @(update.State == UpdateState.Failed ? "alert-warning" : update.Selected ? "alert-primary" : "alert-secondary")" role="alert">
+        <div class="d-flex align-items-start">
+            @if (update.State == UpdateState.Started)
+            {
+                <div class="spinner-border text-secondary spinner-border-sm" role="status">
+                    <span class="visually-hidden">@Resources.Updating</span>
+                </div>
+            }
+            else if (update.State == UpdateState.Failed)
+            {
+                <span class="oi oi-bolt"></span>
+            }
+            else if (update.State == UpdateState.Installed)
+            {
+                <span class="oi oi-check"></span>
+            }
+            else if (update.IsMandatory)
+            {
+                <InputCheckbox class="form-check-input" @bind-Value="@update.Selected" disabled="disabled"></InputCheckbox>
+            }
+            else
+            {
+                <InputCheckbox class="form-check-input" @bind-Value="@update.Selected"></InputCheckbox>
+            }
+            <div class="ms-2">
+                <span>@update.Name@update.VersionLabel</span>
+                <br />
+                <span>@update.UpdatePlugIn.UpdatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+            </div>
+        </div>
+        <hr/>
+        <div class="alert alert-secondary">
+            <span>@update.Description</span>
+        </div>
+        @if (update.InstalledAt.HasValue)
+        {
+            <div>
+                <span>@string.Format(Resources.InstalledOn, update.InstalledAt.Value.ToString("yyyy-MM-dd HH:mm"))</span>
+            </div>
+        }
+    </div>
+}
+
+@if (this._overallState == UpdateState.Started)
+{
+    <button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        @Resources.ApplyingUpdates
+    </button>
+}
+else if (this._overallState == UpdateState.Failed)
+{
+    <button class="btn btn-primary" type="button" disabled>
+        <span class="oi oi-bolt" role="status" aria-hidden="true"></span>
+        @Resources.UpdateFailed
+    </button>
+}
+else if (this._availableUpdates.Any(u => u.Selected))
+{
+    <button class="btn btn-primary" type="button" @onclick="this.OnUpdateClickAsync">@Resources.ApplySelectedUpdates</button>
+}
+else
+{
+    <button class="btn btn-primary" type="button" disabled>@Resources.ApplySelectedUpdates</button>
+}
+
+@if (this._exception is { } exception)
+{
+    <hr/>
+    <div class="alert alert-danger">
+        <h3 class="alert-heading">
+            <span class="oi oi-bolt"></span><span>&nbsp;@exception.Message</span>
+        </h3>
+        <hr/>
+        <span>@exception.StackTrace</span>
+    </div>
+}

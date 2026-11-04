@@ -1,0 +1,72 @@
+@page "/users"
+@using MUnique.OpenMU.Persistence.AdminAuth
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@{
+    var title = Resources.AdminUsers;
+}
+<PageTitle>OpenMU: @title</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@title" />
+<h1>@title</h1>
+
+@if (this._isLoading)
+{
+    <p>@Resources.Loading</p>
+}
+else
+{
+    <div>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th class="col-3">@Resources.LoginName</th>
+                <th class="col-2">@Resources.Role</th>
+                <th class="col-2">@Resources.TwoFactor</th>
+                <th class="col-2">@Resources.LastLogin</th>
+                <th class="col-3">@Resources.Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in this._users)
+            {
+                <tr>
+                    <td>@user.LoginName</td>
+                    <td>
+                        <select class="form-select form-select-sm" value="@user.Roles"
+                                @onchange="@(args => this.OnRoleChangedAsync(user, args.Value?.ToString()))">
+                            @foreach (var role in AdminRoles.All)
+                            {
+                                <option value="@role">@MUnique.OpenMU.Web.AdminPanel.Auth.RoleCaption.Get(role)</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        @if (user.IsTwoFactorEnabled)
+                        {
+                            <span class="badge text-bg-success">@Resources.Enabled</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary">@Resources.Disabled</span>
+                        }
+                    </td>
+                    <td>@(user.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-primary me-1" @onclick="@(() => this.OnChangePasswordAsync(user))">@Resources.ChangePassword</button>
+                        @if (user.IsTwoFactorEnabled)
+                        {
+                            <button type="button" class="btn btn-sm btn-warning me-1" @onclick="@(() => this.OnResetTwoFactorAsync(user))">@Resources.ResetTwoFactor</button>
+                        }
+                        @if (this._users.Count > 1)
+                        {
+                            <button type="button" class="btn btn-sm btn-danger" @onclick="@(() => this.OnDeleteAsync(user))">@Resources.Delete</button>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-sm btn-success" @onclick="@this.OnCreateNewAsync">@Resources.CreateUser</button>
+    </div>
+}

@@ -1,0 +1,15 @@
+﻿@page "/error"
+@attribute [AllowAnonymous]
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>@Resources.Error</PageTitle>
+<h1 class="text-danger">@Resources.Error.</h1>
+<h2 class="text-danger">@Resources.AnErrorOccurredWhileProcessingYourRequest.</h2>
+
+<h3>@Resources.DevelopmentMode</h3>
+<p>
+    @Resources.SwappingToDevForMoreInformation
+</p>
+<p>
+    @Resources.DevelopmentEnvironmentWarning
+</p>

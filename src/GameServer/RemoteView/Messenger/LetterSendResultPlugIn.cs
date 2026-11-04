@@ -1,0 +1,47 @@
+﻿// <copyright file="LetterSendResultPlugIn.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameServer.RemoteView.Messenger;
+
+using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Views.Messenger;
+using MUnique.OpenMU.Network.Packets.ServerToClient;
+using MUnique.OpenMU.PlugIns;
+
+/// <summary>
+/// The default implementation of the <see cref="ILetterSendResultPlugIn"/> which is forwarding everything to the game client with specific data packets.
+/// </summary>
+[PlugIn]
+[Display(Name = nameof(PlugInResources.LetterSendResultPlugIn_Name), Description = nameof(PlugInResources.LetterSendResultPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("c67cad23-20ba-4cd7-ba4e-b672beed427c")]
+public class LetterSendResultPlugIn : ILetterSendResultPlugIn
+{
+    private readonly RemotePlayer _player;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LetterSendResultPlugIn"/> class.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    public LetterSendResultPlugIn(RemotePlayer player) => this._player = player;
+
+    /// <inheritdoc/>
+    public async ValueTask LetterSendResultAsync(LetterSendSuccess success, uint letterId)
+    {
+        await this._player.Connection.SendLetterSendResponseAsync(letterId, Convert(success)).ConfigureAwait(false);
+    }
+
+    private static LetterSendResponse.LetterSendRequestResult Convert(LetterSendSuccess success)
+    {
+        return success switch
+        {
+            LetterSendSuccess.TryAgain => LetterSendResponse.LetterSendRequestResult.TryAgain,
+            LetterSendSuccess.Success => LetterSendResponse.LetterSendRequestResult.Success,
+            LetterSendSuccess.MailboxFull => LetterSendResponse.LetterSendRequestResult.MailboxFull,
+            LetterSendSuccess.ReceiverNotExists => LetterSendResponse.LetterSendRequestResult.ReceiverNotExists,
+            LetterSendSuccess.CantSendToYourself => LetterSendResponse.LetterSendRequestResult.CantSendToYourself,
+            LetterSendSuccess.NotEnoughMoney => LetterSendResponse.LetterSendRequestResult.NotEnoughMoney,
+            _ => throw new ArgumentException($"Unhandled case {success}."),
+        };
+    }
+}

@@ -1,0 +1,68 @@
+services:
+  openmu-startup:
+    image: munique/openmu
+    container_name: openmu-startup
+    networks:
+      - proxy
+    ports:
+      - "45901:45901"
+      - "45902:45902"
+      - "45903:45903"
+      - "45904:45904"
+      - "45905:45905"
+      - "45906:45906"
+      - "44405:44405"
+      - "45980:45980"
+    environment:
+      DB_HOST: ${DB_HOST:-database}
+      DB_ADMIN_USER: ${DB_ADMIN_USER:-}
+      DB_ADMIN_PW: ${DB_ADMIN_PW:-}
+    working_dir: /app/
+    depends_on:
+      - database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.openmu.entrypoints=websecure"
+      - "traefik.http.routers.openmu.rule=Host(`${DOMAIN}`)"
+
+  database:
+    image: postgres
+    container_name: database
+    environment:
+      POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}
+      POSTGRES_DB: ${DB_NAME:-openmu}
+      POSTGRES_USER: ${DB_ADMIN_USER:-postgres}
+    networks:
+      - proxy
+    ports:
+      - "5432"
+    volumes:
+      - dbdata:/var/lib/postgresql #store data on volume
+
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./data-traefik/traefik.yml:/traefik.yml:ro
+      - ./data-traefik/acme.json:/acme.json
+      - ./data-traefik/configurations:/configurations
+    networks:
+      - proxy
+    labels:
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  dbdata:

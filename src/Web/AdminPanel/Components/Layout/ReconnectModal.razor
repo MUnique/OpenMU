@@ -1,0 +1,33 @@
+﻿@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<script type="module" src="@Assets[$"_content/{typeof(ReconnectModal).Assembly.GetName().Name}/Components/Layout/ReconnectModal.razor.js"]"></script>
+
+<dialog id="components-reconnect-modal" data-nosnippet>
+    <div class="components-reconnect-container">
+        <div class="components-rejoining-animation" aria-hidden="true">
+            <div></div>
+            <div></div>
+        </div>
+        <p class="components-reconnect-first-attempt-visible">
+            @Resources.ReconnectJoining
+        </p>
+        <p class="components-reconnect-repeated-attempt-visible">
+            @Resources.ReconnectRetryBefore<span id="components-seconds-to-next-attempt"></span>@Resources.ReconnectRetryAfter
+        </p>
+        <p class="components-reconnect-failed-visible">
+            @Resources.ReconnectFailed
+        </p>
+        <button id="components-reconnect-button" class="components-reconnect-failed-visible">
+            @Resources.ReconnectRetry
+        </button>
+        <p class="components-pause-visible">
+            @Resources.ReconnectPaused
+        </p>
+        <button id="components-resume-button" class="components-pause-visible">
+            @Resources.ReconnectResume
+        </button>
+        <p class="components-resume-failed-visible">
+            @Resources.ReconnectResumeFailed
+        </p>
+    </div>
+</dialog>

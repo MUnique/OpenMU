@@ -1,0 +1,106 @@
+{{- $component := "admin-panel" }}
+# A StatefulSet with one replica, because its stable pod name keeps the names of its pub/sub queues stable.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ $component }}
+spec:
+  serviceName: {{ include "openmu.fullname" . }}-{{ $component }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 8 }}
+      annotations:
+        {{- include "openmu.daprAnnotations" (dict "root" . "appId" "admin-panel") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "openmu.fullname" . }}
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        # The app runs as the user 1654 of the .NET images; it needs to write the keys.
+        fsGroup: 1654
+      containers:
+        - name: admin-panel
+          image: {{ include "openmu.image" (dict "root" . "image" .Values.adminPanel.image) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- include "openmu.commonEnv" . | nindent 12 }}
+            - name: PATH_BASE
+              value: /admin/
+            {{- if .Values.adminPanel.bootstrapUser.name }}
+            - name: OPENMU_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openmu.fullname" . }}-admin-bootstrap
+                  key: name
+            - name: OPENMU_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openmu.fullname" . }}-admin-bootstrap
+                  key: password
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+          {{- include "openmu.probes" . | nindent 10 }}
+          {{- with .Values.adminPanel.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: keys
+              mountPath: /app/data-protection-keys
+      {{- if not .Values.adminPanel.persistence.enabled }}
+      volumes:
+        - name: keys
+          emptyDir: {}
+      {{- end }}
+      {{- with .Values.adminPanel.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.adminPanel.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.adminPanel.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.adminPanel.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: keys
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- with .Values.adminPanel.persistence.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.adminPanel.persistence.size }}
+  {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openmu.fullname" . }}-{{ $component }}
+  labels:
+    {{- include "openmu.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "openmu.selectorLabels" (dict "root" . "component" $component) | nindent 4 }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

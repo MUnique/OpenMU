@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="KanturuTransitionDefinition_TypeCaption" xml:space="preserve"><value>坎特鲁过渡阶段</value></data>
+  <data name="KanturuTransitionDefinition_TypeCaptionPlural" xml:space="preserve"><value>坎特鲁过渡阶段列表</value></data>
+  <data name="KanturuTransitionDefinition_CinematicDuration_Caption" xml:space="preserve"><value>过场动画时长</value></data>
+  <data name="KanturuTransitionDefinition_EntryPointX_Caption" xml:space="preserve"><value>入场 X 坐标</value></data>
+  <data name="KanturuTransitionDefinition_EntryPointY_Caption" xml:space="preserve"><value>入场 Y 坐标</value></data>
+  <data name="KanturuTransitionDefinition_WarpAnimationDelay_Caption" xml:space="preserve"><value>传送动画延迟</value></data>
+  <data name="KanturuNightmareHpPhase_TypeCaption" xml:space="preserve"><value>咒怨魔王生命值阶段</value></data>
+  <data name="KanturuNightmareHpPhase_TypeCaptionPlural" xml:space="preserve"><value>咒怨魔王生命值阶段列表</value></data>
+  <data name="KanturuNightmareHpPhase_HealthPercentage_Caption" xml:space="preserve"><value>生命值比例</value></data>
+  <data name="KanturuNightmareHpPhase_TeleportTargetX_Caption" xml:space="preserve"><value>瞬移目标 X 坐标</value></data>
+  <data name="KanturuNightmareHpPhase_TeleportTargetY_Caption" xml:space="preserve"><value>瞬移目标 Y 坐标</value></data>
+  <data name="KanturuNightmareHpPhase_MessageKey_Caption" xml:space="preserve"><value>消息资源键</value></data>
+  <data name="KanturuTerrainArea_TypeCaption" xml:space="preserve"><value>坎特鲁地形区域</value></data>
+  <data name="KanturuTerrainArea_TypeCaptionPlural" xml:space="preserve"><value>坎特鲁地形区域列表</value></data>
+  <data name="KanturuTerrainArea_StartX_Caption" xml:space="preserve"><value>起点 X 坐标</value></data>
+  <data name="KanturuTerrainArea_StartY_Caption" xml:space="preserve"><value>起点 Y 坐标</value></data>
+  <data name="KanturuTerrainArea_EndX_Caption" xml:space="preserve"><value>终点 X 坐标</value></data>
+  <data name="KanturuTerrainArea_EndY_Caption" xml:space="preserve"><value>终点 Y 坐标</value></data>
+  <data name="KanturuPhaseDefinition_TypeCaption" xml:space="preserve"><value>坎特鲁阶段</value></data>
+  <data name="KanturuPhaseDefinition_TypeCaptionPlural" xml:space="preserve"><value>坎特鲁阶段列表</value></data>
+  <data name="KanturuPhaseDefinition_Name_Caption" xml:space="preserve"><value>名称</value></data>
+  <data name="KanturuPhaseDefinition_Kind_Caption" xml:space="preserve"><value>阶段类型</value></data>
+  <data name="KanturuPhaseDefinition_State_Caption" xml:space="preserve"><value>状态</value></data>
+  <data name="KanturuPhaseDefinition_DetailState_Caption" xml:space="preserve"><value>详细状态</value></data>
+  <data name="KanturuPhaseDefinition_TimeLimit_Caption" xml:space="preserve"><value>时间限制</value></data>
+  <data name="KanturuPhaseDefinition_SpawnWaveNumber_Caption" xml:space="preserve"><value>刷新波次编号</value></data>
+  <data name="KanturuPhaseDefinition_StartDelay_Caption" xml:space="preserve"><value>开始延迟</value></data>
+  <data name="KanturuPhaseDefinition_KillTarget_Caption" xml:space="preserve"><value>目标击杀数</value></data>
+  <data name="KanturuPhaseDefinition_CountedMonsters_Caption" xml:space="preserve"><value>计入击杀数的怪物</value></data>
+  <data name="KanturuPhaseDefinition_Duration_Caption" xml:space="preserve"><value>持续时间</value></data>
+  <data name="KanturuPhaseDefinition_StartMessageKey_Caption" xml:space="preserve"><value>开始消息资源键</value></data>
+  <data name="KanturuPhaseDefinition_CompletedMessageKey_Caption" xml:space="preserve"><value>完成消息资源键</value></data>
+  <data name="KanturuPhaseDefinition_StandbyDuration_Caption" xml:space="preserve"><value>等待时长</value></data>
+  <data name="KanturuPhaseDefinition_Transition_Caption" xml:space="preserve"><value>过渡阶段配置</value></data>
+  <data name="KanturuPhaseDefinition_Nightmare_Caption" xml:space="preserve"><value>咒怨魔王配置</value></data>
+  <data name="KanturuEventDefinition_TypeCaption" xml:space="preserve"><value>坎特鲁副本配置</value></data>
+  <data name="KanturuEventDefinition_TypeCaptionPlural" xml:space="preserve"><value>坎特鲁副本配置列表</value></data>
+  <data name="KanturuEventDefinition_IntroSpawnWaveNumber_Caption" xml:space="preserve"><value>开场刷新波次编号</value></data>
+  <data name="KanturuEventDefinition_IntroMessageKey_Caption" xml:space="preserve"><value>开场消息资源键</value></data>
+  <data name="KanturuEventDefinition_IntroState_Caption" xml:space="preserve"><value>开场状态</value></data>
+  <data name="KanturuEventDefinition_IntroDetailState_Caption" xml:space="preserve"><value>开场详细状态</value></data>
+  <data name="KanturuEventDefinition_IntroDuration_Caption" xml:space="preserve"><value>开场时长</value></data>
+  <data name="KanturuEventDefinition_MayaAttackInterval_Caption" xml:space="preserve"><value>玛雅攻击动画间隔</value></data>
+  <data name="KanturuEventDefinition_Phases_Caption" xml:space="preserve"><value>阶段列表</value></data>
+  <data name="KanturuEventDefinition_RequiredItemDurabilityLossInterval_Caption" xml:space="preserve"><value>入场物品耐久消耗间隔</value></data>
+  <data name="KanturuEventDefinition_RequiredItemDurabilityLoss_Caption" xml:space="preserve"><value>每次消耗的耐久度</value></data>
+  <data name="KanturuEventDefinition_RequiredItemDestroyedMessageKey_Caption" xml:space="preserve"><value>入场物品损毁消息资源键</value></data>
+  <data name="KanturuEventDefinition_BarrierOpeningMessageKey_Caption" xml:space="preserve"><value>屏障开启消息资源键</value></data>
+  <data name="KanturuEventDefinition_VictoryCinematicDuration_Caption" xml:space="preserve"><value>胜利动画时长</value></data>
+  <data name="KanturuEventDefinition_BarrierAreas_Caption" xml:space="preserve"><value>屏障区域</value></data>
+  <data name="KanturuEventDefinition_TowerOfRefinementDuration_Caption" xml:space="preserve"><value>提炼之塔开放时长</value></data>
+  <data name="KanturuEventDefinition_TowerClosingWarningOffset_Caption" xml:space="preserve"><value>提炼之塔关闭提前提醒时间</value></data>
+  <data name="KanturuEventDefinition_TowerConqueredMessageKey_Caption" xml:space="preserve"><value>提炼之塔开放消息资源键</value></data>
+  <data name="KanturuEventDefinition_TowerClosingWarningMessageKey_Caption" xml:space="preserve"><value>提炼之塔关闭提醒资源键</value></data>
+  <data name="KanturuEventDefinition_TowerClosedMessageKey_Caption" xml:space="preserve"><value>提炼之塔关闭消息资源键</value></data>
+  <data name="KanturuEventDefinition_VictoryMessageKey_Caption" xml:space="preserve"><value>胜利消息资源键</value></data>
+  <data name="KanturuEventDefinition_DefeatMessageKey_Caption" xml:space="preserve"><value>失败消息资源键</value></data>
+  <data name="KanturuNightmareDefinition_TypeCaption" xml:space="preserve"><value>咒怨魔王配置</value></data>
+  <data name="KanturuNightmareDefinition_TypeCaptionPlural" xml:space="preserve"><value>咒怨魔王配置列表</value></data>
+  <data name="KanturuNightmareDefinition_Monster_Caption" xml:space="preserve"><value>怪物</value></data>
+  <data name="KanturuNightmareDefinition_SpawnTimeout_Caption" xml:space="preserve"><value>刷新超时时间</value></data>
+  <data name="KanturuNightmareDefinition_HealthCheckInterval_Caption" xml:space="preserve"><value>生命值检查间隔</value></data>
+  <data name="KanturuNightmareDefinition_TeleportDelay_Caption" xml:space="preserve"><value>瞬移延迟</value></data>
+  <data name="KanturuNightmareDefinition_SpecialAttackSkillNumber_Caption" xml:space="preserve"><value>特殊攻击技能编号</value></data>
+  <data name="KanturuNightmareDefinition_SpecialAttackInterval_Caption" xml:space="preserve"><value>特殊攻击间隔</value></data>
+  <data name="KanturuNightmareDefinition_BattleDetailState_Caption" xml:space="preserve"><value>战斗详细状态</value></data>
+  <data name="KanturuNightmareDefinition_HpPhases_Caption" xml:space="preserve"><value>生命值阶段配置</value></data>
+  <data name="DoppelgangerPathArea_TypeCaption" xml:space="preserve"><value>镜像世界路径区域</value></data>
+  <data name="DoppelgangerPathArea_TypeCaptionPlural" xml:space="preserve"><value>镜像世界路径区域列表</value></data>
+  <data name="DoppelgangerPathArea_X1_Caption" xml:space="preserve"><value>起点 X 坐标</value></data>
+  <data name="DoppelgangerPathArea_Y1_Caption" xml:space="preserve"><value>起点 Y 坐标</value></data>
+  <data name="DoppelgangerPathArea_X2_Caption" xml:space="preserve"><value>终点 X 坐标</value></data>
+  <data name="DoppelgangerPathArea_Y2_Caption" xml:space="preserve"><value>终点 Y 坐标</value></data>
+  <data name="DoppelgangerHerdSize_TypeCaption" xml:space="preserve"><value>镜像世界怪物群规模</value></data>
+  <data name="DoppelgangerHerdSize_TypeCaptionPlural" xml:space="preserve"><value>镜像世界怪物群规模列表</value></data>
+  <data name="DoppelgangerHerdSize_StartsAfter_Caption" xml:space="preserve"><value>开始时间偏移</value></data>
+  <data name="DoppelgangerHerdSize_BaseCount_Caption" xml:space="preserve"><value>基础数量</value></data>
+  <data name="DoppelgangerEventDefinition_TypeCaption" xml:space="preserve"><value>镜像世界配置</value></data>
+  <data name="DoppelgangerEventDefinition_TypeCaptionPlural" xml:space="preserve"><value>镜像世界配置列表</value></data>
+  <data name="DoppelgangerEventDefinition_MaximumGoalCount_Caption" xml:space="preserve"><value>最多允许突破终点的怪物数</value></data>
+  <data name="DoppelgangerEventDefinition_PlayInfoInterval_Caption" xml:space="preserve"><value>副本信息更新间隔</value></data>
+  <data name="DoppelgangerEventDefinition_HerdInterval_Caption" xml:space="preserve"><value>怪物群刷新间隔</value></data>
+  <data name="DoppelgangerEventDefinition_HerdMonsters_Caption" xml:space="preserve"><value>怪物群成员</value></data>
+  <data name="DoppelgangerEventDefinition_HerdSizes_Caption" xml:space="preserve"><value>怪物群规模配置</value></data>
+  <data name="DoppelgangerEventDefinition_AttackFirstChance_Caption" xml:space="preserve"><value>优先攻击概率</value></data>
+  <data name="DoppelgangerEventDefinition_AlwaysAttackingMonsters_Caption" xml:space="preserve"><value>始终主动攻击的怪物</value></data>
+  <data name="DoppelgangerEventDefinition_AdditionalSpawns_Caption" xml:space="preserve"><value>额外刷新配置</value></data>
+  <data name="DoppelgangerEventDefinition_IceWalker_Caption" xml:space="preserve"><value>冰霜行者</value></data>
+  <data name="DoppelgangerEventDefinition_IceWalkerSpawnTime_Caption" xml:space="preserve"><value>冰霜行者刷新时间</value></data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMissionDuration_Caption" xml:space="preserve"><value>冰霜行者任务时限</value></data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMinimumPosition_Caption" xml:space="preserve"><value>冰霜行者最小路径位置</value></data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMaximumPosition_Caption" xml:space="preserve"><value>冰霜行者最大路径位置</value></data>
+  <data name="DoppelgangerEventDefinition_IceWalkerMissionFailedMultiplier_Caption" xml:space="preserve"><value>冰霜行者任务失败倍率</value></data>
+  <data name="DoppelgangerEventDefinition_MonsterScalings_Caption" xml:space="preserve"><value>怪物属性缩放配置</value></data>
+  <data name="DoppelgangerEventDefinition_InterimChestMonsters_Caption" xml:space="preserve"><value>中途宝箱生成怪物</value></data>
+  <data name="DoppelgangerEventDefinition_InterimRewardChest_Caption" xml:space="preserve"><value>中途奖励宝箱</value></data>
+  <data name="DoppelgangerEventDefinition_InterimChestCount_Caption" xml:space="preserve"><value>中途宝箱数量</value></data>
+  <data name="DoppelgangerEventDefinition_InterimChestDuration_Caption" xml:space="preserve"><value>中途宝箱保留时间</value></data>
+  <data name="DoppelgangerEventDefinition_LarvaChance_Caption" xml:space="preserve"><value>幼虫出现概率</value></data>
+  <data name="DoppelgangerEventDefinition_Larva_Caption" xml:space="preserve"><value>幼虫</value></data>
+  <data name="DoppelgangerEventDefinition_FinalRewardChest_Caption" xml:space="preserve"><value>最终奖励宝箱</value></data>
+  <data name="DoppelgangerEventDefinition_Paths_Caption" xml:space="preserve"><value>行进路线</value></data>
+  <data name="DoppelgangerPath_TypeCaption" xml:space="preserve"><value>镜像世界行进路线</value></data>
+  <data name="DoppelgangerPath_TypeCaptionPlural" xml:space="preserve"><value>镜像世界行进路线列表</value></data>
+  <data name="DoppelgangerPath_MapNumber_Caption" xml:space="preserve"><value>地图编号</value></data>
+  <data name="DoppelgangerPath_Areas_Caption" xml:space="preserve"><value>区域列表</value></data>
+  <data name="DoppelgangerMonsterSpawn_TypeCaption" xml:space="preserve"><value>镜像世界怪物刷新</value></data>
+  <data name="DoppelgangerMonsterSpawn_TypeCaptionPlural" xml:space="preserve"><value>镜像世界怪物刷新列表</value></data>
+  <data name="DoppelgangerMonsterSpawn_SpawnTime_Caption" xml:space="preserve"><value>刷新时间</value></data>
+  <data name="DoppelgangerMonsterSpawn_Monsters_Caption" xml:space="preserve"><value>怪物列表</value></data>
+  <data name="DoppelgangerMonsterScaling_TypeCaption" xml:space="preserve"><value>镜像世界怪物属性缩放</value></data>
+  <data name="DoppelgangerMonsterScaling_TypeCaptionPlural" xml:space="preserve"><value>镜像世界怪物属性缩放列表</value></data>
+  <data name="DoppelgangerMonsterScaling_MaximumPlayerLevel_Caption" xml:space="preserve"><value>最高玩家等级</value></data>
+  <data name="DoppelgangerMonsterScaling_LevelMultipliers_Caption" xml:space="preserve"><value>等级倍率列表</value></data>
+  <data name="DoppelgangerMonsterScaling_HealthMultipliers_Caption" xml:space="preserve"><value>生命值倍率列表</value></data>
+  <data name="DoppelgangerMonsterScaling_DamageMultipliers_Caption" xml:space="preserve"><value>伤害倍率列表</value></data>
+  <data name="DoppelgangerMonsterScaling_DefenseMultipliers_Caption" xml:space="preserve"><value>防御倍率列表</value></data>
+  <data name="SpawnMapStrategy_RandomMap_Caption" xml:space="preserve"><value>随机地图</value></data>
+  <data name="SpawnMapStrategy_AllMaps_Caption" xml:space="preserve"><value>所有地图</value></data>
+  <data name="KanturuPhaseKind_MonsterWave_Caption" xml:space="preserve"><value>怪物波次</value></data>
+  <data name="KanturuPhaseKind_Transition_Caption" xml:space="preserve"><value>过渡阶段</value></data>
+  <data name="KanturuPhaseKind_Nightmare_Caption" xml:space="preserve"><value>咒怨魔王战斗</value></data>
+  <data name="KanturuState_None_Caption" xml:space="preserve"><value>无</value></data>
+  <data name="KanturuState_Standby_Caption" xml:space="preserve"><value>待机</value></data>
+  <data name="KanturuState_MayaBattle_Caption" xml:space="preserve"><value>玛雅战斗</value></data>
+  <data name="KanturuState_NightmareBattle_Caption" xml:space="preserve"><value>咒怨魔王战斗</value></data>
+  <data name="KanturuState_Tower_Caption" xml:space="preserve"><value>提炼之塔开放</value></data>
+  <data name="KanturuState_End_Caption" xml:space="preserve"><value>结束</value></data>
+</root>

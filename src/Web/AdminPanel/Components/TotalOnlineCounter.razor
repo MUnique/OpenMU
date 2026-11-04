@@ -1,0 +1,60 @@
+﻿@using MUnique.OpenMU.Interfaces
+@using System.ComponentModel
+
+@implements IDisposable
+
+<tr class="info">
+    <td colspan="5">
+        <span>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.TotalPlayers: @this.GetPlayerCount()</span>
+    </td>
+</tr>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the servers.
+    /// </summary>
+    [Parameter]
+    public IList<IManageableServer> Servers { get; set; } = null!;
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        foreach (var server in this.Servers)
+        {
+            server.PropertyChanged -= this.OnServerPropertyChanged;
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        foreach (var server in this.Servers)
+        {
+            server.PropertyChanged += this.OnServerPropertyChanged;
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnServerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        try
+        {
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+        catch
+        {
+            // must be catched because it's an async void method.
+        }
+        
+    }
+
+    private int GetPlayerCount()
+    {
+        return this.Servers?
+            .Where(s => s.Id < 0x10000
+                    && s.ServerState != ServerState.Timeout)
+            .Sum(s => s.CurrentConnections) ?? 0;
+    }
+}

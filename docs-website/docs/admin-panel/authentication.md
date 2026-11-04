@@ -1,0 +1,415 @@
+---
+title: Signing in
+sidebar_label: Signing in
+sidebar_position: 13
+description: How the admin panel login works, and how to set a second factor up.
+---
+
+# Signing in
+
+The admin panel authenticates its users itself. Earlier versions relied on the
+basic authentication of the reverse proxy against an `.htpasswd` file; that file
+is gone, and so are the proxy configurations which used it.
+
+:::warning[Requires OpenMU 0.9.12 or newer]
+The built-in login is part of OpenMU 0.9.12 and newer. The docker images up to
+0.9.10 still rely on the `.htpasswd` file of the reverse proxy. Don't combine
+such an image with the current deployment files, which no longer contain that
+file: the admin panel would then be reachable by anybody, without a login. Run
+`docker compose pull` to get the current image, or check out the git tag of the
+version you run (e.g. `v0.9.10`).
+:::
+
+What you get instead:
+
+* a real login page with a logout,
+* an optional second factor with an authenticator app,
+* roles, so not every user can change everything,
+* the same protection no matter how you run the server — from source, in docker,
+  or in the distributed deployment.
+
+## The login
+
+Enter your login name and password. If your account has a second factor, the
+form asks for the code right away, on the same page — nothing reloads, and you
+don't lose what you had open.
+
+Check *Keep me signed in* to stay signed in after closing the browser. Without
+it, the session ends when the browser does.
+
+A session is only created once **everything** checked out, so an active session
+always means the second factor was used when your account has one.
+
+After five failed attempts the account is locked for five minutes. Wrong
+authenticator codes count towards that too.
+
+## The first user
+
+On a fresh installation there is no database yet — and the admin panel is the
+tool which creates it. Until the first user exists, the panel stays reachable
+**without a login** and shows a warning banner.
+
+:::danger[Close that window]
+Anybody who reaches the panel during that time can set your server up and read
+all account data afterwards. Either finish the installation and create your
+first user immediately, or configure a bootstrap user before the first start —
+see below.
+:::
+
+### Bootstrap user
+
+A bootstrap user is configured outside of the database, so it works from the
+very first second — before any installation, and also when you locked yourself
+out later. Set these environment variables on the container or process which
+hosts the admin panel:
+
+```bash
+OPENMU_ADMIN_USER=admin
+OPENMU_ADMIN_PASSWORD=<a long password>
+# optional, if the bootstrap user should require a second factor:
+OPENMU_ADMIN_TOTP_SECRET=<base32 secret>
+```
+
+The docker compose files already pass these through, so you can put them in a
+`.env` file next to the compose file.
+
+The same can be configured under `AdminPanel:Auth:BootstrapUser` in the
+`appsettings.json`.
+
+:::note[It is a way in, not an account to work with]
+Changes to the bootstrap user — a password change, a newly set up authenticator,
+its lockout counter — are only kept in memory and are gone after a restart,
+because there is nowhere to store them. Use it to create a real user on the
+[Users page](users.md), then work with that one.
+:::
+
+## Two-factor authentication
+
+Every user can protect its own account with a time based one time password
+(TOTP) under *Account security*. It works with the **Microsoft Authenticator**
+app and with any other authenticator app — Google Authenticator, Aegis,
+Bitwarden, 1Password, and so on.
+
+### Setting it up
+
+1. Open *Account security* from the header, next to your user name.
+2. Click **Set up authenticator app**.
+3. Scan the QR code with your app. If you can't scan it, type the key which is
+   shown below the code into the app by hand.
+4. Enter the six digit code your app shows and click **Verify**.
+
+The second factor is only switched on after that last step succeeded, so a
+mis-scan can't lock you out of your own panel.
+
+### Recovery codes
+
+Right after the setup you get ten recovery codes. **They are shown exactly
+once.** Store them somewhere safe, outside of the server — a password manager,
+or on paper.
+
+Each code signs you in once when you don't have your authenticator app, through
+*Use a recovery code instead* on the login page. When you run low, generate a
+new set under *Account security*; the old ones stop working then.
+
+Only hashes of the codes are stored, so a database dump does not hand out usable
+second factors.
+
+### Lost the authenticator and the recovery codes
+
+An administrator can reset the second factor of any user on the
+[Users page](users.md). If nobody can sign in anymore, use a
+[bootstrap user](#bootstrap-user).
+
+### Requiring it from everybody
+
+Set `AdminPanel:Auth:RequireTwoFactor` to `true` to require a second factor from
+every user. Users who don't have one yet are then asked to set it up before they
+can use the panel.
+
+## Roles
+
+Each user has one role. They build up on each other:
+
+| Role | May do |
+|---|---|
+| **Viewer** | See the servers, accounts and the configuration |
+| **Operator** | Everything above, plus operating the servers and editing accounts |
+| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files, the logging configuration and the user management |
+
+Give each administrator their own user, so you can remove one without changing
+everybody else's password.
+
+## API keys for external applications
+
+The server has a small public API under `/api` — the server status, the number
+of online players, whether an account is online, a global message, and the
+registration of new accounts. A game launcher, a status page or a website needs
+it, and none of them can go through a login form with a second factor.
+
+They authenticate with an API key instead. Send it in the `X-Api-Key` header:
+
+```http
+GET /api/status HTTP/1.1
+X-Api-Key: <the key>
+```
+
+`Authorization: Bearer <the key>` works as well, for clients which only speak
+that.
+
+### Creating a key
+
+Open **API keys** in the navigation — it's next to *Users* and needs the
+administrator role. Click **Create API key**, give the application a name and
+pick its role.
+
+A key can only be created once the admin panel has its [first
+user](#the-first-user). Until then, anybody who reaches the panel could create
+one, and the key would keep working after the first user exists.
+
+The generated key is then shown once, with a button which copies it to the
+clipboard.
+
+:::warning[The key is shown exactly once]
+Only a hash of the key is stored, the same way recovery codes are. Copy it
+straight into the application which needs it before you close the message. If it
+gets lost, delete the key and create a new one.
+:::
+
+The list shows each key by its name and its first characters, so you can tell
+them apart without knowing them.
+
+**Disable** stops a key from working without deleting it, which is the quickest
+reaction when you suspect a key has leaked and you don't want to touch the
+application's configuration yet. **Delete** removes it for good.
+
+### Keys from before the first user
+
+Earlier versions created keys while the admin panel had no user. At that time
+anybody who reached the panel could create one, and it kept working after the
+first user existed. So such keys are disabled once:
+
+* when the server updates its database, every key which is older than the
+  oldest user is disabled,
+* when the first user is created in the admin panel, every key which exists at
+  that moment is disabled.
+
+The **API keys** page marks them with *Created before the first user*. Enable
+such a key only if you created it yourself. Better, replace it: create a new
+key, put it into the application and delete the old one. Delete a key which you
+don't know: whoever created it can do everything its role allows.
+
+If users have been deleted since, the oldest remaining user is younger than the
+first one was, so keys from between are disabled and marked as well; enable the
+ones you know. If you only sign in with the [bootstrap user](#bootstrap-user)
+and never created a user in the panel, the server can't tell when the panel got
+its first user, so it disables nothing. If the panel was open without a user
+before you configured the bootstrap user, check the keys yourself.
+
+### What a key may do
+
+A key has the same [roles](#roles) as a user, and defaults to **Viewer**. A key
+can also get the role **Cash shop coins only**, which allows nothing but the
+cash
+shop endpoints — that's the right one for a payment provider. Administrators
+have this role implicitly.
+
+| Endpoint | Needs |
+|---|---|
+| `GET /api/status` | Viewer |
+| `GET /api/is-online/{account}` | Viewer |
+| `POST /api/send/{server}?msg=` | Operator |
+| `POST /api/accounts` | Operator |
+| `GET /api/accounts/{account}` | Viewer |
+| `GET /api/characters/{name}` | Viewer |
+| `PUT /api/accounts/{account}/password` | Operator, key only |
+| `PUT /api/accounts/{account}/state` | Operator, key only |
+| `POST /api/players/{account}/disconnect` | Operator, key only |
+| `GET /api/accounts/{account}/cash-shop` | Cash shop |
+| `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
+| `GET /api/items/exchange` | Viewer, [key only](#items-for-the-client-editor) |
+
+So a status page gets a Viewer key and can only read, while an application which
+announces something in the game needs an Operator key. The role is chosen when
+the key is created and can't be changed afterwards — create a new key with the
+role you need and delete the old one.
+
+A signed in admin panel user can use the API as well, with the same roles — this
+is handy while trying things out in the browser. The endpoints marked "key only"
+don't accept the login cookie; they need an API key.
+
+### Items for the client editor
+
+`GET /api/items/exchange` returns the items as an item exchange file of the
+MuMain client. Its editor, MuEditor, downloads it with "Update from server" and
+shows what differs from the client's items before anything changes; see the
+client's `docs/item-data.md`.
+
+* It needs an API key with the Viewer role. The login cookie of the admin panel
+  isn't accepted.
+* It reads the saved configuration, so changes which aren't saved yet in the
+  admin panel aren't part of it.
+* One export runs at a time. A request in the meantime gets `429 Too Many
+  Requests`, with `Retry-After` in seconds.
+* The file names the item fields it carries in its `fields` list; the client
+  keeps its own values of the other fields.
+* Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
+  out, because the client would refuse the whole file. The log names them.
+* The file names the game version of the configuration, `season6` for Season 6.
+  The client only reads Season 6 data, so it refuses the file of a server with
+  another version.
+
+The admin panel shouldn't be reachable from the internet for this either: keep
+it on localhost, behind a VPN or a firewall.
+
+### Registering accounts from a website
+
+A website's registration form creates the account with `POST /api/accounts`:
+
+```http
+POST /api/accounts HTTP/1.1
+X-Api-Key: <the key>
+Content-Type: application/json
+
+{ "loginName": "newbie", "password": "secret1", "eMail": "newbie@example.com" }
+```
+
+The account can log in right away. The answer is `201` when it was created,
+`409` when the login name is taken, and `400` with the invalid fields when the
+registration doesn't fit what the game client can send: the login name has 3 to
+10 characters, the password 3 to 20, both only printable ASCII (the login name
+without spaces). The e-mail address is optional.
+
+Call it from the website's server, not from the visitor's browser, so the key
+stays secret. The game server only sees the website, not the visitors behind
+it — protecting the form against abuse (a captcha, a limit per visitor) is the
+website's job.
+
+:::warning[The key is a password]
+It is sent in plain text with every request, so use HTTPS, and keep it out of
+client side code — a key in a launcher which ships to players is a key your
+players have. Requests without a valid key get `401`, and requests whose key
+lacks the role get `403`.
+:::
+
+### Reading and administering accounts
+
+`GET /api/accounts/{account}` and `GET /api/characters/{name}` return the same
+safe, saved snapshots as `accounts_get` and `characters_get` through MCP.
+They return `404` when the requested account or character does not exist.
+Live gameplay may have newer values. All five account administration routes
+require an authenticated caller, including during initial setup.
+The two read routes accept an API key or a panel cookie. The password, state and
+disconnect routes require an API key (`X-Api-Key` or `Authorization: Bearer`);
+a panel cookie alone cannot authorize these mutations.
+
+Change a password with `PUT /api/accounts/{account}/password` and a JSON body
+`{ "password": "secret2", "reason": "Player-requested recovery" }`.
+Change state with `PUT /api/accounts/{account}/state` and
+`{ "state": "Banned", "reason": "Confirmed abuse" }`.
+Both require an offline account and use the shared operations layer's validation
+and durable audit. Privileged accounts and states require Administrator.
+Passwords are never returned or recorded in the audit history.
+
+Use `POST /api/players/{account}/disconnect` without a body to disconnect a
+live session through its owning game server. Its response includes `disconnected`;
+poll the account snapshot before attempting an offline change. These routes use
+the operational error statuses described in [MCP](mcp.md#phase-two-upgrade-notes).
+
+### Granting cash shop coins
+
+A shop or payment provider grants [cash shop](../server-features/cash-shop.md)
+coins to an account with `POST /api/accounts/{account}/cash-shop/grants`:
+
+```http
+POST /api/accounts/buyer/cash-shop/grants HTTP/1.1
+X-Api-Key: <the key>
+Content-Type: application/json
+
+{ "coinType": "WCoinC", "amount": 500, "reason": "Purchase of 500 WCoin", "reference": "payment-4711" }
+```
+
+The coin type is `WCoinC`, `WCoinP` or `GoblinPoints`. A negative amount takes
+coins again, but never below zero. The `reference` is optional: an account gets
+each reference only once, so a payment notification which arrives twice doesn't
+grant the coins twice. The answer is:
+
+* `201` with the created grant,
+* `200` with the existing grant, when the account already got the reference,
+* `404` when the account doesn't exist,
+* `409` when another account already got the reference,
+* `400` when the amount is zero or a field is invalid.
+
+The game server applies the grant to the balance the next time the player opens
+the cash shop, even when the player is online at that moment.
+`GET /api/accounts/{account}/cash-shop` returns the saved balances and the
+latest
+grants, where `appliedAt` is empty for the pending ones.
+
+Like the panel itself, the API is open as long as [no user exists at
+all](#the-first-user).
+
+## Keeping the sessions alive across restarts
+
+The sessions and the stored authenticator secrets are protected with a key ring
+which has to survive a restart. The docker compose files mount the
+`adminpanel-keys` volume at `/app/data-protection-keys` for that.
+
+:::warning[Don't lose that volume]
+If the key ring is lost, everybody is signed out **and** every stored
+authenticator secret becomes unreadable, so every user has to set its second
+factor up again. Recovery codes still work, and so does a bootstrap user.
+:::
+
+The location can be changed with `AdminPanel:Auth:DataProtectionKeyPath`.
+
+## Still worth doing
+
+* **Set up HTTPS.** The session cookie travels over whatever the request used —
+  without TLS it can be read on the way
+  ([all-in-one](../deployment/all-in-one.md#option-b--with-https),
+  [Traefik](../deployment/all-in-one-traefik.md#option-b--with-https)).
+* Don't expose the admin panel port to the whole internet if you can reach it
+  through a VPN or an SSH tunnel instead.
+* Remember that admin panel access means full access to your players' account
+  data.
+
+## AI agents through MCP
+
+API keys with the Viewer role can also access the optional read-only
+[MCP endpoint](mcp.md). It is disabled by default and accepts API keys only.
+
+### Phase two MCP and API upgrade notes
+
+The panel still permits anonymous initial setup until the first admin user
+exists or a bootstrap user is configured. Setup operations are attributed to
+`setup`; when admin audit storage is unavailable they use sanitized log-only
+auditing.
+
+If the host restarts while the admin database is unreachable, it cannot
+distinguish a previous installation from initial setup and may allow anonymous
+setup actions with log-only auditing. Configure a bootstrap user with
+`OPENMU_ADMIN_USER` and `OPENMU_ADMIN_PASSWORD` to prevent that fallback.
+
+Explicit `-demo` mode also uses log-only panel auditing. MCP and API
+writes always require authentication and durable admin audit storage.
+
+Outside demo mode and initial setup, panel operations including **Stop** require
+the admin audit database. An outage blocks the action and displays an error. Use
+the host's service manager or orchestrator for emergency shutdown during an
+audit outage.
+
+External applications must update announcement requests from GET to
+`POST /api/send/{id}?msg=...`. The identifier is now the actual game server ID,
+rather than its position in a list. Operational APIs no longer allow anonymous
+requests during initial setup. See [MCP](mcp.md#phase-two-upgrade-notes) for the
+operational HTTP error statuses and uncertain-outcome handling.
+
+### Restrict MCP tools per key
+
+The optional **Allowed MCP tools** field accepts comma-separated exact names
+or area wildcards, such as `accounts_search,players_*,server_overview`.
+Empty keeps the key's existing role-based access. The allowlist further limits
+MCP discovery and direct calls; it never grants a tool beyond the key's role
+and does not alter REST API permissions. See
+[MCP configuration changes](mcp.md#configuration-and-offline-character-changes)
+for the preview/apply workflow.

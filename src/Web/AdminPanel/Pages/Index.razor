@@ -1,0 +1,123 @@
+﻿@page "/"
+
+@using MUnique.OpenMU.DataModel
+@using MUnique.OpenMU.Interfaces
+@using MUnique.OpenMU.Web.AdminPanel.Components.Dashboard
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.AdminPanel.Services
+
+<PageTitle>@Resources.OpenMUAdminPanel</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Home"/>
+<h1>@Resources.Dashboard</h1>
+<p class="text-body-secondary">@Resources.WelcomeMessage</p>
+
+<div class="dashboard">
+    <div class="dashboard-grid dashboard-statistics">
+        <StatisticCard Title="@Resources.DashboardPlayersOnline" Icon="oi-people">
+            <Value>@ServerStatistics.GetOnlinePlayerCount(this._servers).ToString("N0")</Value>
+            <ChildContent>
+                @if (ServerStatistics.GetPlayerCapacity(this._servers) is { } capacity)
+                {
+                    @string.Format(Resources.DashboardPlayerCapacity, capacity.ToString("N0"))
+                }
+            </ChildContent>
+        </StatisticCard>
+        <StatisticCard Title="@Resources.DashboardServersRunning" Icon="oi-project">
+            <Value>
+                @this._servers.Count(s => s.ServerState == ServerState.Started)
+                <span class="fs-5 fw-normal text-body-secondary">/ @this._servers.Count</span>
+            </Value>
+            <ChildContent>
+                @if (this._servers.Count(s => s.ServerState != ServerState.Started) is var notRunning and > 0)
+                {
+                    <span class="text-warning-emphasis fw-semibold">@string.Format(Resources.DashboardServersNotRunning, notRunning)</span>
+                }
+                else
+                {
+                    @Resources.DashboardAllServersRunning
+                }
+            </ChildContent>
+        </StatisticCard>
+        <StatisticCard Title="@Resources.Accounts" Icon="oi-person">
+            <Value>@this.GetStatisticText(this._accountStatistics?.AccountCount)</Value>
+            <ChildContent>
+                @if (this._accountStatistics is { } accounts)
+                {
+                    <span class="text-success-emphasis fw-semibold">@string.Format(Resources.DashboardNewAccounts, accounts.NewAccountCount.ToString("N0"))</span>
+                    <span> · @string.Format(Resources.DashboardBannedAccounts, accounts.BannedAccountCount.ToString("N0"))</span>
+                }
+            </ChildContent>
+        </StatisticCard>
+        <StatisticCard Title="@Resources.Guilds" Icon="oi-flag">
+            <Value>@this.GetStatisticText(this._guildStatistics?.GuildCount)</Value>
+            <ChildContent>@this.GetGuildDetails()</ChildContent>
+        </StatisticCard>
+    </div>
+
+    <div class="dashboard-grid dashboard-main">
+        <OnlinePlayersChart />
+
+        <section class="card h-100">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h2 class="h6 mb-0">@Resources.Servers</h2>
+                <a href="servers" class="small">@Resources.DashboardManageServers</a>
+            </div>
+            <ul class="list-group list-group-flush">
+                @foreach (var server in this._servers.OrderBy(s => s.Type).ThenBy(s => s.Description))
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="text-truncate">
+                                <div class="fw-semibold text-truncate">@server.Description</div>
+                                <div class="small text-body-secondary">@server.Type.GetEnumCaption()</div>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <span class="small">@GetLoadText(server)</span>
+                                <span class="badge rounded-pill @GetStateBadgeClass(server.ServerState)">@server.ServerState.GetEnumCaption()</span>
+                            </div>
+                        </div>
+                        @if (GetLoadPercentage(server) is { } percentage)
+                        {
+                            <div class="progress server-load mt-2" role="progressbar" aria-label="@server.Description" aria-valuenow="@server.CurrentConnections" aria-valuemin="0" aria-valuemax="@server.MaximumConnections">
+                                <div class="progress-bar" style="width: @percentage%"></div>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    </div>
+
+    <div class="dashboard-grid dashboard-details">
+        <section class="card h-100">
+            <div class="card-header">
+                <h2 class="h6 mb-0">@Resources.DashboardQuickActions</h2>
+            </div>
+            <div class="card-body d-flex flex-column gap-3">
+                @if (this._isGlobalMessageAvailable)
+                {
+                    <GlobalMessageForm Servers="@this._servers" Compact="true" />
+                }
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-outline-secondary btn-sm" href="accounts">@Resources.Accounts</a>
+                    <a class="btn btn-outline-secondary btn-sm" href="logged-in">@Resources.OnlineAccounts</a>
+                    <a class="btn btn-outline-secondary btn-sm" href="guilds">@Resources.Guilds</a>
+                    @if (AdminPanelEnvironment.IsHostingEmbedded)
+                    {
+                        <a class="btn btn-outline-secondary btn-sm" href="logfiles">@Resources.LogFiles</a>
+                    }
+                    @if (AdminPanelEnvironment.IsGrafanaAvailable)
+                    {
+                        <a class="btn btn-outline-secondary btn-sm" href="/grafana/dashboards" target="_blank">@Resources.Metrics</a>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <AuthorizeView Policy="@AdminPolicies.Administrator">
+            <CastleSiegeCard />
+            <SystemInfoCard />
+            <ConfigurationUpdatesCard />
+        </AuthorizeView>
+    </div>
+</div>

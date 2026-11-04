@@ -1,0 +1,152 @@
+﻿@using Microsoft.Extensions.Logging
+@using MUnique.OpenMU.Web.Map.Properties
+@using Nito.AsyncEx
+
+@implements IAsyncDisposable
+
+<div class="livemap">
+    <LiveMap
+        Id="@this.MapFactory.GetMapContainerIdentifier(this.Server.Id, this.MapId)"
+        MapController="@this._lazyController"/>
+    @if (this._controller is { })
+    {
+        <div class="livemap-players">
+            <div id="selected_info" style="display: none;" class="card mt-2 shadow-sm">
+                <div class="card-body py-2 px-3">
+                    <h6 class="card-title mb-1 text-truncate" id="objectData_name"></h6>
+                    <div class="d-flex align-items-center">
+                        <small class="text-muted me-3"><i class="oi oi-person me-1"></i>ID: <span id="objectData_id"></span></small>
+                        <small class="text-muted me-3"><i class="oi oi-map-marker me-1"></i>Position: (<span id="objectData_x"></span>, <span id="objectData_y"></span>)</small>
+                        <small class="text-muted" id="objectData_level_container" style="display: none;"><i class="oi oi-bar-chart me-1"></i>Level: <span id="objectData_level"></span></small>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <MapPlayerList MapController="@this._controller" ServerId="@this.Server.Id" FollowedPlayerName="@FollowedPlayerName" OnFollowPlayer="@OnFollowPlayer" OnSelectPlayer="@SelectPlayerAsync"/>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+    /// <summary>
+    /// Gets or sets the map factory.
+    /// </summary>
+    [Inject]
+    IMapFactory MapFactory { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the server on which the map is hosted.
+    /// </summary>
+    [Parameter]
+    public IObservableGameServer Server { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the map id.
+    /// </summary>
+    [Parameter]
+    public Guid MapId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the followed player name.
+    /// </summary>
+    [Parameter]
+    public string? FollowedPlayerName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the follow button is clicked.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string?> OnFollowPlayer { get; set; }
+
+    /// <summary>
+    /// Gets or sets the JS runtime.
+    /// </summary>
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    private ILogger<Map> Logger { get; set; } = null!;
+
+    private readonly object _syncRoot = new();
+
+    private IMapController? _controller;
+
+    private AsyncLazy<IMapController>? _lazyController;
+
+    private bool _isDisposed;
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        _lazyController = new AsyncLazy<IMapController>(async () =>
+        {
+            var controller = await this.MapFactory.CreateMapAsync(this.Server, this.MapId);
+            bool isDisposed;
+            lock (this._syncRoot)
+            {
+                isDisposed = this._isDisposed;
+                if (!isDisposed)
+                {
+                    this._controller = controller;
+                }
+            }
+
+            if (isDisposed)
+            {
+                // The component was disposed while the map was created. The controller would
+                // otherwise stay registered as an observer of the game map forever.
+                try
+                {
+                    await controller.DisposeAsync();
+                }
+                catch (Exception ex)
+                {
+                    // The component is gone, so an exception would only end up in the render loop.
+                    this.Logger.LogError(ex, "Error when disposing the map controller of a disposed map component.");
+                }
+
+                return controller;
+            }
+
+            await this.InvokeAsync(this.StateHasChanged);
+            return controller;
+        });
+        base.OnInitialized();
+    }
+
+    private async Task SelectPlayerAsync(int objectId)
+    {
+        try
+        {
+            await this.JsRuntime.InvokeVoidAsync("SelectMapObject", this.Server.Id, this.MapId, objectId).ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit was torn down while the call was in flight; ignore.
+        }
+        catch (JSException ex)
+        {
+            this.Logger.LogDebug(ex, "Unexpected JS interop error while selecting map object {ObjectId}.", objectId);
+        }
+    }
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync()
+    {
+        IMapController? controller;
+        lock (this._syncRoot)
+        {
+            this._isDisposed = true;
+            controller = this._controller;
+            this._controller = null;
+        }
+
+        // A controller which is still being created is disposed by the creating task, see OnInitialized.
+        return controller?.DisposeAsync() ?? ValueTask.CompletedTask;
+    }
+}

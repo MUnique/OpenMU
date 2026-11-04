@@ -1,0 +1,55 @@
+﻿@typeparam TValue
+
+@inherits InputBase<IList<TValue>>
+
+<div class="card mb-3">
+    <h5 class="card-header">
+        <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+        @if (this._isStartingCollapsed)
+    {
+        @if (this._isCollapsed)
+        {
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">@string.Format(Resources.ExpandItems, this.Value?.Count)</button>
+        }
+        else
+        {
+        <button type="button" class="btn btn-outline-info" @onclick="@this.OnToggleCollapseClick">@Resources.Collapse</button>
+        }
+    }
+    </h5>
+    @if (!this._isCollapsed)
+    {
+        <div class="card-body card-text">
+            <table class="table table-striped table-hover">
+                <tbody>
+                @if (this.WrappedList is not null)
+                {
+                    for (int i = 0; i < this.WrappedList.Count; i++)
+                    {
+                        var index = i;
+                        <tr>
+                            <td>
+                                <EditForm Model="@this.WrappedList[index]">
+                                    <DataAnnotationsValidator/>
+                                    <AutoFields/>
+                                    <ValidationSummary/>
+                                </EditForm>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" @onclick="@(() => OnRemoveClickAsync(index))"><span class="oi oi-trash" aria-hidden="true"></span> @Resources.Remove</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="border-bottom-0">
+                            <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">@Resources.AddValue</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    }
+    </div>

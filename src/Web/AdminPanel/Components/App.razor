@@ -1,0 +1,77 @@
+@using MUnique.OpenMU.Web.AdminPanel.Components.Layout
+@using MUnique.OpenMU.Web.Shared.Services
+
+@code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    private string CurrentTheme =>
+        ThemeController.NormalizeTheme(this.HttpContext?.Request.Cookies[ThemeController.CookieName]);
+
+    /// <summary>
+    /// Gets the base path of the panel, e.g. "/admin/" when it's hosted under a sub path behind a reverse proxy.
+    /// </summary>
+    private string BaseHref => $"{this.HttpContext?.Request.PathBase}/";
+
+    /// <summary>
+    /// Gets the bundle of the scoped styles of the hosting application, e.g. the all-in-one startup or the admin panel host.
+    /// </summary>
+    private string HostStylesheet => $"{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name}.styles.css";
+}
+
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" data-bs-theme="@this.CurrentTheme">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OpenMUAdminPanel</title>
+    <base href="@this.BaseHref" />
+    <ResourcePreloader />
+    <link href="@Assets[this.HostStylesheet]" rel="stylesheet" />
+    <link href="@Assets["_content/MUnique.OpenMU.Web.AdminPanel/MUnique.OpenMU.Web.AdminPanel.styles.css"]" rel="stylesheet" />
+    @foreach (var stylesheetSrc in Web.AdminPanel.Exports.Stylesheets)
+    {
+      <link href="@Assets[stylesheetSrc]" rel="stylesheet" />
+    }
+    <ImportMap />
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+<body>
+    
+      <Routes @rendermode="InteractiveServer" />
+      <ReconnectModal />
+      <script src="@Assets["_framework/blazor.web.js"]"></script>
+      @foreach (var scriptSrc in Web.AdminPanel.Exports.Scripts)
+      {
+        <script src="@Assets[scriptSrc]"></script>
+      }
+      @if (Web.AdminPanel.Exports.ScriptMappings.Any())
+      {
+        var sb = new StringBuilder();
+        sb.AppendLine("System.config({").AppendLine("    map: {");
+        bool isFirst = true;
+        foreach (var scriptMapping in Web.AdminPanel.Exports.ScriptMappings)
+        {
+          if (!isFirst)
+          {
+            sb.AppendLine(",");
+          }
+
+          isFirst = false;
+          sb.Append($"'{scriptMapping.Key}': '")
+            .Append(scriptMapping.Path)
+            .Append("'");
+        }
+        sb.AppendLine("    }")
+          .AppendLine("});");
+
+      
+        <script>
+          // To be able to resolve three etc. in our TS files and the resulting javascript, SystemJS needs to be configured.
+          // These modules are loaded by SystemJS when they get requested the first time. No need to manually load them.
+          
+          @((MarkupString)sb.ToString())
+      </script>
+      }
+</body>
+</html>

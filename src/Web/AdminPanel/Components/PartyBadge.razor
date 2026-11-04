@@ -1,0 +1,26 @@
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+@if (PartyMaster is null || PartySize <= 0)
+{
+  <span class="text-muted">@Resources.EmptyValue</span>
+}
+else
+{
+  <span class="badge" title="@string.Format(Resources.PartyBadgeTitle, PartyMaster, PartySize)" style="background-color: @GetPartyColor(); color: #fff;">@PartyMaster (@PartySize)</span>
+}
+
+@code {
+    /// <summary>
+    /// Gets or sets the character name of the party master.
+    /// </summary>
+    [Parameter]
+    public string? PartyMaster { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of party members.
+    /// </summary>
+    [Parameter]
+    public int PartySize { get; set; }
+
+    private string GetPartyColor() => PartyColorHelper.GetPartyColor(this.PartyMaster!);
+}

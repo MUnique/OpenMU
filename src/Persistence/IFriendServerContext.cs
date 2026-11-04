@@ -1,0 +1,64 @@
+﻿// <copyright file="IFriendServerContext.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Persistence;
+
+using MUnique.OpenMU.Interfaces;
+
+/// <summary>
+/// A context which is used by the <see cref="T:MUnique.OpenMU.Interfaces.IFriendServer" />.
+/// </summary>
+public interface IFriendServerContext : IContext
+{
+    /// <summary>
+    /// Creates a new friend view item.
+    /// </summary>
+    /// <param name="characterName">Name of the character.</param>
+    /// <param name="friendName">Name of the friend.</param>
+    /// <returns>The created friend view item.</returns>
+    ValueTask<Friend> CreateNewFriendAsync(string characterName, string friendName);
+
+    /// <summary>
+    /// Determines whether a character with the specified name exists. Doesn't change anything.
+    /// </summary>
+    /// <param name="characterName">Name of the character.</param>
+    /// <returns><see langword="true"/>, if a character with this name exists.</returns>
+    ValueTask<bool> CharacterExistsAsync(string characterName);
+
+    /// <summary>
+    /// Gets the friend view item by friend.
+    /// </summary>
+    /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
+    /// <param name="friendName">Name of the friend.</param>
+    /// <returns>The friend view item of the friend.</returns>
+    ValueTask<Friend?> GetFriendByNamesAsync(string characterName, string friendName);
+
+    /// <summary>
+    /// Gets the friends of a character.
+    /// </summary>
+    /// <param name="characterId">Id of the character.</param>
+    /// <returns>The friends of the character.</returns>
+    ValueTask<IEnumerable<FriendViewItem>> GetFriendsAsync(Guid characterId);
+
+    /// <summary>
+    /// Gets the friend names of a character.
+    /// </summary>
+    /// <param name="characterId">Id of the character.</param>
+    /// <returns>The friend names of the character.</returns>
+    ValueTask<IEnumerable<string>> GetFriendNamesAsync(Guid characterId);
+
+    /// <summary>
+    /// Deletes the friend with name <paramref name="friendName"/> from the friendlist of <paramref name="characterName"/>.
+    /// </summary>
+    /// <param name="characterName">Name of the character holding the friend view item in its friendlist.</param>
+    /// <param name="friendName">Name of the friend.</param>
+    ValueTask DeleteAsync(string characterName, string friendName);
+
+    /// <summary>
+    /// Gets the names from characters which requested a friendship to the character with the specified id and are not answered yet.
+    /// </summary>
+    /// <param name="characterId">Id of the character.</param>
+    /// <returns>The open friend requester names.</returns>
+    ValueTask<IEnumerable<string>> GetOpenFriendRequesterNamesAsync(Guid characterId);
+}
