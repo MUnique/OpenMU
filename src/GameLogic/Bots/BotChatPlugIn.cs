@@ -315,10 +315,20 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public void BotJoinedParty(Player bot, Player inviter)
     {
-        if (this.Configuration is not { PartyChatChancePercent: > 0 } configuration
+        if (this.Configuration is not { } partyConfiguration)
+        {
+            return;
+        }
+
+        // An old friend gets a warmer welcome; and from now on, the inviter and the party are friends.
+        var throttle = this.GetThrottle(bot.GameContext);
+        var inviterIsFriend = inviter.SelectedCharacter?.Name is { } name && throttle.IsFriend(bot, name);
+        throttle.RememberFriends(bot, (bot.Party?.PartyList ?? []).OfType<Player>().Append(inviter).Where(p => p is not OfflinePlayer).Select(p => p.SelectedCharacter?.Name).OfType<string>());
+
+        if (partyConfiguration is not { PartyChatChancePercent: > 0 } configuration
             || !Rand.NextRandomBool(configuration.PartyChatChancePercent)
-            || PickLine(configuration.PartyJoinedLines) is not { } line
-            || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
+            || PickLine(inviterIsFriend && configuration.FriendLines.Count > 0 ? configuration.FriendLines : configuration.PartyJoinedLines) is not { } line
+            || !throttle.TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
         {
             return;
         }
@@ -1311,12 +1321,14 @@ public class BotChatPlugIn
         }
 
         var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
-        var bot = FindGreeter(players, player, map);
-        var now = DateTime.UtcNow;
         var throttle = this.GetThrottle(player.GameContext);
+
+        // An old party companion nearby greets first.
+        var bot = FindGreeter(players.Where(p => throttle.IsFriend(p, playerName)), player, map) ?? FindGreeter(players, player, map);
+        var now = DateTime.UtcNow;
         if (bot is null
             || !this.MayTalkUnasked(bot, configuration)
-            || this.PickLineFor(player, configuration.GreetingLines) is not { } line
+            || this.PickLineFor(player, throttle.IsFriend(bot, playerName) && configuration.FriendLines.Count > 0 ? configuration.FriendLines : configuration.GreetingLines) is not { } line
             || !throttle.TryReserveOccasion($"greeting {playerName}", now, configuration.GreetingCooldown)
             || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
         {

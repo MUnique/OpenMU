@@ -5508,5 +5508,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_NotableMonsterLines_Description text.</summary>
         public static string BotChatConfiguration_NotableMonsterLines_Description => ResourceManager.GetString("BotChatConfiguration_NotableMonsterLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_FriendLines_Name text.</summary>
+        public static string BotChatConfiguration_FriendLines_Name => ResourceManager.GetString("BotChatConfiguration_FriendLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_FriendLines_Description text.</summary>
+        public static string BotChatConfiguration_FriendLines_Description => ResourceManager.GetString("BotChatConfiguration_FriendLines_Description", resourceCulture)!;
+
     }
 }

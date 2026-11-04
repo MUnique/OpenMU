@@ -344,6 +344,18 @@ public class BotChatConfiguration
     public ICollection<BotChatLine> GreetingLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
+    /// Gets or sets the lines with which a bot greets a player it was in a party with before - instead
+    /// of the <see cref="GreetingLines"/> when the player enters the game, and of the
+    /// <see cref="PartyJoinedLines"/> when the player invites it again. The bots remember their party
+    /// companions until the server restarts. Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_FriendLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_FriendLines_Description))]
+    public ICollection<BotChatLine> FriendLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
     /// Gets or sets the lines a bot says in the party chat after it accepted a player's party invitation.
     /// Placeholders: <c>{player}</c> (the inviter), <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
@@ -610,6 +622,12 @@ public class BotChatConfiguration
             ("late night grind, {player}?", "nocny exp, {player}?"),
             ("{player}, can't sleep either?", "{player}, też nie możesz spać?"));
         Add(
+            configuration.FriendLines,
+            ("{player}! good to see you again", "{player}! dobrze cię znowu widzieć"),
+            ("hey {player}, together again?", "hej {player}, znowu razem?"),
+            ("my old party buddy {player} :)", "mój stary kompan {player} :)"),
+            ("{player}, ready for round two?", "{player}, gotowy na drugą rundę?"));
+        Add(
             configuration.PartyJoinedLines,
             ("thx for invite", "dzięki za zaproszenie"),
             ("hi all", "siema wszystkim"),
@@ -820,6 +838,7 @@ public class BotChatConfiguration
         SetGesture(configuration.DuelDeclineLines, BotChatGesture.Awkward);
         SetGesture(configuration.ConversationJoinLines, BotChatGesture.Smile);
         SetGesture(configuration.RareDropLines, BotChatGesture.Clap);
+        SetGesture(configuration.FriendLines, BotChatGesture.Greeting);
         foreach (var reply in configuration.WhisperReplies)
         {
             reply.Gesture = reply.Keywords.StartsWith("hi,", StringComparison.Ordinal) ? BotChatGesture.Greeting
