@@ -443,6 +443,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixAncientDiscriminatorsUpdatePlugIn_Description text.</summary>
         public static string FixAncientDiscriminatorsUpdatePlugIn_Description => ResourceManager.GetString("FixAncientDiscriminatorsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixMurenRingOfFireBonusPlugIn_Name text.</summary>
+        public static string FixMurenRingOfFireBonusPlugIn_Name => ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixMurenRingOfFireBonusPlugIn_Description text.</summary>
+        public static string FixMurenRingOfFireBonusPlugIn_Description => ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSummonerBuffSkillsPlugIn_Name text.</summary>
         public static string AddSummonerBuffSkillsPlugIn_Name => ResourceManager.GetString("AddSummonerBuffSkillsPlugIn_Name", resourceCulture)!;
 
