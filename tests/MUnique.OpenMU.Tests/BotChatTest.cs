@@ -107,7 +107,7 @@ public class BotChatTest
     }
 
     /// <summary>
-    /// The default configuration comes with 50 to 100 conversations for every place, each with a
+    /// The default configuration comes with 150 to 250 conversations for every place, each with a
     /// Polish translation of both texts.
     /// </summary>
     [Test]
@@ -116,7 +116,7 @@ public class BotChatTest
         var conversations = BotChatConfiguration.CreateDefault().Conversations;
         var polish = CultureInfo.GetCultureInfo("pl");
 
-        Assert.That(conversations, Has.Count.InRange(50, 100));
+        Assert.That(conversations, Has.Count.InRange(150, 250));
         Assert.That(conversations.Select(c => c.Where).Distinct().Count(), Is.EqualTo(Enum.GetValues<BotConversationPlace>().Length));
         Assert.That(conversations.All(c => c.Opener.GetOwnTranslation(polish) is not null && c.Reply.GetOwnTranslation(polish) is not null), Is.True);
     }
