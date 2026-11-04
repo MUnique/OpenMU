@@ -186,11 +186,46 @@ public class BotChatTest
             new() { Text = "{level} finally" },
         };
 
-        var picked = BotChatComposer.PickLine(lines, count => count - 1);
-        var silent = BotChatComposer.PickLine(new List<BotChatLine> { new() { Text = string.Empty } }, _ => 0);
+        var picked = BotChatComposer.PickLine(lines, BotChatTimeOfDay.Day, count => count - 1);
+        var silent = BotChatComposer.PickLine(new List<BotChatLine> { new() { Text = string.Empty } }, BotChatTimeOfDay.Day, _ => 0);
 
         Assert.That(picked?.Text.ValueInNeutralLanguage, Is.EqualTo("{level} finally"));
         Assert.That(silent, Is.Null);
+    }
+
+    /// <summary>
+    /// A line of a time of day is only said then - "good morning" in the morning - while the lines
+    /// for any time are always available.
+    /// </summary>
+    [Test]
+    public void PicksLinesOfTheTimeOfDay()
+    {
+        var lines = new List<BotChatLine>
+        {
+            new() { Text = "good morning", When = BotChatTimeOfDay.Morning },
+            new() { Text = "late night grind?", When = BotChatTimeOfDay.Night },
+        };
+        var anytime = new BotChatLine { Text = "hey" };
+
+        Assert.That(BotChatComposer.PickLine(lines, BotChatTimeOfDay.Morning, _ => 0)?.Text.ValueInNeutralLanguage, Is.EqualTo("good morning"));
+        Assert.That(BotChatComposer.PickLine(lines, BotChatTimeOfDay.Day, _ => 0), Is.Null);
+        Assert.That(BotChatComposer.PickLine(lines.Append(anytime), BotChatTimeOfDay.Day, _ => 0), Is.SameAs(anytime));
+    }
+
+    /// <summary>
+    /// The hours of the server's local time map to the times of day; the night wraps around midnight.
+    /// </summary>
+    /// <param name="hour">The hour.</param>
+    /// <param name="expected">The expected time of day.</param>
+    [TestCase(4, BotChatTimeOfDay.Night)]
+    [TestCase(5, BotChatTimeOfDay.Morning)]
+    [TestCase(11, BotChatTimeOfDay.Day)]
+    [TestCase(18, BotChatTimeOfDay.Evening)]
+    [TestCase(23, BotChatTimeOfDay.Night)]
+    [TestCase(0, BotChatTimeOfDay.Night)]
+    public void KnowsTheTimeOfDay(int hour, BotChatTimeOfDay expected)
+    {
+        Assert.That(BotChatPlugIn.GetTimeOfDay(hour), Is.EqualTo(expected));
     }
 
     /// <summary>

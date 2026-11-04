@@ -24,6 +24,12 @@ public class BotChatLine
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_Text_Name), Description = nameof(PlugInResources.BotChatLine_Text_Description))]
     public LocalizedString Text { get; set; }
 
+    /// <summary>
+    /// Gets or sets when the line may be said, by the local time of the server.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_When_Name), Description = nameof(PlugInResources.BotChatLine_When_Description))]
+    public BotChatTimeOfDay When { get; set; }
+
     /// <inheritdoc />
     public override string ToString() => this.Text.ValueInNeutralLanguage;
 }
