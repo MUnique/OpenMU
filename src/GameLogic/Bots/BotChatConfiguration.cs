@@ -121,8 +121,15 @@ public class BotChatConfiguration
             BotChatSituation.WhisperReply,
             "sry busy hunting",
             "hi, cant talk now",
-            "?",
+            "hi, what's up?",
             "afk a bit");
+        AddReplies("how are you, how r u, how are u, hru, how's it going, how is it going", "fine, thanks for asking", "good, you?", "all good, just grinding");
+        AddReplies("hi, hello, hey, yo, hiho, sup", "hi, what's up?", "hey :)", "hello");
+        AddReplies("level, lvl, what level", "{level} now", "lvl {level}");
+        AddReplies("where are you, where r u, where", "{map}", "in {map}");
+        AddReplies("party, pt", "sure, invite me", "ok, send invite");
+        AddReplies("thanks, thank you, thx, ty", "np", "no problem");
+        AddReplies("bye, cya, see you, gn", "bye", "cya");
         return configuration;
 
         void Add(BotChatSituation situation, params string[] texts)
@@ -130,6 +137,14 @@ public class BotChatConfiguration
             foreach (var text in texts)
             {
                 configuration.Lines.Add(new BotChatLine { Situation = situation, Text = text });
+            }
+        }
+
+        void AddReplies(string keywords, params string[] texts)
+        {
+            foreach (var text in texts)
+            {
+                configuration.Lines.Add(new BotChatLine { Situation = BotChatSituation.WhisperReply, Text = text, Keywords = keywords });
             }
         }
     }

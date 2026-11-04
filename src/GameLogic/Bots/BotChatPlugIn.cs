@@ -145,7 +145,7 @@ public class BotChatPlugIn
             || !IsBot(receiver)
             || sender is OfflinePlayer
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || PickLine(configuration, BotChatSituation.WhisperReply) is not { } line
+            || BotChatComposer.PickWhisperReply(configuration.Lines, message, count => Rand.NextInt(0, count)) is not { } line
             || !this.GetThrottle(receiver.GameContext).TryReserveWhisperReply(receiver, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;

@@ -129,6 +129,46 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A whisper is answered by the lines whose keywords match it - ignoring case and punctuation,
+    /// preferring the longest match, and matching whole words only. Without a match, a reply
+    /// without keywords is used.
+    /// </summary>
+    /// <param name="message">The whispered message.</param>
+    /// <param name="expected">The expected reply.</param>
+    [TestCase("How are you?!", "fine, thanks for asking")]
+    [TestCase("hi, how are you", "fine, thanks for asking")]
+    [TestCase("HI", "hi, what's up?")]
+    [TestCase("this is cool", "busy")]
+    [TestCase("asdf", "busy")]
+    public void AnswersWhispersByKeywords(string message, string expected)
+    {
+        var lines = new List<BotChatLine>
+        {
+            new() { Situation = BotChatSituation.WhisperReply, Text = "busy" },
+            new() { Situation = BotChatSituation.WhisperReply, Text = "hi, what's up?", Keywords = "hi, hello" },
+            new() { Situation = BotChatSituation.WhisperReply, Text = "fine, thanks for asking", Keywords = "how are you, how r u" },
+            new() { Situation = BotChatSituation.LevelMilestone, Text = "not a reply", Keywords = "how are you" },
+        };
+
+        var reply = BotChatComposer.PickWhisperReply(lines, message, _ => 0);
+
+        Assert.That(reply?.Text.ValueInNeutralLanguage, Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// The default configuration knows the basic small talk: a "how are you" gets a fitting answer.
+    /// </summary>
+    [Test]
+    public void DefaultRepliesAnswerHowAreYou()
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+
+        var reply = BotChatComposer.PickWhisperReply(configuration.Lines, "hey, how are you?", _ => 0);
+
+        Assert.That(reply?.Keywords, Does.Contain("how are you"));
+    }
+
+    /// <summary>
     /// A server which switches the plugin on has something to say in every situation.
     /// </summary>
     [Test]

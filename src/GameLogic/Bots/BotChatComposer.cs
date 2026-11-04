@@ -29,6 +29,34 @@ internal static class BotChatComposer
     }
 
     /// <summary>
+    /// Picks the reply to a player's whisper: a random one of the lines whose keywords match the
+    /// message best, or - when no keyword matches - one of the replies without keywords.
+    /// </summary>
+    /// <param name="lines">All configured lines.</param>
+    /// <param name="message">The whispered message.</param>
+    /// <param name="pickIndex">Returns a random index below the given count.</param>
+    /// <returns>The picked line, or <c>null</c> when there is no usable reply.</returns>
+    /// <remarks>
+    /// The best match is the longest matching keyword, so "hi, how are you?" is answered by the
+    /// "how are you" lines rather than by the greetings matching "hi".
+    /// </remarks>
+    internal static BotChatLine? PickWhisperReply(IEnumerable<BotChatLine> lines, string message, Func<int, int> pickIndex)
+    {
+        var replies = lines
+            .Where(line => line.Situation == BotChatSituation.WhisperReply && !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage))
+            .ToList();
+        var normalizedMessage = $" {Normalize(message)} ";
+        var scored = replies
+            .Select(line => (Line: line, Score: GetKeywords(line).Where(k => normalizedMessage.Contains($" {k} ", StringComparison.Ordinal)).Select(k => k.Length).DefaultIfEmpty(0).Max()))
+            .ToList();
+        var bestScore = scored.Count == 0 ? 0 : scored.Max(s => s.Score);
+        var candidates = bestScore > 0
+            ? scored.Where(s => s.Score == bestScore).Select(s => s.Line).ToList()
+            : replies.Where(line => !GetKeywords(line).Any()).ToList();
+        return candidates.Count == 0 ? null : candidates[pickIndex(candidates.Count)];
+    }
+
+    /// <summary>
     /// Renders the line for a receiver of the given culture.
     /// </summary>
     /// <param name="line">The line.</param>
@@ -58,5 +86,40 @@ internal static class BotChatComposer
         }
 
         return result.ToString();
+    }
+
+    private static IEnumerable<string> GetKeywords(BotChatLine line)
+        => (line.Keywords ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(Normalize)
+            .Where(keyword => keyword.Length > 0);
+
+    /// <summary>
+    /// Lower-cases the text and turns everything except letters and digits into single spaces, so
+    /// "How are you?!" and "how are you" compare equal and keywords match as whole words.
+    /// </summary>
+    private static string Normalize(string text)
+    {
+        var builder = new StringBuilder(text.Length);
+        var pendingSpace = false;
+        foreach (var character in text)
+        {
+            if (char.IsLetterOrDigit(character))
+            {
+                if (pendingSpace && builder.Length > 0)
+                {
+                    builder.Append(' ');
+                }
+
+                builder.Append(char.ToLowerInvariant(character));
+                pendingSpace = false;
+            }
+            else
+            {
+                pendingSpace = true;
+            }
+        }
+
+        return builder.ToString();
     }
 }

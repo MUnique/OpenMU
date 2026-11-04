@@ -4633,6 +4633,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatLine_Text_Description text.</summary>
         public static string BotChatLine_Text_Description => ResourceManager.GetString("BotChatLine_Text_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatLine_Keywords_Name text.</summary>
+        public static string BotChatLine_Keywords_Name => ResourceManager.GetString("BotChatLine_Keywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatLine_Keywords_Description text.</summary>
+        public static string BotChatLine_Keywords_Description => ResourceManager.GetString("BotChatLine_Keywords_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotChatConfiguration_EventPostChancePercent_Name text.</summary>
         public static string BotChatConfiguration_EventPostChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_EventPostChancePercent_Name", resourceCulture)!;
 
