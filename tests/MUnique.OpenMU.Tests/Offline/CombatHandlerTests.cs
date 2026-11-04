@@ -193,6 +193,7 @@ public class CombatHandlerTests
     {
         var monsterDefinition = new MonsterDefinition
         {
+            Id = Guid.NewGuid(),
             ObjectKind = NpcObjectKind.Monster,
         };
         monsterDefinition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = level });
