@@ -32,10 +32,11 @@ internal sealed class BotChatThrottle
     private static readonly TimeSpan PartySearchMemory = TimeSpan.FromMinutes(30);
 
     /// <summary>
-    /// How often the bots look for players who are due to overhear a conversation. A second-by-second
-    /// look over all players would cost for nothing; a few seconds late doesn't matter.
+    /// How often the bots look over the players - who is due to overhear a conversation, whose reset
+    /// count grew. A second-by-second look over all players would cost for nothing; a few seconds late
+    /// doesn't matter.
     /// </summary>
-    private static readonly TimeSpan ConversationScanInterval = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan PlayerScanInterval = TimeSpan.FromSeconds(5);
 
     private readonly ConcurrentDictionary<string, DateTime> _occasions = new();
 
@@ -53,7 +54,9 @@ internal sealed class BotChatThrottle
 
     private readonly Lock _conversationLock = new();
 
-    private long _nextConversationScanTicks;
+    private readonly ConcurrentDictionary<string, int> _knownResets = new();
+
+    private long _nextPlayerScanTicks;
 
     private long _nextPostTicks;
 
@@ -207,13 +210,32 @@ internal sealed class BotChatThrottle
     public void RemovePartyOffer(Player bot) => this._partyOffers.Remove(bot);
 
     /// <summary>
-    /// Determines whether it's time for the next look for players who are due to overhear a
-    /// conversation.
+    /// Determines whether it's time for the next look over the players.
     /// </summary>
     /// <param name="now">The current time.</param>
     /// <returns><c>true</c>, if the caller should look now.</returns>
-    public bool TryStartConversationScan(DateTime now)
-        => TryReserve(ref this._nextConversationScanTicks, now, ConversationScanInterval);
+    public bool TryStartPlayerScan(DateTime now)
+        => TryReserve(ref this._nextPlayerScanTicks, now, PlayerScanInterval);
+
+    /// <summary>
+    /// Remembers the reset count of a character and tells whether it grew since the last look. A
+    /// character seen for the first time didn't reset in front of the bots.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="resets">The current reset count.</param>
+    /// <returns><c>true</c>, if the count grew.</returns>
+    public bool TryUpdateKnownResets(string characterName, int resets)
+    {
+        var previous = this._knownResets.GetOrAdd(characterName, resets);
+        if (resets < previous)
+        {
+            // Lowered by an admin: start counting from there.
+            this._knownResets.TryUpdate(characterName, resets, previous);
+            return false;
+        }
+
+        return resets > previous && this._knownResets.TryUpdate(characterName, resets, previous);
+    }
 
     /// <summary>
     /// Determines whether the player is due to overhear a conversation. A player seen for the first

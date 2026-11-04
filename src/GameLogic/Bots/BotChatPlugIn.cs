@@ -107,6 +107,11 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) KilledDelaySeconds = (1, 2);
 
     /// <summary>
+    /// The delay range of a congratulation: the level-up or reset effect first, then the "gz".
+    /// </summary>
+    private static readonly (int Min, int Max) CongratulationDelaySeconds = (2, 5);
+
+    /// <summary>
     /// The delay range of the answer in a conversation of two bots: the time to read and type.
     /// </summary>
     private static readonly (int Min, int Max) ConversationReplyDelaySeconds = (3, 6);
@@ -170,7 +175,18 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public void CharacterLeveledUp(Player player)
     {
-        if (this.Configuration is not { LevelMilestoneStep: > 0, LevelMilestoneChancePercent: > 0 } configuration
+        if (this.Configuration is not { } configuration)
+        {
+            return;
+        }
+
+        if (player is not OfflinePlayer)
+        {
+            this.Congratulate(player, configuration, configuration.CongratulationLines, $"congratulation {player.SelectedCharacter?.Name}");
+            return;
+        }
+
+        if (configuration is not { LevelMilestoneStep: > 0, LevelMilestoneChancePercent: > 0 }
             || !IsBot(player))
         {
             return;
@@ -381,7 +397,12 @@ public class BotChatPlugIn
         }
 
         await this.MakeMerchantTalkAsync(gameContext, configuration).ConfigureAwait(false);
-        await this.HoldConversationsAsync(gameContext, configuration).ConfigureAwait(false);
+        if (this.GetThrottle(gameContext).TryStartPlayerScan(DateTime.UtcNow))
+        {
+            var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
+            await this.HoldConversationsAsync(gameContext, configuration, players).ConfigureAwait(false);
+            this.CongratulateResets(players, configuration);
+        }
     }
 
     /// <inheritdoc />
@@ -459,8 +480,8 @@ public class BotChatPlugIn
     }
 
     /// <summary>
-    /// Finds the bot which greets an entering player: the nearest available bot on the player's map,
-    /// within the range in which the player sees it.
+    /// Finds the bot which talks to a player - greets the entering player, congratulates them: the
+    /// nearest available bot on the player's map, within the range in which the player sees it.
     /// </summary>
     /// <param name="players">The players of the game server.</param>
     /// <param name="player">The entering player.</param>
@@ -755,18 +776,16 @@ public class BotChatPlugIn
     /// stands close together - both in a town or both out hunting - and the conversation fits the
     /// place. Every player who hears it waits a whole interval for the next one.
     /// </summary>
-    private async ValueTask HoldConversationsAsync(GameContext gameContext, BotChatConfiguration configuration)
+    private async ValueTask HoldConversationsAsync(GameContext gameContext, BotChatConfiguration configuration, IList<Player> players)
     {
         var now = DateTime.UtcNow;
         var throttle = this.GetThrottle(gameContext);
         if (configuration.ConversationChancePercent <= 0
-            || configuration.Conversations.Count == 0
-            || !throttle.TryStartConversationScan(now))
+            || configuration.Conversations.Count == 0)
         {
             return;
         }
 
-        var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
         var humans = players.Where(p => p is not OfflinePlayer && p.PlayerState.CurrentState == PlayerState.EnteredWorld && p.CurrentMap is not null).ToList();
         var bots = players.Where(p => IsBot(p) && IsAvailable(p)).ToList();
         foreach (var human in humans)
@@ -810,6 +829,70 @@ public class BotChatPlugIn
                 RandomDelay(ConversationReplyDelaySeconds),
                 () => IsAvailable(second) ? BotChatSpeaker.SayAsync(second, conversation.Reply, secondValues) : ValueTask.CompletedTask);
         }
+    }
+
+    /// <summary>
+    /// Lets the nearest bot congratulate the players whose reset count grew since the last look - the
+    /// reset may log the player out to the character selection or not, so it's noticed by the count.
+    /// </summary>
+    private void CongratulateResets(IEnumerable<Player> players, BotChatConfiguration configuration)
+    {
+        foreach (var player in players)
+        {
+            if (player is OfflinePlayer
+                || player.SelectedCharacter?.Name is not { } name
+                || player.Attributes is not { } attributes)
+            {
+                continue;
+            }
+
+            var resets = (int)attributes[Stats.Resets];
+            if (this.GetThrottle(player.GameContext).TryUpdateKnownResets(name, resets))
+            {
+                this.Congratulate(player, configuration, configuration.ResetCongratulationLines, $"reset congratulation {name}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Lets the nearest bot congratulate a player in the normal chat - "gz" - after a moment, at most
+    /// once per player and cooldown for each kind of occasion.
+    /// </summary>
+    private void Congratulate(Player player, BotChatConfiguration configuration, ICollection<BotChatLine> lines, string occasionKey)
+    {
+        if (configuration.CongratulationChancePercent <= 0
+            || player.SelectedCharacter?.Name is not { } playerName
+            || !Rand.NextRandomBool(configuration.CongratulationChancePercent))
+        {
+            return;
+        }
+
+        var playerLevel = GetLevel(player).ToString(CultureInfo.InvariantCulture);
+        var playerResets = ((int)(player.Attributes?[Stats.Resets] ?? 0)).ToString(CultureInfo.InvariantCulture);
+        RunLater(player.GameContext, RandomDelay(CongratulationDelaySeconds), async () =>
+        {
+            if (player.PlayerState.CurrentState != PlayerState.EnteredWorld || player.CurrentMap is not { } map)
+            {
+                return;
+            }
+
+            var now = DateTime.UtcNow;
+            var throttle = this.GetThrottle(player.GameContext);
+            var players = await player.GameContext.GetPlayersAsync().ConfigureAwait(false);
+            if (FindGreeter(players, player, map) is not { } bot
+                || PickLine(lines) is not { } line
+                || !throttle.TryReserveOccasion(occasionKey, now, configuration.CongratulationCooldown)
+                || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
+            {
+                return;
+            }
+
+            var values = CreateBotValues(bot);
+            values["player"] = _ => playerName;
+            values["level"] = _ => playerLevel;
+            values["resets"] = _ => playerResets;
+            await BotChatSpeaker.SayAsync(bot, line.Text, values).ConfigureAwait(false);
+        });
     }
 
     private async ValueTask GreetAsync(Player player, BotChatConfiguration configuration)
