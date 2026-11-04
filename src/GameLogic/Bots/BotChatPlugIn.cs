@@ -16,6 +16,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -48,6 +49,7 @@ public class BotChatPlugIn
     IAttackableGotKilledPlugIn,
     IChatMessageSentPlugIn,
     IPeriodicTaskPlugIn,
+    IPostMessageSentPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -96,6 +98,12 @@ public class BotChatPlugIn
     /// respawns, so the killer sees it.
     /// </summary>
     private static readonly (int Min, int Max) KilledDelaySeconds = (1, 2);
+
+    /// <summary>
+    /// The gap between the whispers of two bots answering the same party search, so the answers
+    /// trickle in like those of players who read the post at different moments.
+    /// </summary>
+    private static readonly (int Min, int Max) PartyVolunteerSpacingSeconds = (2, 6);
 
     private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
 
@@ -177,6 +185,19 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public void WhisperMessageReceived(Player sender, Player receiver, string message, CancelEventArgs cancelEventArgs)
     {
+        // A bot which answered the sender's party search waits for the meeting place - that whisper is
+        // part of a conversation the player started, so it's always answered.
+        if (this.Configuration is { } partyConfiguration
+            && receiver is OfflinePlayer partyBot
+            && IsBot(partyBot)
+            && sender is not OfflinePlayer
+            && this.GetThrottle(receiver.GameContext).GetOpenPartyOffer(partyBot, DateTime.UtcNow) is { } offer
+            && ReferenceEquals(offer.Requester, sender))
+        {
+            this.AnswerMeetingPlace(partyBot, sender, message, partyConfiguration);
+            return;
+        }
+
         if (this.Configuration is not { WhisperReplyChancePercent: > 0 } configuration
             || !IsBot(receiver)
             || sender is OfflinePlayer
@@ -376,6 +397,51 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public void ForceStart() => Interlocked.Increment(ref this._forceStartCount);
 
+    /// <inheritdoc />
+    public async ValueTask PostMessageSentAsync(Player sender, string message)
+    {
+        if (this.Configuration is not { PartyVolunteerCount: > 0 } configuration
+            || sender is OfflinePlayer
+            || sender.SelectedCharacter?.Name is not { } senderName
+            || BotPartyRequest.TryParse(message, configuration.PartyRequestKeywords, configuration.PartyClassAliases) is not { } request)
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        var throttle = this.GetThrottle(sender.GameContext);
+        var classes = sender.GameContext.Configuration.CharacterClasses;
+        var players = await sender.GameContext.GetPlayersAsync().ConfigureAwait(false);
+        var candidates = players
+            .OfType<OfflinePlayer>()
+            .Where(bot => IsBot(bot)
+                          && IsAvailable(bot)
+                          && IsFreeToMeet(bot)
+                          && throttle.GetOpenPartyOffer(bot, now) is null
+                          && request.IsWantedLevel(GetLevel(bot))
+                          && IsOfWantedClass(bot, request, classes));
+        var volunteers = throttle.TakeNewVolunteers(sender, candidates, configuration.PartyVolunteerCount, now, count => Rand.NextInt(0, count));
+        var delay = TimeSpan.Zero;
+        foreach (var bot in volunteers)
+        {
+            if (PickLine(configuration.PartyVolunteerLines) is not { } line)
+            {
+                return;
+            }
+
+            throttle.SetPartyOffer(bot, new BotPartyOffer(sender, now + configuration.PartyOfferTimeout));
+            delay += RandomDelay(PartyVolunteerSpacingSeconds);
+            var values = CreateBotValues(bot);
+            values["player"] = _ => senderName;
+            RunLater(
+                bot.GameContext,
+                delay,
+                () => IsAvailable(bot) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
+                    ? BotChatSpeaker.WhisperAsync(bot, sender, line.Text, values)
+                    : ValueTask.CompletedTask);
+        }
+    }
+
     /// <summary>
     /// Determines whether the bot may warp to the map according to the warp list - the same rule the
     /// bots' navigation follows (the plain level against the class-reduced warp requirement) - and the
@@ -419,7 +485,50 @@ public class BotChatPlugIn
             .Select(candidate => candidate.Bot)
             .FirstOrDefault();
 
+    /// <summary>
+    /// Gets the first class of the line the class belongs to, e.g. the Dark Knight for the Blade
+    /// Master - by following the class evolution of the configuration backwards.
+    /// </summary>
+    /// <param name="characterClass">The character class.</param>
+    /// <param name="classes">All character classes of the configuration.</param>
+    /// <returns>The first class of the line.</returns>
+    internal static CharacterClass GetFirstClassOfLine(CharacterClass characterClass, ICollection<CharacterClass> classes)
+    {
+        var current = characterClass;
+
+        // Bounded, so a misconfigured evolution cycle can't hang the game logic.
+        for (var step = 0; step < classes.Count; step++)
+        {
+            if (classes.FirstOrDefault(c => c.NextGenerationClass?.Number == current.Number) is not { } previous)
+            {
+                break;
+            }
+
+            current = previous;
+        }
+
+        return current;
+    }
+
     private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
+
+    private static bool IsOfWantedClass(Player bot, BotPartyRequest request, ICollection<CharacterClass> classes)
+    {
+        if (request.ClassNumbers.Count == 0)
+        {
+            return true;
+        }
+
+        if (bot.SelectedCharacter?.CharacterClass is not { } ownClass)
+        {
+            return false;
+        }
+
+        var ownLine = GetFirstClassOfLine(ownClass, classes).Number;
+        return request.ClassNumbers.Any(number =>
+            classes.FirstOrDefault(c => c.Number == number) is { } wanted
+            && GetFirstClassOfLine(wanted, classes).Number == ownLine);
+    }
 
     /// <summary>
     /// Determines whether the bot is free to wait for players at an event: not already waiting, not on
@@ -476,9 +585,11 @@ public class BotChatPlugIn
         var level = GetLevel(bot).ToString(CultureInfo.InvariantCulture);
         var map = bot.CurrentMap?.Definition.Name;
         var position = bot.Position;
+        var characterClass = bot.SelectedCharacter?.CharacterClass?.Name;
         return new Dictionary<string, Func<CultureInfo, string>>
         {
             ["level"] = _ => level,
+            ["class"] = culture => characterClass?.GetTranslation(culture) ?? string.Empty,
             ["map"] = culture => map?.GetTranslation(culture) ?? string.Empty,
             ["location"] = culture => BotChatComposer.FormatLocation(map?.GetTranslation(culture), position),
         };
@@ -516,6 +627,74 @@ public class BotChatPlugIn
     }
 
     private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
+
+    /// <summary>
+    /// Answers the whisper in which a player, whose party search the bot answered, names the meeting
+    /// place: "devias 215 40", or "here" for where the player stands. A bot which may go there sets
+    /// off and waits for the invitation (see <see cref="BotEventMeeting"/>); a place it may not go to
+    /// is declined, and a whisper without a place gets asked again.
+    /// </summary>
+    private void AnswerMeetingPlace(OfflinePlayer bot, Player requester, string message, BotChatConfiguration configuration)
+    {
+        var throttle = this.GetThrottle(bot.GameContext);
+        var values = CreateBotValues(bot);
+        var requesterName = requester.SelectedCharacter?.Name ?? string.Empty;
+        values["player"] = _ => requesterName;
+
+        // A named map wins over "here": "i'm here, devias 215 40" names the place.
+        var place = BotChatComposer.FindPlace(message, bot.GameContext.Configuration.Maps);
+        if (place is null
+            && BotChatComposer.ContainsAnyKeyword(message, configuration.PartyHereKeywords)
+            && requester.CurrentMap is { } requesterMap)
+        {
+            place = (requesterMap.Definition, requester.Position);
+        }
+
+        if (place is not { } found)
+        {
+            if (throttle.TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown)
+                && PickLine(configuration.PartyAskWhereLines) is { } askLine)
+            {
+                this.WhisperLater(bot, requester, askLine, values);
+            }
+
+            return;
+        }
+
+        var (map, position) = found;
+        throttle.RemovePartyOffer(bot);
+        values["map"] = culture => map.Name.GetTranslation(culture) ?? string.Empty;
+        values["location"] = culture => BotChatComposer.FormatLocation(map.Name.GetTranslation(culture), position);
+        if (!IsAvailable(bot) || !IsFreeToMeet(bot))
+        {
+            // Taken into another party, or busy otherwise, since it answered: it lets the player be.
+            return;
+        }
+
+        if (!MayWarpTo(bot, map) || !map.ExitGates.Any(gate => gate.IsSpawnGate))
+        {
+            if (PickLine(configuration.PartyCantGoLines) is { } cantGoLine)
+            {
+                this.WhisperLater(bot, requester, cantGoLine, values);
+            }
+
+            return;
+        }
+
+        bot.EventMeeting = new BotEventMeeting(map, position, DateTime.UtcNow + configuration.PartyMeetingWaitTime);
+        if (PickLine(configuration.PartyOnTheWayLines) is { } onTheWayLine)
+        {
+            this.WhisperLater(bot, requester, onTheWayLine, values);
+        }
+    }
+
+    private void WhisperLater(Player bot, Player receiver, BotChatLine line, Dictionary<string, Func<CultureInfo, string>> values)
+        => RunLater(
+            bot.GameContext,
+            RandomDelay(WhisperReplyDelaySeconds),
+            () => receiver.PlayerState.CurrentState == PlayerState.EnteredWorld
+                ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values)
+                : ValueTask.CompletedTask);
 
     private async ValueTask GreetAsync(Player player, BotChatConfiguration configuration)
     {

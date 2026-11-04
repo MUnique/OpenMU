@@ -5280,5 +5280,77 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_SmallTalkLines_Description text.</summary>
         public static string BotChatConfiguration_SmallTalkLines_Description => ResourceManager.GetString("BotChatConfiguration_SmallTalkLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_PartyVolunteerCount_Name text.</summary>
+        public static string BotChatConfiguration_PartyVolunteerCount_Name => ResourceManager.GetString("BotChatConfiguration_PartyVolunteerCount_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyVolunteerCount_Description text.</summary>
+        public static string BotChatConfiguration_PartyVolunteerCount_Description => ResourceManager.GetString("BotChatConfiguration_PartyVolunteerCount_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyRequestKeywords_Name text.</summary>
+        public static string BotChatConfiguration_PartyRequestKeywords_Name => ResourceManager.GetString("BotChatConfiguration_PartyRequestKeywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyRequestKeywords_Description text.</summary>
+        public static string BotChatConfiguration_PartyRequestKeywords_Description => ResourceManager.GetString("BotChatConfiguration_PartyRequestKeywords_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyHereKeywords_Name text.</summary>
+        public static string BotChatConfiguration_PartyHereKeywords_Name => ResourceManager.GetString("BotChatConfiguration_PartyHereKeywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyHereKeywords_Description text.</summary>
+        public static string BotChatConfiguration_PartyHereKeywords_Description => ResourceManager.GetString("BotChatConfiguration_PartyHereKeywords_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyOfferTimeout_Name text.</summary>
+        public static string BotChatConfiguration_PartyOfferTimeout_Name => ResourceManager.GetString("BotChatConfiguration_PartyOfferTimeout_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyOfferTimeout_Description text.</summary>
+        public static string BotChatConfiguration_PartyOfferTimeout_Description => ResourceManager.GetString("BotChatConfiguration_PartyOfferTimeout_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyMeetingWaitTime_Name text.</summary>
+        public static string BotChatConfiguration_PartyMeetingWaitTime_Name => ResourceManager.GetString("BotChatConfiguration_PartyMeetingWaitTime_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyMeetingWaitTime_Description text.</summary>
+        public static string BotChatConfiguration_PartyMeetingWaitTime_Description => ResourceManager.GetString("BotChatConfiguration_PartyMeetingWaitTime_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyVolunteerLines_Name text.</summary>
+        public static string BotChatConfiguration_PartyVolunteerLines_Name => ResourceManager.GetString("BotChatConfiguration_PartyVolunteerLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyVolunteerLines_Description text.</summary>
+        public static string BotChatConfiguration_PartyVolunteerLines_Description => ResourceManager.GetString("BotChatConfiguration_PartyVolunteerLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyAskWhereLines_Name text.</summary>
+        public static string BotChatConfiguration_PartyAskWhereLines_Name => ResourceManager.GetString("BotChatConfiguration_PartyAskWhereLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyAskWhereLines_Description text.</summary>
+        public static string BotChatConfiguration_PartyAskWhereLines_Description => ResourceManager.GetString("BotChatConfiguration_PartyAskWhereLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyOnTheWayLines_Name text.</summary>
+        public static string BotChatConfiguration_PartyOnTheWayLines_Name => ResourceManager.GetString("BotChatConfiguration_PartyOnTheWayLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyOnTheWayLines_Description text.</summary>
+        public static string BotChatConfiguration_PartyOnTheWayLines_Description => ResourceManager.GetString("BotChatConfiguration_PartyOnTheWayLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyCantGoLines_Name text.</summary>
+        public static string BotChatConfiguration_PartyCantGoLines_Name => ResourceManager.GetString("BotChatConfiguration_PartyCantGoLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyCantGoLines_Description text.</summary>
+        public static string BotChatConfiguration_PartyCantGoLines_Description => ResourceManager.GetString("BotChatConfiguration_PartyCantGoLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyClassAliases_Name text.</summary>
+        public static string BotChatConfiguration_PartyClassAliases_Name => ResourceManager.GetString("BotChatConfiguration_PartyClassAliases_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyClassAliases_Description text.</summary>
+        public static string BotChatConfiguration_PartyClassAliases_Description => ResourceManager.GetString("BotChatConfiguration_PartyClassAliases_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotClassAlias_Keywords_Name text.</summary>
+        public static string BotClassAlias_Keywords_Name => ResourceManager.GetString("BotClassAlias_Keywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotClassAlias_Keywords_Description text.</summary>
+        public static string BotClassAlias_Keywords_Description => ResourceManager.GetString("BotClassAlias_Keywords_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotClassAlias_ClassNumber_Name text.</summary>
+        public static string BotClassAlias_ClassNumber_Name => ResourceManager.GetString("BotClassAlias_ClassNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotClassAlias_ClassNumber_Description text.</summary>
+        public static string BotClassAlias_ClassNumber_Description => ResourceManager.GetString("BotClassAlias_ClassNumber_Description", resourceCulture)!;
+
     }
 }

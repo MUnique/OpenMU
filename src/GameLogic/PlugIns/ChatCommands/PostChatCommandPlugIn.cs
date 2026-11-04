@@ -43,6 +43,10 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
         }
 
         await player.GameContext.SendGlobalChatMessageAsync(PostSender, FormatPost(player.SelectedCharacter?.Name, message), ChatMessageType.Gens).ConfigureAwait(false);
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IPostMessageSentPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.PostMessageSentAsync(player, message).ConfigureAwait(false);
+        }
     }
 
     /// <summary>

@@ -107,6 +107,43 @@ public class BotChatConfiguration
     public int PartyChatChancePercent { get; set; } = 70;
 
     /// <summary>
+    /// Gets or sets how many bots answer a player's party search posted with <c>/post</c>, e.g.
+    /// "party 300-350 bk" (see <see cref="BotPartyRequest"/>); 0 switches it off. The same search
+    /// posted again is answered by other bots.
+    /// </summary>
+    [Range(0, 20)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyVolunteerCount_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyVolunteerCount_Description))]
+    public int PartyVolunteerCount { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the comma-separated words which mark a post as a party search; the post needs a
+    /// level as well.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyRequestKeywords_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyRequestKeywords_Description))]
+    public string PartyRequestKeywords { get; set; } = "party, pt, grupa, grupy, grupe, grupę, grp";
+
+    /// <summary>
+    /// Gets or sets the comma-separated words with which a player tells an answering bot to come to
+    /// where the player stands, instead of naming a map and coordinates.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyHereKeywords_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyHereKeywords_Description))]
+    public string PartyHereKeywords { get; set; } = "here, come here, to me, tu, tutaj, do mnie";
+
+    /// <summary>
+    /// Gets or sets how long a bot which answered a party search waits for the player to whisper
+    /// back where to meet.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyOfferTimeout_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyOfferTimeout_Description))]
+    public TimeSpan PartyOfferTimeout { get; set; } = TimeSpan.FromMinutes(3);
+
+    /// <summary>
+    /// Gets or sets how long a bot waits at the meeting place for the player's party invitation
+    /// before it goes back to hunting.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyMeetingWaitTime_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyMeetingWaitTime_Description))]
+    public TimeSpan PartyMeetingWaitTime { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
     /// Gets or sets the chance, in percent, that a bot killed by a player says something about it.
     /// </summary>
     [Range(0, 100)]
@@ -193,6 +230,51 @@ public class BotChatConfiguration
     public ICollection<BotChatLine> EventFinishedLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
+    /// Gets or sets the whispers with which a bot answers a player's party search.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{class}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyVolunteerLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyVolunteerLines_Description))]
+    public ICollection<BotChatLine> PartyVolunteerLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the whispers with which a bot asks again when it didn't understand where to meet.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{class}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyAskWhereLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyAskWhereLines_Description))]
+    public ICollection<BotChatLine> PartyAskWhereLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the whispers with which a bot confirms that it's on its way to the meeting place.
+    /// Placeholders: <c>{player}</c>, <c>{map}</c> and <c>{location}</c> (the meeting place).
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyOnTheWayLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyOnTheWayLines_Description))]
+    public ICollection<BotChatLine> PartyOnTheWayLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the whispers with which a bot declines a meeting place it may not go to - its level
+    /// is too low for the map, or the map can't be reached by warp.
+    /// Placeholders: <c>{player}</c>, <c>{map}</c> (the named map), <c>{level}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyCantGoLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyCantGoLines_Description))]
+    public ICollection<BotChatLine> PartyCantGoLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the words players use for the character classes in a party search.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyClassAliases_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyClassAliases_Description))]
+    public ICollection<BotClassAlias> PartyClassAliases { get; set; } = new List<BotClassAlias>();
+
+    /// <summary>
     /// Gets or sets the lines a bot says in the normal chat when a player killed it outside of an event, right
     /// before it respawns. Placeholders: <c>{player}</c> (the killer), <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
     /// </summary>
@@ -226,6 +308,8 @@ public class BotChatConfiguration
     /// </summary>
     /// <returns>The default configuration.</returns>
     /// <remarks>
+    /// The class words leave out "me" and "he" (Muse Elf, High Elf): "party 300 for me" would
+    /// otherwise call elves only.
     /// The lines are configuration data like the names of the seeded items, not texts of the game
     /// logic: a server owner is expected to rewrite them and to add translations. Event, map and item
     /// names stay English in the Polish lines - the game data names them that way. The keywords hold
@@ -294,6 +378,32 @@ public class BotChatConfiguration
             ("anyone up for bc later?", "ktoś na bc później?"),
             ("so many people today", "dużo ludzi dzisiaj"),
             ("gm online?", "jest gm?"));
+        Add(
+            configuration.PartyVolunteerLines,
+            ("me? {level} {class}", "ja? {level} {class}"),
+            ("i can come, {class} {level}", "mogę przyjść, {class} {level}"),
+            ("{class} {level} here, where are you?", "{class} {level}, gdzie jesteś?"),
+            ("count me in, lvl {level}. where?", "wchodzę, lvl {level}. gdzie?"));
+        Add(
+            configuration.PartyAskWhereLines,
+            ("where? write map and coords, e.g. devias 215 40", "gdzie? napisz mapę i koordy, np. devias 215 40"),
+            ("which map? like lorencia 130 120", "jaka mapa? np. lorencia 130 120"));
+        Add(
+            configuration.PartyOnTheWayLines,
+            ("omw to {location}", "idę, {location}"),
+            ("ok, coming to {location}", "ok, już idę do {location}"),
+            ("on my way", "już lecę"));
+        Add(
+            configuration.PartyCantGoLines,
+            ("cant go to {map}, sry", "nie mogę iść do {map}, sry"),
+            ("{map} is too much for me", "{map} to za dużo dla mnie"));
+        AddClass("dk, bk, bm, knight, dark knight, blade knight, blade master, rycerz", BotClassNumbers.DarkKnightNumber);
+        AddClass("dw, sm, gm, wizard, dark wizard, soul master, grand master, mag", BotClassNumbers.DarkWizardNumber);
+        AddClass("elf, fe, muse, fairy elf, muse elf, high elf, elfka", BotClassNumbers.FairyElfNumber);
+        AddClass("mg, dm, gladiator, magic gladiator, duel master", BotClassNumbers.MagicGladiatorNumber);
+        AddClass("dl, le, lord, dark lord, lord emperor", BotClassNumbers.DarkLordNumber);
+        AddClass("sum, summoner, bs, dim, bloody summoner, dimension master", BotClassNumbers.SummonerNumber);
+        AddClass("rf, fm, fighter, rage fighter, fist master", BotClassNumbers.RageFighterNumber);
         AddReplies(
             "how are you, how r u, how are u, hru, how's it going, how is it going, jak sie masz, jak się masz, co slychac, co słychać, co tam",
             ("fine, thanks for asking", "dobrze, dzięki że pytasz"),
@@ -341,6 +451,9 @@ public class BotChatConfiguration
                 configuration.WhisperReplies.Add(new BotChatReply { Keywords = keywords, Text = Translated(text) });
             }
         }
+
+        void AddClass(string keywords, byte classNumber)
+            => configuration.PartyClassAliases.Add(new BotClassAlias { Keywords = keywords, ClassNumber = classNumber });
 
         static LocalizedString Translated((string English, string Polish) text)
             => new LocalizedString(text.English).WithTranslation(CultureInfo.GetCultureInfo("pl"), text.Polish);
