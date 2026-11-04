@@ -33,7 +33,9 @@ public enum BotChatSituation
     LevelMilestone,
 
     /// <summary>
-    /// A human player whispered to the bot. The bot whispers back.
+    /// A human player whispered to the bot, or mentioned its name in the normal chat next to it. The
+    /// bot answers the same way: by whisper, or in the normal chat. A line may carry
+    /// <see cref="BotChatLine.Keywords"/>.
     /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
     /// </summary>
     WhisperReply,
