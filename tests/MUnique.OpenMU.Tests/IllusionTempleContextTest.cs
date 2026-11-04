@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -234,6 +235,32 @@ public class IllusionTempleContextTest
         Assert.That(carrier.Inventory!.Items.Any(IsRelicItem), Is.False);
         Assert.That(GetRelicCarrier(illusionTemple), Is.Null);
 
+    }
+
+    /// <summary>
+    /// The team which reaches 7 points wins at once - delivering the 7th relic ends the game.
+    /// </summary>
+    [Test]
+    public async ValueTask DeliveringTheSeventhPointEndsTheGameAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var carrier = players.First(p => GetTeamOf(illusionTemple, p) == IllusionTempleTeam.AlliedForces);
+        illusionTemple.Score.IncreaseScore(IllusionTempleTeam.AlliedForces, 6);
+        carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
+        await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
+        var gameEnded = (CancellationToken)typeof(MiniGameContext)
+            .GetProperty("GameEndedToken", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(illusionTemple)!;
+        Assert.That(gameEnded.IsCancellationRequested, Is.False);
+
+        await illusionTemple.TalkToNpcTeamStorageAsync(AlliedStorageNumber, carrier).ConfigureAwait(false);
+
+        Assert.That(illusionTemple.Score.AlliedForcesScore, Is.EqualTo(7));
+        Assert.That(gameEnded.IsCancellationRequested, Is.True);
     }
 
     /// <summary>
