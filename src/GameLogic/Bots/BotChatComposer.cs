@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Globalization;
 using System.Text;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Chooses the line a bot says and renders it for one receiver: the translation of the receiver's
@@ -14,52 +15,51 @@ using System.Text;
 internal static class BotChatComposer
 {
     /// <summary>
-    /// Picks a random line of the situation.
+    /// Picks a random usable line of the list.
     /// </summary>
-    /// <param name="lines">All configured lines.</param>
-    /// <param name="situation">The situation.</param>
+    /// <param name="lines">The lines of one list, e.g. the greetings.</param>
     /// <param name="pickIndex">Returns a random index below the given count.</param>
-    /// <returns>The picked line, or <c>null</c> when the situation has no usable line.</returns>
-    internal static BotChatLine? PickLine(IEnumerable<BotChatLine> lines, BotChatSituation situation, Func<int, int> pickIndex)
+    /// <returns>The picked line, or <c>null</c> when the list has no usable line.</returns>
+    internal static BotChatLine? PickLine(IEnumerable<BotChatLine> lines, Func<int, int> pickIndex)
     {
         var candidates = lines
-            .Where(line => line.Situation == situation && !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage))
+            .Where(line => !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage))
             .ToList();
         return candidates.Count == 0 ? null : candidates[pickIndex(candidates.Count)];
     }
 
     /// <summary>
-    /// Picks the reply to a player's whisper: a random one of the lines whose keywords match the
+    /// Picks the reply to a player's message: a random one of the replies whose keywords match the
     /// message best, or - when no keyword matches - one of the replies without keywords.
     /// </summary>
-    /// <param name="lines">All configured lines.</param>
-    /// <param name="message">The whispered message.</param>
+    /// <param name="replies">The configured replies.</param>
+    /// <param name="message">The player's message.</param>
     /// <param name="pickIndex">Returns a random index below the given count.</param>
-    /// <returns>The picked line, or <c>null</c> when there is no usable reply.</returns>
+    /// <returns>The picked reply, or <c>null</c> when there is no usable reply.</returns>
     /// <remarks>
     /// The best match is the longest matching keyword, so "hi, how are you?" is answered by the
-    /// "how are you" lines rather than by the greetings matching "hi".
+    /// "how are you" replies rather than by the greetings matching "hi".
     /// </remarks>
-    internal static BotChatLine? PickWhisperReply(IEnumerable<BotChatLine> lines, string message, Func<int, int> pickIndex)
+    internal static BotChatReply? PickWhisperReply(IEnumerable<BotChatReply> replies, string message, Func<int, int> pickIndex)
     {
-        var replies = lines
-            .Where(line => line.Situation == BotChatSituation.WhisperReply && !string.IsNullOrWhiteSpace(line.Text.ValueInNeutralLanguage))
+        var usable = replies
+            .Where(reply => !string.IsNullOrWhiteSpace(reply.Text.ValueInNeutralLanguage))
             .ToList();
         var normalizedMessage = $" {Normalize(message)} ";
-        var scored = replies
-            .Select(line => (Line: line, Score: GetKeywords(line).Where(k => normalizedMessage.Contains($" {k} ", StringComparison.Ordinal)).Select(k => k.Length).DefaultIfEmpty(0).Max()))
+        var scored = usable
+            .Select(reply => (Reply: reply, Score: GetKeywords(reply.Keywords).Where(k => normalizedMessage.Contains($" {k} ", StringComparison.Ordinal)).Select(k => k.Length).DefaultIfEmpty(0).Max()))
             .ToList();
         var bestScore = scored.Count == 0 ? 0 : scored.Max(s => s.Score);
         var candidates = bestScore > 0
-            ? scored.Where(s => s.Score == bestScore).Select(s => s.Line).ToList()
-            : replies.Where(line => !GetKeywords(line).Any()).ToList();
+            ? scored.Where(s => s.Score == bestScore).Select(s => s.Reply).ToList()
+            : usable.Where(reply => !GetKeywords(reply.Keywords).Any()).ToList();
         return candidates.Count == 0 ? null : candidates[pickIndex(candidates.Count)];
     }
 
     /// <summary>
-    /// Renders the line for a receiver of the given culture.
+    /// Renders a text for a receiver of the given culture.
     /// </summary>
-    /// <param name="line">The line.</param>
+    /// <param name="text">The text, e.g. of a <see cref="BotChatLine"/>.</param>
     /// <param name="culture">The culture of the receiving player.</param>
     /// <param name="values">The placeholder values by name (without braces), each resolved for the culture.</param>
     /// <returns>The text to send.</returns>
@@ -67,9 +67,9 @@ internal static class BotChatComposer
     /// Unknown placeholders are left as they are, so a typo in a configured line is visible in the
     /// game instead of silently swallowing text.
     /// </remarks>
-    internal static string Render(BotChatLine line, CultureInfo culture, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    internal static string Render(LocalizedString text, CultureInfo culture, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
     {
-        var template = line.Text.GetTranslation(culture) ?? string.Empty;
+        var template = text.GetTranslation(culture) ?? string.Empty;
         if (!template.Contains('{', StringComparison.Ordinal))
         {
             return template;
@@ -99,8 +99,8 @@ internal static class BotChatComposer
         => Normalize(name) is { Length: > 0 } normalizedName
            && $" {Normalize(message)} ".Contains($" {normalizedName} ", StringComparison.Ordinal);
 
-    private static IEnumerable<string> GetKeywords(BotChatLine line)
-        => (line.Keywords ?? string.Empty)
+    private static IEnumerable<string> GetKeywords(string? keywords)
+        => (keywords ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(Normalize)
             .Where(keyword => keyword.Length > 0);

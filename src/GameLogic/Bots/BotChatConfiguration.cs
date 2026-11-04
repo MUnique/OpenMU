@@ -127,12 +127,97 @@ public class BotChatConfiguration
     public int SmallTalkChancePercent { get; set; } = 50;
 
     /// <summary>
-    /// Gets or sets the lines the bots choose from. A situation without lines stays silent.
+    /// Gets or sets the lines a bot posts with <c>/post</c> when the entrance of a Blood Castle, Devil Square
+    /// or Chaos Castle opened, before it waits for players at the meeting point (see <see cref="BotEventMeeting"/>).
+    /// Placeholders: <c>{event}</c>, <c>{map}</c> (the map of the meeting point), <c>{level}</c>.
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
-    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_Lines_Name), Description = nameof(PlugInResources.BotChatConfiguration_Lines_Description))]
-    public ICollection<BotChatLine> Lines { get; set; } = new List<BotChatLine>();
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventLines_Description))]
+    public ICollection<BotChatLine> EventLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot posts with <c>/post</c> when an invasion (White Wizard, Golden, Red Dragon)
+    /// started. Placeholders: <c>{event}</c>, <c>{map}</c>, <c>{level}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_InvasionLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_InvasionLines_Description))]
+    public ICollection<BotChatLine> InvasionLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot says in the normal chat when it reached a level milestone
+    /// (see <see cref="LevelMilestoneStep"/>). Placeholders: <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_LevelMilestoneLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_LevelMilestoneLines_Description))]
+    public ICollection<BotChatLine> LevelMilestoneLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the answers of a bot to a player who whispered to it, or mentioned its name in the normal
+    /// chat next to it. The bot answers the same way: by whisper, or in the normal chat.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_WhisperReplies_Name), Description = nameof(PlugInResources.BotChatConfiguration_WhisperReplies_Description))]
+    public ICollection<BotChatReply> WhisperReplies { get; set; } = new List<BotChatReply>();
+
+    /// <summary>
+    /// Gets or sets the lines the nearest bot greets a player with who entered the game.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_GreetingLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_GreetingLines_Description))]
+    public ICollection<BotChatLine> GreetingLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot says in the party chat after it accepted a player's party invitation.
+    /// Placeholders: <c>{player}</c> (the inviter), <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyJoinedLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyJoinedLines_Description))]
+    public ICollection<BotChatLine> PartyJoinedLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines one bot per party says in the party chat when an event it went through with a
+    /// player's party ended. Placeholders: <c>{event}</c>, <c>{level}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_EventFinishedLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_EventFinishedLines_Description))]
+    public ICollection<BotChatLine> EventFinishedLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot says in the normal chat when a player killed it outside of an event, right
+    /// before it respawns. Placeholders: <c>{player}</c> (the killer), <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_KilledLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_KilledLines_Description))]
+    public ICollection<BotChatLine> KilledLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot says instead of the <see cref="KilledLines"/> when the same player killed
+    /// it again within a short time - the bot gives up its revenge (see <see cref="BotRevengePlugIn"/>).
+    /// Placeholders as for the <see cref="KilledLines"/>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_KilledAgainLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_KilledAgainLines_Description))]
+    public ICollection<BotChatLine> KilledAgainLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines a bot standing in a safezone says now and then in the normal chat (see
+    /// <see cref="SmallTalkInterval"/>) - only when a player sees it. Placeholders: <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_SmallTalkLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_SmallTalkLines_Description))]
+    public ICollection<BotChatLine> SmallTalkLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Creates the configuration a server starts with: a set of English lines, each with a Polish
@@ -149,59 +234,59 @@ public class BotChatConfiguration
     {
         var configuration = new BotChatConfiguration();
         Add(
-            BotChatSituation.EventEntranceOpened,
+            configuration.EventLines,
             ("{event} open, anyone going? im in {map}", "{event} otwarte, ktoś idzie? jestem w {map}"),
             ("lf party {event}, waiting in {map}", "szukam grupy na {event}, czekam w {map}"),
             ("{event} now, who wants to join? {map}", "{event} teraz, kto chętny? {map}"),
             ("going {event}, party anyone? at {map}", "idę na {event}, ktoś do grupy? {map}"));
         Add(
-            BotChatSituation.InvasionStarted,
+            configuration.InvasionLines,
             ("{event} in {map}!", "{event} w {map}!"),
             ("{event} on {map}, go go", "{event} na {map}, lecimy"),
             ("{map} - {event} started", "{map} - start: {event}"));
         Add(
-            BotChatSituation.LevelMilestone,
+            configuration.LevelMilestoneLines,
             ("{level} finally :)", "{level} w końcu :)"),
             ("lvl {level}, nice", "lvl {level}, nieźle"),
             ("{level} done", "{level} wbite"));
-        Add(
-            BotChatSituation.WhisperReply,
+        AddReplies(
+            string.Empty,
             ("sry busy hunting", "sry, poluję"),
             ("hi, cant talk now", "hej, nie mogę teraz gadać"),
             ("hi, what's up?", "hej, co tam?"),
             ("afk a bit", "chwilę afk"));
         Add(
-            BotChatSituation.PlayerLogin,
+            configuration.GreetingLines,
             ("hi {player}, have a nice game", "siema {player}, miłej gry"),
             ("welcome back {player}", "witaj z powrotem {player}"),
             ("yo {player} :)", "yo {player} :)"),
             ("hey {player}", "hej {player}"));
         Add(
-            BotChatSituation.PartyJoined,
+            configuration.PartyJoinedLines,
             ("thx for invite", "dzięki za zaproszenie"),
             ("hi all", "hej wszystkim"),
             ("ty {player}", "dzięki {player}"),
             ("hey, lets go", "hej, lecimy"));
         Add(
-            BotChatSituation.EventFinished,
+            configuration.EventFinishedLines,
             ("gg", "gg"),
             ("gg wp", "gg wp"),
             ("gg, thx for party", "gg, dzięki za grupę"),
             ("nice run", "niezły run"));
         Add(
-            BotChatSituation.KilledByPlayer,
+            configuration.KilledLines,
             ("why??", "czemu??"),
             ("wtf {player}", "wtf {player}"),
             ("really?", "serio?"),
             ("ok {player}, remember that", "ok {player}, zapamiętam"));
         Add(
-            BotChatSituation.KilledAgainByPlayer,
+            configuration.KilledAgainLines,
             ("you again...", "znowu ty..."),
             ("ok ok, i leave", "dobra dobra, idę stąd"),
             ("{player} pls stop", "{player} weź przestań"),
             ("enough, im out", "dość, spadam"));
         Add(
-            BotChatSituation.SmallTalk,
+            configuration.SmallTalkLines,
             ("lf party {map}", "szukam grupy {map}"),
             ("lag?", "lag?"),
             ("need a party for exp", "potrzebna grupa na expa"),
@@ -240,11 +325,11 @@ public class BotChatConfiguration
             ("cya", "na razie"));
         return configuration;
 
-        void Add(BotChatSituation situation, params (string English, string Polish)[] texts)
+        void Add(ICollection<BotChatLine> lines, params (string English, string Polish)[] texts)
         {
             foreach (var text in texts)
             {
-                configuration.Lines.Add(new BotChatLine { Situation = situation, Text = Translated(text) });
+                lines.Add(new BotChatLine { Text = Translated(text) });
             }
         }
 
@@ -252,7 +337,7 @@ public class BotChatConfiguration
         {
             foreach (var text in texts)
             {
-                configuration.Lines.Add(new BotChatLine { Situation = BotChatSituation.WhisperReply, Text = Translated(text), Keywords = keywords });
+                configuration.WhisperReplies.Add(new BotChatReply { Keywords = keywords, Text = Translated(text) });
             }
         }
 

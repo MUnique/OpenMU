@@ -334,8 +334,9 @@ population ebbs and flows instead of appearing and vanishing in blocks.
 ### Talking
 
 With the separate *Bot chat* plugin (off by default), bots say a line now and
-then. The lines come from the plugin's configuration; there is no language
-model. A bot only talks about what it could actually do:
+then. The lines come from the plugin's configuration, one list per situation
+(event lines, greetings, whisper replies, …); there is no language model. A bot
+only talks about what it could actually do:
 
 | Situation | Where | Who says it |
 |---|---|---|
