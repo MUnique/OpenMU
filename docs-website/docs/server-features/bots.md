@@ -406,6 +406,10 @@ every player sees the translation of their own language, or the English text
 when it has none. The default lines come with a Polish translation, and the default
 keywords understand Polish whispers too.
 
+A bot answers like a typing player: it takes a moment to read, then a little
+time per character, so a quick "np" comes at once and a whole sentence takes a
+few seconds (at most twelve).
+
 The limits keep a large population from flooding the chat. All bots of a game
 server share one gap between two posts (`Minimum time between posts`, 3 minutes),
 each opened event type or started invasion is announced at most once, and each

@@ -16,6 +16,7 @@ using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
@@ -86,19 +87,9 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) LevelMilestoneDelaySeconds = (1, 4);
 
     /// <summary>
-    /// The delay range of a whisper reply - the time a player needs to read and type.
-    /// </summary>
-    private static readonly (int Min, int Max) WhisperReplyDelaySeconds = (2, 7);
-
-    /// <summary>
     /// The delay range of a greeting: the entering player's client needs a moment to load the world.
     /// </summary>
     private static readonly (int Min, int Max) GreetingDelaySeconds = (3, 8);
-
-    /// <summary>
-    /// The delay range of a party chat line - after the party window or the event's score popped up.
-    /// </summary>
-    private static readonly (int Min, int Max) PartyChatDelaySeconds = (2, 6);
 
     /// <summary>
     /// The delay range of a comment on being killed: said while the bot still lies there, before it
@@ -112,9 +103,19 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) CongratulationDelaySeconds = (2, 5);
 
     /// <summary>
-    /// The delay range of the answer in a conversation of two bots: the time to read and type.
+    /// The delay range before a bot starts typing an answer: the time to notice and read the message.
     /// </summary>
-    private static readonly (int Min, int Max) ConversationReplyDelaySeconds = (3, 6);
+    private static readonly (int Min, int Max) TypingReactionSeconds = (1, 3);
+
+    /// <summary>
+    /// The range of the time a bot needs per typed character - a casual typist in a game chat.
+    /// </summary>
+    private static readonly (int Min, int Max) TypingMillisecondsPerCharacter = (120, 220);
+
+    /// <summary>
+    /// The longest a bot types, so a long line doesn't arrive after the player gave up waiting.
+    /// </summary>
+    private static readonly TimeSpan MaximumTypingTime = TimeSpan.FromSeconds(12);
 
     /// <summary>
     /// The gap between the whispers of two bots answering the same party search, so the answers
@@ -241,7 +242,7 @@ public class BotChatPlugIn
         values["player"] = _ => senderName;
         RunLater(
             receiver.GameContext,
-            RandomDelay(WhisperReplyDelaySeconds),
+            TypingDelay(line.Text),
             () => IsAvailable(receiver) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
                 ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values)
                 : ValueTask.CompletedTask);
@@ -278,7 +279,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         var inviterName = inviter.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => inviterName;
-        RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
+        RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
     }
 
     /// <inheritdoc />
@@ -307,7 +308,7 @@ public class BotChatPlugIn
 
             var values = CreateBotValues(bot);
             values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
-            RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
+            RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
         }
 
         return ValueTask.CompletedTask;
@@ -384,7 +385,7 @@ public class BotChatPlugIn
         values["player"] = _ => senderName;
         RunLater(
             bot.GameContext,
-            RandomDelay(WhisperReplyDelaySeconds),
+            TypingDelay(line.Text),
             () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values) : ValueTask.CompletedTask);
     }
 
@@ -442,11 +443,12 @@ public class BotChatPlugIn
 
             throttle.SetPartyOffer(bot, new BotPartyOffer(sender, now + configuration.PartyOfferTimeout));
             delay += RandomDelay(PartyVolunteerSpacingSeconds);
+            var whisperDelay = delay + TypingDelay(line.Text);
             var values = CreateBotValues(bot);
             values["player"] = _ => senderName;
             RunLater(
                 bot.GameContext,
-                delay,
+                whisperDelay,
                 () => IsAvailable(bot) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
                     ? BotChatSpeaker.WhisperAsync(bot, sender, line.Text, values)
                     : ValueTask.CompletedTask);
@@ -519,6 +521,20 @@ public class BotChatPlugIn
         }
 
         return current;
+    }
+
+    /// <summary>
+    /// Gets the time a bot needs to answer with a text of the given length: the reaction, then the
+    /// typing of each character - "np" comes quickly, a whole sentence takes a while.
+    /// </summary>
+    /// <param name="length">The length of the text.</param>
+    /// <param name="reaction">The time to notice and read the message.</param>
+    /// <param name="perCharacter">The time per typed character.</param>
+    /// <returns>The delay, at most <see cref="MaximumTypingTime"/>.</returns>
+    internal static TimeSpan GetTypingTime(int length, TimeSpan reaction, TimeSpan perCharacter)
+    {
+        var time = reaction + (perCharacter * length);
+        return time < MaximumTypingTime ? time : MaximumTypingTime;
     }
 
     private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
@@ -615,6 +631,16 @@ public class BotChatPlugIn
 
     private static BotChatLine? PickLine(IEnumerable<BotChatLine> lines)
         => BotChatComposer.PickLine(lines, count => Rand.NextInt(0, count));
+
+    /// <summary>
+    /// Gets a random, human-like time to answer with the text (see <see cref="GetTypingTime"/>). The
+    /// English text stands in for all translations - they are about as long.
+    /// </summary>
+    private static TimeSpan TypingDelay(LocalizedString text)
+        => GetTypingTime(
+            text.ValueInNeutralLanguage.Length,
+            RandomDelay(TypingReactionSeconds),
+            TimeSpan.FromMilliseconds(Rand.NextInt(TypingMillisecondsPerCharacter.Min, TypingMillisecondsPerCharacter.Max)));
 
     private static TimeSpan RandomDelay(TimeSpan min, TimeSpan max)
         => max <= min ? min : min + TimeSpan.FromMilliseconds(Rand.NextDouble() * (max - min).TotalMilliseconds);
@@ -733,7 +759,7 @@ public class BotChatPlugIn
     private void WhisperLater(Player bot, Player receiver, BotChatLine line, Dictionary<string, Func<CultureInfo, string>> values)
         => RunLater(
             bot.GameContext,
-            RandomDelay(WhisperReplyDelaySeconds),
+            TypingDelay(line.Text),
             () => receiver.PlayerState.CurrentState == PlayerState.EnteredWorld
                 ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values)
                 : ValueTask.CompletedTask);
@@ -826,7 +852,7 @@ public class BotChatPlugIn
             await BotChatSpeaker.SayAsync(first, conversation.Opener, firstValues).ConfigureAwait(false);
             RunLater(
                 gameContext,
-                RandomDelay(ConversationReplyDelaySeconds),
+                TypingDelay(conversation.Reply),
                 () => IsAvailable(second) ? BotChatSpeaker.SayAsync(second, conversation.Reply, secondValues) : ValueTask.CompletedTask);
         }
     }

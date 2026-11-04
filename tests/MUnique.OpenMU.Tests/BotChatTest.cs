@@ -139,6 +139,21 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// A bot answers like a typing player: a short "np" comes quickly, a long sentence takes longer -
+    /// but never longer than the cap, so the player doesn't give up waiting.
+    /// </summary>
+    [Test]
+    public void TypesLongerForLongerTexts()
+    {
+        var reaction = TimeSpan.FromSeconds(1);
+        var perCharacter = TimeSpan.FromMilliseconds(200);
+
+        Assert.That(BotChatPlugIn.GetTypingTime(2, reaction, perCharacter), Is.EqualTo(TimeSpan.FromMilliseconds(1400)));
+        Assert.That(BotChatPlugIn.GetTypingTime(30, reaction, perCharacter), Is.EqualTo(TimeSpan.FromSeconds(7)));
+        Assert.That(BotChatPlugIn.GetTypingTime(500, reaction, perCharacter), Is.EqualTo(TimeSpan.FromSeconds(12)));
+    }
+
+    /// <summary>
     /// The chat and whisper reply cooldowns belong to one bot; another bot may still talk, and the
     /// two cooldowns don't block each other.
     /// </summary>
