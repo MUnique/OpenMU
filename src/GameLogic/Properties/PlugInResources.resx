@@ -2017,4 +2017,6 @@
   <data name="BotChatLanguageHint_Words_Description" xml:space="preserve"><value>Comma-separated typical words of the language. The language with the most hits in a message wins; a tie leaves it open.</value></data>
   <data name="BotChatLanguageHint_Letters_Name" xml:space="preserve"><value>Letters</value></data>
   <data name="BotChatLanguageHint_Letters_Description" xml:space="preserve"><value>Letters only this language uses, e.g. ąćęłńóśźż. One of them in a message counts like a typical word.</value></data>
+  <data name="BotChatLine_Gesture_Name" xml:space="preserve"><value>Gesture</value></data>
+  <data name="BotChatLine_Gesture_Description" xml:space="preserve"><value>A gesture the bot makes with it, like a player typing /hello: Greeting, Goodbye, Clap, Cheer, Win, Smile, Respect, Salute, Cry, Awkward or Provocation. The bot turns to the player it talks to.</value></data>
 </root>

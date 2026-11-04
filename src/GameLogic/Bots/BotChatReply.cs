@@ -35,6 +35,12 @@ public class BotChatReply
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_Text_Name), Description = nameof(PlugInResources.BotChatLine_Text_Description))]
     public LocalizedString Text { get; set; }
 
+    /// <summary>
+    /// Gets or sets the gesture the bot makes with the reply, seen by the players around it.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_Gesture_Name), Description = nameof(PlugInResources.BotChatLine_Gesture_Description))]
+    public BotChatGesture Gesture { get; set; }
+
     /// <inheritdoc />
     public override string ToString() => $"{this.Keywords}: {this.Text.ValueInNeutralLanguage}";
 }

@@ -30,6 +30,12 @@ public class BotChatLine
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_When_Name), Description = nameof(PlugInResources.BotChatLine_When_Description))]
     public BotChatTimeOfDay When { get; set; }
 
+    /// <summary>
+    /// Gets or sets the gesture the bot makes with the line, seen by the players around it.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatLine_Gesture_Name), Description = nameof(PlugInResources.BotChatLine_Gesture_Description))]
+    public BotChatGesture Gesture { get; set; }
+
     /// <inheritdoc />
     public override string ToString() => this.Text.ValueInNeutralLanguage;
 }

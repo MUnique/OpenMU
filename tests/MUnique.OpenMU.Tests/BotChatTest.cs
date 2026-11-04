@@ -417,6 +417,21 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// The default lines come with fitting gestures: a wave with a greeting and with a goodbye, a
+    /// clap with a "gz". The values are the client's emote animations.
+    /// </summary>
+    [Test]
+    public void DefaultLinesComeWithGestures()
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+
+        Assert.That(configuration.GreetingLines.All(line => line.Gesture == BotChatGesture.Greeting), Is.True);
+        Assert.That(configuration.CongratulationLines.All(line => line.Gesture == BotChatGesture.Clap), Is.True);
+        Assert.That(BotChatComposer.PickWhisperReply(configuration.WhisperReplies, "muszę kończyć", _ => 0)?.Gesture, Is.EqualTo(BotChatGesture.Goodbye));
+        Assert.That((byte)BotChatGesture.Greeting, Is.EqualTo(131));
+    }
+
+    /// <summary>
     /// A server which switches the plugin on has something to say in every situation: each list of
     /// the default configuration has lines.
     /// </summary>
