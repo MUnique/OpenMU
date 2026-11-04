@@ -5328,5 +5328,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotClassAlias_ClassNumber_Description text.</summary>
         public static string BotClassAlias_ClassNumber_Description => ResourceManager.GetString("BotClassAlias_ClassNumber_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_ConversationInterval_Name text.</summary>
+        public static string BotChatConfiguration_ConversationInterval_Name => ResourceManager.GetString("BotChatConfiguration_ConversationInterval_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ConversationInterval_Description text.</summary>
+        public static string BotChatConfiguration_ConversationInterval_Description => ResourceManager.GetString("BotChatConfiguration_ConversationInterval_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ConversationChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_ConversationChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_ConversationChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_ConversationChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_ConversationChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_ConversationChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_Conversations_Name text.</summary>
+        public static string BotChatConfiguration_Conversations_Name => ResourceManager.GetString("BotChatConfiguration_Conversations_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_Conversations_Description text.</summary>
+        public static string BotChatConfiguration_Conversations_Description => ResourceManager.GetString("BotChatConfiguration_Conversations_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Opener_Name text.</summary>
+        public static string BotConversation_Opener_Name => ResourceManager.GetString("BotConversation_Opener_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Opener_Description text.</summary>
+        public static string BotConversation_Opener_Description => ResourceManager.GetString("BotConversation_Opener_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Reply_Name text.</summary>
+        public static string BotConversation_Reply_Name => ResourceManager.GetString("BotConversation_Reply_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Reply_Description text.</summary>
+        public static string BotConversation_Reply_Description => ResourceManager.GetString("BotConversation_Reply_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Where_Name text.</summary>
+        public static string BotConversation_Where_Name => ResourceManager.GetString("BotConversation_Where_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConversation_Where_Description text.</summary>
+        public static string BotConversation_Where_Description => ResourceManager.GetString("BotConversation_Where_Description", resourceCulture)!;
+
     }
 }
