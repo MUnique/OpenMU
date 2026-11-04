@@ -12,6 +12,7 @@ using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlayerActions.Duel;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
@@ -51,6 +52,8 @@ public class BotChatPlugIn
     IChatMessageSentPlugIn,
     IPeriodicTaskPlugIn,
     IPostMessageSentPlugIn,
+    ITradeRequestedPlugIn,
+    IDuelRequestedPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -410,6 +413,35 @@ public class BotChatPlugIn
     public void ForceStart() => Interlocked.Increment(ref this._forceStartCount);
 
     /// <inheritdoc />
+    public ValueTask TradeRequestedAsync(Player requester, Player partner)
+    {
+        // The bot has no trade window, so the request goes nowhere - the bot says why.
+        if (this.Configuration is { } configuration
+            && IsBot(partner)
+            && requester is not OfflinePlayer)
+        {
+            this.DeclineLater(partner, requester, configuration, configuration.TradeDeclineLines, null);
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask DuelRequestedAsync(Player requester, Player target)
+    {
+        // A bot never answered a duel request, which left the challenger waiting in vain: it refuses,
+        // like a player clicking "no", and says why.
+        if (this.Configuration is { } configuration
+            && IsBot(target)
+            && requester is not OfflinePlayer)
+        {
+            this.DeclineLater(target, requester, configuration, configuration.DuelDeclineLines, () => RefuseDuelAsync(target, requester));
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
     public async ValueTask PostMessageSentAsync(Player sender, string message)
     {
         if (this.Configuration is not { PartyVolunteerCount: > 0 } configuration
@@ -707,6 +739,15 @@ public class BotChatPlugIn
             : PlugInResources.ResourceManager.GetString(displayName, culture) ?? displayName;
     }
 
+    /// <summary>
+    /// Refuses the duel the player challenged the bot to - unless the challenge is already over, e.g.
+    /// the player took it back meanwhile.
+    /// </summary>
+    private static ValueTask RefuseDuelAsync(Player bot, Player requester)
+        => bot.DuelRoom is { State: DuelState.DuelRequested } duelRoom && ReferenceEquals(duelRoom.Requester, requester)
+            ? new DuelActions().HandleDuelResponseAsync(bot, requester, false)
+            : ValueTask.CompletedTask;
+
     private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
 
     /// <summary>
@@ -797,6 +838,33 @@ public class BotChatPlugIn
         {
             this.WhisperLater(bot, requester, onTheWayLine, values);
         }
+    }
+
+    /// <summary>
+    /// Declines a player's request after a human-like moment: runs the refusal, if any, and whispers
+    /// one of the lines - by chance, and not more often than the whisper reply cooldown allows.
+    /// </summary>
+    private void DeclineLater(Player bot, Player requester, BotChatConfiguration configuration, ICollection<BotChatLine> lines, Func<ValueTask>? refuse)
+    {
+        var whisper = configuration.DeclineReplyChancePercent > 0
+                      && Rand.NextRandomBool(configuration.DeclineReplyChancePercent)
+                      && this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown);
+        var line = whisper ? this.PickLineFor(requester, lines) : null;
+        var values = CreateBotValues(bot);
+        var requesterName = requester.SelectedCharacter?.Name ?? string.Empty;
+        values["player"] = _ => requesterName;
+        RunLater(bot.GameContext, line is null ? RandomDelay(TypingReactionSeconds) : TypingDelay(line.Text), async () =>
+        {
+            if (refuse is not null)
+            {
+                await refuse().ConfigureAwait(false);
+            }
+
+            if (line is not null && requester.PlayerState.CurrentState == PlayerState.EnteredWorld)
+            {
+                await BotChatSpeaker.WhisperAsync(bot, requester, line.Text, values).ConfigureAwait(false);
+            }
+        });
     }
 
     private void WhisperLater(Player bot, Player receiver, BotChatLine line, Dictionary<string, Func<CultureInfo, string>> values)

@@ -122,6 +122,15 @@ public class BotChatConfiguration
     public TimeSpan CongratulationCooldown { get; set; } = TimeSpan.FromMinutes(10);
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that a bot says why it turns down a player's trade or duel
+    /// request, by whisper. A bot turns them down in any case - it has no trade window, and it
+    /// doesn't duel.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_DeclineReplyChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_DeclineReplyChancePercent_Description))]
+    public int DeclineReplyChancePercent { get; set; } = 70;
+
+    /// <summary>
     /// Gets or sets how many bots answer a player's party search posted with <c>/post</c>, e.g.
     /// "party 300-350 bk" (see <see cref="BotPartyRequest"/>); 0 switches it off. The same search
     /// posted again is answered by other bots.
@@ -279,6 +288,24 @@ public class BotChatConfiguration
     [ScaffoldColumn(true)]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Description))]
     public ICollection<BotChatLine> ResetCongratulationLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the whispers with which a bot turns down a player's trade request.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_TradeDeclineLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_TradeDeclineLines_Description))]
+    public ICollection<BotChatLine> TradeDeclineLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the whispers with which a bot turns down a player's duel challenge.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_DuelDeclineLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_DuelDeclineLines_Description))]
+    public ICollection<BotChatLine> DuelDeclineLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Gets or sets the whispers with which a bot answers a player's party search.
@@ -455,6 +482,16 @@ public class BotChatConfiguration
             ("gz on the reset!", "gratki resetu!"),
             ("reset {resets}, nice {player}", "reset {resets}, nieźle {player}"),
             ("another reset? gz", "kolejny reset? gz"));
+        Add(
+            configuration.TradeDeclineLines,
+            ("sry, no trade", "sorry, nie handluję"),
+            ("not trading now, busy", "teraz nie handluję, jestem zajęty"),
+            ("nothing to sell, sry", "nie mam nic na sprzedaż, sry"));
+        Add(
+            configuration.DuelDeclineLines,
+            ("not now, maybe later", "nie teraz, może później"),
+            ("no duels today, sry", "dziś bez duelów, sry"),
+            ("haha no, i'm here for exp", "haha nie, jestem tu dla expa"));
         Add(
             configuration.PartyVolunteerLines,
             ("me? {level} {class}", "ja? {level} {class}"),
