@@ -3,6 +3,7 @@
 // </copyright>
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -11,6 +12,9 @@ using MUnique.OpenMU.Persistence.EntityFramework;
 using MUnique.OpenMU.Web.PlayerPortal.Api;
 
 var builder = DaprService.CreateBuilder("PlayerPortal", args);
+
+// Keep this private player API reachable only by a local Cloudflare Tunnel agent.
+builder.WebHost.UseUrls("http://127.0.0.1:8080");
 builder.Services.AddPeristenceProvider()
     .AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
 builder.Services.AddPlayerPortalApi(builder.Configuration);

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>Registers the isolated player portal API and its Worker-only authentication policy.</summary>
 public static class PlayerPortalApiExtensions
@@ -29,6 +30,7 @@ public static class PlayerPortalApiExtensions
         services.TryAddSingleton(TimeProvider.System);
         services.AddSingleton<PlayerSessionStore>();
         services.AddSingleton<PlayerLoginAttemptLimiter>();
+        services.AddScoped<AccountRegistrationService>();
         services.AddScoped<PlayerPortalService>();
         services.AddAuthentication(options =>
             {

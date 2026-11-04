@@ -218,6 +218,19 @@ public sealed class PlayerPortalApiTests
         Assert.That(this._sessions.TryGetAccountId(session.Token, out _), Is.False);
     }
 
+    /// <summary>The private API registers the native account registration service it consumes.</summary>
+    [Test]
+    public void PlayerPortalApiRegistersNativeAccountRegistrationService()
+    {
+        var services = new ServiceCollection();
+        services.AddPlayerPortalApi(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            [PlayerPortalApiDefaults.WorkerTokenConfigurationKey] = "synthetic-worker-secret-with-32-bytes-minimum",
+        }).Build());
+
+        Assert.That(services.Any(descriptor => descriptor.ServiceType == typeof(AccountRegistrationService)), Is.True);
+    }
+
     /// <summary>Worker authentication rejects missing, weakly-configured, and incorrect service credentials.</summary>
     [Test]
     public async Task WorkerAuthenticationRequiresDistinctBearerCredentialAsync()
