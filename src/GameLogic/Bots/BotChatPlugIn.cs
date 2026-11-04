@@ -43,6 +43,7 @@ public class BotChatPlugIn
     IPlayerStateChangedPlugIn,
     IBotPartyJoinedPlugIn,
     IMiniGameEndedPlugIn,
+    IAttackableGotKilledPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -85,6 +86,12 @@ public class BotChatPlugIn
     /// The delay range of a party chat line - after the party window or the event's score popped up.
     /// </summary>
     private static readonly (int Min, int Max) PartyChatDelaySeconds = (2, 6);
+
+    /// <summary>
+    /// The delay range of a comment on being killed: said while the bot still lies there, before it
+    /// respawns, so the killer sees it.
+    /// </summary>
+    private static readonly (int Min, int Max) KilledDelaySeconds = (1, 2);
 
     private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
 
@@ -244,6 +251,40 @@ public class BotChatPlugIn
             RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line, values));
         }
 
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
+    {
+        // Same cases as the revenge (BotRevengePlugIn): a human player's kill outside of an event,
+        // where dying is part of the game.
+        if (this.Configuration is not { KilledByPlayerChancePercent: > 0 } configuration
+            || killed is not OfflinePlayer bot
+            || !IsBot(bot)
+            || bot.CurrentMiniGame is not null
+            || killer is not Player killerPlayer
+            || killerPlayer is OfflinePlayer
+            || !Rand.NextRandomBool(configuration.KilledByPlayerChancePercent)
+            || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        RunLater(bot.GameContext, RandomDelay(KilledDelaySeconds), () =>
+        {
+            // Read after the delay: the revenge plugin registers the death in the same notification.
+            var situation = bot.GetRecentDeathCount(killerPlayer) >= OfflinePlayer.RepeatedKillThreshold ? BotChatSituation.KilledAgainByPlayer : BotChatSituation.KilledByPlayer;
+            if (PickLine(configuration, situation) is not { } line)
+            {
+                return ValueTask.CompletedTask;
+            }
+
+            var values = CreateBotValues(bot);
+            var killerName = killerPlayer.SelectedCharacter?.Name ?? string.Empty;
+            values["player"] = _ => killerName;
+            return BotChatSpeaker.SayAsync(bot, line, values);
+        });
         return ValueTask.CompletedTask;
     }
 

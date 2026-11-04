@@ -345,6 +345,7 @@ model. A bot only talks about what it could actually do:
 | A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
 | The bot accepted a player's party invitation | party chat, `{player}` | the bot |
 | An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
+| A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
 
 A bot which posts about an event does not stay out hunting where nobody

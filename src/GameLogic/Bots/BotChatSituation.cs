@@ -58,4 +58,16 @@ public enum BotChatSituation
     /// Placeholders: <c>{event}</c>, <c>{level}</c>.
     /// </summary>
     EventFinished,
+
+    /// <summary>
+    /// A player killed the bot (outside of an event). Said in the normal chat, right before the bot
+    /// respawns. Placeholders: <c>{player}</c> (the killer), <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    KilledByPlayer,
+
+    /// <summary>
+    /// The same player killed the bot again within a short time - the bot gives up its revenge
+    /// (see <see cref="BotRevengePlugIn"/>). Placeholders as for <see cref="KilledByPlayer"/>.
+    /// </summary>
+    KilledAgainByPlayer,
 }

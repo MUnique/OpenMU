@@ -105,6 +105,13 @@ public class BotChatConfiguration
     public int PartyChatChancePercent { get; set; } = 70;
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that a bot killed by a player says something about it.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_KilledByPlayerChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_KilledByPlayerChancePercent_Description))]
+    public int KilledByPlayerChancePercent { get; set; } = 70;
+
+    /// <summary>
     /// Gets or sets the lines the bots choose from. A situation without lines stays silent.
     /// </summary>
     [MemberOfAggregate]
@@ -163,6 +170,18 @@ public class BotChatConfiguration
             "gg wp",
             "gg, thx for party",
             "nice run");
+        Add(
+            BotChatSituation.KilledByPlayer,
+            "why??",
+            "wtf {player}",
+            "really?",
+            "ok {player}, remember that");
+        Add(
+            BotChatSituation.KilledAgainByPlayer,
+            "you again...",
+            "ok ok, i leave",
+            "{player} pls stop",
+            "enough, im out");
         AddReplies("how are you, how r u, how are u, hru, how's it going, how is it going", "fine, thanks for asking", "good, you?", "all good, just grinding");
         AddReplies("hi, hello, hey, yo, hiho, sup", "hi, what's up?", "hey :)", "hello");
         AddReplies("level, lvl, what level", "{level} now", "lvl {level}");
