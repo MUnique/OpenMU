@@ -400,6 +400,23 @@ every player sees the translation of their own language, or the English text
 when it has none. The default lines come with a Polish translation, and the default
 keywords understand Polish whispers too.
 
+For the Polish lines to reach a Polish player, three things are needed:
+
+1. **The player's language is set to `pl`** — the *Language Iso Code* of the
+   player's account in the admin panel. The game client doesn't tell the server
+   its language, and the `/language` command only offers the languages of the
+   server messages.
+2. **The server has the full culture data.** The Docker images install
+   `icu-data-full`; with the English culture data alone (`icu-libs` on Alpine),
+   the server doesn't know the `pl` culture and every player gets the English
+   lines. A self-built image needs the package too.
+3. **The admin panel shows a field for Polish**, to read and edit the
+   translations. It shows the languages of its own user interface, every
+   language a text already has a translation in, and the additional content
+   languages of the `AdminPanel:ContentLanguages` setting — e.g. the environment
+   variable `AdminPanel__ContentLanguages__0=pl`. Without the setting, the
+   Polish default lines are still shown, but a new line gets no Polish field.
+
 Every line and conversation has a `When`: `Anytime` (the default), `Morning`
 (5–11 o'clock), `Day` (11–18), `Evening` (18–23) or `Night` (23–5), by the local
 time of the server. A greeting may be "good morning" in the morning and "late

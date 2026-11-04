@@ -4,7 +4,9 @@ WORKDIR /app
 # OpenMU uses localized texts, which require the culture data of ICU.
 # The alpine images don't contain it and run in the globalization-invariant mode by default.
 # tzdata provides the IANA time zones (e.g. Europe/Berlin), which the alpine images don't contain either.
-RUN apk add --no-cache icu-libs tzdata
+# icu-data-full: icu-libs alone brings the English culture data only, so a player's language like
+# "pl" isn't found and every player gets the English texts.
+RUN apk add --no-cache icu-libs icu-data-full tzdata
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 EXPOSE 8080
 
