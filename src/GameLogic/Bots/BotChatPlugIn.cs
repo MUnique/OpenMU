@@ -55,10 +55,17 @@ public class BotChatPlugIn
     IDisabledByDefault
 {
     /// <summary>
-    /// How close a bot must stand to greet an entering player - roughly the range in which the
-    /// player sees it, so the greeting comes from a character on the screen.
+    /// How close a bot must stand to a player to talk to them - to greet an entering player, or to
+    /// let them overhear a conversation: roughly the range in which the player sees it, so the line
+    /// comes from a character on the screen.
     /// </summary>
-    private const double GreetingRange = 12;
+    private const double HearingRange = 12;
+
+    /// <summary>
+    /// How close two bots must stand to each other to have a conversation - close enough to look like
+    /// they are talking to each other.
+    /// </summary>
+    private const double ConversationPairRange = 5;
 
     /// <summary>
     /// How long an invasion counts as announced. Long enough that a second invasion of the same kind
@@ -98,6 +105,11 @@ public class BotChatPlugIn
     /// respawns, so the killer sees it.
     /// </summary>
     private static readonly (int Min, int Max) KilledDelaySeconds = (1, 2);
+
+    /// <summary>
+    /// The delay range of the answer in a conversation of two bots: the time to read and type.
+    /// </summary>
+    private static readonly (int Min, int Max) ConversationReplyDelaySeconds = (3, 6);
 
     /// <summary>
     /// The gap between the whispers of two bots answering the same party search, so the answers
@@ -363,35 +375,13 @@ public class BotChatPlugIn
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        if (this.Configuration is not { SmallTalkChancePercent: > 0 } configuration
-            || !this.GetThrottle(gameContext).TryStartSmallTalk(DateTime.UtcNow, configuration.SmallTalkInterval, Volatile.Read(ref this._forceStartCount))
-            || !Rand.NextRandomBool(configuration.SmallTalkChancePercent))
+        if (this.Configuration is not { } configuration)
         {
             return;
         }
 
-        var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
-        var candidates = new List<Player>();
-        foreach (var bot in players.Where(p => IsBot(p) && IsAvailable(p) && IsInSafezone(p)))
-        {
-            // Talking to nobody would be wasted: only a bot which a player sees may talk.
-            if (await HasHumanObserverAsync(bot).ConfigureAwait(false))
-            {
-                candidates.Add(bot);
-            }
-        }
-
-        if (candidates.Count == 0
-            || PickLine(configuration.SmallTalkLines) is not { } line)
-        {
-            return;
-        }
-
-        var speaker = candidates[Rand.NextInt(0, candidates.Count)];
-        if (this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
-        {
-            await BotChatSpeaker.SayAsync(speaker, line.Text, CreateBotValues(speaker)).ConfigureAwait(false);
-        }
+        await this.MakeSmallTalkAsync(gameContext, configuration).ConfigureAwait(false);
+        await this.HoldConversationsAsync(gameContext, configuration).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -480,7 +470,7 @@ public class BotChatPlugIn
         => players
             .Where(p => IsBot(p) && IsAvailable(p) && ReferenceEquals(p.CurrentMap, map))
             .Select(p => (Bot: p, Distance: p.GetDistanceTo(player)))
-            .Where(candidate => candidate.Distance <= GreetingRange)
+            .Where(candidate => candidate.Distance <= HearingRange)
             .OrderBy(candidate => candidate.Distance)
             .Select(candidate => candidate.Bot)
             .FirstOrDefault();
@@ -552,6 +542,37 @@ public class BotChatPlugIn
 
     private static bool IsInSafezone(Player bot)
         => bot.CurrentMap is { } map && map.Terrain.SafezoneMap[bot.Position.X, bot.Position.Y];
+
+    private static bool IsInHearingRange(Player speaker, Player listener)
+        => ReferenceEquals(speaker.CurrentMap, listener.CurrentMap) && speaker.GetDistanceTo(listener) <= HearingRange;
+
+    /// <summary>
+    /// Finds two bots for a conversation among the bots near a player: a random pair standing close
+    /// together, both in a safezone (a town) or both outside of it (out hunting).
+    /// </summary>
+    private static (Player First, Player Second, BotConversationPlace Place)? FindConversationPair(IReadOnlyList<Player> bots)
+    {
+        var pairs = new List<(Player First, Player Second, BotConversationPlace Place)>();
+        for (var i = 0; i < bots.Count; i++)
+        {
+            for (var j = i + 1; j < bots.Count; j++)
+            {
+                var (a, b) = (bots[i], bots[j]);
+                var inTown = IsInSafezone(a);
+                if (ReferenceEquals(a.CurrentMap, b.CurrentMap)
+                    && a.GetDistanceTo(b) <= ConversationPairRange
+                    && inTown == IsInSafezone(b))
+                {
+                    var place = inTown ? BotConversationPlace.Town : BotConversationPlace.Hunting;
+
+                    // Random order, so it's not always the same bot which starts.
+                    pairs.Add(Rand.NextRandomBool() ? (a, b, place) : (b, a, place));
+                }
+            }
+        }
+
+        return pairs.Count == 0 ? null : pairs[Rand.NextInt(0, pairs.Count)];
+    }
 
     private static async ValueTask<bool> HasHumanObserverAsync(Player bot)
     {
@@ -695,6 +716,101 @@ public class BotChatPlugIn
             () => receiver.PlayerState.CurrentState == PlayerState.EnteredWorld
                 ? BotChatSpeaker.WhisperAsync(bot, receiver, line.Text, values)
                 : ValueTask.CompletedTask);
+
+    private async ValueTask MakeSmallTalkAsync(GameContext gameContext, BotChatConfiguration configuration)
+    {
+        if (configuration.SmallTalkChancePercent <= 0
+            || !this.GetThrottle(gameContext).TryStartSmallTalk(DateTime.UtcNow, configuration.SmallTalkInterval, Volatile.Read(ref this._forceStartCount))
+            || !Rand.NextRandomBool(configuration.SmallTalkChancePercent))
+        {
+            return;
+        }
+
+        var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var candidates = new List<Player>();
+        foreach (var bot in players.Where(p => IsBot(p) && IsAvailable(p) && IsInSafezone(p)))
+        {
+            // Talking to nobody would be wasted: only a bot which a player sees may talk.
+            if (await HasHumanObserverAsync(bot).ConfigureAwait(false))
+            {
+                candidates.Add(bot);
+            }
+        }
+
+        if (candidates.Count == 0
+            || PickLine(configuration.SmallTalkLines) is not { } line)
+        {
+            return;
+        }
+
+        var speaker = candidates[Rand.NextInt(0, candidates.Count)];
+        if (this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
+        {
+            await BotChatSpeaker.SayAsync(speaker, line.Text, CreateBotValues(speaker)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Lets two bots near a human player talk, for every player whose interval is over: the pair
+    /// stands close together - both in a town or both out hunting - and the conversation fits the
+    /// place. Every player who hears it waits a whole interval for the next one.
+    /// </summary>
+    private async ValueTask HoldConversationsAsync(GameContext gameContext, BotChatConfiguration configuration)
+    {
+        var now = DateTime.UtcNow;
+        var throttle = this.GetThrottle(gameContext);
+        if (configuration.ConversationChancePercent <= 0
+            || configuration.Conversations.Count == 0
+            || !throttle.TryStartConversationScan(now))
+        {
+            return;
+        }
+
+        var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
+        var humans = players.Where(p => p is not OfflinePlayer && p.PlayerState.CurrentState == PlayerState.EnteredWorld && p.CurrentMap is not null).ToList();
+        var bots = players.Where(p => IsBot(p) && IsAvailable(p)).ToList();
+        foreach (var human in humans)
+        {
+            if (!throttle.IsConversationDue(human, now, configuration.ConversationInterval)
+                || FindConversationPair(bots.Where(bot => IsInHearingRange(bot, human)).ToList()) is not { } pair)
+            {
+                continue;
+            }
+
+            // Whoever hears this one waits a whole interval - also when the dice said no.
+            foreach (var listener in humans.Where(listener => IsInHearingRange(pair.First, listener) || IsInHearingRange(pair.Second, listener)))
+            {
+                throttle.PostponeConversation(listener, now + configuration.ConversationInterval);
+            }
+
+            var candidates = configuration.Conversations
+                .Where(c => (c.Where == BotConversationPlace.Anywhere || c.Where == pair.Place)
+                            && !string.IsNullOrWhiteSpace(c.Opener.ValueInNeutralLanguage)
+                            && !string.IsNullOrWhiteSpace(c.Reply.ValueInNeutralLanguage))
+                .ToList();
+            if (!Rand.NextRandomBool(configuration.ConversationChancePercent)
+                || !throttle.TryReserveChat(pair.First, now, configuration.BotChatCooldown)
+                || !throttle.TryReserveChat(pair.Second, now, configuration.BotChatCooldown)
+                || throttle.DrawConversation(candidates, count => Rand.NextInt(0, count)) is not { } conversation)
+            {
+                continue;
+            }
+
+            var (first, second) = (pair.First, pair.Second);
+            var firstValues = CreateBotValues(first);
+            var secondName = second.SelectedCharacter?.Name ?? string.Empty;
+            firstValues["partner"] = _ => secondName;
+            var secondValues = CreateBotValues(second);
+            var firstName = first.SelectedCharacter?.Name ?? string.Empty;
+            secondValues["partner"] = _ => firstName;
+
+            await BotChatSpeaker.SayAsync(first, conversation.Opener, firstValues).ConfigureAwait(false);
+            RunLater(
+                gameContext,
+                RandomDelay(ConversationReplyDelaySeconds),
+                () => IsAvailable(second) ? BotChatSpeaker.SayAsync(second, conversation.Reply, secondValues) : ValueTask.CompletedTask);
+        }
+    }
 
     private async ValueTask GreetAsync(Player player, BotChatConfiguration configuration)
     {

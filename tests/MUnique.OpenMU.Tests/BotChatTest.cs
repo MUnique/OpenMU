@@ -70,6 +70,58 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// Conversations are drawn without repetition: each one comes again only after all of them were
+    /// used.
+    /// </summary>
+    [Test]
+    public void ConversationsDontRepeatUntilAllWereUsed()
+    {
+        var throttle = new BotChatThrottle();
+        var conversations = Enumerable.Range(0, 5).Select(i => new BotConversation { Opener = $"opener {i}", Reply = "reply" }).ToList();
+
+        var firstRound = Enumerable.Range(0, 5).Select(_ => throttle.DrawConversation(conversations, _ => 0)).ToList();
+        var nextRound = throttle.DrawConversation(conversations, _ => 0);
+
+        Assert.That(firstRound, Is.EquivalentTo(conversations));
+        Assert.That(nextRound, Is.Not.Null);
+    }
+
+    /// <summary>
+    /// A player overhears a conversation once per interval: the first one only after an interval in
+    /// the game, the next one an interval after the last.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask ConversationsFollowTheIntervalPerPlayerAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var throttle = new BotChatThrottle();
+        var interval = TimeSpan.FromMinutes(5);
+
+        Assert.That(throttle.IsConversationDue(player, Start, interval), Is.False);
+        Assert.That(throttle.IsConversationDue(player, Start.AddMinutes(5), interval), Is.True);
+        throttle.PostponeConversation(player, Start.AddMinutes(10));
+        Assert.That(throttle.IsConversationDue(player, Start.AddMinutes(9), interval), Is.False);
+        Assert.That(throttle.IsConversationDue(player, Start.AddMinutes(10), interval), Is.True);
+    }
+
+    /// <summary>
+    /// The default configuration comes with 50 to 100 conversations for every place, each with a
+    /// Polish translation of both texts.
+    /// </summary>
+    [Test]
+    public void DefaultConversationsAreManyAndTranslated()
+    {
+        var conversations = BotChatConfiguration.CreateDefault().Conversations;
+        var polish = CultureInfo.GetCultureInfo("pl");
+
+        Assert.That(conversations, Has.Count.InRange(50, 100));
+        Assert.That(conversations.Select(c => c.Where).Distinct().Count(), Is.EqualTo(Enum.GetValues<BotConversationPlace>().Length));
+        Assert.That(conversations.All(c => c.Opener.GetOwnTranslation(polish) is not null && c.Reply.GetOwnTranslation(polish) is not null), Is.True);
+    }
+
+    /// <summary>
     /// The chat and whisper reply cooldowns belong to one bot; another bot may still talk, and the
     /// two cooldowns don't block each other.
     /// </summary>

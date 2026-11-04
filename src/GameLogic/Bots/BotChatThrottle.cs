@@ -31,6 +31,12 @@ internal sealed class BotChatThrottle
     /// </summary>
     private static readonly TimeSpan PartySearchMemory = TimeSpan.FromMinutes(30);
 
+    /// <summary>
+    /// How often the bots look for players who are due to overhear a conversation. A second-by-second
+    /// look over all players would cost for nothing; a few seconds late doesn't matter.
+    /// </summary>
+    private static readonly TimeSpan ConversationScanInterval = TimeSpan.FromSeconds(5);
+
     private readonly ConcurrentDictionary<string, DateTime> _occasions = new();
 
     private readonly ConditionalWeakTable<Player, BotCooldowns> _bots = new();
@@ -40,6 +46,14 @@ internal sealed class BotChatThrottle
     private readonly ConditionalWeakTable<Player, BotPartyOffer> _partyOffers = new();
 
     private readonly ConditionalWeakTable<Player, PartySearchVolunteers> _partySearches = new();
+
+    private readonly ConditionalWeakTable<Player, StrongBox<DateTime>> _nextConversations = new();
+
+    private readonly HashSet<BotConversation> _usedConversations = [];
+
+    private readonly Lock _conversationLock = new();
+
+    private long _nextConversationScanTicks;
 
     private long _nextPostTicks;
 
@@ -191,6 +205,75 @@ internal sealed class BotChatThrottle
     /// </summary>
     /// <param name="bot">The bot.</param>
     public void RemovePartyOffer(Player bot) => this._partyOffers.Remove(bot);
+
+    /// <summary>
+    /// Determines whether it's time for the next look for players who are due to overhear a
+    /// conversation.
+    /// </summary>
+    /// <param name="now">The current time.</param>
+    /// <returns><c>true</c>, if the caller should look now.</returns>
+    public bool TryStartConversationScan(DateTime now)
+        => TryReserve(ref this._nextConversationScanTicks, now, ConversationScanInterval);
+
+    /// <summary>
+    /// Determines whether the player is due to overhear a conversation. A player seen for the first
+    /// time waits one interval first - the player just entered the game.
+    /// </summary>
+    /// <param name="player">The human player.</param>
+    /// <param name="now">The current time.</param>
+    /// <param name="interval">The configured interval between two conversations a player hears.</param>
+    /// <returns><c>true</c>, if the player is due.</returns>
+    public bool IsConversationDue(Player player, DateTime now, TimeSpan interval)
+    {
+        var next = this._nextConversations.GetValue(player, _ => new StrongBox<DateTime>(now + interval));
+        lock (next)
+        {
+            return now >= next.Value;
+        }
+    }
+
+    /// <summary>
+    /// Postpones the next conversation the player may overhear.
+    /// </summary>
+    /// <param name="player">The human player.</param>
+    /// <param name="until">The time of the player's next conversation.</param>
+    public void PostponeConversation(Player player, DateTime until)
+    {
+        var next = this._nextConversations.GetValue(player, _ => new StrongBox<DateTime>(until));
+        lock (next)
+        {
+            next.Value = until;
+        }
+    }
+
+    /// <summary>
+    /// Draws a conversation from the candidates without repetition: a conversation comes again only
+    /// after all candidates were used.
+    /// </summary>
+    /// <param name="candidates">The conversations which fit the place.</param>
+    /// <param name="pickIndex">Returns a random index below the given count.</param>
+    /// <returns>The drawn conversation, or <c>null</c> without candidates.</returns>
+    public BotConversation? DrawConversation(IReadOnlyCollection<BotConversation> candidates, Func<int, int> pickIndex)
+    {
+        if (candidates.Count == 0)
+        {
+            return null;
+        }
+
+        lock (this._conversationLock)
+        {
+            var unused = candidates.Where(c => !this._usedConversations.Contains(c)).ToList();
+            if (unused.Count == 0)
+            {
+                this._usedConversations.ExceptWith(candidates);
+                unused = candidates.ToList();
+            }
+
+            var drawn = unused[pickIndex(unused.Count)];
+            this._usedConversations.Add(drawn);
+            return drawn;
+        }
+    }
 
     private static bool TryReserve(ref long nextAllowedTicks, DateTime now, TimeSpan gap)
     {

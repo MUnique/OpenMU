@@ -164,6 +164,21 @@ public class BotChatConfiguration
     public int SmallTalkChancePercent { get; set; } = 50;
 
     /// <summary>
+    /// Gets or sets how often a human player may overhear a conversation of two bots near them (see
+    /// <see cref="Conversations"/>). The time counts per player: each player who stands next to two
+    /// bots hears them talk about once per interval.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ConversationInterval_Name), Description = nameof(PlugInResources.BotChatConfiguration_ConversationInterval_Description))]
+    public TimeSpan ConversationInterval { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Gets or sets the chance, in percent, that two bots near a player talk when the interval is over.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ConversationChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_ConversationChancePercent_Description))]
+    public int ConversationChancePercent { get; set; } = 100;
+
+    /// <summary>
     /// Gets or sets the lines a bot posts with <c>/post</c> when the entrance of a Blood Castle, Devil Square
     /// or Chaos Castle opened, before it waits for players at the meeting point (see <see cref="BotEventMeeting"/>).
     /// Placeholders: <c>{event}</c>, <c>{map}</c> (the map of the meeting point), <c>{location}</c>
@@ -303,6 +318,17 @@ public class BotChatConfiguration
     public ICollection<BotChatLine> SmallTalkLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
+    /// Gets or sets the conversations two bots near a player have now and then: one bot says the
+    /// opener, the other one answers. They are drawn without repetition until all of a place were
+    /// used. Placeholders: <c>{map}</c>, <c>{location}</c>, <c>{level}</c>, <c>{class}</c> of the
+    /// speaking bot, and <c>{partner}</c> - the name of the other bot.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_Conversations_Name), Description = nameof(PlugInResources.BotChatConfiguration_Conversations_Description))]
+    public ICollection<BotConversation> Conversations { get; set; } = new List<BotConversation>();
+
+    /// <summary>
     /// Creates the configuration a server starts with: a set of English lines, each with a Polish
     /// translation.
     /// </summary>
@@ -397,6 +423,7 @@ public class BotChatConfiguration
             configuration.PartyCantGoLines,
             ("cant go to {map}, sry", "nie mogę iść do {map}, sry"),
             ("{map} is too much for me", "{map} to za dużo dla mnie"));
+        BotConversationDefaults.AddTo(configuration.Conversations);
         AddClass("dk, bk, bm, knight, dark knight, blade knight, blade master, rycerz", BotClassNumbers.DarkKnightNumber);
         AddClass("dw, sm, gm, wizard, dark wizard, soul master, grand master, mag", BotClassNumbers.DarkWizardNumber);
         AddClass("elf, fe, muse, fairy elf, muse elf, high elf, elfka", BotClassNumbers.FairyElfNumber);

@@ -349,6 +349,7 @@ only talks about what it could actually do:
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
 | A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
 | Now and then (every 10 minutes per game server, 50 % chance) | normal chat | a bot standing in a safezone which a player sees |
+| A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
 
 A bot which posts about an event does not stay out hunting where nobody
@@ -376,6 +377,15 @@ there) it declines; a whisper without a place gets asked again. Map names are
 recognized in every translation of the map. The words, the number of bots and
 the times are part of the configuration.
 
+The conversations make a town feel lived in, like the townsfolk of a
+role-playing game: "my potions are running low" — "the shop here sells them
+cheap". Only when a human player stands near two bots which stand close
+together do they talk — nobody else would hear it. Each conversation has a
+place: `Town` (both bots in a safezone), `Hunting` (both outside of it, usually
+fighting) or `Anywhere`. They are drawn without repetition until all of a place
+were used, and each player hears about one every five minutes. The default
+configuration comes with some seventy of them.
+
 A whisper reply can carry `Keywords`, a comma-separated list of words or
 phrases it answers (`how are you, how r u`). The bot picks among the replies
 whose keyword matches the whisper — whole words, ignoring case and punctuation,
@@ -385,7 +395,8 @@ The default lines cover greetings, "how are you", the level, where the bot is,
 party, thanks and goodbye.
 
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
-`{level}`, `{class}`, `{player}` (whisper replies), and `{location}` — the map with the
+`{level}`, `{class}`, `{player}` (whisper replies), `{partner}` (the other bot of
+a conversation), and `{location}` — the map with the
 bot's coordinates the way players write them, e.g. "Devias 215, 40", so a player
 can find it with the mini map. The default "where are you?" replies use it. In
 an event post, `{location}` is the meeting point; in an invasion post, just the

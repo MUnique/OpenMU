@@ -1977,4 +1977,16 @@
   <data name="BotClassAlias_Keywords_Description" xml:space="preserve"><value>Comma-separated words for the class line, e.g. "dk, bk, bm, knight". Whole words, case and punctuation are ignored.</value></data>
   <data name="BotClassAlias_ClassNumber_Name" xml:space="preserve"><value>Class number</value></data>
   <data name="BotClassAlias_ClassNumber_Description" xml:space="preserve"><value>The number of a character class of the line, e.g. 4 for the Dark Knight - the whole line (Dark Knight, Blade Knight, Blade Master) is meant.</value></data>
+  <data name="BotChatConfiguration_ConversationInterval_Name" xml:space="preserve"><value>Conversation interval per player</value></data>
+  <data name="BotChatConfiguration_ConversationInterval_Description" xml:space="preserve"><value>How often a player may overhear two bots near them talking. Counts per player: everyone who stands next to two bots hears them talk about once per interval.</value></data>
+  <data name="BotChatConfiguration_ConversationChancePercent_Name" xml:space="preserve"><value>Conversation chance (%)</value></data>
+  <data name="BotChatConfiguration_ConversationChancePercent_Description" xml:space="preserve"><value>Chance that two bots near a player talk when the interval is over. 0 = never.</value></data>
+  <data name="BotChatConfiguration_Conversations_Name" xml:space="preserve"><value>Conversations</value></data>
+  <data name="BotChatConfiguration_Conversations_Description" xml:space="preserve"><value>Exchanges of two bots near a player, like the townsfolk of a role-playing game: one says the opener, the other answers. Drawn without repetition. Placeholders: {map}, {location}, {level}, {class} of the speaking bot, {partner} (the other bot).</value></data>
+  <data name="BotConversation_Opener_Name" xml:space="preserve"><value>Opener</value></data>
+  <data name="BotConversation_Opener_Description" xml:space="preserve"><value>What the first bot says.</value></data>
+  <data name="BotConversation_Reply_Name" xml:space="preserve"><value>Reply</value></data>
+  <data name="BotConversation_Reply_Description" xml:space="preserve"><value>What the second bot answers, a few seconds later.</value></data>
+  <data name="BotConversation_Where_Name" xml:space="preserve"><value>Where</value></data>
+  <data name="BotConversation_Where_Description" xml:space="preserve"><value>Where the bots may have this conversation: Town (both in a safezone), Hunting (both outside of it) or Anywhere.</value></data>
 </root>
