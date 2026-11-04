@@ -1352,7 +1352,13 @@
     <value>每种宝石储备量</value>
   </data>
   <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve">
-    <value>机器人分别保留的祝福、灵魂、生命宝石数量；超过后停止拾取并出售多余部分。</value>
+    <value>机器人分别保留的祝福、灵魂、生命、混沌宝石数量；超过后停止拾取并出售多余部分。</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
+    <value>禁止机器人前往的地图</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
+    <value>机器人从不传送到这些地图：不在那里狩猎、不跟随队长前往、不参加在那里举行的活动；在这些地图上登录的机器人会离开。玩家不受影响。</value>
   </data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve">
     <value>药水储备量（使用次数）</value>

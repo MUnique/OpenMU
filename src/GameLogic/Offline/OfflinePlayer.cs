@@ -160,6 +160,13 @@ public class OfflinePlayer : Player
     internal bool IsOnBuffTrip { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the bot is currently on its way to the chaos machine to
+    /// upgrade a piece of its gear, maintained by <see cref="Bots.BotNavigator"/>. Like the other
+    /// errands, it makes the bot decline party invitations meanwhile.
+    /// </summary>
+    internal bool IsOnChaosMachineTrip { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the
     /// bot has unfinished business and is in no mood to group up.
     /// </summary>
