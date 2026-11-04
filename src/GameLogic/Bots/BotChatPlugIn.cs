@@ -161,7 +161,7 @@ public class BotChatPlugIn
         if (level < configuration.LevelMilestoneStep
             || level % configuration.LevelMilestoneStep != 0
             || !Rand.NextRandomBool(configuration.LevelMilestoneChancePercent)
-            || PickLine(configuration, BotChatSituation.LevelMilestone) is not { } line
+            || PickLine(configuration.LevelMilestoneLines) is not { } line
             || !this.GetThrottle(player.GameContext).TryReserveChat(player, DateTime.UtcNow, configuration.BotChatCooldown))
         {
             return;
@@ -171,7 +171,7 @@ public class BotChatPlugIn
             player.GameContext,
             RandomDelay(LevelMilestoneDelaySeconds),
             () => IsAvailable(player)
-                ? BotChatSpeaker.SayAsync(player, line, CreateBotValues(player))
+                ? BotChatSpeaker.SayAsync(player, line.Text, CreateBotValues(player))
                 : ValueTask.CompletedTask);
     }
 
@@ -182,7 +182,7 @@ public class BotChatPlugIn
             || !IsBot(receiver)
             || sender is OfflinePlayer
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || BotChatComposer.PickWhisperReply(configuration.Lines, message, count => Rand.NextInt(0, count)) is not { } line
+            || BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, count => Rand.NextInt(0, count)) is not { } line
             || !this.GetThrottle(receiver.GameContext).TryReserveWhisperReply(receiver, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
@@ -195,7 +195,7 @@ public class BotChatPlugIn
             receiver.GameContext,
             RandomDelay(WhisperReplyDelaySeconds),
             () => IsAvailable(receiver) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
-                ? BotChatSpeaker.WhisperAsync(receiver, sender, line, values)
+                ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values)
                 : ValueTask.CompletedTask);
     }
 
@@ -221,7 +221,7 @@ public class BotChatPlugIn
     {
         if (this.Configuration is not { PartyChatChancePercent: > 0 } configuration
             || !Rand.NextRandomBool(configuration.PartyChatChancePercent)
-            || PickLine(configuration, BotChatSituation.PartyJoined) is not { } line
+            || PickLine(configuration.PartyJoinedLines) is not { } line
             || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
         {
             return;
@@ -230,7 +230,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         var inviterName = inviter.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => inviterName;
-        RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line, values));
+        RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
     }
 
     /// <inheritdoc />
@@ -251,7 +251,7 @@ public class BotChatPlugIn
         foreach (var bot in speakers)
         {
             if (!Rand.NextRandomBool(configuration.PartyChatChancePercent)
-                || PickLine(configuration, BotChatSituation.EventFinished) is not { } line
+                || PickLine(configuration.EventFinishedLines) is not { } line
                 || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
             {
                 continue;
@@ -259,7 +259,7 @@ public class BotChatPlugIn
 
             var values = CreateBotValues(bot);
             values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
-            RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line, values));
+            RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values));
         }
 
         return ValueTask.CompletedTask;
@@ -285,8 +285,8 @@ public class BotChatPlugIn
         RunLater(bot.GameContext, RandomDelay(KilledDelaySeconds), () =>
         {
             // Read after the delay: the revenge plugin registers the death in the same notification.
-            var situation = bot.GetRecentDeathCount(killerPlayer) >= OfflinePlayer.RepeatedKillThreshold ? BotChatSituation.KilledAgainByPlayer : BotChatSituation.KilledByPlayer;
-            if (PickLine(configuration, situation) is not { } line)
+            var lines = bot.GetRecentDeathCount(killerPlayer) >= OfflinePlayer.RepeatedKillThreshold ? configuration.KilledAgainLines : configuration.KilledLines;
+            if (PickLine(lines) is not { } line)
             {
                 return ValueTask.CompletedTask;
             }
@@ -294,7 +294,7 @@ public class BotChatPlugIn
             var values = CreateBotValues(bot);
             var killerName = killerPlayer.SelectedCharacter?.Name ?? string.Empty;
             values["player"] = _ => killerName;
-            return BotChatSpeaker.SayAsync(bot, line, values);
+            return BotChatSpeaker.SayAsync(bot, line.Text, values);
         });
         return ValueTask.CompletedTask;
     }
@@ -326,7 +326,7 @@ public class BotChatPlugIn
 
         if (mentionedBots.FirstOrDefault(IsAvailable) is not { } bot
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || BotChatComposer.PickWhisperReply(configuration.Lines, message, count => Rand.NextInt(0, count)) is not { } line
+            || BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, count => Rand.NextInt(0, count)) is not { } line
             || !this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
@@ -337,7 +337,7 @@ public class BotChatPlugIn
         RunLater(
             bot.GameContext,
             RandomDelay(WhisperReplyDelaySeconds),
-            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line, values) : ValueTask.CompletedTask);
+            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values) : ValueTask.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -362,7 +362,7 @@ public class BotChatPlugIn
         }
 
         if (candidates.Count == 0
-            || PickLine(configuration, BotChatSituation.SmallTalk) is not { } line)
+            || PickLine(configuration.SmallTalkLines) is not { } line)
         {
             return;
         }
@@ -370,7 +370,7 @@ public class BotChatPlugIn
         var speaker = candidates[Rand.NextInt(0, candidates.Count)];
         if (this.GetThrottle(gameContext).TryReserveChat(speaker, DateTime.UtcNow, configuration.BotChatCooldown))
         {
-            await BotChatSpeaker.SayAsync(speaker, line, CreateBotValues(speaker)).ConfigureAwait(false);
+            await BotChatSpeaker.SayAsync(speaker, line.Text, CreateBotValues(speaker)).ConfigureAwait(false);
         }
     }
 
@@ -463,8 +463,8 @@ public class BotChatPlugIn
     private static bool IsPostCommandActive(IGameContext gameContext)
         => gameContext.PlugInManager.IsPlugInActive(typeof(PostChatCommandPlugIn));
 
-    private static BotChatLine? PickLine(BotChatConfiguration configuration, BotChatSituation situation)
-        => BotChatComposer.PickLine(configuration.Lines, situation, count => Rand.NextInt(0, count));
+    private static BotChatLine? PickLine(IEnumerable<BotChatLine> lines)
+        => BotChatComposer.PickLine(lines, count => Rand.NextInt(0, count));
 
     private static TimeSpan RandomDelay(TimeSpan min, TimeSpan max)
         => max <= min ? min : min + TimeSpan.FromMilliseconds(Rand.NextDouble() * (max - min).TotalMilliseconds);
@@ -530,7 +530,7 @@ public class BotChatPlugIn
         var now = DateTime.UtcNow;
         var throttle = this.GetThrottle(player.GameContext);
         if (bot is null
-            || PickLine(configuration, BotChatSituation.PlayerLogin) is not { } line
+            || PickLine(configuration.GreetingLines) is not { } line
             || !throttle.TryReserveOccasion($"greeting {playerName}", now, configuration.GreetingCooldown)
             || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
         {
@@ -539,7 +539,7 @@ public class BotChatPlugIn
 
         var values = CreateBotValues(bot);
         values["player"] = _ => playerName;
-        await BotChatSpeaker.SayAsync(bot, line, values).ConfigureAwait(false);
+        await BotChatSpeaker.SayAsync(bot, line.Text, values).ConfigureAwait(false);
     }
 
     private async ValueTask PostAboutEventAsync(MiniGameContext miniGame, BotChatConfiguration configuration)
@@ -568,7 +568,7 @@ public class BotChatPlugIn
         if (candidates.Count == 0
             || !throttle.TryReserveOccasion($"mini game {definition.Type}", now, miniGame.EnterEndsAtUtc - now)
             || !Rand.NextRandomBool(configuration.EventPostChancePercent)
-            || PickLine(configuration, BotChatSituation.EventEntranceOpened) is not { } line
+            || PickLine(configuration.EventLines) is not { } line
             || !throttle.TryReservePost(now, configuration.MinTimeBetweenPosts))
         {
             return;
@@ -579,7 +579,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(chosen);
         values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
         values["map"] = culture => meeting!.Map.Name.GetTranslation(culture) ?? string.Empty;
-        await BotChatSpeaker.PostAsync(chosen, line, values).ConfigureAwait(false);
+        await BotChatSpeaker.PostAsync(chosen, line.Text, values).ConfigureAwait(false);
     }
 
     private async ValueTask PostAboutInvasionAsync(IGameContext gameContext, IPeriodicTaskPlugIn invasion, IReadOnlyCollection<GameMapDefinition> maps, BotChatConfiguration configuration)
@@ -594,7 +594,7 @@ public class BotChatPlugIn
         if (candidates.Count == 0
             || !throttle.TryReserveOccasion($"invasion {invasion.GetType().Name}", now, InvasionAnnouncementWindow)
             || !Rand.NextRandomBool(configuration.InvasionPostChancePercent)
-            || PickLine(configuration, BotChatSituation.InvasionStarted) is not { } line
+            || PickLine(configuration.InvasionLines) is not { } line
             || !throttle.TryReservePost(now, configuration.MinTimeBetweenPosts))
         {
             return;
@@ -604,6 +604,6 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         values["event"] = culture => GetInvasionName(invasion, culture);
         values["map"] = culture => map.Name.GetTranslation(culture) ?? string.Empty;
-        await BotChatSpeaker.PostAsync(bot, line, values).ConfigureAwait(false);
+        await BotChatSpeaker.PostAsync(bot, line.Text, values).ConfigureAwait(false);
     }
 }

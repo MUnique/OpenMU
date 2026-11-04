@@ -1853,10 +1853,8 @@
   </data>
   <data name="BotChatPlugIn_Name" xml:space="preserve"><value>Bot chat</value></data>
   <data name="BotChatPlugIn_Description" xml:space="preserve"><value>Lets server-side bots talk: they announce events and invasions with /post, comment on level milestones and answer whispers, using configurable lines.</value></data>
-  <data name="BotChatLine_Situation_Name" xml:space="preserve"><value>Situation</value></data>
-  <data name="BotChatLine_Situation_Description" xml:space="preserve"><value>When the line may be said.</value></data>
   <data name="BotChatLine_Text_Name" xml:space="preserve"><value>Text</value></data>
-  <data name="BotChatLine_Text_Description" xml:space="preserve"><value>What the bot says. Placeholders: {event}, {map}, {level}, {player} - the documentation lists which situation offers which.</value></data>
+  <data name="BotChatLine_Text_Description" xml:space="preserve"><value>What the bot says. The placeholders in curly braces which the list offers are filled in - see the description of the list.</value></data>
   <data name="BotChatConfiguration_EventPostChancePercent_Name" xml:space="preserve"><value>Event post chance (%)</value></data>
   <data name="BotChatConfiguration_EventPostChancePercent_Description" xml:space="preserve"><value>Chance that a bot which meets the entry requirements announces an opened Blood Castle, Devil Square or Chaos Castle with /post. Rolled once per event type and opening. 0 = never.</value></data>
   <data name="BotChatConfiguration_InvasionPostChancePercent_Name" xml:space="preserve"><value>Invasion post chance (%)</value></data>
@@ -1875,10 +1873,6 @@
   <data name="BotChatConfiguration_WhisperReplyChancePercent_Description" xml:space="preserve"><value>Chance that a bot answers a whisper of a player. 0 = never.</value></data>
   <data name="BotChatConfiguration_WhisperReplyCooldown_Name" xml:space="preserve"><value>Whisper reply cooldown</value></data>
   <data name="BotChatConfiguration_WhisperReplyCooldown_Description" xml:space="preserve"><value>Minimum time between two whisper replies of the same bot.</value></data>
-  <data name="BotChatConfiguration_Lines_Name" xml:space="preserve"><value>Lines</value></data>
-  <data name="BotChatConfiguration_Lines_Description" xml:space="preserve"><value>The lines the bots choose from, per situation. A situation without lines stays silent.</value></data>
-  <data name="BotChatLine_Keywords_Name" xml:space="preserve"><value>Keywords</value></data>
-  <data name="BotChatLine_Keywords_Description" xml:space="preserve"><value>Whisper replies only: comma-separated words or phrases of a player's whisper which this line answers, e.g. "how are you, how r u". Whole words, case and punctuation are ignored. Replies without keywords are used when nothing matches.</value></data>
   <data name="BotChatConfiguration_GreetingChancePercent_Name" xml:space="preserve"><value>Greeting chance (%)</value></data>
   <data name="BotChatConfiguration_GreetingChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot greets a player who enters the game, in the normal chat. 0 = never.</value></data>
   <data name="BotChatConfiguration_GreetingCooldown_Name" xml:space="preserve"><value>Greeting cooldown per player</value></data>
@@ -1891,4 +1885,26 @@
   <data name="BotChatConfiguration_SmallTalkInterval_Description" xml:space="preserve"><value>How often a bot standing in a safezone may say something in the normal chat, per game server. Only a bot which a player sees talks.</value></data>
   <data name="BotChatConfiguration_SmallTalkChancePercent_Name" xml:space="preserve"><value>Small talk chance (%)</value></data>
   <data name="BotChatConfiguration_SmallTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot makes small talk when the interval is over. 0 = never.</value></data>
+  <data name="BotChatReply_Keywords_Name" xml:space="preserve"><value>Keywords</value></data>
+  <data name="BotChatReply_Keywords_Description" xml:space="preserve"><value>Comma-separated words or phrases of a player's message which this reply answers, e.g. "how are you, how r u". Whole words, case and punctuation are ignored. Replies without keywords are used when nothing matches.</value></data>
+  <data name="BotChatConfiguration_EventLines_Name" xml:space="preserve"><value>Event lines</value></data>
+  <data name="BotChatConfiguration_EventLines_Description" xml:space="preserve"><value>Posted with /post when the entrance of a Blood Castle, Devil Square or Chaos Castle opened; the bot then waits for players at the meeting point. Placeholders: {event}, {map} (the meeting point), {level}.</value></data>
+  <data name="BotChatConfiguration_InvasionLines_Name" xml:space="preserve"><value>Invasion lines</value></data>
+  <data name="BotChatConfiguration_InvasionLines_Description" xml:space="preserve"><value>Posted with /post when an invasion started. Placeholders: {event}, {map}, {level}.</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneLines_Name" xml:space="preserve"><value>Level milestones</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneLines_Description" xml:space="preserve"><value>Said in the normal chat when the bot reached a level milestone. Placeholders: {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_WhisperReplies_Name" xml:space="preserve"><value>Whisper replies</value></data>
+  <data name="BotChatConfiguration_WhisperReplies_Description" xml:space="preserve"><value>Answers to a player who whispered to the bot or mentioned its name in the normal chat next to it. The best keyword match wins; replies without keywords are the fallback. Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_GreetingLines_Name" xml:space="preserve"><value>Greetings</value></data>
+  <data name="BotChatConfiguration_GreetingLines_Description" xml:space="preserve"><value>Said by the nearest bot in the normal chat when a player entered the game. Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_PartyJoinedLines_Name" xml:space="preserve"><value>Party: joined</value></data>
+  <data name="BotChatConfiguration_PartyJoinedLines_Description" xml:space="preserve"><value>Said in the party chat after the bot accepted a player's invitation. Placeholders: {player} (the inviter), {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_EventFinishedLines_Name" xml:space="preserve"><value>Party: event finished</value></data>
+  <data name="BotChatConfiguration_EventFinishedLines_Description" xml:space="preserve"><value>Said in the party chat by one bot per party when an event it went through with a player's party ended. Placeholders: {event}, {level}.</value></data>
+  <data name="BotChatConfiguration_KilledLines_Name" xml:space="preserve"><value>Killed by a player</value></data>
+  <data name="BotChatConfiguration_KilledLines_Description" xml:space="preserve"><value>Said in the normal chat when a player killed the bot outside of an event. Placeholders: {player} (the killer), {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_KilledAgainLines_Name" xml:space="preserve"><value>Killed again</value></data>
+  <data name="BotChatConfiguration_KilledAgainLines_Description" xml:space="preserve"><value>Said instead of the "Killed by a player" lines when the same player killed the bot again within a short time. Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_SmallTalkLines_Name" xml:space="preserve"><value>Small talk</value></data>
+  <data name="BotChatConfiguration_SmallTalkLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot standing in a safezone which a player sees. Placeholders: {level}, {map}.</value></data>
 </root>

@@ -90,21 +90,19 @@ public class BotChatTest
     }
 
     /// <summary>
-    /// Only lines of the requested situation are picked, and blank lines are ignored - a situation
-    /// without a usable line stays silent.
+    /// Blank lines are ignored - a list without a usable line stays silent.
     /// </summary>
     [Test]
-    public void PicksOnlyUsableLinesOfTheSituation()
+    public void PicksOnlyUsableLines()
     {
         var lines = new List<BotChatLine>
         {
-            new() { Situation = BotChatSituation.WhisperReply, Text = "busy" },
-            new() { Situation = BotChatSituation.LevelMilestone, Text = " " },
-            new() { Situation = BotChatSituation.LevelMilestone, Text = "{level} finally" },
+            new() { Text = " " },
+            new() { Text = "{level} finally" },
         };
 
-        var picked = BotChatComposer.PickLine(lines, BotChatSituation.LevelMilestone, count => count - 1);
-        var silent = BotChatComposer.PickLine(lines, BotChatSituation.InvasionStarted, _ => 0);
+        var picked = BotChatComposer.PickLine(lines, count => count - 1);
+        var silent = BotChatComposer.PickLine(new List<BotChatLine> { new() { Text = string.Empty } }, _ => 0);
 
         Assert.That(picked?.Text.ValueInNeutralLanguage, Is.EqualTo("{level} finally"));
         Assert.That(silent, Is.Null);
@@ -118,19 +116,15 @@ public class BotChatTest
     public void RendersTheLineInTheReceiversLanguage()
     {
         var polish = CultureInfo.GetCultureInfo("pl");
-        var line = new BotChatLine
-        {
-            Situation = BotChatSituation.InvasionStarted,
-            Text = new LocalizedString("{event} in {map}!").WithTranslation(polish, "{event} na {map}!"),
-        };
+        var text = new LocalizedString("{event} in {map}!").WithTranslation(polish, "{event} na {map}!");
         var values = new Dictionary<string, Func<CultureInfo, string>>
         {
             ["event"] = culture => culture.Name == "pl" ? "Inwazja" : "Invasion",
             ["map"] = _ => "Devias",
         };
 
-        Assert.That(BotChatComposer.Render(line, polish, values), Is.EqualTo("Inwazja na Devias!"));
-        Assert.That(BotChatComposer.Render(line, CultureInfo.GetCultureInfo("de"), values), Is.EqualTo("Invasion in Devias!"));
+        Assert.That(BotChatComposer.Render(text, polish, values), Is.EqualTo("Inwazja na Devias!"));
+        Assert.That(BotChatComposer.Render(text, CultureInfo.GetCultureInfo("de"), values), Is.EqualTo("Invasion in Devias!"));
     }
 
     /// <summary>
@@ -140,9 +134,7 @@ public class BotChatTest
     [Test]
     public void KeepsUnknownPlaceholders()
     {
-        var line = new BotChatLine { Situation = BotChatSituation.LevelMilestone, Text = "{lvl} done" };
-
-        Assert.That(BotChatComposer.Render(line, CultureInfo.InvariantCulture, NoValues), Is.EqualTo("{lvl} done"));
+        Assert.That(BotChatComposer.Render("{lvl} done", CultureInfo.InvariantCulture, NoValues), Is.EqualTo("{lvl} done"));
     }
 
     /// <summary>
@@ -159,15 +151,14 @@ public class BotChatTest
     [TestCase("asdf", "busy")]
     public void AnswersWhispersByKeywords(string message, string expected)
     {
-        var lines = new List<BotChatLine>
+        var replies = new List<BotChatReply>
         {
-            new() { Situation = BotChatSituation.WhisperReply, Text = "busy" },
-            new() { Situation = BotChatSituation.WhisperReply, Text = "hi, what's up?", Keywords = "hi, hello" },
-            new() { Situation = BotChatSituation.WhisperReply, Text = "fine, thanks for asking", Keywords = "how are you, how r u" },
-            new() { Situation = BotChatSituation.LevelMilestone, Text = "not a reply", Keywords = "how are you" },
+            new() { Text = "busy" },
+            new() { Text = "hi, what's up?", Keywords = "hi, hello" },
+            new() { Text = "fine, thanks for asking", Keywords = "how are you, how r u" },
         };
 
-        var reply = BotChatComposer.PickWhisperReply(lines, message, _ => 0);
+        var reply = BotChatComposer.PickWhisperReply(replies, message, _ => 0);
 
         Assert.That(reply?.Text.ValueInNeutralLanguage, Is.EqualTo(expected));
     }
@@ -196,7 +187,7 @@ public class BotChatTest
     {
         var configuration = BotChatConfiguration.CreateDefault();
 
-        var reply = BotChatComposer.PickWhisperReply(configuration.Lines, "hey, how are you?", _ => 0);
+        var reply = BotChatComposer.PickWhisperReply(configuration.WhisperReplies, "hey, how are you?", _ => 0);
 
         Assert.That(reply?.Keywords, Does.Contain("how are you"));
     }
@@ -212,23 +203,24 @@ public class BotChatTest
     {
         var configuration = BotChatConfiguration.CreateDefault();
 
-        var reply = BotChatComposer.PickWhisperReply(configuration.Lines, message, _ => 0);
-        var text = reply is null ? null : BotChatComposer.Render(reply, CultureInfo.GetCultureInfo("pl-PL"), NoValues);
+        var reply = BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, _ => 0);
+        var text = reply is null ? null : BotChatComposer.Render(reply.Text, CultureInfo.GetCultureInfo("pl-PL"), NoValues);
 
         Assert.That(text, Is.EqualTo("dobrze, dzięki że pytasz"));
     }
 
     /// <summary>
-    /// A server which switches the plugin on has something to say in every situation.
+    /// A server which switches the plugin on has something to say in every situation: each list of
+    /// the default configuration has lines.
     /// </summary>
     [Test]
     public void DefaultConfigurationHasLinesForEverySituation()
     {
         var configuration = BotChatConfiguration.CreateDefault();
 
-        foreach (var situation in Enum.GetValues<BotChatSituation>())
+        foreach (var property in typeof(BotChatConfiguration).GetProperties().Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)))
         {
-            Assert.That(configuration.Lines.Any(line => line.Situation == situation), Is.True, situation.ToString());
+            Assert.That(property.GetValue(configuration) as System.Collections.ICollection, Is.Not.Empty, property.Name);
         }
     }
 }

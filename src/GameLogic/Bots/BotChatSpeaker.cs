@@ -26,9 +26,9 @@ internal static class BotChatSpeaker
     /// Says the line in the normal chat, to the players who see the bot.
     /// </summary>
     /// <param name="bot">The speaking bot.</param>
-    /// <param name="line">The line.</param>
+    /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static ValueTask SayAsync(Player bot, BotChatLine line, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    internal static ValueTask SayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
@@ -36,7 +36,7 @@ internal static class BotChatSpeaker
         }
 
         return bot.ForEachObservingAsync<Player>(
-            receiver => SendAsync(receiver, BotChatComposer.Render(line, receiver.Culture, values), name, ChatMessageType.Normal),
+            receiver => SendAsync(receiver, BotChatComposer.Render(text, receiver.Culture, values), name, ChatMessageType.Normal),
             false);
     }
 
@@ -45,25 +45,25 @@ internal static class BotChatSpeaker
     /// </summary>
     /// <param name="bot">The whispering bot.</param>
     /// <param name="receiver">The receiving player.</param>
-    /// <param name="line">The line.</param>
+    /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static ValueTask WhisperAsync(Player bot, Player receiver, BotChatLine line, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    internal static ValueTask WhisperAsync(Player bot, Player receiver, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
             return ValueTask.CompletedTask;
         }
 
-        return SendAsync(receiver, BotChatComposer.Render(line, receiver.Culture, values), name, ChatMessageType.Whisper);
+        return SendAsync(receiver, BotChatComposer.Render(text, receiver.Culture, values), name, ChatMessageType.Whisper);
     }
 
     /// <summary>
     /// Says the line in the party chat, to the players of the bot's party.
     /// </summary>
     /// <param name="bot">The speaking bot.</param>
-    /// <param name="line">The line.</param>
+    /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static async ValueTask PartySayAsync(Player bot, BotChatLine line, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    internal static async ValueTask PartySayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
     {
         if (bot.SelectedCharacter?.Name is not { } name || bot.Party is not { } party)
         {
@@ -72,7 +72,7 @@ internal static class BotChatSpeaker
 
         foreach (var receiver in party.PartyList.OfType<Player>())
         {
-            await SendAsync(receiver, BotChatComposer.Render(line, receiver.Culture, values), name, ChatMessageType.Party).ConfigureAwait(false);
+            await SendAsync(receiver, BotChatComposer.Render(text, receiver.Culture, values), name, ChatMessageType.Party).ConfigureAwait(false);
         }
     }
 
@@ -80,9 +80,9 @@ internal static class BotChatSpeaker
     /// Posts the line to all players of the game server, in the format of the <c>/post</c> command.
     /// </summary>
     /// <param name="bot">The posting bot.</param>
-    /// <param name="line">The line.</param>
+    /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
-    internal static async ValueTask PostAsync(Player bot, BotChatLine line, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    internal static async ValueTask PostAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
     {
         if (bot.SelectedCharacter?.Name is not { } name)
         {
@@ -92,7 +92,7 @@ internal static class BotChatSpeaker
         await bot.GameContext.ForEachPlayerAsync(receiver =>
             SendAsync(
                 receiver,
-                PostChatCommandPlugIn.FormatPost(name, BotChatComposer.Render(line, receiver.Culture, values)),
+                PostChatCommandPlugIn.FormatPost(name, BotChatComposer.Render(text, receiver.Culture, values)),
                 PostChatCommandPlugIn.PostSender,
                 ChatMessageType.Gens).AsTask())
             .ConfigureAwait(false);
