@@ -226,6 +226,8 @@
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Ancient Discriminators</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the discriminators of some ancient items.</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>Fix Muren Ring of Fire Bonus</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>Gives the Ring of Fire of the Muren ancient set its energy bonus, which was initialized as vitality.</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>Add Summoner Buff Skills</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>Some added skills</value></data>
