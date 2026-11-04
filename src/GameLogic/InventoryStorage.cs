@@ -109,9 +109,9 @@ public class InventoryStorage : Storage, IInventoryStorage
         if (success)
         {
             var isEquippedItem = this.IsWearingSlot(slot);
-            if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
+            if (isEquippedItem)
             {
-                await eventHandler(new ItemEventArgs(convertedItem ?? item, true)).ConfigureAwait(false);
+                await this.RaiseEquippedItemsChangedAsync(convertedItem ?? item, true).ConfigureAwait(false);
             }
         }
 
@@ -123,9 +123,9 @@ public class InventoryStorage : Storage, IInventoryStorage
     {
         var isEquippedItem = this.IsWearingSlot(item.ItemSlot);
         await base.RemoveItemAsync(item).ConfigureAwait(false);
-        if (isEquippedItem && this.EquippedItemsChanged is { } eventHandler)
+        if (isEquippedItem)
         {
-            await eventHandler(new ItemEventArgs(item, false)).ConfigureAwait(false);
+            await this.RaiseEquippedItemsChangedAsync(item, false).ConfigureAwait(false);
         }
     }
 
@@ -136,9 +136,19 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="isEquipped">Whether <paramref name="item"/> is equipped or not.</param>
     /// <param name="hasDurabilityFactorChanged">Whether <paramref name="item"/>'s durability factor has changed or not.</param>
     /// <returns>True, if successful.</returns>
-    public ValueTask RaiseEquippedItemsChangedAsync(Item item, bool isEquipped, bool hasDurabilityFactorChanged = false)
+    public async ValueTask RaiseEquippedItemsChangedAsync(Item item, bool isEquipped, bool hasDurabilityFactorChanged = false)
     {
-        return this.EquippedItemsChanged?.Invoke(new ItemEventArgs(item, isEquipped, hasDurabilityFactorChanged)) ?? ValueTask.CompletedTask;
+        var eventHandler = this.EquippedItemsChanged;
+        if (eventHandler is null)
+        {
+            return;
+        }
+
+        var eventArgs = new ItemEventArgs(item, isEquipped, hasDurabilityFactorChanged);
+        foreach (AsyncEventHandler<ItemEventArgs> handler in eventHandler.GetInvocationList())
+        {
+            await handler(eventArgs).ConfigureAwait(false);
+        }
     }
 
     private bool IsWearingSlot(int slot)
