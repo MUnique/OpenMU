@@ -2027,4 +2027,14 @@
   <data name="BotChatConfiguration_EventReminderChancePercent_Description" xml:space="preserve"><value>Chance that a bot in a town where a player stands reminds of an opened Blood Castle, Devil Square or Chaos Castle in the normal chat - once per town and opening, only a bot which meets the entry requirements. Independent of the /post chances. 0 = never.</value></data>
   <data name="BotChatConfiguration_EventReminderLines_Name" xml:space="preserve"><value>Event reminders in town</value></data>
   <data name="BotChatConfiguration_EventReminderLines_Description" xml:space="preserve"><value>Said in the normal chat by a bot in a town when an event entrance opened. Placeholders: {event}, {map}, {location}, {level}.</value></data>
+  <data name="BotChatConfiguration_RareDropChancePercent_Name" xml:space="preserve"><value>Rare drop comment chance (%)</value></data>
+  <data name="BotChatConfiguration_RareDropChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot comments on an excellent or ancient item a player's kill dropped ("nice drop!"). 0 = never.</value></data>
+  <data name="BotChatConfiguration_NotableMonsterChancePercent_Name" xml:space="preserve"><value>Notable monster call-out chance (%)</value></data>
+  <data name="BotChatConfiguration_NotableMonsterChancePercent_Description" xml:space="preserve"><value>Chance that a bot calls out a notable monster which appeared near it while a player sees it. 0 = never.</value></data>
+  <data name="BotChatConfiguration_NotableMonsterNumbers_Name" xml:space="preserve"><value>Notable monsters</value></data>
+  <data name="BotChatConfiguration_NotableMonsterNumbers_Description" xml:space="preserve"><value>Comma-separated numbers of the monsters a bot calls out when they appear near it. By default the golden monsters, the Red Dragon and the White Wizard.</value></data>
+  <data name="BotChatConfiguration_RareDropLines_Name" xml:space="preserve"><value>Rare drop comments</value></data>
+  <data name="BotChatConfiguration_RareDropLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player's kill dropped an excellent or ancient item. Placeholders: {player}, {item}, {map}.</value></data>
+  <data name="BotChatConfiguration_NotableMonsterLines_Name" xml:space="preserve"><value>Notable monster call-outs</value></data>
+  <data name="BotChatConfiguration_NotableMonsterLines_Description" xml:space="preserve"><value>Said by a bot when a notable monster appeared near it. Placeholders: {monster}, {map}, {location}.</value></data>
 </root>

@@ -454,6 +454,17 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// The bots call out the golden monsters of the invasions by default - the Golden Goblin is one.
+    /// </summary>
+    [Test]
+    public void DefaultNotableMonstersAreTheGoldenOnes()
+    {
+        var numbers = BotChatConfiguration.CreateDefault().NotableMonsterNumbers.Split(',').Select(n => n.Trim());
+
+        Assert.That(numbers, Does.Contain("78").And.Contain("43").And.Contain("44"));
+    }
+
+    /// <summary>
     /// A server which switches the plugin on has something to say in every situation: each list of
     /// the default configuration has lines.
     /// </summary>

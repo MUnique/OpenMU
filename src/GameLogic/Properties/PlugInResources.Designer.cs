@@ -5502,5 +5502,35 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_EventReminderLines_Description text.</summary>
         public static string BotChatConfiguration_EventReminderLines_Description => ResourceManager.GetString("BotChatConfiguration_EventReminderLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_RareDropChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_RareDropChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_RareDropChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_RareDropChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_RareDropChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_RareDropChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_NotableMonsterChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_NotableMonsterChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_NotableMonsterChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_NotableMonsterChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_NotableMonsterChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_NotableMonsterChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_NotableMonsterNumbers_Name text.</summary>
+        public static string BotChatConfiguration_NotableMonsterNumbers_Name => ResourceManager.GetString("BotChatConfiguration_NotableMonsterNumbers_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_NotableMonsterNumbers_Description text.</summary>
+        public static string BotChatConfiguration_NotableMonsterNumbers_Description => ResourceManager.GetString("BotChatConfiguration_NotableMonsterNumbers_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_RareDropLines_Name text.</summary>
+        public static string BotChatConfiguration_RareDropLines_Name => ResourceManager.GetString("BotChatConfiguration_RareDropLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_RareDropLines_Description text.</summary>
+        public static string BotChatConfiguration_RareDropLines_Description => ResourceManager.GetString("BotChatConfiguration_RareDropLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_NotableMonsterLines_Name text.</summary>
+        public static string BotChatConfiguration_NotableMonsterLines_Name => ResourceManager.GetString("BotChatConfiguration_NotableMonsterLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_NotableMonsterLines_Description text.</summary>
+        public static string BotChatConfiguration_NotableMonsterLines_Description => ResourceManager.GetString("BotChatConfiguration_NotableMonsterLines_Description", resourceCulture)!;
+
     }
 }

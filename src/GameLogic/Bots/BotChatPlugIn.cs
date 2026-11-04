@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlayerActions.Duel;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -54,6 +55,8 @@ public class BotChatPlugIn
     IPostMessageSentPlugIn,
     ITradeRequestedPlugIn,
     IDuelRequestedPlugIn,
+    IMonsterItemDroppedPlugIn,
+    IObjectAddedToMapPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -107,6 +110,17 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) EventReminderDelaySeconds = (10, 40);
 
     /// <summary>
+    /// How long a notable monster on a map counts as announced: an invasion spawns many of them at
+    /// once, and a bot shouldn't call out each one.
+    /// </summary>
+    private static readonly TimeSpan NotableMonsterAnnouncementWindow = TimeSpan.FromMinutes(2);
+
+    /// <summary>
+    /// The delay range of calling out a notable monster: the time to notice it.
+    /// </summary>
+    private static readonly (int Min, int Max) NotableMonsterDelaySeconds = (1, 4);
+
+    /// <summary>
     /// The delay range of a congratulation: the level-up or reset effect first, then the "gz".
     /// </summary>
     private static readonly (int Min, int Max) CongratulationDelaySeconds = (2, 5);
@@ -139,6 +153,12 @@ public class BotChatPlugIn
     private static readonly (int Min, int Max) PartyVolunteerSpacingSeconds = (2, 6);
 
     private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
+
+    /// <summary>
+    /// The parsed <see cref="BotChatConfiguration.NotableMonsterNumbers"/>, with the text they were
+    /// parsed from.
+    /// </summary>
+    private (string? Text, HashSet<short> Numbers) _notableMonsters = (null, []);
 
     /// <summary>
     /// The number of calls of <see cref="ForceStart"/>; a server which didn't see the current number
@@ -484,6 +504,61 @@ public class BotChatPlugIn
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public ValueTask MonsterItemDroppedAsync(AttackableNpcBase monster, Player killer, DroppedItem droppedItem)
+    {
+        // A rare drop - the nearest bot sees it fall and says so.
+        if (this.Configuration is { RareDropChancePercent: > 0 } configuration
+            && killer is not OfflinePlayer
+            && killer.SelectedCharacter?.Name is { } killerName
+            && (droppedItem.Item.IsExcellent() || droppedItem.Item.IsAncient())
+            && Rand.NextRandomBool(configuration.RareDropChancePercent))
+        {
+            var itemName = droppedItem.Item.Definition?.Name;
+            this.SayToPlayerLater(killer, configuration, configuration.RareDropLines, $"rare drop {killerName}", values => values["item"] = culture => itemName?.GetTranslation(culture) ?? string.Empty);
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
+    {
+        // Called for every object added to a map - so the cheap checks come first.
+        if (addedObject is not Monster monster
+            || this.Configuration is not { NotableMonsterChancePercent: > 0 } configuration
+            || !this.IsNotableMonster(monster.Definition.Number, configuration))
+        {
+            return;
+        }
+
+        var bot = map.GetAttackablesInRange(monster.Position, (int)HearingRange)
+            .OfType<Player>()
+            .Where(p => IsBot(p) && IsAvailable(p))
+            .OrderBy(p => p.GetDistanceTo(monster))
+            .FirstOrDefault();
+        if (bot is null || !await HasHumanObserverAsync(bot).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+        var throttle = this.GetThrottle(bot.GameContext);
+        if (!this.MayTalkUnasked(bot, configuration)
+            || !throttle.TryReserveOccasion($"notable monster {map.MapId} {monster.Definition.Number}", now, NotableMonsterAnnouncementWindow)
+            || !Rand.NextRandomBool(configuration.NotableMonsterChancePercent)
+            || PickLine(configuration.NotableMonsterLines) is not { } line
+            || !throttle.TryReserveChat(bot, now, configuration.BotChatCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(bot);
+        var monsterName = monster.Definition.Designation;
+        values["monster"] = culture => monsterName.GetTranslation(culture) ?? string.Empty;
+        RunLater(bot.GameContext, RandomDelay(NotableMonsterDelaySeconds), () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture) : ValueTask.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -1152,7 +1227,6 @@ public class BotChatPlugIn
     private void Congratulate(Player player, BotChatConfiguration configuration, ICollection<BotChatLine> lines, string occasionKey)
     {
         if (configuration.CongratulationChancePercent <= 0
-            || player.SelectedCharacter?.Name is not { } playerName
             || !Rand.NextRandomBool(configuration.CongratulationChancePercent))
         {
             return;
@@ -1160,6 +1234,24 @@ public class BotChatPlugIn
 
         var playerLevel = GetLevel(player).ToString(CultureInfo.InvariantCulture);
         var playerResets = ((int)(player.Attributes?[Stats.Resets] ?? 0)).ToString(CultureInfo.InvariantCulture);
+        this.SayToPlayerLater(player, configuration, lines, occasionKey, values =>
+        {
+            values["level"] = _ => playerLevel;
+            values["resets"] = _ => playerResets;
+        });
+    }
+
+    /// <summary>
+    /// Lets the nearest bot which sees the player say one of the lines to them in the normal chat,
+    /// after a moment - at most once per occasion and the congratulation cooldown.
+    /// </summary>
+    private void SayToPlayerLater(Player player, BotChatConfiguration configuration, ICollection<BotChatLine> lines, string occasionKey, Action<Dictionary<string, Func<CultureInfo, string>>> addValues)
+    {
+        if (player.SelectedCharacter?.Name is not { } playerName)
+        {
+            return;
+        }
+
         RunLater(player.GameContext, RandomDelay(CongratulationDelaySeconds), async () =>
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld || player.CurrentMap is not { } map)
@@ -1181,10 +1273,31 @@ public class BotChatPlugIn
 
             var values = CreateBotValues(bot);
             values["player"] = _ => playerName;
-            values["level"] = _ => playerLevel;
-            values["resets"] = _ => playerResets;
+            addValues(values);
             await BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture, toward: player).ConfigureAwait(false);
         });
+    }
+
+    /// <summary>
+    /// Determines whether the monster is one of the configured notable monsters - parsed once per
+    /// configured text, since the check runs for every monster spawn.
+    /// </summary>
+    private bool IsNotableMonster(short number, BotChatConfiguration configuration)
+    {
+        var text = configuration.NotableMonsterNumbers ?? string.Empty;
+        var cache = this._notableMonsters;
+        if (!ReferenceEquals(cache.Text, text))
+        {
+            var numbers = text
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(part => short.TryParse(part, NumberStyles.Integer, CultureInfo.InvariantCulture, out var n) ? n : (short)-1)
+                .Where(n => n >= 0)
+                .ToHashSet();
+            cache = (text, numbers);
+            this._notableMonsters = cache;
+        }
+
+        return cache.Numbers.Contains(number);
     }
 
     private async ValueTask GreetAsync(Player player, BotChatConfiguration configuration)

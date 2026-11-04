@@ -131,6 +131,44 @@ public class BotChatConfiguration
     public TimeSpan CongratulationCooldown { get; set; } = TimeSpan.FromMinutes(10);
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that the nearest bot comments on an excellent or ancient
+    /// item a player's kill dropped - "nice drop!".
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_RareDropChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_RareDropChancePercent_Description))]
+    public int RareDropChancePercent { get; set; } = 50;
+
+    /// <summary>
+    /// Gets or sets the chance, in percent, that a bot calls out a notable monster which appeared
+    /// near it while a player sees it (see <see cref="NotableMonsterNumbers"/>).
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_NotableMonsterChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_NotableMonsterChancePercent_Description))]
+    public int NotableMonsterChancePercent { get; set; } = 70;
+
+    /// <summary>
+    /// Gets or sets the comma-separated numbers of the monsters a bot calls out when they appear near
+    /// it - by default the golden monsters, the Red Dragon and the White Wizard of the invasions.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_NotableMonsterNumbers_Name), Description = nameof(PlugInResources.BotChatConfiguration_NotableMonsterNumbers_Description))]
+    public string NotableMonsterNumbers { get; set; } = string.Join(
+        ", ",
+        new[]
+        {
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenBudgeDragon,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenTitan,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenSoldier,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenGoblin,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenDragon,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenLizardKing,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenVepar,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenTantallos,
+            PlugIns.InvasionEvents.InvasionMonsters.GoldenWheel,
+            PlugIns.InvasionEvents.InvasionMonsters.RedDragon,
+            PlugIns.InvasionEvents.InvasionMonsters.WhiteWizard,
+        });
+
+    /// <summary>
     /// Gets or sets the chance, in percent, that a bot says why it turns down a player's trade or duel
     /// request, by whisper. A bot turns them down in any case - it has no trade window, and it
     /// doesn't duel.
@@ -344,6 +382,26 @@ public class BotChatConfiguration
     [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_ResetCongratulationLines_Description))]
     public ICollection<BotChatLine> ResetCongratulationLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines with which the nearest bot comments on an excellent or ancient item a
+    /// player's kill dropped. Placeholders: <c>{player}</c>, <c>{item}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_RareDropLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_RareDropLines_Description))]
+    public ICollection<BotChatLine> RareDropLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines with which a bot calls out a notable monster which appeared near it.
+    /// Placeholders: <c>{monster}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_NotableMonsterLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_NotableMonsterLines_Description))]
+    public ICollection<BotChatLine> NotableMonsterLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Gets or sets the whispers with which a bot turns down a player's trade request.
@@ -612,6 +670,18 @@ public class BotChatConfiguration
             ("{resets} resets? respect", "{resets} resetów? szacun"),
             ("gz {player}, back to the start :)", "gz {player}, i od nowa :)"));
         Add(
+            configuration.RareDropLines,
+            ("nice drop, {player}!", "niezły drop, {player}!"),
+            ("whoa, {item}!", "o kurczę, {item}!"),
+            ("lucky! gz on the {item}", "fart! gratki za {item}"),
+            ("{player}, that's a good one", "{player}, to jest dobre"));
+        Add(
+            configuration.NotableMonsterLines,
+            ("{monster} here!", "{monster} tutaj!"),
+            ("look, {monster}! at {location}", "patrz, {monster}! {location}"),
+            ("{monster}!! everyone come", "{monster}!! wszyscy tu"),
+            ("careful, {monster}", "uważajcie, {monster}"));
+        Add(
             configuration.TradeDeclineLines,
             ("sry, no trade", "sorki, nie handluję"),
             ("not trading now, busy", "teraz nie handluję, jestem zajęty"),
@@ -749,6 +819,7 @@ public class BotChatConfiguration
         SetGesture(configuration.KilledAgainLines, BotChatGesture.Cry);
         SetGesture(configuration.DuelDeclineLines, BotChatGesture.Awkward);
         SetGesture(configuration.ConversationJoinLines, BotChatGesture.Smile);
+        SetGesture(configuration.RareDropLines, BotChatGesture.Clap);
         foreach (var reply in configuration.WhisperReplies)
         {
             reply.Gesture = reply.Keywords.StartsWith("hi,", StringComparison.Ordinal) ? BotChatGesture.Greeting
