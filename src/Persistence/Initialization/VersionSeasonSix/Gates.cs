@@ -282,7 +282,7 @@ public class Gates : InitializerBase
         // Kanturu
         targetGates.Add(138, this.CreateExitGate(maps[37], 19, 217, 21, 219, 0, true));
         targetGates.Add(141, this.CreateExitGate(maps[37], 205, 36, 208, 41, 0));
-        targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0));
+        targetGates.Add(334, this.CreateExitGate(maps[37], 67, 183, 74, 189, 0));
         targetGates.Add(126, this.CreateExitGate(maps[37], 17, 219, 21, 220, 0));
         targetGates.Add(132, this.CreateExitGate(maps[37], 85, 89, 86, 92, 0));
 
