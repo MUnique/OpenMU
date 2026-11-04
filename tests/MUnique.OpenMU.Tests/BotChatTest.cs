@@ -202,6 +202,23 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// The default lines come with a Polish translation: a Polish player who whispers in Polish gets
+    /// a fitting answer in Polish, also when typing without diacritics.
+    /// </summary>
+    /// <param name="message">The whispered message.</param>
+    [TestCase("siema, jak się masz?")]
+    [TestCase("jak sie masz")]
+    public void DefaultRepliesSpeakPolish(string message)
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+
+        var reply = BotChatComposer.PickWhisperReply(configuration.Lines, message, _ => 0);
+        var text = reply is null ? null : BotChatComposer.Render(reply, CultureInfo.GetCultureInfo("pl-PL"), NoValues);
+
+        Assert.That(text, Is.EqualTo("dobrze, dzięki że pytasz"));
+    }
+
+    /// <summary>
     /// A server which switches the plugin on has something to say in every situation.
     /// </summary>
     [Test]
