@@ -317,6 +317,24 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// In the party chat, a message without the bot's name is only answered when it matches a
+    /// keyword - an "ok" or "let's go" gets no fallback reply.
+    /// </summary>
+    [Test]
+    public void AnswersUnaddressedPartyMessagesOnlyByKeyword()
+    {
+        var replies = new List<BotChatReply>
+        {
+            new() { Text = "busy" },
+            new() { Text = "lvl 300", Keywords = "level, lvl" },
+        };
+
+        Assert.That(BotChatComposer.PickWhisperReply(replies, "ok lets go", _ => 0, requireKeyword: true), Is.Null);
+        Assert.That(BotChatComposer.PickWhisperReply(replies, "~what lvl are you?", _ => 0, requireKeyword: true)?.Text.ValueInNeutralLanguage, Is.EqualTo("lvl 300"));
+        Assert.That(BotChatComposer.PickWhisperReply(replies, "ok lets go", _ => 0)?.Text.ValueInNeutralLanguage, Is.EqualTo("busy"));
+    }
+
+    /// <summary>
     /// A bot feels addressed when its name is in a chat message as a whole word - not when it is only
     /// a part of a longer word.
     /// </summary>

@@ -349,6 +349,7 @@ only talks about what it could actually do:
 | An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
 | A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
+| A player wrote in the party chat (`~`) | party chat, the same lines as whisper replies | the bot whose name is in the message; without a name, one bot of the party - only when a keyword matches |
 | Now and then, like a merchant advertising (off by default — meant for a future merchant bot) | normal chat, `{location}` | a bot standing in a safezone which a player sees |
 | A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
 | A player asked the bot for a trade or challenged it to a duel | whisper, 70 % chance, `{player}` — the bot turns it down in any case (no trade window, no duels) | the bot |
