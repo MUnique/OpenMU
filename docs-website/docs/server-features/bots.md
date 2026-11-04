@@ -341,7 +341,7 @@ only talks about what it could actually do:
 | An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
 | A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
-| Now and then (every 10 minutes per game server, 50 % chance) | normal chat | a bot standing in a safezone which a player sees |
+| Now and then, like a merchant advertising (off by default — meant for a future merchant bot) | normal chat, `{location}` | a bot standing in a safezone which a player sees |
 | A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
 
