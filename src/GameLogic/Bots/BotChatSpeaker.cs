@@ -58,6 +58,25 @@ internal static class BotChatSpeaker
     }
 
     /// <summary>
+    /// Says the line in the party chat, to the players of the bot's party.
+    /// </summary>
+    /// <param name="bot">The speaking bot.</param>
+    /// <param name="line">The line.</param>
+    /// <param name="values">The placeholder values.</param>
+    internal static async ValueTask PartySayAsync(Player bot, BotChatLine line, IReadOnlyDictionary<string, Func<CultureInfo, string>> values)
+    {
+        if (bot.SelectedCharacter?.Name is not { } name || bot.Party is not { } party)
+        {
+            return;
+        }
+
+        foreach (var receiver in party.PartyList.OfType<Player>())
+        {
+            await SendAsync(receiver, BotChatComposer.Render(line, receiver.Culture, values), name, ChatMessageType.Party).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Posts the line to all players of the game server, in the format of the <c>/post</c> command.
     /// </summary>
     /// <param name="bot">The posting bot.</param>

@@ -1929,4 +1929,6 @@
   <data name="BotChatConfiguration_GreetingChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot greets a player who enters the game, in the normal chat. 0 = never.</value></data>
   <data name="BotChatConfiguration_GreetingCooldown_Name" xml:space="preserve"><value>Greeting cooldown per player</value></data>
   <data name="BotChatConfiguration_GreetingCooldown_Description" xml:space="preserve"><value>Minimum time between two greetings of the same player, so logging out and in again doesn't start a round of greetings.</value></data>
+  <data name="BotChatConfiguration_PartyChatChancePercent_Name" xml:space="preserve"><value>Party chat chance (%)</value></data>
+  <data name="BotChatConfiguration_PartyChatChancePercent_Description" xml:space="preserve"><value>Chance that a bot says something in the party chat of a player: thanks for the invitation, "gg" after an event. 0 = never.</value></data>
 </root>

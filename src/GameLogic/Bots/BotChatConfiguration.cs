@@ -97,6 +97,14 @@ public class BotChatConfiguration
     public TimeSpan GreetingCooldown { get; set; } = TimeSpan.FromMinutes(30);
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that a bot says something in the party chat of a player:
+    /// thanks for the invitation, "gg" after an event.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyChatChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyChatChancePercent_Description))]
+    public int PartyChatChancePercent { get; set; } = 70;
+
+    /// <summary>
     /// Gets or sets the lines the bots choose from. A situation without lines stays silent.
     /// </summary>
     [MemberOfAggregate]
@@ -143,6 +151,18 @@ public class BotChatConfiguration
             "welcome back {player}",
             "yo {player} :)",
             "hey {player}");
+        Add(
+            BotChatSituation.PartyJoined,
+            "thx for invite",
+            "hi all",
+            "ty {player}",
+            "hey, lets go");
+        Add(
+            BotChatSituation.EventFinished,
+            "gg",
+            "gg wp",
+            "gg, thx for party",
+            "nice run");
         AddReplies("how are you, how r u, how are u, hru, how's it going, how is it going", "fine, thanks for asking", "good, you?", "all good, just grinding");
         AddReplies("hi, hello, hey, yo, hiho, sup", "hi, what's up?", "hey :)", "hello");
         AddReplies("level, lvl, what level", "{level} now", "lvl {level}");
