@@ -19,7 +19,7 @@ public class OfflinePlayer : Player
     /// A player who killed this bot this many times gets no (further) revenge: walking back a third
     /// time into the same lost fight would just be a death loop feeding the killer free kills.
     /// </summary>
-    private const int RepeatedKillThreshold = 2;
+    internal const int RepeatedKillThreshold = 2;
 
     /// <summary>
     /// How long an attack by a player stays "hot" as a self-defense target, counted from the LAST hit
@@ -258,6 +258,16 @@ public class OfflinePlayer : Player
     {
         this._aggression = new Aggression(aggressor, DateTime.UtcNow);
     }
+
+    /// <summary>
+    /// Gets how often the player killed this bot recently (within the memory of the revenge logic).
+    /// </summary>
+    /// <param name="killer">The killing player.</param>
+    /// <returns>The number of recent deaths by this player; 0 when none is remembered.</returns>
+    internal int GetRecentDeathCount(Player killer)
+        => this._deathsByKiller.TryGetValue(killer.Name, out var record) && DateTime.UtcNow - record.LastDeathUtc <= DeathCountMemory
+            ? record.Count
+            : 0;
 
     /// <summary>
     /// Registers that a (human) player killed this bot. The first kill makes a revenge pending: after
