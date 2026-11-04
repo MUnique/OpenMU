@@ -304,22 +304,26 @@ public sealed class ItemExchangeExportTests
     /// <summary>
     /// Tests the size: <c>width</c> and <c>height</c> are the item's, e.g. 1x1 for the Seed Spheres.
     /// </summary>
+    /// <remarks>
+    /// The file's items are compared with the exported ones in their order, so that items which
+    /// share their group and number, and the ones which the file leaves out, don't matter here.
+    /// </remarks>
     [Test]
     public void SizeIsTheItemsWidthAndHeight()
     {
         using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
-        var items = file.RootElement.GetProperty("items").EnumerateArray()
-            .ToDictionary(item => (item.GetProperty("group").GetInt32(), item.GetProperty("number").GetInt32()));
+        var items = file.RootElement.GetProperty("items").EnumerateArray().ToList();
+        var exported = ItemExchangeExport.GetExportedItems(this._seasonSixConfiguration).ToList();
 
         Assert.That(ItemExchangeExport.Fields.Select(field => field.Key), Is.SupersetOf(new[] { "width", "height" }));
-        foreach (var definition in this._seasonSixConfiguration.Items)
+        Assert.That(items, Has.Count.EqualTo(exported.Count));
+        foreach (var (definition, item) in exported.Zip(items))
         {
-            var item = items[(definition.Group, definition.Number)];
             Assert.That(GetNumberOrZero(item, "width"), Is.EqualTo(definition.Width), $"width of {definition.Group},{definition.Number}");
             Assert.That(GetNumberOrZero(item, "height"), Is.EqualTo(definition.Height), $"height of {definition.Group},{definition.Number}");
         }
 
-        var seedSphere = items[(12, 118)];
+        var seedSphere = items.First(item => item.GetProperty("group").GetInt32() == 12 && item.GetProperty("number").GetInt32() == 118);
         Assert.That(seedSphere.GetProperty("width").GetInt32(), Is.EqualTo(1));
         Assert.That(seedSphere.GetProperty("height").GetInt32(), Is.EqualTo(1));
     }
