@@ -416,6 +416,11 @@ A bot answers like a typing player: it takes a moment to read, then a little
 time per character, so a quick "np" comes at once and a whole sentence takes a
 few seconds (at most twelve).
 
+The bots don't drown out the players: while the players around a bot are busy
+talking (three normal chat messages within 30 seconds, by default), it says
+nothing unasked — no conversation, greeting, congratulation or comment. It
+still answers a player who talks to it.
+
 The limits keep a large population from flooding the chat. All bots of a game
 server share one gap between two posts (`Minimum time between posts`, 3 minutes),
 each opened event type or started invasion is announced at most once, and each

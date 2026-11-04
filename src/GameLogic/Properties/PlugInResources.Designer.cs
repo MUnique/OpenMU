@@ -5436,5 +5436,17 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_DuelDeclineLines_Description text.</summary>
         public static string BotChatConfiguration_DuelDeclineLines_Description => ResourceManager.GetString("BotChatConfiguration_DuelDeclineLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_BusyChatMessageCount_Name text.</summary>
+        public static string BotChatConfiguration_BusyChatMessageCount_Name => ResourceManager.GetString("BotChatConfiguration_BusyChatMessageCount_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_BusyChatMessageCount_Description text.</summary>
+        public static string BotChatConfiguration_BusyChatMessageCount_Description => ResourceManager.GetString("BotChatConfiguration_BusyChatMessageCount_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_BusyChatWindow_Name text.</summary>
+        public static string BotChatConfiguration_BusyChatWindow_Name => ResourceManager.GetString("BotChatConfiguration_BusyChatWindow_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_BusyChatWindow_Description text.</summary>
+        public static string BotChatConfiguration_BusyChatWindow_Description => ResourceManager.GetString("BotChatConfiguration_BusyChatWindow_Description", resourceCulture)!;
+
     }
 }

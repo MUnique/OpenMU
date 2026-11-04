@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
 /// The chat limits and the short-term memory of the bots of one game server: the server-wide gap
@@ -57,6 +58,8 @@ internal sealed class BotChatThrottle
     private readonly ConcurrentDictionary<string, int> _knownResets = new();
 
     private readonly ConditionalWeakTable<Player, Dictionary<object, object>> _lastLines = new();
+
+    private readonly List<(GameMap Map, Point Position, DateTime Time)> _humanChat = [];
 
     private long _nextPlayerScanTicks;
 
@@ -326,6 +329,49 @@ internal sealed class BotChatThrottle
         lock (lines)
         {
             lines[list] = line;
+        }
+    }
+
+    /// <summary>
+    /// Remembers that a human player said something in the normal chat.
+    /// </summary>
+    /// <param name="map">The map of the player.</param>
+    /// <param name="position">The position of the player.</param>
+    /// <param name="now">The current time.</param>
+    /// <param name="window">How long a message counts; older ones are forgotten.</param>
+    public void RecordHumanChat(GameMap map, Point position, DateTime now, TimeSpan window)
+    {
+        lock (this._humanChat)
+        {
+            this._humanChat.RemoveAll(message => now - message.Time > window);
+            this._humanChat.Add((map, position, now));
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the human players near a place are busy talking: at least the given number
+    /// of their normal chat messages were said within the window and the range.
+    /// </summary>
+    /// <param name="map">The map of the place.</param>
+    /// <param name="position">The position of the place.</param>
+    /// <param name="range">The range around the place.</param>
+    /// <param name="now">The current time.</param>
+    /// <param name="window">How long a message counts.</param>
+    /// <param name="count">The number of messages from which the chat is busy; 0 never.</param>
+    /// <returns><c>true</c>, if the players near the place are busy talking.</returns>
+    public bool IsHumanChatBusy(GameMap map, Point position, double range, DateTime now, TimeSpan window, int count)
+    {
+        if (count <= 0)
+        {
+            return false;
+        }
+
+        lock (this._humanChat)
+        {
+            return this._humanChat.Count(message =>
+                ReferenceEquals(message.Map, map)
+                && now - message.Time <= window
+                && message.Position.EuclideanDistanceTo(position) <= range) >= count;
         }
     }
 

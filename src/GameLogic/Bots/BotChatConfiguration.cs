@@ -131,6 +131,21 @@ public class BotChatConfiguration
     public int DeclineReplyChancePercent { get; set; } = 70;
 
     /// <summary>
+    /// Gets or sets from how many normal chat messages of human players near a bot the bot keeps
+    /// quiet - it says nothing unasked (conversations, greetings, congratulations, comments) while the
+    /// players around it are busy talking; 0 switches it off. Answers to a player stay unaffected.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_BusyChatMessageCount_Name), Description = nameof(PlugInResources.BotChatConfiguration_BusyChatMessageCount_Description))]
+    public int BusyChatMessageCount { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets how long a message of a human player counts for <see cref="BusyChatMessageCount"/>.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_BusyChatWindow_Name), Description = nameof(PlugInResources.BotChatConfiguration_BusyChatWindow_Description))]
+    public TimeSpan BusyChatWindow { get; set; } = TimeSpan.FromSeconds(30);
+
+    /// <summary>
     /// Gets or sets how many bots answer a player's party search posted with <c>/post</c>, e.g.
     /// "party 300-350 bk" (see <see cref="BotPartyRequest"/>); 0 switches it off. The same search
     /// posted again is answered by other bots.
