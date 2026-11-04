@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable;CS4014;VSTHRD110;VSTHRD100</WarningsAsErrors>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\MUnique.OpenMU.Dapr.Common.csproj" />
+    <ProjectReference Include="..\..\Persistence\MUnique.OpenMU.Persistence.csproj" />
+    <ProjectReference Include="..\..\Persistence\EntityFramework\MUnique.OpenMU.Persistence.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\Web\PlayerPortal.Api\MUnique.OpenMU.Web.PlayerPortal.Api.csproj" />
+  </ItemGroup>
+</Project>

@@ -27,6 +27,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<ConfigurationTaskOperations>();
         services.AddScoped<CharacterWriteOperations>();
         services.AddScoped<AccountReadOperations>();
+        services.AddScoped<AccountRegistrationService>();
         services.AddScoped<ServerReadOperations>();
         services.AddScoped<GuildReadOperations>();
         services.AddScoped<ConfigurationReadOperations>();
