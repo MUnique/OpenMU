@@ -1066,6 +1066,14 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // A bot which announced an opened event waits at the meeting point until the entrance closes
+        // (see BotChatPlugIn): it said where it would be, so it must be found there. This outranks the
+        // errands and the party follow below - and a due reset, which would change its level.
+        if (await this.TryEventMeetingAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
         // On servers with the reset feature, a due character reset outranks the whole routine below:
         // the bot has reached the required level, so hunting on only gains it nothing until it resets.
         // It keeps fighting normally through the random grace delay, then resets and starts its next
@@ -1420,6 +1428,81 @@ internal sealed class BotNavigator : AsyncDisposable
     private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition)
     {
         await BotBuffHandler.TryRequestBuffAsync(this._player, map, buffNpcPosition).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drives an event meeting (see <see cref="OfflinePlayer.EventMeeting"/>): a bot which announced an
+    /// opened event warps to the meeting map, walks up to the event's entry NPC (or just into the
+    /// safezone, for Chaos Castle) and waits there until the entrance closes. The meeting ends early
+    /// when a player takes the bot into a party - the follow logic then takes it into the event behind
+    /// its new leader.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the meeting consumed this tick.</returns>
+    private async ValueTask<bool> TryEventMeetingAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    {
+        if (this._player.EventMeeting is not { } meeting)
+        {
+            return false;
+        }
+
+        if (DateTime.UtcNow >= meeting.UntilUtc
+            || this._player.CurrentMiniGame is not null
+            || BotPartyHandler.HasHumanCompanion(this._player))
+        {
+            this.EndEventMeeting(meeting);
+            return false;
+        }
+
+        // Leaving the hunting ground for a while: don't keep other bots off it meanwhile.
+        this._player.HuntingSpot = null;
+
+        if (map.Definition.Number != meeting.Map.Number || (meeting.NpcPosition is null && !inSafezone))
+        {
+            if (meeting.Map.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is not { } gate)
+            {
+                this.EndEventMeeting(meeting);
+                return false;
+            }
+
+            this._travelPath = null;
+            this._hasDestination = false;
+            this._lastWarpUtc = this._timeProvider.GetUtcNow();
+            this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} to wait for players of the event it announced.", this._player.Name, meeting.Map.Name);
+            await this._player.WarpToAsync(gate).ConfigureAwait(false);
+            return true;
+        }
+
+        if (meeting.NpcPosition is { } npcPosition && this._player.GetDistanceTo(npcPosition) > MerchantTalkRange)
+        {
+            if (BotEventMeetingPlanner.FindStandingPoint(map.Terrain, npcPosition, MerchantTalkRange) is not { } standingPoint
+                || !await this.TravelTowardAsync(map, standingPoint, cancellationToken).ConfigureAwait(false))
+            {
+                this._player.Logger.LogDebug("Bot '{Name}' gives up waiting for the event: no route to the entry NPC at {Target}.", this._player.Name, npcPosition);
+                this.EndEventMeeting(meeting);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Waiting at the meeting point is not "stuck".
+        this._lastMoveUtc = DateTime.UtcNow;
+        return true;
+    }
+
+    /// <summary>
+    /// Ends the event meeting, unless a newer one replaced it in the meantime.
+    /// </summary>
+    /// <param name="meeting">The meeting which is over.</param>
+    private void EndEventMeeting(BotEventMeeting meeting)
+    {
+        if (ReferenceEquals(this._player.EventMeeting, meeting))
+        {
+            this._player.EventMeeting = null;
+        }
     }
 
     /// <summary>

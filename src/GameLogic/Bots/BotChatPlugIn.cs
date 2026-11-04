@@ -25,7 +25,9 @@ using MUnique.OpenMU.PlugIns;
 /// A bot only talks about what it could actually do: it posts about a Blood Castle only when it
 /// meets that event's entry requirements (the same check that decides whether a bot may follow its
 /// leader in, see <see cref="BotMiniGameHandler.IsEligible"/>), and about an invasion only when it may
-/// warp to the invaded map. The limits of the <see cref="BotChatConfiguration"/> keep a large
+/// warp to the invaded map. After announcing an event, the bot waits at the event's entry NPC (or in
+/// its home town for Chaos Castle) until the entrance closes, so the players can find and invite it
+/// (see <see cref="BotEventMeeting"/>). The limits of the <see cref="BotChatConfiguration"/> keep a large
 /// population from flooding the chat; they are tracked per game server.
 /// It's a feature plugin of the bots, listed in the admin panel next to them.
 /// </remarks>
@@ -47,6 +49,13 @@ public class BotChatPlugIn
     /// started by the same schedule run doesn't get its own post.
     /// </summary>
     private static readonly TimeSpan InvasionAnnouncementWindow = TimeSpan.FromMinutes(10);
+
+    /// <summary>
+    /// The least time an event's entrance must still stay open for a bot to announce it: the bot
+    /// waits at the meeting point until the entrance closes (see <see cref="BotEventMeeting"/>), and a
+    /// player who reads the post needs the time to get there and invite it.
+    /// </summary>
+    private static readonly TimeSpan MinimumMeetingTime = TimeSpan.FromMinutes(2);
 
     /// <summary>
     /// The delay range of a level milestone comment: a moment after the level-up effect.
@@ -182,6 +191,18 @@ public class BotChatPlugIn
     private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
 
     /// <summary>
+    /// Determines whether the bot is free to wait for players at an event: not already waiting, not on
+    /// an errand or a revenge, and not in a party with a player - it would look for company it has.
+    /// </summary>
+    private static bool IsFreeToMeet(OfflinePlayer bot)
+        => bot.EventMeeting is null
+           && !bot.IsOnShoppingTrip
+           && !bot.IsOnBuffTrip
+           && !bot.IsOnChaosMachineTrip
+           && !bot.HasRevengeIntent
+           && !BotPartyHandler.HasHumanCompanion(bot);
+
+    /// <summary>
     /// Determines whether the bot is in the world and free to talk: alive and not inside an event.
     /// </summary>
     private static bool IsAvailable(Player bot)
@@ -255,10 +276,19 @@ public class BotChatPlugIn
             return;
         }
 
+        // A player reading the post needs the time to get to the meeting point.
+        if (miniGame.EnterEndsAtUtc - now < MinimumMeetingTime)
+        {
+            return;
+        }
+
         var definition = miniGame.Definition;
         var players = await miniGame.GameContext.GetPlayersAsync().ConfigureAwait(false);
         var candidates = players
-            .Where(p => IsBot(p) && IsAvailable(p) && BotMiniGameHandler.IsEligible(p, definition, out _))
+            .OfType<OfflinePlayer>()
+            .Where(bot => IsBot(bot) && IsAvailable(bot) && IsFreeToMeet(bot) && BotMiniGameHandler.IsEligible(bot, definition, out _))
+            .Select(bot => (Bot: bot, Meeting: BotEventMeetingPlanner.TryPlan(bot, definition.Type, miniGame.EnterEndsAtUtc)))
+            .Where(candidate => candidate.Meeting is not null)
             .ToList();
         var throttle = this.GetThrottle(miniGame.GameContext);
         if (candidates.Count == 0
@@ -270,10 +300,12 @@ public class BotChatPlugIn
             return;
         }
 
-        var bot = candidates[Rand.NextInt(0, candidates.Count)];
-        var values = CreateBotValues(bot);
+        var (chosen, meeting) = candidates[Rand.NextInt(0, candidates.Count)];
+        chosen.EventMeeting = meeting;
+        var values = CreateBotValues(chosen);
         values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
-        await BotChatSpeaker.PostAsync(bot, line, values).ConfigureAwait(false);
+        values["map"] = culture => meeting!.Map.Name.GetTranslation(culture) ?? string.Empty;
+        await BotChatSpeaker.PostAsync(chosen, line, values).ConfigureAwait(false);
     }
 
     private async ValueTask PostAboutInvasionAsync(IGameContext gameContext, IPeriodicTaskPlugIn invasion, IReadOnlyCollection<GameMapDefinition> maps, BotChatConfiguration configuration)
