@@ -1,4 +1,4 @@
-﻿// <copyright file="SimpleItemCraftingHandler.cs" company="MUnique">
+// <copyright file="SimpleItemCraftingHandler.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -106,7 +106,7 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             return CraftingResult.IncorrectMixItems;
         }
 
-        if (totalCraftingPrice > 0)
+        if (totalCraftingPrice > 0 && this._settings.NpcPriceDivisor > 0)
         {
             // The rate is a byte; an expensive item (e.g. an excellent weapon with options) can be worth more
             // than 255 times the divisor, which wrapped the rate around to a small value instead of capping it.

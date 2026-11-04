@@ -27,6 +27,7 @@
         <NavLink class="dropdown-item" href="edit-item-drops" @onclick="() => NavigationHistory.Clear()">@Resources.ItemDrops</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(GameMapDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.GameMaps</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(MiniGameDefinition).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.MiniGames</NavLink>
+        <NavLink class="dropdown-item" href="edit-config/custom-craftings" @onclick="() => NavigationHistory.Clear()">@Resources.ResourceManager.GetString("CustomCraftings")</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(WarpInfo).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.WarpList</NavLink>
         <NavLink class="dropdown-item" href="@($"edit-config-grid/{typeof(JewelMix).FullName}/")" @onclick="() => NavigationHistory.Clear()">@Resources.JewelMixes</NavLink>
         <hr class="dropdown-divider"/>
