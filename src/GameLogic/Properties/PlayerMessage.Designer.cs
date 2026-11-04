@@ -2201,6 +2201,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create kalima gate in Kalima..
+        /// </summary>
+        public static string NoKalimaGateInKalima {
+            get {
+                return ResourceManager.GetString("NoKalimaGateInKalima", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create kalima gate on event map..
         /// </summary>
         public static string NoKalimaGateOnEventMap {

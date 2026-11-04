@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.CashShop;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -41,7 +42,11 @@ public class AddElitePotionsUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInResources.AddElitePotionsUpdatePlugIn_Description;
 
     /// <inheritdoc />
-    public override bool IsMandatory => true;
+    /// <remarks>
+    /// The update puts packages of the in-game shop on sale, which a server owner may want to keep off sale,
+    /// so it can be deselected.
+    /// </remarks>
+    public override bool IsMandatory => false;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 02, 17, 0, 0, DateTimeKind.Utc);
@@ -65,10 +70,13 @@ public class AddElitePotionsUpdatePlugIn : UpdatePlugInBase
     /// Assigns the potions to the products of the in-game shop, which were created without them.
     /// Their packages were initialized as not for sale then, so they're put on sale, if all of
     /// their products can be delivered.
+    /// The product sequences only identify these products in the script which comes with the game client,
+    /// so a configuration which uses a custom script stays untouched.
     /// </summary>
     private static void AssignCashShopProducts(GameConfiguration gameConfiguration)
     {
-        if (gameConfiguration.CashShopConfiguration is not { } configuration)
+        if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration))
         {
             return;
         }

@@ -78,6 +78,32 @@ internal class CraftingTalismansDataTest
         AssertTalismanData(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the update doesn't assign the Talisman of Luck to the products of a custom in-game shop script,
+    /// because its price sequences may identify other products, and doesn't put its packages on sale.
+    /// </summary>
+    [Test]
+    public async Task UpdateDoesNotAssignTalismansToCustomScriptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var configuration = gameConfiguration.CashShopConfiguration!;
+        configuration.ScriptYearId++;
+        foreach (var package in configuration.Packages.Where(p => LuckPackages.Contains(p.PackageSequence)))
+        {
+            package.IsForSale = false;
+            package.Products.ToList().ForEach(product => (product.ItemDefinition, product.Quantity) = (null, 1));
+        }
+
+        gameConfiguration.Items.Where(IsTalisman).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
+
+        await new AddCraftingTalismansUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Items.Count(IsTalisman), Is.EqualTo(2));
+        Assert.That(configuration.Packages.SelectMany(p => p.Products), Has.None.Matches<CashShopProduct>(p => p.ItemDefinition is { } item && IsTalisman(item)));
+        Assert.That(configuration.Packages.Where(p => LuckPackages.Contains(p.PackageSequence)), Has.None.Matches<CashShopPackage>(p => p.IsForSale));
+    }
+
     private static bool IsTalisman(ItemDefinition item) => item.Group == Group && item.Number is LuckNumber or ChaosAssemblyNumber;
 
     private static void AssertTalismanData(GameConfiguration gameConfiguration)

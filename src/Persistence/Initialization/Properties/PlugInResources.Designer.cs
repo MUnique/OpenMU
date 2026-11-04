@@ -899,6 +899,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddCrywolfEventUpdatePlugIn_Description text.</summary>
         public static string AddCrywolfEventUpdatePlugIn_Description => ResourceManager.GetString("AddCrywolfEventUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddResetFruitsUpdatePlugIn_Name text.</summary>
+        public static string AddResetFruitsUpdatePlugIn_Name => ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddResetFruitsUpdatePlugIn_Description text.</summary>
+        public static string AddResetFruitsUpdatePlugIn_Description => ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSantaVillageInvitationUpdatePlugIn_Name text.</summary>
         public static string AddSantaVillageInvitationUpdatePlugIn_Name => ResourceManager.GetString("AddSantaVillageInvitationUpdatePlugIn_Name", resourceCulture)!;
 
@@ -989,24 +995,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddItemPriceDefinitionsPlugIn_Description text.</summary>
         public static string AddItemPriceDefinitionsPlugIn_Description => ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized AddResetFruitsUpdatePlugIn_Name text.</summary>
-        public static string AddResetFruitsUpdatePlugIn_Name => ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized AddResetFruitsUpdatePlugIn_Description text.</summary>
-        public static string AddResetFruitsUpdatePlugIn_Description => ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized Name1 text.</summary>
-        public static string Name1 => ResourceManager.GetString("Name1", resourceCulture)!;
-
-        /// <summary>Gets the localized Color1 text.</summary>
-        public static string Color1 => ResourceManager.GetString("Color1", resourceCulture)!;
-
-        /// <summary>Gets the localized Bitmap1 text.</summary>
-        public static string Bitmap1 => ResourceManager.GetString("Bitmap1", resourceCulture)!;
-
-        /// <summary>Gets the localized Icon1 text.</summary>
-        public static string Icon1 => ResourceManager.GetString("Icon1", resourceCulture)!;
-
         /// <summary>Gets the localized AddKalimaTicketUpdatePlugIn_Name text.</summary>
         public static string AddKalimaTicketUpdatePlugIn_Name => ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Name", resourceCulture)!;
 
@@ -1042,5 +1030,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddCraftingTalismansUpdatePlugIn_Description text.</summary>
         public static string AddCraftingTalismansUpdatePlugIn_Description => ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }

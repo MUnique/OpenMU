@@ -1,0 +1,206 @@
+﻿@using Microsoft.Extensions.Logging
+@using MUnique.OpenMU.Web.Map.Properties
+
+@implements IAsyncDisposable
+
+<div class="mt-2">
+    <label class="form-label mb-1" for="monster-filter-text">@(Resources.FilterMonsters)</label>
+    <div class="input-group input-group-sm">
+        <select class="form-select monster-filter-mode" @onchange="this.OnModeChangedAsync">
+            <option value="@((int)MonsterFilterMode.Contains)" selected="@(this._mode == MonsterFilterMode.Contains)">@(Resources.FilterContains)</option>
+            <option value="@((int)MonsterFilterMode.StartsWith)" selected="@(this._mode == MonsterFilterMode.StartsWith)">@(Resources.FilterStartsWith)</option>
+            <option value="@((int)MonsterFilterMode.EndsWith)" selected="@(this._mode == MonsterFilterMode.EndsWith)">@(Resources.FilterEndsWith)</option>
+        </select>
+        <input id="monster-filter-text" type="text" class="form-control monster-filter-text" placeholder="@(Resources.FilterMonstersPlaceholder)"
+               value="@this._text" @oninput="this.OnTextChangedAsync"/>
+        <button type="button" class="btn btn-outline-secondary monster-filter-clear" title="@(Resources.ClearFilter)"
+                disabled="@(!this.IsFilterSet)" @onclick="this.ClearAsync"><i class="oi oi-x"></i></button>
+    </div>
+    @if (this.IsFilterSet)
+    {
+        <small class="text-muted monster-filter-count">
+            @(this._matches.Count == 0 ? Resources.NoMatchingMonsters : string.Format(Resources.MatchingMonsters, this._matches.Count))
+        </small>
+        @if (this._matches.Count > 0)
+        {
+            <table class="table table-sm table-striped table-hover mt-1">
+                <thead>
+                <tr>
+                    <td>@(Resources.Name)</td>
+                    <td>@(Resources.Position)</td>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var match in this._matches)
+                {
+                    <tr class="monster-filter-match" @onclick="() => this.OnSelectObject.InvokeAsync(match.Id)">
+                        <td>@match.Name</td>
+                        <td>(@match.X, @match.Y)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    }
+</div>
+
+@code {
+
+    /// <summary>
+    /// The interval in which the list of matching monsters is refreshed while a filter is set,
+    /// because the monsters move, die and respawn.
+    /// </summary>
+    private static readonly TimeSpan RefreshInterval = TimeSpan.FromSeconds(1);
+
+    private MonsterFilterMode _mode = MonsterFilterMode.Contains;
+
+    private string _text = string.Empty;
+
+    private IReadOnlyList<MonsterFilterMatch> _matches = Array.Empty<MonsterFilterMatch>();
+
+    private CancellationTokenSource? _refreshCts;
+
+    /// <summary>
+    /// Gets or sets the identifier of the server which hosts the map.
+    /// </summary>
+    [Parameter]
+    public int ServerId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the map.
+    /// </summary>
+    [Parameter]
+    public Guid MapId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when a matching monster is clicked to select it on the map.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> OnSelectObject { get; set; }
+
+    /// <summary>
+    /// Gets or sets the JS runtime.
+    /// </summary>
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the logger.
+    /// </summary>
+    [Inject]
+    private ILogger<MapMonsterFilter> Logger { get; set; } = null!;
+
+    private bool IsFilterSet => !string.IsNullOrWhiteSpace(this._text);
+
+    /// <inheritdoc />
+    public ValueTask DisposeAsync()
+    {
+        this.StopRefresh();
+        return ValueTask.CompletedTask;
+    }
+
+    private async Task OnModeChangedAsync(ChangeEventArgs args)
+    {
+        if (!int.TryParse(args.Value?.ToString(), out var value) || !Enum.IsDefined(typeof(MonsterFilterMode), value))
+        {
+            return;
+        }
+
+        this._mode = (MonsterFilterMode)value;
+        await this.ApplyFilterAsync();
+    }
+
+    private async Task OnTextChangedAsync(ChangeEventArgs args)
+    {
+        this._text = args.Value?.ToString() ?? string.Empty;
+        await this.ApplyFilterAsync();
+    }
+
+    private async Task ClearAsync()
+    {
+        this._text = string.Empty;
+        await this.ApplyFilterAsync();
+    }
+
+    private async Task ApplyFilterAsync()
+    {
+        await this.InvokeJsAsync(() => this.JsRuntime.InvokeVoidAsync("SetMapMonsterFilter", this.ServerId, this.MapId, (int)this._mode, this._text));
+        await this.RefreshMatchesAsync();
+        if (this.IsFilterSet)
+        {
+            this.StartRefresh();
+        }
+        else
+        {
+            this.StopRefresh();
+        }
+    }
+
+    private async Task RefreshMatchesAsync()
+    {
+        if (!this.IsFilterSet)
+        {
+            this._matches = Array.Empty<MonsterFilterMatch>();
+            return;
+        }
+
+        await this.InvokeJsAsync(async () =>
+        {
+            this._matches = await this.JsRuntime.InvokeAsync<MonsterFilterMatch[]>("GetMapMonsterFilterMatches", this.ServerId, this.MapId);
+        });
+    }
+
+    private void StartRefresh()
+    {
+        if (this._refreshCts is not null)
+        {
+            return;
+        }
+
+        this._refreshCts = new CancellationTokenSource();
+        _ = this.RefreshPeriodicallyAsync(this._refreshCts.Token);
+    }
+
+    private void StopRefresh()
+    {
+        this._refreshCts?.Cancel();
+        this._refreshCts?.Dispose();
+        this._refreshCts = null;
+    }
+
+    private async Task RefreshPeriodicallyAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(RefreshInterval);
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                await this.InvokeAsync(async () =>
+                {
+                    await this.RefreshMatchesAsync();
+                    this.StateHasChanged();
+                });
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // The filter was cleared or the component was disposed.
+        }
+    }
+
+    private async Task InvokeJsAsync(Func<ValueTask> call)
+    {
+        try
+        {
+            await call();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit was torn down while the call was in flight; ignore.
+        }
+        catch (JSException ex)
+        {
+            this.Logger.LogDebug(ex, "Unexpected JS interop error of the monster filter.");
+        }
+    }
+}

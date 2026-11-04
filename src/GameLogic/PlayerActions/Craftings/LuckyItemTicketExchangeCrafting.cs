@@ -17,7 +17,7 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// The result items with the same reference are the items for which the ticket can be exchanged. Of these, the player
 /// gets the one which the character class of the player can wear. When more than one fits, the one for the fewest
 /// character classes is taken, e.g. the set which is made for the class, and then the one with the lowest item number.
-/// Exactly one ticket is accepted per exchange.
+/// Exactly one ticket is accepted per exchange, and only when the item fits into the inventory.
 /// </remarks>
 public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
 {
@@ -46,10 +46,17 @@ public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
             return CraftingResult.IncorrectMixItems;
         }
 
-        if (this.GetResultItemDefinition(player, items) is null)
+        if (this.GetResultItemDefinition(player, items) is not { } definition)
         {
             // The ticket would be consumed without giving an item, e.g. a helm ticket for a magic gladiator.
             return CraftingResult.IncorrectMixItems;
+        }
+
+        if (player.Inventory?.CheckInvSpace(new TemporaryItem { Definition = definition }) is null)
+        {
+            // The armor is bigger than the ticket. If it doesn't fit into the inventory, it would be lost
+            // when the player leaves before making room for it.
+            return CraftingResult.TooManyItems;
         }
 
         return default;

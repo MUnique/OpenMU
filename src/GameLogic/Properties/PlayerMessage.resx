@@ -219,6 +219,9 @@
   <data name="NoKalimaGateOnEventMap" xml:space="preserve">
     <value>Cannot create kalima gate on event map.</value>
   </data>
+  <data name="NoKalimaGateInKalima" xml:space="preserve">
+    <value>Cannot create kalima gate in Kalima.</value>
+  </data>
   <data name="NoKalimaGateInSafezone" xml:space="preserve">
     <value>Cannot create kalima gate in safe zone.</value>
   </data>
