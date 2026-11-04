@@ -196,8 +196,8 @@ else
                             <td>@RequiredAmountSummary(requirement)</td>
                             <td>+@(requirement.MinimumLevel)–+@(requirement.MaximumLevel)</td>
                             <td>@RequirementOptions(requirement)</td>
-                            <td>@GetResource("CustomCraftingsMixResult_" + requirement.SuccessResult)</td>
-                            <td>@GetResource("CustomCraftingsMixResult_" + requirement.FailResult)</td>
+                            <td>@MixResultCaption(requirement.SuccessResult)</td>
+                            <td>@MixResultCaption(requirement.FailResult)</td>
                             <td><button type="button" class="btn btn-sm btn-outline-danger" title="@Resources.Delete" @onclick="() => this.RemoveRequirement(requirement)">×</button></td>
                         </tr>
                     }
@@ -249,7 +249,7 @@ else
                     <InputSelect id="requiredOnSuccess" class="form-select form-select-sm" @bind-Value="this._requirementDraft.SuccessResult">
                         @foreach (var mixResult in Enum.GetValues<MixResult>())
                         {
-                            <option value="@mixResult">@GetResource("CustomCraftingsMixResult_" + mixResult)</option>
+                            <option value="@mixResult">@MixResultCaption(mixResult)</option>
                         }
                     </InputSelect>
                 </div>
@@ -258,7 +258,7 @@ else
                     <InputSelect id="requiredOnFailure" class="form-select form-select-sm" @bind-Value="this._requirementDraft.FailResult">
                         @foreach (var mixResult in Enum.GetValues<MixResult>())
                         {
-                            <option value="@mixResult">@GetResource("CustomCraftingsMixResult_" + mixResult)</option>
+                            <option value="@mixResult">@MixResultCaption(mixResult)</option>
                         }
                     </InputSelect>
                 </div>
@@ -276,7 +276,7 @@ else
                 <InputSelect id="resultSelection" class="form-select form-select-sm" @bind-Value="this._form.ResultItemSelection">
                     @foreach (var selection in Enum.GetValues<ResultItemSelection>())
                     {
-                        <option value="@selection">@GetResource("CustomCraftingsResultSelection_" + selection)</option>
+                        <option value="@selection">@ResultSelectionCaption(selection)</option>
                     }
                 </InputSelect>
             </div>

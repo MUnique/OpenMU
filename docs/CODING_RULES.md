@@ -358,6 +358,12 @@ Text a player can see is localized. Don't put English strings in the code.
   Description = nameof(PlugInResources.X_Description), ResourceType =
   typeof(PlugInResources))]` — never a literal.
 * Admin panel and web: the `Resources.resx` of the project.
+* Use strongly typed resource properties for fixed UI text, such as
+  `@Resources.Save` in Razor and `Resources.Save` in C#. Avoid
+  `ResourceManager.GetString`, string-key helpers, and wrappers for fixed keys.
+  If a property is missing, add the resource to the `.resx` and regenerate its
+  designer output. Use runtime lookup only when the key is genuinely dynamic
+  and cannot reasonably be selected from typed properties.
 * Log messages are *not* localized — they are for operators, and stay English.
 
 ## 11. Async and concurrency

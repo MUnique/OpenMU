@@ -71,11 +71,17 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
 
     private bool SelectedRequiredItemIsStackable => this.SelectedRequiredItem is { } item && this.IsStackable(item);
 
-    private string RequiredMinimumAmountLabel => this.GetResource(this.SelectedRequiredItemIsStackable ? "CustomCraftingsMinimumStackQuantityShort" : "CustomCraftingsMinimumItemCountShort");
+    private string RequiredMinimumAmountLabel => this.SelectedRequiredItemIsStackable
+        ? Resources.CustomCraftingsMinimumStackQuantityShort
+        : Resources.CustomCraftingsMinimumItemCountShort;
 
-    private string RequiredMaximumAmountLabel => this.GetResource(this.SelectedRequiredItemIsStackable ? "CustomCraftingsMaximumStackQuantityShort" : "CustomCraftingsMaximumItemCountShort");
+    private string RequiredMaximumAmountLabel => this.SelectedRequiredItemIsStackable
+        ? Resources.CustomCraftingsMaximumStackQuantityShort
+        : Resources.CustomCraftingsMaximumItemCountShort;
 
-    private string RequiredAmountHint => this.GetResource(this.SelectedRequiredItemIsStackable ? "CustomCraftingsRequiredStackAmountHint" : "CustomCraftingsRequiredItemAmountHint");
+    private string RequiredAmountHint => this.SelectedRequiredItemIsStackable
+        ? Resources.CustomCraftingsRequiredStackAmountHint
+        : Resources.CustomCraftingsRequiredItemAmountHint;
 
     private string ResultQuantityOrDurabilityLabel => this.SelectedResultIsStackable
         ? Resources.CustomCraftingsStackQuantity
@@ -213,11 +219,10 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
 
     private string RequiredAmountSummary(int minimumAmount, int maximumAmount, ItemDefinition? item)
     {
-        var summaryKey = item is not null && this.IsStackable(item)
-            ? "CustomCraftingsStackAmountSummary"
-            : "CustomCraftingsItemCountSummary";
-        var summary = string.Format(CultureInfo.CurrentCulture, this.GetResource(summaryKey), minimumAmount, maximumAmount);
-        return summary;
+        var summaryTemplate = item is not null && this.IsStackable(item)
+            ? Resources.CustomCraftingsStackAmountSummary
+            : Resources.CustomCraftingsItemCountSummary;
+        return string.Format(CultureInfo.CurrentCulture, summaryTemplate, minimumAmount, maximumAmount);
     }
 
     private ItemDefinition? FindItem(string? itemId)
@@ -226,7 +231,21 @@ public partial class CustomCraftings : ComponentBase, IAsyncDisposable
     private string LocalizedName(LocalizedString name)
         => name.GetTranslation(CultureInfo.CurrentUICulture) ?? name.ValueInNeutralLanguage;
 
-    private string GetResource(string resourceKey) => Resources.ResourceManager.GetString(resourceKey, CultureInfo.CurrentUICulture) ?? resourceKey;
+    private string MixResultCaption(MixResult mixResult) => mixResult switch
+    {
+        MixResult.Disappear => Resources.CustomCraftingsMixResult_Disappear,
+        MixResult.StaysAsIs => Resources.CustomCraftingsMixResult_StaysAsIs,
+        MixResult.ChaosWeaponAndFirstWingsDowngradedRandom => Resources.CustomCraftingsMixResult_ChaosWeaponAndFirstWingsDowngradedRandom,
+        MixResult.ThirdWingsDowngradedRandom => Resources.CustomCraftingsMixResult_ThirdWingsDowngradedRandom,
+        _ => mixResult.ToString(),
+    };
+
+    private string ResultSelectionCaption(ResultItemSelection selection) => selection switch
+    {
+        ResultItemSelection.Any => Resources.CustomCraftingsResultSelection_Any,
+        ResultItemSelection.All => Resources.CustomCraftingsResultSelection_All,
+        _ => selection.ToString(),
+    };
 
     private async Task ResetRecipePageAsync()
     {
