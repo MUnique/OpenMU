@@ -45,4 +45,17 @@ public enum BotChatSituation
     /// </summary>
     /// <remarks>New situations are appended: the configuration stores the situation as a number.</remarks>
     PlayerLogin,
+
+    /// <summary>
+    /// The bot accepted a player's party invitation. Said in the party chat.
+    /// Placeholders: <c>{player}</c> (the inviter), <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    PartyJoined,
+
+    /// <summary>
+    /// An event (Blood Castle, Devil Square, Chaos Castle) the bot went through with a player's party
+    /// ended. One bot per party says it in the party chat.
+    /// Placeholders: <c>{event}</c>, <c>{level}</c>.
+    /// </summary>
+    EventFinished,
 }

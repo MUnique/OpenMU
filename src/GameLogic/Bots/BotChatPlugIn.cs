@@ -42,6 +42,8 @@ public class BotChatPlugIn
     ICharacterLevelUpPlugIn,
     IWhisperMessageReceivedPlugIn,
     IPlayerStateChangedPlugIn,
+    IBotPartyJoinedPlugIn,
+    IMiniGameEndedPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -79,6 +81,11 @@ public class BotChatPlugIn
     /// The delay range of a greeting: the entering player's client needs a moment to load the world.
     /// </summary>
     private static readonly (int Min, int Max) GreetingDelaySeconds = (3, 8);
+
+    /// <summary>
+    /// The delay range of a party chat line - after the party window or the event's score popped up.
+    /// </summary>
+    private static readonly (int Min, int Max) PartyChatDelaySeconds = (2, 6);
 
     private readonly ConditionalWeakTable<IGameContext, BotChatThrottle> _throttles = new();
 
@@ -189,6 +196,55 @@ public class BotChatPlugIn
         }
 
         RunLater(player.GameContext, RandomDelay(GreetingDelaySeconds), () => this.GreetAsync(player, configuration));
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public void BotJoinedParty(Player bot, Player inviter)
+    {
+        if (this.Configuration is not { PartyChatChancePercent: > 0 } configuration
+            || !Rand.NextRandomBool(configuration.PartyChatChancePercent)
+            || PickLine(configuration, BotChatSituation.PartyJoined) is not { } line
+            || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
+        {
+            return;
+        }
+
+        var values = CreateBotValues(bot);
+        var inviterName = inviter.SelectedCharacter?.Name ?? string.Empty;
+        values["player"] = _ => inviterName;
+        RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line, values));
+    }
+
+    /// <inheritdoc />
+    public ValueTask MiniGameEndedAsync(MiniGameContext miniGame, Player? winner, IReadOnlyCollection<Player> finishers)
+    {
+        if (this.Configuration is not { PartyChatChancePercent: > 0 } configuration)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        // One bot per party with a player: a whole chorus of "gg" from the bots would give them away.
+        var speakers = finishers
+            .Where(p => IsBot(p) && p.Party is not null && BotPartyHandler.HasHumanCompanion(p))
+            .GroupBy(p => p.Party)
+            .Select(party => party.First())
+            .ToList();
+        var definition = miniGame.Definition;
+        foreach (var bot in speakers)
+        {
+            if (!Rand.NextRandomBool(configuration.PartyChatChancePercent)
+                || PickLine(configuration, BotChatSituation.EventFinished) is not { } line
+                || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
+            {
+                continue;
+            }
+
+            var values = CreateBotValues(bot);
+            values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
+            RunLater(bot.GameContext, RandomDelay(PartyChatDelaySeconds), () => BotChatSpeaker.PartySayAsync(bot, line, values));
+        }
+
         return ValueTask.CompletedTask;
     }
 
