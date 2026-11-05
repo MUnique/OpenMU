@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -42,6 +43,12 @@ public class BotMerchantPlugIn
 
     private readonly ConcurrentDictionary<IGameContext, DateTime> _nextCheckUtc = new();
 
+    /// <summary>
+    /// The number of market shifts each good spent in a store without a buyer, by the id of the item.
+    /// In memory only: a restart of the server gives every good a new chance.
+    /// </summary>
+    private readonly ConcurrentDictionary<Guid, int> _unsoldShifts = new();
+
     /// <inheritdoc />
     public BotMerchantConfiguration? Configuration { get; set; }
 
@@ -68,11 +75,33 @@ public class BotMerchantPlugIn
     /// <inheritdoc />
     public void ItemSold(Player seller, Item item, Player buyer)
     {
-        if (seller is OfflinePlayer { MarketShift: { } shift })
+        if (seller is OfflinePlayer { MarketShift: { } shift } bot)
         {
             shift.LastSaleUtc = DateTime.UtcNow;
+            this._unsoldShifts.TryRemove(item.GetId(), out _);
+
+            // The bot buys nothing, so its income is removed - in its own tick, which is the only
+            // place allowed to change its inventory (see OfflinePlayer.PendingBotActions).
+            bot.PendingBotActions.Enqueue(() => BotMerchandise.RemoveIncomeAsync(bot, shift));
         }
     }
+
+    /// <summary>
+    /// Counts one more market shift without a buyer for the good.
+    /// </summary>
+    /// <param name="item">The good.</param>
+    /// <returns>The number of shifts the good spent in the store without a buyer.</returns>
+    internal int CountUnsoldShift(Item item) => this._unsoldShifts.AddOrUpdate(item.GetId(), 1, (_, count) => count + 1);
+
+    /// <summary>
+    /// Determines whether the good spent too many shifts in a store without a buyer: it's sold to an NPC
+    /// and doesn't go back into the store.
+    /// </summary>
+    /// <param name="item">The good.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <returns><c>true</c>, if the good is retired from the market.</returns>
+    internal bool IsRetired(Item item, BotMerchantConfiguration configuration)
+        => this._unsoldShifts.TryGetValue(item.GetId(), out var count) && count >= configuration.UnsoldShiftsUntilNpc;
 
     /// <summary>
     /// Sends bots with goods to the market until it has the configured number of merchants.

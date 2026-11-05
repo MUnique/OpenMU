@@ -75,6 +75,17 @@ internal sealed class BotMarketShift
     }
 
     /// <summary>
+    /// Gets or sets the money of the bot when it opened its store: everything above is income, which is removed.
+    /// </summary>
+    public int MoneyAtOpen { get; set; }
+
+    /// <summary>
+    /// Gets or sets the items of the inventory when the bot opened its store: every other item which
+    /// appears in it during the shift is income, e.g. jewels paid for a good, and is removed.
+    /// </summary>
+    public IReadOnlySet<Item> ItemsAtOpen { get; set; } = new HashSet<Item>();
+
+    /// <summary>
     /// Gets or sets a value indicating whether the bot opened its store on this shift.
     /// </summary>
     public bool IsStoreOpened

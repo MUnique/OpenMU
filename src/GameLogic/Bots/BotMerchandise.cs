@@ -215,9 +215,19 @@ internal static class BotMerchandise
     /// </remarks>
     internal static async ValueTask<int> StockStoreAsync(OfflinePlayer player, IReadOnlyCollection<Item> junk)
     {
-        if (player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()?.Configuration is not { } configuration
-            || player.ShopStorage is not { StoreOpen: false } shopStorage
-            || player.Level < Math.Max(configuration.MinimumLevel, BotMarketPlanner.MinimumStoreLevel))
+        if (player.ShopStorage is not { StoreOpen: false } shopStorage)
+        {
+            return 0;
+        }
+
+        if (player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>() is not { Configuration: { } configuration } plugIn)
+        {
+            // Switched off: the goods of earlier shifts must not stay locked away in the store.
+            await TakeOutOfStoreAsync(player, shopStorage.Items.ToList()).ConfigureAwait(false);
+            return 0;
+        }
+
+        if (player.Level < Math.Max(configuration.MinimumLevel, BotMarketPlanner.MinimumStoreLevel))
         {
             return 0;
         }
@@ -226,7 +236,8 @@ internal static class BotMerchandise
         foreach (var item in junk)
         {
             var priceClass = Classify(item, configuration);
-            if (CalculatePrice(item, priceClass, configuration) is not { } offer
+            if (plugIn.IsRetired(item, configuration)
+                || CalculatePrice(item, priceClass, configuration) is not { } offer
                 || !TryCreatePrice(player.GameContext, offer.Currency, offer.Amount, out var price)
                 || (priceClass == PriceClass.Jewel && !MayStockJewel(shopStorage, item, price, configuration))
                 || shopStorage.CheckInvSpace(item) is not { } storeSlot)
@@ -264,6 +275,95 @@ internal static class BotMerchandise
         }
 
         return stocked;
+    }
+
+    /// <summary>
+    /// Removes the income of the shift: the zen above what the bot had when it opened its store, and the
+    /// items which appeared in its inventory since then - the jewels paid for its goods. The bot buys
+    /// nothing, and the jewels would fill its inventory until it can't take any payment anymore.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="shift">The market shift.</param>
+    /// <remarks>Runs in the tick of the bot (see <see cref="OfflinePlayer.PendingBotActions"/>).</remarks>
+    /// <returns>The task.</returns>
+    internal static async ValueTask RemoveIncomeAsync(Player bot, BotMarketShift shift)
+    {
+        if (!shift.IsStoreOpened || bot.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        var money = Math.Max(0, bot.Money - shift.MoneyAtOpen);
+        if (money > 0)
+        {
+            bot.Money = shift.MoneyAtOpen;
+        }
+
+        var income = inventory.Items.Where(item => !shift.ItemsAtOpen.Contains(item)).ToList();
+        foreach (var item in income)
+        {
+            await bot.DestroyInventoryItemAsync(item).ConfigureAwait(false);
+        }
+
+        if (money > 0 || income.Count > 0)
+        {
+            bot.Logger.LogDebug("Bot '{Name}' removed its income of {Money} zen and {Count} item(s).", bot.Name, money, income.Count);
+        }
+    }
+
+    /// <summary>
+    /// After a market shift, counts one more shift without a buyer for each good left in the store,
+    /// and takes the goods which reached <see cref="BotMerchantConfiguration.UnsoldShiftsUntilNpc"/> out
+    /// of it - the next visit at a merchant NPC sells them, making room for fresh goods.
+    /// </summary>
+    /// <param name="bot">The bot, with its store closed.</param>
+    /// <returns>The task.</returns>
+    internal static async ValueTask RetireUnsoldGoodsAsync(OfflinePlayer bot)
+    {
+        if (bot.ShopStorage is not { StoreOpen: false } shopStorage
+            || bot.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>() is not { Configuration: { } configuration } plugIn)
+        {
+            return;
+        }
+
+        var retired = shopStorage.Items
+            .Where(item => plugIn.CountUnsoldShift(item) >= configuration.UnsoldShiftsUntilNpc)
+            .ToList();
+        await TakeOutOfStoreAsync(bot, retired).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Takes goods out of the store into the inventory, without their price: they become junk which the
+    /// bot sells to a merchant NPC. A good which doesn't fit into the inventory stays in the store for now.
+    /// </summary>
+    private static async ValueTask TakeOutOfStoreAsync(OfflinePlayer bot, IReadOnlyCollection<Item> goods)
+    {
+        if (goods.Count == 0 || bot.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        var takenOut = 0;
+        foreach (var item in goods)
+        {
+            if (inventory.CheckInvSpace(item) is not { } slot)
+            {
+                continue;
+            }
+
+            var fromSlot = item.ItemSlot;
+            await MoveAction.MoveItemAsync(bot, fromSlot, Storages.PersonalStore, slot, Storages.Inventory).ConfigureAwait(false);
+            if (inventory.GetItem(slot) == item)
+            {
+                item.SetStorePrice(null);
+                takenOut++;
+            }
+        }
+
+        if (takenOut > 0)
+        {
+            bot.Logger.LogDebug("Bot '{Name}' took {Count} unsold item(s) out of its store.", bot.Name, takenOut);
+        }
     }
 
     /// <summary>

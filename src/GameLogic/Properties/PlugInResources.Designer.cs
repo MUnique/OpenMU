@@ -5838,5 +5838,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotMerchantConfiguration_CreationPrice_Description text.</summary>
         public static string BotMerchantConfiguration_CreationPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_CreationPrice_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name text.</summary>
+        public static string BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name => ResourceManager.GetString("BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description text.</summary>
+        public static string BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description => ResourceManager.GetString("BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description", resourceCulture)!;
+
     }
 }
