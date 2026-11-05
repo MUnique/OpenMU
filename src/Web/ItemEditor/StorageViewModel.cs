@@ -76,6 +76,64 @@ public class StorageViewModel
     public byte? EmptyRowsToPreviousStorage { get; }
 
     /// <summary>
+    /// Determines whether the item can be placed at the specified position of this storage box,
+    /// so that it fits into the box and doesn't overlap with other items of it.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="column">The column of the top left corner of the item.</param>
+    /// <param name="row">The row of the top left corner of the item.</param>
+    /// <returns><c>true</c>, if the item can be placed there; Otherwise, <c>false</c>.</returns>
+    public bool CanPlace(Item item, int column, int row)
+    {
+        var width = GetWidth(item);
+        var height = GetHeight(item);
+        if (column < 0 || row < 0 || column + width > InventoryConstants.RowSize || row + height > this.Rows)
+        {
+            return false;
+        }
+
+        var startSlot = this.StartIndex + (row * InventoryConstants.RowSize) + column;
+        if (startSlot > this.EndIndex || startSlot > byte.MaxValue)
+        {
+            return false;
+        }
+
+        return !this.Storage.Items
+            .Where(other => other != item && this.IsIncluded(other))
+            .Any(other => Overlaps(other, column, row, width, height));
+
+        bool Overlaps(Item other, int left, int top, int w, int h)
+        {
+            var otherIndex = other.ItemSlot - this.StartIndex;
+            var otherColumn = otherIndex % InventoryConstants.RowSize;
+            var otherRow = otherIndex / InventoryConstants.RowSize;
+            return left < otherColumn + GetWidth(other)
+                   && otherColumn < left + w
+                   && top < otherRow + GetHeight(other)
+                   && otherRow < top + h;
+        }
+    }
+
+    /// <summary>
+    /// Moves the item to the specified position of this storage box, if it can be placed there.
+    /// The item may come from another box of the same storage, e.g. from an inventory extension.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="column">The column of the top left corner of the item.</param>
+    /// <param name="row">The row of the top left corner of the item.</param>
+    /// <returns><c>true</c>, if the item was moved; Otherwise, <c>false</c>.</returns>
+    public bool TryPlace(Item item, int column, int row)
+    {
+        if (!this.Storage.Items.Contains(item) || !this.CanPlace(item, column, row))
+        {
+            return false;
+        }
+
+        item.ItemSlot = (byte)(this.StartIndex + (row * InventoryConstants.RowSize) + column);
+        return true;
+    }
+
+    /// <summary>
     /// Determines whether the specified item is included in the shown storage box.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -86,4 +144,8 @@ public class StorageViewModel
     {
         return item.ItemSlot >= this.StartIndex && item.ItemSlot <= this.EndIndex;
     }
+
+    private static int GetWidth(Item item) => Math.Max(item.Definition?.Width ?? 1, (byte)1);
+
+    private static int GetHeight(Item item) => Math.Max(item.Definition?.Height ?? 1, (byte)1);
 }
