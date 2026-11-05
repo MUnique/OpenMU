@@ -61,6 +61,13 @@ public sealed class BotPlayer : OfflinePlayer
     public bool AwaitsFaultRestart { get; set; }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// A bot opens its store only on a market shift (see <see cref="BotMarketShift"/>): a store which was
+    /// open when it logged out must stay closed after the next login, wherever the bot enters the game.
+    /// </remarks>
+    protected override bool IsPlayerStoreOpeningAfterEnterSupported => false;
+
+    /// <inheritdoc />
     public override async ValueTask StopAsync()
     {
         await this.StopNavigatorAsync().ConfigureAwait(false);

@@ -886,10 +886,12 @@ public class BotChatPlugIn
 
     /// <summary>
     /// Determines whether the bot is free to wait for players at an event: not already waiting, not on
-    /// an errand or a revenge, and not in a party with a player - it would look for company it has.
+    /// an errand, a market shift or a revenge, and not in a party with a player - it would look for
+    /// company it has.
     /// </summary>
     private static bool IsFreeToMeet(OfflinePlayer bot)
         => bot.EventMeeting is null
+           && bot.MarketShift is null
            && !bot.IsOnShoppingTrip
            && !bot.IsOnBuffTrip
            && !bot.IsOnChaosMachineTrip

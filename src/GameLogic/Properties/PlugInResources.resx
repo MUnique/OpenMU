@@ -2120,4 +2120,26 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>The number of waiting items which are named, one per message.</value>
   </data>
+  <data name="BotMerchantPlugIn_Name" xml:space="preserve"><value>Bot merchants</value></data>
+  <data name="BotMerchantPlugIn_Description" xml:space="preserve"><value>Lets server-side bots sell the goods of their personal store on the market map (Loren Market) for a while, then go back hunting.</value></data>
+  <data name="BotMerchantConfiguration_MarketMapNumber_Name" xml:space="preserve"><value>Market map number</value></data>
+  <data name="BotMerchantConfiguration_MarketMapNumber_Description" xml:space="preserve"><value>The number of the map on which the bots open their stores (79 = Loren Market). The bots get there through its spawn gate, regardless of the warp list.</value></data>
+  <data name="BotMerchantConfiguration_MaximumMerchants_Name" xml:space="preserve"><value>Maximum merchants</value></data>
+  <data name="BotMerchantConfiguration_MaximumMerchants_Description" xml:space="preserve"><value>The maximum number of bots with an open store on the market at the same time, per game server.</value></data>
+  <data name="BotMerchantConfiguration_MinimumLevel_Name" xml:space="preserve"><value>Minimum level</value></data>
+  <data name="BotMerchantConfiguration_MinimumLevel_Description" xml:space="preserve"><value>The minimum level of a bot to go to the market. The game allows a personal store from level 6.</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStart_Name" xml:space="preserve"><value>Minimum goods to start</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStart_Description" xml:space="preserve"><value>The minimum number of priced goods in the personal store of a bot to go to the market.</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStay_Name" xml:space="preserve"><value>Minimum goods to stay</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStay_Description" xml:space="preserve"><value>When fewer goods are left, the bot closes its store and leaves the market early. 1 (default) = it stays as long as it has anything to sell.</value></data>
+  <data name="BotMerchantConfiguration_MinimumShiftDuration_Name" xml:space="preserve"><value>Minimum shift duration</value></data>
+  <data name="BotMerchantConfiguration_MinimumShiftDuration_Description" xml:space="preserve"><value>The shortest stay on the market. The actual length is random between the minimum and the maximum.</value></data>
+  <data name="BotMerchantConfiguration_MaximumShiftDuration_Name" xml:space="preserve"><value>Maximum shift duration</value></data>
+  <data name="BotMerchantConfiguration_MaximumShiftDuration_Description" xml:space="preserve"><value>The longest stay on the market.</value></data>
+  <data name="BotMerchantConfiguration_LeaveWithoutSalesAfter_Name" xml:space="preserve"><value>Leave without sales after</value></data>
+  <data name="BotMerchantConfiguration_LeaveWithoutSalesAfter_Description" xml:space="preserve"><value>After this time without a sale, the bot leaves the market before its shift is over and makes room for another one. Zero switches it off.</value></data>
+  <data name="BotMerchantConfiguration_TimeBetweenShifts_Name" xml:space="preserve"><value>Time between shifts</value></data>
+  <data name="BotMerchantConfiguration_TimeBetweenShifts_Description" xml:space="preserve"><value>The time after a shift before the same bot goes to the market again.</value></data>
+  <data name="BotMerchantConfiguration_StoreNames_Name" xml:space="preserve"><value>Store names</value></data>
+  <data name="BotMerchantConfiguration_StoreNames_Description" xml:space="preserve"><value>The names of the stores, separated by commas. Every shift draws one of them.</value></data>
 </root>

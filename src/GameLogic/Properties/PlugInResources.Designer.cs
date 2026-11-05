@@ -2113,6 +2113,204 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to After this time without a sale, the bot leaves the market before its shift is over and makes room for another one. Zero switches it off..
+        /// </summary>
+        public static string BotMerchantConfiguration_LeaveWithoutSalesAfter_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_LeaveWithoutSalesAfter_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave without sales after.
+        /// </summary>
+        public static string BotMerchantConfiguration_LeaveWithoutSalesAfter_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_LeaveWithoutSalesAfter_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of the map on which the bots open their stores (79 = Loren Market). The bots get there through its spawn gate, regardless of the warp list..
+        /// </summary>
+        public static string BotMerchantConfiguration_MarketMapNumber_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MarketMapNumber_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Market map number.
+        /// </summary>
+        public static string BotMerchantConfiguration_MarketMapNumber_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MarketMapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum number of bots with an open store on the market at the same time, per game server..
+        /// </summary>
+        public static string BotMerchantConfiguration_MaximumMerchants_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MaximumMerchants_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum merchants.
+        /// </summary>
+        public static string BotMerchantConfiguration_MaximumMerchants_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MaximumMerchants_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The longest stay on the market..
+        /// </summary>
+        public static string BotMerchantConfiguration_MaximumShiftDuration_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MaximumShiftDuration_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum shift duration.
+        /// </summary>
+        public static string BotMerchantConfiguration_MaximumShiftDuration_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MaximumShiftDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum number of priced goods in the personal store of a bot to go to the market..
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStart_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStart_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum goods to start.
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStart_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStart_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When fewer goods are left, the bot closes its store and leaves the market early. 1 (default) = it stays as long as it has anything to sell..
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStay_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStay_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum goods to stay.
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStay_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStay_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum level of a bot to go to the market. The game allows a personal store from level 6..
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumLevel_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum level.
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shortest stay on the market. The actual length is random between the minimum and the maximum..
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumShiftDuration_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumShiftDuration_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum shift duration.
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumShiftDuration_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumShiftDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The names of the stores, separated by commas. Every shift draws one of them..
+        /// </summary>
+        public static string BotMerchantConfiguration_StoreNames_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_StoreNames_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Store names.
+        /// </summary>
+        public static string BotMerchantConfiguration_StoreNames_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_StoreNames_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The time after a shift before the same bot goes to the market again..
+        /// </summary>
+        public static string BotMerchantConfiguration_TimeBetweenShifts_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_TimeBetweenShifts_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time between shifts.
+        /// </summary>
+        public static string BotMerchantConfiguration_TimeBetweenShifts_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_TimeBetweenShifts_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lets server-side bots sell the goods of their personal store on the market map (Loren Market) for a while, then go back hunting..
+        /// </summary>
+        public static string BotMerchantPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bot merchants.
+        /// </summary>
+        public static string BotMerchantPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Makes server-side bots return to their death site and take revenge on the player who killed them..
         /// </summary>
         public static string BotRevengePlugIn_Description {
@@ -3391,6 +3589,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applies the effect of the Gladiator&apos;s Honor, which can only be used in Vulcanus..
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gladiator&apos;s Honor consume handler.
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gives players Goblin Points of the cash shop for their play time..
         /// </summary>
         public static string GoblinPointsForPlayTimePlugIn_Description {
@@ -4332,6 +4548,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string LowerRefineStoneConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("LowerRefineStoneConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Players can register lucky coins at the NPC Delgado, or exchange 10, 20 or 30 of them for an item. The rewards of the exchange are configured here..
+        /// </summary>
+        public static string LuckyCoinFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky coin event.
+        /// </summary>
+        public static string LuckyCoinFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Name", resourceCulture);
             }
         }
         
@@ -7118,6 +7352,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Respawns a dead player at the place of its death, when it carries a Talisman of Resurrection, which is used up. It doesn&apos;t apply in mini games, duels and guild wars..
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Talisman of Resurrection.
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default (catch-all) handler for targeted skills.
         /// </summary>
         public static string TargetedSkillDefaultPlugin_Description {
@@ -7604,6 +7874,123 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator&apos;s Honor..
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Description {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vulcanus experience bonus.
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Name {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string VulcanusMapConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("VulcanusMapConfiguration_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/waiting&apos;. Lists the items which wait for space in the inventory..
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items chat command.
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message..
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it&apos;s deactivated, the items keep waiting..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items delivery.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How often the waiting items are put into the inventories, as far as they fit there..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check interval.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {
@@ -7703,176 +8090,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Handles the chat command &apos;/waiting&apos;. Lists the items which wait for space in the inventory..
-        /// </summary>
-        public static string WaitingItemsChatCommandPlugIn_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Waiting items chat command.
-        /// </summary>
-        public static string WaitingItemsChatCommandPlugIn_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Check interval.
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to How often the waiting items are put into the inventories, as far as they fit there..
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Named items.
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault..
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Named items.
-        /// </summary>
-        public static string WaitingItemsCommandConfiguration_ItemsNamed_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The number of waiting items which are named, one per message..
-        /// </summary>
-        public static string WaitingItemsCommandConfiguration_ItemsNamed_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it&apos;s deactivated, the items keep waiting..
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugIn_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Waiting items delivery.
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugIn_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to World chat command.
         /// </summary>
         public static string WorldChatChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Name text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugIn_Name => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Description text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugIn_Description => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture)!;
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Lucky coin event.
-        /// </summary>
-        public static string LuckyCoinFeaturePlugIn_Name {
-            get {
-                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Gladiator's Honor consume handler.
-        /// </summary>
-        public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Players can register lucky coins at the NPC Delgado, or exchange 10, 20 or 30 of them for an item. The rewards of the exchange are configured here..
-        /// </summary>
-        public static string LuckyCoinFeaturePlugIn_Description {
-            get {
-                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Applies the effect of the Gladiator's Honor, which can only be used in Vulcanus..
-        /// </summary>
-        public static string GladiatorsHonorConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Vulcanus experience bonus.
-        /// </summary>
-        public static string VulcanusExperiencePlugIn_Name {
-            get {
-                return ResourceManager.GetString("VulcanusExperiencePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator's Honor..
-        /// </summary>
-        public static string VulcanusExperiencePlugIn_Description {
-            get {
-                return ResourceManager.GetString("VulcanusExperiencePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Map number.
-        /// </summary>
-        public static string VulcanusMapConfiguration_MapNumber_Name {
-            get {
-                return ResourceManager.GetString("VulcanusMapConfiguration_MapNumber_Name", resourceCulture);
             }
         }
     }

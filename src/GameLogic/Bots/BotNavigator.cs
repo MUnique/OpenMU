@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 
@@ -183,6 +184,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>The game's own warp action, so a bot travels on exactly a player's terms - fare included.</summary>
     private static readonly WarpAction WarpAction = new();
 
+    /// <summary>The game's own action to open a personal store, with all its checks of the prices.</summary>
+    private static readonly OpenStoreAction MarketStoreOpenAction = new();
+
+    /// <summary>The game's own action to close a personal store, which tells the players around.</summary>
+    private static readonly CloseStoreAction MarketStoreCloseAction = new();
+
     /// <summary>
     /// Cache of which maps' safezone spawn gates have a walkable tile, so a bot may safely be sent
     /// there. Keyed by the resolved safezone map's id, not its number: map numbers are not unique -
@@ -325,6 +332,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _isEvaluating;
     private Point _destination;
     private bool _hasDestination;
+
+    /// <summary>
+    /// Whether the bot just ended a market shift and still stands on the market, which has no hunting
+    /// ground: it warps home first, like after a shopping trip on a map without a merchant.
+    /// </summary>
+    private bool _leavesMarket;
     private DateTimeOffset _lastWarpUtc = DateTimeOffset.MinValue;
     private DateTimeOffset _nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
     private Point _lastPosition;
@@ -1527,6 +1540,13 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // A bot on a market shift sells the goods of its personal store at its stall (see
+        // BotMerchantPlugIn) - its customers have to find it there, like the players of an event meeting.
+        if (await this.TryMarketShiftAsync(map, cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
         // On servers with the reset feature, a due character reset outranks the whole routine below:
         // the bot has reached the required level, so hunting on only gains it nothing until it resets.
         // It keeps fighting normally through the random grace delay, then resets and starts its next
@@ -1904,6 +1924,158 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private int GetGateWarpCount(BotEventMeeting meeting)
         => ReferenceEquals(this._gateWarpMeeting, meeting) ? this._gateWarpCount : 0;
+
+    /// <summary>
+    /// Drives a market shift (see <see cref="OfflinePlayer.MarketShift"/>): the bot warps to the market
+    /// through its spawn gate - not through the warp list, whose level requirement and costs are for
+    /// the players -, walks to its stall, opens its personal store and stays until the shift ends
+    /// (see <see cref="BotMarketPlanner.GetEndReason"/>). Opening and closing the store run in the
+    /// MU Helper tick, like the trades (see <see cref="OfflinePlayer.PendingBotActions"/>).
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the shift consumed this tick.</returns>
+    private async ValueTask<bool> TryMarketShiftAsync(GameMap map, CancellationToken cancellationToken)
+    {
+        if (this._player.MarketShift is not { } shift)
+        {
+            return await this.TryLeaveMarketAsync().ConfigureAwait(false);
+        }
+
+        // Standing behind the own store is not "stuck", and the hunting ground is free for others meanwhile.
+        this._lastMoveUtc = DateTime.UtcNow;
+        this._player.HuntingSpot = null;
+        if (shift.IsEnding)
+        {
+            return true;
+        }
+
+        var configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()?.Configuration;
+        var endReason = configuration is null
+            ? BotMarketPlanner.EndReason.TimeIsUp
+            : BotMarketPlanner.GetEndReason(this._player, shift, configuration, DateTime.UtcNow);
+        if (endReason != BotMarketPlanner.EndReason.None)
+        {
+            this.EndMarketShift(shift, configuration, endReason);
+            return true;
+        }
+
+        if (map.Definition.Number != shift.Map.Number)
+        {
+            if (shift.Map.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is not { } gate)
+            {
+                this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreClosed);
+                return true;
+            }
+
+            this._travelPath = null;
+            this._hasDestination = false;
+            this._lastWarpUtc = this._timeProvider.GetUtcNow();
+            this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} for its market shift.", this._player.Name, shift.Map.Name);
+            await this._player.WarpToAsync(gate).ConfigureAwait(false);
+            return true;
+        }
+
+        if (this._player.GetDistanceTo(shift.Stall) > 1)
+        {
+            if (!await this.TravelTowardAsync(map, shift.Stall, cancellationToken).ConfigureAwait(false))
+            {
+                this._player.Logger.LogDebug("Bot '{Name}' gives up its market shift: no route to its stall at {Stall}.", this._player.Name, shift.Stall);
+                this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreClosed);
+            }
+
+            return true;
+        }
+
+        if (!shift.IsStoreOpened && !shift.IsOpenRequested)
+        {
+            shift.IsOpenRequested = true;
+            this._player.PendingBotActions.Enqueue(() => this.OpenMarketStoreAsync(shift));
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Opens the personal store at the stall, as it runs inside the MU Helper tick.
+    /// </summary>
+    private async ValueTask OpenMarketStoreAsync(BotMarketShift shift)
+    {
+        if (!ReferenceEquals(this._player.MarketShift, shift) || shift.IsEnding)
+        {
+            return;
+        }
+
+        await MarketStoreOpenAction.OpenStoreAsync(this._player, shift.StoreName).ConfigureAwait(false);
+        if (this._player.ShopStorage?.StoreOpen ?? false)
+        {
+            shift.LastSaleUtc = DateTime.UtcNow;
+            shift.IsStoreOpened = true;
+            this._player.Logger.LogDebug("Bot '{Name}' opened its store '{Store}' at {Stall}.", this._player.Name, shift.StoreName, shift.Stall);
+        }
+        else
+        {
+            // E.g. a price in a currency which isn't allowed (anymore): the bot can't sell, so it leaves.
+            this._player.Logger.LogDebug("Bot '{Name}' couldn't open its store - it ends its market shift.", this._player.Name);
+            shift.IsEnding = true;
+            this._player.PendingBotActions.Enqueue(() => this.CloseMarketStoreAsync(shift));
+        }
+    }
+
+    /// <summary>
+    /// Ends the market shift: the store gets closed in the next MU Helper tick, the shift is removed
+    /// afterward, and the bot may start its next one after the configured time.
+    /// </summary>
+    private void EndMarketShift(BotMarketShift shift, BotMerchantConfiguration? configuration, BotMarketPlanner.EndReason reason)
+    {
+        shift.IsEnding = true;
+        this._player.NextMarketShiftUtc = DateTime.UtcNow + (configuration?.TimeBetweenShifts ?? TimeSpan.Zero);
+        this._player.Logger.LogDebug("Bot '{Name}' ends its market shift: {Reason}.", this._player.Name, reason);
+        this._player.PendingBotActions.Enqueue(() => this.CloseMarketStoreAsync(shift));
+    }
+
+    /// <summary>
+    /// Closes the personal store and removes the shift, as it runs inside the MU Helper tick.
+    /// </summary>
+    private async ValueTask CloseMarketStoreAsync(BotMarketShift shift)
+    {
+        if (this._player.ShopStorage?.StoreOpen ?? false)
+        {
+            await MarketStoreCloseAction.CloseStoreAsync(this._player).ConfigureAwait(false);
+        }
+
+        if (ReferenceEquals(this._player.MarketShift, shift))
+        {
+            this._player.MarketShift = null;
+            this._leavesMarket = this._player.CurrentMap?.Definition.Number == shift.Map.Number;
+        }
+    }
+
+    /// <summary>
+    /// Takes the bot home after its market shift: the market has no hunting ground, so the routine
+    /// wouldn't find a way back to the monsters from there.
+    /// </summary>
+    /// <returns>True, if the warp consumed this tick.</returns>
+    private async ValueTask<bool> TryLeaveMarketAsync()
+    {
+        if (!this._leavesMarket)
+        {
+            return false;
+        }
+
+        this._leavesMarket = false;
+        if (!this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _))
+        {
+            return false;
+        }
+
+        this._travelPath = null;
+        this._hasDestination = false;
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
+        this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} after its market shift.", this._player.Name, homeMap.Name);
+        await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
+        return true;
+    }
 
     /// <summary>
     /// Ends the event meeting, unless a newer one replaced it in the meantime.
