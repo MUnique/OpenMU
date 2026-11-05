@@ -188,7 +188,25 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 07, 29, 20, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 5, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        // Replaying version one's content changes could overwrite owner-customized spawns or safezones.
+        if (installedVersion is null or < 1)
+        {
+            await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
+        }
+
+        this.FixTicketBindings(gameConfiguration);
+    }
 
     /// <inheritdoc />
 #pragma warning disable CS1998
@@ -242,6 +260,30 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         {
             covenant.Number = 51;
             scrollOfBlood.Number = 50;
+        }
+    }
+
+    /// <summary>
+    /// Repairs the seeded ticket references left pointing at the Scroll of Blood after version one's renumbering.
+    /// Only owned item instances and the unchanged default temple definition ids and ticket levels are recognized.
+    /// </summary>
+    private void FixTicketBindings(GameConfiguration gameConfiguration)
+    {
+        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 51 && item.Name.ValueInNeutralLanguage == "Illusion Sorcerer Covenant");
+        var scrollOfBlood = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 50 && item.Name.ValueInNeutralLanguage == "Scroll of Blood");
+        if (covenant is null || scrollOfBlood is null)
+        {
+            return;
+        }
+
+        foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(definition =>
+                     definition.Type == MiniGameType.IllusionTemple
+                     && definition.GameLevel is >= 1 and <= 6
+                     && definition.TicketItemLevel == definition.GameLevel
+                     && definition.GetId() == GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.IllusionTemple, definition.GameLevel)
+                     && ReferenceEquals(definition.TicketItem, scrollOfBlood)))
+        {
+            definition.TicketItem = covenant;
         }
     }
 
