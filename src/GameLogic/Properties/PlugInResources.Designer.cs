@@ -5520,5 +5520,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotSayChatCommandPlugIn_Description text.</summary>
         public static string BotSayChatCommandPlugIn_Description => ResourceManager.GetString("BotSayChatCommandPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_WingsChancePercent_Name text.</summary>
+        public static string BotChatConfiguration_WingsChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_WingsChancePercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WingsChancePercent_Description text.</summary>
+        public static string BotChatConfiguration_WingsChancePercent_Description => ResourceManager.GetString("BotChatConfiguration_WingsChancePercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_OwnWingsLines_Name text.</summary>
+        public static string BotChatConfiguration_OwnWingsLines_Name => ResourceManager.GetString("BotChatConfiguration_OwnWingsLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_OwnWingsLines_Description text.</summary>
+        public static string BotChatConfiguration_OwnWingsLines_Description => ResourceManager.GetString("BotChatConfiguration_OwnWingsLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PlayerWingsLines_Name text.</summary>
+        public static string BotChatConfiguration_PlayerWingsLines_Name => ResourceManager.GetString("BotChatConfiguration_PlayerWingsLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PlayerWingsLines_Description text.</summary>
+        public static string BotChatConfiguration_PlayerWingsLines_Description => ResourceManager.GetString("BotChatConfiguration_PlayerWingsLines_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WithoutWingsLines_Name text.</summary>
+        public static string BotChatConfiguration_WithoutWingsLines_Name => ResourceManager.GetString("BotChatConfiguration_WithoutWingsLines_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_WithoutWingsLines_Description text.</summary>
+        public static string BotChatConfiguration_WithoutWingsLines_Description => ResourceManager.GetString("BotChatConfiguration_WithoutWingsLines_Description", resourceCulture)!;
+
     }
 }

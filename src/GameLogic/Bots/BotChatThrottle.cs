@@ -57,6 +57,8 @@ internal sealed class BotChatThrottle
 
     private readonly ConcurrentDictionary<string, int> _knownResets = new();
 
+    private readonly ConcurrentDictionary<(string Character, string Wings), bool> _seenWings = new();
+
     private readonly ConditionalWeakTable<Player, Dictionary<object, object>> _lastLines = new();
 
     private readonly List<(GameMap Map, Point Position, DateTime Time)> _humanChat = [];
@@ -245,6 +247,17 @@ internal sealed class BotChatThrottle
 
         return resets > previous && this._knownResets.TryUpdate(characterName, resets, previous);
     }
+
+    /// <summary>
+    /// Remembers that the bots saw a character put on a pair of wings, and tells whether it's the
+    /// first time - the wings go on again after every change of equipment, but a bot comments only
+    /// once per character and pair until the server restarts.
+    /// </summary>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="wingsKey">The pair of wings, e.g. its item definition and level.</param>
+    /// <returns><c>true</c>, if the bots didn't see the character put on this pair before.</returns>
+    public bool TryRememberWings(string characterName, string wingsKey)
+        => this._seenWings.TryAdd((characterName, wingsKey), true);
 
     /// <summary>
     /// Determines whether the player is due to overhear a conversation. A player seen for the first

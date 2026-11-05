@@ -1890,7 +1890,7 @@
   <data name="BotChatConfiguration_LevelMilestoneLines_Name" xml:space="preserve"><value>Level milestones</value></data>
   <data name="BotChatConfiguration_LevelMilestoneLines_Description" xml:space="preserve"><value>Said in the normal chat when the bot reached a level milestone. Placeholders: {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
   <data name="BotChatConfiguration_WhisperReplies_Name" xml:space="preserve"><value>Whisper replies</value></data>
-  <data name="BotChatConfiguration_WhisperReplies_Description" xml:space="preserve"><value>Answers to a player who whispered to the bot or mentioned its name in the normal chat next to it. The best keyword match wins; replies without keywords are the fallback. Placeholders: {player}, {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
+  <data name="BotChatConfiguration_WhisperReplies_Description" xml:space="preserve"><value>Answers to a player who whispered to the bot or mentioned its name in the normal chat next to it. The best keyword match wins; replies without keywords are the fallback. Placeholders: {player}, {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40"), {wings} (the bot's wings; a bot without wings answers with one of the answers without wings).</value></data>
   <data name="BotChatConfiguration_GreetingLines_Name" xml:space="preserve"><value>Greetings</value></data>
   <data name="BotChatConfiguration_GreetingLines_Description" xml:space="preserve"><value>Said by the nearest bot in the normal chat when a player entered the game. Placeholders: {player}, {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
   <data name="BotChatConfiguration_PartyJoinedLines_Name" xml:space="preserve"><value>Party: joined</value></data>
@@ -1995,4 +1995,12 @@
   <data name="BotChatConfiguration_FriendLines_Description" xml:space="preserve"><value>Said to a player the bot was in a party with before - instead of a greeting when the player enters the game, and instead of the party lines when the player invites it again. Remembered until the server restarts. Placeholders: {player}, {level}, {map}.</value></data>
   <data name="BotSayChatCommandPlugIn_Name" xml:space="preserve"><value>Chat command: /botsay</value></data>
   <data name="BotSayChatCommandPlugIn_Description" xml:space="preserve"><value>Handles the chat command '/botsay &lt;bot&gt; &lt;text&gt;'. A game master makes a server-side bot say the text in the normal chat, to the players who see it - e.g. for staged scenes of an event. Only bots, never a player's character.</value></data>
+  <data name="BotChatConfiguration_WingsChancePercent_Name" xml:space="preserve"><value>Wings comment chance (%)</value></data>
+  <data name="BotChatConfiguration_WingsChancePercent_Description" xml:space="preserve"><value>Chance that a bot comments on wings: its own new pair earned at a level milestone ("finally, my wings!"), or the wings a player next to it put on ("nice wings!"). 0 = never.</value></data>
+  <data name="BotChatConfiguration_OwnWingsLines_Name" xml:space="preserve"><value>Own new wings</value></data>
+  <data name="BotChatConfiguration_OwnWingsLines_Description" xml:space="preserve"><value>Said by a bot which put on the new wings it earned at a level milestone, while a player sees it. Placeholders: {wings}, {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_PlayerWingsLines_Name" xml:space="preserve"><value>Player's wings comments</value></data>
+  <data name="BotChatConfiguration_PlayerWingsLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player put on wings - once per player and pair until the server restarts. Placeholders: {player}, {wings} (the player's), {map}.</value></data>
+  <data name="BotChatConfiguration_WithoutWingsLines_Name" xml:space="preserve"><value>Answers without wings</value></data>
+  <data name="BotChatConfiguration_WithoutWingsLines_Description" xml:space="preserve"><value>Said instead of a whisper reply with {wings} when the bot has no wings yet ("no wings yet, saving up"). Placeholders: {player}, {level}, {map}.</value></data>
 </root>

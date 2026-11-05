@@ -308,6 +308,32 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// An item is named the way players name it - with its level, but without a "+0".
+    /// </summary>
+    [Test]
+    public void FormatsAnItemLikePlayersDo()
+    {
+        Assert.That(BotChatComposer.FormatItem("Wings of Soul", 9), Is.EqualTo("Wings of Soul +9"));
+        Assert.That(BotChatComposer.FormatItem("Wings of Elf", 0), Is.EqualTo("Wings of Elf"));
+    }
+
+    /// <summary>
+    /// A player puts the same wings on again after every change of equipment; the bots comment on a
+    /// pair only once per character - a new pair, or the same one upgraded, is news again.
+    /// </summary>
+    [Test]
+    public void CommentsOnAPairOfWingsOnce()
+    {
+        var throttle = new BotChatThrottle();
+
+        Assert.That(throttle.TryRememberWings("Hero", "12/4+9"), Is.True);
+        Assert.That(throttle.TryRememberWings("Hero", "12/4+9"), Is.False);
+        Assert.That(throttle.TryRememberWings("Hero", "12/4+10"), Is.True);
+        Assert.That(throttle.TryRememberWings("Hero", "12/36+0"), Is.True);
+        Assert.That(throttle.TryRememberWings("Other", "12/4+9"), Is.True);
+    }
+
+    /// <summary>
     /// A whisper is answered by the lines whose keywords match it - ignoring case and punctuation,
     /// preferring the longest match, and matching whole words only. Without a match, a reply
     /// without keywords is used.
@@ -418,6 +444,25 @@ public class BotChatTest
         var reply = BotChatComposer.PickWhisperReply(configuration.WhisperReplies, "hey, how are you?", _ => 0);
 
         Assert.That(reply?.Keywords, Does.Contain("how are you"));
+    }
+
+    /// <summary>
+    /// The default configuration answers a question about the bot's wings by naming them - in English
+    /// and in Polish, with or without diacritics.
+    /// </summary>
+    /// <param name="message">The whispered message.</param>
+    [TestCase("nice wings!")]
+    [TestCase("what wings do you have?")]
+    [TestCase("jakie masz skrzydła?")]
+    [TestCase("ladne skrzydla")]
+    public void DefaultRepliesNameTheWings(string message)
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+
+        var reply = BotChatComposer.PickWhisperReply(configuration.WhisperReplies, message, _ => 0);
+
+        Assert.That(reply?.Text.ValueInNeutralLanguage, Does.Contain("{wings}"));
+        Assert.That(configuration.WithoutWingsLines.Select(l => l.Text.ValueInNeutralLanguage), Has.None.Contain("{wings}"));
     }
 
     /// <summary>

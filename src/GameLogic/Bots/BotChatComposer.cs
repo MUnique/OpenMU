@@ -122,6 +122,17 @@ internal static class BotChatComposer
             : mapName ?? string.Empty;
 
     /// <summary>
+    /// Formats an item the way players name it in the chat, e.g. "Wings of Soul +9".
+    /// </summary>
+    /// <param name="itemName">The (translated) name of the item.</param>
+    /// <param name="level">The item level; +0 isn't written.</param>
+    /// <returns>The formatted item.</returns>
+    internal static string FormatItem(string? itemName, int level)
+        => level > 0
+            ? string.Create(CultureInfo.InvariantCulture, $"{itemName} +{level}")
+            : itemName ?? string.Empty;
+
+    /// <summary>
     /// Recognizes the language of a player's message by its typical words and letters: the language
     /// with the most hits wins, a tie or no hit at all leaves it open.
     /// </summary>

@@ -58,6 +58,8 @@ public class BotChatPlugIn
     IDuelRequestedPlugIn,
     IMonsterItemDroppedPlugIn,
     IObjectAddedToMapPlugIn,
+    IBotWingsEarnedPlugIn,
+    IItemMovedPlugIn,
     ISupportCustomConfiguration<BotChatConfiguration>,
     ISupportDefaultCustomConfiguration,
     IDisabledByDefault
@@ -242,6 +244,7 @@ public class BotChatPlugIn
         var level = GetLevel(player);
         if (level < configuration.LevelMilestoneStep
             || level % configuration.LevelMilestoneStep != 0
+            || (configuration.WingsChancePercent > 0 && BotWingHandler.PlanNextGrant(player) is not null)
             || !Rand.NextRandomBool(configuration.LevelMilestoneChancePercent)
             || PickLine(configuration.LevelMilestoneLines) is not { } line
             || !this.GetThrottle(player.GameContext).TryReserveChat(player, DateTime.UtcNow, configuration.BotChatCooldown))
@@ -283,15 +286,16 @@ public class BotChatPlugIn
             return;
         }
 
+        var text = GetAnswerText(receiver, line.Text, configuration);
         var values = CreateBotValues(receiver);
         var senderName = sender.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => senderName;
         var language = GetMessageLanguage(message, configuration);
         RunLater(
             receiver.GameContext,
-            TypingDelay(line.Text),
+            TypingDelay(text),
             () => IsAvailable(receiver) && sender.PlayerState.CurrentState == PlayerState.EnteredWorld
-                ? BotChatSpeaker.WhisperAsync(receiver, sender, line.Text, values, language, line.Gesture)
+                ? BotChatSpeaker.WhisperAsync(receiver, sender, text, values, language, line.Gesture)
                 : ValueTask.CompletedTask);
     }
 
@@ -459,13 +463,14 @@ public class BotChatPlugIn
             return;
         }
 
+        var text = GetAnswerText(bot, line.Text, configuration);
         var values = CreateBotValues(bot);
         values["player"] = _ => senderName;
         var language = GetMessageLanguage(message, configuration);
         RunLater(
             bot.GameContext,
-            TypingDelay(line.Text),
-            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values, language, line.Gesture, sender) : ValueTask.CompletedTask);
+            TypingDelay(text),
+            () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, text, values, language, line.Gesture, sender) : ValueTask.CompletedTask);
     }
 
     /// <inheritdoc />
@@ -570,6 +575,52 @@ public class BotChatPlugIn
         var monsterName = monster.Definition.Designation;
         values["monster"] = culture => monsterName.GetTranslation(culture) ?? string.Empty;
         RunLater(bot.GameContext, RandomDelay(NotableMonsterDelaySeconds), () => IsAvailable(bot) ? BotChatSpeaker.SayAsync(bot, line.Text, values, gesture: line.Gesture) : ValueTask.CompletedTask);
+    }
+
+    /// <inheritdoc />
+    public void BotEarnedWings(Player bot, Item wings)
+    {
+        if (this.Configuration is not { WingsChancePercent: > 0 } configuration
+            || !IsBot(bot)
+            || !Rand.NextRandomBool(configuration.WingsChancePercent)
+            || PickLine(configuration.OwnWingsLines) is not { } line)
+        {
+            return;
+        }
+
+        RunLater(bot.GameContext, RandomDelay(LevelMilestoneDelaySeconds), async () =>
+        {
+            // New wings are something to show off - to nobody, it would be wasted.
+            if (!IsAvailable(bot)
+                || !this.MayTalkUnasked(bot, configuration)
+                || !await HasHumanObserverAsync(bot).ConfigureAwait(false)
+                || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
+            {
+                return;
+            }
+
+            await BotChatSpeaker.SayAsync(bot, line.Text, CreateBotValues(bot), gesture: line.Gesture).ConfigureAwait(false);
+        });
+    }
+
+    /// <inheritdoc />
+    public ValueTask ItemMovedAsync(Player player, Item item)
+    {
+        // Wings go on again after every change of equipment, so each pair of a player gets one comment
+        // at most - remembered before the dice, or re-equipping would just roll again.
+        if (this.Configuration is { WingsChancePercent: > 0 } configuration
+            && player is not OfflinePlayer
+            && ReferenceEquals(GetWings(player), item)
+            && item.Definition is { } definition
+            && player.SelectedCharacter?.Name is { } playerName
+            && this.GetThrottle(player.GameContext).TryRememberWings(playerName, string.Create(CultureInfo.InvariantCulture, $"{definition.Group}/{definition.Number}+{item.Level}"))
+            && Rand.NextRandomBool(configuration.WingsChancePercent))
+        {
+            var wingsText = GetWingsText(item);
+            this.SayToPlayerLater(player, configuration, configuration.PlayerWingsLines, $"wings {playerName}", values => values["wings"] = wingsText);
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />
@@ -857,8 +908,33 @@ public class BotChatPlugIn
             ["class"] = culture => characterClass?.GetTranslation(culture) ?? string.Empty,
             ["map"] = culture => map?.GetTranslation(culture) ?? string.Empty,
             ["location"] = culture => BotChatComposer.FormatLocation(map?.GetTranslation(culture), position),
+            ["wings"] = GetWingsText(GetWings(bot)),
         };
     }
+
+    private static Item? GetWings(Player player) => player.Inventory?.GetItem(InventoryConstants.WingsSlot);
+
+    /// <summary>
+    /// Gets the <c>{wings}</c> value of a pair of wings, e.g. "Wings of Soul +9" - in the receiver's
+    /// language; empty without wings.
+    /// </summary>
+    private static Func<CultureInfo, string> GetWingsText(Item? wings)
+    {
+        var name = wings?.Definition?.Name;
+        var level = wings?.Level ?? 0;
+        return culture => name is { } itemName ? BotChatComposer.FormatItem(itemName.GetTranslation(culture), level) : string.Empty;
+    }
+
+    /// <summary>
+    /// Gets the text a bot answers with: the chosen reply - unless it names the bot's wings and the
+    /// bot has none, then one of the <see cref="BotChatConfiguration.WithoutWingsLines"/>.
+    /// </summary>
+    private static LocalizedString GetAnswerText(Player bot, LocalizedString text, BotChatConfiguration configuration)
+        => text.ValueInNeutralLanguage.Contains("{wings}", StringComparison.Ordinal)
+           && GetWings(bot) is null
+           && PickLine(configuration.WithoutWingsLines) is { } withoutWings
+            ? withoutWings.Text
+            : text;
 
     /// <summary>
     /// Runs the action after the delay, without holding up the caller - the plugin points are called
@@ -1028,10 +1104,11 @@ public class BotChatPlugIn
             return;
         }
 
+        var text = GetAnswerText(speaker, line.Text, configuration);
         var values = CreateBotValues(speaker);
         values["player"] = _ => senderName;
         var language = GetMessageLanguage(message, configuration);
-        RunLater(speaker.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(speaker, line.Text, values, language, line.Gesture, sender));
+        RunLater(speaker.GameContext, TypingDelay(text), () => BotChatSpeaker.PartySayAsync(speaker, text, values, language, line.Gesture, sender));
     }
 
     /// <summary>
@@ -1052,11 +1129,13 @@ public class BotChatPlugIn
             ? reply.Text
             : this.PickLineFor(sender, configuration.ConversationJoinLines)?.Text;
         if (bot is null
-            || text is not { } answer
+            || text is not { } chosen
             || !this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
         }
+
+        var answer = GetAnswerText(bot, chosen, configuration);
 
         var values = CreateBotValues(bot);
         values["player"] = _ => senderName;
