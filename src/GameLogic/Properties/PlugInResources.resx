@@ -2182,4 +2182,26 @@
   <data name="BotMerchantConfiguration_HighSetSurcharge_Description" xml:space="preserve"><value>The surcharge of an ancient item, and of an excellent item with a wanted option, luck and an additional option, for every step of drop levels above the high set minimum drop level.</value></data>
   <data name="BotMerchantConfiguration_HighSetSurchargeDropLevels_Name" xml:space="preserve"><value>Expensive: drop levels per surcharge</value></data>
   <data name="BotMerchantConfiguration_HighSetSurchargeDropLevels_Description" xml:space="preserve"><value>How many drop levels make one step of the higher set surcharge.</value></data>
+  <data name="BotMerchantConfiguration_MaximumJewelsPerKind_Name" xml:space="preserve"><value>Jewels: maximum per kind</value></data>
+  <data name="BotMerchantConfiguration_MaximumJewelsPerKind_Description" xml:space="preserve"><value>How many jewels of one kind a bot puts into its store at most. 0 keeps the jewels out of the stores.</value></data>
+  <data name="BotMerchantConfiguration_BlessCurrency_Name" xml:space="preserve"><value>Jewel of Bless: currency</value></data>
+  <data name="BotMerchantConfiguration_BlessCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Bless: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_BlessPrice_Name" xml:space="preserve"><value>Jewel of Bless: price</value></data>
+  <data name="BotMerchantConfiguration_BlessPrice_Description" xml:space="preserve"><value>The price of one Jewel of Bless, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_SoulCurrency_Name" xml:space="preserve"><value>Jewel of Soul: currency</value></data>
+  <data name="BotMerchantConfiguration_SoulCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Soul: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_SoulPrice_Name" xml:space="preserve"><value>Jewel of Soul: price</value></data>
+  <data name="BotMerchantConfiguration_SoulPrice_Description" xml:space="preserve"><value>The price of one Jewel of Soul, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_ChaosCurrency_Name" xml:space="preserve"><value>Jewel of Chaos: currency</value></data>
+  <data name="BotMerchantConfiguration_ChaosCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Chaos: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_ChaosPrice_Name" xml:space="preserve"><value>Jewel of Chaos: price</value></data>
+  <data name="BotMerchantConfiguration_ChaosPrice_Description" xml:space="preserve"><value>The price of one Jewel of Chaos, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_LifeCurrency_Name" xml:space="preserve"><value>Jewel of Life: currency</value></data>
+  <data name="BotMerchantConfiguration_LifeCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Life: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_LifePrice_Name" xml:space="preserve"><value>Jewel of Life: price</value></data>
+  <data name="BotMerchantConfiguration_LifePrice_Description" xml:space="preserve"><value>The price of one Jewel of Life, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_CreationCurrency_Name" xml:space="preserve"><value>Jewel of Creation: currency</value></data>
+  <data name="BotMerchantConfiguration_CreationCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Creation: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_CreationPrice_Name" xml:space="preserve"><value>Jewel of Creation: price</value></data>
+  <data name="BotMerchantConfiguration_CreationPrice_Description" xml:space="preserve"><value>The price of one Jewel of Creation, in its currency.</value></data>
 </root>

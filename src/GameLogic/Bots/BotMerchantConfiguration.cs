@@ -237,6 +237,78 @@ public class BotMerchantConfiguration
     public int HighSetSurchargeDropLevels { get; set; } = 20;
 
     /// <summary>
+    /// Gets or sets how many jewels of one kind a bot puts into its store at most, so that its stall isn't full of jewels; 0 keeps the jewels out of the stores.
+    /// </summary>
+    [Range(0, 32)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MaximumJewelsPerKind_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MaximumJewelsPerKind_Description))]
+    public int MaximumJewelsPerKind { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the currency for which a bot sells its surplus of the Jewel of Bless: "zen" or another jewel.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_BlessCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_BlessCurrency_Description))]
+    public string BlessCurrency { get; set; } = "zen";
+
+    /// <summary>
+    /// Gets or sets the price of one Jewel of Bless.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_BlessPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_BlessPrice_Description))]
+    public int BlessPrice { get; set; } = 9_000_000;
+
+    /// <summary>
+    /// Gets or sets the currency for which a bot sells its surplus of the Jewel of Soul: "zen" or another jewel.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_SoulCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_SoulCurrency_Description))]
+    public string SoulCurrency { get; set; } = "zen";
+
+    /// <summary>
+    /// Gets or sets the price of one Jewel of Soul.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_SoulPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_SoulPrice_Description))]
+    public int SoulPrice { get; set; } = 6_000_000;
+
+    /// <summary>
+    /// Gets or sets the currency for which a bot sells its surplus of the Jewel of Chaos: "zen" or another jewel.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ChaosCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ChaosCurrency_Description))]
+    public string ChaosCurrency { get; set; } = "zen";
+
+    /// <summary>
+    /// Gets or sets the price of one Jewel of Chaos.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ChaosPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ChaosPrice_Description))]
+    public int ChaosPrice { get; set; } = 810_000;
+
+    /// <summary>
+    /// Gets or sets the currency for which a bot sells its surplus of the Jewel of Life: "zen" or another jewel.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_LifeCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_LifeCurrency_Description))]
+    public string LifeCurrency { get; set; } = "zen";
+
+    /// <summary>
+    /// Gets or sets the price of one Jewel of Life.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_LifePrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_LifePrice_Description))]
+    public int LifePrice { get; set; } = 45_000_000;
+
+    /// <summary>
+    /// Gets or sets the currency for which a bot sells its surplus of the Jewel of Creation: "zen" or another jewel.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CreationCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CreationCurrency_Description))]
+    public string CreationCurrency { get; set; } = "zen";
+
+    /// <summary>
+    /// Gets or sets the price of one Jewel of Creation.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CreationPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CreationPrice_Description))]
+    public int CreationPrice { get; set; } = 36_000_000;
+
+    /// <summary>
     /// Gets the store names of <see cref="StoreNames"/>, without the empty ones.
     /// </summary>
     /// <returns>The store names.</returns>

@@ -2131,6 +2131,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The currency for which a bot sells its surplus of the Jewel of Bless: zen or another jewel (bless, soul, chaos, life, creation)..
+        /// </summary>
+        public static string BotMerchantConfiguration_BlessCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_BlessCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Bless: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_BlessCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_BlessCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of one Jewel of Bless, in its currency..
+        /// </summary>
+        public static string BotMerchantConfiguration_BlessPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_BlessPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Bless: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_BlessPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_BlessPrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The currency for which a bot sells its surplus of the Jewel of Chaos: zen or another jewel (bless, soul, chaos, life, creation)..
+        /// </summary>
+        public static string BotMerchantConfiguration_ChaosCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ChaosCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Chaos: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_ChaosCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ChaosCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of one Jewel of Chaos, in its currency..
+        /// </summary>
+        public static string BotMerchantConfiguration_ChaosPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ChaosPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Chaos: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_ChaosPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ChaosPrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The currency of the cheap goods (normal items, excellent items with only a cheap option): zen, bless, soul, chaos, life or creation..
         /// </summary>
         public static string BotMerchantConfiguration_CheapCurrency_Description {
@@ -2199,6 +2271,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string BotMerchantConfiguration_CheapPricePerOption_Name {
             get {
                 return ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The currency for which a bot sells its surplus of the Jewel of Creation: zen or another jewel (bless, soul, chaos, life, creation)..
+        /// </summary>
+        public static string BotMerchantConfiguration_CreationCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CreationCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Creation: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_CreationCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CreationCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of one Jewel of Creation, in its currency..
+        /// </summary>
+        public static string BotMerchantConfiguration_CreationPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CreationPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Creation: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_CreationPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CreationPrice_Name", resourceCulture);
             }
         }
         
@@ -2383,6 +2491,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The currency for which a bot sells its surplus of the Jewel of Life: zen or another jewel (bless, soul, chaos, life, creation)..
+        /// </summary>
+        public static string BotMerchantConfiguration_LifeCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_LifeCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Life: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_LifeCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_LifeCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of one Jewel of Life, in its currency..
+        /// </summary>
+        public static string BotMerchantConfiguration_LifePrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_LifePrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Life: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_LifePrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_LifePrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The number of the map on which the bots open their stores (79 = Loren Market). The bots get there through its spawn gate, regardless of the warp list..
         /// </summary>
         public static string BotMerchantConfiguration_MarketMapNumber_Description {
@@ -2397,6 +2541,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string BotMerchantConfiguration_MarketMapNumber_Name {
             get {
                 return ResourceManager.GetString("BotMerchantConfiguration_MarketMapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many jewels of one kind a bot puts into its store at most. 0 keeps the jewels out of the stores..
+        /// </summary>
+        public static string BotMerchantConfiguration_MaximumJewelsPerKind_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MaximumJewelsPerKind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewels: maximum per kind.
+        /// </summary>
+        public static string BotMerchantConfiguration_MaximumJewelsPerKind_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MaximumJewelsPerKind_Name", resourceCulture);
             }
         }
         
@@ -2613,6 +2775,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string BotMerchantConfiguration_PriceSpreadPercent_Name {
             get {
                 return ResourceManager.GetString("BotMerchantConfiguration_PriceSpreadPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The currency for which a bot sells its surplus of the Jewel of Soul: zen or another jewel (bless, soul, chaos, life, creation)..
+        /// </summary>
+        public static string BotMerchantConfiguration_SoulCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_SoulCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Soul: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_SoulCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_SoulCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of one Jewel of Soul, in its currency..
+        /// </summary>
+        public static string BotMerchantConfiguration_SoulPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_SoulPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Soul: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_SoulPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_SoulPrice_Name", resourceCulture);
             }
         }
         
