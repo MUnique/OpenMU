@@ -11,8 +11,6 @@ services:
     env_file:
       - ./player-portal/dapr-api-token.env
     user: "${PLAYER_PORTAL_UID:?Set PLAYER_PORTAL_UID to the owner of local secret files}:${PLAYER_PORTAL_GID:?Set PLAYER_PORTAL_GID to the owner group of local secret files}"
-    ports:
-      - 127.0.0.1:18080:8080
     volumes:
       - ./player-portal/appsettings.Production.json:/app/appsettings.Production.json:ro
     networks:
@@ -21,6 +19,20 @@ services:
       player-portal-dapr:
         condition: service_started
       player-portal-db-relay:
+        condition: service_started
+    restart: unless-stopped
+
+  player-portal-host-proxy:
+    image: nginx:alpine
+    ports:
+      - 127.0.0.1:18080:80
+    volumes:
+      - ./player-portal/host-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - player-portal-private
+      - player-portal-host
+    depends_on:
+      player-portal-api:
         condition: service_started
     restart: unless-stopped
 
@@ -84,3 +96,5 @@ networks:
   player-portal-private:
     driver: bridge
     internal: true
+  player-portal-host:
+    driver: bridge

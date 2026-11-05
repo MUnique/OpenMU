@@ -111,18 +111,24 @@ jobs:
           for name, service in base["services"].items():
               assert merged["services"].get(name) == service, f"existing service changed in merged config: {name}"
           assert set(base["services"]) == {"nginx-80", "openmu-startup", "database"}
-          assert {"player-portal-api", "player-portal-dapr", "player-portal-db-relay"}.issubset(merged["services"])
+          assert {"player-portal-api", "player-portal-dapr", "player-portal-db-relay", "player-portal-host-proxy"}.issubset(merged["services"])
           api = merged["services"]["player-portal-api"]
           dapr = merged["services"]["player-portal-dapr"]
           relay = merged["services"]["player-portal-db-relay"]
-          assert len(api.get("ports", [])) == 1
-          assert api["ports"][0]["host_ip"] == "127.0.0.1" and api["ports"][0]["published"] == "18080"
+          proxy = merged["services"]["player-portal-host-proxy"]
+          assert not api.get("ports")
           assert not dapr.get("ports")
           assert set(api["networks"]) == {"player-portal-private"}
           assert set(dapr["networks"]) == {"player-portal-private"}
           assert set(relay["networks"]) == {"default", "player-portal-private"}
+          assert len(proxy.get("ports", [])) == 1
+          assert proxy["ports"][0]["host_ip"] == "127.0.0.1" and proxy["ports"][0]["published"] == "18080" and proxy["ports"][0]["target"] == 80
+          assert set(proxy["networks"]) == {"player-portal-private", "player-portal-host"}
+          assert "default" not in proxy["networks"]
+          assert merged["networks"]["player-portal-private"].get("internal") is True
+          assert not merged["networks"]["player-portal-host"].get("internal", False)
           assert runtime["services"]["database"]["ports"][0]["host_ip"] == "127.0.0.1"
-          print("PASS: Compose merge preserves nginx-80, openmu-startup, and database exactly; API/Dapr/relay networks and port bindings match the intended isolation.")
+          print("PASS: original services are unchanged; API/Dapr remain internal with no ports; only the dedicated proxy publishes loopback and is excluded from all-in-one_default.")
           PY
 
       - name: Build and run player portal unit regressions
@@ -179,7 +185,7 @@ jobs:
           docker compose --project-name all-in-one --project-directory deploy/all-in-one \
             -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
             -f deploy/all-in-one/docker-compose.player-portal.yml \
-            up -d --build player-portal-api player-portal-dapr player-portal-db-relay
+            up -d --build player-portal-api player-portal-dapr player-portal-db-relay player-portal-host-proxy
 
       - name: Diagnose Docker port publication and network reachability
         shell: bash
@@ -187,6 +193,7 @@ jobs:
           set -uo pipefail
           compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
           docker pull curlimages/curl:8.12.1 >/dev/null
+          docker pull busybox:1.37.0 >/dev/null
           sleep 2
 
           runtime_file="$RUNNER_TEMP/player-portal-runtime-network.json"
@@ -198,7 +205,7 @@ jobs:
 
           compose = ["docker", "compose", "--project-name", "all-in-one", "--project-directory", "deploy/all-in-one", "-f", "deploy/all-in-one/docker-compose.player-portal.ci.yml", "-f", "deploy/all-in-one/docker-compose.player-portal.yml"]
           runtime = {}
-          for service in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay"):
+          for service in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay", "player-portal-host-proxy"):
               container_id = subprocess.check_output(compose + ["ps", "-q", service], text=True).strip()
               if not container_id:
                   runtime[service] = {"present": False, "configured_ports": {}, "effective_ports": {}, "networks": []}
@@ -228,8 +235,10 @@ jobs:
           PY
 
           private_network="$(docker network inspect all-in-one_player-portal-private --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
+          host_network="$(docker network inspect all-in-one_player-portal-host --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
           shared_network="$(docker network inspect all-in-one_default --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
           echo "NETWORK $private_network"
+          echo "NETWORK $host_network"
           echo "NETWORK $shared_network"
 
           listener="$(ss -ltnH 'sport = :18080' 2>/dev/null | awk '{print $1, $4}' || true)"
@@ -288,16 +297,39 @@ jobs:
             echo "PROBE label=$label http_status=$http_status curl_exit=$probe_exit content_type=$safe_content_type classification=${PROBE_CLASS[$label]}"
           }
 
+          api_container="$("${compose[@]}" ps -q player-portal-api)"
+          dapr_container="$("${compose[@]}" ps -q player-portal-dapr)"
           probe_http private_api all-in-one_player-portal-private http://player-portal-api:8080/health/live
           probe_http host_loopback host http://127.0.0.1:18080/health/live
+          probe_http external_api "container:$api_container" http://1.1.1.1/
+          probe_http external_dapr "container:$dapr_container" http://1.1.1.1/
           probe_http shared_bridge_api all-in-one_default http://player-portal-api:8080/health/live
           probe_http shared_bridge_dapr all-in-one_default http://player-portal-dapr:3500/v1.0/metadata
+          probe_http shared_bridge_proxy all-in-one_default http://player-portal-host-proxy:80/health/live
           gateway="$(docker network inspect all-in-one_default --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null || true)"
           if [[ -n "$gateway" ]]; then
             probe_http shared_bridge_host_port all-in-one_default "http://$gateway:18080/health/live"
           else
             echo "PROBE label=shared_bridge_host_port result=unavailable reason=no_network_gateway"
           fi
+
+          default_route_status() {
+            local service="$1"
+            local container_id="$2"
+            local route=""
+            local command_exit=0
+            route="$(docker run --rm --network "container:$container_id" busybox:1.37.0 sh -c 'if grep -q "[[:space:]]00000000[[:space:]]" /proc/net/route; then echo present; else echo absent; fi' 2>/dev/null)" || command_exit=$?
+            if [[ "$command_exit" -eq 0 && "$route" == "absent" ]]; then
+              echo "EXTERNAL_ROUTE service=$service default_route=absent"
+              return 0
+            fi
+            echo "EXTERNAL_ROUTE service=$service default_route=${route:-unavailable} probe_exit=$command_exit"
+            return 1
+          }
+          api_route_ok=0
+          dapr_route_ok=0
+          default_route_status player-portal-api "$api_container" && api_route_ok=1
+          default_route_status player-portal-dapr "$dapr_container" && dapr_route_ok=1
 
           runtime_expectation="$(python3 - "$runtime_file" <<'PY'
           import json
@@ -307,16 +339,28 @@ jobs:
           api = runtime["player-portal-api"]
           dapr = runtime["player-portal-dapr"]
           relay = runtime["player-portal-db-relay"]
-          expected_api = [{"host_ip": "127.0.0.1", "host_port": "18080"}]
+          proxy = runtime["player-portal-host-proxy"]
+          published_api = [binding for values in api["effective_ports"].values() for binding in values]
+          published_dapr = [binding for values in dapr["effective_ports"].values() for binding in values]
+          published_relay = [binding for values in relay["effective_ports"].values() for binding in values]
+          configured_api = [binding for values in api["configured_ports"].values() for binding in values]
+          configured_dapr = [binding for values in dapr["configured_ports"].values() for binding in values]
+          expected_proxy = [{"host_ip": "127.0.0.1", "host_port": "18080"}]
           ok = (
               api["present"]
-              and api["effective_ports"].get("8080/tcp") == expected_api
+              and not published_api
+              and not configured_api
               and api["networks"] == ["all-in-one_player-portal-private"]
               and dapr["present"]
-              and not any(dapr["effective_ports"].values())
+              and not published_dapr
+              and not configured_dapr
               and dapr["networks"] == ["all-in-one_player-portal-private"]
               and relay["present"]
+              and not published_relay
               and relay["networks"] == ["all-in-one_default", "all-in-one_player-portal-private"]
+              and proxy["present"]
+              and proxy["effective_ports"].get("80/tcp") == expected_proxy
+              and proxy["networks"] == ["all-in-one_player-portal-host", "all-in-one_player-portal-private"]
           )
           print("pass" if ok else "fail")
           PY
@@ -325,9 +369,14 @@ jobs:
 
           diagnostics_ok=1
           [[ "$runtime_expectation" == "pass" ]] || diagnostics_ok=0
+          [[ "$private_network" == "all-in-one_player-portal-private driver=bridge internal=true" ]] || diagnostics_ok=0
+          [[ "$host_network" == "all-in-one_player-portal-host driver=bridge internal=false" ]] || diagnostics_ok=0
           [[ "${PROBE_STATUS[private_api]}" == "200" && "${PROBE_EXIT[private_api]}" == "0" ]] || diagnostics_ok=0
           [[ "${PROBE_STATUS[host_loopback]}" == "200" && "${PROBE_EXIT[host_loopback]}" == "0" ]] || diagnostics_ok=0
-          for label in shared_bridge_api shared_bridge_dapr shared_bridge_host_port; do
+          [[ "${PROBE_STATUS[external_api]}" == "000" && ( "${PROBE_EXIT[external_api]}" == "7" || "${PROBE_EXIT[external_api]}" == "28" ) ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[external_dapr]}" == "000" && ( "${PROBE_EXIT[external_dapr]}" == "7" || "${PROBE_EXIT[external_dapr]}" == "28" ) ]] || diagnostics_ok=0
+          [[ "$api_route_ok" == "1" && "$dapr_route_ok" == "1" ]] || diagnostics_ok=0
+          for label in shared_bridge_api shared_bridge_dapr shared_bridge_proxy shared_bridge_host_port; do
             if [[ "$label" == "shared_bridge_host_port" && -z "$gateway" ]]; then
               continue
             fi
@@ -338,54 +387,18 @@ jobs:
           done
 
           if [[ "$diagnostics_ok" == "1" ]]; then
-            echo "PASS: runtime binding, host listener path, private API path, and shared-bridge denial matched expectations."
+            echo "PASS: proxy loopback binding, private API path, API/Dapr egress isolation, and shared-bridge denial matched expectations."
           else
             echo "FAIL: connectivity matrix contains a mismatch; all probes above completed independently."
             exit 1
           fi
 
-      - name: Prove network boundaries and run API end-to-end checks
+      - name: Run player account E2E checks through the host proxy
         if: ${{ !contains(github.event.head_commit.message, '[connectivity-diagnostic-only]') }}
         shell: bash
         run: |
           set -euo pipefail
           compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
-          docker pull curlimages/curl:8.12.1 >/dev/null
-          python3 - <<'PY'
-          import json, subprocess
-          services = {}
-          for name in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay"):
-              container = subprocess.check_output(["docker", "compose", "--project-name", "all-in-one", "--project-directory", "deploy/all-in-one", "-f", "deploy/all-in-one/docker-compose.player-portal.ci.yml", "-f", "deploy/all-in-one/docker-compose.player-portal.yml", "ps", "-q", name], text=True).strip()
-              assert container, f"missing container: {name}"
-              services[name] = json.loads(subprocess.check_output(["docker", "inspect", container], text=True))[0]
-          api, dapr, relay = (services[name] for name in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay"))
-          assert set(api["NetworkSettings"]["Networks"]) == {"all-in-one_player-portal-private"}
-          assert set(dapr["NetworkSettings"]["Networks"]) == {"all-in-one_player-portal-private"}
-          assert set(relay["NetworkSettings"]["Networks"]) == {"all-in-one_default", "all-in-one_player-portal-private"}
-          bindings = api["NetworkSettings"]["Ports"]["8080/tcp"]
-          assert len(bindings) == 1 and bindings[0]["HostIp"] == "127.0.0.1" and bindings[0]["HostPort"] == "18080"
-          assert not any(binding.get("HostPort") for values in dapr["NetworkSettings"]["Ports"].values() if values for binding in values)
-          print("PASS: runtime networks isolate API/Dapr to the private bridge; relay alone is dual-homed; API binding is loopback-only; Dapr has no published ports.")
-          PY
-          check_unreachable() {
-            local url="$1"
-            local code
-            set +e
-            docker run --rm --network all-in-one_default curlimages/curl:8.12.1 \
-              --silent --show-error --output /dev/null --connect-timeout 2 --max-time 3 "$url" >/dev/null 2>&1
-            code=$?
-            set -e
-            if [[ "$code" == "6" || "$code" == "7" || "$code" == "28" ]]; then
-              echo "PASS: shared-bridge probe could not reach the protected service."
-            else
-              echo "FAIL: shared-bridge probe unexpectedly reached a protected service."
-              exit 1
-            fi
-          }
-          gateway="$(docker network inspect all-in-one_default --format '{{(index .IPAM.Config 0).Gateway}}')"
-          check_unreachable http://player-portal-api:8080/health/live
-          check_unreachable http://player-portal-dapr:3500/v1.0/metadata
-          check_unreachable "http://$gateway:18080/health/live"
           scratch="$RUNNER_TEMP/player-portal-e2e"
           mkdir -p "$scratch"
           login="ci$(openssl rand -hex 3)"
