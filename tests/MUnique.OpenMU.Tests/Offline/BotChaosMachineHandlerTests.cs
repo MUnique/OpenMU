@@ -299,6 +299,7 @@ public class BotChaosMachineHandlerTests
         definitionMock.SetupAllProperties();
         definitionMock.Setup(d => d.QualifiedCharacters).Returns(new List<CharacterClass>());
         definitionMock.Setup(d => d.PossibleItemOptions).Returns(new List<ItemOptionDefinition>());
+        definitionMock.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
         definitionMock.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
         definitionMock.Setup(d => d.Requirements).Returns(new List<AttributeRequirement>());
         if (slot is { } targetSlot)
