@@ -37,13 +37,15 @@ public class AdjustIceArrowFreezeDurationUpdatePlugInSeason6 : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var duration = gameConfiguration.Skills
-            .FirstOrDefault(skill => skill.Number == (short)SkillNumber.IceArrow)?
-            .MagicEffectDef?
-            .Duration;
-        if (duration is not null && duration.ConstantValue.Value == OriginalDurationInSeconds)
+        var iceArrowSkills = gameConfiguration.Skills
+            .Where(skill => skill.Number == (short)SkillNumber.IceArrow || skill.Number == (short)SkillNumber.IceArrowStrengthener);
+
+        foreach (var skill in iceArrowSkills)
         {
-            duration.ConstantValue.Value = UpdatedDurationInSeconds;
+            if (skill.MagicEffectDef?.Duration is { } duration && duration.ConstantValue.Value == OriginalDurationInSeconds)
+            {
+                duration.ConstantValue.Value = UpdatedDurationInSeconds;
+            }
         }
 
         return ValueTask.CompletedTask;
