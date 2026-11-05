@@ -2142,4 +2142,44 @@
   <data name="BotMerchantConfiguration_TimeBetweenShifts_Description" xml:space="preserve"><value>The time after a shift before the same bot goes to the market again.</value></data>
   <data name="BotMerchantConfiguration_StoreNames_Name" xml:space="preserve"><value>Store names</value></data>
   <data name="BotMerchantConfiguration_StoreNames_Description" xml:space="preserve"><value>The names of the stores, separated by commas. Every shift draws one of them.</value></data>
+  <data name="BotMerchantConfiguration_HighSetMinimumDropLevel_Name" xml:space="preserve"><value>High set minimum drop level</value></data>
+  <data name="BotMerchantConfiguration_HighSetMinimumDropLevel_Description" xml:space="preserve"><value>The drop level from which an item counts as one of the higher sets. Normal items need it to be stocked; above it, ancient and the best excellent items cost more.</value></data>
+  <data name="BotMerchantConfiguration_MinimumNormalItemLevel_Name" xml:space="preserve"><value>Minimum normal item level</value></data>
+  <data name="BotMerchantConfiguration_MinimumNormalItemLevel_Description" xml:space="preserve"><value>The minimum level (+) of a normal item of a higher set with luck to be stocked.</value></data>
+  <data name="BotMerchantConfiguration_PriceSpreadPercent_Name" xml:space="preserve"><value>Zen price spread (%)</value></data>
+  <data name="BotMerchantConfiguration_PriceSpreadPercent_Description" xml:space="preserve"><value>How far, up or down, a zen price may differ from the calculated one. It's drawn once, when the good goes into the store, and rounded to an amount a player would ask for, e.g. 800,000 or 5.5 million. Prices in jewels stay exact; 0 keeps all prices exact.</value></data>
+  <data name="BotMerchantConfiguration_CheapCurrency_Name" xml:space="preserve"><value>Cheap: currency</value></data>
+  <data name="BotMerchantConfiguration_CheapCurrency_Description" xml:space="preserve"><value>The currency of the cheap goods (normal items, excellent items with only a cheap option): zen, bless, soul, chaos, life or creation.</value></data>
+  <data name="BotMerchantConfiguration_CheapPrice_Name" xml:space="preserve"><value>Cheap: price</value></data>
+  <data name="BotMerchantConfiguration_CheapPrice_Description" xml:space="preserve"><value>The base price of the cheap goods.</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerLevel_Name" xml:space="preserve"><value>Cheap: per level above +7</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerLevel_Description" xml:space="preserve"><value>The surcharge of the cheap goods per item level above +7.</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerOption_Name" xml:space="preserve"><value>Cheap: per +4 option</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerOption_Description" xml:space="preserve"><value>The surcharge of the cheap goods per +4 of the additional option. Fractions are summed up and rounded down.</value></data>
+  <data name="BotMerchantConfiguration_MediumCurrency_Name" xml:space="preserve"><value>Medium: currency</value></data>
+  <data name="BotMerchantConfiguration_MediumCurrency_Description" xml:space="preserve"><value>The currency of the medium goods (excellent items with one wanted option, without luck): zen, bless, soul, chaos, life or creation.</value></data>
+  <data name="BotMerchantConfiguration_MediumPrice_Name" xml:space="preserve"><value>Medium: price</value></data>
+  <data name="BotMerchantConfiguration_MediumPrice_Description" xml:space="preserve"><value>The base price of the medium goods.</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerLevel_Name" xml:space="preserve"><value>Medium: per level above +7</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerLevel_Description" xml:space="preserve"><value>The surcharge of the medium goods per item level above +7.</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerOption_Name" xml:space="preserve"><value>Medium: per +4 option</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerOption_Description" xml:space="preserve"><value>The surcharge of the medium goods per +4 of the additional option. Fractions are summed up and rounded down, so 0.5 means one more per +8.</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveCurrency_Name" xml:space="preserve"><value>Expensive: currency</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveCurrency_Description" xml:space="preserve"><value>The currency of the expensive goods (ancient items, excellent items with two or more options or one wanted option and luck): zen, bless, soul, chaos, life or creation.</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveOneOptionPrice_Name" xml:space="preserve"><value>Expensive: one wanted option and luck</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveOneOptionPrice_Description" xml:space="preserve"><value>The base price of an excellent item with one wanted option and luck.</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePrice_Name" xml:space="preserve"><value>Expensive: two options or ancient</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePrice_Description" xml:space="preserve"><value>The base price of an excellent item with two options and of an ancient item.</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name" xml:space="preserve"><value>Expensive: three or more options</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description" xml:space="preserve"><value>The base price of an excellent item with three or more options.</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerLevel_Name" xml:space="preserve"><value>Expensive: per level above +7</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerLevel_Description" xml:space="preserve"><value>The surcharge of the expensive goods per item level above +7.</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerOption_Name" xml:space="preserve"><value>Expensive: per +4 option</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerOption_Description" xml:space="preserve"><value>The surcharge of the expensive goods per +4 of the additional option. Fractions are summed up and rounded down, so 0.5 means one more per +8.</value></data>
+  <data name="BotMerchantConfiguration_AncientLuckSurcharge_Name" xml:space="preserve"><value>Expensive: ancient with luck</value></data>
+  <data name="BotMerchantConfiguration_AncientLuckSurcharge_Description" xml:space="preserve"><value>The surcharge of an ancient item with luck.</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurcharge_Name" xml:space="preserve"><value>Expensive: higher set surcharge</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurcharge_Description" xml:space="preserve"><value>The surcharge of an ancient item, and of an excellent item with a wanted option, luck and an additional option, for every step of drop levels above the high set minimum drop level.</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurchargeDropLevels_Name" xml:space="preserve"><value>Expensive: drop levels per surcharge</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurchargeDropLevels_Description" xml:space="preserve"><value>How many drop levels make one step of the higher set surcharge.</value></data>
 </root>

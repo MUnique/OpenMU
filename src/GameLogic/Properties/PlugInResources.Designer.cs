@@ -2113,6 +2113,258 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The surcharge of an ancient item with luck..
+        /// </summary>
+        public static string BotMerchantConfiguration_AncientLuckSurcharge_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_AncientLuckSurcharge_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: ancient with luck.
+        /// </summary>
+        public static string BotMerchantConfiguration_AncientLuckSurcharge_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_AncientLuckSurcharge_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The currency of the cheap goods (normal items, excellent items with only a cheap option): zen, bless, soul, chaos, life or creation..
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cheap: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The base price of the cheap goods..
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cheap: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapPrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of the cheap goods per item level above +7..
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapPricePerLevel_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cheap: per level above +7.
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapPricePerLevel_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of the cheap goods per +4 of the additional option. Fractions are summed up and rounded down..
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapPricePerOption_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerOption_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cheap: per +4 option.
+        /// </summary>
+        public static string BotMerchantConfiguration_CheapPricePerOption_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The currency of the expensive goods (ancient items, excellent items with two or more options or one wanted option and luck): zen, bless, soul, chaos, life or creation..
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensiveCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensiveCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensiveCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensiveCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The base price of an excellent item with one wanted option and luck..
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensiveOneOptionPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensiveOneOptionPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: one wanted option and luck.
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensiveOneOptionPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensiveOneOptionPrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The base price of an excellent item with two options and of an ancient item..
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensivePrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensivePrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: two options or ancient.
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensivePrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensivePrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of the expensive goods per item level above +7..
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerLevel_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: per level above +7.
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerLevel_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of the expensive goods per +4 of the additional option. Fractions are summed up and rounded down, so 0.5 means one more per +8..
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerOption_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerOption_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: per +4 option.
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerOption_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The base price of an excellent item with three or more options..
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: three or more options.
+        /// </summary>
+        public static string BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The drop level from which an item counts as one of the higher sets. Normal items need it to be stocked; above it, ancient and the best excellent items cost more..
+        /// </summary>
+        public static string BotMerchantConfiguration_HighSetMinimumDropLevel_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_HighSetMinimumDropLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to High set minimum drop level.
+        /// </summary>
+        public static string BotMerchantConfiguration_HighSetMinimumDropLevel_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_HighSetMinimumDropLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of an ancient item, and of an excellent item with a wanted option, luck and an additional option, for every step of drop levels above the high set minimum drop level..
+        /// </summary>
+        public static string BotMerchantConfiguration_HighSetSurcharge_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_HighSetSurcharge_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: higher set surcharge.
+        /// </summary>
+        public static string BotMerchantConfiguration_HighSetSurcharge_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_HighSetSurcharge_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many drop levels make one step of the higher set surcharge..
+        /// </summary>
+        public static string BotMerchantConfiguration_HighSetSurchargeDropLevels_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_HighSetSurchargeDropLevels_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expensive: drop levels per surcharge.
+        /// </summary>
+        public static string BotMerchantConfiguration_HighSetSurchargeDropLevels_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_HighSetSurchargeDropLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to After this time without a sale, the bot leaves the market before its shift is over and makes room for another one. Zero switches it off..
         /// </summary>
         public static string BotMerchantConfiguration_LeaveWithoutSalesAfter_Description {
@@ -2185,6 +2437,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The currency of the medium goods (excellent items with one wanted option, without luck): zen, bless, soul, chaos, life or creation..
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumCurrency_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumCurrency_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium: currency.
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumCurrency_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumCurrency_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The base price of the medium goods..
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumPrice_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumPrice_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium: price.
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumPrice_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumPrice_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of the medium goods per item level above +7..
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumPricePerLevel_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium: per level above +7.
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumPricePerLevel_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The surcharge of the medium goods per +4 of the additional option. Fractions are summed up and rounded down, so 0.5 means one more per +8..
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumPricePerOption_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerOption_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medium: per +4 option.
+        /// </summary>
+        public static string BotMerchantConfiguration_MediumPricePerOption_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The minimum number of priced goods in the personal store of a bot to go to the market..
         /// </summary>
         public static string BotMerchantConfiguration_MinimumGoodsToStart_Description {
@@ -2239,6 +2563,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The minimum level (+) of a normal item of a higher set with luck to be stocked..
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumNormalItemLevel_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumNormalItemLevel_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum normal item level.
+        /// </summary>
+        public static string BotMerchantConfiguration_MinimumNormalItemLevel_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_MinimumNormalItemLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The shortest stay on the market. The actual length is random between the minimum and the maximum..
         /// </summary>
         public static string BotMerchantConfiguration_MinimumShiftDuration_Description {
@@ -2253,6 +2595,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string BotMerchantConfiguration_MinimumShiftDuration_Name {
             get {
                 return ResourceManager.GetString("BotMerchantConfiguration_MinimumShiftDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How far, up or down, a zen price may differ from the calculated one. It&apos;s drawn once, when the good goes into the store, and rounded to an amount a player would ask for, e.g. 800,000 or 5.5 million. Prices in jewels stay exact; 0 keeps all prices exact..
+        /// </summary>
+        public static string BotMerchantConfiguration_PriceSpreadPercent_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_PriceSpreadPercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen price spread (%).
+        /// </summary>
+        public static string BotMerchantConfiguration_PriceSpreadPercent_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_PriceSpreadPercent_Name", resourceCulture);
             }
         }
         
