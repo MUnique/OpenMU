@@ -88,6 +88,7 @@ internal static class BotWingHandler
         }
 
         player.Logger.LogDebug("Bot '{Name}' earned its tier {Tier} wings: '{Wings}'.", player.Name, plan.Tier, wings);
+        player.GameContext.PlugInManager.GetPlugInPoint<IBotWingsEarnedPlugIn>()?.BotEarnedWings(player, wings);
 
         try
         {

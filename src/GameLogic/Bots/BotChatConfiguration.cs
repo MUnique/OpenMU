@@ -139,6 +139,14 @@ public class BotChatConfiguration
     public int RareDropChancePercent { get; set; } = 50;
 
     /// <summary>
+    /// Gets or sets the chance, in percent, that a bot comments on wings: its own new pair ("finally,
+    /// my wings!"), or the wings a player next to it put on ("nice wings!").
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_WingsChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_WingsChancePercent_Description))]
+    public int WingsChancePercent { get; set; } = 50;
+
+    /// <summary>
     /// Gets or sets the chance, in percent, that a bot calls out a notable monster which appeared
     /// near it while a player sees it (see <see cref="NotableMonsterNumbers"/>).
     /// </summary>
@@ -313,7 +321,8 @@ public class BotChatConfiguration
     /// <summary>
     /// Gets or sets the answers of a bot to a player who whispered to it, or mentioned its name in the normal
     /// chat next to it. The bot answers the same way: by whisper, or in the normal chat.
-    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>, <c>{location}</c>, <c>{wings}</c> (see
+    /// <see cref="WithoutWingsLines"/>).
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -404,6 +413,38 @@ public class BotChatConfiguration
     [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_RareDropLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_RareDropLines_Description))]
     public ICollection<BotChatLine> RareDropLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines with which a bot shows off the new wings it earned at a level milestone,
+    /// while a player sees it. Placeholders: <c>{wings}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_OwnWingsLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_OwnWingsLines_Description))]
+    public ICollection<BotChatLine> OwnWingsLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the lines with which the nearest bot comments on the wings a player put on - once
+    /// per player and pair until the server restarts. Placeholders: <c>{player}</c>, <c>{wings}</c>
+    /// (the player's), <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PlayerWingsLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_PlayerWingsLines_Description))]
+    public ICollection<BotChatLine> PlayerWingsLines { get; set; } = new List<BotChatLine>();
+
+    /// <summary>
+    /// Gets or sets the answers of a bot without wings to a question about them: a whisper reply with
+    /// <c>{wings}</c> would name nothing, so the bot answers with one of these instead.
+    /// Placeholders: <c>{player}</c>, <c>{level}</c>, <c>{map}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_WithoutWingsLines_Name), Description = nameof(PlugInResources.BotChatConfiguration_WithoutWingsLines_Description))]
+    public ICollection<BotChatLine> WithoutWingsLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
     /// Gets or sets the lines with which a bot calls out a notable monster which appeared near it.
@@ -694,6 +735,25 @@ public class BotChatConfiguration
             ("lucky! gz on the {item}", "fart! gratki za {item}"),
             ("{player}, that's a good one", "{player}, to jest dobre"));
         Add(
+            configuration.OwnWingsLines,
+            ("finally, my wings!", "w końcu moje skrzydła!"),
+            ("{wings}! all that grinding paid off", "{wings}! cały ten grind się opłacił"),
+            ("look, new wings :)", "patrzcie, nowe skrzydła :)"),
+            ("{level} and {wings}, what a day", "{level} i {wings}, co za dzień"),
+            ("at last, {wings}", "nareszcie, {wings}"));
+        Add(
+            configuration.PlayerWingsLines,
+            ("nice wings, {player}!", "ładne skrzydła, {player}!"),
+            ("whoa, {wings}!", "o kurczę, {wings}!"),
+            ("{wings}? respect", "{wings}? szacun"),
+            ("gz on the wings, {player}", "gratki skrzydeł, {player}"),
+            ("i want those wings too", "też chcę takie skrzydła"));
+        Add(
+            configuration.WithoutWingsLines,
+            ("no wings yet, saving up", "jeszcze bez skrzydeł, zbieram"),
+            ("not yet, a few more levels", "jeszcze nie, jeszcze parę lvli"),
+            ("none yet, still grinding", "jeszcze nie mam, expię dalej"));
+        Add(
             configuration.NotableMonsterLines,
             ("{monster} here!", "{monster} tutaj!"),
             ("look, {monster}! at {location}", "patrz, {monster}! {location}"),
@@ -800,6 +860,11 @@ public class BotChatConfiguration
             ("atlans is good if you have a party", "atlans jest spoko, jak masz grupę"),
             ("i like {map} at my level", "na moim lvlu lubię {map}"));
         AddReplies(
+            "wings, wing, your wings, nice wings, skrzydla, skrzydła, skrzydelka, skrzydełka, jakie skrzydla, jakie skrzydła",
+            ("{wings}", "{wings}"),
+            ("{wings}, took me a while", "{wings}, trochę to trwało"),
+            ("{wings} :)", "{wings} :)"));
+        AddReplies(
             "party, pt, grupa, grupe, grupę, do grupy",
             ("sure, invite me", "jasne, zaproś mnie"),
             ("ok, send invite", "ok, wysyłaj zaproszenie"),
@@ -838,6 +903,8 @@ public class BotChatConfiguration
         SetGesture(configuration.DuelDeclineLines, BotChatGesture.Awkward);
         SetGesture(configuration.ConversationJoinLines, BotChatGesture.Smile);
         SetGesture(configuration.RareDropLines, BotChatGesture.Clap);
+        SetGesture(configuration.OwnWingsLines, BotChatGesture.Win);
+        SetGesture(configuration.PlayerWingsLines, BotChatGesture.Respect);
         SetGesture(configuration.FriendLines, BotChatGesture.Greeting);
         foreach (var reply in configuration.WhisperReplies)
         {

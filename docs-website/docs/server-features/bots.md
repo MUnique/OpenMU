@@ -347,6 +347,8 @@ only talks about what it could actually do:
 | A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
 | A player leveled up or made a reset | normal chat, "gz", `{player}`, `{level}`, `{resets}` | the nearest bot which sees the player — 30 % chance, once per player in 10 minutes |
 | A player's kill dropped an excellent or ancient item | normal chat ("nice drop!"), `{item}` | the nearest bot - 50 % chance |
+| The bot put on the new wings it earned at a level milestone | normal chat ("finally, my wings!"), `{wings}` | the bot, while a player sees it - 50 % chance; at a level milestone, instead of the level comment |
+| A player put on wings | normal chat ("nice wings!"), `{player}`, `{wings}` | the nearest bot which sees the player - 50 % chance, once per player and pair until the server restarts |
 | A golden monster, the Red Dragon or the White Wizard appeared near a bot | normal chat ("Golden Goblin here!"), `{monster}` | the nearest bot, while a player sees it - once per map and monster in two minutes |
 | A player the bot was in a party with before enters the game or invites it again | normal / party chat ("good to see you again"), `{player}` | the bot - it remembers its party companions until the server restarts, and a companion nearby greets first |
 | The bot accepted a player's party invitation | party chat, `{player}` | the bot |
@@ -403,11 +405,11 @@ whose keyword matches the whisper — whole words, ignoring case and punctuation
 the longest match winning, so "hi, how are you?" gets an answer to the question
 rather than a greeting. When nothing matches, it uses a reply without keywords.
 The default lines cover greetings, "how are you", the level and class, where the
-bot is, where to hunt, party, help, trade, thanks and goodbye.
+bot is, where to hunt, its wings, party, help, trade, thanks and goodbye.
 
 Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
 `{level}`, `{class}`, `{player}` (whisper replies), `{partner}` (the other bot of
-a conversation), and `{location}` — the map with the
+a conversation), `{wings}` (see below), and `{location}` — the map with the
 bot's coordinates the way players write them, e.g. "Devias 215, 40", so a player
 can find it with the mini map. The default "where are you?" replies use it. In
 an event post, `{location}` is the meeting point; in an invasion post, just the
@@ -415,6 +417,11 @@ invaded map. Each line is a localized text, so
 every player sees the translation of their own language, or the English text
 when it has none. The default lines come with a Polish translation, and the default
 keywords understand Polish whispers too.
+
+`{wings}` names the bot's wings with their level, e.g. "Wings of Soul +9"; in a
+comment on a player's wings, the player's. A bot without wings doesn't answer
+"what wings do you have?" with an empty name: a whisper reply with `{wings}` is
+swapped for one of the *answers without wings* ("no wings yet, saving up").
 
 A bot answers a message in the language it is written in: a Polish whisper
 gets a Polish answer, an English one an English answer, whatever the player's
