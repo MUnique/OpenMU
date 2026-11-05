@@ -1689,9 +1689,6 @@
   <data name="GameMasterTransformationRing" xml:space="preserve">
     <value>Game Master Transformation Ring</value>
   </data>
-  <data name="KalimaTicket" xml:space="preserve">
-    <value>Kalima Ticket</value>
-  </data>
   <data name="OldScroll" xml:space="preserve">
     <value>Old Scroll</value>
   </data>
@@ -1721,30 +1718,6 @@
   </data>
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>Panda Transformation Ring</value>
-  </data>
-  <data name="LethalWizardsRing" xml:space="preserve">
-    <value>Lethal Wizard's Ring</value>
-  </data>
-  <data name="SapphireRing" xml:space="preserve">
-    <value>Sapphire Ring</value>
-  </data>
-  <data name="RubyRing" xml:space="preserve">
-    <value>Ruby Ring</value>
-  </data>
-  <data name="TopazRing" xml:space="preserve">
-    <value>Topaz Ring</value>
-  </data>
-  <data name="AmethystRing" xml:space="preserve">
-    <value>Amethyst Ring</value>
-  </data>
-  <data name="RubyNecklace" xml:space="preserve">
-    <value>Ruby Necklace</value>
-  </data>
-  <data name="EmeraldNecklace" xml:space="preserve">
-    <value>Emerald Necklace</value>
-  </data>
-  <data name="SapphireNecklace" xml:space="preserve">
-    <value>Sapphire Necklace</value>
   </data>
   <data name="PetPanda" xml:space="preserve">
     <value>Pet Panda</value>
@@ -1856,18 +1829,6 @@
   </data>
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>Large Shield Potion</value>
-  </data>
-  <data name="EliteHealingPotion" xml:space="preserve">
-    <value>Elite Healing Potion</value>
-  </data>
-  <data name="EliteManaPotion" xml:space="preserve">
-    <value>Elite Mana Potion</value>
-  </data>
-  <data name="MediumEliteHealingPotion" xml:space="preserve">
-    <value>Medium Elite Healing Potion</value>
-  </data>
-  <data name="EliteShieldPotion" xml:space="preserve">
-    <value>Elite SD Potion</value>
   </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>Small Complex Potion</value>
@@ -2118,20 +2079,8 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>Doppelganger Free Ticket</value>
   </data>
-  <data name="ResetFruitStrength" xml:space="preserve">
-    <value>Reset Fruit (Strength)</value>
-  </data>
-  <data name="ResetFruitAgility" xml:space="preserve">
-    <value>Reset Fruit (Agility)</value>
-  </data>
-  <data name="ResetFruitVitality" xml:space="preserve">
-    <value>Reset Fruit (Vitality)</value>
-  </data>
-  <data name="ResetFruitEnergy" xml:space="preserve">
-    <value>Reset Fruit (Energy)</value>
-  </data>
-  <data name="ResetFruitCommand" xml:space="preserve">
-    <value>Reset Fruit (Command)</value>
+  <data name="InvitationToSantaVillage" xml:space="preserve">
+    <value>Invitation to Santa Village</value>
   </data>
   <data name="DevilSquareFreeTicket" xml:space="preserve">
     <value>Devil Square Ticket</value>
@@ -2162,6 +2111,60 @@
   </data>
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Cursed Castle Water</value>
+  </data>
+  <data name="ResetFruitStrength" xml:space="preserve">
+    <value>Reset Fruit (Strength)</value>
+  </data>
+  <data name="ResetFruitAgility" xml:space="preserve">
+    <value>Reset Fruit (Agility)</value>
+  </data>
+  <data name="ResetFruitVitality" xml:space="preserve">
+    <value>Reset Fruit (Vitality)</value>
+  </data>
+  <data name="ResetFruitEnergy" xml:space="preserve">
+    <value>Reset Fruit (Energy)</value>
+  </data>
+  <data name="ResetFruitCommand" xml:space="preserve">
+    <value>Reset Fruit (Command)</value>
+  </data>
+  <data name="KalimaTicket" xml:space="preserve">
+    <value>Kalima Ticket</value>
+  </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>Lethal Wizard's Ring</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>Sapphire Ring</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>Ruby Ring</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>Topaz Ring</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>Amethyst Ring</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>Ruby Necklace</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>Emerald Necklace</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>Sapphire Necklace</value>
+  </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>Elite Healing Potion</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>Elite Mana Potion</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>Medium Elite Healing Potion</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>Elite SD Potion</value>
   </data>
   <data name="SphinxHelm" xml:space="preserve">
     <value>Sphinx Helm</value>

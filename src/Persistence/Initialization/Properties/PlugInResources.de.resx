@@ -308,6 +308,12 @@
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert die Diskriminatoren einiger antiker Gegenstände.</value>
   </data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve">
+    <value>Bonus des Muren-Feuerrings korrigieren</value>
+  </data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">
+    <value>Gibt dem Feuerring des antiken Sets Muren seinen Energie-Bonus, der als Vitalität initialisiert wurde.</value>
+  </data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve">
     <value>Buff-Fähigkeiten des Beschwörers hinzufügen</value>
   </data>
@@ -776,11 +782,11 @@
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Monster des Crywolf-Events und ihre Spawns hinzu, lässt die Statue und die Altäre der Festung immer auf der Karte, und fügt den Warp-Eintrag der Festung und die Geländevarianten der Besetzungszustände hinzu.</value>
   </data>
-  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
-    <value>Kalima-Ticket hinzufügen</value>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
   </data>
-  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve">
-    <value>Dieses Update fügt das Kalima-Ticket hinzu, das ein Tor zu der Kalima-Stufe öffnet, die zum Level des Charakters passt. Die Pakete des In-Game-Shops, die es enthalten, werden zum Verkauf angeboten.</value>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Einladung ins Dorf des Weihnachtsmanns hinzu, die den Spieler ins Dorf des Weihnachtsmanns teleportiert, sowie ein Spawn-Tor im Dorf des Weihnachtsmanns.</value>
   </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>Kleine Flügel und Umhänge hinzufügen</value>
@@ -840,12 +846,6 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>Fügt die Gegenstands-Werteprofile hinzu, die die Gegenstandsformeln (wie Anforderungen wachsen, was exzellente und antike Gegenstände mehr bekommen) als Daten enthalten, und gibt jedem Gegenstand das Profil seiner Art. Die Werte, die das Spiel berechnet, bleiben gleich; vorhandene Profile und Gegenstände mit einem Profil bleiben erhalten.</value>
   </data>
-  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
-    <value>Ringe und Halsketten des Item-Shops hinzufügen</value>
-  </data>
-  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
-    <value>Diese Aktualisierung fügt den Ring des tödlichen Zauberers, den Saphir-, Rubin-, Topas- und Amethystring sowie die Rubin-, Smaragd- und Saphirhalskette des Item-Shops mit ihren festen Boni hinzu. Ihre Pakete werden nicht zum Verkauf angeboten, weil der Shop sie zeitlich begrenzt verkauft, was noch nicht unterstützt wird.</value>
-  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>Attribut für den Bonus der Erfolgsrate beim Kombinieren hinzufügen</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>Fügt das Attribut hinzu, das die Prozentpunkte festlegt, die zur Erfolgsrate beim Kombinieren von Gegenständen addiert werden.</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Maximale Gegenstandsstufe der Seed Spheres korrigieren</value></data>
@@ -874,6 +874,18 @@
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die freien Tickets für Devil Square, Blood Castle, Illusion Temple und Chaos Castle hinzu, mit denen man das Event jeder Stufe betreten kann. Die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
+    <value>Kalima-Ticket hinzufügen</value>
+  </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt das Kalima-Ticket hinzu, das ein Tor zu der Kalima-Stufe öffnet, die zum Level des Charakters passt. Die Pakete des In-Game-Shops, die es enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>Ringe und Halsketten des Item-Shops hinzufügen</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Ring des tödlichen Zauberers, den Saphir-, Rubin-, Topas- und Amethystring sowie die Rubin-, Smaragd- und Saphirhalskette des Item-Shops mit ihren festen Boni hinzu. Ihre Pakete werden nicht zum Verkauf angeboten, weil der Shop sie zeitlich begrenzt verkauft, was noch nicht unterstützt wird.</value>
+  </data>
   <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve">
     <value>Glücksgegenstände hinzufügen</value>
   </data>
@@ -897,5 +909,11 @@
   </data>
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve">
+    <value>Treffer-Schock-Einstellungen hinzufügen</value>
+  </data>
+  <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
+    <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
 </root>

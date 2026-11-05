@@ -157,7 +157,6 @@ internal partial class CharacterClassInitialization : InitializerBase
         }
 
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.MaximumGuildSize, 0.1f, Stats.Level));
-        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.CanFly, 1, Stats.IsDinorantEquipped));
     }
 
     private void AddCommonBaseAttributeValues(ICollection<ConstValueAttribute> baseAttributeValues, bool isMaster)

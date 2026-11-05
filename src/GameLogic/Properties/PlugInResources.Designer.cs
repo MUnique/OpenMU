@@ -4005,6 +4005,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the invitation to the santa village, which warps the player to the santa village..
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invitation to Santa Village Consume Handler.
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the town portal scroll consumption..
         /// </summary>
         public static string TownPortalScrollConsumeHandlerPlugIn_Description {
@@ -4584,6 +4611,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
 
         /// <summary>Gets the localized BotConfiguration_BotsPayResetCosts_Description text.</summary>
         public static string BotConfiguration_BotsPayResetCosts_Description => ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConfiguration_MapsForbiddenForBots_Name text.</summary>
+        public static string BotConfiguration_MapsForbiddenForBots_Name => ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotConfiguration_MapsForbiddenForBots_Description text.</summary>
+        public static string BotConfiguration_MapsForbiddenForBots_Description => ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Description", resourceCulture)!;
 
         /// <summary>Gets the localized BotConfiguration_JewelStockPerKind_Name text.</summary>
         public static string BotConfiguration_JewelStockPerKind_Name => ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Name", resourceCulture)!;

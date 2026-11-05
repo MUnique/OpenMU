@@ -201,7 +201,6 @@ internal static class BotShoppingHandler
     /// </summary>
     private static List<Item> GetSellableJunk(OfflinePlayer player, IStorage inventory)
     {
-        var stockLimit = BotJewelHandler.GetStockLimit(player);
         var keptJewels = new Dictionary<ItemIdentifier, int>();
         var junk = new List<Item>();
 
@@ -232,7 +231,7 @@ internal static class BotShoppingHandler
                 // backpack: asking "is the stock full?" for each jewel on its own would answer yes for
                 // every one of fifteen Souls at a limit of ten, and the bot would end up with none.
                 var kept = keptJewels.GetValueOrDefault(identifier);
-                if (kept < stockLimit)
+                if (kept < BotJewelHandler.GetStockLimit(player, identifier))
                 {
                     keptJewels[identifier] = kept + 1;
                     continue;
@@ -436,9 +435,9 @@ internal static class BotShoppingHandler
     private static async ValueTask<int> BuyJewelsAsync(OfflinePlayer player, ItemStorage store)
     {
         var bought = 0;
-        var stockLimit = BotJewelHandler.GetStockLimit(player);
         foreach (var identifier in BotJewelHandler.UsableJewels)
         {
+            var stockLimit = BotJewelHandler.GetStockLimit(player, identifier);
             while (bought < MaxJewelPurchasesPerTrip
                    && BotJewelHandler.CountInStock(player, identifier) < stockLimit
                    && FindAffordableOffer(player, store, identifier, JewelPurchaseReserve) is { } offer)
@@ -545,8 +544,8 @@ internal static class BotShoppingHandler
     /// <summary>
     /// A jewel which reached the junk list: either a kind the bot can never spend, or the part of a
     /// usable kind above its stock limit. Unlike a piece of gear it has no second life - the bot cannot
-    /// wear it, craft with it or trade it - so when the money limit refuses the sale there is nothing
-    /// left to wait for.
+    /// wear it or trade it, and what it mixes with is covered by the stock - so when the money limit
+    /// refuses the sale there is nothing left to wait for.
     /// </summary>
     private static bool IsDeadWeight(Item item)
     {

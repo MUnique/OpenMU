@@ -226,6 +226,8 @@
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration.</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>Fix Ancient Discriminators</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>This update fixes the discriminators of some ancient items.</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>Fix Muren Ring of Fire Bonus</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>Gives the Ring of Fire of the Muren ancient set its energy bonus, which was initialized as vitality.</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>Add Summoner Buff Skills</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option.</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>Some added skills</value></data>
@@ -374,8 +376,8 @@
   <data name="FixFireScreamRequirementsUpdatePlugIn_Description" xml:space="preserve"><value>This update corrects the energy and leadership requirements of the fire scream skill to 150 and 70. They were swapped, so a dark lord with less than 150 leadership could learn the skill but not use it.</value></data>
   <data name="AddCrywolfEventUpdatePlugIn_Name" xml:space="preserve"><value>Add Crywolf event</value></data>
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the monsters of the crywolf event and their spawns, lets the statue and the altars of the fortress always be on the map, adds the warp entry of the fortress and the terrains of the occupation states.</value></data>
-  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve"><value>Add kalima ticket</value></data>
-  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the kalima ticket, which opens a gate to the level of Kalima which fits the level of the character. The packages of the in-game shop which contain it are put on sale.</value></data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve"><value>Add invitation to santa village</value></data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the invitation to the santa village, which warps the player to the santa village, and a spawn gate to the santa village.</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve"><value>Add small wings and capes</value></data>
   <data name="AddSmallWingsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior's Cloak. Existing items with the same numbers are left unchanged.</value></data>
   <data name="SetIntroducedGameVersionsPlugInBase_Name" xml:space="preserve"><value>Set the game versions of the content</value></data>
@@ -402,12 +404,6 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds the item stat profiles, which hold the item formulas (how requirements grow, what excellent and ancient items get more) as data, and gives each item the profile of its kind. The values the game computes stay the same; profiles which exist and items which have a profile are kept.</value>
   </data>
-  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
-    <value>Add cash shop rings and necklaces</value>
-  </data>
-  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
-    <value>This update adds the Lethal Wizard's Ring, the Sapphire, Ruby, Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces of the in-game shop, with their fixed bonuses. Their packages stay not for sale, because the shop sells them for a limited time, which isn't supported yet.</value>
-  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>Add crafting bonus percentage attribute</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>Adds the attribute which defines the percentage points which are added to the success rate of item craftings.</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>Fix maximum item level of seed spheres</value></data>
@@ -420,6 +416,14 @@
   <data name="AddResetFruitsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the reset fruits of strength, agility, vitality, energy and command, which take back invested points of a stat and return them as level up points. The packages of the in-game shop which contain them are put on sale.</value></data>
   <data name="AddFreeTicketItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add free event tickets</value></data>
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the free tickets of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which allow to enter the event of any level. The packages of the in-game shop which contain them are put on sale.</value></data>
+  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve"><value>Add kalima ticket</value></data>
+  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the kalima ticket, which opens a gate to the level of Kalima which fits the level of the character. The packages of the in-game shop which contain it are put on sale.</value></data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add cash shop rings and necklaces</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Lethal Wizard's Ring, the Sapphire, Ruby, Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces of the in-game shop, with their fixed bonuses. Their packages stay not for sale, because the shop sells them for a limited time, which isn't supported yet.</value>
+  </data>
   <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add lucky items</value></data>
   <data name="AddLuckyItemsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class. The packages of the in-game shop which contain the tickets are put on sale.</value></data>
   <data name="AddBuffItemsUpdatePlugIn_Name" xml:space="preserve"><value>Add buff items</value></data>
@@ -428,4 +432,6 @@
   <data name="AddElitePotionsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the elite healing, mana and SD potions of the in-game shop, which recover health, mana or shield immediately. The packages of the in-game shop which contain them are put on sale.</value></data>
   <data name="AddCraftingTalismansUpdatePlugIn_Name" xml:space="preserve"><value>Add crafting talismans</value></data>
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Luck, which increases the success rate of a crafting by its durability in percent, and the Talisman of Chaos Assembly, which keeps the item of a failed +10 to +15 item upgrade. They are added to the craftings which accept them, and the packages of the in-game shop which contain them are put on sale.</value></data>
+  <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve"><value>Add hit-shock settings</value></data>
+  <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>Adds the global hit-shock chance and damage threshold settings, and the Uniria marker so Uniria-equipped players are excluded from hit shock.</value></data>
 </root>

@@ -6438,7 +6438,7 @@ public readonly struct ObjectHit
     }
 
     /// <summary>
-    /// Gets or sets the object id.
+    /// Gets or sets the object ID; its most significant bit indicates whether the target receives a hit shock.
     /// </summary>
     public ushort ObjectId
     {
@@ -6625,7 +6625,7 @@ public readonly struct ObjectHitExtended
     }
 
     /// <summary>
-    /// Gets or sets the object id.
+    /// Gets or sets the object ID; its most significant bit indicates whether the target receives a hit shock.
     /// </summary>
     public ushort ObjectId
     {
@@ -6634,7 +6634,7 @@ public readonly struct ObjectHitExtended
     }
 
     /// <summary>
-    /// Gets or sets gets or sets the status of the remaining health in fractions of 1/250.
+    /// Gets or sets the status of the remaining health in fractions of 1/250.
     /// </summary>
     public byte HealthStatus
     {
@@ -6643,7 +6643,7 @@ public readonly struct ObjectHitExtended
     }
 
     /// <summary>
-    /// Gets or sets gets or sets the status of the remaining shield in fractions of 1/250.
+    /// Gets or sets the status of the remaining shield in fractions of 1/250.
     /// </summary>
     public byte ShieldStatus
     {

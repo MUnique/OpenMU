@@ -287,7 +287,6 @@ public static class AttackableExtensions
         if (dmg > 0)
         {
             // To-do: Ice arrow magic effect duration is reduced by 1s for every successful hit (dmg >0)
-            //        Sleep magic effect is canceled for successful hit (dmg > 0)
             if (isCombo)
             {
                 dmg += (int)attacker.Attributes[Stats.ComboBonus];
@@ -324,17 +323,19 @@ public static class AttackableExtensions
     /// <returns>The calculated hit info.</returns>
     public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null, uint petDamage = 0)
     {
-        var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
-        if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
-        {
-            return new HitInfo(damage, 0, attributes, manaToll, petDamage, skill);
-        }
+        var triggersHitShock = defender.GetsHitShocked(damage);
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
         {
             var shieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
-            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll, petDamage, skill);
+            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll, petDamage, skill, triggersHitShock);
+        }
+
+        var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
+        if (shieldBypass || defender.Attributes[Stats.CurrentShield] < 1)
+        {
+            return new HitInfo(damage, 0, attributes, manaToll, petDamage, skill, triggersHitShock);
         }
 
         var shieldRatio = 0.90;
@@ -342,7 +343,7 @@ public static class AttackableExtensions
         shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
         shieldRatio = Math.Min(1, shieldRatio);
-        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage, skill);
+        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage, skill, triggersHitShock);
     }
 
     /// <summary>
@@ -1082,5 +1083,26 @@ public static class AttackableExtensions
         {
             return 0;
         }
+    }
+
+    /// <summary>
+    /// Whether the <paramref name="defender"/> (a <see cref="Player"/>) should be "hit-shocked".
+    /// This will cause a pain animation to be displayed on the client, interrupting other actions.
+    /// </summary>
+    /// <param name="defender">The defending player.</param>
+    /// <param name="damage">The damage caused.</param>
+    /// <returns><c>true</c> if the hit should shock the defender; <c>false</c> otherwise.</returns>
+    private static bool GetsHitShocked(this IAttackable defender, float damage)
+    {
+        if (defender is not Player
+            || defender.Attributes[Stats.IsUniriaEquipped] > 0
+            || defender.Attributes[Stats.IsDinorantEquipped] > 0
+            || defender.Attributes[Stats.IsHorseEquipped] > 0)
+        {
+            return false;
+        }
+
+        return damage >= defender.Attributes[Stats.HitShockDamageThreshold]
+            && Rand.NextRandomBool(defender.Attributes[Stats.HitShockChance]);
     }
 }

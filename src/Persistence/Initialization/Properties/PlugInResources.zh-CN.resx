@@ -187,6 +187,8 @@
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>为 Season 6 游戏配置添加 MaximumAllianceSize 全局基础属性，默认值为 5。</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>修正套装物品识别值</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>修正部分套装物品的识别值。</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>修正 Muren 套装火之指环的加成</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>将 Muren 古代套装中火之指环的加成由体力修正为智力。</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>添加召唤术师辅助技能</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>添加昏睡术、破御阵、伤害反射和虚弱阵，并修正三代翅膀的完全反射属性。</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>补充魔法师与格斗家技能</value></data>
@@ -353,11 +355,11 @@
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
     <value>添加狼魂要塞活动的怪物及其刷新点，使要塞的神狼雕像和护台始终位于地图上，并添加要塞的传送条目和各占领状态的地形。</value>
   </data>
-  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
-    <value>添加卡利玛门票</value>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加圣诞村邀请函</value>
   </data>
-  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve">
-    <value>此更新添加卡利玛门票，可打开通往与角色等级相符的卡利玛层级的传送门。包含它的游戏商城礼包将开始出售。</value>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加小翅膀和小披风</value>
@@ -399,12 +401,6 @@
   <data name="AddItemStatProfilesUpdatePlugIn_Description" xml:space="preserve">
     <value>添加以数据形式保存物品公式（需求如何增长、卓越和远古物品额外获得的值）的物品属性配置，并为每个物品指定其类型的配置。游戏计算的数值保持不变；已有的配置和已有配置的物品保持不变。</value>
   </data>
-  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
-    <value>添加游戏商城的指环和项链</value>
-  </data>
-  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
-    <value>补充游戏商城的巫师致命指环、蓝宝石指环、红宝石指环、黄宝石指环、紫水晶指环，以及红宝石项链、绿宝石项链和蓝宝石项链，并带有其固定加成。由于商城限时出售这些物品，而限时物品尚不受支持，其礼包仍不出售。</value>
-  </data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>添加合成成功率加成属性</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>添加用于定义物品合成成功率额外增加的百分点的属性。</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>
@@ -426,6 +422,18 @@
   </data>
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>补充恶魔广场、血色城堡、幻影寺院和赤色要塞的自由入场券，可进入任意等级的活动。包含这些入场券的游戏商城礼包将开始出售。</value>
+  </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加卡利玛门票</value>
+  </data>
+  <data name="AddKalimaTicketUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加卡利玛门票，可打开通往与角色等级相符的卡利玛层级的传送门。包含它的游戏商城礼包将开始出售。</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加游戏商城的指环和项链</value>
+  </data>
+  <data name="AddCashShopJeweleryUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充游戏商城的巫师致命指环、蓝宝石指环、红宝石指环、黄宝石指环、紫水晶指环，以及红宝石项链、绿宝石项链和蓝宝石项链，并带有其固定加成。由于商城限时出售这些物品，而限时物品尚不受支持，其礼包仍不出售。</value>
   </data>
   <data name="AddLuckyItemsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加幸运装备</value>
