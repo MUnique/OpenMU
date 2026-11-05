@@ -5586,5 +5586,71 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_WithoutWingsLines_Description text.</summary>
         public static string BotChatConfiguration_WithoutWingsLines_Description => ResourceManager.GetString("BotChatConfiguration_WithoutWingsLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotMerchantPlugIn_Name text.</summary>
+        public static string BotMerchantPlugIn_Name => ResourceManager.GetString("BotMerchantPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantPlugIn_Description text.</summary>
+        public static string BotMerchantPlugIn_Description => ResourceManager.GetString("BotMerchantPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MarketMapNumber_Name text.</summary>
+        public static string BotMerchantConfiguration_MarketMapNumber_Name => ResourceManager.GetString("BotMerchantConfiguration_MarketMapNumber_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MarketMapNumber_Description text.</summary>
+        public static string BotMerchantConfiguration_MarketMapNumber_Description => ResourceManager.GetString("BotMerchantConfiguration_MarketMapNumber_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MaximumMerchants_Name text.</summary>
+        public static string BotMerchantConfiguration_MaximumMerchants_Name => ResourceManager.GetString("BotMerchantConfiguration_MaximumMerchants_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MaximumMerchants_Description text.</summary>
+        public static string BotMerchantConfiguration_MaximumMerchants_Description => ResourceManager.GetString("BotMerchantConfiguration_MaximumMerchants_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumLevel_Name text.</summary>
+        public static string BotMerchantConfiguration_MinimumLevel_Name => ResourceManager.GetString("BotMerchantConfiguration_MinimumLevel_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumLevel_Description text.</summary>
+        public static string BotMerchantConfiguration_MinimumLevel_Description => ResourceManager.GetString("BotMerchantConfiguration_MinimumLevel_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumGoodsToStart_Name text.</summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStart_Name => ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStart_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumGoodsToStart_Description text.</summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStart_Description => ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStart_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumGoodsToStay_Name text.</summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStay_Name => ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStay_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumGoodsToStay_Description text.</summary>
+        public static string BotMerchantConfiguration_MinimumGoodsToStay_Description => ResourceManager.GetString("BotMerchantConfiguration_MinimumGoodsToStay_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumShiftDuration_Name text.</summary>
+        public static string BotMerchantConfiguration_MinimumShiftDuration_Name => ResourceManager.GetString("BotMerchantConfiguration_MinimumShiftDuration_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumShiftDuration_Description text.</summary>
+        public static string BotMerchantConfiguration_MinimumShiftDuration_Description => ResourceManager.GetString("BotMerchantConfiguration_MinimumShiftDuration_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MaximumShiftDuration_Name text.</summary>
+        public static string BotMerchantConfiguration_MaximumShiftDuration_Name => ResourceManager.GetString("BotMerchantConfiguration_MaximumShiftDuration_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MaximumShiftDuration_Description text.</summary>
+        public static string BotMerchantConfiguration_MaximumShiftDuration_Description => ResourceManager.GetString("BotMerchantConfiguration_MaximumShiftDuration_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_LeaveWithoutSalesAfter_Name text.</summary>
+        public static string BotMerchantConfiguration_LeaveWithoutSalesAfter_Name => ResourceManager.GetString("BotMerchantConfiguration_LeaveWithoutSalesAfter_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_LeaveWithoutSalesAfter_Description text.</summary>
+        public static string BotMerchantConfiguration_LeaveWithoutSalesAfter_Description => ResourceManager.GetString("BotMerchantConfiguration_LeaveWithoutSalesAfter_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_TimeBetweenShifts_Name text.</summary>
+        public static string BotMerchantConfiguration_TimeBetweenShifts_Name => ResourceManager.GetString("BotMerchantConfiguration_TimeBetweenShifts_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_TimeBetweenShifts_Description text.</summary>
+        public static string BotMerchantConfiguration_TimeBetweenShifts_Description => ResourceManager.GetString("BotMerchantConfiguration_TimeBetweenShifts_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_StoreNames_Name text.</summary>
+        public static string BotMerchantConfiguration_StoreNames_Name => ResourceManager.GetString("BotMerchantConfiguration_StoreNames_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_StoreNames_Description text.</summary>
+        public static string BotMerchantConfiguration_StoreNames_Description => ResourceManager.GetString("BotMerchantConfiguration_StoreNames_Description", resourceCulture)!;
+
     }
 }
