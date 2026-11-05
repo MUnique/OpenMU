@@ -244,7 +244,7 @@ public class MagicEffectsList : AsyncDisposable
     }
 
     /// <summary>
-    /// Clear the effects that produce a specific stat.
+    /// Clears the effects that produce a specific stat.
     /// </summary>
     /// <param name="stat">The stat produced by effect.</param>
     public async ValueTask ClearAllEffectsProducingSpecificStatAsync(AttributeDefinition stat)
@@ -258,6 +258,28 @@ public class MagicEffectsList : AsyncDisposable
                 await effect.DisposeAsync().ConfigureAwait(false);
             }
         }
+    }
+
+    /// <summary>
+    /// Shortens the duration of effects that produce a specific stat by a given time.
+    /// </summary>
+    /// <param name="stat">The stat produced by effect.</param>
+    /// <param name="seconds">The seconds to shorten the effect duration for.</param>
+    public ValueTask ShortenEffectsProducingSpecificStatAsync(AttributeDefinition stat, int seconds)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(seconds);
+
+        var effects = this.GetActiveEffectsSnapshot();
+
+        foreach (var effect in effects)
+        {
+            if (effect.PowerUpElements.Any(p => p.Target == stat))
+            {
+                effect.DecreaseTimer(seconds);
+            }
+        }
+
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>

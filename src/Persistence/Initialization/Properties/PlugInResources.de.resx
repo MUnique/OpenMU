@@ -898,4 +898,6 @@
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve"><value>Einfrierdauer des Eis-Pfeils anpassen</value></data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils, um die Verkürzung bei erfolgreichen Treffern auszugleichen. Angepasste Dauern bleiben unverändert.</value></data>
 </root>

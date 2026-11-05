@@ -135,6 +135,11 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
             }
 
+            if (this.Attributes[Stats.IsFrozen] > 0)
+            {
+                await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
+            }
+
             if (attacker is Player player)
             {
                 await player.AfterHitTargetAsync(this.Attributes[Stats.DefensePvm], skill?.Skill?.DamageType).ConfigureAwait(false);
