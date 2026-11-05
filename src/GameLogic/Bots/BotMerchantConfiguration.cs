@@ -98,6 +98,145 @@ public class BotMerchantConfiguration
     public string StoreNames { get; set; } = "Good stuff, Cheap items, Best prices, Exc items, Jewels here, Look inside, Fair prices, Rare finds";
 
     /// <summary>
+    /// Gets or sets the drop level from which an item counts as one of the higher sets: only such normal items are worth a stall, and above it ancient and the best excellent items get the surcharge of <see cref="HighSetSurcharge"/>.
+    /// </summary>
+    [Range(0, 400)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_HighSetMinimumDropLevel_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_HighSetMinimumDropLevel_Description))]
+    public int HighSetMinimumDropLevel { get; set; } = 60;
+
+    /// <summary>
+    /// Gets or sets the minimum level (+) of a normal item of a higher set with luck to be stocked.
+    /// </summary>
+    [Range(0, 15)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MinimumNormalItemLevel_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MinimumNormalItemLevel_Description))]
+    public int MinimumNormalItemLevel { get; set; } = 7;
+
+    /// <summary>
+    /// Gets or sets how far, in percent up or down, a zen price may differ from the calculated one. The price is
+    /// drawn once, when the good goes into the store, and rounded to an amount a player would ask for - so the
+    /// same good costs a bit differently at two merchants. Prices in jewels stay exact; 0 keeps all prices exact.
+    /// </summary>
+    [Range(0, 50)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_PriceSpreadPercent_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_PriceSpreadPercent_Description))]
+    public int PriceSpreadPercent { get; set; } = 10;
+
+    /// <summary>
+    /// Gets or sets the currency of the cheap goods: normal items, and excellent items with only a cheap option. "zen" or the name of a jewel ("bless", "soul", "chaos", "life", "creation").
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CheapCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CheapCurrency_Description))]
+    public string CheapCurrency { get; set; } = "zen";
+
+    /// <summary>
+    /// Gets or sets the base price of the cheap goods.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CheapPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CheapPrice_Description))]
+    public int CheapPrice { get; set; } = 2_000_000;
+
+    /// <summary>
+    /// Gets or sets the surcharge of the cheap goods per item level above +7.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CheapPricePerLevel_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CheapPricePerLevel_Description))]
+    public int CheapPricePerLevel { get; set; } = 1_000_000;
+
+    /// <summary>
+    /// Gets or sets the surcharge of the cheap goods per +4 of the additional option; the sum is rounded down.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CheapPricePerOption_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CheapPricePerOption_Description))]
+    public double CheapPricePerOption { get; set; } = 500_000;
+
+    /// <summary>
+    /// Gets or sets the currency of the medium goods: excellent items with one wanted option, without luck.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MediumCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MediumCurrency_Description))]
+    public string MediumCurrency { get; set; } = "bless";
+
+    /// <summary>
+    /// Gets or sets the base price of the medium goods.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MediumPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MediumPrice_Description))]
+    public int MediumPrice { get; set; } = 2;
+
+    /// <summary>
+    /// Gets or sets the surcharge of the medium goods per item level above +7.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MediumPricePerLevel_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MediumPricePerLevel_Description))]
+    public int MediumPricePerLevel { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the surcharge of the medium goods per +4 of the additional option; the sum is rounded down.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MediumPricePerOption_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MediumPricePerOption_Description))]
+    public double MediumPricePerOption { get; set; } = 0.5;
+
+    /// <summary>
+    /// Gets or sets the currency of the expensive goods: ancient items, excellent items with two or more options, and with one wanted option and luck.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ExpensiveCurrency_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ExpensiveCurrency_Description))]
+    public string ExpensiveCurrency { get; set; } = "soul";
+
+    /// <summary>
+    /// Gets or sets the base price of an excellent item with one wanted option and luck.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ExpensiveOneOptionPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ExpensiveOneOptionPrice_Description))]
+    public int ExpensiveOneOptionPrice { get; set; } = 3;
+
+    /// <summary>
+    /// Gets or sets the base price of an excellent item with two options and of an ancient item.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ExpensivePrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ExpensivePrice_Description))]
+    public int ExpensivePrice { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the base price of an excellent item with three or more options.
+    /// </summary>
+    [Range(1, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description))]
+    public int ExpensiveThreeOptionsPrice { get; set; } = 10;
+
+    /// <summary>
+    /// Gets or sets the surcharge of the expensive goods per item level above +7.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ExpensivePricePerLevel_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ExpensivePricePerLevel_Description))]
+    public int ExpensivePricePerLevel { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the surcharge of the expensive goods per +4 of the additional option; the sum is rounded down.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_ExpensivePricePerOption_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_ExpensivePricePerOption_Description))]
+    public double ExpensivePricePerOption { get; set; } = 0.5;
+
+    /// <summary>
+    /// Gets or sets the surcharge of an ancient item with luck.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_AncientLuckSurcharge_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_AncientLuckSurcharge_Description))]
+    public int AncientLuckSurcharge { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the surcharge of an ancient item, and of an excellent item with a wanted option, luck and an additional option, per <see cref="HighSetSurchargeDropLevels"/> drop levels above <see cref="HighSetMinimumDropLevel"/>.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_HighSetSurcharge_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_HighSetSurcharge_Description))]
+    public int HighSetSurcharge { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets how many drop levels make one step of <see cref="HighSetSurcharge"/>.
+    /// </summary>
+    [Range(1, 400)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_HighSetSurchargeDropLevels_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_HighSetSurchargeDropLevels_Description))]
+    public int HighSetSurchargeDropLevels { get; set; } = 20;
+
+    /// <summary>
     /// Gets the store names of <see cref="StoreNames"/>, without the empty ones.
     /// </summary>
     /// <returns>The store names.</returns>

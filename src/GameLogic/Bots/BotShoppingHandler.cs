@@ -145,6 +145,11 @@ internal static class BotShoppingHandler
             return false;
         }
 
+        // The goods worth a stall on the market go into the own store instead of to the NPC (see
+        // BotMerchantPlugIn) - before the dialog opens, because the game moves nothing into a store
+        // during an NPC dialog. Nothing happens while the plugin is off.
+        var stocked = await BotMerchandise.StockStoreAsync(player, GetSellableJunk(player, inventory)).ConfigureAwait(false);
+
         await TalkAction.TalkToNpcAsync(player, merchant).ConfigureAwait(false);
         if (player.OpenedNpc is null)
         {
@@ -175,9 +180,10 @@ internal static class BotShoppingHandler
             // "went and had nothing to do" apart from a silently failed trip. Every counter reports
             // what REALLY happened - a sale which the money limit refused is not a sale.
             player.Logger.LogDebug(
-                "Bot '{Name}' traded with '{Merchant}': sold {Sold} item(s), discarded {Discarded}, repaired {Repaired}, bought {Potions} potion stack(s) and {Jewels} jewel(s), {Money} zen left.",
+                "Bot '{Name}' traded with '{Merchant}': stocked {Stocked} item(s) for the market, sold {Sold} item(s), discarded {Discarded}, repaired {Repaired}, bought {Potions} potion stack(s) and {Jewels} jewel(s), {Money} zen left.",
                 player.Name,
                 merchant.Definition.Designation,
+                stocked,
                 sold,
                 discarded,
                 repaired,

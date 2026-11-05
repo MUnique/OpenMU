@@ -5652,5 +5652,125 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotMerchantConfiguration_StoreNames_Description text.</summary>
         public static string BotMerchantConfiguration_StoreNames_Description => ResourceManager.GetString("BotMerchantConfiguration_StoreNames_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotMerchantConfiguration_HighSetMinimumDropLevel_Name text.</summary>
+        public static string BotMerchantConfiguration_HighSetMinimumDropLevel_Name => ResourceManager.GetString("BotMerchantConfiguration_HighSetMinimumDropLevel_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_HighSetMinimumDropLevel_Description text.</summary>
+        public static string BotMerchantConfiguration_HighSetMinimumDropLevel_Description => ResourceManager.GetString("BotMerchantConfiguration_HighSetMinimumDropLevel_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumNormalItemLevel_Name text.</summary>
+        public static string BotMerchantConfiguration_MinimumNormalItemLevel_Name => ResourceManager.GetString("BotMerchantConfiguration_MinimumNormalItemLevel_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MinimumNormalItemLevel_Description text.</summary>
+        public static string BotMerchantConfiguration_MinimumNormalItemLevel_Description => ResourceManager.GetString("BotMerchantConfiguration_MinimumNormalItemLevel_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_PriceSpreadPercent_Name text.</summary>
+        public static string BotMerchantConfiguration_PriceSpreadPercent_Name => ResourceManager.GetString("BotMerchantConfiguration_PriceSpreadPercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_PriceSpreadPercent_Description text.</summary>
+        public static string BotMerchantConfiguration_PriceSpreadPercent_Description => ResourceManager.GetString("BotMerchantConfiguration_PriceSpreadPercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_CheapCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_CheapCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_CheapCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_CheapCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_CheapPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_CheapPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_CheapPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_CheapPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapPricePerLevel_Name text.</summary>
+        public static string BotMerchantConfiguration_CheapPricePerLevel_Name => ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerLevel_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapPricePerLevel_Description text.</summary>
+        public static string BotMerchantConfiguration_CheapPricePerLevel_Description => ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerLevel_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapPricePerOption_Name text.</summary>
+        public static string BotMerchantConfiguration_CheapPricePerOption_Name => ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerOption_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CheapPricePerOption_Description text.</summary>
+        public static string BotMerchantConfiguration_CheapPricePerOption_Description => ResourceManager.GetString("BotMerchantConfiguration_CheapPricePerOption_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_MediumCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_MediumCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_MediumCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_MediumCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_MediumPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_MediumPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_MediumPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_MediumPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumPricePerLevel_Name text.</summary>
+        public static string BotMerchantConfiguration_MediumPricePerLevel_Name => ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerLevel_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumPricePerLevel_Description text.</summary>
+        public static string BotMerchantConfiguration_MediumPricePerLevel_Description => ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerLevel_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumPricePerOption_Name text.</summary>
+        public static string BotMerchantConfiguration_MediumPricePerOption_Name => ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerOption_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MediumPricePerOption_Description text.</summary>
+        public static string BotMerchantConfiguration_MediumPricePerOption_Description => ResourceManager.GetString("BotMerchantConfiguration_MediumPricePerOption_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensiveCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_ExpensiveCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_ExpensiveCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensiveCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_ExpensiveCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_ExpensiveCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensiveOneOptionPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_ExpensiveOneOptionPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_ExpensiveOneOptionPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensiveOneOptionPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_ExpensiveOneOptionPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_ExpensiveOneOptionPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensivePrice_Name text.</summary>
+        public static string BotMerchantConfiguration_ExpensivePrice_Name => ResourceManager.GetString("BotMerchantConfiguration_ExpensivePrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensivePrice_Description text.</summary>
+        public static string BotMerchantConfiguration_ExpensivePrice_Description => ResourceManager.GetString("BotMerchantConfiguration_ExpensivePrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensivePricePerLevel_Name text.</summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerLevel_Name => ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerLevel_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensivePricePerLevel_Description text.</summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerLevel_Description => ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerLevel_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensivePricePerOption_Name text.</summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerOption_Name => ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerOption_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ExpensivePricePerOption_Description text.</summary>
+        public static string BotMerchantConfiguration_ExpensivePricePerOption_Description => ResourceManager.GetString("BotMerchantConfiguration_ExpensivePricePerOption_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_AncientLuckSurcharge_Name text.</summary>
+        public static string BotMerchantConfiguration_AncientLuckSurcharge_Name => ResourceManager.GetString("BotMerchantConfiguration_AncientLuckSurcharge_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_AncientLuckSurcharge_Description text.</summary>
+        public static string BotMerchantConfiguration_AncientLuckSurcharge_Description => ResourceManager.GetString("BotMerchantConfiguration_AncientLuckSurcharge_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_HighSetSurcharge_Name text.</summary>
+        public static string BotMerchantConfiguration_HighSetSurcharge_Name => ResourceManager.GetString("BotMerchantConfiguration_HighSetSurcharge_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_HighSetSurcharge_Description text.</summary>
+        public static string BotMerchantConfiguration_HighSetSurcharge_Description => ResourceManager.GetString("BotMerchantConfiguration_HighSetSurcharge_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_HighSetSurchargeDropLevels_Name text.</summary>
+        public static string BotMerchantConfiguration_HighSetSurchargeDropLevels_Name => ResourceManager.GetString("BotMerchantConfiguration_HighSetSurchargeDropLevels_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_HighSetSurchargeDropLevels_Description text.</summary>
+        public static string BotMerchantConfiguration_HighSetSurchargeDropLevels_Description => ResourceManager.GetString("BotMerchantConfiguration_HighSetSurchargeDropLevels_Description", resourceCulture)!;
+
     }
 }
