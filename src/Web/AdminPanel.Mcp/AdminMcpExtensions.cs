@@ -40,6 +40,11 @@ public static class AdminMcpExtensions
             options.Enabled = enabled;
         }
 
+        if (options.MaxPanelPluginConfigurationLength < 1)
+        {
+            throw new ArgumentException("The panel plugin configuration size limit must be positive.", nameof(configuration));
+        }
+
         services.AddSingleton(options);
         services.AddSingleton<AdminWriteSettings>(options);
         if (!options.Enabled)
