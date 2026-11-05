@@ -7,13 +7,20 @@ let animationFrame = 0;
 const edgeSize = 72;
 const maximumSpeed = 720;
 
+function isScrollable(element) {
+    const overflowY = getComputedStyle(element).overflowY;
+    return ["auto", "scroll", "overlay"].includes(overflowY)
+        && element.scrollHeight > element.clientHeight;
+}
+
 function findScrollTarget(element) {
-    for (let current = element.parentElement; current; current = current.parentElement) {
-        const overflowY = getComputedStyle(current).overflowY;
-        if ((overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay")
-            && current.scrollHeight > current.clientHeight) {
+    let current = element.parentElement;
+    while (current) {
+        if (isScrollable(current)) {
             return current;
         }
+
+        current = current.parentElement;
     }
 
     return document.scrollingElement ?? document.documentElement;
@@ -30,40 +37,42 @@ function getScrollBounds() {
     return { top: bounds.top, bottom: bounds.bottom };
 }
 
-function updateScrollSpeed(event) {
-    if (!activeContainer || !scrollTarget) {
-        targetSpeed = 0;
-        return;
-    }
+function isPointerInsideContainer(event) {
+    const bounds = activeContainer.getBoundingClientRect();
+    return event.clientX >= bounds.left && event.clientX <= bounds.right;
+}
 
-    const containerBounds = activeContainer.getBoundingClientRect();
-    if (event.clientX < containerBounds.left || event.clientX > containerBounds.right) {
-        targetSpeed = 0;
-        return;
-    }
+function isWithinEdge(distance) {
+    return distance < edgeSize && distance > -edgeSize;
+}
 
+function getEdgeIntensity(distance) {
+    return Math.min(1, (edgeSize - distance) / edgeSize);
+}
+
+function getEdgeScrollSpeed(pointerY) {
     const bounds = getScrollBounds();
-    const distanceFromTop = event.clientY - bounds.top;
-    const distanceFromBottom = bounds.bottom - event.clientY;
+    const distanceFromTop = pointerY - bounds.top;
+    const distanceFromBottom = bounds.bottom - pointerY;
 
-    if (distanceFromTop < edgeSize && distanceFromTop > -edgeSize) {
-        const intensity = Math.min(1, (edgeSize - distanceFromTop) / edgeSize);
-        targetSpeed = -maximumSpeed * intensity;
-    } else if (distanceFromBottom < edgeSize && distanceFromBottom > -edgeSize) {
-        const intensity = Math.min(1, (edgeSize - distanceFromBottom) / edgeSize);
-        targetSpeed = maximumSpeed * intensity;
-    } else {
-        targetSpeed = 0;
+    if (isWithinEdge(distanceFromTop)) {
+        return -maximumSpeed * getEdgeIntensity(distanceFromTop);
     }
 
-    if (targetSpeed !== 0 && animationFrame === 0) {
-        animationFrame = requestAnimationFrame(scrollFrame);
+    if (isWithinEdge(distanceFromBottom)) {
+        return maximumSpeed * getEdgeIntensity(distanceFromBottom);
     }
+
+    return 0;
+}
+
+function isScrollActive() {
+    return targetSpeed !== 0 && scrollTarget !== null;
 }
 
 function scrollFrame(timestamp) {
     animationFrame = 0;
-    if (targetSpeed === 0 || !scrollTarget) {
+    if (!isScrollActive()) {
         previousFrameTime = 0;
         return;
     }
@@ -83,7 +92,23 @@ function scrollFrame(timestamp) {
     animationFrame = requestAnimationFrame(scrollFrame);
 }
 
-function stop() {
+function scheduleScrollFrame() {
+    if (targetSpeed !== 0 && animationFrame === 0) {
+        animationFrame = requestAnimationFrame(scrollFrame);
+    }
+}
+
+function updateScrollSpeed(event) {
+    if (!activeContainer || !scrollTarget || !isPointerInsideContainer(event)) {
+        targetSpeed = 0;
+        return;
+    }
+
+    targetSpeed = getEdgeScrollSpeed(event.clientY);
+    scheduleScrollFrame();
+}
+
+export function stop() {
     document.removeEventListener("dragover", updateScrollSpeed, true);
     document.removeEventListener("dragend", stop, true);
     document.removeEventListener("drop", stop, true);
@@ -108,5 +133,3 @@ export function start(container) {
     document.addEventListener("dragend", stop, true);
     document.addEventListener("drop", stop, true);
 }
-
-export { stop };
