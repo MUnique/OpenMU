@@ -2704,4 +2704,232 @@
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Save or discard the pending changes first.</value>
   </data>
+  <data name="CustomCraftings" xml:space="preserve">
+      <value>Custom Craftings</value>
+  </data>
+  <data name="CustomCraftingsDescription" xml:space="preserve">
+      <value>Create a simple item crafting recipe and attach it to an NPC. The recipe is saved in the game configuration and becomes available through the NPC crafting window.</value>
+  </data>
+  <data name="CustomCraftingsLoadFailed" xml:space="preserve">
+      <value>The game configuration could not be loaded.</value>
+  </data>
+  <data name="CustomCraftingsNpc" xml:space="preserve">
+      <value>NPC</value>
+  </data>
+  <data name="CustomCraftingsSelectNpc" xml:space="preserve">
+      <value>Select an NPC.</value>
+  </data>
+  <data name="CustomCraftingsName" xml:space="preserve">
+      <value>Recipe name</value>
+  </data>
+  <data name="CustomCraftingsSuccessRate" xml:space="preserve">
+      <value>Success rate (%)</value>
+  </data>
+  <data name="CustomCraftingsMaximumSuccessRate" xml:space="preserve">
+      <value>Maximum success rate (%)</value>
+  </data>
+  <data name="CustomCraftingsZenCost" xml:space="preserve">
+      <value>Zen cost</value>
+  </data>
+  <data name="CustomCraftingsZenPerSuccessPercent" xml:space="preserve">
+      <value>Zen per success percentage</value>
+  </data>
+  <data name="CustomCraftingsRequiredItems" xml:space="preserve">
+      <value>Required items</value>
+  </data>
+  <data name="CustomCraftingsResults" xml:space="preserve">
+      <value>Result items</value>
+  </data>
+  <data name="CustomCraftingsMinimumLevel" xml:space="preserve">
+      <value>Minimum level</value>
+  </data>
+  <data name="CustomCraftingsMaximumLevel" xml:space="preserve">
+      <value>Maximum level</value>
+  </data>
+  <data name="CustomCraftingsDurability" xml:space="preserve">
+      <value>Durability</value>
+  </data>
+  <data name="CustomCraftingsStackQuantity" xml:space="preserve">
+      <value>Stack quantity</value>
+  </data>
+  <data name="CustomCraftingsRequiredAmountHint" xml:space="preserve">
+      <value>Amount counts units in a stack or individual items; it does not set item durability.</value>
+  </data>
+  <data name="CustomCraftingsStackQuantityHint" xml:space="preserve">
+      <value>Number of items in the result stack (1–{0}).</value>
+  </data>
+  <data name="CustomCraftingsDurabilityHint" xml:space="preserve">
+      <value>Remaining durability of the result item. Leave blank to use its normal maximum.</value>
+  </data>
+  <data name="CustomCraftingsResultQuantityOrDurability" xml:space="preserve">
+      <value>Quantity / durability</value>
+  </data>
+  <data name="CustomCraftingsStackQuantitySummary" xml:space="preserve">
+      <value>{0} in stack</value>
+  </data>
+  <data name="CustomCraftingsDurabilitySummary" xml:space="preserve">
+      <value>{0} durability</value>
+  </data>
+  <data name="CustomCraftingsDefaultStackQuantity" xml:space="preserve">
+      <value>1 in stack (default)</value>
+  </data>
+  <data name="CustomCraftingsDefaultDurability" xml:space="preserve">
+      <value>Normal maximum (default)</value>
+  </data>
+  <data name="CustomCraftingsSingleItem" xml:space="preserve">
+      <value>Single item</value>
+  </data>
+  <data name="CustomCraftingsSingleItemHint" xml:space="preserve">
+      <value>One item is created; this item has no stack quantity or wearable durability.</value>
+  </data>
+  <data name="CustomCraftingsMinimumStackQuantityShort" xml:space="preserve">
+      <value>Min stack</value>
+  </data>
+  <data name="CustomCraftingsMaximumStackQuantityShort" xml:space="preserve">
+      <value>Max stack</value>
+  </data>
+  <data name="CustomCraftingsMinimumItemCountShort" xml:space="preserve">
+      <value>Min items</value>
+  </data>
+  <data name="CustomCraftingsMaximumItemCountShort" xml:space="preserve">
+      <value>Max items</value>
+  </data>
+  <data name="CustomCraftingsRequiredStackAmountHint" xml:space="preserve">
+      <value>Counts units in each matching stack.</value>
+  </data>
+  <data name="CustomCraftingsRequiredItemAmountHint" xml:space="preserve">
+      <value>Counts separate matching items.</value>
+  </data>
+  <data name="CustomCraftingsRequiredQuantity" xml:space="preserve">
+      <value>Required quantity</value>
+  </data>
+  <data name="CustomCraftingsStackAmountSummary" xml:space="preserve">
+      <value>{0}–{1} units in stack</value>
+  </data>
+  <data name="CustomCraftingsItemCountSummary" xml:space="preserve">
+      <value>{0}–{1} individual items</value>
+  </data>
+  <data name="CustomCraftingsSelectItem" xml:space="preserve">
+      <value>Select an item</value>
+  </data>
+  <data name="CustomCraftingsAddRequiredItem" xml:space="preserve">
+      <value>Add required item</value>
+  </data>
+  <data name="CustomCraftingsAddResult" xml:space="preserve">
+      <value>Add result item</value>
+  </data>
+  <data name="CustomCraftingsOnSuccess" xml:space="preserve">
+      <value>Input on success</value>
+  </data>
+  <data name="CustomCraftingsOnFailure" xml:space="preserve">
+      <value>Input on failure</value>
+  </data>
+  <data name="CustomCraftingsMixResult_Disappear" xml:space="preserve">
+      <value>Disappear</value>
+  </data>
+  <data name="CustomCraftingsMixResult_StaysAsIs" xml:space="preserve">
+      <value>Stay as is</value>
+  </data>
+  <data name="CustomCraftingsMixResult_ChaosWeaponAndFirstWingsDowngradedRandom" xml:space="preserve">
+      <value>Downgrade randomly (Chaos weapon / first wings)</value>
+  </data>
+  <data name="CustomCraftingsMixResult_ThirdWingsDowngradedRandom" xml:space="preserve">
+      <value>Downgrade randomly (third wings)</value>
+  </data>
+  <data name="CustomCraftingsAmount" xml:space="preserve">
+      <value>Amount</value>
+  </data>
+  <data name="CustomCraftingsMinimumAmount" xml:space="preserve">
+      <value>Minimum amount</value>
+  </data>
+  <data name="CustomCraftingsMaximumAmount" xml:space="preserve">
+      <value>Maximum amount</value>
+  </data>
+  <data name="CustomCraftingsRequiredOptions" xml:space="preserve">
+      <value>Required options (select all which apply)</value>
+  </data>
+  <data name="CustomCraftingsResultSelection" xml:space="preserve">
+      <value>How to choose result items</value>
+  </data>
+  <data name="CustomCraftingsResultSelection_Any" xml:space="preserve">
+      <value>Choose one result at random</value>
+  </data>
+  <data name="CustomCraftingsResultSelection_All" xml:space="preserve">
+      <value>Create all listed results</value>
+  </data>
+  <data name="CustomCraftingsCreate" xml:space="preserve">
+      <value>Create recipe</value>
+  </data>
+  <data name="CustomCraftingsCreated" xml:space="preserve">
+      <value>Created recipe “{0}” with mix number {1}.</value>
+  </data>
+  <data name="CustomCraftingsValidationFailed" xml:space="preserve">
+      <value>Enter a name, valid success rates, at least one required item and result, and valid item levels.</value>
+  </data>
+  <data name="CustomCraftingsFormInvalid" xml:space="preserve">
+      <value>One or more values are invalid. Check the highlighted fields and try again.</value>
+  </data>
+  <data name="CustomCraftingsNoAvailableNumber" xml:space="preserve">
+      <value>This NPC has no available mix number.</value>
+  </data>
+  <data name="CustomCraftingsRecipes" xml:space="preserve">
+      <value>Configured recipes</value>
+  </data>
+  <data name="CustomCraftingsNoRecipes" xml:space="preserve">
+      <value>No recipes are configured for this NPC.</value>
+  </data>
+  <data name="CustomCraftingsNumber" xml:space="preserve">
+      <value>Mix number</value>
+  </data>
+  <data name="CustomCraftingsHandler" xml:space="preserve">
+      <value>Handler</value>
+  </data>
+  <data name="CustomCraftingsRandomItem" xml:space="preserve">
+      <value>Random item</value>
+  </data>
+  <data name="CustomCraftingsReferencedResult" xml:space="preserve">
+      <value>Referenced item {0}</value>
+  </data>
+  <data name="CustomCraftingsAvailableRecipes" xml:space="preserve">
+      <value>Available recipes</value>
+  </data>
+  <data name="CustomCraftingsCreateRecipeTab" xml:space="preserve">
+      <value>Create a recipe</value>
+  </data>
+  <data name="CustomCraftingsLevelRange" xml:space="preserve">
+      <value>Item level</value>
+  </data>
+  <data name="CustomCraftingsRequiredOptionsShort" xml:space="preserve">
+      <value>Required options</value>
+  </data>
+  <data name="CustomCraftingsMinimumAmountShort" xml:space="preserve">
+      <value>Min amount</value>
+  </data>
+  <data name="CustomCraftingsMaximumAmountShort" xml:space="preserve">
+      <value>Max amount</value>
+  </data>
+  <data name="CustomCraftingsMinimumLevelShort" xml:space="preserve">
+      <value>Min level</value>
+  </data>
+  <data name="CustomCraftingsMaximumLevelShort" xml:space="preserve">
+      <value>Max level</value>
+  </data>
+  <data name="CustomCraftingsRequirementInvalid" xml:space="preserve">
+      <value>Select an item and enter valid amount and level ranges before adding it.</value>
+  </data>
+  <data name="CustomCraftingsResultInvalid" xml:space="preserve">
+      <value>Select an item and enter a valid level range and stack quantity or durability before adding it.</value>
+  </data>
+  <data name="CustomCraftingsAllRecipesTab" xml:space="preserve">
+      <value>All recipes</value>
+  </data>
+  <data name="CustomCraftingsNoRecipesAnywhere" xml:space="preserve">
+      <value>No recipes are configured for the available NPCs.</value>
+  </data>
+  <data name="CustomCraftingsDeleteConfirmation" xml:space="preserve">
+      <value>Delete recipe “{0}” from {1}?</value>
+  </data>
+  <data name="CustomCraftingsDeleted" xml:space="preserve">
+      <value>Recipe deleted.</value>
+  </data>
 </root>
