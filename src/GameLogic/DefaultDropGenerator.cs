@@ -1,4 +1,4 @@
-﻿// <copyright file="DefaultDropGenerator.cs" company="MUnique">
+// <copyright file="DefaultDropGenerator.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -491,14 +491,23 @@ public class DefaultDropGenerator : IDropGenerator
 
         for (int i = existingOptionCount; i < maximumOptions; i++)
         {
+            // The drop group may allow more options than the item definition provides. Add each option
+            // only once and stop when there is nothing left, instead of searching forever.
+            var remainingOptions = excellentOptions.PossibleOptions
+                .Where(possibleOption => item.ItemOptions.All(link => !object.Equals(link.ItemOption, possibleOption)))
+                .ToList();
+            if (remainingOptions.Count == 0)
+            {
+                break;
+            }
+
             if (i == 0)
             {
                 // The first option is always added without a chance
-                var newOption = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
+                var newOption = remainingOptions.SelectRandom(this._randomizer);
                 if (newOption is not null)
                 {
                     item.ItemOptions.Add(new ItemOptionLink { ItemOption = newOption });
-                    existingOptionCount++;
                 }
 
                 continue;
@@ -506,12 +515,7 @@ public class DefaultDropGenerator : IDropGenerator
 
             if (this._randomizer.NextRandomBool(addChance))
             {
-                var newOption = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
-                while (item.ItemOptions.Any(o => object.Equals(o.ItemOption, newOption)))
-                {
-                    newOption = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
-                }
-
+                var newOption = remainingOptions.SelectRandom(this._randomizer);
                 if (newOption is not null)
                 {
                     item.ItemOptions.Add(new ItemOptionLink { ItemOption = newOption });

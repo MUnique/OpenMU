@@ -287,6 +287,26 @@ public class DropGeneratorTest
         Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(2));
     }
 
+    /// <summary>
+    /// Tests that a drop group which allows more excellent options than the item definition provides
+    /// doesn't try to add more than the available ones.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropStopsAtAvailableOptions()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 2);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+        dropGroup.ExcellentOptionsMaximumOptionsPerItem = 5;
+        dropGroup.ExcellentOptionsAddChance = 1f;
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(2));
+    }
+
     private IRandomizer GetRandomizerWithIncreasingInts()
     {
         var randomizer = new Mock<IRandomizer>();
