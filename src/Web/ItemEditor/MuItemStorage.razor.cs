@@ -1,4 +1,4 @@
-// <copyright file="MuItemStorage.razor.cs" company="MUnique">
+﻿// <copyright file="MuItemStorage.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -151,6 +151,11 @@ public partial class MuItemStorage
             viewModel.StartIndex,
             viewModel.Rows);
         this.StateHasChanged();
+    }
+
+    private string GetPreviewValidityClass()
+    {
+        return this._previewIsValid ? "valid" : "invalid";
     }
 
     private string GetPreviewStyle((int Column, int Row) position, Item item)

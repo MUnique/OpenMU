@@ -39,7 +39,7 @@
             @if (this._previewPosition is { } previewPosition && this.DraggedItem is { } draggedItem)
             {
                 <div
-                    class=@($"item-drop-preview {(this._previewIsValid ? "valid" : "invalid")}")
+                    class=@($"item-drop-preview {this.GetPreviewValidityClass()}")
                     style="@this.GetPreviewStyle(previewPosition, draggedItem)"
                     aria-hidden="true"></div>
             }
