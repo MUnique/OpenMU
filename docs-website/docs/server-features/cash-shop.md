@@ -225,6 +225,14 @@ sell the card.
 While the plugin of a special item is deactivated, its packages can't be bought,
 and bought items stay in the storage until the plugin is active again.
 
+### Invitation to Santa Village
+
+The Invitation to Santa Village can be used ten times. Each use warps the
+player to the safezone of the Santa Village. It isn't used up when the player
+is already there, or when the map is deactivated. The target map can be changed
+in the configuration of the plugin *Invitation to Santa Village Consume
+Handler* on the **Plugins** page.
+
 ### Lucky item tickets
 
 The ten lucky item tickets (1st and 2nd Lucky Armor, Pants, Helm, Gloves and

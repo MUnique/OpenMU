@@ -97,6 +97,12 @@ internal static class BotMiniGameHandler
             return false;
         }
 
+        if (BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(definition.Entrance?.Map) == true)
+        {
+            reason = "its map is forbidden for bots";
+            return false;
+        }
+
         if (definition.RequiresMasterClass && bot.SelectedCharacter?.CharacterClass?.IsMasterClass is not true)
         {
             reason = "it has not evolved into a master class yet";

@@ -13,6 +13,11 @@ using MUnique.OpenMU.Interfaces;
 public class Gates : InitializerBase
 {
     /// <summary>
+    /// The area of the spawn gate of the santa village, where the invitation to the santa village warps the player to.
+    /// </summary>
+    internal static readonly (byte X1, byte Y1, byte X2, byte Y2) SantaVillageSpawnGate = (221, 23, 225, 27);
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Gates" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -277,7 +282,7 @@ public class Gates : InitializerBase
         // Kanturu
         targetGates.Add(138, this.CreateExitGate(maps[37], 19, 217, 21, 219, 0, true));
         targetGates.Add(141, this.CreateExitGate(maps[37], 205, 36, 208, 41, 0));
-        targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0));
+        targetGates.Add(334, this.CreateExitGate(maps[37], 67, 183, 74, 189, 0));
         targetGates.Add(126, this.CreateExitGate(maps[37], 17, 219, 21, 220, 0));
         targetGates.Add(132, this.CreateExitGate(maps[37], 85, 89, 86, 92, 0));
 
@@ -430,6 +435,11 @@ public class Gates : InitializerBase
         targetGates.Add(330, this.CreateExitGate(maps[66], 134, 69, 139, 74, 0, true));
         targetGates.Add(331, this.CreateExitGate(maps[67], 106, 60, 111, 62, 0, true));
         targetGates.Add(332, this.CreateExitGate(maps[68], 92, 13, 97, 17, 0, true));
+
+        // Santa Village
+        // The original gate list contains no gate for it, because the invitation to the santa village warps the player there directly.
+        // So, this gate doesn't get a number. Its area consists of walkable coordinates of the safezone.
+        this.CreateExitGate(maps[62], SantaVillageSpawnGate.X1, SantaVillageSpawnGate.Y1, SantaVillageSpawnGate.X2, SantaVillageSpawnGate.Y2, 0, true);
 
         // Loren Market
         targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));

@@ -46,8 +46,8 @@ public class SkillListTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var skillList = player.SkillList as SkillList;
-        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass)).ConfigureAwait(false);
-        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(NonQualifiedItemSkillId)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(player, QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(player, NonQualifiedItemSkillId)).ConfigureAwait(false);
 
         Assert.That(skillList!.ContainsSkill(QualifiedItemSkillId), Is.True);
         Assert.That(skillList!.ContainsSkill(NonQualifiedItemSkillId), Is.False);
@@ -60,7 +60,7 @@ public class SkillListTest
     public async ValueTask ItemSkillRemovedAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        var item = this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
+        var item = this.CreateItemWithSkill(player, QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
         item.Durability = 1;
         await player.Inventory!.AddItemAsync(0, item).ConfigureAwait(false);
         var skillList = new SkillList(player);
@@ -77,8 +77,8 @@ public class SkillListTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var characterClass = player.SelectedCharacter!.CharacterClass;
-        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
-        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(player, QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(player, QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
         var skillList = new SkillList(player);
 
         Assert.That(await skillList.RemoveItemSkillAsync(QualifiedItemSkillId).ConfigureAwait(false), Is.True);
@@ -118,7 +118,7 @@ public class SkillListTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.SelectedCharacter!.LearnedSkills.Add(this.CreateSkillEntry(QualifiedItemSkillId));
-        var item = this.CreateItemWithSkill(QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
+        var item = this.CreateItemWithSkill(player, QualifiedItemSkillId, player.SelectedCharacter!.CharacterClass);
         item.Durability = 1;
         await player.Inventory!.AddItemAsync(0, item).ConfigureAwait(false);
         var skillList = new SkillList(player);
@@ -278,8 +278,8 @@ public class SkillListTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var characterClass = player.SelectedCharacter!.CharacterClass;
-        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
-        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(0, this.CreateItemWithSkill(player, QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
+        await player.Inventory!.AddItemAsync(1, this.CreateItemWithSkill(player, QualifiedItemSkillId, characterClass)).ConfigureAwait(false);
         var skillList = new SkillList(player);
         var availableEntry = skillList.GetSkill(QualifiedItemSkillId)!;
         availableEntry.Attributes = new SkillAttributeSystem(availableEntry, [], player.Attributes!);
@@ -317,7 +317,7 @@ public class SkillListTest
         Assert.That(powerUpChanged, Is.False, "The released power-up should no longer follow the attributes of the character.");
     }
 
-    private Item CreateItemWithSkill(ushort skillId, CharacterClass? qualifiedClass = null)
+    private Item CreateItemWithSkill(Player player, ushort skillId, CharacterClass? qualifiedClass = null)
     {
         var itemDefinition = new Mock<ItemDefinition>();
         itemDefinition.SetupAllProperties();
@@ -334,15 +334,14 @@ public class SkillListTest
         itemDefinition.Object.Height = 1;
         itemDefinition.Object.Width = 1;
         itemDefinition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+        itemDefinition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
 
-        var item = new Item
-        {
-            HasSkill = true,
-            Definition = itemDefinition.Object,
+        var item = player.PersistenceContext.CreateNew<Item>();
+        item.HasSkill = true;
+        item.Definition = itemDefinition.Object;
 
-            // A broken item (durability 0) doesn't grant its skill.
-            Durability = 1,
-        };
+        // A broken item (durability 0) doesn't grant its skill.
+        item.Durability = 1;
         return item;
     }
 

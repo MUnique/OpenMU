@@ -60,6 +60,9 @@ internal class EventTicketItems : InitializerBase
         // Free tickets of the in-game shop, which allow to enter an event of any level:
         this.CreateFreeTicketItems();
 
+        // Santa Village:
+        this.CreateSantaVillageInvitation();
+
         // Imperial Guardian
         var scrapOfPaper = this.CreateEventItem(101, 14, 1, 1, LocalizedString.FromResource(() => ItemNames.SuspiciousScrapOfPaper), false, 0, 32);
         scrapOfPaper.Durability = 5;
@@ -207,6 +210,23 @@ internal class EventTicketItems : InitializerBase
         CreateIfMissing(61, LocalizedString.FromResource(() => ItemNames.IllusionTempleFreeTicket));
         CreateIfMissing(121, LocalizedString.FromResource(() => ItemNames.ChaosCastleFreeTicket));
         return createdItems;
+    }
+
+    /// <summary>
+    /// Creates the invitation to the santa village, if it doesn't exist yet. It warps the player to the
+    /// santa village, and like in the client, its durability is the number of usages, up to ten.
+    /// </summary>
+    /// <returns>The created item, if it was created.</returns>
+    internal ItemDefinition? CreateSantaVillageInvitation()
+    {
+        if (this.GameConfiguration.Items.Any(item => item is { Group: 13, Number: 66 }))
+        {
+            return null;
+        }
+
+        var invitation = this.CreateEventItem(66, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.InvitationToSantaVillage), false);
+        invitation.Durability = 10;
+        return invitation;
     }
 
     private ItemDefinition CreateEventItem(byte number, byte group, byte width, byte height, LocalizedString name, bool dropsFromMonsters, byte maxItemLevel = 0, params byte[] dropLevels)
