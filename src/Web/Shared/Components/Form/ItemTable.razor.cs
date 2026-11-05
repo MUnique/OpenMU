@@ -93,7 +93,8 @@ public partial class ItemTable<TItem>
         this._isInlineEditable = this._isEditable && isMemberOfAggregate && this.ValueExpression!.ScaffoldColumn();
         this._isAddingSupported = !isMemberOfAggregate;
         this._isCreatingSupported = isMemberOfAggregate;
-        this._isStartingCollapsed = this.Value is not null && this.Value.Count > this._searchThreshold;
+        this._isStartingCollapsed = this.Value is { Count: > 0 } value
+                                    && (value.Count > this._searchThreshold || this.ValueExpression!.IsCollapsedByDefault());
         this._isCollapsed = this._isStartingCollapsed;
     }
 
