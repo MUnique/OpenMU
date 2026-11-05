@@ -1,4 +1,4 @@
-// <copyright file="DefaultDropGenerator.cs" company="MUnique">
+﻿// <copyright file="DefaultDropGenerator.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -176,8 +176,9 @@ public class DefaultDropGenerator : IDropGenerator
     /// </summary>
     /// <param name="monsterLevel">The monster level, if it's a monster drop.</param>
     /// <param name="possibleItems">The possible items, if the drop is from an item box (e.g. box of kundun).</param>
+    /// <param name="dropGroup">The drop group, which may override the chance and the maximum number of excellent options.</param>
     /// <returns>A random excellent item.</returns>
-    protected Item? GenerateRandomExcellentItem(int monsterLevel = 0, ICollection<ItemDefinition>? possibleItems = null)
+    protected Item? GenerateRandomExcellentItem(int monsterLevel = 0, ICollection<ItemDefinition>? possibleItems = null, DropItemGroup? dropGroup = null)
     {
         if (monsterLevel < this._excellentItemDropLevelDelta && possibleItems is null)
         {
@@ -196,7 +197,7 @@ public class DefaultDropGenerator : IDropGenerator
 
         item.HasSkill = item.CanHaveSkill(); // every excellent item got skill
 
-        this.AddRandomExcOptions(item);
+        this.AddRandomExcOptions(item, dropGroup);
         item.Durability = item.GetMaximumDurabilityOfOnePiece();
         return item;
     }
@@ -361,7 +362,7 @@ public class DefaultDropGenerator : IDropGenerator
         var item = selectedGroup.ItemType switch
         {
             SpecialItemType.Ancient => this.GenerateRandomAncient(),
-            SpecialItemType.Excellent => this.GenerateRandomExcellentItem(possibleItems: possibleItems),
+            SpecialItemType.Excellent => this.GenerateRandomExcellentItem(possibleItems: possibleItems, dropGroup: selectedGroup),
             _ => this.GenerateRandomItem(possibleItems),
         };
 
@@ -471,7 +472,7 @@ public class DefaultDropGenerator : IDropGenerator
         }
     }
 
-    private void AddRandomExcOptions(Item item)
+    private void AddRandomExcOptions(Item item, DropItemGroup? dropGroup)
     {
         var excellentOptions = item.Definition!.PossibleItemOptions.FirstOrDefault(
             o => o.PossibleOptions.Any(p => object.Equals(p.OptionType, ItemOptionTypes.Excellent)));
@@ -481,9 +482,14 @@ public class DefaultDropGenerator : IDropGenerator
             return;
         }
 
+        // A drop source, like a specific level of the Box of Kundun, can override the chance and the
+        // maximum count of its excellent options. Otherwise, the values of the item definition apply.
+        var maximumOptions = Math.Max(0, dropGroup?.ExcellentOptionsMaximumOptionsPerItem ?? excellentOptions.MaximumOptionsPerItem);
+        var addChance = dropGroup?.ExcellentOptionsAddChance ?? excellentOptions.AddChance;
+
         var existingOptionCount = item.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent));
 
-        for (int i = existingOptionCount; i < excellentOptions.MaximumOptionsPerItem; i++)
+        for (int i = existingOptionCount; i < maximumOptions; i++)
         {
             if (i == 0)
             {
@@ -498,7 +504,7 @@ public class DefaultDropGenerator : IDropGenerator
                 continue;
             }
 
-            if (this._randomizer.NextRandomBool(excellentOptions.AddChance))
+            if (this._randomizer.NextRandomBool(addChance))
             {
                 var newOption = excellentOptions.PossibleOptions.SelectRandom(this._randomizer);
                 while (item.ItemOptions.Any(o => object.Equals(o.ItemOption, newOption)))
@@ -557,7 +563,7 @@ public class DefaultDropGenerator : IDropGenerator
         return selectedGroup.ItemType switch
         {
             SpecialItemType.Ancient => this.GenerateRandomAncient(),
-            SpecialItemType.Excellent => this.GenerateRandomExcellentItem(monsterLevel),
+            SpecialItemType.Excellent => this.GenerateRandomExcellentItem(monsterLevel, dropGroup: selectedGroup),
             SpecialItemType.RandomItem => this.GenerateRandomItem(monsterLevel, false),
             SpecialItemType.SocketItem => this.GenerateRandomItem(monsterLevel, true),
             _ => null,
@@ -603,3 +609,5 @@ public class DefaultDropGenerator : IDropGenerator
                  select it).ToList();
     }
 }
+
+

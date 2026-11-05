@@ -8213,5 +8213,32 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
                 return ResourceManager.GetString("MoneyRateMissing", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Excellent option chance (%).
+        /// </summary>
+        public static string ExcellentOptionsChance {
+            get {
+                return ResourceManager.GetString("ExcellentOptionsChance", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum excellent options per item.
+        /// </summary>
+        public static string ExcellentOptionsMaximumOptionsPerItem {
+            get {
+                return ResourceManager.GetString("ExcellentOptionsMaximumOptionsPerItem", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Empty means that the value of the excellent option definition of the item applies..
+        /// </summary>
+        public static string ExcellentOptionsHint {
+            get {
+                return ResourceManager.GetString("ExcellentOptionsHint", resourceCulture);
+            }
+        }
     }
 }

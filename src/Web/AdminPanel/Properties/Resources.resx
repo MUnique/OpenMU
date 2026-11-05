@@ -2716,4 +2716,13 @@
   <data name="MoneyRateMissing" xml:space="preserve">
     <value>The configuration has no global "Money Drop Amount Rate" attribute value, so the money rate can't be edited here. Add it in the full configuration under "Global base attribute values".</value>
   </data>
+  <data name="ExcellentOptionsChance" xml:space="preserve">
+    <value>Excellent option chance (%)</value>
+  </data>
+  <data name="ExcellentOptionsMaximumOptionsPerItem" xml:space="preserve">
+    <value>Maximum excellent options per item</value>
+  </data>
+  <data name="ExcellentOptionsHint" xml:space="preserve">
+    <value>Empty means that the value of the excellent option definition of the item applies. The first option is always added without a chance.</value>
+  </data>
 </root>
