@@ -36,67 +36,105 @@ public class ResetCharacterAction
     /// </summary>
     public async ValueTask ResetCharacterAsync()
     {
+        ResetParameter? resetParameter = await this.GetParametersToResetAsync().ConfigureAwait(false);
+        if (resetParameter is null)
+        {
+            return;
+        }
+
+        this.UpdatePlayer(resetParameter.Value);
+        this.UpdateStats(resetParameter.Value);
+
+        await this.HandlePostResetAsync(resetParameter.Value).ConfigureAwait(false);
+    }
+
+    private async ValueTask<ResetParameter?> GetParametersToResetAsync()
+    {
         var resetFeature = this._player.GameContext.FeaturePlugIns.GetPlugIn<ResetFeaturePlugIn>();
         if (resetFeature is null)
         {
             await this.ShowMessageAsync(nameof(PlayerMessage.ResetNotEnabled)).ConfigureAwait(false);
-            return;
-        }
-
-        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
-        {
-            await this.ShowMessageAsync(nameof(PlayerMessage.CantResetWithOpenedWindows)).ConfigureAwait(false);
-            return;
-        }
-
-        if (this._player.Attributes is null || this._player.SelectedCharacter is null)
-        {
-            await this.ShowMessageAsync(nameof(PlayerMessage.NotEnteredTheGame)).ConfigureAwait(false);
-            return;
+            return null;
         }
 
         var configuration = resetFeature.Configuration;
         if (configuration is null)
         {
             await this.ShowMessageAsync(nameof(PlayerMessage.ResetNotConfigured)).ConfigureAwait(false);
-            return;
+            return null;
         }
 
-        var resetProgression = ResetProgressionCalculator.Calculate(this.GetResetCount(), (int)this._player.Attributes[Stats.PointsPerReset], configuration);
-
-        if (this._player.Level < configuration.RequiredLevel)
+        if (!await this.ValidatePlayerAsync(configuration).ConfigureAwait(false))
         {
-            await this.ShowMessageAsync(nameof(PlayerMessage.RequiredLevelForReset), configuration.RequiredLevel).ConfigureAwait(false);
-            return;
+            return null;
         }
 
-        if (configuration.ResetLimit > 0 && resetProgression.NextResetCount > configuration.ResetLimit)
+        var resetProgression = ResetProgressionCalculator.Calculate(this.GetResetCount(), (int)this._player.Attributes![Stats.PointsPerReset], configuration);
+        if (!await this.ValidateResetProgressionAsync(configuration, resetProgression).ConfigureAwait(false))
         {
-            await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
-            return;
+            return null;
         }
 
-        if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
+        return new ResetParameter
         {
-            return;
-        }
+            NextResetCount = resetProgression.NextResetCount,
+            LevelAfterReset = configuration.LevelAfterReset,
+            ReplacePointsPerReset = configuration.ReplacePointsPerReset,
+            TotalPointsAfterReset = resetProgression.TotalPointsAfterReset,
+            PointsForReset = resetProgression.PointsForReset,
+            MoveHome = configuration.MoveHome,
+            LogOut = configuration.LogOut,
+            ResetStats = configuration.ResetStats,
+        };
+    }
 
-        this._player.Attributes[Stats.Resets] = resetProgression.NextResetCount;
-        this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
-        this._player.SelectedCharacter.Experience = 0;
-        this.UpdateStats(configuration, resetProgression);
-        if (configuration.MoveHome)
+    private async ValueTask<bool> ValidatePlayerAsync(ResetConfiguration configuration)
+    {
+        string? messageKey;
+        object? arg = null;
+        if (this._player.PlayerState.CurrentState != PlayerState.EnteredWorld && this._npc is null)
         {
-            await this.MoveHomeAsync().ConfigureAwait(false);
+            messageKey = nameof(PlayerMessage.CantResetWithOpenedWindows);
         }
-
-        if (configuration.LogOut)
+        else if (this._player.Attributes is null || this._player.SelectedCharacter is null)
         {
-            await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
+            messageKey = nameof(PlayerMessage.NotEnteredTheGame);
+        }
+        else if (this._player.Level < configuration.RequiredLevel)
+        {
+            messageKey = nameof(PlayerMessage.RequiredLevelForReset);
+            arg = configuration.RequiredLevel;
         }
         else
         {
-            await this.UpdateClientStatsAsync(configuration).ConfigureAwait(false);
+            messageKey = null;
+        }
+
+        if (messageKey is null)
+        {
+            return true;
+        }
+        else
+        {
+            await this.ShowMessageAsync(messageKey, arg).ConfigureAwait(false);
+            return false;
+        }
+    }
+
+    private async ValueTask<bool> ValidateResetProgressionAsync(ResetConfiguration configuration, ResetProgression resetProgression)
+    {
+        if (configuration.ResetLimit > 0 && resetProgression.NextResetCount > configuration.ResetLimit)
+        {
+            await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
+            return false;
+        }
+        else if (!await this.TryConsumeResetCostsAsync(configuration, resetProgression).ConfigureAwait(false))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -177,22 +215,46 @@ public class ResetCharacterAction
         return requiredItems;
     }
 
-    private void UpdateStats(ResetConfiguration configuration, ResetProgression resetProgression)
+    private void UpdatePlayer(ResetParameter resetParameter)
     {
-        if (configuration.ResetStats)
+        this._player.Attributes![Stats.Resets] = resetParameter.NextResetCount;
+        this._player.Attributes[Stats.Level] = resetParameter.LevelAfterReset;
+        this._player.SelectedCharacter!.Experience = 0;
+    }
+
+    private void UpdateStats(ResetParameter resetParameter)
+    {
+        if (resetParameter.ResetStats)
         {
             this._player.SelectedCharacter!.CharacterClass!.StatAttributes
                 .Where(s => s.IncreasableByPlayer)
                 .ForEach(s => this._player.Attributes![s.Attribute] = s.BaseValue);
         }
 
-        if (configuration.ReplacePointsPerReset)
+        if (resetParameter.ReplacePointsPerReset)
         {
-            this._player.SelectedCharacter!.LevelUpPoints = resetProgression.TotalPointsAfterReset;
+            this._player.SelectedCharacter!.LevelUpPoints = resetParameter.TotalPointsAfterReset;
         }
         else
         {
-            this._player.SelectedCharacter!.LevelUpPoints += resetProgression.PointsForReset;
+            this._player.SelectedCharacter!.LevelUpPoints += resetParameter.PointsForReset;
+        }
+    }
+
+    private async ValueTask HandlePostResetAsync(ResetParameter resetParameter)
+    {
+        if (resetParameter.MoveHome)
+        {
+            await this.MoveHomeAsync().ConfigureAwait(false);
+        }
+
+        if (resetParameter.LogOut)
+        {
+            await this._logoutAction.LogoutAsync(this._player, LogoutType.BackToCharacterSelection).ConfigureAwait(false);
+        }
+        else
+        {
+            await this.UpdateClientStatsAsync(resetParameter.ResetStats).ConfigureAwait(false);
         }
     }
 
@@ -209,9 +271,9 @@ public class ResetCharacterAction
         }
     }
 
-    private async ValueTask UpdateClientStatsAsync(ResetConfiguration configuration)
+    private async ValueTask UpdateClientStatsAsync(bool resetStats)
     {
-        if (configuration.ResetStats)
+        if (resetStats)
         {
             await this._player.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
         }
