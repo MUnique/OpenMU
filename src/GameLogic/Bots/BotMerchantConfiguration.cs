@@ -89,6 +89,18 @@ public class BotMerchantConfiguration
     public TimeSpan TimeBetweenShifts { get; set; } = TimeSpan.FromHours(2);
 
     /// <summary>
+    /// Gets or sets after how many market shifts without a buyer a good leaves the store and is sold to
+    /// an NPC, making room for fresh goods.
+    /// </summary>
+    /// <remarks>
+    /// There are no discounts: players who know that the price drops would never buy at the first one.
+    /// The count is kept while the game server runs.
+    /// </remarks>
+    [Range(1, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description))]
+    public int UnsoldShiftsUntilNpc { get; set; } = 3;
+
+    /// <summary>
     /// Gets or sets the names of the stores, separated by commas; every shift draws one of them.
     /// </summary>
     /// <remarks>

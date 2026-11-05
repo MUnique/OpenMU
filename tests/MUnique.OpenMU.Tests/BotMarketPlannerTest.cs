@@ -220,6 +220,33 @@ public class BotMarketPlannerTest
         Assert.That(BotMarketPlanner.CountPricedGoods(bot), Is.EqualTo(2));
     }
 
+    /// <summary>
+    /// The bot buys nothing, so its income is removed: the zen above what it had when it opened the store,
+    /// and the items paid for its goods. What it had before stays.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask IncomeIsRemovedAsync()
+    {
+        var bot = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        bot.Money = 1000;
+        var ownJewel = CreateItem();
+        Assert.That(await bot.Inventory!.AddItemAsync(ownJewel).ConfigureAwait(false), Is.True);
+        var shift = CreateShift();
+        shift.MoneyAtOpen = bot.Money;
+        shift.ItemsAtOpen = bot.Inventory.Items.ToHashSet();
+        shift.IsStoreOpened = true;
+
+        bot.Money += 500_000;
+        var paidJewel = CreateItem();
+        Assert.That(await bot.Inventory.AddItemAsync(paidJewel).ConfigureAwait(false), Is.True);
+        await BotMerchandise.RemoveIncomeAsync(bot, shift).ConfigureAwait(false);
+
+        Assert.That(bot.Money, Is.EqualTo(1000));
+        Assert.That(bot.Inventory.Items, Does.Contain(ownJewel));
+        Assert.That(bot.Inventory.Items, Does.Not.Contain(paidJewel));
+    }
+
     private static BotMarketShift CreateShift()
         => new(new GameMapDefinition { Number = BotMerchantConfiguration.DefaultMarketMapNumber }, Arrival, "Good stuff", Now, Now.AddMinutes(60));
 

@@ -2851,6 +2851,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to After this many market shifts without a buyer, a good leaves the store and is sold to an NPC. There are no discounts..
+        /// </summary>
+        public static string BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsold shifts until NPC.
+        /// </summary>
+        public static string BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lets server-side bots sell the goods of their personal store on the market map (Loren Market) for a while, then go back hunting..
         /// </summary>
         public static string BotMerchantPlugIn_Description {

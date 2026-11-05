@@ -2204,4 +2204,6 @@
   <data name="BotMerchantConfiguration_CreationCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Creation: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
   <data name="BotMerchantConfiguration_CreationPrice_Name" xml:space="preserve"><value>Jewel of Creation: price</value></data>
   <data name="BotMerchantConfiguration_CreationPrice_Description" xml:space="preserve"><value>The price of one Jewel of Creation, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name" xml:space="preserve"><value>Unsold shifts until NPC</value></data>
+  <data name="BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description" xml:space="preserve"><value>After this many market shifts without a buyer, a good leaves the store and is sold to an NPC. There are no discounts.</value></data>
 </root>

@@ -2009,6 +2009,10 @@ internal sealed class BotNavigator : AsyncDisposable
         await MarketStoreOpenAction.OpenStoreAsync(this._player, shift.StoreName).ConfigureAwait(false);
         if (this._player.ShopStorage?.StoreOpen ?? false)
         {
+            // What the bot has now is its own - every zen and item which comes in later is income (see
+            // BotMerchandise.RemoveIncomeAsync).
+            shift.MoneyAtOpen = this._player.Money;
+            shift.ItemsAtOpen = this._player.Inventory?.Items.ToHashSet() ?? [];
             shift.LastSaleUtc = DateTime.UtcNow;
             shift.IsStoreOpened = true;
             this._player.Logger.LogDebug("Bot '{Name}' opened its store '{Store}' at {Stall}.", this._player.Name, shift.StoreName, shift.Stall);
@@ -2035,13 +2039,20 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Closes the personal store and removes the shift, as it runs inside the MU Helper tick.
+    /// Closes the personal store, removes the last income, retires the goods which found no buyer for
+    /// too long and removes the shift, as it runs inside the MU Helper tick.
     /// </summary>
     private async ValueTask CloseMarketStoreAsync(BotMarketShift shift)
     {
         if (this._player.ShopStorage?.StoreOpen ?? false)
         {
             await MarketStoreCloseAction.CloseStoreAsync(this._player).ConfigureAwait(false);
+        }
+
+        if (shift.IsStoreOpened)
+        {
+            await BotMerchandise.RemoveIncomeAsync(this._player, shift).ConfigureAwait(false);
+            await BotMerchandise.RetireUnsoldGoodsAsync(this._player).ConfigureAwait(false);
         }
 
         if (ReferenceEquals(this._player.MarketShift, shift))
