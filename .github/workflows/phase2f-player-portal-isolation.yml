@@ -313,17 +313,64 @@ jobs:
             echo "PROBE label=shared_bridge_host_port result=unavailable reason=no_network_gateway"
           fi
 
+          parse_default_route() {
+            python3 -c '
+          import sys
+
+          lines = [line.split() for line in sys.stdin if line.strip()]
+          if not lines:
+              print("invalid")
+              sys.exit(2)
+          header = lines[0]
+          try:
+              destination_index = header.index("Destination")
+              mask_index = header.index("Mask")
+          except ValueError:
+              print("invalid")
+              sys.exit(2)
+          for fields in lines[1:]:
+              if max(destination_index, mask_index) >= len(fields):
+                  print("invalid")
+                  sys.exit(2)
+              destination = fields[destination_index].upper()
+              mask = fields[mask_index].upper()
+              if destination == "00000000" and mask == "00000000":
+                  print("present")
+                  sys.exit(0)
+          print("absent")
+          '
+          }
+
+          route_header='Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT'
+          default_route_fixture="$route_header
+          eth0 00000000 0102A8C0 0003 0 0 0 00000000 0 0 0"
+          gateway_zero_fixture="$route_header
+          eth0 0002A8C0 00000000 0001 0 0 0 00FFFFFF 0 0 0"
+          destination_zero_fixture="$route_header
+          eth0 00000000 0102A8C0 0001 0 0 0 00FFFFFF 0 0 0"
+          mask_zero_fixture="$route_header
+          eth0 0002A8C0 0102A8C0 0001 0 0 0 00000000 0 0 0"
+          [[ "$(printf '%s\n' "$default_route_fixture" | parse_default_route)" == "present" ]]
+          [[ "$(printf '%s\n' "$gateway_zero_fixture" | parse_default_route)" == "absent" ]]
+          [[ "$(printf '%s\n' "$destination_zero_fixture" | parse_default_route)" == "absent" ]]
+          [[ "$(printf '%s\n' "$mask_zero_fixture" | parse_default_route)" == "absent" ]]
+          echo "ROUTE_PARSER_SYNTHETIC=pass (Destination and Mask jointly identify the default route)"
+
           default_route_status() {
             local service="$1"
             local container_id="$2"
             local route=""
+            local route_table=""
             local command_exit=0
-            route="$(docker run --rm --network "container:$container_id" busybox:1.37.0 sh -c 'if grep -q "[[:space:]]00000000[[:space:]]" /proc/net/route; then echo present; else echo absent; fi' 2>/dev/null)" || command_exit=$?
+            route_table="$(docker run --rm --network "container:$container_id" busybox:1.37.0 cat /proc/net/route 2>/dev/null)" || command_exit=$?
+            if [[ "$command_exit" -eq 0 ]]; then
+              route="$(printf '%s\n' "$route_table" | parse_default_route)" || command_exit=$?
+            fi
             if [[ "$command_exit" -eq 0 && "$route" == "absent" ]]; then
               echo "EXTERNAL_ROUTE service=$service default_route=absent"
               return 0
             fi
-            echo "EXTERNAL_ROUTE service=$service default_route=${route:-unavailable} probe_exit=$command_exit"
+            echo "EXTERNAL_ROUTE service=$service default_route=${route:-unavailable} parser_exit=$command_exit"
             return 1
           }
           api_route_ok=0
