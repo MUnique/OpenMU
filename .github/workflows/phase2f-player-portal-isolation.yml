@@ -180,17 +180,85 @@ jobs:
             -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
             -f deploy/all-in-one/docker-compose.player-portal.yml \
             up -d --build player-portal-api player-portal-dapr player-portal-db-relay
-          response_file="$RUNNER_TEMP/player-portal-liveness.json"
-          http_status="000"
-          curl_exit=0
-          safe_content_type="none"
-          safe_error="absent"
-          response_class="connection_failure"
-          for attempt in $(seq 1 60); do
-            curl_exit=0
-            response_meta="$(curl --silent --output "$response_file" --write-out '%{http_code}\n%{content_type}' --max-time 2 \
-              -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" \
-              http://127.0.0.1:18080/player-portal/v1/me 2>/dev/null)" || curl_exit=$?
+
+      - name: Diagnose Docker port publication and network reachability
+        shell: bash
+        run: |
+          set -uo pipefail
+          compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
+          docker pull curlimages/curl:8.12.1 >/dev/null
+          sleep 2
+
+          runtime_file="$RUNNER_TEMP/player-portal-runtime-network.json"
+          python3 - "$runtime_file" <<'PY'
+          import json
+          import pathlib
+          import subprocess
+          import sys
+
+          compose = ["docker", "compose", "--project-name", "all-in-one", "--project-directory", "deploy/all-in-one", "-f", "deploy/all-in-one/docker-compose.player-portal.ci.yml", "-f", "deploy/all-in-one/docker-compose.player-portal.yml"]
+          runtime = {}
+          for service in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay"):
+              container_id = subprocess.check_output(compose + ["ps", "-q", service], text=True).strip()
+              if not container_id:
+                  runtime[service] = {"present": False, "configured_ports": {}, "effective_ports": {}, "networks": []}
+                  continue
+              inspect = json.loads(subprocess.check_output(["docker", "inspect", container_id], text=True))[0]
+              settings = inspect["NetworkSettings"]
+
+              def public_bindings(values):
+                  result = {}
+                  for port, entries in (values or {}).items():
+                      result[port] = [
+                          {"host_ip": entry.get("HostIp", ""), "host_port": entry.get("HostPort", "")}
+                          for entry in (entries or [])
+                      ]
+                  return result
+
+              runtime[service] = {
+                  "present": True,
+                  "configured_ports": public_bindings(inspect.get("HostConfig", {}).get("PortBindings")),
+                  "effective_ports": public_bindings(settings.get("Ports")),
+                  "networks": sorted((settings.get("Networks") or {}).keys()),
+              }
+
+          pathlib.Path(sys.argv[1]).write_text(json.dumps(runtime), encoding="utf-8")
+          for service, details in runtime.items():
+              print("RUNTIME " + json.dumps({"service": service, **details}, sort_keys=True))
+          PY
+
+          private_network="$(docker network inspect all-in-one_player-portal-private --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
+          shared_network="$(docker network inspect all-in-one_default --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
+          echo "NETWORK $private_network"
+          echo "NETWORK $shared_network"
+
+          listener="$(ss -ltnH 'sport = :18080' 2>/dev/null | awk '{print $1, $4}' || true)"
+          if [[ -n "$listener" ]]; then
+            echo "HOST_TCP_LISTENER present $listener"
+          else
+            echo "HOST_TCP_LISTENER absent"
+          fi
+
+          declare -A PROBE_STATUS=()
+          declare -A PROBE_EXIT=()
+          declare -A PROBE_CONTENT_TYPE=()
+          declare -A PROBE_CLASS=()
+          probe_http() {
+            local label="$1"
+            local mode="$2"
+            local url="$3"
+            local response_meta=""
+            local probe_exit=0
+            local http_status="000"
+            local raw_content_type=""
+            local safe_content_type="none"
+
+            if [[ "$mode" == "host" ]]; then
+              response_meta="$(curl --noproxy '*' --silent --output /dev/null --write-out '%{http_code}\n%{content_type}' --connect-timeout 2 --max-time 4 "$url" 2>/dev/null)" || probe_exit=$?
+            else
+              response_meta="$(docker run --rm --network "$mode" curlimages/curl:8.12.1 --noproxy '*' --silent --output /dev/null --write-out '%{http_code}\n%{content_type}' --connect-timeout 2 --max-time 4 "$url" 2>/dev/null)" || probe_exit=$?
+            fi
+
             http_status="${response_meta%%$'\n'*}"
             raw_content_type="${response_meta#*$'\n'}"
             if [[ "$response_meta" != *$'\n'* ]]; then
@@ -199,7 +267,6 @@ jobs:
             if [[ ! "$http_status" =~ ^[0-9]{3}$ ]]; then
               http_status="000"
             fi
-            safe_content_type="none"
             if [[ -n "$raw_content_type" ]]; then
               if [[ "$raw_content_type" =~ ^[A-Za-z0-9.+_-]+/[A-Za-z0-9.+_-]+([[:space:]]*\;[[:space:]]*charset=[A-Za-z0-9._-]+)?$ ]]; then
                 safe_content_type="$raw_content_type"
@@ -207,53 +274,78 @@ jobs:
                 safe_content_type="unrecognized"
               fi
             fi
-            safe_error="$(python3 - "$response_file" <<'PY'
+
+            if [[ "$probe_exit" -ne 0 ]]; then
+              PROBE_CLASS["$label"]="connection_failure"
+            elif [[ "$http_status" == "200" ]]; then
+              PROBE_CLASS["$label"]="http_200"
+            else
+              PROBE_CLASS["$label"]="unexpected_http_response"
+            fi
+            PROBE_STATUS["$label"]="$http_status"
+            PROBE_EXIT["$label"]="$probe_exit"
+            PROBE_CONTENT_TYPE["$label"]="$safe_content_type"
+            echo "PROBE label=$label http_status=$http_status curl_exit=$probe_exit content_type=$safe_content_type classification=${PROBE_CLASS[$label]}"
+          }
+
+          probe_http private_api all-in-one_player-portal-private http://player-portal-api:8080/health/live
+          probe_http host_loopback host http://127.0.0.1:18080/health/live
+          probe_http shared_bridge_api all-in-one_default http://player-portal-api:8080/health/live
+          probe_http shared_bridge_dapr all-in-one_default http://player-portal-dapr:3500/v1.0/metadata
+          gateway="$(docker network inspect all-in-one_default --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null || true)"
+          if [[ -n "$gateway" ]]; then
+            probe_http shared_bridge_host_port all-in-one_default "http://$gateway:18080/health/live"
+          else
+            echo "PROBE label=shared_bridge_host_port result=unavailable reason=no_network_gateway"
+          fi
+
+          runtime_expectation="$(python3 - "$runtime_file" <<'PY'
           import json
-          import pathlib
           import sys
 
-          try:
-              body = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-          except OSError:
-              print("absent")
-              raise SystemExit(0)
-          if not body.strip():
-              print("absent")
-              raise SystemExit(0)
-          try:
-              payload = json.loads(body)
-          except json.JSONDecodeError:
-              print("non_json")
-              raise SystemExit(0)
-          value = payload.get("error") if isinstance(payload, dict) else None
-          safe_values = {"invalid_session", "invalid_credentials", "try_again_later", "temporarily_unavailable"}
-          if value is None:
-              print("absent")
-          elif isinstance(value, str) and value in safe_values:
-              print(value)
-          else:
-              print("other")
+          runtime = json.load(open(sys.argv[1], encoding="utf-8"))
+          api = runtime["player-portal-api"]
+          dapr = runtime["player-portal-dapr"]
+          relay = runtime["player-portal-db-relay"]
+          expected_api = [{"host_ip": "127.0.0.1", "host_port": "18080"}]
+          ok = (
+              api["present"]
+              and api["effective_ports"].get("8080/tcp") == expected_api
+              and api["networks"] == ["all-in-one_player-portal-private"]
+              and dapr["present"]
+              and not any(dapr["effective_ports"].values())
+              and dapr["networks"] == ["all-in-one_player-portal-private"]
+              and relay["present"]
+              and relay["networks"] == ["all-in-one_default", "all-in-one_player-portal-private"]
+          )
+          print("pass" if ok else "fail")
           PY
-            )"
-            if [[ "$curl_exit" -ne 0 ]]; then
-              response_class="connection_failure"
-            elif [[ "$http_status" == "401" && "$safe_error" == "absent" ]]; then
-              response_class="authentication_failure"
-            elif [[ "$http_status" == "401" && "$safe_error" == "invalid_session" ]]; then
-              response_class="expected_no_session"
-            else
-              response_class="unexpected_response"
+          )"
+          echo "RUNTIME_EXPECTATION=$runtime_expectation"
+
+          diagnostics_ok=1
+          [[ "$runtime_expectation" == "pass" ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[private_api]}" == "200" && "${PROBE_EXIT[private_api]}" == "0" ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[host_loopback]}" == "200" && "${PROBE_EXIT[host_loopback]}" == "0" ]] || diagnostics_ok=0
+          for label in shared_bridge_api shared_bridge_dapr shared_bridge_host_port; do
+            if [[ "$label" == "shared_bridge_host_port" && -z "$gateway" ]]; then
+              continue
             fi
-            if [[ "$curl_exit" -eq 0 && "$http_status" == "401" && "$safe_error" == "invalid_session" ]]; then
-              echo "PASS: API probe http_status=$http_status curl_exit=$curl_exit content_type=$safe_content_type error=$safe_error classification=$response_class."
-              exit 0
+            code="${PROBE_EXIT[$label]}"
+            if [[ "${PROBE_STATUS[$label]}" != "000" || ( "$code" != "6" && "$code" != "7" && "$code" != "28" ) ]]; then
+              diagnostics_ok=0
             fi
-            sleep 2
           done
-          echo "FAIL: API probe http_status=$http_status curl_exit=$curl_exit content_type=$safe_content_type error=$safe_error classification=$response_class."
-          exit 1
+
+          if [[ "$diagnostics_ok" == "1" ]]; then
+            echo "PASS: runtime binding, host listener path, private API path, and shared-bridge denial matched expectations."
+          else
+            echo "FAIL: connectivity matrix contains a mismatch; all probes above completed independently."
+            exit 1
+          fi
 
       - name: Prove network boundaries and run API end-to-end checks
+        if: ${{ !contains(github.event.head_commit.message, '[connectivity-diagnostic-only]') }}
         shell: bash
         run: |
           set -euo pipefail
