@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("MUnique.OpenMU.GameLogic")]
 
 [assembly: InternalsVisibleTo("MUnique.OpenMU.Tests")]
+[assembly: InternalsVisibleTo("MUnique.OpenMU.Persistence.Initialization.Tests")]
