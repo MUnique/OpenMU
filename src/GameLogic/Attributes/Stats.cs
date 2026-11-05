@@ -1473,6 +1473,21 @@ public class Stats
     public static AttributeDefinition CanFly { get; } = new(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
 
     /// <summary>
+    /// Gets the hit shock chance attribute definition.
+    /// </summary>
+    public static AttributeDefinition HitShockChance { get; } = new(new Guid("049415D6-BFD5-4C0E-8CF1-41D6C41A2892"), "Hit Shock Chance", "The chance between 0 and 1 that a qualifying hit causes hit shock.");
+
+    /// <summary>
+    /// Gets the hit shock damage threshold attribute definition.
+    /// </summary>
+    public static AttributeDefinition HitShockDamageThreshold { get; } = new(new Guid("22F07E43-9A6A-4007-9EB4-D1B549F7FDC3"), "Hit Shock Damage Threshold", "The minimum damage required for a hit to cause hit shock.");
+
+    /// <summary>
+    /// Gets the is uniria equipped attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsUniriaEquipped { get; } = new(new Guid("68338496-A8C6-4884-B595-64390861E7E6"), "Is Uniria Equipped", string.Empty);
+
+    /// <summary>
     /// Gets the is dinorant equipped attribute definition.
     /// </summary>
     public static AttributeDefinition IsDinorantEquipped { get; } = new(new Guid("C52B5CA4-34BA-4E31-963B-E37089671C37"), "Is Dinorant Equipped", string.Empty);

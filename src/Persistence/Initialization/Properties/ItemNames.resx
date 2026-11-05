@@ -2334,4 +2334,7 @@
   <data name="TalismanOfChaosAssembly" xml:space="preserve">
     <value>Talisman of Chaos Assembly</value>
   </data>
+  <data name="InvitationToSantaVillage" xml:space="preserve">
+    <value>Invitation to Santa Village</value>
+  </data>
 </root>

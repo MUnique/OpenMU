@@ -43,13 +43,17 @@ public class ShowHitPlugIn : IShowHitPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowHitAsync(IAttackable target, HitInfo hitInfo)
     {
-        var targetId = target.GetId(this._player);
-        var remainingHealthDamage = hitInfo.HealthDamage;
-        var remainingShieldDamage = hitInfo.ShieldDamage;
-
         if (this._player.Connection is not { } connection)
         {
             return;
+        }
+
+        var remainingHealthDamage = hitInfo.HealthDamage;
+        var remainingShieldDamage = hitInfo.ShieldDamage;
+        var targetId = target.GetId(this._player);
+        if (hitInfo.TriggersHitShock == true)
+        {
+            targetId |= 0x8000;
         }
 
         // do/while, so that a 'miss' with 0 damage sends a message, too.

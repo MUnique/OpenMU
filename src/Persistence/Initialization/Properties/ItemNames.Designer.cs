@@ -5466,5 +5466,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("TalismanOfChaosAssembly", resourceCulture);
             }
         }
+
+        /// <summary>Gets InvitationToSantaVillage from the configuration name resources.</summary>
+        public static string InvitationToSantaVillage {
+            get {
+                return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
+            }
+        }
     }
 }

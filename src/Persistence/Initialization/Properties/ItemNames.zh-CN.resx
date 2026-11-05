@@ -2334,4 +2334,7 @@
   <data name="TalismanOfChaosAssembly" xml:space="preserve">
     <value>混沌合成符咒</value>
   </data>
+  <data name="InvitationToSantaVillage" xml:space="preserve">
+    <value>圣诞村邀请函</value>
+  </data>
 </root>

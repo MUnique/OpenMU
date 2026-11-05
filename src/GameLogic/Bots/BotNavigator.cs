@@ -200,6 +200,15 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private static readonly TimeSpan BuffCooldown = TimeSpan.FromMinutes(10);
 
+    /// <summary>
+    /// How often the bot considers a visit to the chaos machine (see <see cref="BotChaosMachineHandler"/>).
+    /// Short, so a bot standing at the goblin mixes its next piece right away; planning is cheap.
+    /// </summary>
+    private static readonly TimeSpan ChaosMachineCheckInterval = TimeSpan.FromSeconds(30);
+
+    /// <summary>Cooldown after a chaos machine trip which came to nothing (no route, no warp there, or a refused mix).</summary>
+    private static readonly TimeSpan ChaosMachineCooldown = TimeSpan.FromMinutes(10);
+
     /// <summary>Minimum time between two cross-map warps, so a bot does not bounce between maps (a real player does not hop maps every minute either).</summary>
     private static readonly TimeSpan WarpCooldown = TimeSpan.FromMinutes(3);
 
@@ -282,6 +291,18 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>Target position of the current buff trip, or null, if there is none.</summary>
     private Point? _buffTarget;
+
+    /// <summary>Target position of the current chaos machine trip, or null, if there is none.</summary>
+    private Point? _chaosMachineTarget;
+
+    /// <summary>The walkable tile next to the goblin the current chaos machine trip walks to.</summary>
+    private Point _chaosMachineStandingPoint;
+
+    /// <summary>
+    /// When the bot considers a chaos machine trip again; the first one is spread over the cooldown, so
+    /// a population does not crowd the goblin at once after a restart.
+    /// </summary>
+    private DateTime _nextChaosMachineCheckUtc = DateTime.UtcNow + (ChaosMachineCooldown * Rand.NextDouble());
 
     /// <summary>
     /// When the bot considers a buff trip again. Like the shopping check, the first one is spread over the
@@ -964,6 +985,13 @@ internal sealed class BotNavigator : AsyncDisposable
             return;
         }
 
+        // A chaos machine trip (upgrading a lucky +9..+14 piece at the goblin) is an errand like the
+        // others: it completes even for party members.
+        if (await this.TryChaosMachineTripAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
         // Armed revenge (a player killed this bot; it respawned on the same map) overrides the
         // whole normal routine below, including following the party leader: the bot marches back to
         // the place of its death. A leader on a revenge march still drags its followers along - the
@@ -1277,6 +1305,134 @@ internal sealed class BotNavigator : AsyncDisposable
     private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition)
     {
         await BotBuffHandler.TryRequestBuffAsync(this._player, map, buffNpcPosition).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drives a chaos machine trip: when the bot carries what an upgrade of a worn lucky piece needs (see
+    /// <see cref="BotChaosMachineHandler.PlanNextMix"/>), it heads to the goblin - warping to a map with
+    /// one first, through the regular warp action with its fare, when its own map has none (in Season Six
+    /// only Noria does) - walks up to it and mixes. The mix itself runs in the MU Helper tick, like the
+    /// trades and buffs (see <see cref="OfflinePlayer.PendingBotActions"/>).
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the trip consumed this tick.</returns>
+    private async ValueTask<bool> TryChaosMachineTripAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    {
+        if (this._chaosMachineTarget is { } target)
+        {
+            if (this._player.GetDistanceTo(target) > MerchantTalkRange)
+            {
+                if (!await this.TravelTowardAsync(map, this._chaosMachineStandingPoint, cancellationToken).ConfigureAwait(false))
+                {
+                    this._player.Logger.LogDebug("Bot '{Name}' gives up its chaos machine trip: no route to the goblin at {Target}.", this._player.Name, target);
+                    this._chaosMachineTarget = null;
+                    this._player.IsOnChaosMachineTrip = false;
+                    this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+                }
+
+                return true;
+            }
+
+            this._player.PendingBotActions.Enqueue(() => this.MixAtChaosMachineAsync(map, target));
+            this._chaosMachineTarget = null;
+            this._player.IsOnChaosMachineTrip = false;
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCheckInterval;
+            this._lastMoveUtc = DateTime.UtcNow; // standing at the goblin is not "stuck"
+            return true;
+        }
+
+        if (DateTime.UtcNow < this._nextChaosMachineCheckUtc)
+        {
+            return false;
+        }
+
+        this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCheckInterval;
+        if (BotChaosMachineHandler.GetChaosMachine(this._player.GameContext.Configuration) is not { } goblin
+            || BotChaosMachineHandler.PlanNextMix(this._player, goblin) is not { } plan)
+        {
+            return false;
+        }
+
+        if (BotChaosMachineHandler.FindChaosMachinePosition(map) is not { } goblinPosition)
+        {
+            if (this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
+            {
+                // Just warped (e.g. to its hunting map): wait, rather than bouncing between maps.
+                return false;
+            }
+
+            if (this.TryGetChaosMachineWarp(plan.Price, out var warp))
+            {
+                this._travelPath = null;
+                this._hasDestination = false;
+                this._player.HuntingSpot = null;
+                this._lastWarpUtc = this._timeProvider.GetUtcNow();
+                this._nextChaosMachineCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
+                this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} for the chaos machine.", this._player.Name, warp.Gate?.Map?.Name);
+                await WarpAction.WarpToAsync(this._player, warp).ConfigureAwait(false);
+                return true;
+            }
+
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+            return false;
+        }
+
+        if (BotChaosMachineHandler.FindStandingPoint(map.Terrain, goblinPosition, MerchantTalkRange) is not { } standingPoint)
+        {
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+            return false;
+        }
+
+        // The goblin stands in town: when out in the field, warp to the map's safezone first.
+        if (!inSafezone
+            && map.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is { } townGate)
+        {
+            this._travelPath = null;
+            this._hasDestination = false;
+            await this._player.WarpToAsync(townGate).ConfigureAwait(false);
+        }
+
+        // The bot leaves its hunting ground for the trip; its claim would keep other bots off it meanwhile.
+        this._player.HuntingSpot = null;
+        this._chaosMachineTarget = goblinPosition;
+        this._chaosMachineStandingPoint = standingPoint;
+        this._player.IsOnChaosMachineTrip = true;
+        this._player.Logger.LogDebug("Bot '{Name}' heads to the chaos machine.", this._player.Name);
+        return true;
+    }
+
+    /// <summary>
+    /// Mixes at the chaos machine, as it runs inside the MU Helper tick (see <see cref="BotChaosMachineHandler.TryMixAsync"/>).
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="goblinPosition">The position of the chaos machine NPC.</param>
+    private async ValueTask MixAtChaosMachineAsync(GameMap map, Point goblinPosition)
+    {
+        if (!await BotChaosMachineHandler.TryMixAsync(this._player, map, goblinPosition).ConfigureAwait(false))
+        {
+            // A refused mix (e.g. the castle tax on top of the price) would fail the same way in 30 s.
+            this._nextChaosMachineCheckUtc = DateTime.UtcNow + ChaosMachineCooldown;
+        }
+    }
+
+    /// <summary>
+    /// Gets a warp the bot may take to a map where a chaos machine NPC stands, and can afford while
+    /// keeping the price of the mix - otherwise it arrives without the Zen to mix.
+    /// </summary>
+    /// <param name="mixPrice">The price of the planned mix.</param>
+    /// <param name="warp">The warp.</param>
+    /// <returns>True, if there is one.</returns>
+    private bool TryGetChaosMachineWarp(long mixPrice, [MaybeNullWhen(false)] out WarpInfo warp)
+    {
+        warp = this._player.GameContext.Configuration.Maps
+            .Where(m => m.MonsterSpawns.Any(s => s.MonsterDefinition is { } npc && BotChaosMachineHandler.IsChaosMachine(npc)))
+            .SelectMany(this.GetLegalWarps)
+            .Where(w => this._player.Money >= w.Costs + mixPrice)
+            .OrderBy(w => w.Costs)
+            .FirstOrDefault();
+        return warp is not null;
     }
 
     /// <summary>
@@ -2062,8 +2218,11 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {
-        if (this._player.SelectedCharacter is not { } character)
+        if (this._player.SelectedCharacter is not { } character
+            || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(mapDefinition) == true)
         {
+            // A map forbidden for bots has no legal warp at all: no hunting ground, no leader to follow
+            // there, no errand - and a bot which logged in on it treats it as illegal and leaves.
             return [];
         }
 
@@ -2134,6 +2293,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var homeMap = this._player.SelectedCharacter?.CharacterClass?.HomeMap;
         if (homeMap is null
             || homeMap.Number == this._player.CurrentMap?.Definition.Number
+            || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(homeMap) == true
             || homeMap.GetSafezoneGate() is not { } safezoneGate)
         {
             return false;

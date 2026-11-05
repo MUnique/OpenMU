@@ -31,12 +31,20 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-        var angel = this.CreatePet(0, LocalizedString.FromResource(() => ItemNames.GuardianAngel), 23, (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate), (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
+#pragma warning disable SA1117 // Parameters should be on same line or separete lines
+        var angel = this.CreatePet(0, LocalizedString.FromResource(() => ItemNames.GuardianAngel), 23,
+            (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate),
+            (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(angel);
-        var imp = this.CreatePet(1, LocalizedString.FromResource(() => ItemNames.Imp), 28, (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+        var imp = this.CreatePet(1, LocalizedString.FromResource(() => ItemNames.Imp), 28,
+            (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum), (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
+        var uniria = this.CreatePet(2, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25,
+            (Stats.IsUniriaEquipped, 1, AggregateType.AddRaw),
+            (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
+#pragma warning restore SA1117
     }
 
     private ItemDefinition CreatePet(byte number, LocalizedString name, int dropLevelAndLevelRequirement, params (AttributeDefinition, float, AggregateType)[] basePowerUps)

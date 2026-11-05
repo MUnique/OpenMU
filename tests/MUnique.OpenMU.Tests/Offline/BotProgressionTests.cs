@@ -16,6 +16,14 @@ using MUnique.OpenMU.GameLogic.Bots;
 [TestFixture]
 public class BotProgressionTests
 {
+    /// <summary>The Dark Wizard build of <see cref="BotProgression.GetStatWeights"/>.</summary>
+    private static readonly (AttributeDefinition Stat, int Weight)[] DarkWizardWeights =
+        [(Stats.BaseEnergy, 66), (Stats.BaseVitality, 22), (Stats.BaseAgility, 8), (Stats.BaseStrength, 4)];
+
+    /// <summary>The Dark Lord build of <see cref="BotProgression.GetStatWeights"/>.</summary>
+    private static readonly (AttributeDefinition Stat, int Weight)[] DarkLordWeights =
+        [(Stats.BaseStrength, 38), (Stats.BaseLeadership, 30), (Stats.BaseVitality, 22), (Stats.BaseAgility, 8), (Stats.BaseEnergy, 2)];
+
     /// <summary>
     /// Tests that the split assigns all points proportionally when nothing is capped.
     /// </summary>
@@ -63,6 +71,186 @@ public class BotProgressionTests
 
         Assert.That(result.Values.Sum(), Is.EqualTo(50));
         Assert.That(result.Values, Is.All.EqualTo(25));
+    }
+
+    /// <summary>
+    /// Tests that a bot which gets its points level-up by level-up (5 or 7 at a time) ends up with the
+    /// same build as one which gets them all at once: the small-weight stats used to round down to 0
+    /// on every level-up and stayed at the class base forever.
+    /// </summary>
+    /// <param name="pointsPerLevel">The points granted per level-up.</param>
+    /// <param name="useDarkLordBuild">True for the five-stat Dark Lord build, false for the Dark Wizard build.</param>
+    [TestCase(5, false)]
+    [TestCase(7, true)]
+    public void SplitPoints_LevelUpsOneByOne_MatchSplitAtOnce(int pointsPerLevel, bool useDarkLordBuild)
+    {
+        var weights = useDarkLordBuild ? DarkLordWeights : DarkWizardWeights;
+        const int levelUps = 399;
+
+        var oneByOne = LevelUp(weights, levelUps, pointsPerLevel);
+        var atOnce = BotProgression.SplitPoints(levelUps * pointsPerLevel, weights).ToDictionary(r => r.Stat, r => (long)r.Amount);
+
+        Assert.That(oneByOne.Values.Sum(), Is.EqualTo(levelUps * pointsPerLevel));
+        foreach (var (stat, _) in weights)
+        {
+            Assert.That(oneByOne[stat], Is.EqualTo(atOnce[stat]).Within(1), stat.Designation);
+            Assert.That(oneByOne[stat], Is.GreaterThan(0), stat.Designation);
+        }
+    }
+
+    /// <summary>
+    /// Tests that already invested points above a stat's share make it skip the split, so a bot whose
+    /// stats are off the build (e.g. a caster with no strength from the old rounding) is evened out.
+    /// </summary>
+    [Test]
+    public void SplitPoints_SkewedStats_AreEvenedOut()
+    {
+        var invested = new Dictionary<AttributeDefinition, long>
+        {
+            { Stats.BaseEnergy, 1000 },
+            { Stats.BaseVitality, 300 },
+        };
+
+        var result = BotProgression.SplitPoints(50, DarkWizardWeights, investedOf: s => invested.GetValueOrDefault(s))
+            .ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(50));
+        Assert.That(result.ContainsKey(Stats.BaseEnergy), Is.False);
+        Assert.That(result.ContainsKey(Stats.BaseVitality), Is.False);
+        Assert.That(result[Stats.BaseAgility], Is.GreaterThan(result[Stats.BaseStrength]));
+    }
+
+    /// <summary>
+    /// Tests that the pool of a reset which keeps the stats brings a skewed character to the build's
+    /// proportions of its whole investment, instead of adding a proportional slice on top of the skew.
+    /// </summary>
+    [Test]
+    public void SplitPoints_ResetKeepingStats_ReachesBuildProportions()
+    {
+        var invested = new Dictionary<AttributeDefinition, long>
+        {
+            { Stats.BaseEnergy, 1600 },
+            { Stats.BaseVitality, 400 },
+        };
+        const int resetPoints = 2000;
+
+        foreach (var (stat, amount) in BotProgression.SplitPoints(resetPoints, DarkWizardWeights, investedOf: s => invested.GetValueOrDefault(s)))
+        {
+            invested[stat] = invested.GetValueOrDefault(stat) + amount;
+        }
+
+        var total = invested.Values.Sum();
+        Assert.That(total, Is.EqualTo(1600 + 400 + resetPoints));
+        foreach (var (stat, weight) in DarkWizardWeights)
+        {
+            Assert.That(invested[stat], Is.EqualTo(total * weight / 100).Within(1), stat.Designation);
+        }
+    }
+
+    /// <summary>
+    /// Tests that the vitality target of a reset-meta server still holds when it is reached over
+    /// many level-ups: vitality stops at the target and its share flows into the rest of the build.
+    /// </summary>
+    [Test]
+    public void SplitPoints_LevelUpsUpToVitalityTarget_OverflowToOthers()
+    {
+        const long vitalityTarget = 100;
+
+        var result = LevelUp(DarkWizardWeights, 399, 5, (stat, invested) => stat == Stats.BaseVitality ? vitalityTarget - invested : long.MaxValue);
+
+        Assert.That(result[Stats.BaseVitality], Is.EqualTo(vitalityTarget));
+        Assert.That(result.Values.Sum(), Is.EqualTo(399 * 5));
+        Assert.That(result[Stats.BaseStrength], Is.GreaterThan(0));
+    }
+
+    /// <summary>
+    /// Tests that a leftover point which no share covers goes to the primary stat on a tie.
+    /// </summary>
+    [Test]
+    public void SplitPoints_TieGoesToPrimaryStat()
+    {
+        var weights = new[] { (Stats.BaseStrength, 50), (Stats.BaseAgility, 50) };
+
+        var result = BotProgression.SplitPoints(1, weights).Single();
+
+        Assert.That(result, Is.EqualTo((Stats.BaseStrength, 1)));
+    }
+
+    /// <summary>
+    /// Tests that the minimums (gear requirements) are served before the weighted split.
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumsAreServedFirst()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 100 } };
+
+        var result = BotProgression.SplitPoints(200, DarkWizardWeights, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(200));
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(100));
+        Assert.That(result[Stats.BaseEnergy], Is.GreaterThan(result.Where(r => r.Key != Stats.BaseEnergy && r.Key != Stats.BaseStrength).Sum(r => r.Value)));
+    }
+
+    /// <summary>
+    /// Tests that the points are shared out by what is missing when they don't cover all minimums.
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumsBeyondThePoints_AreSharedByWhatIsMissing()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 300 }, { Stats.BaseAgility, 100 } };
+
+        var result = BotProgression.SplitPoints(40, DarkWizardWeights, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(30));
+        Assert.That(result[Stats.BaseAgility], Is.EqualTo(10));
+    }
+
+    /// <summary>
+    /// Tests that already invested points count towards a minimum.
+    /// </summary>
+    [Test]
+    public void SplitPoints_InvestedPointsCountTowardsTheMinimum()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 100 } };
+        var invested = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 90 }, { Stats.BaseEnergy, 2000 } };
+
+        var result = BotProgression.SplitPoints(5, DarkWizardWeights, investedOf: s => invested.GetValueOrDefault(s), minimums: minimums)
+            .ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(5));
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(5));
+    }
+
+    /// <summary>
+    /// Tests that a stat outside the build gets its minimum and nothing beyond it: a Rage Fighter
+    /// invests no agility, yet a Brass Armor requires some.
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumOfStatOutsideTheBuild_GetsOnlyTheMinimum()
+    {
+        var weights = new[] { (Stats.BaseStrength, 45), (Stats.BaseVitality, 35), (Stats.BaseEnergy, 20) };
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseAgility, 50 } };
+
+        var result = BotProgression.SplitPoints(1000, weights, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result.Values.Sum(), Is.EqualTo(1000));
+        Assert.That(result[Stats.BaseAgility], Is.EqualTo(50));
+    }
+
+    /// <summary>
+    /// Tests that a minimum stays within the stat's capacity (a fun server's stat maximum).
+    /// </summary>
+    [Test]
+    public void SplitPoints_MinimumRespectsCapacity()
+    {
+        var minimums = new Dictionary<AttributeDefinition, long> { { Stats.BaseStrength, 100 } };
+        long CapacityOf(AttributeDefinition stat) => stat == Stats.BaseStrength ? 30 : long.MaxValue;
+
+        var result = BotProgression.SplitPoints(200, DarkWizardWeights, CapacityOf, minimums: minimums).ToDictionary(r => r.Stat, r => r.Amount);
+
+        Assert.That(result[Stats.BaseStrength], Is.EqualTo(30));
+        Assert.That(result.Values.Sum(), Is.EqualTo(200));
     }
 
     /// <summary>
@@ -484,5 +672,28 @@ public class BotProgressionTests
         {
             this.Requirements = new List<AttributeRequirement> { requirement };
         }
+    }
+
+    /// <summary>
+    /// Plays the given number of level-ups the way the bot does at runtime: each one splits only its
+    /// own points, knowing what was invested before.
+    /// </summary>
+    private static Dictionary<AttributeDefinition, long> LevelUp(
+        IReadOnlyList<(AttributeDefinition Stat, int Weight)> weights,
+        int levelUps,
+        int pointsPerLevel,
+        Func<AttributeDefinition, long, long>? capacityOf = null)
+    {
+        var invested = weights.ToDictionary(w => w.Stat, _ => 0L);
+        for (var level = 0; level < levelUps; level++)
+        {
+            Func<AttributeDefinition, long>? capacity = capacityOf is null ? null : s => capacityOf(s, invested[s]);
+            foreach (var (stat, amount) in BotProgression.SplitPoints(pointsPerLevel, weights, capacity, s => invested[s]))
+            {
+                invested[stat] += amount;
+            }
+        }
+
+        return invested;
     }
 }

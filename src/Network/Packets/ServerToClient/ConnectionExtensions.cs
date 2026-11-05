@@ -1046,7 +1046,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="headerCode">The header code.</param>
-    /// <param name="objectId">The object id.</param>
+    /// <param name="objectId">The object ID; its most significant bit indicates whether the target receives a hit shock.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="kind">The kind.</param>
     /// <param name="isRageFighterStreakHit">The is rage fighter streak hit.</param>
@@ -1094,9 +1094,9 @@ public static class ConnectionExtensions
     /// <param name="isRageFighterStreakFinalHit">The is rage fighter streak final hit.</param>
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
-    /// <param name="objectId">The object id.</param>
-    /// <param name="healthStatus">Gets or sets the status of the remaining health in fractions of 1/250.</param>
-    /// <param name="shieldStatus">Gets or sets the status of the remaining shield in fractions of 1/250.</param>
+    /// <param name="objectId">The object ID; its most significant bit indicates whether the target receives a hit shock.</param>
+    /// <param name="healthStatus">The status of the remaining health in fractions of 1/250.</param>
+    /// <param name="shieldStatus">The status of the remaining shield in fractions of 1/250.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="shieldDamage">The shield damage.</param>
     /// <remarks>
