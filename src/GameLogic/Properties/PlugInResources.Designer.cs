@@ -5406,6 +5406,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_MerchantLines_Description text.</summary>
         public static string BotChatConfiguration_MerchantLines_Description => ResourceManager.GetString("BotChatConfiguration_MerchantLines_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_MerchantWhisperReplies_Name text.</summary>
+        public static string BotChatConfiguration_MerchantWhisperReplies_Name => ResourceManager.GetString("BotChatConfiguration_MerchantWhisperReplies_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_MerchantWhisperReplies_Description text.</summary>
+        public static string BotChatConfiguration_MerchantWhisperReplies_Description => ResourceManager.GetString("BotChatConfiguration_MerchantWhisperReplies_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotChatConfiguration_CongratulationChancePercent_Name text.</summary>
         public static string BotChatConfiguration_CongratulationChancePercent_Name => ResourceManager.GetString("BotChatConfiguration_CongratulationChancePercent_Name", resourceCulture)!;
 

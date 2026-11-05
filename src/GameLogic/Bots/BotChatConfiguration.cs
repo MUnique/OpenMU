@@ -264,20 +264,20 @@ public class BotChatConfiguration
     public int KilledByPlayerChancePercent { get; set; } = 70;
 
     /// <summary>
-    /// Gets or sets how often a bot standing in a safezone may advertise like a merchant (see
-    /// <see cref="MerchantLines"/>), per game server.
+    /// Gets or sets how often a bot selling its goods on the market may advertise them (see
+    /// <see cref="MerchantLines"/> and <see cref="BotMerchantPlugIn"/>), per game server.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantTalkInterval_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantTalkInterval_Description))]
     public TimeSpan MerchantTalkInterval { get; set; } = TimeSpan.FromMinutes(10);
 
     /// <summary>
-    /// Gets or sets the chance, in percent, that a bot advertises when the interval is over. 0 by
-    /// default: the lines are meant for a merchant bot which doesn't exist yet - the conversations
-    /// (see <see cref="Conversations"/>) took the place of the lone small talk.
+    /// Gets or sets the chance, in percent, that a bot advertises when the interval is over. Only bots
+    /// behind their open store on the market advertise, so nothing happens while the
+    /// <see cref="BotMerchantPlugIn"/> is off.
     /// </summary>
     [Range(0, 100)]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantTalkChancePercent_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantTalkChancePercent_Description))]
-    public int MerchantTalkChancePercent { get; set; }
+    public int MerchantTalkChancePercent { get; set; } = 80;
 
     /// <summary>
     /// Gets or sets how often a human player may overhear a conversation of two bots near them (see
@@ -348,6 +348,20 @@ public class BotChatConfiguration
     [CollapsedByDefault]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_WhisperReplies_Name), Description = nameof(PlugInResources.BotChatConfiguration_WhisperReplies_Description))]
     public ICollection<BotChatReply> WhisperReplies { get; set; } = new List<BotChatReply>();
+
+    /// <summary>
+    /// Gets or sets the answers of a bot behind its open store on the market (see <see cref="BotMerchantPlugIn"/>)
+    /// to a whisper, or a mention of its name in the normal chat next to it, which asks what it sells: they
+    /// point to the store, which shows the goods and prices. Only a reply whose keyword matches is used,
+    /// before the <see cref="WhisperReplies"/>; any other message gets a usual answer. The keywords cover
+    /// those of the usual trade replies, so a merchant never answers that it has nothing to sell.
+    /// Placeholders as in <see cref="WhisperReplies"/>, and <c>{store}</c>.
+    /// </summary>
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [CollapsedByDefault]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_MerchantWhisperReplies_Name), Description = nameof(PlugInResources.BotChatConfiguration_MerchantWhisperReplies_Description))]
+    public ICollection<BotChatReply> MerchantWhisperReplies { get; set; } = new List<BotChatReply>();
 
     /// <summary>
     /// Gets or sets the typical words and letters by which a bot recognizes the language of a
@@ -567,9 +581,9 @@ public class BotChatConfiguration
     public ICollection<BotChatLine> KilledAgainLines { get; set; } = new List<BotChatLine>();
 
     /// <summary>
-    /// Gets or sets the lines a bot standing in a safezone advertises like a merchant, now and then
+    /// Gets or sets the lines a bot behind its open store on the market advertises with, now and then
     /// (see <see cref="MerchantTalkInterval"/>) - only when a player sees it.
-    /// Placeholders: <c>{level}</c>, <c>{map}</c>, <c>{location}</c>.
+    /// Placeholders: <c>{level}</c>, <c>{map}</c>, <c>{location}</c>, <c>{store}</c> (the name of its store).
     /// </summary>
     [MemberOfAggregate]
     [ScaffoldColumn(true)]
@@ -724,14 +738,12 @@ public class BotChatConfiguration
             ("you must be bored", "chyba się nudzisz"));
         Add(
             configuration.MerchantLines,
-            ("selling potions, cheap! {location}", "sprzedam potki, tanio! {location}"),
-            ("buying jewels of bless, whisper me", "kupię jewele bless, pisz pw"),
-            ("selling +9 weapons, good price, {location}", "sprzedam bronie +9, dobra cena, {location}"),
-            ("trade? whisper me, i'm at {location}", "handel? pisz pw, stoję w {location}"),
-            ("buying wings, paying well", "kupię skrzydła, dobrze płacę"),
-            ("jewels for sale, come to {location}", "jewele na sprzedaż, zapraszam do {location}"),
-            ("fresh apples and potions, {location}", "świeże jabłka i potki, {location}"),
-            ("selling chaos, bless and soul, cheap", "sprzedam chaos, bless i soul, tanio"));
+            ("selling my loot, take a look at {location}", "sprzedaję dropa, zajrzyj na {location}"),
+            ("check my store '{store}', good prices", "zajrzyj do sklepu '{store}', dobre ceny"),
+            ("store open at {location}, come and see", "sklep otwarty na {location}, zapraszam"),
+            ("good items for sale, {location}", "dobre itemy na sprzedaż, {location}"),
+            ("'{store}' is open, first come first served", "'{store}' otwarty, kto pierwszy ten lepszy"),
+            ("selling what i found today, {location}", "sprzedaję, co dziś wypadło, {location}"));
         Add(
             configuration.CongratulationLines,
             ("gz", "gz"),
@@ -911,6 +923,14 @@ public class BotChatConfiguration
             ("cya", "na razie"),
             ("ok, see you later", "ok, do później"),
             ("take care", "trzymaj się"));
+        AddMerchantReplies(
+            "sell, selling, wts, wtb, trade, price, how much, shop, store, buy, sprzedajesz, sprzedasz, co sprzedajesz, sprzedam, kupisz, handel, masz coś, masz cos, cena, za ile, ile za, ile chcesz, sklep, kupię, kupie",
+            ("check my store, everything's priced", "zajrzyj do sklepu, wszystko z cenami"),
+            ("click my shop, it's all there", "kliknij mój sklep, wszystko tam jest"),
+            ("have a look at '{store}' :)", "zerknij do '{store}' :)"),
+            ("prices are in the shop, no haggling", "ceny są w sklepie, nie targuję się"),
+            ("open my store, maybe something catches your eye", "otwórz sklep, może coś wpadnie w oko"),
+            ("all i sell is on the shelf, take a look", "co sprzedaję, to na półce, zobacz sam"));
         SetGesture(configuration.GreetingLines, BotChatGesture.Greeting);
         SetGesture(configuration.PartyJoinedLines, BotChatGesture.Salute);
         SetGesture(configuration.LevelMilestoneLines, BotChatGesture.Win);
@@ -964,6 +984,14 @@ public class BotChatConfiguration
             foreach (var text in texts)
             {
                 configuration.WhisperReplies.Add(new BotChatReply { Keywords = keywords, Text = Translated(text) });
+            }
+        }
+
+        void AddMerchantReplies(string keywords, params (string English, string Polish)[] texts)
+        {
+            foreach (var text in texts)
+            {
+                configuration.MerchantWhisperReplies.Add(new BotChatReply { Keywords = keywords, Text = Translated(text) });
             }
         }
 
