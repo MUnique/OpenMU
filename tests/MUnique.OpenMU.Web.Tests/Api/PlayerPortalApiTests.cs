@@ -123,7 +123,7 @@ public sealed class PlayerPortalApiTests
 
     /// <summary>Account data returned to a session is derived only from its stored owner ID.</summary>
     [Test]
-    public async Task SessionCannotReadAnotherAccountsCharactersAsync()
+    public async Task EachSessionReadsOnlyItsOwnAccountAndCharactersAsync()
     {
         await this._service.RegisterAsync(Registration("ownerone", "GamePass1")).ConfigureAwait(false);
         await this._service.RegisterAsync(Registration("ownertwo", "GamePass2")).ConfigureAwait(false);
@@ -146,6 +146,22 @@ public sealed class PlayerPortalApiTests
         Assert.That(response.Characters.Select(character => character.Name), Is.EqualTo(new[] { "OwnerHero" }));
         Assert.That(response.Characters.Single().Level, Is.EqualTo(75));
         Assert.That(response.Characters.Single().MasterLevel, Is.EqualTo(12));
+
+        var otherSession = this._sessions.Create(other!.GetId(), SessionLifetime);
+        var otherController = new PlayerPortalController(this._service, this._sessions)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
+        };
+        otherController.Request.Headers[PlayerPortalApiDefaults.SessionHeaderName] = otherSession.Token;
+        otherController.Request.QueryString = new QueryString($"?accountId={owner!.GetId()}");
+
+        var otherResult = await otherController.GetOwnAccountAsync(CancellationToken.None).ConfigureAwait(false);
+
+        var otherResponse = (PlayerAccountSnapshot)((OkObjectResult)otherResult).Value!;
+        Assert.That(otherResponse.LoginName, Is.EqualTo("ownertwo"));
+        Assert.That(otherResponse.Characters.Select(character => character.Name), Is.EqualTo(new[] { "OtherHero" }));
+        Assert.That(otherResponse.Characters.Single().Level, Is.EqualTo(250));
+        Assert.That(otherResponse.Characters.Single().MasterLevel, Is.EqualTo(40));
         Assert.That(typeof(PlayerPortalController).GetMethod(nameof(PlayerPortalController.GetOwnAccountAsync))!.GetParameters(), Has.Length.EqualTo(1));
     }
 

@@ -62,15 +62,25 @@ public sealed class PlayerPortalService(
             return (PlayerLoginStatus.InvalidCredentials, null, TimeSpan.Zero);
         }
 
-        var account = await context.GetAccountByLoginNameAsync(request.LoginName, cancellationToken).ConfigureAwait(false);
-        if (account is null || account.State != AccountState.Normal)
+        // Authentication only needs the account identifier. Loading the complete account graph here
+        // would require the portal database role to read character, storage, and grant tables.
+        var accountId = await context.GetAccountIdByLoginNameAsync(request.LoginName, cancellationToken).ConfigureAwait(false);
+        if (accountId is null)
+        {
+            return (PlayerLoginStatus.InvalidCredentials, null, TimeSpan.Zero);
+        }
+
+        // Recheck credentials and state after resolving the ID, so a concurrent account block or
+        // password change cannot create a session from stale authentication state.
+        var finalState = await context.AuthenticateAsync(request.LoginName, request.Password, cancellationToken).ConfigureAwait(false);
+        if (finalState != AccountState.Normal)
         {
             return (PlayerLoginStatus.InvalidCredentials, null, TimeSpan.Zero);
         }
 
         try
         {
-            return (PlayerLoginStatus.Authenticated, sessions.Create(account.GetId(), TimeSpan.FromMinutes(30)), TimeSpan.Zero);
+            return (PlayerLoginStatus.Authenticated, sessions.Create(accountId.Value, TimeSpan.FromMinutes(30)), TimeSpan.Zero);
         }
         catch (InvalidOperationException)
         {
@@ -85,28 +95,34 @@ public sealed class PlayerPortalService(
     {
         var configuration = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         using var context = persistence.CreateNewPlayerContext(configuration);
-        var account = await context.GetByIdAsync<Account>(ownerAccountId, cancellationToken).ConfigureAwait(false);
+        var account = await context.GetAccountOverviewAsync(
+            ownerAccountId,
+            LevelDefinitionId,
+            MasterLevelDefinitionId,
+            cancellationToken).ConfigureAwait(false);
         if (account is null || account.State != AccountState.Normal)
         {
             return null;
         }
 
+        var characterClasses = configuration.CharacterClasses?.ToDictionary(characterClass => characterClass.GetId()) ?? new Dictionary<Guid, CharacterClass>();
         var characters = account.Characters
-            .OrderBy(character => character.CharacterSlot)
-            .Select(character => new PlayerCharacterSnapshot(
-                character.Name,
-                character.CharacterClass?.Name.ToString(),
-                character.CharacterClass?.Number,
-                ReadStat(character, LevelDefinitionId),
-                ReadStat(character, MasterLevelDefinitionId)))
+            .Select(character =>
+            {
+                var characterClass = character.CharacterClassId is { } classId && characterClasses.TryGetValue(classId, out var configuredClass)
+                    ? configuredClass
+                    : null;
+                return new PlayerCharacterSnapshot(
+                    character.Name,
+                    characterClass?.Name.ToString(),
+                    characterClass?.Number,
+                    ReadStat(character.Level),
+                    ReadStat(character.MasterLevel));
+            })
             .ToArray();
 
         return new PlayerAccountSnapshot(account.LoginName, characters);
     }
 
-    private static int ReadStat(Character character, Guid definitionId)
-    {
-        var value = character.Attributes?.FirstOrDefault(attribute => attribute.Definition?.Id == definitionId)?.Value ?? 0;
-        return float.IsFinite(value) ? (int)Math.Clamp(value, 0, int.MaxValue) : 0;
-    }
+    private static int ReadStat(float value) => float.IsFinite(value) ? (int)Math.Clamp(value, 0, int.MaxValue) : 0;
 }

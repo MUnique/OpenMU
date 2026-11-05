@@ -13,8 +13,9 @@ using MUnique.OpenMU.Web.PlayerPortal.Api;
 
 var builder = DaprService.CreateBuilder("PlayerPortal", args);
 
-// Keep this private player API reachable only by a local Cloudflare Tunnel agent.
-builder.WebHost.UseUrls("http://127.0.0.1:8080");
+// Keep local execution on loopback; container deployments must opt in to their bind address.
+var bindUrl = Environment.GetEnvironmentVariable("PLAYER_PORTAL_BIND_URL");
+builder.WebHost.UseUrls(string.IsNullOrWhiteSpace(bindUrl) ? "http://127.0.0.1:8080" : bindUrl);
 builder.Services.AddPeristenceProvider()
     .AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
 builder.Services.AddPlayerPortalApi(builder.Configuration);

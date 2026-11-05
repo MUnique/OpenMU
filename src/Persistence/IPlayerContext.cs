@@ -200,6 +200,18 @@ public interface IPlayerContext : IContext
     /// <returns>The identifier of the account; Otherwise, null, if the account doesn't exist.</returns>
     ValueTask<Guid?> GetAccountIdByLoginNameAsync(string loginName, CancellationToken cancellationToken = default);
 
+    /// <summary>Reads a narrow account and character projection by the authenticated owner's account ID.</summary>
+    /// <param name="accountId">The account ID obtained from the authenticated session.</param>
+    /// <param name="levelAttributeId">The configured level attribute ID.</param>
+    /// <param name="masterLevelAttributeId">The configured master-level attribute ID.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The account projection, or <see langword="null"/> if the account does not exist.</returns>
+    ValueTask<AccountOverview?> GetAccountOverviewAsync(
+        Guid accountId,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Gets the status of a character, e.g. if it's a game master, without loading the account.
     /// </summary>

@@ -1,0 +1,322 @@
+name: Phase 2F player portal isolation
+
+on:
+  push:
+    branches:
+      - feat/openmu-player-api-2c
+    paths:
+      - .github/workflows/phase2f-player-portal-isolation.yml
+      - deploy/all-in-one/docker-compose.player-portal.yml
+      - deploy/all-in-one/docker-compose.player-portal.ci.yml
+      - deploy/all-in-one/docker-compose.yml
+      - deploy/all-in-one/player-portal/**
+      - src/Dapr/PlayerPortal.Host/**
+      - src/Persistence/AccountOverview.cs
+      - src/Persistence/EntityFramework/PlayerContext.cs
+      - src/Persistence/IPlayerContext.cs
+      - src/Persistence/InMemory/PlayerInMemoryContext.cs
+      - src/Web/PlayerPortal.Api/**
+      - tests/MUnique.OpenMU.Web.Tests/Api/PlayerPortalPostgreSqlTests.cs
+
+permissions:
+  contents: read
+
+jobs:
+  docker-isolation:
+    name: Disposable Docker Compose proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PLAYER_PORTAL_UID: "10001"
+      PLAYER_PORTAL_GID: "10001"
+
+    steps:
+      - name: Check out the test branch
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Generate synthetic credentials
+        shell: bash
+        run: |
+          set +x
+          worker_token="$(openssl rand -hex 32)"
+          dapr_token="$(openssl rand -hex 32)"
+          database_password="$(openssl rand -hex 32)"
+          account_password="$(openssl rand -hex 24)"
+          configuration_password="$(openssl rand -hex 24)"
+          for value in "$worker_token" "$dapr_token" "$database_password" "$account_password" "$configuration_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "PORTAL_CI_WORKER_TOKEN=$worker_token"
+            echo "PORTAL_CI_DAPR_TOKEN=$dapr_token"
+            echo "PORTAL_CI_POSTGRES_PASSWORD=$database_password"
+            echo "PORTAL_CI_ACCOUNT_PASSWORD=$account_password"
+            echo "PORTAL_CI_CONFIGURATION_PASSWORD=$configuration_password"
+          } >> "$GITHUB_ENV"
+
+      - name: Create ignored local secret files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib
+          directory = pathlib.Path("deploy/all-in-one/player-portal")
+          account_password = os.environ["PORTAL_CI_ACCOUNT_PASSWORD"]
+          configuration_password = os.environ["PORTAL_CI_CONFIGURATION_PASSWORD"]
+          relay = "player-portal-db-relay"
+          values = {
+              "connectionStrings": {
+                  "MUnique.OpenMU.Persistence.EntityFramework.AccountContext": f"Host={relay};Database=openmu;User Id=portal_account_ci;Password={account_password};",
+                  "MUnique.OpenMU.Persistence.EntityFramework.ConfigurationContext": f"Host={relay};Database=openmu;User Id=portal_config_ci;Password={configuration_password};",
+                  "MUnique.OpenMU.Persistence.EntityFramework.EntityDataContext": f"Host={relay};Database=openmu;User Id=portal_config_ci;Password={configuration_password};",
+              }
+          }
+          appsettings = {"PlayerPortalApi": {"WorkerToken": os.environ["PORTAL_CI_WORKER_TOKEN"]}}
+          files = {
+              directory / "secrets.json": json.dumps(values),
+              directory / "appsettings.Production.json": json.dumps(appsettings),
+              directory / "dapr-api-token.env": f"DAPR_API_TOKEN={os.environ['PORTAL_CI_DAPR_TOKEN']}\n",
+          }
+          for path, content in files.items():
+              path.write_text(content + "\n", encoding="utf-8")
+              path.chmod(0o600)
+          PY
+          sudo chown 10001:10001 \
+            deploy/all-in-one/player-portal/secrets.json \
+            deploy/all-in-one/player-portal/appsettings.Production.json
+
+      - name: Validate merged Compose without printing resolved configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/openmu-compose-base.json"
+          merged="$RUNNER_TEMP/openmu-compose-merged.json"
+          runtime="$RUNNER_TEMP/player-portal-compose-ci.json"
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.yml config --format json > "$base"
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml config --format json > "$merged"
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml config --format json > "$runtime"
+          python3 - "$base" "$merged" "$runtime" <<'PY'
+          import json, sys
+          base, merged, runtime = [json.load(open(path, encoding="utf-8")) for path in sys.argv[1:]]
+          for name, service in base["services"].items():
+              assert merged["services"].get(name) == service, f"existing service changed in merged config: {name}"
+          assert set(base["services"]) == {"nginx-80", "openmu-startup", "database"}
+          assert {"player-portal-api", "player-portal-dapr", "player-portal-db-relay"}.issubset(merged["services"])
+          api = merged["services"]["player-portal-api"]
+          dapr = merged["services"]["player-portal-dapr"]
+          relay = merged["services"]["player-portal-db-relay"]
+          assert len(api.get("ports", [])) == 1
+          assert api["ports"][0]["host_ip"] == "127.0.0.1" and api["ports"][0]["published"] == "18080"
+          assert not dapr.get("ports")
+          assert set(api["networks"]) == {"player-portal-private"}
+          assert set(dapr["networks"]) == {"player-portal-private"}
+          assert set(relay["networks"]) == {"default", "player-portal-private"}
+          assert runtime["services"]["database"]["ports"][0]["host_ip"] == "127.0.0.1"
+          print("PASS: Compose merge preserves nginx-80, openmu-startup, and database exactly; API/Dapr/relay networks and port bindings match the intended isolation.")
+          PY
+
+      - name: Build and run player portal unit regressions
+        run: >-
+          dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj
+          --configuration Release -p:ci=true
+          --filter FullyQualifiedName~PlayerPortalApiTests
+
+      - name: Create the isolated Docker network and PostgreSQL
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create all-in-one_default >/dev/null
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml up -d database
+          for attempt in $(seq 1 60); do
+            if docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+              -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+              -f deploy/all-in-one/docker-compose.player-portal.yml ps --status running --services | grep -qx database; then
+              if docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+                -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+                -f deploy/all-in-one/docker-compose.player-portal.yml exec -T database \
+                pg_isready -U portal_ci_admin -d openmu >/dev/null 2>&1; then
+                break
+              fi
+            fi
+            sleep 2
+          done
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml exec -T database \
+            pg_isready -U portal_ci_admin -d openmu >/dev/null
+
+      - name: Prepare the database schema and grants with synthetic data
+        shell: bash
+        run: |
+          set -euo pipefail
+          connection="Host=127.0.0.1;Port=55432;Database=openmu;User Id=portal_ci_admin;Password=$PORTAL_CI_POSTGRES_PASSWORD;"
+          OPENMU_TEST_PLAYER_PORTAL_POSTGRES="$connection" \
+          OPENMU_TEST_PLAYER_PORTAL_ACCOUNT_ROLE=portal_account_ci \
+          OPENMU_TEST_PLAYER_PORTAL_ACCOUNT_PASSWORD="$PORTAL_CI_ACCOUNT_PASSWORD" \
+          OPENMU_TEST_PLAYER_PORTAL_CONFIGURATION_ROLE=portal_config_ci \
+          OPENMU_TEST_PLAYER_PORTAL_CONFIGURATION_PASSWORD="$PORTAL_CI_CONFIGURATION_PASSWORD" \
+          OPENMU_TEST_PLAYER_PORTAL_KEEP_ROLES=true \
+          dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
+            --configuration Release -p:ci=true --no-build \
+            --filter FullyQualifiedName~PlayerPortalPostgreSqlTests
+
+      - name: Build and start API, Dapr, and the PostgreSQL relay
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml \
+            up -d --build player-portal-api player-portal-dapr player-portal-db-relay
+          response_file="$RUNNER_TEMP/player-portal-liveness.json"
+          for attempt in $(seq 1 60); do
+            status="$(curl --silent --output "$response_file" --write-out '%{http_code}' --max-time 2 \
+              -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" \
+              http://127.0.0.1:18080/player-portal/v1/me || true)"
+            if [[ "$status" == "401" ]] && python3 -c 'import json, sys; sys.exit(0 if json.load(open(sys.argv[1], encoding="utf-8")).get("error") == "invalid_session" else 1)' "$response_file"; then
+              echo "PASS: Worker-authenticated API request reached the controller and returned the expected no-session response."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "FAIL: API did not return the expected Worker-authenticated no-session response."
+          exit 1
+
+      - name: Prove network boundaries and run API end-to-end checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
+          docker pull curlimages/curl:8.12.1 >/dev/null
+          python3 - <<'PY'
+          import json, subprocess
+          services = {}
+          for name in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay"):
+              container = subprocess.check_output(["docker", "compose", "--project-name", "all-in-one", "--project-directory", "deploy/all-in-one", "-f", "deploy/all-in-one/docker-compose.player-portal.ci.yml", "-f", "deploy/all-in-one/docker-compose.player-portal.yml", "ps", "-q", name], text=True).strip()
+              assert container, f"missing container: {name}"
+              services[name] = json.loads(subprocess.check_output(["docker", "inspect", container], text=True))[0]
+          api, dapr, relay = (services[name] for name in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay"))
+          assert set(api["NetworkSettings"]["Networks"]) == {"all-in-one_player-portal-private"}
+          assert set(dapr["NetworkSettings"]["Networks"]) == {"all-in-one_player-portal-private"}
+          assert set(relay["NetworkSettings"]["Networks"]) == {"all-in-one_default", "all-in-one_player-portal-private"}
+          bindings = api["NetworkSettings"]["Ports"]["8080/tcp"]
+          assert len(bindings) == 1 and bindings[0]["HostIp"] == "127.0.0.1" and bindings[0]["HostPort"] == "18080"
+          assert not any(binding.get("HostPort") for values in dapr["NetworkSettings"]["Ports"].values() if values for binding in values)
+          print("PASS: runtime networks isolate API/Dapr to the private bridge; relay alone is dual-homed; API binding is loopback-only; Dapr has no published ports.")
+          PY
+          check_unreachable() {
+            local url="$1"
+            local code
+            set +e
+            docker run --rm --network all-in-one_default curlimages/curl:8.12.1 \
+              --silent --show-error --output /dev/null --connect-timeout 2 --max-time 3 "$url" >/dev/null 2>&1
+            code=$?
+            set -e
+            if [[ "$code" == "6" || "$code" == "7" || "$code" == "28" ]]; then
+              echo "PASS: shared-bridge probe could not reach the protected service."
+            else
+              echo "FAIL: shared-bridge probe unexpectedly reached a protected service."
+              exit 1
+            fi
+          }
+          gateway="$(docker network inspect all-in-one_default --format '{{(index .IPAM.Config 0).Gateway}}')"
+          check_unreachable http://player-portal-api:8080/health/live
+          check_unreachable http://player-portal-dapr:3500/v1.0/metadata
+          check_unreachable "http://$gateway:18080/health/live"
+          scratch="$RUNNER_TEMP/player-portal-e2e"
+          mkdir -p "$scratch"
+          login="ci$(openssl rand -hex 3)"
+          password="SyntheticPass1"
+          printf '{"loginName":"%s","password":"%s"}\n' "$login" "$password" > "$scratch/credentials.json"
+          printf '{"loginName":"%s","password":"WrongSynthetic1"}\n' "$login" > "$scratch/wrong-credentials.json"
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H 'Content-Type: application/json' --data-binary "@$scratch/credentials.json" \
+            http://127.0.0.1:18080/player-portal/v1/accounts)"
+          [[ "$code" == "401" ]] || { echo "FAIL: request without Worker authentication returned HTTP $code"; exit 1; }
+          echo "PASS: request without Worker authentication returned HTTP 401."
+          code="$(curl --silent --output "$scratch/response.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/credentials.json" http://127.0.0.1:18080/player-portal/v1/accounts)"
+          [[ "$code" == "202" ]] || { echo "FAIL: synthetic registration HTTP $code"; exit 1; }
+          persisted="$("${compose[@]}" exec -T database psql -U portal_ci_admin -d openmu -Atc "SELECT count(*) FROM data.\"Account\" WHERE \"LoginName\" = '$login'")"
+          [[ "$persisted" == "1" ]] || { echo "FAIL: synthetic account persistence was not confirmed."; exit 1; }
+          echo "PASS: registration returned HTTP 202 and one matching account row exists in disposable PostgreSQL via the relay path."
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/wrong-credentials.json" http://127.0.0.1:18080/player-portal/v1/sessions)"
+          [[ "$code" == "401" ]] || { echo "FAIL: incorrect-password login returned HTTP $code"; exit 1; }
+          echo "PASS: incorrect-password login returned HTTP 401."
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H 'Authorization: Bearer invalid-synthetic-worker-token' -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/credentials.json" http://127.0.0.1:18080/player-portal/v1/accounts)"
+          [[ "$code" == "401" ]] || { echo "FAIL: invalid Worker credential returned HTTP $code"; exit 1; }
+          code="$(curl --silent --output "$scratch/login.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/credentials.json" http://127.0.0.1:18080/player-portal/v1/sessions)"
+          [[ "$code" == "201" ]] || { echo "FAIL: valid login returned HTTP $code"; exit 1; }
+          session="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["token"])' "$scratch/login.json")"
+          code="$(curl --silent --output "$scratch/me.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H "X-Player-Session: $session" \
+            http://127.0.0.1:18080/player-portal/v1/me)"
+          [[ "$code" == "200" ]] || { echo "FAIL: authenticated /me returned HTTP $code"; exit 1; }
+          python3 - "$scratch/me.json" "$login" <<'PY'
+          import json, sys
+          profile = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert profile["loginName"] == sys.argv[2]
+          assert isinstance(profile["characters"], list)
+          print("PASS: authenticated /me returned the session owner and a character list.")
+          PY
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" \
+            http://127.0.0.1:18080/player-portal/v1/me)"
+          [[ "$code" == "401" ]] || { echo "FAIL: /me without a player session returned HTTP $code"; exit 1; }
+          echo "PASS: /me without a player session returned HTTP 401."
+
+      - name: Print sanitized service logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          set +x
+          compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
+          "${compose[@]}" logs --no-color > "$RUNNER_TEMP/player-portal-logs.txt" 2>&1 || true
+          python3 - "$RUNNER_TEMP/player-portal-logs.txt" <<'PY'
+          import os, pathlib, sys
+          data = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          secrets = [os.environ.get(key, "") for key in (
+              "PORTAL_CI_WORKER_TOKEN",
+              "PORTAL_CI_DAPR_TOKEN",
+              "PORTAL_CI_POSTGRES_PASSWORD",
+              "PORTAL_CI_ACCOUNT_PASSWORD",
+              "PORTAL_CI_CONFIGURATION_PASSWORD",
+          )]
+          secrets.extend(("SyntheticPass1", "WrongSynthetic1"))
+          for secret in secrets:
+              if secret:
+                  data = data.replace(secret, "[REDACTED]")
+          sys.stdout.write(data[-12000:])
+          PY
+
+      - name: Stop and remove all disposable containers and volumes
+        if: always()
+        shell: bash
+        run: |
+          set +x
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml down --volumes --remove-orphans || true
+          docker network rm all-in-one_default >/dev/null 2>&1 || true
+          rm -f deploy/all-in-one/player-portal/secrets.json \
+            deploy/all-in-one/player-portal/appsettings.Production.json \
+            deploy/all-in-one/player-portal/dapr-api-token.env
