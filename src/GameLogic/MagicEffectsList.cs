@@ -250,7 +250,6 @@ public class MagicEffectsList : AsyncDisposable
     public async ValueTask ClearAllEffectsProducingSpecificStatAsync(AttributeDefinition stat)
     {
         var effects = this.GetActiveEffectsSnapshot();
-
         foreach (var effect in effects)
         {
             if (effect.PowerUpElements.Any(p => p.Target == stat))
@@ -270,7 +269,6 @@ public class MagicEffectsList : AsyncDisposable
         ArgumentOutOfRangeException.ThrowIfNegative(seconds);
 
         var effects = this.GetActiveEffectsSnapshot();
-
         foreach (var effect in effects)
         {
             if (effect.PowerUpElements.Any(p => p.Target == stat))
