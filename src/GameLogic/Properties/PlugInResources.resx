@@ -1990,11 +1990,13 @@
   <data name="BotConversation_Where_Name" xml:space="preserve"><value>Where</value></data>
   <data name="BotConversation_Where_Description" xml:space="preserve"><value>Where the bots may have this conversation: Town (both in a safezone), Hunting (both outside of it) or Anywhere.</value></data>
   <data name="BotChatConfiguration_MerchantTalkInterval_Name" xml:space="preserve"><value>Merchant adverts: interval</value></data>
-  <data name="BotChatConfiguration_MerchantTalkInterval_Description" xml:space="preserve"><value>How often a bot standing in a safezone may advertise like a merchant, per game server. Only when a player sees it.</value></data>
+  <data name="BotChatConfiguration_MerchantTalkInterval_Description" xml:space="preserve"><value>How often a bot selling its goods on the market (Bot merchants plugin) may advertise them, per game server. Only when a player sees it.</value></data>
   <data name="BotChatConfiguration_MerchantTalkChancePercent_Name" xml:space="preserve"><value>Merchant adverts: chance (%)</value></data>
-  <data name="BotChatConfiguration_MerchantTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot advertises when the interval is over. 0 (default) = never: the lines are meant for a future merchant bot.</value></data>
+  <data name="BotChatConfiguration_MerchantTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot advertises when the interval is over. Only bots behind their open store on the market advertise, so nothing happens while the Bot merchants plugin is off.</value></data>
   <data name="BotChatConfiguration_MerchantLines_Name" xml:space="preserve"><value>Merchant adverts</value></data>
-  <data name="BotChatConfiguration_MerchantLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot standing in a safezone, like a merchant advertising. Off by default. Placeholders: {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_MerchantLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot behind its open store on the market. Placeholders: {level}, {map}, {location}, {store} (the name of its store).</value></data>
+  <data name="BotChatConfiguration_MerchantWhisperReplies_Name" xml:space="preserve"><value>Merchant whisper replies</value></data>
+  <data name="BotChatConfiguration_MerchantWhisperReplies_Description" xml:space="preserve"><value>Answers of a bot behind its open store on the market to a whisper, or a mention of its name in the normal chat next to it, which asks what it sells ("what are you selling?"): they point to the store. Only a reply whose keyword matches is used, before the whisper replies; any other message gets a usual answer. Placeholders as in the whisper replies, and {store} (the name of its store).</value></data>
   <data name="BotChatConfiguration_CongratulationChancePercent_Name" xml:space="preserve"><value>Congratulation chance (%)</value></data>
   <data name="BotChatConfiguration_CongratulationChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot congratulates a player on a level-up or a reset in the normal chat ("gz"). 0 = never.</value></data>
   <data name="BotChatConfiguration_CongratulationCooldown_Name" xml:space="preserve"><value>Congratulation cooldown per player</value></data>

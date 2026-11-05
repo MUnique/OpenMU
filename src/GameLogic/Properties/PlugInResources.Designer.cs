@@ -979,7 +979,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Said now and then in the normal chat by a bot standing in a safezone, like a merchant advertising. Off by default. Placeholders: {level}, {map}, {location}..
+        ///   Looks up a localized string similar to Said now and then in the normal chat by a bot behind its open store on the market. Placeholders: {level}, {map}, {location}, {store} (the name of its store)..
         /// </summary>
         public static string BotChatConfiguration_MerchantLines_Description {
             get {
@@ -997,7 +997,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Chance that a bot advertises when the interval is over. 0 (default) = never: the lines are meant for a future merchant bot..
+        ///   Looks up a localized string similar to Chance that a bot advertises when the interval is over. Only bots behind their open store on the market advertise, so nothing happens while the Bot merchants plugin is off..
         /// </summary>
         public static string BotChatConfiguration_MerchantTalkChancePercent_Description {
             get {
@@ -1015,7 +1015,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to How often a bot standing in a safezone may advertise like a merchant, per game server. Only when a player sees it..
+        ///   Looks up a localized string similar to How often a bot selling its goods on the market (Bot merchants plugin) may advertise them, per game server. Only when a player sees it..
         /// </summary>
         public static string BotChatConfiguration_MerchantTalkInterval_Description {
             get {
@@ -1029,6 +1029,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string BotChatConfiguration_MerchantTalkInterval_Name {
             get {
                 return ResourceManager.GetString("BotChatConfiguration_MerchantTalkInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers of a bot behind its open store on the market to a whisper, or a mention of its name in the normal chat next to it, which asks what it sells (&quot;what are you selling?&quot;): they point to the store. Only a reply whose keyword matches is used, before the whisper replies; any other message gets a usual answer. Placeholders as in the whisper replies, and {store} (the name of its store)..
+        /// </summary>
+        public static string BotChatConfiguration_MerchantWhisperReplies_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantWhisperReplies_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merchant whisper replies.
+        /// </summary>
+        public static string BotChatConfiguration_MerchantWhisperReplies_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantWhisperReplies_Name", resourceCulture);
             }
         }
         

@@ -279,7 +279,7 @@ public class BotChatPlugIn
             || !IsBot(receiver)
             || sender is OfflinePlayer
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || this.PickReplyFor(sender, configuration.WhisperReplies, message) is not { } line
+            || (this.PickMerchantReplyFor(receiver, sender, message, configuration) ?? this.PickReplyFor(sender, configuration.WhisperReplies, message)) is not { } line
             || !this.GetThrottle(receiver.GameContext).TryReserveWhisperReply(receiver, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
@@ -458,7 +458,7 @@ public class BotChatPlugIn
 
         if (mentionedBots.FirstOrDefault(IsAvailable) is not { } bot
             || !Rand.NextRandomBool(configuration.WhisperReplyChancePercent)
-            || this.PickReplyFor(sender, configuration.WhisperReplies, message) is not { } line
+            || (this.PickMerchantReplyFor(bot, sender, message, configuration) ?? this.PickReplyFor(sender, configuration.WhisperReplies, message)) is not { } line
             || !this.GetThrottle(bot.GameContext).TryReserveWhisperReply(bot, DateTime.UtcNow, configuration.WhisperReplyCooldown))
         {
             return;
@@ -1011,6 +1011,7 @@ public class BotChatPlugIn
             ["map"] = culture => map?.GetTranslation(culture) ?? string.Empty,
             ["location"] = culture => BotChatComposer.FormatLocation(map?.GetTranslation(culture), position),
             ["wings"] = GetWingsText(GetWings(bot)),
+            ["store"] = _ => (bot as OfflinePlayer)?.MarketShift?.StoreName ?? string.Empty,
         };
     }
 
@@ -1106,6 +1107,15 @@ public class BotChatPlugIn
 
         return line;
     }
+
+    /// <summary>
+    /// Picks the answer of a bot behind its open store on the market to a message which asks what it sells;
+    /// <c>null</c> for any other bot or message.
+    /// </summary>
+    private BotChatReply? PickMerchantReplyFor(Player bot, Player listener, string message, BotChatConfiguration configuration)
+        => bot is OfflinePlayer { MarketShift: { IsStoreOpened: true, IsEnding: false } }
+            ? this.PickReplyFor(listener, configuration.MerchantWhisperReplies, message, requireKeyword: true)
+            : null;
 
     /// <summary>
     /// Picks the reply to the player's message, other than the reply the player got last time.
@@ -1300,7 +1310,10 @@ public class BotChatPlugIn
 
         var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
         var candidates = new List<Player>();
-        foreach (var bot in players.Where(p => IsBot(p) && IsAvailable(p) && IsInSafezone(p)))
+
+        // Only a bot which really sells something advertises: one behind its open store on the market
+        // (see BotMerchantPlugIn).
+        foreach (var bot in players.Where(p => IsBot(p) && IsAvailable(p) && p is OfflinePlayer { MarketShift: { IsStoreOpened: true, IsEnding: false } }))
         {
             // Talking to nobody would be wasted: only a bot which a player sees may talk.
             if (await HasHumanObserverAsync(bot).ConfigureAwait(false))
