@@ -19,8 +19,8 @@ using MUnique.OpenMU.Interfaces;
 /// personal store of the bot instead of selling it to an NPC (see <see cref="BotMerchantPlugIn"/>).
 /// </summary>
 /// <remarks>
-/// The goods come from what the bot would otherwise sell to a merchant NPC: the loot it doesn't wear
-/// and the gear it outgrew. A price class (<see cref="PriceClass"/>) follows from the excellent options,
+/// The goods come from what the bot would otherwise sell to a merchant NPC: the loot it doesn't wear,
+/// the gear it outgrew and the jewels above the stock it keeps for its own gear. A price class (<see cref="PriceClass"/>) follows from the excellent options,
 /// luck and ancient set of the item, the price from the class and the settings of the
 /// <see cref="BotMerchantConfiguration"/>.
 /// </remarks>
@@ -70,6 +70,9 @@ internal static class BotMerchandise
 
         /// <summary>An ancient item, an excellent item with two or more options, or with one wanted option and luck.</summary>
         Expensive,
+
+        /// <summary>A jewel of the surplus which the bot doesn't keep for its own gear.</summary>
+        Jewel,
     }
 
     /// <summary>
@@ -86,6 +89,11 @@ internal static class BotMerchandise
         {
             // The game doesn't open a store with such an item.
             return PriceClass.None;
+        }
+
+        if (GetJewelPrice(item, configuration) is not null)
+        {
+            return PriceClass.Jewel;
         }
 
         if (item.IsAncient())
@@ -186,6 +194,8 @@ internal static class BotMerchandise
                 }
 
                 return (configuration.ExpensiveCurrency, Sum(basePrice, configuration.ExpensivePricePerLevel * (long)levelSteps, configuration.ExpensivePricePerOption * optionSteps));
+            case PriceClass.Jewel:
+                return GetJewelPrice(item, configuration);
             default:
                 return null;
         }
@@ -215,8 +225,10 @@ internal static class BotMerchandise
         var stocked = 0;
         foreach (var item in junk)
         {
-            if (CalculatePrice(item, Classify(item, configuration), configuration) is not { } offer
+            var priceClass = Classify(item, configuration);
+            if (CalculatePrice(item, priceClass, configuration) is not { } offer
                 || !TryCreatePrice(player.GameContext, offer.Currency, offer.Amount, out var price)
+                || (priceClass == PriceClass.Jewel && !MayStockJewel(shopStorage, item, price, configuration))
                 || shopStorage.CheckInvSpace(item) is not { } storeSlot)
             {
                 continue;
@@ -269,6 +281,43 @@ internal static class BotMerchandise
 
         price = price with { Amount = Math.Min(price.Amount, ShopPrices.GetMaximumAmount(gameContext, price.Kind)) };
         return true;
+    }
+
+    /// <summary>
+    /// Gets the configured price of a jewel; <c>null</c>, if the item is no jewel which the bots sell.
+    /// </summary>
+    private static (string Currency, int Amount)? GetJewelPrice(Item item, BotMerchantConfiguration configuration)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return null;
+        }
+
+        var identifier = new ItemIdentifier(definition.Number, definition.Group);
+        return identifier switch
+        {
+            _ when identifier == ItemConstants.JewelOfBless => (configuration.BlessCurrency, configuration.BlessPrice),
+            _ when identifier == ItemConstants.JewelOfSoul => (configuration.SoulCurrency, configuration.SoulPrice),
+            _ when identifier == ItemConstants.JewelOfChaos => (configuration.ChaosCurrency, configuration.ChaosPrice),
+            _ when identifier == ItemConstants.JewelOfLife => (configuration.LifeCurrency, configuration.LifePrice),
+            _ when identifier == ItemConstants.JewelOfCreation => (configuration.CreationCurrency, configuration.CreationPrice),
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// Determines whether the jewel may go into the store: the store doesn't hold the maximum of its kind
+    /// yet, and its price isn't paid with the same jewel - a Bless for a Bless is no trade.
+    /// </summary>
+    private static bool MayStockJewel(IStorage shopStorage, Item jewel, ShopPrice price, BotMerchantConfiguration configuration)
+    {
+        if (ShopPrice.IsSameItem(price.PriceItem, jewel.Definition))
+        {
+            return false;
+        }
+
+        var stockedOfKind = shopStorage.Items.Count(i => ShopPrice.IsSameItem(i.Definition, jewel.Definition));
+        return stockedOfKind < configuration.MaximumJewelsPerKind;
     }
 
     private static int Sum(long basePrice, long levelSurcharge, double optionSurcharge)

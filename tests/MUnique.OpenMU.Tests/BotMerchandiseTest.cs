@@ -124,6 +124,30 @@ public class BotMerchandiseTest
         Assert.That(BotMerchandise.Classify(item, this._configuration), Is.EqualTo(BotMerchandise.PriceClass.None));
     }
 
+    /// <summary>
+    /// A surplus jewel is sold for its value in zen by default.
+    /// </summary>
+    [Test]
+    public void SurplusJewelIsSoldForItsValueInZen()
+    {
+        var bless = CreateJewel(13);
+
+        Assert.That(BotMerchandise.Classify(bless, this._configuration), Is.EqualTo(BotMerchandise.PriceClass.Jewel));
+        Assert.That(BotMerchandise.CalculatePrice(bless, BotMerchandise.PriceClass.Jewel, this._configuration), Is.EqualTo(("zen", 9_000_000)));
+    }
+
+    /// <summary>
+    /// The admin decides for each jewel for what it's exchanged, e.g. a Life for five Bless.
+    /// </summary>
+    [Test]
+    public void JewelCanBeExchangedForAnotherJewel()
+    {
+        var configuration = new BotMerchantConfiguration { LifeCurrency = "bless", LifePrice = 5 };
+        var life = CreateJewel(16);
+
+        Assert.That(BotMerchandise.CalculatePrice(life, BotMerchandise.Classify(life, configuration), configuration), Is.EqualTo(("bless", 5)));
+    }
+
     private static Item CreateItem(int dropLevel, int level, bool luck, int optionLevel, bool ancient, string excellentOptions)
     {
         var definitionMock = new Mock<ItemDefinition>();
@@ -171,6 +195,16 @@ public class BotMerchandiseTest
         }
 
         return item;
+    }
+
+    private static Item CreateJewel(short number)
+    {
+        var jewel = CreateItem(0, 0, false, 0, false, string.Empty);
+        jewel.Definition!.Group = 14;
+        jewel.Definition.Number = number;
+        jewel.Definition.Width = 1;
+        jewel.Definition.Height = 1;
+        return jewel;
     }
 
     private static AttributeDefinition GetAttribute(string option) => option switch

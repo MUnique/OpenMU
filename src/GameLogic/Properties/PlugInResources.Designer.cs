@@ -5772,5 +5772,71 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotMerchantConfiguration_HighSetSurchargeDropLevels_Description text.</summary>
         public static string BotMerchantConfiguration_HighSetSurchargeDropLevels_Description => ResourceManager.GetString("BotMerchantConfiguration_HighSetSurchargeDropLevels_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotMerchantConfiguration_MaximumJewelsPerKind_Name text.</summary>
+        public static string BotMerchantConfiguration_MaximumJewelsPerKind_Name => ResourceManager.GetString("BotMerchantConfiguration_MaximumJewelsPerKind_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_MaximumJewelsPerKind_Description text.</summary>
+        public static string BotMerchantConfiguration_MaximumJewelsPerKind_Description => ResourceManager.GetString("BotMerchantConfiguration_MaximumJewelsPerKind_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_BlessCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_BlessCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_BlessCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_BlessCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_BlessCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_BlessCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_BlessPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_BlessPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_BlessPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_BlessPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_BlessPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_BlessPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_SoulCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_SoulCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_SoulCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_SoulCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_SoulCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_SoulCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_SoulPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_SoulPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_SoulPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_SoulPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_SoulPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_SoulPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ChaosCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_ChaosCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_ChaosCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ChaosCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_ChaosCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_ChaosCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ChaosPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_ChaosPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_ChaosPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_ChaosPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_ChaosPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_ChaosPrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_LifeCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_LifeCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_LifeCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_LifeCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_LifeCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_LifeCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_LifePrice_Name text.</summary>
+        public static string BotMerchantConfiguration_LifePrice_Name => ResourceManager.GetString("BotMerchantConfiguration_LifePrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_LifePrice_Description text.</summary>
+        public static string BotMerchantConfiguration_LifePrice_Description => ResourceManager.GetString("BotMerchantConfiguration_LifePrice_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CreationCurrency_Name text.</summary>
+        public static string BotMerchantConfiguration_CreationCurrency_Name => ResourceManager.GetString("BotMerchantConfiguration_CreationCurrency_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CreationCurrency_Description text.</summary>
+        public static string BotMerchantConfiguration_CreationCurrency_Description => ResourceManager.GetString("BotMerchantConfiguration_CreationCurrency_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CreationPrice_Name text.</summary>
+        public static string BotMerchantConfiguration_CreationPrice_Name => ResourceManager.GetString("BotMerchantConfiguration_CreationPrice_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CreationPrice_Description text.</summary>
+        public static string BotMerchantConfiguration_CreationPrice_Description => ResourceManager.GetString("BotMerchantConfiguration_CreationPrice_Description", resourceCulture)!;
+
     }
 }
