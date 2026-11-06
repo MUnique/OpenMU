@@ -20,15 +20,26 @@ internal static class BotMarketPlanner
     internal const int MinimumStoreLevel = 6;
 
     /// <summary>
-    /// How far from the arrival point of the market a stall may be: the stalls stay together, where the
-    /// players arrive, instead of spreading over the whole map.
+    /// How far from the arrival point of a city a stall may be: the stalls stay in the middle of the
+    /// town, where the players are, instead of in its corners. On the market, the whole safezone is used.
     /// </summary>
     internal const int StallSearchRange = 18;
+
+    /// <summary>
+    /// How many tiles around a stall have to be walkable safezone: a store doesn't stand against a wall,
+    /// and corridors narrower than five tiles, like the entrance of the market, stay free.
+    /// </summary>
+    internal const int StallMargin = 2;
 
     /// <summary>
     /// The least distance between two stalls, so that the players can click each store.
     /// </summary>
     internal const double StallSpacing = 3;
+
+    /// <summary>
+    /// The four directions in which the search for reachable tiles goes on.
+    /// </summary>
+    private static readonly (int X, int Y)[] Neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)];
 
     /// <summary>
     /// Why a market shift ends.
@@ -114,35 +125,24 @@ internal static class BotMarketPlanner
     }
 
     /// <summary>
-    /// Finds a free stall: a walkable safezone tile near the arrival point which keeps its distance from
-    /// the stalls of the other merchants.
+    /// Finds a free stall: a safezone tile which the bot can walk to from the arrival point, away from the
+    /// walls (see <see cref="StallMargin"/>), which keeps its distance from the stalls of the other merchants.
     /// </summary>
-    /// <param name="terrain">The terrain of the market map.</param>
-    /// <param name="arrival">The center of the arrival area of the market.</param>
+    /// <param name="terrain">The terrain of the map.</param>
+    /// <param name="arrival">The center of the arrival area of the map.</param>
     /// <param name="takenStalls">The stalls of the other merchants.</param>
     /// <param name="nextInt">Returns a random number between the inclusive minimum and the exclusive maximum.</param>
-    /// <returns>The stall; <c>null</c>, if the market is full.</returns>
-    internal static Point? FindStall(GameMapTerrain terrain, Point arrival, IReadOnlyCollection<Point> takenStalls, Func<int, int, int> nextInt)
+    /// <param name="searchRange">How far from the arrival point the stall may be; <c>null</c> for the whole safezone.</param>
+    /// <returns>The stall; <c>null</c>, if the map is full.</returns>
+    internal static Point? FindStall(GameMapTerrain terrain, Point arrival, IReadOnlyCollection<Point> takenStalls, Func<int, int, int> nextInt, int? searchRange = StallSearchRange)
     {
         var candidates = new List<Point>();
-        for (var x = arrival.X - StallSearchRange; x <= arrival.X + StallSearchRange; x++)
+        foreach (var point in GetReachableSafezone(terrain, arrival, searchRange))
         {
-            for (var y = arrival.Y - StallSearchRange; y <= arrival.Y + StallSearchRange; y++)
+            if (HasMargin(terrain, point)
+                && takenStalls.All(stall => stall.EuclideanDistanceTo(point) >= StallSpacing))
             {
-                if (x is < 0 or > byte.MaxValue
-                    || y is < 0 or > byte.MaxValue
-                    || !terrain.WalkMap[x, y]
-                    || !terrain.SafezoneMap[x, y])
-                {
-                    continue;
-                }
-
-                var point = new Point((byte)x, (byte)y);
-                if (point.EuclideanDistanceTo(arrival) <= StallSearchRange
-                    && takenStalls.All(stall => stall.EuclideanDistanceTo(point) >= StallSpacing))
-                {
-                    candidates.Add(point);
-                }
+                candidates.Add(point);
             }
         }
 
@@ -225,5 +225,75 @@ internal static class BotMarketPlanner
         }
 
         return EndReason.None;
+    }
+
+    /// <summary>
+    /// Gets the walkable safezone tiles which are connected to the arrival point, within the range.
+    /// A safezone behind a wall, which the bot can't walk to, is left out.
+    /// </summary>
+    private static List<Point> GetReachableSafezone(GameMapTerrain terrain, Point arrival, int? searchRange)
+    {
+        bool IsUsable(int x, int y)
+            => x is >= 0 and <= byte.MaxValue
+               && y is >= 0 and <= byte.MaxValue
+               && terrain.WalkMap[x, y]
+               && terrain.SafezoneMap[x, y]
+               && (searchRange is not { } range || new Point((byte)x, (byte)y).EuclideanDistanceTo(arrival) <= range);
+
+        var reached = new List<Point>();
+        var visited = new bool[byte.MaxValue + 1, byte.MaxValue + 1];
+        var queue = new Queue<Point>();
+
+        // The spawn gate may be a few tiles wide, so the search starts at every usable tile close to its center.
+        for (var x = arrival.X - 2; x <= arrival.X + 2; x++)
+        {
+            for (var y = arrival.Y - 2; y <= arrival.Y + 2; y++)
+            {
+                if (IsUsable(x, y))
+                {
+                    visited[x, y] = true;
+                    queue.Enqueue(new Point((byte)x, (byte)y));
+                }
+            }
+        }
+
+        while (queue.TryDequeue(out var point))
+        {
+            reached.Add(point);
+            foreach (var (dx, dy) in Neighbors)
+            {
+                var x = point.X + dx;
+                var y = point.Y + dy;
+                if (IsUsable(x, y) && !visited[x, y])
+                {
+                    visited[x, y] = true;
+                    queue.Enqueue(new Point((byte)x, (byte)y));
+                }
+            }
+        }
+
+        return reached;
+    }
+
+    /// <summary>
+    /// Determines whether all tiles within <see cref="StallMargin"/> of the point are walkable safezone.
+    /// </summary>
+    private static bool HasMargin(GameMapTerrain terrain, Point point)
+    {
+        for (var x = point.X - StallMargin; x <= point.X + StallMargin; x++)
+        {
+            for (var y = point.Y - StallMargin; y <= point.Y + StallMargin; y++)
+            {
+                if (x is < 0 or > byte.MaxValue
+                    || y is < 0 or > byte.MaxValue
+                    || !terrain.WalkMap[x, y]
+                    || !terrain.SafezoneMap[x, y])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
