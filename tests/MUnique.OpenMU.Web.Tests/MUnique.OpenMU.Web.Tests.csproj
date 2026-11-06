@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Web\AdminPanel.Mcp\MUnique.OpenMU.Web.AdminPanel.Mcp.csproj" />
+    <ProjectReference Include="..\..\src\Web\PlayerPortal.Api\MUnique.OpenMU.Web.PlayerPortal.Api.csproj" />
     <ProjectReference Include="..\..\src\Web\Shared\MUnique.OpenMU.Web.Shared.csproj" />
     <ProjectReference Include="..\..\src\Web\AdminPanel\MUnique.OpenMU.Web.AdminPanel.csproj" />
     <ProjectReference Include="..\..\src\Web\ItemEditor\MUnique.OpenMU.Web.ItemEditor.csproj" />

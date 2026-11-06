@@ -1,0 +1,541 @@
+name: Phase 2F player portal isolation
+
+on:
+  pull_request:
+    branches:
+      - feat/openmu-player-api-2c
+    paths:
+      - .github/workflows/phase2f-player-portal-isolation.yml
+      - src/Dapr/PlayerPortal.Host/**
+      - src/Web/PlayerPortal.Api/**
+      - src/Persistence/EntityFramework/EntityDataContext.cs
+      - tests/MUnique.OpenMU.Web.Tests/Api/**
+  push:
+    branches:
+      - feat/openmu-player-api-2c
+    paths:
+      - .github/workflows/phase2f-player-portal-isolation.yml
+      - deploy/all-in-one/docker-compose.player-portal.yml
+      - deploy/all-in-one/docker-compose.player-portal.ci.yml
+      - deploy/all-in-one/docker-compose.yml
+      - deploy/all-in-one/player-portal/**
+      - src/Dapr/PlayerPortal.Host/**
+      - src/Persistence/AccountOverview.cs
+      - src/Persistence/EntityFramework/PlayerContext.cs
+      - src/Persistence/IPlayerContext.cs
+      - src/Persistence/InMemory/PlayerInMemoryContext.cs
+      - src/Web/PlayerPortal.Api/**
+      - tests/MUnique.OpenMU.Web.Tests/Api/PlayerPortalPostgreSqlTests.cs
+
+permissions:
+  contents: read
+
+jobs:
+  docker-isolation:
+    name: Disposable Docker Compose proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PLAYER_PORTAL_UID: "10001"
+      PLAYER_PORTAL_GID: "10001"
+
+    steps:
+      - name: Check out the test branch
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Generate synthetic credentials
+        shell: bash
+        run: |
+          set +x
+          worker_token="$(openssl rand -hex 32)"
+          dapr_token="$(openssl rand -hex 32)"
+          database_password="$(openssl rand -hex 32)"
+          account_password="$(openssl rand -hex 24)"
+          configuration_password="$(openssl rand -hex 24)"
+          for value in "$worker_token" "$dapr_token" "$database_password" "$account_password" "$configuration_password"; do
+            echo "::add-mask::$value"
+          done
+          {
+            echo "PORTAL_CI_WORKER_TOKEN=$worker_token"
+            echo "PORTAL_CI_DAPR_TOKEN=$dapr_token"
+            echo "PORTAL_CI_POSTGRES_PASSWORD=$database_password"
+            echo "PORTAL_CI_ACCOUNT_PASSWORD=$account_password"
+            echo "PORTAL_CI_CONFIGURATION_PASSWORD=$configuration_password"
+          } >> "$GITHUB_ENV"
+
+      - name: Create ignored local secret files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib
+          directory = pathlib.Path("deploy/all-in-one/player-portal")
+          account_password = os.environ["PORTAL_CI_ACCOUNT_PASSWORD"]
+          configuration_password = os.environ["PORTAL_CI_CONFIGURATION_PASSWORD"]
+          relay = "player-portal-db-relay"
+          values = {
+              "connectionStrings": {
+                  "MUnique.OpenMU.Persistence.EntityFramework.AccountContext": f"Host={relay};Database=openmu;User Id=portal_account_ci;Password={account_password};",
+                  "MUnique.OpenMU.Persistence.EntityFramework.ConfigurationContext": f"Host={relay};Database=openmu;User Id=portal_config_ci;Password={configuration_password};",
+              }
+          }
+          appsettings = {"PlayerPortalApi": {"WorkerToken": os.environ["PORTAL_CI_WORKER_TOKEN"]}}
+          files = {
+              directory / "secrets.json": json.dumps(values),
+              directory / "appsettings.Production.json": json.dumps(appsettings),
+              directory / "dapr-api-token.env": f"DAPR_API_TOKEN={os.environ['PORTAL_CI_DAPR_TOKEN']}\n",
+          }
+          for path, content in files.items():
+              path.write_text(content + "\n", encoding="utf-8")
+              path.chmod(0o600)
+          PY
+          sudo chown 10001:10001 \
+            deploy/all-in-one/player-portal/secrets.json \
+            deploy/all-in-one/player-portal/appsettings.Production.json
+
+      - name: Validate merged Compose without printing resolved configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/openmu-compose-base.json"
+          merged="$RUNNER_TEMP/openmu-compose-merged.json"
+          runtime="$RUNNER_TEMP/player-portal-compose-ci.json"
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.yml config --format json > "$base"
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml config --format json > "$merged"
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml config --format json > "$runtime"
+          python3 - "$base" "$merged" "$runtime" <<'PY'
+          import json, sys
+          base, merged, runtime = [json.load(open(path, encoding="utf-8")) for path in sys.argv[1:]]
+          for name, service in base["services"].items():
+              assert merged["services"].get(name) == service, f"existing service changed in merged config: {name}"
+          assert set(base["services"]) == {"nginx-80", "openmu-startup", "database"}
+          assert {"player-portal-api", "player-portal-dapr", "player-portal-db-relay", "player-portal-host-proxy"}.issubset(merged["services"])
+          api = merged["services"]["player-portal-api"]
+          dapr = merged["services"]["player-portal-dapr"]
+          relay = merged["services"]["player-portal-db-relay"]
+          proxy = merged["services"]["player-portal-host-proxy"]
+          assert not api.get("ports")
+          assert not dapr.get("ports")
+          assert set(api["networks"]) == {"player-portal-private"}
+          assert set(dapr["networks"]) == {"player-portal-private"}
+          assert set(relay["networks"]) == {"default", "player-portal-private"}
+          assert len(proxy.get("ports", [])) == 1
+          assert proxy["ports"][0]["host_ip"] == "127.0.0.1" and proxy["ports"][0]["published"] == "18080" and proxy["ports"][0]["target"] == 80
+          assert set(proxy["networks"]) == {"player-portal-private", "player-portal-host"}
+          assert "default" not in proxy["networks"]
+          assert merged["networks"]["player-portal-private"].get("internal") is True
+          assert not merged["networks"]["player-portal-host"].get("internal", False)
+          assert runtime["services"]["database"]["ports"][0]["host_ip"] == "127.0.0.1"
+          print("PASS: original services are unchanged; API/Dapr remain internal with no ports; only the dedicated proxy publishes loopback and is excluded from all-in-one_default.")
+          PY
+
+      - name: Build and run player portal unit regressions
+        run: >-
+          dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj
+          --configuration Release -p:ci=true
+          --filter "FullyQualifiedName~PlayerPortalApiTests|FullyQualifiedName~PlayerPortalConfigurationDataSourceTests"
+
+      - name: Create the isolated Docker network and PostgreSQL
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create all-in-one_default >/dev/null
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml up -d database
+          for attempt in $(seq 1 60); do
+            if docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+              -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+              -f deploy/all-in-one/docker-compose.player-portal.yml ps --status running --services | grep -qx database; then
+              if docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+                -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+                -f deploy/all-in-one/docker-compose.player-portal.yml exec -T database \
+                pg_isready -U portal_ci_admin -d openmu >/dev/null 2>&1; then
+                break
+              fi
+            fi
+            sleep 2
+          done
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml exec -T database \
+            pg_isready -U portal_ci_admin -d openmu >/dev/null
+
+      - name: Prepare the database schema and grants with synthetic data
+        shell: bash
+        run: |
+          set -euo pipefail
+          connection="Host=127.0.0.1;Port=55432;Database=openmu;User Id=portal_ci_admin;Password=$PORTAL_CI_POSTGRES_PASSWORD;"
+          OPENMU_TEST_PLAYER_PORTAL_POSTGRES="$connection" \
+          OPENMU_TEST_PLAYER_PORTAL_ACCOUNT_ROLE=portal_account_ci \
+          OPENMU_TEST_PLAYER_PORTAL_ACCOUNT_PASSWORD="$PORTAL_CI_ACCOUNT_PASSWORD" \
+          OPENMU_TEST_PLAYER_PORTAL_CONFIGURATION_ROLE=portal_config_ci \
+          OPENMU_TEST_PLAYER_PORTAL_CONFIGURATION_PASSWORD="$PORTAL_CI_CONFIGURATION_PASSWORD" \
+          OPENMU_TEST_PLAYER_PORTAL_KEEP_ROLES=true \
+          dotnet test tests/MUnique.OpenMU.Web.Tests/MUnique.OpenMU.Web.Tests.csproj \
+            --configuration Release -p:ci=true --no-build \
+            --filter FullyQualifiedName~PlayerPortalPostgreSqlTests
+
+      - name: Build and start API, Dapr, and the PostgreSQL relay
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml \
+            up -d --build player-portal-api player-portal-dapr player-portal-db-relay player-portal-host-proxy
+
+      - name: Diagnose Docker port publication and network reachability
+        shell: bash
+        run: |
+          set -uo pipefail
+          compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
+          docker pull curlimages/curl:8.12.1 >/dev/null
+          docker pull busybox:1.37.0 >/dev/null
+          sleep 2
+
+          runtime_file="$RUNNER_TEMP/player-portal-runtime-network.json"
+          python3 - "$runtime_file" <<'PY'
+          import json
+          import pathlib
+          import subprocess
+          import sys
+
+          compose = ["docker", "compose", "--project-name", "all-in-one", "--project-directory", "deploy/all-in-one", "-f", "deploy/all-in-one/docker-compose.player-portal.ci.yml", "-f", "deploy/all-in-one/docker-compose.player-portal.yml"]
+          runtime = {}
+          for service in ("player-portal-api", "player-portal-dapr", "player-portal-db-relay", "player-portal-host-proxy"):
+              container_id = subprocess.check_output(compose + ["ps", "-q", service], text=True).strip()
+              if not container_id:
+                  runtime[service] = {"present": False, "configured_ports": {}, "effective_ports": {}, "networks": []}
+                  continue
+              inspect = json.loads(subprocess.check_output(["docker", "inspect", container_id], text=True))[0]
+              settings = inspect["NetworkSettings"]
+
+              def public_bindings(values):
+                  result = {}
+                  for port, entries in (values or {}).items():
+                      result[port] = [
+                          {"host_ip": entry.get("HostIp", ""), "host_port": entry.get("HostPort", "")}
+                          for entry in (entries or [])
+                      ]
+                  return result
+
+              runtime[service] = {
+                  "present": True,
+                  "configured_ports": public_bindings(inspect.get("HostConfig", {}).get("PortBindings")),
+                  "effective_ports": public_bindings(settings.get("Ports")),
+                  "networks": sorted((settings.get("Networks") or {}).keys()),
+              }
+
+          pathlib.Path(sys.argv[1]).write_text(json.dumps(runtime), encoding="utf-8")
+          for service, details in runtime.items():
+              print("RUNTIME " + json.dumps({"service": service, **details}, sort_keys=True))
+          PY
+
+          private_network="$(docker network inspect all-in-one_player-portal-private --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
+          host_network="$(docker network inspect all-in-one_player-portal-host --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
+          shared_network="$(docker network inspect all-in-one_default --format '{{.Name}} driver={{.Driver}} internal={{.Internal}}' 2>/dev/null || echo unavailable)"
+          echo "NETWORK $private_network"
+          echo "NETWORK $host_network"
+          echo "NETWORK $shared_network"
+
+          listener="$(ss -ltnH 'sport = :18080' 2>/dev/null | awk '{print $1, $4}' || true)"
+          if [[ -n "$listener" ]]; then
+            echo "HOST_TCP_LISTENER present $listener"
+          else
+            echo "HOST_TCP_LISTENER absent"
+          fi
+
+          declare -A PROBE_STATUS=()
+          declare -A PROBE_EXIT=()
+          declare -A PROBE_CONTENT_TYPE=()
+          declare -A PROBE_CLASS=()
+          probe_http() {
+            local label="$1"
+            local mode="$2"
+            local url="$3"
+            local response_meta=""
+            local probe_exit=0
+            local http_status="000"
+            local raw_content_type=""
+            local safe_content_type="none"
+
+            if [[ "$mode" == "host" ]]; then
+              response_meta="$(curl --noproxy '*' --silent --output /dev/null --write-out '%{http_code}\n%{content_type}' --connect-timeout 2 --max-time 4 "$url" 2>/dev/null)" || probe_exit=$?
+            else
+              response_meta="$(docker run --rm --network "$mode" curlimages/curl:8.12.1 --noproxy '*' --silent --output /dev/null --write-out '%{http_code}\n%{content_type}' --connect-timeout 2 --max-time 4 "$url" 2>/dev/null)" || probe_exit=$?
+            fi
+
+            http_status="${response_meta%%$'\n'*}"
+            raw_content_type="${response_meta#*$'\n'}"
+            if [[ "$response_meta" != *$'\n'* ]]; then
+              raw_content_type=""
+            fi
+            if [[ ! "$http_status" =~ ^[0-9]{3}$ ]]; then
+              http_status="000"
+            fi
+            if [[ -n "$raw_content_type" ]]; then
+              if [[ "$raw_content_type" =~ ^[A-Za-z0-9.+_-]+/[A-Za-z0-9.+_-]+([[:space:]]*\;[[:space:]]*charset=[A-Za-z0-9._-]+)?$ ]]; then
+                safe_content_type="$raw_content_type"
+              else
+                safe_content_type="unrecognized"
+              fi
+            fi
+
+            if [[ "$probe_exit" -ne 0 ]]; then
+              PROBE_CLASS["$label"]="connection_failure"
+            elif [[ "$http_status" == "200" ]]; then
+              PROBE_CLASS["$label"]="http_200"
+            else
+              PROBE_CLASS["$label"]="unexpected_http_response"
+            fi
+            PROBE_STATUS["$label"]="$http_status"
+            PROBE_EXIT["$label"]="$probe_exit"
+            PROBE_CONTENT_TYPE["$label"]="$safe_content_type"
+            echo "PROBE label=$label http_status=$http_status curl_exit=$probe_exit content_type=$safe_content_type classification=${PROBE_CLASS[$label]}"
+          }
+
+          api_container="$("${compose[@]}" ps -q player-portal-api)"
+          dapr_container="$("${compose[@]}" ps -q player-portal-dapr)"
+          probe_http private_api all-in-one_player-portal-private http://player-portal-api:8080/health/live
+          probe_http host_loopback host http://127.0.0.1:18080/health/live
+          probe_http external_api "container:$api_container" http://1.1.1.1/
+          probe_http external_dapr "container:$dapr_container" http://1.1.1.1/
+          probe_http shared_bridge_api all-in-one_default http://player-portal-api:8080/health/live
+          probe_http shared_bridge_dapr all-in-one_default http://player-portal-dapr:3500/v1.0/metadata
+          probe_http shared_bridge_proxy all-in-one_default http://player-portal-host-proxy:80/health/live
+          gateway="$(docker network inspect all-in-one_default --format '{{(index .IPAM.Config 0).Gateway}}' 2>/dev/null || true)"
+          if [[ -n "$gateway" ]]; then
+            probe_http shared_bridge_host_port all-in-one_default "http://$gateway:18080/health/live"
+          else
+            echo "PROBE label=shared_bridge_host_port result=unavailable reason=no_network_gateway"
+          fi
+
+          parse_default_route() {
+            python3 -c '
+          import sys
+
+          lines = [line.split() for line in sys.stdin if line.strip()]
+          if not lines:
+              print("invalid")
+              sys.exit(2)
+          header = lines[0]
+          try:
+              destination_index = header.index("Destination")
+              mask_index = header.index("Mask")
+          except ValueError:
+              print("invalid")
+              sys.exit(2)
+          for fields in lines[1:]:
+              if max(destination_index, mask_index) >= len(fields):
+                  print("invalid")
+                  sys.exit(2)
+              destination = fields[destination_index].upper()
+              mask = fields[mask_index].upper()
+              if destination == "00000000" and mask == "00000000":
+                  print("present")
+                  sys.exit(0)
+          print("absent")
+          '
+          }
+
+          route_header='Iface Destination Gateway Flags RefCnt Use Metric Mask MTU Window IRTT'
+          default_route_fixture="$route_header
+          eth0 00000000 0102A8C0 0003 0 0 0 00000000 0 0 0"
+          gateway_zero_fixture="$route_header
+          eth0 0002A8C0 00000000 0001 0 0 0 00FFFFFF 0 0 0"
+          destination_zero_fixture="$route_header
+          eth0 00000000 0102A8C0 0001 0 0 0 00FFFFFF 0 0 0"
+          mask_zero_fixture="$route_header
+          eth0 0002A8C0 0102A8C0 0001 0 0 0 00000000 0 0 0"
+          [[ "$(printf '%s\n' "$default_route_fixture" | parse_default_route)" == "present" ]]
+          [[ "$(printf '%s\n' "$gateway_zero_fixture" | parse_default_route)" == "absent" ]]
+          [[ "$(printf '%s\n' "$destination_zero_fixture" | parse_default_route)" == "absent" ]]
+          [[ "$(printf '%s\n' "$mask_zero_fixture" | parse_default_route)" == "absent" ]]
+          echo "ROUTE_PARSER_SYNTHETIC=pass (Destination and Mask jointly identify the default route)"
+
+          default_route_status() {
+            local service="$1"
+            local container_id="$2"
+            local route=""
+            local route_table=""
+            local command_exit=0
+            route_table="$(docker run --rm --network "container:$container_id" busybox:1.37.0 cat /proc/net/route 2>/dev/null)" || command_exit=$?
+            if [[ "$command_exit" -eq 0 ]]; then
+              route="$(printf '%s\n' "$route_table" | parse_default_route)" || command_exit=$?
+            fi
+            if [[ "$command_exit" -eq 0 && "$route" == "absent" ]]; then
+              echo "EXTERNAL_ROUTE service=$service default_route=absent"
+              return 0
+            fi
+            echo "EXTERNAL_ROUTE service=$service default_route=${route:-unavailable} parser_exit=$command_exit"
+            return 1
+          }
+          api_route_ok=0
+          dapr_route_ok=0
+          default_route_status player-portal-api "$api_container" && api_route_ok=1
+          default_route_status player-portal-dapr "$dapr_container" && dapr_route_ok=1
+
+          runtime_expectation="$(python3 - "$runtime_file" <<'PY'
+          import json
+          import sys
+
+          runtime = json.load(open(sys.argv[1], encoding="utf-8"))
+          api = runtime["player-portal-api"]
+          dapr = runtime["player-portal-dapr"]
+          relay = runtime["player-portal-db-relay"]
+          proxy = runtime["player-portal-host-proxy"]
+          published_api = [binding for values in api["effective_ports"].values() for binding in values]
+          published_dapr = [binding for values in dapr["effective_ports"].values() for binding in values]
+          published_relay = [binding for values in relay["effective_ports"].values() for binding in values]
+          configured_api = [binding for values in api["configured_ports"].values() for binding in values]
+          configured_dapr = [binding for values in dapr["configured_ports"].values() for binding in values]
+          expected_proxy = [{"host_ip": "127.0.0.1", "host_port": "18080"}]
+          ok = (
+              api["present"]
+              and not published_api
+              and not configured_api
+              and api["networks"] == ["all-in-one_player-portal-private"]
+              and dapr["present"]
+              and not published_dapr
+              and not configured_dapr
+              and dapr["networks"] == ["all-in-one_player-portal-private"]
+              and relay["present"]
+              and not published_relay
+              and relay["networks"] == ["all-in-one_default", "all-in-one_player-portal-private"]
+              and proxy["present"]
+              and proxy["effective_ports"].get("80/tcp") == expected_proxy
+              and proxy["networks"] == ["all-in-one_player-portal-host", "all-in-one_player-portal-private"]
+          )
+          print("pass" if ok else "fail")
+          PY
+          )"
+          echo "RUNTIME_EXPECTATION=$runtime_expectation"
+
+          diagnostics_ok=1
+          [[ "$runtime_expectation" == "pass" ]] || diagnostics_ok=0
+          [[ "$private_network" == "all-in-one_player-portal-private driver=bridge internal=true" ]] || diagnostics_ok=0
+          [[ "$host_network" == "all-in-one_player-portal-host driver=bridge internal=false" ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[private_api]}" == "200" && "${PROBE_EXIT[private_api]}" == "0" ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[host_loopback]}" == "200" && "${PROBE_EXIT[host_loopback]}" == "0" ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[external_api]}" == "000" && ( "${PROBE_EXIT[external_api]}" == "7" || "${PROBE_EXIT[external_api]}" == "28" ) ]] || diagnostics_ok=0
+          [[ "${PROBE_STATUS[external_dapr]}" == "000" && ( "${PROBE_EXIT[external_dapr]}" == "7" || "${PROBE_EXIT[external_dapr]}" == "28" ) ]] || diagnostics_ok=0
+          [[ "$api_route_ok" == "1" && "$dapr_route_ok" == "1" ]] || diagnostics_ok=0
+          for label in shared_bridge_api shared_bridge_dapr shared_bridge_proxy shared_bridge_host_port; do
+            if [[ "$label" == "shared_bridge_host_port" && -z "$gateway" ]]; then
+              continue
+            fi
+            code="${PROBE_EXIT[$label]}"
+            if [[ "${PROBE_STATUS[$label]}" != "000" || ( "$code" != "6" && "$code" != "7" && "$code" != "28" ) ]]; then
+              diagnostics_ok=0
+            fi
+          done
+
+          if [[ "$diagnostics_ok" == "1" ]]; then
+            echo "PASS: proxy loopback binding, private API path, API/Dapr egress isolation, and shared-bridge denial matched expectations."
+          else
+            echo "FAIL: connectivity matrix contains a mismatch; all probes above completed independently."
+            exit 1
+          fi
+
+      - name: Run player account E2E checks through the host proxy
+        if: ${{ !contains(github.event.head_commit.message, '[connectivity-diagnostic-only]') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
+          scratch="$RUNNER_TEMP/player-portal-e2e"
+          mkdir -p "$scratch"
+          login="ci$(openssl rand -hex 3)"
+          password="SyntheticPass1"
+          printf '{"loginName":"%s","password":"%s"}\n' "$login" "$password" > "$scratch/credentials.json"
+          printf '{"loginName":"%s","password":"WrongSynthetic1"}\n' "$login" > "$scratch/wrong-credentials.json"
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H 'Content-Type: application/json' --data-binary "@$scratch/credentials.json" \
+            http://127.0.0.1:18080/player-portal/v1/accounts)"
+          [[ "$code" == "401" ]] || { echo "FAIL: request without Worker authentication returned HTTP $code"; exit 1; }
+          echo "PASS: request without Worker authentication returned HTTP 401."
+          code="$(curl --silent --output "$scratch/response.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/credentials.json" http://127.0.0.1:18080/player-portal/v1/accounts)"
+          [[ "$code" == "202" ]] || { echo "FAIL: synthetic registration HTTP $code"; exit 1; }
+          persisted="$("${compose[@]}" exec -T database psql -U portal_ci_admin -d openmu -Atc "SELECT count(*) FROM data.\"Account\" WHERE \"LoginName\" = '$login'")"
+          [[ "$persisted" == "1" ]] || { echo "FAIL: synthetic account persistence was not confirmed."; exit 1; }
+          echo "PASS: registration returned HTTP 202 and one matching account row exists in disposable PostgreSQL via the relay path."
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/wrong-credentials.json" http://127.0.0.1:18080/player-portal/v1/sessions)"
+          [[ "$code" == "401" ]] || { echo "FAIL: incorrect-password login returned HTTP $code"; exit 1; }
+          echo "PASS: incorrect-password login returned HTTP 401."
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H 'Authorization: Bearer invalid-synthetic-worker-token' -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/credentials.json" http://127.0.0.1:18080/player-portal/v1/accounts)"
+          [[ "$code" == "401" ]] || { echo "FAIL: invalid Worker credential returned HTTP $code"; exit 1; }
+          code="$(curl --silent --output "$scratch/login.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H 'Content-Type: application/json' \
+            --data-binary "@$scratch/credentials.json" http://127.0.0.1:18080/player-portal/v1/sessions)"
+          [[ "$code" == "201" ]] || { echo "FAIL: valid login returned HTTP $code"; exit 1; }
+          session="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["token"])' "$scratch/login.json")"
+          code="$(curl --silent --output "$scratch/me.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" -H "X-Player-Session: $session" \
+            http://127.0.0.1:18080/player-portal/v1/me)"
+          [[ "$code" == "200" ]] || { echo "FAIL: authenticated /me returned HTTP $code"; exit 1; }
+          python3 - "$scratch/me.json" "$login" <<'PY'
+          import json, sys
+          profile = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert profile["loginName"] == sys.argv[2]
+          assert isinstance(profile["characters"], list)
+          print("PASS: authenticated /me returned the session owner and a character list.")
+          PY
+          code="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+            -H "Authorization: Bearer $PORTAL_CI_WORKER_TOKEN" \
+            http://127.0.0.1:18080/player-portal/v1/me)"
+          [[ "$code" == "401" ]] || { echo "FAIL: /me without a player session returned HTTP $code"; exit 1; }
+          echo "PASS: /me without a player session returned HTTP 401."
+
+      - name: Print sanitized service logs on failure
+        if: failure()
+        shell: bash
+        run: |
+          set +x
+          compose=(docker compose --project-name all-in-one --project-directory deploy/all-in-one -f deploy/all-in-one/docker-compose.player-portal.ci.yml -f deploy/all-in-one/docker-compose.player-portal.yml)
+          "${compose[@]}" logs --no-color > "$RUNNER_TEMP/player-portal-logs.txt" 2>&1 || true
+          python3 - "$RUNNER_TEMP/player-portal-logs.txt" <<'PY'
+          import os, pathlib, sys
+          data = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          secrets = [os.environ.get(key, "") for key in (
+              "PORTAL_CI_WORKER_TOKEN",
+              "PORTAL_CI_DAPR_TOKEN",
+              "PORTAL_CI_POSTGRES_PASSWORD",
+              "PORTAL_CI_ACCOUNT_PASSWORD",
+              "PORTAL_CI_CONFIGURATION_PASSWORD",
+          )]
+          secrets.extend(("SyntheticPass1", "WrongSynthetic1"))
+          for secret in secrets:
+              if secret:
+                  data = data.replace(secret, "[REDACTED]")
+          sys.stdout.write(data[-12000:])
+          PY
+
+      - name: Stop and remove all disposable containers and volumes
+        if: always()
+        shell: bash
+        run: |
+          set +x
+          docker compose --project-name all-in-one --project-directory deploy/all-in-one \
+            -f deploy/all-in-one/docker-compose.player-portal.ci.yml \
+            -f deploy/all-in-one/docker-compose.player-portal.yml down --volumes --remove-orphans || true
+          docker network rm all-in-one_default >/dev/null 2>&1 || true
+          rm -f deploy/all-in-one/player-portal/secrets.json \
+            deploy/all-in-one/player-portal/appsettings.Production.json \
+            deploy/all-in-one/player-portal/dapr-api-token.env
