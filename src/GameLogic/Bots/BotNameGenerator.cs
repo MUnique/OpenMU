@@ -349,6 +349,19 @@ internal sealed class BotNameGenerator
     }
 
     /// <summary>
+    /// Adds the names to the similarity index, if they aren't in it yet - the names which were reserved
+    /// before this call, e.g. by an earlier call for another bot of the same run.
+    /// </summary>
+    /// <param name="names">The names.</param>
+    internal void IndexNames(IEnumerable<string> names)
+    {
+        foreach (var name in names)
+        {
+            this.IndexName(name);
+        }
+    }
+
+    /// <summary>
     /// Gets the first and last three letters of a name of at least six letters, e.g. "fen-lis" of
     /// "fenelis"; <c>null</c> for a shorter name.
     /// </summary>
@@ -448,18 +461,6 @@ internal sealed class BotNameGenerator
         };
 
         return decorated.Length <= MaxNameLength ? decorated : word;
-    }
-
-    /// <summary>
-    /// Adds the names to the similarity index, if they aren't in it yet - the names which were reserved
-    /// before this call, e.g. by an earlier call for another bot of the same run.
-    /// </summary>
-    private void IndexNames(IEnumerable<string> names)
-    {
-        foreach (var name in names)
-        {
-            this.IndexName(name);
-        }
     }
 
     private void IndexName(string name)

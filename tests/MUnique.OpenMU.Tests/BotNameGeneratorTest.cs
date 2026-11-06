@@ -220,13 +220,12 @@ public class BotNameGeneratorTest
         Assert.That(compoundWords.Distinct(StringComparer.OrdinalIgnoreCase).Count(), Is.EqualTo(compoundWords.Count));
     }
 
-    private static async ValueTask<BotNameGenerator> CreateGeneratorWithAsync(string existing)
+    private static ValueTask<BotNameGenerator> CreateGeneratorWithAsync(string existing)
     {
+        // Only the given name is indexed: handing out a random name too could make the candidate similar to it.
         var generator = new BotNameGenerator();
-
-        // Handing out one more name indexes the reserved ones.
-        await generator.GenerateUniqueAsync(CreateEmptyContext(), new HashSet<string>(StringComparer.OrdinalIgnoreCase) { existing }).ConfigureAwait(false);
-        return generator;
+        generator.IndexNames([existing]);
+        return ValueTask.FromResult(generator);
     }
 
     private static IPlayerContext CreateEmptyContext()
