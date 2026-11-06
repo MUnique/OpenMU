@@ -2833,7 +2833,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The names of the stores, separated by commas. Every shift draws one of them..
+        ///   Looks up a localized string similar to The names of the stores, separated by commas. Every shift draws one which no other open store has; when all are taken, the store gets the name of the bot..
         /// </summary>
         public static string BotMerchantConfiguration_StoreNames_Description {
             get {

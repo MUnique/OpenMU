@@ -101,13 +101,15 @@ public class BotMerchantConfiguration
     public int UnsoldShiftsUntilNpc { get; set; } = 3;
 
     /// <summary>
-    /// Gets or sets the names of the stores, separated by commas; every shift draws one of them.
+    /// Gets or sets the names of the stores, separated by commas; every shift draws one which no other
+    /// open store of the bots has.
     /// </summary>
     /// <remarks>
     /// A store name is a single text which every player sees in the same language, so it can't be translated.
+    /// When all of them are taken, the store gets the name of the bot.
     /// </remarks>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_StoreNames_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_StoreNames_Description))]
-    public string StoreNames { get; set; } = "Good stuff, Cheap items, Best prices, Exc items, Jewels here, Look inside, Fair prices, Rare finds";
+    public string StoreNames { get; set; } = "Good stuff, Cheap items, Best prices, Exc items, Jewels here, Look inside, Fair prices, Rare finds, Bargains, Hot deals, Quick sale, Gear shop, Loot sale, Top gear, Clean items, Full opts, Low prices, Must see, Take a look, All must go, Cheap exc, Exc weapons, Exc sets, Ancient sets, Bless and Soul, Big sale, Mega sale, Cheap stuff, Good deals, Nice items, Fresh loot, Drops for sale, Buy here, Shop here, Come and see, Ok prices, Cheap jewels, Gear for all, Best deals, Luck items, Rare items, For sale, Weapons here, Armor here, Sets for sale, Daily deals, Starter gear, Cheap armor, Grab it, Last pieces";
 
     /// <summary>
     /// Gets or sets the drop level from which an item counts as one of the higher sets: only such normal items are worth a stall, and above it ancient and the best excellent items get the surcharge of <see cref="HighSetSurcharge"/>.

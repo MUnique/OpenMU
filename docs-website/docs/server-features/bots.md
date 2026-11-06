@@ -337,11 +337,11 @@ jewels stay exact. `Zen price spread` 0 keeps all prices exact.
 
 With enough goods (4 by default), a bot goes to the market for a shift of 30 to
 90 minutes: through the map's spawn gate, regardless of the warp list, to a
-stall apart from the other merchants. At most 15 bots per game server sell at
-the same time. A bot leaves early when it sold everything, after 30 minutes
-without a sale, or when it logs out; then it warps home and goes back hunting,
-and its next shift is two hours later at the earliest. On a shift, it declines
-party invitations.
+stall apart from the other merchants. Every store gets a name no other open
+store has. At most 15 bots per game server sell at the same time. A bot leaves
+early when it sold everything, after 30 minutes without a sale, or when it logs
+out; then it warps home and goes back hunting, and its next shift is two hours
+later at the earliest. On a shift, it declines party invitations.
 
 A bot buys nothing, so the zen and the jewels paid for its goods are removed
 right after each sale. There are no discounts - players would learn to wait for

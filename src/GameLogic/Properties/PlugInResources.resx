@@ -2143,7 +2143,7 @@
   <data name="BotMerchantConfiguration_TimeBetweenShifts_Name" xml:space="preserve"><value>Time between shifts</value></data>
   <data name="BotMerchantConfiguration_TimeBetweenShifts_Description" xml:space="preserve"><value>The time after a shift before the same bot goes to the market again.</value></data>
   <data name="BotMerchantConfiguration_StoreNames_Name" xml:space="preserve"><value>Store names</value></data>
-  <data name="BotMerchantConfiguration_StoreNames_Description" xml:space="preserve"><value>The names of the stores, separated by commas. Every shift draws one of them.</value></data>
+  <data name="BotMerchantConfiguration_StoreNames_Description" xml:space="preserve"><value>The names of the stores, separated by commas. Every shift draws one which no other open store has; when all are taken, the store gets the name of the bot.</value></data>
   <data name="BotMerchantConfiguration_HighSetMinimumDropLevel_Name" xml:space="preserve"><value>High set minimum drop level</value></data>
   <data name="BotMerchantConfiguration_HighSetMinimumDropLevel_Description" xml:space="preserve"><value>The drop level from which an item counts as one of the higher sets. Normal items need it to be stocked; above it, ancient and the best excellent items cost more.</value></data>
   <data name="BotMerchantConfiguration_MinimumNormalItemLevel_Name" xml:space="preserve"><value>Minimum normal item level</value></data>
