@@ -58,6 +58,17 @@ public class BotMerchantConfiguration
     public int CityMerchantsPercent { get; set; } = 20;
 
     /// <summary>
+    /// Gets or sets how many bots at most start a shift every 30 seconds, per game server.
+    /// </summary>
+    /// <remarks>
+    /// After a server start, many bots have goods at once; this way the market fills up within minutes
+    /// instead of all at once, and the parties of the bots don't fall apart together.
+    /// </remarks>
+    [Range(1, 50)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_NewMerchantsPerCheck_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_NewMerchantsPerCheck_Description))]
+    public int NewMerchantsPerCheck { get; set; } = 3;
+
+    /// <summary>
     /// Gets or sets the numbers of the city maps, separated by commas, in which a share of the shifts
     /// (see <see cref="CityMerchantsPercent"/>) takes place.
     /// </summary>

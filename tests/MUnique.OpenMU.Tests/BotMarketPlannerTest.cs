@@ -136,6 +136,35 @@ public class BotMarketPlannerTest
     }
 
     /// <summary>
+    /// A bot may leave a party of bots for a market shift, but never a party with a player.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask OnlyAPartyOfBotsIsLeftForTheMarketAsync()
+    {
+        var bot = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var otherBot = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        SetIsBot(bot, true);
+        SetIsBot(otherBot, true);
+        SetIsBot(player, false);
+
+        Assert.That(BotMarketPlanner.HasOnlyBots([bot, otherBot]), Is.True);
+        Assert.That(BotMarketPlanner.HasOnlyBots([bot, player]), Is.False);
+    }
+
+    /// <summary>
+    /// After a server start, the bots go to the market a few at a time.
+    /// </summary>
+    [Test]
+    public void FewBotsStartAShiftAtATime()
+    {
+        var configuration = new BotMerchantConfiguration();
+
+        Assert.That(configuration.NewMerchantsPerCheck, Is.LessThan(configuration.MaximumMerchants));
+    }
+
+    /// <summary>
     /// The length of a shift is random between the minimum and the maximum, both included.
     /// </summary>
     [Test]
@@ -337,6 +366,17 @@ public class BotMarketPlannerTest
         var item = itemMock.Object;
         item.Definition = definition;
         return item;
+    }
+
+    /// <summary>
+    /// Gives the player an account which is a bot account or not.
+    /// </summary>
+    private static void SetIsBot(Player player, bool isBot)
+    {
+        var account = new Mock<Account>();
+        account.SetupAllProperties();
+        account.Object.IsBot = isBot;
+        player.Account = account.Object;
     }
 
     /// <summary>

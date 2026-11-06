@@ -104,6 +104,30 @@ public class BotMerchantPlugIn
         => this._unsoldShifts.TryGetValue(item.GetId(), out var count) && count >= configuration.UnsoldShiftsUntilNpc;
 
     /// <summary>
+    /// Takes the bot out of its party of bots for the shift (see <see cref="BotMarketPlanner.MayStartShift"/>).
+    /// </summary>
+    /// <returns><c>true</c>, if the bot is in no party anymore.</returns>
+    private static async ValueTask<bool> LeavePartyAsync(OfflinePlayer bot)
+    {
+        if (bot.Party is not { } party)
+        {
+            return true;
+        }
+
+        try
+        {
+            await party.KickMySelfAsync(bot).ConfigureAwait(false);
+            bot.Logger.LogDebug("Bot '{Name}' leaves its party for a market shift.", bot.Name);
+        }
+        catch (Exception ex)
+        {
+            bot.Logger.LogWarning(ex, "Bot '{Name}' couldn't leave its party for a market shift.", bot.Name);
+        }
+
+        return bot.Party is null;
+    }
+
+    /// <summary>
     /// Sends bots with goods to the market and the cities until there's the configured number of merchants.
     /// </summary>
     private async ValueTask StartShiftsAsync(GameContext gameContext, BotMerchantConfiguration configuration, DateTime now)
@@ -140,7 +164,13 @@ public class BotMerchantPlugIn
         var storeNames = configuration.GetStoreNames();
         var takenNames = shifts.Select(s => s.StoreName).ToList();
         var logger = gameContext.LoggerFactory.CreateLogger<BotMerchantPlugIn>();
-        foreach (var bot in candidates.OrderBy(_ => Rand.NextInt(0, int.MaxValue)).Take(freePlaces))
+
+        // Bots without a party first, so that the parties of the bots lose as few members as possible.
+        var starting = candidates
+            .OrderBy(b => b.Party is null ? 0 : 1)
+            .ThenBy(_ => Rand.NextInt(0, int.MaxValue))
+            .Take(Math.Min(freePlaces, configuration.NewMerchantsPerCheck));
+        foreach (var bot in starting)
         {
             var mapNumber = BotMarketPlanner.DrawShiftMap(configuration, cities, Rand.NextInt);
 
@@ -160,6 +190,11 @@ public class BotMerchantPlugIn
             {
                 logger.LogDebug("The map {Map} has no free stall for more bots.", place.Definition.Name);
                 places[place.Definition.Number] = null;
+                continue;
+            }
+
+            if (!await LeavePartyAsync(bot).ConfigureAwait(false))
+            {
                 continue;
             }
 

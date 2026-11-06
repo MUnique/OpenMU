@@ -5862,5 +5862,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotMerchantConfiguration_CityMapNumbers_Description text.</summary>
         public static string BotMerchantConfiguration_CityMapNumbers_Description => ResourceManager.GetString("BotMerchantConfiguration_CityMapNumbers_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotMerchantConfiguration_NewMerchantsPerCheck_Name text.</summary>
+        public static string BotMerchantConfiguration_NewMerchantsPerCheck_Name => ResourceManager.GetString("BotMerchantConfiguration_NewMerchantsPerCheck_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_NewMerchantsPerCheck_Description text.</summary>
+        public static string BotMerchantConfiguration_NewMerchantsPerCheck_Description => ResourceManager.GetString("BotMerchantConfiguration_NewMerchantsPerCheck_Description", resourceCulture)!;
+
     }
 }
