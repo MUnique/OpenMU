@@ -85,6 +85,15 @@ internal sealed class BotNameGenerator
         "Dark", "Soul", "Storm", "Blood", "Shadow", "Fire", "Ice", "Night", "Iron", "Death",
         "Frost", "Doom", "Grim", "Rage", "Ghost", "Wild", "Hell", "Sky", "Steel", "Black",
         "Dead", "Silent", "Mad", "Red", "Holy", "Chaos", "Thunder", "Venom", "Lone", "Star",
+        "Ash", "Bone", "Cold", "Cruel", "Dawn", "Dire", "Dread", "Dusk", "Ember", "Evil",
+        "Fallen", "Fear", "Fell", "Flame", "Gold", "Grey", "Hollow", "Jade", "Last", "Light",
+        "Lunar", "Moon", "Mystic", "Noble", "Pale", "Plague", "Pure", "Quick", "Rune", "Rust",
+        "Sacred", "Sand", "Scar", "Shade", "Sharp", "Silver", "Sin", "Snow", "Solar", "Spell",
+        "Stone", "Sun", "Swift", "True", "Twin", "Void", "War", "White", "Wind", "Winter",
+        "Wise", "Brave", "Bright", "Burn", "Cursed", "Deep", "Demon", "Divine", "Dragon", "Dust",
+        "Elder", "Fate", "Feral", "Flash", "Glory", "Grave", "Mighty", "High", "Lost", "Magic",
+        "Metal", "Mist", "Mortal", "Nether", "Poison", "Prime", "Rebel", "Royal", "Ruby", "Sage",
+        "Savage", "Skull", "Smoke", "Spark", "Stark", "Thorn", "Tide", "Titan", "Unholy", "Wrath",
     };
 
     private static readonly string[] CompoundSuffixes =
@@ -92,6 +101,15 @@ internal sealed class BotNameGenerator
         "Blade", "Hunter", "Knight", "Lord", "Slayer", "Fang", "Fury", "Wolf", "Mage", "Bane",
         "Claw", "Fist", "Heart", "Rider", "Born", "Eye", "Reaper", "Angel", "King", "Strike",
         "Hawk", "Bow", "Axe", "Shot", "Walker", "Storm", "Killer", "Wing", "Spirit", "Guard",
+        "Arrow", "Beast", "Bear", "Boar", "Crow", "Drake", "Eagle", "Fox", "Lion", "Lynx",
+        "Owl", "Snake", "Spider", "Tiger", "Wyrm", "Hound", "Bat", "Stag", "Bull", "Shark",
+        "Archer", "Baron", "Bard", "Brute", "Chief", "Duke", "Druid", "Giant", "Hero", "Monk",
+        "Priest", "Prince", "Queen", "Ranger", "Seer", "Shaman", "Smith", "Thief", "Warden", "Witch",
+        "Wizard", "Keeper", "Seeker", "Stalker", "Weaver", "Breaker", "Crusher", "Bringer", "Caller", "Cutter",
+        "Dancer", "Eater", "Hammer", "Lance", "Mace", "Spear", "Sword", "Staff", "Shield", "Edge",
+        "Song", "Tooth", "Horn", "Hand", "Scale", "Warlock", "Vandal", "Lancer", "Saint", "Mauler",
+        "Raider", "Brawler", "Ripper", "Viking", "Runner", "Templar", "Slinger", "Whip", "Fiend", "Ghoul",
+        "Wraith", "Golem", "Troll", "Orc", "Elf", "Imp", "Lich", "Pyre", "Flare", "Bolt",
     };
 
     private static readonly string[] HandleWords =
@@ -102,6 +120,18 @@ internal sealed class BotNameGenerator
         "Marco", "Diego", "Lucas", "Ivan", "Sven", "Elena", "Mika", "Aiden", "Hugo", "Leon",
         "Felix", "Oscar", "Nina", "Luna", "Mia", "Ryu", "Max", "Neo", "Tank", "Joker",
         "Bandit", "Psycho", "Kitsune", "Spike", "Dante", "Vlad", "Igor", "Hiro", "Shin", "Kai",
+        "Axel", "Bruno", "Cain", "Ezra", "Faye", "Flux", "Gaia", "Gunner", "Hana", "Haru",
+        "Iris", "Juno", "Kato", "Kenzo", "Koda", "Lexi", "Lyra", "Mako", "Maya", "Milo",
+        "Momo", "Niko", "Orion", "Otto", "Pablo", "Quinn", "Remy", "Rhea", "Rio", "Rocco",
+        "Saga", "Sasha", "Taro", "Theo", "Vega", "Wren", "Zane", "Zion", "Ziggy", "Glitch",
+        "Gizmo", "Havoc", "Jester", "Karma", "Lucky", "Mamba", "Moose", "Nacho", "Nitro", "Panda",
+        "Phoenix", "Pickle", "Pirate", "Pluto", "Pogo", "Prophet", "Puma", "Rocket", "Rusty", "Sarge",
+        "Scout", "Sniper", "Sparky", "Spooky", "Static", "Turbo", "Vortex", "Wasabi", "Yeti", "Ozzy",
+        "Taiga", "Hikaru", "Daiki", "Bjorn", "Erik", "Freya", "Astrid", "Ingrid", "Matteo", "Rafael",
+        "Tiago", "Andre", "Yusuf", "Omar", "Tariq", "Amir", "Dmitri", "Boris", "Cosmo", "Falco",
+        "Hector", "Jasper", "Logan", "Nash", "Orca", "Otis", "Ruben", "Silas", "Tobias", "Vince",
+        "Diesel", "Fuzzy", "Jumbo", "Kiwi", "Ludo", "Mango", "Noodle", "Peanut", "Pepper", "Sushi",
+        "Tofu", "Waffle",
     };
 
     private readonly IRandomizer _randomizer;
