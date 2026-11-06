@@ -129,6 +129,7 @@ public class BotMerchantPlugIn
         var arrival = new Point((byte)((arrivalGate.X1 + arrivalGate.X2) / 2), (byte)((arrivalGate.Y1 + arrivalGate.Y2) / 2));
         var stalls = shifts.Select(s => s.Stall).ToList();
         var storeNames = configuration.GetStoreNames();
+        var takenNames = shifts.Select(s => s.StoreName).ToList();
         foreach (var bot in candidates.OrderBy(_ => Rand.NextInt(0, int.MaxValue)).Take(freePlaces))
         {
             if (BotMarketPlanner.FindStall(market.Terrain, arrival, stalls, Rand.NextInt) is not { } stall)
@@ -138,7 +139,8 @@ public class BotMerchantPlugIn
             }
 
             stalls.Add(stall);
-            var storeName = storeNames.Count > 0 ? storeNames[Rand.NextInt(0, storeNames.Count)] : bot.Name;
+            var storeName = BotMarketPlanner.DrawStoreName(storeNames, takenNames, bot.Name, Rand.NextInt);
+            takenNames.Add(storeName);
             var duration = BotMarketPlanner.DrawShiftDuration(configuration, Rand.NextInt);
             bot.MarketShift = new BotMarketShift(marketDefinition, stall, storeName, now, now + duration);
             bot.Logger.LogDebug("Bot '{Name}' goes to the market for {Duration} with {Count} goods.", bot.Name, duration, BotMarketPlanner.CountPricedGoods(bot));

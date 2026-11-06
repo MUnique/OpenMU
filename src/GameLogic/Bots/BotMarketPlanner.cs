@@ -138,6 +138,21 @@ internal static class BotMarketPlanner
     }
 
     /// <summary>
+    /// Draws a store name which no other open store has, so that two stores next to each other can be
+    /// told apart.
+    /// </summary>
+    /// <param name="storeNames">The configured store names.</param>
+    /// <param name="takenNames">The names of the other open stores.</param>
+    /// <param name="botName">The name of the bot, used when all store names are taken.</param>
+    /// <param name="nextInt">Returns a random number between the inclusive minimum and the exclusive maximum.</param>
+    /// <returns>The store name.</returns>
+    internal static string DrawStoreName(IReadOnlyList<string> storeNames, IReadOnlyCollection<string> takenNames, string botName, Func<int, int, int> nextInt)
+    {
+        var free = storeNames.Where(n => !takenNames.Contains(n, StringComparer.OrdinalIgnoreCase)).ToList();
+        return free.Count == 0 ? botName : free[nextInt(0, free.Count)];
+    }
+
+    /// <summary>
     /// Determines whether and why the shift of the bot ends now.
     /// </summary>
     /// <param name="bot">The bot.</param>

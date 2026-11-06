@@ -76,6 +76,35 @@ public class BotMarketPlannerTest
     }
 
     /// <summary>
+    /// No two open stores get the same name while there are free names - the default names suffice
+    /// for the maximum number of merchants.
+    /// </summary>
+    [Test]
+    public void StoreNamesDontRepeat()
+    {
+        var configuration = new BotMerchantConfiguration();
+        var storeNames = configuration.GetStoreNames();
+        var taken = new List<string>();
+
+        for (var i = 0; i < configuration.MaximumMerchants; i++)
+        {
+            taken.Add(BotMarketPlanner.DrawStoreName(storeNames, taken, "Bot", Random.Shared.Next));
+        }
+
+        Assert.That(taken, Is.Unique);
+        Assert.That(taken, Has.None.EqualTo("Bot"));
+    }
+
+    /// <summary>
+    /// When all store names are taken, the store gets the name of the bot.
+    /// </summary>
+    [Test]
+    public void StoreGetsTheBotNameWhenAllNamesAreTaken()
+    {
+        Assert.That(BotMarketPlanner.DrawStoreName(["Rare finds"], ["rare finds"], "Raven", Random.Shared.Next), Is.EqualTo("Raven"));
+    }
+
+    /// <summary>
     /// The length of a shift is random between the minimum and the maximum, both included.
     /// </summary>
     [Test]
