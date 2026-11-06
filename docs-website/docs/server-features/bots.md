@@ -335,23 +335,24 @@ millions above. A Jewel of Chaos costs 750,000 at one merchant and 850,000 at
 another. The price stays until the good is sold or leaves the store; prices in
 jewels stay exact. `Zen price spread` 0 keeps all prices exact.
 
-With enough goods (4 by default), a bot goes to the market for a shift of 30 to
-90 minutes: through the map's spawn gate, regardless of the warp list, to a
-stall apart from the other merchants - anywhere in the safezone of the market,
-at least two tiles away from the walls, so no store blocks a corridor like the
-entrance. Some players sell in town instead, and so do 20 % of the shifts: in
-Lorencia, Devias, Noria or Elvenland, in the safezone near the spawn gate, in
-the middle of the town (`City merchants (%)`, `City map numbers`). Every store
+With enough goods (4 by default, `Minimum goods to start`), a bot goes to the
+market for a shift of 30 to 90 minutes: through the map's spawn gate, regardless
+of the warp list, to a stall apart from the other merchants - anywhere in the
+safezone of the market, at least two tiles away from the walls, so no store
+blocks a corridor like the entrance. Some players sell in town instead, and so
+do 20 % of the shifts: in Lorencia, Devias, Noria or Elvenland, in the safezone
+near the spawn gate, in the middle of the town (`City merchants (%)`, `City map
+numbers`); a city without a free stall sends the bot to the market. Every store
 gets a name no other open store has. At most 50 bots per game server sell at the
-same time - a ceiling, not a number of merchants: only bots with enough goods
-go, so there are few right after a server start. A bot leaves early when it sold
-everything, after 30 minutes without a sale, or when it logs out; then it warps
-home and goes back hunting, and its next shift is two hours later at the
-earliest. A bot in a party of bots leaves it for the shift, like a player who
-goes selling; a party with a player is never left. At most 3 bots start a shift
-every 30 seconds, so after a server start the market fills up within minutes and
-the parties don't fall apart at once. On a shift, a bot declines party
-invitations.
+same time (`Maximum merchants`) - a ceiling, not a number of merchants: only
+bots with enough goods go, so there are few right after a server start. A bot
+leaves early when it sold everything, after 30 minutes without a sale, or when
+it logs out; then it warps home and goes back hunting, and its next shift is two
+hours later at the earliest. A bot in a party of bots leaves it for the shift,
+like a player who goes selling; a party with a player is never left. At most 3
+bots start a shift every 30 seconds (`New merchants per 30 seconds`), so after a
+server start the market fills up within minutes and the parties don't fall apart
+at once. On a shift, a bot declines party invitations.
 
 A bot buys nothing, so the zen and the jewels paid for its goods are removed
 right after each sale. There are no discounts - players would learn to wait for
