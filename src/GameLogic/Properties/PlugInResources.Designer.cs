@@ -2815,6 +2815,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to How many bots at most start a shift every 30 seconds. After a server start, the market fills up within minutes instead of all at once, and the parties of the bots don&apos;t fall apart together..
+        /// </summary>
+        public static string BotMerchantConfiguration_NewMerchantsPerCheck_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_NewMerchantsPerCheck_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New merchants per 30 seconds.
+        /// </summary>
+        public static string BotMerchantConfiguration_NewMerchantsPerCheck_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_NewMerchantsPerCheck_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to How far, up or down, a zen price may differ from the calculated one. It&apos;s drawn once, when the good goes into the store, and rounded to an amount a player would ask for, e.g. 800,000 or 5.5 million. Prices in jewels stay exact; 0 keeps all prices exact..
         /// </summary>
         public static string BotMerchantConfiguration_PriceSpreadPercent_Description {

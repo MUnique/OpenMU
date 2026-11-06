@@ -2212,4 +2212,6 @@
   <data name="BotMerchantConfiguration_CityMerchantsPercent_Description" xml:space="preserve"><value>The share of the shifts which a bot spends in one of the city maps instead of on the market. 0 keeps all merchants on the market.</value></data>
   <data name="BotMerchantConfiguration_CityMapNumbers_Name" xml:space="preserve"><value>City map numbers</value></data>
   <data name="BotMerchantConfiguration_CityMapNumbers_Description" xml:space="preserve"><value>The numbers of the city maps, separated by commas (0 = Lorencia, 2 = Devias, 3 = Noria, 51 = Elvenland). The bots open their store in the safezone near the spawn gate.</value></data>
+  <data name="BotMerchantConfiguration_NewMerchantsPerCheck_Name" xml:space="preserve"><value>New merchants per 30 seconds</value></data>
+  <data name="BotMerchantConfiguration_NewMerchantsPerCheck_Description" xml:space="preserve"><value>How many bots at most start a shift every 30 seconds. After a server start, the market fills up within minutes instead of all at once, and the parties of the bots don't fall apart together.</value></data>
 </root>

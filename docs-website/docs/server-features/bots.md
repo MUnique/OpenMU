@@ -345,7 +345,11 @@ time - a ceiling, not a number of merchants: only bots with enough goods go, so
 there are few right after a server start. A bot leaves early when it sold
 everything, after 30 minutes without a sale, or when it logs out; then it warps
 home and goes back hunting, and its next shift is two hours later at the
-earliest. On a shift, it declines party invitations.
+earliest. A bot in a party of bots leaves it for the shift, like a player who
+goes selling; a party with a player is never left. At most 3 bots start a shift
+every 30 seconds, so after a server start the market fills up within minutes and
+the parties don't fall apart at once. On a shift, a bot declines party
+invitations.
 
 A bot buys nothing, so the zen and the jewels paid for its goods are removed
 right after each sale. There are no discounts - players would learn to wait for

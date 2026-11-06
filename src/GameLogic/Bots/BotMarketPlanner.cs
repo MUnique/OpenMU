@@ -66,6 +66,10 @@ internal static class BotMarketPlanner
     /// Determines whether the bot may start a market shift now: it has enough priced goods, is free of
     /// errands and company, and its last shift is long enough ago.
     /// </summary>
+    /// <remarks>
+    /// Most bots hunt in parties of bots, so a party of bots doesn't keep a bot from the market - it
+    /// leaves the party for its shift, like a player who goes selling. A party with a player isn't left.
+    /// </remarks>
     /// <param name="bot">The bot.</param>
     /// <param name="configuration">The configuration.</param>
     /// <param name="now">The current time.</param>
@@ -77,7 +81,7 @@ internal static class BotMarketPlanner
                && bot.PlayerState.CurrentState == PlayerState.EnteredWorld
                && bot.IsAlive
                && bot.Level >= Math.Max(configuration.MinimumLevel, MinimumStoreLevel)
-               && bot.Party is null
+               && (bot.Party is null || HasOnlyBots(bot.Party.PartyList))
                && bot.CurrentMiniGame is null
                && bot.EventMeeting is null
                && !bot.IsOnShoppingTrip
@@ -87,6 +91,14 @@ internal static class BotMarketPlanner
                && !(bot.ShopStorage?.StoreOpen ?? false)
                && CountPricedGoods(bot) >= configuration.MinimumGoodsToStart;
     }
+
+    /// <summary>
+    /// Determines whether all members of a party are bots, so that a bot may leave it for a market shift.
+    /// </summary>
+    /// <param name="members">The members of the party.</param>
+    /// <returns><c>true</c>, if no player is in the party.</returns>
+    internal static bool HasOnlyBots(IEnumerable<IPartyMember> members)
+        => members.All(member => member is Player { Account.IsBot: true });
 
     /// <summary>
     /// Draws the length of a shift between the configured minimum and maximum.
