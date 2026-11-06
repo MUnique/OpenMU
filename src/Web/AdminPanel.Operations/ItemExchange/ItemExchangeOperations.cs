@@ -33,7 +33,8 @@ public sealed class ItemExchangeOperations(IPersistenceContextProvider persisten
     /// It reads the configuration through a <see cref="ConfigurationReadScope"/>: the one the admin
     /// panel has already loaded, or a copy of the stored one while the admin panel has unsaved
     /// changes. So edits which aren't saved yet are not part of the file, and the configuration
-    /// is usually not loaded again for each request.
+    /// is usually not loaded again for each request. An edit which starts while the file is
+    /// written from the loaded configuration makes it read the stored one and write it again.
     /// </remarks>
     [AdminOperation(AdminRole.Viewer)]
     [NotExposedToAgents("The file is for the client editor's update and holds every item at once. Agents read items with the configuration tools.")]
@@ -50,12 +51,36 @@ public sealed class ItemExchangeOperations(IPersistenceContextProvider persisten
         var gameVersion = await this.GetGameVersionAsync(cancellationToken).ConfigureAwait(false);
         using var read = new ConfigurationReadScope();
         await read.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+        var (file, leftOut) = WriteFile(read.Configuration, gameVersion, cancellationToken);
+        if (read.LoadedConfigurationChanged)
+        {
+            // The admin panel got changes while the file was written from its configuration, so
+            // the file can hold a value which isn't saved. With these changes, the scope reads
+            // the stored configuration.
+            using var stored = new ConfigurationReadScope();
+            await stored.LoadAsync(persistence, configurations, cancellationToken).ConfigureAwait(false);
+            (file, leftOut) = WriteFile(stored.Configuration, gameVersion, cancellationToken);
+        }
+
+        this.LogLeftOutItems(leftOut);
+        return file;
+    }
+
+    /// <summary>
+    /// Writes the file and finds the items which it leaves out.
+    /// </summary>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="gameVersion">The game version which the file names.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The file and the items which it leaves out.</returns>
+    private static (byte[] File, IReadOnlyList<ItemDefinition> LeftOut) WriteFile(GameConfiguration configuration, string gameVersion, CancellationToken cancellationToken)
+    {
         for (var attempt = 1; attempt < MaximumWriteAttempts; attempt++)
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                return this.WriteFile(read.Configuration, gameVersion);
+                return (ItemExchangeExport.Write(configuration, gameVersion), ItemExchangeExport.GetLeftOutItems(configuration));
             }
             catch (InvalidOperationException)
             {
@@ -65,20 +90,7 @@ public sealed class ItemExchangeOperations(IPersistenceContextProvider persisten
         }
 
         cancellationToken.ThrowIfCancellationRequested();
-        return this.WriteFile(read.Configuration, gameVersion);
-    }
-
-    /// <summary>
-    /// Writes the file and logs the items which it leaves out.
-    /// </summary>
-    /// <param name="configuration">The configuration.</param>
-    /// <param name="gameVersion">The game version which the file names.</param>
-    /// <returns>The file.</returns>
-    private byte[] WriteFile(GameConfiguration configuration, string gameVersion)
-    {
-        var file = ItemExchangeExport.Write(configuration, gameVersion);
-        this.LogLeftOutItems(ItemExchangeExport.GetLeftOutItems(configuration));
-        return file;
+        return (ItemExchangeExport.Write(configuration, gameVersion), ItemExchangeExport.GetLeftOutItems(configuration));
     }
 
     /// <summary>
