@@ -919,5 +919,5 @@
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einfrierdauer des Eis-Pfeils anpassen</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve">
-    <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils, um die Verkürzung bei erfolgreichen Treffern auszugleichen. Angepasste Dauern bleiben unverändert.</value></data>
+    <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt die Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert.</value></data>
 </root>

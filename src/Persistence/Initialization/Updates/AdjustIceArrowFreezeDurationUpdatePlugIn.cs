@@ -1,4 +1,4 @@
-// <copyright file="AdjustIceArrowFreezeDurationUpdatePlugInSeason6.cs" company="MUnique">
+// <copyright file="AdjustIceArrowFreezeDurationUpdatePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AdjustIceArrowFreezeDurationUpdatePlugIn_Name), Description = nameof(PlugInResources.AdjustIceArrowFreezeDurationUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("FEC39E1D-85AC-4768-B7E0-D5B0C8A83C26")]
-public class AdjustIceArrowFreezeDurationUpdatePlugInSeason6 : UpdatePlugInBase
+public class AdjustIceArrowFreezeDurationUpdatePlugIn : UpdatePlugInBase
 {
     private const float OriginalDurationInSeconds = 5;
     private const float UpdatedDurationInSeconds = 7;
@@ -32,20 +32,19 @@ public class AdjustIceArrowFreezeDurationUpdatePlugInSeason6 : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 5, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override bool IsMandatory => false;
+    public override bool IsMandatory => true;
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var iceArrowSkills = gameConfiguration.Skills
-            .Where(skill => skill.Number == (short)SkillNumber.IceArrow || skill.Number == (short)SkillNumber.IceArrowStrengthener);
+        var duration = gameConfiguration.Skills
+            .FirstOrDefault(skill => skill.Number == (short)SkillNumber.IceArrow)?
+            .MagicEffectDef?
+            .Duration;
 
-        foreach (var skill in iceArrowSkills)
+        if (duration?.ConstantValue.Value == OriginalDurationInSeconds)
         {
-            if (skill.MagicEffectDef?.Duration is { } duration && duration.ConstantValue.Value == OriginalDurationInSeconds)
-            {
-                duration.ConstantValue.Value = UpdatedDurationInSeconds;
-            }
+            duration.ConstantValue.Value = UpdatedDurationInSeconds;
         }
 
         return ValueTask.CompletedTask;

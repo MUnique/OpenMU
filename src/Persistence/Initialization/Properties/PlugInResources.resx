@@ -437,5 +437,5 @@
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Name" xml:space="preserve"><value>Fix Kanturu Ruins 3 landing area</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept.</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve"><value>Adjust Ice Arrow freeze duration</value></data>
-  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Extends the default Ice Arrow freeze duration to account for the reduction on successful hits. Customized durations are left unchanged.</value></data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Extends the default Ice Arrow freeze duration and adds its reduction on successful hits. Customized durations are left unchanged.</value></data>
 </root>
