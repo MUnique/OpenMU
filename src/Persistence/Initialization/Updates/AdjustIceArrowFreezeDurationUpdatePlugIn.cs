@@ -74,6 +74,6 @@ public class AdjustIceArrowFreezeDurationUpdatePlugIn : UpdatePlugInBase
                && effect.SubType == (byte)(0xFF - ElementalType.Ice)
                && effect.Duration?.ConstantValue.Value == OriginalIcedDurationInSeconds
                && effect.Chance is null
-               && effect.PowerUpDefinitions.FirstOrDefault()?.TargetAttribute == Stats.IsIced.GetPersistent(gameConfiguration);
+               && effect.PowerUpDefinitions.Any(pu => pu.TargetAttribute == Stats.IsIced.GetPersistent(gameConfiguration));
     }
 }
