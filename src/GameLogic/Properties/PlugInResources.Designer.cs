@@ -5850,5 +5850,17 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description text.</summary>
         public static string BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description => ResourceManager.GetString("BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotMerchantConfiguration_CityMerchantsPercent_Name text.</summary>
+        public static string BotMerchantConfiguration_CityMerchantsPercent_Name => ResourceManager.GetString("BotMerchantConfiguration_CityMerchantsPercent_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CityMerchantsPercent_Description text.</summary>
+        public static string BotMerchantConfiguration_CityMerchantsPercent_Description => ResourceManager.GetString("BotMerchantConfiguration_CityMerchantsPercent_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CityMapNumbers_Name text.</summary>
+        public static string BotMerchantConfiguration_CityMapNumbers_Name => ResourceManager.GetString("BotMerchantConfiguration_CityMapNumbers_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotMerchantConfiguration_CityMapNumbers_Description text.</summary>
+        public static string BotMerchantConfiguration_CityMapNumbers_Description => ResourceManager.GetString("BotMerchantConfiguration_CityMapNumbers_Description", resourceCulture)!;
+
     }
 }

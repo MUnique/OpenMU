@@ -76,6 +76,37 @@ public class BotMarketPlannerTest
     }
 
     /// <summary>
+    /// About the configured share of the shifts takes place in the cities, the rest on the market.
+    /// </summary>
+    [Test]
+    public void ShareOfTheShiftsIsInTheCities()
+    {
+        var configuration = new BotMerchantConfiguration();
+        var cities = configuration.GetCityMapNumbers();
+        const int draws = 10_000;
+
+        var maps = Enumerable.Range(0, draws).Select(_ => BotMarketPlanner.DrawShiftMap(configuration, cities, Random.Shared.Next)).ToList();
+
+        Assert.That(cities, Is.EqualTo(new short[] { 0, 2, 3, 51 }));
+        Assert.That(maps.Count(m => m == configuration.MarketMapNumber), Is.InRange(7_500, 8_500));
+        Assert.That(maps.Where(m => m != configuration.MarketMapNumber).Distinct(), Is.EquivalentTo(cities));
+    }
+
+    /// <summary>
+    /// Without a share for the cities, or without usable cities, every shift is on the market.
+    /// </summary>
+    [Test]
+    public void WithoutCitiesEveryShiftIsOnTheMarket()
+    {
+        var noShare = new BotMerchantConfiguration { CityMerchantsPercent = 0 };
+        var noCities = new BotMerchantConfiguration { CityMerchantsPercent = 100, CityMapNumbers = "x, " };
+
+        Assert.That(BotMarketPlanner.DrawShiftMap(noShare, noShare.GetCityMapNumbers(), (_, max) => max - 1), Is.EqualTo(noShare.MarketMapNumber));
+        Assert.That(noCities.GetCityMapNumbers(), Is.Empty);
+        Assert.That(BotMarketPlanner.DrawShiftMap(noCities, noCities.GetCityMapNumbers(), (min, _) => min), Is.EqualTo(noCities.MarketMapNumber));
+    }
+
+    /// <summary>
     /// No two open stores get the same name while there are free names - the default names suffice
     /// for the maximum number of merchants.
     /// </summary>
