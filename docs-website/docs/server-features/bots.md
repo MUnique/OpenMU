@@ -337,12 +337,14 @@ jewels stay exact. `Zen price spread` 0 keeps all prices exact.
 
 With enough goods (4 by default), a bot goes to the market for a shift of 30 to
 90 minutes: through the map's spawn gate, regardless of the warp list, to a
-stall apart from the other merchants. Some players sell in town instead, and so
-do 20 % of the shifts: in Lorencia, Devias, Noria or Elvenland, in the safezone
-near the spawn gate (`City merchants (%)`, `City map numbers`). Every store gets
-a name no other open store has. At most 50 bots per game server sell at the same
-time - a ceiling, not a number of merchants: only bots with enough goods go, so
-there are few right after a server start. A bot leaves early when it sold
+stall apart from the other merchants - anywhere in the safezone of the market,
+at least two tiles away from the walls, so no store blocks a corridor like the
+entrance. Some players sell in town instead, and so do 20 % of the shifts: in
+Lorencia, Devias, Noria or Elvenland, in the safezone near the spawn gate, in
+the middle of the town (`City merchants (%)`, `City map numbers`). Every store
+gets a name no other open store has. At most 50 bots per game server sell at the
+same time - a ceiling, not a number of merchants: only bots with enough goods
+go, so there are few right after a server start. A bot leaves early when it sold
 everything, after 30 minutes without a sale, or when it logs out; then it warps
 home and goes back hunting, and its next shift is two hours later at the
 earliest. A bot in a party of bots leaves it for the shift, like a player who

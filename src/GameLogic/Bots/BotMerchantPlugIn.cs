@@ -186,7 +186,9 @@ public class BotMerchantPlugIn
                 continue;
             }
 
-            if (BotMarketPlanner.FindStall(place.Map.Terrain, place.Arrival, place.Stalls, Rand.NextInt) is not { } stall)
+            // The market is made for stores, so its whole safezone is used; in a city, the stores stay in the middle.
+            var searchRange = place.Definition.Number == configuration.MarketMapNumber ? (int?)null : BotMarketPlanner.StallSearchRange;
+            if (BotMarketPlanner.FindStall(place.Map.Terrain, place.Arrival, place.Stalls, Rand.NextInt, searchRange) is not { } stall)
             {
                 logger.LogDebug("The map {Map} has no free stall for more bots.", place.Definition.Name);
                 places[place.Definition.Number] = null;

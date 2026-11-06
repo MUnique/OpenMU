@@ -63,6 +63,58 @@ public class BotMarketPlannerTest
     }
 
     /// <summary>
+    /// A stall keeps away from the walls, so that no store stands against one.
+    /// </summary>
+    [Test]
+    public void StallKeepsAwayFromTheWalls()
+    {
+        var terrain = CreateSafezoneTerrain();
+        for (var y = 0; y <= byte.MaxValue; y++)
+        {
+            terrain.WalkMap[Arrival.X + 4, y] = false;
+        }
+
+        for (var i = 0; i < 200; i++)
+        {
+            var stall = BotMarketPlanner.FindStall(terrain, Arrival, [], Random.Shared.Next)!.Value;
+            Assert.That(stall.X, Is.LessThanOrEqualTo(Arrival.X + 4 - BotMarketPlanner.StallMargin - 1));
+        }
+    }
+
+    /// <summary>
+    /// On the market, the stalls spread over the whole safezone, not only around the arrival point.
+    /// </summary>
+    [Test]
+    public void MarketStallsSpreadOverTheWholeSafezone()
+    {
+        var terrain = CreateSafezoneTerrain();
+
+        var stalls = Enumerable.Range(0, 50).Select(_ => BotMarketPlanner.FindStall(terrain, Arrival, [], Random.Shared.Next, null)!.Value).ToList();
+
+        Assert.That(stalls.Any(s => s.EuclideanDistanceTo(Arrival) > BotMarketPlanner.StallSearchRange), Is.True);
+    }
+
+    /// <summary>
+    /// A safezone behind a wall, which the bot can't walk to from the arrival point, gets no stall.
+    /// </summary>
+    [Test]
+    public void SafezoneBehindAWallGetsNoStall()
+    {
+        var terrain = CreateSafezoneTerrain();
+        const int wallX = 160;
+        for (var y = 0; y <= byte.MaxValue; y++)
+        {
+            terrain.WalkMap[wallX, y] = false;
+        }
+
+        for (var i = 0; i < 50; i++)
+        {
+            var stall = BotMarketPlanner.FindStall(terrain, Arrival, [], Random.Shared.Next, null)!.Value;
+            Assert.That(stall.X, Is.LessThan(wallX));
+        }
+    }
+
+    /// <summary>
     /// A market without a free tile has no stall: the bot doesn't go there at all.
     /// </summary>
     [Test]
