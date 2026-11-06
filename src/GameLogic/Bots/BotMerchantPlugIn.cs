@@ -13,9 +13,9 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Lets the server-side bots sell their goods in personal stores on the market map (Loren Market): a bot
-/// with enough priced goods in its store goes there for a shift, opens the store and goes back hunting
-/// afterward (see <see cref="BotMarketShift"/>).
+/// Lets the server-side bots sell their goods in personal stores on the market map (Loren Market) and,
+/// for a share of the shifts, in the cities: a bot with enough priced goods in its store goes there for
+/// a shift, opens the store and goes back hunting afterward (see <see cref="BotMarketShift"/>).
 /// </summary>
 /// <remarks>
 /// Every bot may become a merchant now and then - there are no dedicated merchant bots. A shift ends
@@ -104,7 +104,7 @@ public class BotMerchantPlugIn
         => this._unsoldShifts.TryGetValue(item.GetId(), out var count) && count >= configuration.UnsoldShiftsUntilNpc;
 
     /// <summary>
-    /// Sends bots with goods to the market until it has the configured number of merchants.
+    /// Sends bots with goods to the market and the cities until there's the configured number of merchants.
     /// </summary>
     private async ValueTask StartShiftsAsync(GameContext gameContext, BotMerchantConfiguration configuration, DateTime now)
     {
@@ -118,32 +118,84 @@ public class BotMerchantPlugIn
         }
 
         var candidates = bots.Where(b => BotMarketPlanner.MayStartShift(b, configuration, now)).ToList();
-        if (candidates.Count == 0
-            || gameContext.Configuration.Maps.FirstOrDefault(m => m.Number == configuration.MarketMapNumber) is not { } marketDefinition
-            || marketDefinition.ExitGates.FirstOrDefault(g => g.IsSpawnGate) is not { } arrivalGate
-            || await gameContext.GetMapAsync((ushort)marketDefinition.Number).ConfigureAwait(false) is not { } market)
+        if (candidates.Count == 0)
         {
             return;
         }
 
-        var arrival = new Point((byte)((arrivalGate.X1 + arrivalGate.X2) / 2), (byte)((arrivalGate.Y1 + arrivalGate.Y2) / 2));
-        var stalls = shifts.Select(s => s.Stall).ToList();
-        var storeNames = configuration.GetStoreNames();
-        var takenNames = shifts.Select(s => s.StoreName).ToList();
-        foreach (var bot in candidates.OrderBy(_ => Rand.NextInt(0, int.MaxValue)).Take(freePlaces))
+        // Resolved once per check; a map which isn't usable (unknown, without a spawn gate) or full is null.
+        var places = new Dictionary<short, MarketPlace?>();
+        async ValueTask<MarketPlace?> GetPlaceAsync(short mapNumber)
         {
-            if (BotMarketPlanner.FindStall(market.Terrain, arrival, stalls, Rand.NextInt) is not { } stall)
+            if (!places.TryGetValue(mapNumber, out var place))
             {
-                gameContext.LoggerFactory.CreateLogger<BotMerchantPlugIn>().LogDebug("The market {Map} has no free stall for more bots.", marketDefinition.Name);
-                return;
+                place = await MarketPlace.ResolveAsync(gameContext, mapNumber, shifts).ConfigureAwait(false);
+                places[mapNumber] = place;
             }
 
-            stalls.Add(stall);
+            return place;
+        }
+
+        var cities = configuration.GetCityMapNumbers().Where(n => n != configuration.MarketMapNumber).ToList();
+        var storeNames = configuration.GetStoreNames();
+        var takenNames = shifts.Select(s => s.StoreName).ToList();
+        var logger = gameContext.LoggerFactory.CreateLogger<BotMerchantPlugIn>();
+        foreach (var bot in candidates.OrderBy(_ => Rand.NextInt(0, int.MaxValue)).Take(freePlaces))
+        {
+            var mapNumber = BotMarketPlanner.DrawShiftMap(configuration, cities, Rand.NextInt);
+
+            // A city which can't take the bot leaves it to the market.
+            var place = await GetPlaceAsync(mapNumber).ConfigureAwait(false);
+            if (place is null && mapNumber != configuration.MarketMapNumber)
+            {
+                place = await GetPlaceAsync(configuration.MarketMapNumber).ConfigureAwait(false);
+            }
+
+            if (place is null)
+            {
+                continue;
+            }
+
+            if (BotMarketPlanner.FindStall(place.Map.Terrain, place.Arrival, place.Stalls, Rand.NextInt) is not { } stall)
+            {
+                logger.LogDebug("The map {Map} has no free stall for more bots.", place.Definition.Name);
+                places[place.Definition.Number] = null;
+                continue;
+            }
+
+            place.Stalls.Add(stall);
             var storeName = BotMarketPlanner.DrawStoreName(storeNames, takenNames, bot.Name, Rand.NextInt);
             takenNames.Add(storeName);
             var duration = BotMarketPlanner.DrawShiftDuration(configuration, Rand.NextInt);
-            bot.MarketShift = new BotMarketShift(marketDefinition, stall, storeName, now, now + duration);
-            bot.Logger.LogDebug("Bot '{Name}' goes to the market for {Duration} with {Count} goods.", bot.Name, duration, BotMarketPlanner.CountPricedGoods(bot));
+            bot.MarketShift = new BotMarketShift(place.Definition, stall, storeName, now, now + duration);
+            bot.Logger.LogDebug("Bot '{Name}' goes to {Map} for {Duration} with {Count} goods.", bot.Name, place.Definition.Name, duration, BotMarketPlanner.CountPricedGoods(bot));
+        }
+    }
+
+    /// <summary>
+    /// A map on which the bots open their stores, with the stalls which are taken there.
+    /// </summary>
+    /// <param name="Definition">The definition of the map.</param>
+    /// <param name="Map">The map instance of the game server.</param>
+    /// <param name="Arrival">The center of the spawn gate, around which the stalls are.</param>
+    /// <param name="Stalls">The taken stalls of this map.</param>
+    private sealed record MarketPlace(GameMapDefinition Definition, GameMap Map, Point Arrival, List<Point> Stalls)
+    {
+        /// <summary>
+        /// Resolves the map; <c>null</c>, if it's unknown or has no spawn gate the bots could arrive at.
+        /// </summary>
+        public static async ValueTask<MarketPlace?> ResolveAsync(GameContext gameContext, short mapNumber, IEnumerable<BotMarketShift> shifts)
+        {
+            if (gameContext.Configuration.Maps.FirstOrDefault(m => m.Number == mapNumber) is not { } definition
+                || definition.ExitGates.FirstOrDefault(g => g.IsSpawnGate) is not { } gate
+                || await gameContext.GetMapAsync((ushort)definition.Number).ConfigureAwait(false) is not { } map)
+            {
+                return null;
+            }
+
+            var arrival = new Point((byte)((gate.X1 + gate.X2) / 2), (byte)((gate.Y1 + gate.Y2) / 2));
+            var stalls = shifts.Where(s => s.Map.Number == mapNumber).Select(s => s.Stall).ToList();
+            return new MarketPlace(definition, map, arrival, stalls);
         }
     }
 }

@@ -337,11 +337,15 @@ jewels stay exact. `Zen price spread` 0 keeps all prices exact.
 
 With enough goods (4 by default), a bot goes to the market for a shift of 30 to
 90 minutes: through the map's spawn gate, regardless of the warp list, to a
-stall apart from the other merchants. Every store gets a name no other open
-store has. At most 15 bots per game server sell at the same time. A bot leaves
-early when it sold everything, after 30 minutes without a sale, or when it logs
-out; then it warps home and goes back hunting, and its next shift is two hours
-later at the earliest. On a shift, it declines party invitations.
+stall apart from the other merchants. Some players sell in town instead, and so
+do 20 % of the shifts: in Lorencia, Devias, Noria or Elvenland, in the safezone
+near the spawn gate (`City merchants (%)`, `City map numbers`). Every store gets
+a name no other open store has. At most 50 bots per game server sell at the same
+time - a ceiling, not a number of merchants: only bots with enough goods go, so
+there are few right after a server start. A bot leaves early when it sold
+everything, after 30 minutes without a sale, or when it logs out; then it warps
+home and goes back hunting, and its next shift is two hours later at the
+earliest. On a shift, it declines party invitations.
 
 A bot buys nothing, so the zen and the jewels paid for its goods are removed
 right after each sale. There are no discounts - players would learn to wait for
@@ -429,8 +433,8 @@ only talks about what it could actually do:
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
 | A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
 | A player wrote in the party chat (`~`) | party chat, the same lines as whisper replies | the bot whose name is in the message; without a name, one bot of the party - only when a keyword matches |
-| Now and then, advertising its goods (see Selling on the market) | normal chat, `{location}`, `{store}` | a bot behind its open store on the market which a player sees |
-| A player whispered to a merchant what it sells ("what are you selling?", "za ile?"), or asked it by name in the normal chat | the same way back: a line of the *merchant whisper replies* which points to its store, `{store}` | a bot behind its open store on the market |
+| Now and then, advertising its goods (see Selling on the market) | normal chat, `{location}`, `{store}` | a bot behind its open store on the market or in a city which a player sees |
+| A player whispered to a merchant what it sells ("what are you selling?", "za ile?"), or asked it by name in the normal chat | the same way back: a line of the *merchant whisper replies* which points to its store, `{store}` | a bot behind its open store on the market or in a city |
 | A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
 | A player asked the bot for a trade or challenged it to a duel | whisper, 70 % chance, `{player}` — the bot turns it down in any case (no trade window, no duels) | the bot |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |

@@ -2293,6 +2293,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The numbers of the city maps, separated by commas (0 = Lorencia, 2 = Devias, 3 = Noria, 51 = Elvenland). The bots open their store in the safezone near the spawn gate..
+        /// </summary>
+        public static string BotMerchantConfiguration_CityMapNumbers_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CityMapNumbers_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to City map numbers.
+        /// </summary>
+        public static string BotMerchantConfiguration_CityMapNumbers_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CityMapNumbers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The share of the shifts which a bot spends in one of the city maps instead of on the market. 0 keeps all merchants on the market..
+        /// </summary>
+        public static string BotMerchantConfiguration_CityMerchantsPercent_Description {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CityMerchantsPercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to City merchants (%).
+        /// </summary>
+        public static string BotMerchantConfiguration_CityMerchantsPercent_Name {
+            get {
+                return ResourceManager.GetString("BotMerchantConfiguration_CityMerchantsPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The currency for which a bot sells its surplus of the Jewel of Creation: zen or another jewel (bless, soul, chaos, life, creation)..
         /// </summary>
         public static string BotMerchantConfiguration_CreationCurrency_Description {
@@ -2581,7 +2617,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The maximum number of bots with an open store on the market at the same time, per game server..
+        ///   Looks up a localized string similar to The maximum number of bots with an open store at the same time, on the market and in the cities together, per game server. Only bots with enough goods go, so it&apos;s a ceiling - and they go back hunting after their shift..
         /// </summary>
         public static string BotMerchantConfiguration_MaximumMerchants_Description {
             get {

@@ -4,13 +4,16 @@
 
 namespace MUnique.OpenMU.GameLogic.Bots;
 
+using System.Globalization;
+
 /// <summary>
 /// Configuration of the <see cref="BotMerchantPlugIn"/>: how many bots sell their goods on the market
-/// map at the same time, and for how long.
+/// map and in the cities at the same time, and for how long.
 /// </summary>
 /// <remarks>
 /// A bot goes to the market when it collected enough goods in its personal store, stays there for a
-/// shift of random length, and goes back hunting afterward. The limits apply per game server.
+/// shift of random length, and goes back hunting afterward. Some players open their store in a city
+/// instead, so a share of the shifts takes place there. The limits apply per game server.
 /// </remarks>
 public class BotMerchantConfiguration
 {
@@ -18,6 +21,11 @@ public class BotMerchantConfiguration
     /// The default of <see cref="MarketMapNumber"/>: Loren Market, the map which is made for player stores.
     /// </summary>
     internal const short DefaultMarketMapNumber = 79;
+
+    /// <summary>
+    /// The default of <see cref="CityMapNumbers"/>: Lorencia, Devias, Noria and Elvenland, the towns where the players meet.
+    /// </summary>
+    internal const string DefaultCityMapNumbers = "0, 2, 3, 51";
 
     /// <summary>
     /// Gets or sets the number of the map on which the bots open their stores.
@@ -30,11 +38,35 @@ public class BotMerchantConfiguration
     public short MarketMapNumber { get; set; } = DefaultMarketMapNumber;
 
     /// <summary>
-    /// Gets or sets the maximum number of bots with an open store on the market at the same time, per game server.
+    /// Gets or sets the maximum number of bots with an open store at the same time, on the market and in
+    /// the cities together, per game server.
     /// </summary>
-    [Range(0, 200)]
+    /// <remarks>
+    /// It's a ceiling, not a number of dedicated merchants: only bots which collected enough goods go,
+    /// and they go back hunting after their shift.
+    /// </remarks>
+    [Range(0, 50)]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MaximumMerchants_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MaximumMerchants_Description))]
-    public int MaximumMerchants { get; set; } = 15;
+    public int MaximumMerchants { get; set; } = 50;
+
+    /// <summary>
+    /// Gets or sets the share of the shifts, in percent, which a bot spends in one of the
+    /// <see cref="CityMapNumbers"/> instead of on the market.
+    /// </summary>
+    [Range(0, 100)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CityMerchantsPercent_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CityMerchantsPercent_Description))]
+    public int CityMerchantsPercent { get; set; } = 20;
+
+    /// <summary>
+    /// Gets or sets the numbers of the city maps, separated by commas, in which a share of the shifts
+    /// (see <see cref="CityMerchantsPercent"/>) takes place.
+    /// </summary>
+    /// <remarks>
+    /// Like on the market, the stall is in the safezone near the spawn gate of the map, which the bot
+    /// reaches regardless of the warp list.
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_CityMapNumbers_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_CityMapNumbers_Description))]
+    public string CityMapNumbers { get; set; } = DefaultCityMapNumbers;
 
     /// <summary>
     /// Gets or sets the minimum level of a bot to go to the market.
@@ -329,4 +361,16 @@ public class BotMerchantConfiguration
     internal IReadOnlyList<string> GetStoreNames()
         => (this.StoreNames ?? string.Empty)
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    /// <summary>
+    /// Gets the map numbers of <see cref="CityMapNumbers"/>, without the ones which aren't numbers.
+    /// </summary>
+    /// <returns>The map numbers.</returns>
+    internal IReadOnlyList<short> GetCityMapNumbers()
+        => (this.CityMapNumbers ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(n => short.TryParse(n, NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) ? number : (short?)null)
+            .OfType<short>()
+            .Distinct()
+            .ToList();
 }

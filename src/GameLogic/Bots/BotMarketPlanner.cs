@@ -138,6 +138,24 @@ internal static class BotMarketPlanner
     }
 
     /// <summary>
+    /// Draws the map of the next shift: one of the cities for the configured share of the shifts,
+    /// otherwise the market.
+    /// </summary>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="cities">The usable city maps; when empty, every shift is on the market.</param>
+    /// <param name="nextInt">Returns a random number between the inclusive minimum and the exclusive maximum.</param>
+    /// <returns>The map number.</returns>
+    internal static short DrawShiftMap(BotMerchantConfiguration configuration, IReadOnlyList<short> cities, Func<int, int, int> nextInt)
+    {
+        if (cities.Count == 0 || nextInt(0, 100) >= configuration.CityMerchantsPercent)
+        {
+            return configuration.MarketMapNumber;
+        }
+
+        return cities[nextInt(0, cities.Count)];
+    }
+
+    /// <summary>
     /// Draws a store name which no other open store has, so that two stores next to each other can be
     /// told apart.
     /// </summary>
