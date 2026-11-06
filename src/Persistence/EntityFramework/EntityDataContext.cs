@@ -17,12 +17,10 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 public class EntityDataContext : ExtendedTypeContext
 {
+    // Repository metadata must not open an administrative context just to enumerate entity types.
+    // ConfigurationContext already uses this compiled model for the exact same entity types.
     private static readonly Lazy<IModel> CompleteModelValue = new(
-        () =>
-        {
-            using var context = new EntityDataContext();
-            return context.Model;
-        },
+        () => CompiledModels.ForEntityDataContext.EntityDataContextModel.Instance,
         LazyThreadSafetyMode.PublicationOnly);
 
     /// <summary>

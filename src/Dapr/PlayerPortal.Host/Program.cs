@@ -17,7 +17,7 @@ var builder = DaprService.CreateBuilder("PlayerPortal", args);
 var bindUrl = Environment.GetEnvironmentVariable("PLAYER_PORTAL_BIND_URL");
 builder.WebHost.UseUrls(string.IsNullOrWhiteSpace(bindUrl) ? "http://127.0.0.1:8080" : bindUrl);
 builder.Services.AddPeristenceProvider()
-    .AddSingleton<IDataSource<GameConfiguration>, GameConfigurationDataSource>();
+    .AddSingleton<IDataSource<GameConfiguration>, PlayerPortalGameConfigurationDataSource>();
 builder.Services.AddPlayerPortalApi(builder.Configuration);
 builder.Services.AddControllers().AddApplicationPart(typeof(PlayerPortalController).Assembly);
 
