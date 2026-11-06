@@ -147,6 +147,8 @@ public class BotMerchantPlugIn
             return;
         }
 
+        var logger = gameContext.LoggerFactory.CreateLogger<BotMerchantPlugIn>();
+
         // Resolved once per check; a map which isn't usable (unknown, without a spawn gate) or full is null.
         var places = new Dictionary<short, MarketPlace?>();
         async ValueTask<MarketPlace?> GetPlaceAsync(short mapNumber)
@@ -160,10 +162,28 @@ public class BotMerchantPlugIn
             return place;
         }
 
+        // The market is made for stores, so its whole safezone is used; in a city, the stores stay in the middle.
+        async ValueTask<(MarketPlace? Place, Point? Stall)> FindStallAsync(short mapNumber)
+        {
+            if (await GetPlaceAsync(mapNumber).ConfigureAwait(false) is not { } place)
+            {
+                return (null, null);
+            }
+
+            var searchRange = mapNumber == configuration.MarketMapNumber ? (int?)null : BotMarketPlanner.StallSearchRange;
+            var stall = BotMarketPlanner.FindStall(place.Map.Terrain, place.Arrival, place.Stalls, Rand.NextInt, searchRange);
+            if (stall is null)
+            {
+                logger.LogDebug("The map {Map} has no free stall for more bots.", place.Definition.Name);
+                places[mapNumber] = null;
+            }
+
+            return (place, stall);
+        }
+
         var cities = configuration.GetCityMapNumbers().Where(n => n != configuration.MarketMapNumber).ToList();
         var storeNames = configuration.GetStoreNames();
         var takenNames = shifts.Select(s => s.StoreName).ToList();
-        var logger = gameContext.LoggerFactory.CreateLogger<BotMerchantPlugIn>();
 
         // Bots without a party first, so that the parties of the bots lose as few members as possible.
         var starting = candidates
@@ -174,24 +194,15 @@ public class BotMerchantPlugIn
         {
             var mapNumber = BotMarketPlanner.DrawShiftMap(configuration, cities, Rand.NextInt);
 
-            // A city which can't take the bot leaves it to the market.
-            var place = await GetPlaceAsync(mapNumber).ConfigureAwait(false);
-            if (place is null && mapNumber != configuration.MarketMapNumber)
+            // A city which can't take the bot (unusable or full) leaves it to the market.
+            var (place, stall) = await FindStallAsync(mapNumber).ConfigureAwait(false);
+            if (stall is null && mapNumber != configuration.MarketMapNumber)
             {
-                place = await GetPlaceAsync(configuration.MarketMapNumber).ConfigureAwait(false);
+                (place, stall) = await FindStallAsync(configuration.MarketMapNumber).ConfigureAwait(false);
             }
 
-            if (place is null)
+            if (place is null || stall is not { } freeStall)
             {
-                continue;
-            }
-
-            // The market is made for stores, so its whole safezone is used; in a city, the stores stay in the middle.
-            var searchRange = place.Definition.Number == configuration.MarketMapNumber ? (int?)null : BotMarketPlanner.StallSearchRange;
-            if (BotMarketPlanner.FindStall(place.Map.Terrain, place.Arrival, place.Stalls, Rand.NextInt, searchRange) is not { } stall)
-            {
-                logger.LogDebug("The map {Map} has no free stall for more bots.", place.Definition.Name);
-                places[place.Definition.Number] = null;
                 continue;
             }
 
@@ -200,11 +211,11 @@ public class BotMerchantPlugIn
                 continue;
             }
 
-            place.Stalls.Add(stall);
+            place.Stalls.Add(freeStall);
             var storeName = BotMarketPlanner.DrawStoreName(storeNames, takenNames, bot.Name, Rand.NextInt);
             takenNames.Add(storeName);
             var duration = BotMarketPlanner.DrawShiftDuration(configuration, Rand.NextInt);
-            bot.MarketShift = new BotMarketShift(place.Definition, stall, storeName, now, now + duration);
+            bot.MarketShift = new BotMarketShift(place.Definition, freeStall, storeName, now, now + duration);
             bot.Logger.LogDebug("Bot '{Name}' goes to {Map} for {Duration} with {Count} goods.", bot.Name, place.Definition.Name, duration, BotMarketPlanner.CountPricedGoods(bot));
         }
     }
