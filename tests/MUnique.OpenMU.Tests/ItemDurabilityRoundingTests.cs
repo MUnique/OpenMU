@@ -132,6 +132,7 @@ public class ItemDurabilityRoundingTests
         var definitionMock = new Mock<ItemDefinition>();
         definitionMock.SetupAllProperties();
         definitionMock.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+        definitionMock.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
         var definition = definitionMock.Object;
         definition.Width = 1;
         definition.Height = 1;
