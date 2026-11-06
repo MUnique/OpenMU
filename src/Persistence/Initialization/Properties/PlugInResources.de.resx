@@ -919,5 +919,5 @@
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einfrierdauer des Eis-Pfeils anpassen</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve">
-    <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt die Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert.</value></data>
+    <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt ihre Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert. Außerdem werden die Magieeffekte von Ice Arrow Str, Chain Drive Str und Strike of Destruction Str an die ihrer Basisfähigkeiten angeglichen.</value></data>
 </root>
