@@ -8,6 +8,7 @@ on:
       - .github/workflows/phase2f-player-portal-isolation.yml
       - src/Dapr/PlayerPortal.Host/**
       - src/Web/PlayerPortal.Api/**
+      - src/Persistence/EntityFramework/EntityDataContext.cs
       - tests/MUnique.OpenMU.Web.Tests/Api/**
   push:
     branches:
