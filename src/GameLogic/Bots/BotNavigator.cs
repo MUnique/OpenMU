@@ -148,6 +148,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int PartyRegroupDistance = 2;
 
     /// <summary>
+    /// Distance (tiles) from its leader beyond which a follower walks back even while there are monsters
+    /// near the leader. Twice the hunting range: the combat handler only fights targets within
+    /// <see cref="HuntingRange"/> of the leader, so no fight keeps a follower further away than that.
+    /// </summary>
+    private const int FollowerLeashDistance = 2 * HuntingRange;
+
+    /// <summary>
     /// Hunting grounds closer than this (tiles) to a recent death site are avoided after the same
     /// player killed the bot repeatedly (see <see cref="OfflinePlayer.TryGetDeathSiteToAvoid"/>),
     /// so the bot farms somewhere else instead of walking back into the same lost fight.
@@ -175,7 +182,19 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private static readonly ConcurrentDictionary<Guid, bool> WalkableSpawnGateCache = new();
 
-    private static readonly TimeSpan EvaluationInterval = TimeSpan.FromSeconds(1);
+    /// <summary>
+    /// How often the bot takes its navigation decisions (where to go, whether to warp, shop, follow).
+    /// Same pace as the MU Helper tick: a bot standing next to its leader sets off at most half a second
+    /// after him. The errands checked on each decision keep their own, much longer intervals.
+    /// </summary>
+    private static readonly TimeSpan EvaluationInterval = TimeSpan.FromMilliseconds(500);
+
+    /// <summary>
+    /// How often the navigator timer fires. Most shots end right away; they only exist to notice that a
+    /// travel hop has ended, so the next one starts without waiting for <see cref="EvaluationInterval"/>
+    /// (see <see cref="TryBeginEvaluation"/>).
+    /// </summary>
+    private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(200);
 
     private static readonly TimeSpan EmptyGroundGrace = TimeSpan.FromSeconds(8);
 
@@ -323,6 +342,8 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _minWarpLevel = FallbackMinWarpLevel;
     private Guid _leaderMapId;
     private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
+    private DateTimeOffset _nextEvaluationUtc = DateTimeOffset.MinValue;
+    private bool _isHopInProgress;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -359,7 +380,7 @@ internal sealed class BotNavigator : AsyncDisposable
             state => _ = this.SafeEvaluateAsync(cancellationToken),
             null,
             TimeSpan.FromMilliseconds(2000 + Rand.NextInt(0, 1500)),
-            EvaluationInterval);
+            PollInterval);
     }
 
     /// <summary>
@@ -687,6 +708,95 @@ internal sealed class BotNavigator : AsyncDisposable
         return true;
     }
 
+    /// <summary>
+    /// Determines whether the navigator evaluates on this timer shot, and if so, starts the next interval:
+    /// once per <see cref="EvaluationInterval"/>, and additionally as soon as a travel hop has ended.
+    /// </summary>
+    /// <param name="now">The current time.</param>
+    /// <returns><c>true</c>, if the bot should take its next navigation decision now.</returns>
+    /// <remarks>
+    /// A hop of <see cref="StepsPerHop"/> steps takes about a second. When the hop still ran at a decision,
+    /// that decision was skipped, and the bot stood until the next one - it walked in bursts, at about half
+    /// the speed of a player. Continuing right after the hop keeps it moving, while it still stops between
+    /// hops when a monster comes into range.
+    /// </remarks>
+    internal bool TryBeginEvaluation(DateTimeOffset now)
+    {
+        if (now < this._nextEvaluationUtc && !(this._isHopInProgress && !this._player.IsWalking))
+        {
+            return false;
+        }
+
+        this._nextEvaluationUtc = now + EvaluationInterval;
+        this._isHopInProgress = false;
+        return true;
+    }
+
+    /// <summary>
+    /// Hunts around the party leader on the same map: monsters within hunting range
+    /// (<see cref="HuntingRange"/>, mirroring the follower's effective combat range of
+    /// <see cref="Bots.BotMuHelperSettings.HuntingRange"/>) of the leader are fought via the combat
+    /// handler (tethered through <see cref="OfflinePlayer.HuntingOrigin"/>, which is also set where the
+    /// origin is decided so it holds on walking ticks), and only with nothing fightable near the leader
+    /// does the bot close back in to within <see cref="PartyRegroupDistance"/>. Followers never pick
+    /// independent hunting grounds - the leader decides where the party hunts.
+    /// </summary>
+    /// <remarks>
+    /// Two cases close in regardless of monsters: a follower in the safezone, where it cannot fight, and
+    /// a follower further than <see cref="FollowerLeashDistance"/> from its leader.
+    /// </remarks>
+    /// <param name="map">The map of the bot and its leader.</param>
+    /// <param name="leader">The party leader.</param>
+    /// <param name="inSafezone">Whether the bot stands in the safezone.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    internal async ValueTask EvaluateFollowerHuntingAsync(GameMap map, Player leader, bool inSafezone, CancellationToken cancellationToken)
+    {
+        // Tether combat to the leader, so the bot fights what is near him instead of wandering off.
+        this._player.HuntingOrigin = leader.Position;
+        var distanceToLeader = this._player.GetDistanceTo(leader.Position);
+
+        if (inSafezone)
+        {
+            // Nothing to fight in town, so the bot keeps up with its leader - also when he heads out to the
+            // monsters at the gate. It used to stand still here and only moved when the stuck watchdog
+            // fired: three steps every few seconds.
+            if (distanceToLeader > PartyRegroupDistance)
+            {
+                _ = await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            this._hasDestination = false;
+            this._emptyGroundSince = null;
+            return;
+        }
+
+        var monsterNearLeader = map.GetAttackablesInRange(leader.Position, HuntingRange)
+            .OfType<Monster>()
+            .Any(m => m.IsAlive && !m.IsAtSafezone() && m.SummonedBy is null && CombatHandler.IsSafeTarget(this._player, m.Definition));
+        if (monsterNearLeader && distanceToLeader <= FollowerLeashDistance)
+        {
+            // Something fightable near the leader: hold position and let the combat handler engage,
+            // even when drifted out to hunting range - walking back now would interrupt the fight.
+            this._hasDestination = false;
+            this._emptyGroundSince = null;
+            return;
+        }
+
+        // Nothing to fight around the leader, or the bot fell so far behind that no fight explains it
+        // (e.g. it holds for a monster it cannot reach while the leader runs on): close back into formation.
+        if (distanceToLeader > PartyRegroupDistance)
+        {
+            // The result is used by direct regression tests. This production flow returns after the
+            // regroup attempt either way, so there is no subsequent behavior to condition on it.
+            _ = await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        this._hasDestination = false;
+        this._emptyGroundSince = null;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -807,6 +917,11 @@ internal sealed class BotNavigator : AsyncDisposable
 
         try
         {
+            if (!this.TryBeginEvaluation(this._timeProvider.GetUtcNow()))
+            {
+                return;
+            }
+
             await this.EvaluateAsync(cancellationToken).ConfigureAwait(false);
             this._player.OnAiTickSucceeded();
         }
@@ -1592,53 +1707,6 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Hunts around the party leader on the same map: monsters within hunting range
-    /// (<see cref="HuntingRange"/>, mirroring the follower's effective combat range of
-    /// <see cref="Bots.BotMuHelperSettings.HuntingRange"/>) of the leader are fought via the combat
-    /// handler (tethered through <see cref="OfflinePlayer.HuntingOrigin"/>, which is also set where the
-    /// origin is decided so it holds on walking ticks), and only with nothing fightable near the leader
-    /// does the bot close back in to within <see cref="PartyRegroupDistance"/>. Followers never pick
-    /// independent hunting grounds - the leader decides where the party hunts.
-    /// </summary>
-    private async ValueTask EvaluateFollowerHuntingAsync(GameMap map, Player leader, bool inSafezone, CancellationToken cancellationToken)
-    {
-        // Tether combat to the leader, so the bot fights what is near him instead of wandering off.
-        this._player.HuntingOrigin = leader.Position;
-
-        if (inSafezone)
-        {
-            // In town there is nothing to fight; stay with the leader, he decides when to move out.
-            this._hasDestination = false;
-            this._emptyGroundSince = null;
-            return;
-        }
-
-        var monsterNearLeader = map.GetAttackablesInRange(leader.Position, HuntingRange)
-            .OfType<Monster>()
-            .Any(m => m.IsAlive && !m.IsAtSafezone() && m.SummonedBy is null && CombatHandler.IsSafeTarget(this._player, m.Definition));
-        if (monsterNearLeader)
-        {
-            // Something fightable near the leader: hold position and let the combat handler engage,
-            // even when drifted out to hunting range - walking back now would interrupt the fight.
-            this._hasDestination = false;
-            this._emptyGroundSince = null;
-            return;
-        }
-
-        // Nothing to fight around the leader: only now close back into formation.
-        if (this._player.GetDistanceTo(leader.Position) > PartyRegroupDistance)
-        {
-            // The result is used by direct regression tests. This production flow returns after the
-            // regroup attempt either way, so there is no subsequent behavior to condition on it.
-            _ = await this.TryRegroupWithLeaderOnSameMapAsync(map, leader, cancellationToken).ConfigureAwait(false);
-            return;
-        }
-
-        this._hasDestination = false;
-        this._emptyGroundSince = null;
-    }
-
-    /// <summary>
     /// Performs the bot's character reset once it is due (reset feature enabled, required level
     /// reached, reset limit not exhausted). The reset is not executed the moment the bot becomes
     /// eligible: a random grace delay (<see cref="MinResetDelay"/>..<see cref="MaxResetDelay"/>) is
@@ -1894,6 +1962,9 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._travelPathIndex += stepsCount;
         await this._player.WalkToAsync(steps[stepsCount - 1].To, steps).ConfigureAwait(false);
+
+        // A walk refused by the game (e.g. the bot is frozen) must not trigger a decision on every timer shot.
+        this._isHopInProgress = this._player.IsWalking;
     }
 
     /// <summary>
