@@ -30,6 +30,9 @@
 <div title=@this.Model.Item
     class=@($"mu-item {(this.IsSelected ? "highlighted" : "")} mu-item-selector c_{this.Model.Column} r_{this.Model.Row} w_{this.Width} h_{this.Height}")
      @onclick="this.OnClick"
+     draggable="true"
+     @ondragstart="this.OnDragStartAsync"
+     @ondragend="this.OnDragEndAsync"
     tabindex="@(this.IsSelected ? 0 : -1)"
     autofocus="@(this.IsSelected ? "true" : null)" 
     @onkeydown="OnKeyPressAsync"></div>

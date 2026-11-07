@@ -39,6 +39,19 @@ public partial class MuItem
     public EventCallback OnDelete { get; set; }
 
     /// <summary>
+    /// Gets or sets the callback which is called when the user starts to drag the item.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragStart { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback which is called when the user stops to drag the item,
+    /// regardless if it was dropped at a valid place.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragEnd { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is selected.
     /// </summary>
     [Parameter]
@@ -143,6 +156,22 @@ public partial class MuItem
         }
 
         await this.RaiseOnItemMovedAsync().ConfigureAwait(true);
+    }
+
+    private async Task OnDragStartAsync()
+    {
+        if (this.OnDragStart.HasDelegate)
+        {
+            await this.OnDragStart.InvokeAsync().ConfigureAwait(true);
+        }
+    }
+
+    private async Task OnDragEndAsync()
+    {
+        if (this.OnDragEnd.HasDelegate)
+        {
+            await this.OnDragEnd.InvokeAsync().ConfigureAwait(true);
+        }
     }
 
     private async Task RaiseOnItemMovedAsync()

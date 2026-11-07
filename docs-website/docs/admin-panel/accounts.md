@@ -58,6 +58,18 @@ i.e. a direct view of the data model. It is powerful and it is easy to create
 inconsistent data with it.
 :::
 
+### Moving items
+
+In the vault and inventory editor, drag an item with the mouse and drop it on
+another place of the box. While dragging, the cells it would cover are green
+if it fits there and red if it would stick out of the box or overlap another
+item; a drop on a red place keeps the item where it was. An item can also be
+dragged between the boxes of the same storage, e.g. from the inventory into an
+inventory extension or the personal store, but not from the vault into an
+inventory. Moving the selected item with the arrow buttons or the arrow keys
+(or W, A, S, D) still works, too. Like every other change, the new place is
+stored when the account is saved.
+
 ### Creating a character
 
 **Create** below the characters of an account asks only for the **name** and the

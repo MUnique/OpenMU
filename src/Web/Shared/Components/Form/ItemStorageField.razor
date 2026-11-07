@@ -40,6 +40,8 @@
                                    NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
                         SelectedItemChanged="this.OnSelectedItemChanged"
+                        DraggedItem="@this._draggedItem"
+                        DraggedItemChanged="this.OnDraggedItemChanged"
                         OnDelete="this.OnItemDeleteClickAsync"/>
                 </div>
                 @for (byte i = 0; i < this._numberOfExtensions; i++)
@@ -52,6 +54,8 @@
                         ExtensionIndex="@i"
                         SelectedItem="@this._selectedItem"
                         SelectedItemChanged="this.OnSelectedItemChanged"
+                        DraggedItem="@this._draggedItem"
+                        DraggedItemChanged="this.OnDraggedItemChanged"
                         OnDelete="this.OnItemDeleteClickAsync"/>
                 }
                 @if (this._storageType == StorageType.Inventory)
@@ -63,6 +67,8 @@
                         NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
                         SelectedItemChanged="this.OnSelectedItemChanged"
+                        DraggedItem="@this._draggedItem"
+                        DraggedItemChanged="this.OnDraggedItemChanged"
                         OnDelete="this.OnItemDeleteClickAsync"/>
                 }
             </div>
@@ -123,6 +129,8 @@
 
     private Item? _selectedItem;
 
+    private Item? _draggedItem;
+
     private StorageType _storageType;
 
     private byte _numberOfExtensions;
@@ -169,6 +177,11 @@
     {
         this._selectedItem = item;
         this.StateHasChanged();
+    }
+
+    private void OnDraggedItemChanged(Item? item)
+    {
+        this._draggedItem = item;
     }
 
     private async Task OnItemDeleteClickAsync()

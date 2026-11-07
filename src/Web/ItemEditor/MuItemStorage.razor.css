@@ -20,3 +20,25 @@
 .storage-rows15 {
     height: calc(var(--boxSize) * 15);
 }
+
+.mu-drop-cell {
+    position: absolute;
+    width: var(--boxSize);
+    height: var(--boxSize);
+    z-index: 3;
+}
+
+.mu-drop-preview {
+    position: absolute;
+    z-index: 2;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+    .mu-drop-preview.valid {
+        background-color: greenyellow;
+    }
+
+    .mu-drop-preview.invalid {
+        background-color: red;
+    }

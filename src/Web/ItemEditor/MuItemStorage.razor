@@ -5,7 +5,10 @@
     return;
 }
 
-<div class=@($"mu-item-storage storage-rows{this._viewModel.Rows}")>
+@* Firefox only starts dragging when the drag data is set, and the visible part of an item is the element before its
+   (transparent) selector, which receives the mouse events. *@
+<div class=@($"mu-item-storage storage-rows{this._viewModel.Rows}")
+     ondragstart="if (event.target.draggable) { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', ''); if (event.target.previousElementSibling) { event.dataTransfer.setDragImage(event.target.previousElementSibling, event.offsetX, event.offsetY); } }">
     @foreach (var item in this._viewModel.Items)
     {
         <MuItem
@@ -13,6 +16,34 @@
             OnClick="async () => await this.SetSelectedItemAsync(item)"
             OnItemMoved="this.OnItemMovedAsync"
             OnDelete="this.OnDelete"
+            OnDragStart="async () => await this.OnDragStartAsync(item.Item)"
+            OnDragEnd="this.OnDragEndAsync"
             IsSelected="this.SelectedItem == item.Item"/>
+    }
+
+    @if (this.CurrentDraggedItem is { } draggedItem && this._viewModel.Storage.Items.Contains(draggedItem))
+    {
+        @if (this._dropTarget is var (targetColumn, targetRow))
+        {
+            var canPlace = this._viewModel.CanPlace(draggedItem, targetColumn, targetRow);
+            <div class=@($"mu-drop-preview {(canPlace ? "valid" : "invalid")}")
+                 style=@($"left: calc(var(--boxSize) * {targetColumn}); top: calc(var(--boxSize) * {targetRow}); width: calc(var(--boxSize) * {draggedItem.Definition?.Width ?? 1}); height: calc(var(--boxSize) * {draggedItem.Definition?.Height ?? 1});")></div>
+        }
+
+        @for (var row = 0; row < this._viewModel.Rows; row++)
+        {
+            @for (var column = 0; column < InventoryConstants.RowSize; column++)
+            {
+                var cellColumn = column;
+                var cellRow = row;
+                <div class="mu-drop-cell"
+                     style=@($"left: calc(var(--boxSize) * {cellColumn}); top: calc(var(--boxSize) * {cellRow});")
+                     @ondragenter="() => this.OnDragEnter(cellColumn, cellRow)"
+                     @ondragleave="() => this.OnDragLeave(cellColumn, cellRow)"
+                     @ondragover:preventDefault
+                     @ondrop="async () => await this.OnDropAsync(cellColumn, cellRow)"
+                     @ondrop:preventDefault></div>
+            }
+        }
     }
 </div>
