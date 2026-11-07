@@ -77,6 +77,50 @@ public class MuItemStorageDragAndDropTests
         Assert.That(item.ItemSlot, Is.Zero);
     }
 
+    /// <summary>
+    /// Leaving the box with the pointer hides the drop preview, but moving to the next cell keeps it.
+    /// </summary>
+    [Test]
+    public void DragLeave_HidesDropPreview()
+    {
+        using var context = new BunitContext();
+        var (storage, item, _) = CreateStorage();
+        var component = Render(context, storage, _ => { });
+
+        FindSelector(component, item).DragStart();
+        component.FindAll(".mu-drop-cell")[1].DragEnter();
+        component.FindAll(".mu-drop-cell")[2].DragEnter();
+        component.FindAll(".mu-drop-cell")[1].DragLeave();
+        Assert.That(component.FindAll(".mu-drop-preview"), Has.Count.EqualTo(1));
+
+        component.FindAll(".mu-drop-cell")[2].DragLeave();
+        Assert.That(component.FindAll(".mu-drop-preview"), Is.Empty);
+    }
+
+    /// <summary>
+    /// When the shared drag ends in another box, the drop preview of this box doesn't come back on the next drag.
+    /// </summary>
+    [Test]
+    public void SharedDragEndedElsewhere_ClearsDropPreview()
+    {
+        using var context = new BunitContext();
+        var (storage, item, _) = CreateStorage();
+        var component = context.Render<MuItemStorage>(parameters => parameters
+            .Add(c => c.Value, storage)
+            .Add(c => c.ValueExpression, () => storage)
+            .Add(c => c.StorageType, StorageType.Vault)
+            .Add(c => c.DraggedItem, item)
+            .Add(c => c.DraggedItemChanged, _ => { }));
+
+        component.FindAll(".mu-drop-cell")[1].DragEnter();
+        Assert.That(component.FindAll(".mu-drop-preview"), Has.Count.EqualTo(1));
+
+        component.Render(parameters => parameters.Add(c => c.DraggedItem, null));
+        component.Render(parameters => parameters.Add(c => c.DraggedItem, item));
+
+        Assert.That(component.FindAll(".mu-drop-preview"), Is.Empty);
+    }
+
     private static AngleSharp.Dom.IElement FindSelector(IRenderedComponent<MuItemStorage> component, Item item)
     {
         return component.FindAll(".mu-item-selector").First(e => e.GetAttribute("title") == item.ToString());

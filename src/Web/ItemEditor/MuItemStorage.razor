@@ -39,6 +39,7 @@
                 <div class="mu-drop-cell"
                      style=@($"left: calc(var(--boxSize) * {cellColumn}); top: calc(var(--boxSize) * {cellRow});")
                      @ondragenter="() => this.OnDragEnter(cellColumn, cellRow)"
+                     @ondragleave="() => this.OnDragLeave(cellColumn, cellRow)"
                      @ondragover:preventDefault
                      @ondrop="async () => await this.OnDropAsync(cellColumn, cellRow)"
                      @ondrop:preventDefault></div>

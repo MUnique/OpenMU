@@ -95,6 +95,12 @@ public partial class MuItemStorage
         {
             this._viewModel = value.CreateViewModel(this.StorageType, this.NumberOfExtensions, this.ExtensionIndex);
         }
+
+        if (this.CurrentDraggedItem is null)
+        {
+            // The drag ended in another box of the same storage, so a preview of this box must not stay.
+            this._dropTarget = null;
+        }
     }
 
     /// <inheritdoc />
@@ -122,6 +128,16 @@ public partial class MuItemStorage
         this._dropTarget = (column, row);
     }
 
+    private void OnDragLeave(int column, int row)
+    {
+        // The browser raises dragenter on the next cell before dragleave on the previous one,
+        // so the target is only cleared when the pointer left the box.
+        if (this._dropTarget == (column, row))
+        {
+            this._dropTarget = null;
+        }
+    }
+
     private async Task OnDropAsync(int column, int row)
     {
         this._dropTarget = null;
@@ -138,11 +154,11 @@ public partial class MuItemStorage
         }
     }
 
-    private async Task SetDraggedItemAsync(Item? item)
+    private async ValueTask SetDraggedItemAsync(Item? item)
     {
         if (this.DraggedItemChanged.HasDelegate)
         {
-            await this.DraggedItemChanged.InvokeAsync(item).ConfigureAwait(true);
+            await this.DraggedItemChanged.InvokeAsync(item).ConfigureAwait(false);
         }
         else
         {
