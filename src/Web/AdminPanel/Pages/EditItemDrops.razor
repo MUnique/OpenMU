@@ -1,4 +1,4 @@
-﻿@page "/edit-item-drops"
+@page "/edit-item-drops"
 
 @using MUnique.OpenMU.DataModel.Configuration
 @using MUnique.OpenMU.DataModel.Configuration.Items
@@ -96,6 +96,7 @@
     <DropItemGroupTable Groups="@this.MapGroups"
                         Maps="@this._maps"
                         ShowMonsterRestriction="true"
+                        WarnWhenUnassigned="true"
                         OnMapsChanged="@this.StateHasChanged"
                         OnRemove="@this.OnDeleteGroupAsync"
                         RemoveTitle="@Resources.Delete" />

@@ -29,7 +29,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"MaximumCompletionTime\", \"Name\" from config.\"SkillComboDefinition\"",
         "select \"Id\", \"IsFinalStep\", \"Order\", \"SkillComboDefinitionId\", \"SkillId\" from config.\"SkillComboStep\"",
         "select \"Id\", \"AttributeId\", \"BaseValue\", \"CharacterClassId\", \"IncreasableByPlayer\" from config.\"StatAttributeDefinition\"",
-        "select \"Id\", \"Chance\", \"Description\", \"GameConfigurationId\", \"ItemLevel\", \"ItemType\", \"MaximumMonsterLevel\", \"MinimumMonsterLevel\", \"MonsterId\" from config.\"DropItemGroup\"",
+        "select \"Id\", \"Chance\", \"Description\", \"ExcellentOptionsAddChance\", \"ExcellentOptionsMaximumOptionsPerItem\", \"GameConfigurationId\", \"ItemLevel\", \"ItemType\", \"MaximumMonsterLevel\", \"MinimumMonsterLevel\", \"MonsterId\" from config.\"DropItemGroup\"",
         "select \"Id\", \"EntranceFee\", \"ExitId\", \"MaximumScore\", \"MaximumSpectatorsPerDuelRoom\", \"MinimumCharacterLevel\" from config.\"DuelConfiguration\"",
         "select \"Id\", \"DuelConfigurationId\", \"FirstPlayerGateId\", \"Index\", \"SecondPlayerGateId\", \"SpectatorsGateId\" from config.\"DuelArea\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"Name\" from config.\"ItemLevelBonusTable\"",
@@ -46,7 +46,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"ItemPriceDefinitionId\", \"Level\", \"Price\" from config.\"ItemLevelPrice\"",
         "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
-        "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
+        "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ExcellentOptionsAddChance\", \"ExcellentOptionsMaximumOptionsPerItem\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
         "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"GameServerDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
         "select \"Id\", \"AlwaysApplies\", \"CountDistinct\", \"GameConfigurationId\", \"MinimumItemCount\", \"Name\", \"OptionsId\", \"SetLevel\" from config.\"ItemSetGroup\"",
         "select \"Id\", \"AncientSetDiscriminator\", \"BonusOptionId\", \"ItemDefinitionId\", \"ItemSetGroupId\" from config.\"ItemOfItemSet\"",
@@ -670,13 +670,15 @@ internal sealed partial class GameConfigurationLoader
             entity.Id = reader.GetGuid(0);
             entity.Chance = reader.GetDouble(1);
             entity.Description = reader.IsDBNull(2) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(2));
-            if (!reader.IsDBNull(4)) { entity.ItemLevel = (global::System.Byte)reader.GetInt16(4); }
-            entity.ItemType = (global::MUnique.OpenMU.DataModel.Configuration.SpecialItemType)reader.GetInt32(5);
-            if (!reader.IsDBNull(6)) { entity.MaximumMonsterLevel = (global::System.Byte)reader.GetInt16(6); }
-            if (!reader.IsDBNull(7)) { entity.MinimumMonsterLevel = (global::System.Byte)reader.GetInt16(7); }
-            if (!reader.IsDBNull(8)) { entity.MonsterId = reader.GetGuid(8); }
+            if (!reader.IsDBNull(3)) { entity.ExcellentOptionsAddChance = reader.GetFloat(3); }
+            if (!reader.IsDBNull(4)) { entity.ExcellentOptionsMaximumOptionsPerItem = reader.GetInt32(4); }
+            if (!reader.IsDBNull(6)) { entity.ItemLevel = (global::System.Byte)reader.GetInt16(6); }
+            entity.ItemType = (global::MUnique.OpenMU.DataModel.Configuration.SpecialItemType)reader.GetInt32(7);
+            if (!reader.IsDBNull(8)) { entity.MaximumMonsterLevel = (global::System.Byte)reader.GetInt16(8); }
+            if (!reader.IsDBNull(9)) { entity.MinimumMonsterLevel = (global::System.Byte)reader.GetInt16(9); }
+            if (!reader.IsDBNull(10)) { entity.MonsterId = reader.GetGuid(10); }
             this._DropItemGroup[entity.Id] = entity;
-            this._DropItemGroupRows.Add((entity, reader.IsDBNull(8) ? null : reader.GetGuid(8), reader.IsDBNull(3) ? null : reader.GetGuid(3)));
+            this._DropItemGroupRows.Add((entity, reader.IsDBNull(10) ? null : reader.GetGuid(10), reader.IsDBNull(5) ? null : reader.GetGuid(5)));
         }
     }
 
@@ -950,18 +952,20 @@ internal sealed partial class GameConfigurationLoader
             entity.Chance = reader.GetDouble(1);
             entity.Description = reader.IsDBNull(2) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(2));
             entity.DropEffect = (global::MUnique.OpenMU.DataModel.Configuration.ItemDropEffect)reader.GetInt32(3);
-            if (!reader.IsDBNull(5)) { entity.ItemLevel = (global::System.Byte)reader.GetInt16(5); }
-            entity.ItemType = (global::MUnique.OpenMU.DataModel.Configuration.SpecialItemType)reader.GetInt32(6);
-            entity.MaximumLevel = (global::System.Byte)reader.GetInt16(7);
-            if (!reader.IsDBNull(8)) { entity.MaximumMonsterLevel = (global::System.Byte)reader.GetInt16(8); }
-            entity.MinimumLevel = (global::System.Byte)reader.GetInt16(9);
-            if (!reader.IsDBNull(10)) { entity.MinimumMonsterLevel = (global::System.Byte)reader.GetInt16(10); }
-            entity.MoneyAmount = reader.GetInt32(11);
-            if (!reader.IsDBNull(12)) { entity.MonsterId = reader.GetGuid(12); }
-            entity.RequiredCharacterLevel = reader.GetInt16(13);
-            entity.SourceItemLevel = (global::System.Byte)reader.GetInt16(14);
+            if (!reader.IsDBNull(4)) { entity.ExcellentOptionsAddChance = reader.GetFloat(4); }
+            if (!reader.IsDBNull(5)) { entity.ExcellentOptionsMaximumOptionsPerItem = reader.GetInt32(5); }
+            if (!reader.IsDBNull(7)) { entity.ItemLevel = (global::System.Byte)reader.GetInt16(7); }
+            entity.ItemType = (global::MUnique.OpenMU.DataModel.Configuration.SpecialItemType)reader.GetInt32(8);
+            entity.MaximumLevel = (global::System.Byte)reader.GetInt16(9);
+            if (!reader.IsDBNull(10)) { entity.MaximumMonsterLevel = (global::System.Byte)reader.GetInt16(10); }
+            entity.MinimumLevel = (global::System.Byte)reader.GetInt16(11);
+            if (!reader.IsDBNull(12)) { entity.MinimumMonsterLevel = (global::System.Byte)reader.GetInt16(12); }
+            entity.MoneyAmount = reader.GetInt32(13);
+            if (!reader.IsDBNull(14)) { entity.MonsterId = reader.GetGuid(14); }
+            entity.RequiredCharacterLevel = reader.GetInt16(15);
+            entity.SourceItemLevel = (global::System.Byte)reader.GetInt16(16);
             this._ItemDropItemGroup[entity.Id] = entity;
-            this._ItemDropItemGroupRows.Add((entity, reader.IsDBNull(12) ? null : reader.GetGuid(12), reader.IsDBNull(4) ? null : reader.GetGuid(4)));
+            this._ItemDropItemGroupRows.Add((entity, reader.IsDBNull(14) ? null : reader.GetGuid(14), reader.IsDBNull(6) ? null : reader.GetGuid(6)));
         }
     }
 

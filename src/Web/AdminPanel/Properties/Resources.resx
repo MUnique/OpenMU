@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1531,6 +1531,9 @@
   <data name="MapDropItemGroupsDescription" xml:space="preserve">
     <value>Drop groups which apply to monsters on the assigned maps. Groups which are not assigned to any map don't drop.</value>
   </data>
+  <data name="NotAssignedToAnyMap" xml:space="preserve">
+    <value>Not assigned to any map</value>
+  </data>
   <data name="MaximumDropLevel" xml:space="preserve">
     <value>Maximum drop level</value>
   </data>
@@ -2703,5 +2706,26 @@
   </data>
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Save or discard the pending changes first.</value>
+  </data>
+  <data name="Rates" xml:space="preserve">
+    <value>Rates</value>
+  </data>
+  <data name="MoneyRate" xml:space="preserve">
+    <value>Money rate</value>
+  </data>
+  <data name="MoneyRateHint" xml:space="preserve">
+    <value>Multiplier for the money which monsters drop. The amount on the ground is the experience reward of the monster plus 7; when a player picks it up, it is multiplied by this rate and by the money rate bonuses of the player, like the excellent option. 1 is 100 %.</value>
+  </data>
+  <data name="MoneyRateMissing" xml:space="preserve">
+    <value>The configuration has no global "Money Drop Amount Rate" attribute value, so the money rate can't be edited here. Add it in the full configuration under "Global base attribute values".</value>
+  </data>
+  <data name="ExcellentOptionsChance" xml:space="preserve">
+    <value>Excellent option chance (%)</value>
+  </data>
+  <data name="ExcellentOptionsMaximumOptionsPerItem" xml:space="preserve">
+    <value>Maximum excellent options per item</value>
+  </data>
+  <data name="ExcellentOptionsHint" xml:space="preserve">
+    <value>Empty means that the value of the excellent option definition of the item applies. The first option is always added without a chance.</value>
   </data>
 </root>

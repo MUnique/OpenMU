@@ -1,0 +1,22 @@
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<div class="mb-4">
+    <h4 class="mb-3">@Resources.Rates</h4>
+    @if (this._moneyRate is null)
+    {
+        <p class="text-muted">@Resources.MoneyRateMissing</p>
+    }
+    else
+    {
+        <div class="row g-3">
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label" for="money-rate">@Resources.MoneyRate</label>
+                <input id="money-rate" type="number" min="0" step="0.1" class="form-control"
+                       @bind="this._value" @bind:after="this.ApplyAsync" />
+            </div>
+            <div class="col-md-8 col-lg-7 d-flex align-items-center">
+                <div class="form-text">@Resources.MoneyRateHint</div>
+            </div>
+        </div>
+    }
+</div>
