@@ -391,8 +391,11 @@ public sealed class Party : AsyncDisposable
             return exp;
         }
 
+        // The share is weighted by the total level, because the experience per level is calculated
+        // by the sum of the total levels. Otherwise, a member with master levels which is still below
+        // the maximum level (e.g. after a reset) would lose the share of its master levels.
         var calculatedExperience = perLevel
-                                   * attributes[Stats.Level]
+                                   * attributes[Stats.TotalLevel]
                                    * player.GameContext.ExperienceRate
                                    * (attributes[Stats.ExperienceRate] + attributes[Stats.BonusExperienceRate]);
         var normalExperience = await ApplyExperienceCalculationPlugInsAsync(player, killed, false, calculatedExperience).ConfigureAwait(false);
