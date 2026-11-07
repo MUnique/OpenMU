@@ -2704,4 +2704,7 @@
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Save or discard the pending changes first.</value>
   </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Inspect</value>
+  </data>
 </root>

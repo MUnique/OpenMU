@@ -6,7 +6,7 @@ description: Keep the translated names of the game configuration in sync with th
 
 # Configuration captions
 
-**Navigation:** *Captions* — route `/config-captions`
+**Navigation:** *System → Captions* — route `/config-captions`
 
 The names of built-in configuration objects, e.g. maps, monsters and character
 classes, can contain translations for several languages. New OpenMU versions can

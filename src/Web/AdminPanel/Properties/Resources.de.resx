@@ -2599,4 +2599,7 @@
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Speichere oder verwirf zuerst die ausstehenden Änderungen.</value>
   </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Untersuchen</value>
+  </data>
 </root>

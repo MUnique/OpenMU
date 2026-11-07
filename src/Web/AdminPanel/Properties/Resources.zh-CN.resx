@@ -2767,4 +2767,7 @@
   <data name="LogLevelOverridesInvalid" xml:space="preserve">
     <value>每个日志来源都必须填写名称，且名称不能重复。</value>
   </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>检查</value>
+  </data>
 </root>

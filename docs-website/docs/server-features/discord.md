@@ -18,8 +18,9 @@ OpenMU can bring your game into your Discord server:
 
 ## Setting up
 
-Open **Discord** in the admin panel (route `/discord`, administrators only). The
-page offers two modes: **Discord bot** for the full integration, or **Webhooks**
+Open **System → Discord** in the admin panel (route `/discord`,
+administrators only). The page offers two modes: **Discord bot** for the full
+integration, or **Webhooks**
 for notifications only. Webhook-only mode skips the bot setup steps, and the
 selected mode is saved even before any destinations have been configured.
 For the bot, the page guides you through the setup, step by step:
