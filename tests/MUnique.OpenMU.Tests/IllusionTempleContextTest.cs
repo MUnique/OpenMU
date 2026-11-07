@@ -252,9 +252,7 @@ public class IllusionTempleContextTest
         illusionTemple.Score.IncreaseScore(IllusionTempleTeam.AlliedForces, 6);
         carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
         await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
-        var gameEnded = (CancellationToken)typeof(MiniGameContext)
-            .GetProperty("GameEndedToken", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .GetValue(illusionTemple)!;
+        var gameEnded = GetGameEndedToken(illusionTemple);
         Assert.That(gameEnded.IsCancellationRequested, Is.False);
 
         await illusionTemple.TalkToNpcTeamStorageAsync(AlliedStorageNumber, carrier).ConfigureAwait(false);
@@ -394,6 +392,17 @@ public class IllusionTempleContextTest
     {
         var field = typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance);
         return (Player?)field!.GetValue(context);
+    }
+
+    /// <summary>
+    /// Reads the protected <c>GameEndedToken</c> of the <see cref="MiniGameContext"/> via reflection, which tells
+    /// whether the game was finished. Test-only, like <see cref="GetRelicCarrier"/>.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a protected property of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public accessor purely for tests isn't warranted for an internal implementation detail.")]
+    private static CancellationToken GetGameEndedToken(MiniGameContext context)
+    {
+        var property = typeof(MiniGameContext).GetProperty("GameEndedToken", BindingFlags.NonPublic | BindingFlags.Instance);
+        return (CancellationToken)property!.GetValue(context)!;
     }
 
     private static NonPlayerCharacter CreateStatueNpc(IllusionTempleContext context)
