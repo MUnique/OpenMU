@@ -346,6 +346,14 @@ internal sealed class BotNavigator : AsyncDisposable
     private bool _isHopInProgress;
 
     /// <summary>
+    /// The meeting for which the bot warped through the meeting's gate (see <see cref="BotEventMeeting.Gate"/>),
+    /// and how often - so a bot which can't get any closer gives up instead of warping on and on.
+    /// </summary>
+    private BotEventMeeting? _gateWarpMeeting;
+
+    private int _gateWarpCount;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
     /// </summary>
     /// <param name="player">The bot player.</param>
@@ -452,6 +460,92 @@ internal sealed class BotNavigator : AsyncDisposable
         // this check would be far more expensive than parsing the terrain once.
         var terrain = new GameMapTerrain(safezoneMap);
         return terrain.GetWalkableCoordinate(safezoneMap.GetSafezoneGate(terrain)) is not null;
+    }
+
+    /// <summary>
+    /// Gets the warp entry whose landing area has the shortest walkable route to a target, see
+    /// <see cref="FindBestReachableLegalWarp"/>.
+    /// </summary>
+    /// <param name="warps">The warp entries to choose from; the caller checks they are legal.</param>
+    /// <param name="walkMap">The walk map of the target map.</param>
+    /// <param name="target">The target position.</param>
+    /// <param name="currentPosition">
+    /// The position of the bot if it already is on the map: a gate which may land the bot there takes
+    /// it nowhere; <c>null</c> otherwise.
+    /// </param>
+    /// <param name="ignoreBlockedLandingPoints">
+    /// <c>false</c> to reject a gate as soon as any of its landing points is blocked; <c>true</c> to
+    /// leave the blocked ones out - a player landing there is moved to the map's spawn gate, which is
+    /// acceptable when the caller can cope with that (and the town gates of Lorencia and Devias have
+    /// some blocked tiles, so they'd never be picked otherwise).
+    /// </param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The best reachable warp, or <c>null</c> if no gate can reach the target.</returns>
+    internal static WarpInfo? FindBestReachableWarp(
+        IEnumerable<WarpInfo> warps,
+        bool[,] walkMap,
+        Point target,
+        Point? currentPosition,
+        bool ignoreBlockedLandingPoints,
+        CancellationToken cancellationToken)
+    {
+        var candidates = warps
+            .Where(candidate => candidate.Gate is not null)
+            .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints()
+                .Where(point => !ignoreBlockedLandingPoints || walkMap[point.X, point.Y])
+                .ToArray()))
+            .Where(candidate => candidate.LandingPoints.Length > 0
+                                && (currentPosition is not { } position || !candidate.LandingPoints.Contains(position)))
+            .ToArray();
+        if (candidates.Length == 0)
+        {
+            return null;
+        }
+
+        // Movement on the walk map is bidirectional. One reverse flood fill from the target therefore
+        // gives both reachability and shortest distance for every possible gate landing point, without
+        // acquiring a full-map pathfinder once per point.
+        // Cancellation from this flood fill is expected during shutdown and handled by SafeEvaluateAsync.
+        cancellationToken.ThrowIfCancellationRequested();
+        var width = walkMap.GetLength(0);
+        var coordinateCount = width * walkMap.GetLength(1);
+        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
+        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
+        try
+        {
+            Array.Clear(distancesFromTarget, 0, coordinateCount);
+            PopulateWalkableDistancesFrom(
+                walkMap,
+                target,
+                distancesFromTarget,
+                pendingCoordinates,
+                cancellationToken);
+            WarpInfo? bestWarp = null;
+            var bestWorstCaseDistance = int.MaxValue;
+            foreach (var candidate in candidates)
+            {
+                var worstCaseDistance = GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
+                if (worstCaseDistance is null
+                    || worstCaseDistance > TravelSearchLimit
+                    || worstCaseDistance > bestWorstCaseDistance
+                    || (worstCaseDistance == bestWorstCaseDistance
+                        && bestWarp?.Gate is { } bestGate
+                        && GateDistance(candidate.Gate, target) >= GateDistance(bestGate, target)))
+                {
+                    continue;
+                }
+
+                bestWarp = candidate.Warp;
+                bestWorstCaseDistance = worstCaseDistance.Value;
+            }
+
+            return bestWarp;
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(distancesFromTarget);
+            ArrayPool<int>.Shared.Return(pendingCoordinates);
+        }
     }
 
     /// <summary>
@@ -709,6 +803,82 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// Drives an event meeting (see <see cref="OfflinePlayer.EventMeeting"/>): a bot which announced an
+    /// opened event warps to the meeting map, walks up to the event's entry NPC (or just into the
+    /// safezone, for Chaos Castle) and waits there until the entrance closes. The meeting ends early
+    /// when a player takes the bot into a party - the follow logic then takes it into the event behind
+    /// its new leader. A meeting place which a player named comes with the gate to enter it through
+    /// (see <see cref="BotEventMeeting.Gate"/>), so the bot gets there like a player would - by the
+    /// warp closest to the place, not by a walk from the town.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the meeting consumed this tick.</returns>
+    internal async ValueTask<bool> TryEventMeetingAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    {
+        if (this._player.EventMeeting is not { } meeting)
+        {
+            return false;
+        }
+
+        if (DateTime.UtcNow >= meeting.UntilUtc
+            || this._player.CurrentMiniGame is not null
+            || BotPartyHandler.HasHumanCompanion(this._player))
+        {
+            this.EndEventMeeting(meeting);
+            return false;
+        }
+
+        // Leaving the hunting ground for a while: don't keep other bots off it meanwhile.
+        this._player.HuntingSpot = null;
+
+        if (map.Definition.Number != meeting.Map.Number || (meeting.NpcPosition is null && !inSafezone))
+        {
+            if ((meeting.Gate ?? meeting.Map.ExitGates.Where(g => g.IsSpawnGate).SelectRandom()) is not { } gate)
+            {
+                this.EndEventMeeting(meeting);
+                return false;
+            }
+
+            await this.WarpToMeetingAsync(meeting, gate).ConfigureAwait(false);
+            return true;
+        }
+
+        if (meeting.NpcPosition is { } npcPosition && this._player.GetDistanceTo(npcPosition) > MerchantTalkRange)
+        {
+            var standingPoint = BotEventMeetingPlanner.FindStandingPoint(map.Terrain, npcPosition, MerchantTalkRange);
+
+            // Already on the map, but the meeting's gate lands closer - another floor of the Lost Tower,
+            // or Devias3 while the bot stands in the town of Devias: warp instead of a long walk, or none
+            // at all. The second try is for a landing on a blocked tile, which ends at the spawn gate.
+            if (standingPoint is { } point
+                && meeting.Gate is { } meetingGate
+                && this.GetGateWarpCount(meeting) < 2
+                && !IsInside(meetingGate, this._player.Position)
+                && GateDistance(meetingGate, point) < this._player.GetDistanceTo(point))
+            {
+                await this.WarpToMeetingAsync(meeting, meetingGate).ConfigureAwait(false);
+                return true;
+            }
+
+            if (standingPoint is null
+                || !await this.TravelTowardAsync(map, standingPoint.Value, cancellationToken).ConfigureAwait(false))
+            {
+                this._player.Logger.LogDebug("Bot '{Name}' gives up waiting for the event: no route to the entry NPC at {Target}.", this._player.Name, npcPosition);
+                this.EndEventMeeting(meeting);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Waiting at the meeting point is not "stuck".
+        this._lastMoveUtc = DateTime.UtcNow;
+        return true;
+    }
+
+    /// <summary>
     /// Determines whether the navigator evaluates on this timer shot, and if so, starts the next interval:
     /// once per <see cref="EvaluationInterval"/>, and additionally as soon as a travel hop has ended.
     /// </summary>
@@ -884,6 +1054,87 @@ internal sealed class BotNavigator : AsyncDisposable
         var centerX = (gate.X1 + gate.X2) / 2;
         var centerY = (gate.Y1 + gate.Y2) / 2;
         return Math.Abs(target.X - centerX) + Math.Abs(target.Y - centerY);
+    }
+
+    private static bool IsInside(Gate gate, Point position)
+        => position.X >= gate.X1 && position.X <= gate.X2 && position.Y >= gate.Y1 && position.Y <= gate.Y2;
+
+    private static int? GetWorstLandingDistance(
+        IReadOnlyCollection<Point> landingPoints,
+        int[] distancesFromTarget,
+        int mapWidth)
+    {
+        var worstCaseDistance = 0;
+        foreach (var landingPoint in landingPoints)
+        {
+            var encodedDistance = distancesFromTarget[(landingPoint.Y * mapWidth) + landingPoint.X];
+            if (encodedDistance == 0)
+            {
+                return null;
+            }
+
+            // Zero means unreachable, so stored distances are offset by one.
+            worstCaseDistance = Math.Max(worstCaseDistance, encodedDistance - 1);
+        }
+
+        return worstCaseDistance;
+    }
+
+    private static void PopulateWalkableDistancesFrom(
+        bool[,] walkMap,
+        Point start,
+        int[] distances,
+        int[] pendingCoordinates,
+        CancellationToken cancellationToken)
+    {
+        if (!walkMap[start.X, start.Y])
+        {
+            return;
+        }
+
+        var width = walkMap.GetLength(0);
+        var height = walkMap.GetLength(1);
+        var readIndex = 0;
+        var writeIndex = 0;
+        var startIndex = (start.Y * width) + start.X;
+        distances[startIndex] = 1;
+        pendingCoordinates[writeIndex++] = startIndex;
+        while (readIndex < writeIndex)
+        {
+            if ((readIndex & 0xFF) == 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            var currentIndex = pendingCoordinates[readIndex++];
+            var currentX = currentIndex % width;
+            var currentY = currentIndex / width;
+            var nextEncodedDistance = distances[currentIndex] + 1;
+            for (var offsetX = -1; offsetX <= 1; offsetX++)
+            {
+                for (var offsetY = -1; offsetY <= 1; offsetY++)
+                {
+                    if (offsetX == 0 && offsetY == 0)
+                    {
+                        continue;
+                    }
+
+                    var nextX = currentX + offsetX;
+                    var nextY = currentY + offsetY;
+                    if ((uint)nextX >= width
+                        || (uint)nextY >= height
+                        || !walkMap[nextX, nextY]
+                        || distances[(nextY * width) + nextX] != 0)
+                    {
+                        continue;
+                    }
+
+                    var nextIndex = (nextY * width) + nextX;
+                    distances[nextIndex] = nextEncodedDistance;
+                    pendingCoordinates[writeIndex++] = nextIndex;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -1431,67 +1682,25 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Drives an event meeting (see <see cref="OfflinePlayer.EventMeeting"/>): a bot which announced an
-    /// opened event warps to the meeting map, walks up to the event's entry NPC (or just into the
-    /// safezone, for Chaos Castle) and waits there until the entrance closes. The meeting ends early
-    /// when a player takes the bot into a party - the follow logic then takes it into the event behind
-    /// its new leader.
+    /// Warps the bot through a gate to its meeting, counting the warps through the meeting's own gate.
     /// </summary>
-    /// <param name="map">The current map.</param>
-    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
-    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
-    /// <returns>True, if the meeting consumed this tick.</returns>
-    private async ValueTask<bool> TryEventMeetingAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    private async ValueTask WarpToMeetingAsync(BotEventMeeting meeting, ExitGate gate)
     {
-        if (this._player.EventMeeting is not { } meeting)
+        if (ReferenceEquals(gate, meeting.Gate))
         {
-            return false;
+            this._gateWarpCount = this.GetGateWarpCount(meeting) + 1;
+            this._gateWarpMeeting = meeting;
         }
 
-        if (DateTime.UtcNow >= meeting.UntilUtc
-            || this._player.CurrentMiniGame is not null
-            || BotPartyHandler.HasHumanCompanion(this._player))
-        {
-            this.EndEventMeeting(meeting);
-            return false;
-        }
-
-        // Leaving the hunting ground for a while: don't keep other bots off it meanwhile.
-        this._player.HuntingSpot = null;
-
-        if (map.Definition.Number != meeting.Map.Number || (meeting.NpcPosition is null && !inSafezone))
-        {
-            if (meeting.Map.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is not { } gate)
-            {
-                this.EndEventMeeting(meeting);
-                return false;
-            }
-
-            this._travelPath = null;
-            this._hasDestination = false;
-            this._lastWarpUtc = this._timeProvider.GetUtcNow();
-            this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} to wait for players of the event it announced.", this._player.Name, meeting.Map.Name);
-            await this._player.WarpToAsync(gate).ConfigureAwait(false);
-            return true;
-        }
-
-        if (meeting.NpcPosition is { } npcPosition && this._player.GetDistanceTo(npcPosition) > MerchantTalkRange)
-        {
-            if (BotEventMeetingPlanner.FindStandingPoint(map.Terrain, npcPosition, MerchantTalkRange) is not { } standingPoint
-                || !await this.TravelTowardAsync(map, standingPoint, cancellationToken).ConfigureAwait(false))
-            {
-                this._player.Logger.LogDebug("Bot '{Name}' gives up waiting for the event: no route to the entry NPC at {Target}.", this._player.Name, npcPosition);
-                this.EndEventMeeting(meeting);
-                return false;
-            }
-
-            return true;
-        }
-
-        // Waiting at the meeting point is not "stuck".
-        this._lastMoveUtc = DateTime.UtcNow;
-        return true;
+        this._travelPath = null;
+        this._hasDestination = false;
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
+        this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} to wait for players at the meeting point.", this._player.Name, meeting.Map.Name);
+        await this._player.WarpToAsync(gate).ConfigureAwait(false);
     }
+
+    private int GetGateWarpCount(BotEventMeeting meeting)
+        => ReferenceEquals(this._gateWarpMeeting, meeting) ? this._gateWarpCount : 0;
 
     /// <summary>
     /// Ends the event meeting, unless a newer one replaced it in the meantime.
@@ -2234,141 +2443,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// that budget is therefore rejected before warping.
     /// </remarks>
     private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
-    {
-        var candidates = this.GetLegalWarps(map.Definition)
-            .Where(candidate => candidate.Gate is not null)
-            .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints().ToArray()))
-            .Where(candidate => !candidate.LandingPoints.Contains(this._player.Position))
-            .ToArray();
-        if (candidates.Length == 0)
-        {
-            return null;
-        }
-
-        // Movement on the walk map is bidirectional. One reverse flood fill from the leader therefore
-        // gives both reachability and shortest distance for every possible gate landing point, without
-        // acquiring a full-map pathfinder once per point.
-        // Cancellation from this flood fill is expected during shutdown and handled by SafeEvaluateAsync.
-        cancellationToken.ThrowIfCancellationRequested();
-        var walkMap = map.Terrain.WalkMap;
-        var width = walkMap.GetLength(0);
-        var coordinateCount = width * walkMap.GetLength(1);
-        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
-        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
-        try
-        {
-            Array.Clear(distancesFromTarget, 0, coordinateCount);
-            this.PopulateWalkableDistancesFrom(
-                walkMap,
-                target,
-                distancesFromTarget,
-                pendingCoordinates,
-                cancellationToken);
-            WarpInfo? bestWarp = null;
-            var bestWorstCaseDistance = int.MaxValue;
-            foreach (var candidate in candidates)
-            {
-                var worstCaseDistance = this.GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
-                if (worstCaseDistance is null
-                    || worstCaseDistance > TravelSearchLimit
-                    || worstCaseDistance > bestWorstCaseDistance
-                    || (worstCaseDistance == bestWorstCaseDistance
-                        && bestWarp?.Gate is { } bestGate
-                        && GateDistance(candidate.Gate, target) >= GateDistance(bestGate, target)))
-                {
-                    continue;
-                }
-
-                bestWarp = candidate.Warp;
-                bestWorstCaseDistance = worstCaseDistance.Value;
-            }
-
-            return bestWarp;
-        }
-        finally
-        {
-            ArrayPool<int>.Shared.Return(distancesFromTarget);
-            ArrayPool<int>.Shared.Return(pendingCoordinates);
-        }
-    }
-
-    private int? GetWorstLandingDistance(
-        IReadOnlyCollection<Point> landingPoints,
-        int[] distancesFromTarget,
-        int mapWidth)
-    {
-        var worstCaseDistance = 0;
-        foreach (var landingPoint in landingPoints)
-        {
-            var encodedDistance = distancesFromTarget[(landingPoint.Y * mapWidth) + landingPoint.X];
-            if (encodedDistance == 0)
-            {
-                return null;
-            }
-
-            // Zero means unreachable, so stored distances are offset by one.
-            worstCaseDistance = Math.Max(worstCaseDistance, encodedDistance - 1);
-        }
-
-        return worstCaseDistance;
-    }
-
-    private void PopulateWalkableDistancesFrom(
-        bool[,] walkMap,
-        Point start,
-        int[] distances,
-        int[] pendingCoordinates,
-        CancellationToken cancellationToken)
-    {
-        if (!walkMap[start.X, start.Y])
-        {
-            return;
-        }
-
-        var width = walkMap.GetLength(0);
-        var height = walkMap.GetLength(1);
-        var readIndex = 0;
-        var writeIndex = 0;
-        var startIndex = (start.Y * width) + start.X;
-        distances[startIndex] = 1;
-        pendingCoordinates[writeIndex++] = startIndex;
-        while (readIndex < writeIndex)
-        {
-            if ((readIndex & 0xFF) == 0)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
-            var currentIndex = pendingCoordinates[readIndex++];
-            var currentX = currentIndex % width;
-            var currentY = currentIndex / width;
-            var nextEncodedDistance = distances[currentIndex] + 1;
-            for (var offsetX = -1; offsetX <= 1; offsetX++)
-            {
-                for (var offsetY = -1; offsetY <= 1; offsetY++)
-                {
-                    if (offsetX == 0 && offsetY == 0)
-                    {
-                        continue;
-                    }
-
-                    var nextX = currentX + offsetX;
-                    var nextY = currentY + offsetY;
-                    if ((uint)nextX >= width
-                        || (uint)nextY >= height
-                        || !walkMap[nextX, nextY]
-                        || distances[(nextY * width) + nextX] != 0)
-                    {
-                        continue;
-                    }
-
-                    var nextIndex = (nextY * width) + nextX;
-                    distances[nextIndex] = nextEncodedDistance;
-                    pendingCoordinates[writeIndex++] = nextIndex;
-                }
-            }
-        }
-    }
+        => FindBestReachableWarp(this.GetLegalWarps(map.Definition), map.Terrain.WalkMap, target, this._player.Position, false, cancellationToken);
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {

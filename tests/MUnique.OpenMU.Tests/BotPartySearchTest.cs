@@ -79,7 +79,7 @@ public class BotPartySearchTest
     [TestCase("chodź: Wieża 100 120", 4, 100, 120)]
     public void ReadsTheMeetingPlace(string message, int expectedMap, int expectedX, int expectedY)
     {
-        var place = BotChatComposer.FindPlace(message, CreateMaps());
+        var place = BotChatComposer.FindPlace(message, CreateMaps(), []);
 
         Assert.That(place, Is.Not.Null);
         Assert.That(place!.Value.Map.Number, Is.EqualTo(expectedMap));
@@ -93,7 +93,7 @@ public class BotPartySearchTest
     [Test]
     public void NoMapNoPlace()
     {
-        Assert.That(BotChatComposer.FindPlace("somewhere 10 10", CreateMaps()), Is.Null);
+        Assert.That(BotChatComposer.FindPlace("somewhere 10 10", CreateMaps(), []), Is.Null);
     }
 
     /// <summary>

@@ -676,22 +676,77 @@ public class BotChatPlugIn
     /// <param name="bot">The bot.</param>
     /// <param name="map">The map.</param>
     /// <returns><c>true</c>, if the bot may warp to the map.</returns>
-    internal static bool MayWarpTo(Player bot, GameMapDefinition map)
-    {
-        if (bot.SelectedCharacter is not { } character)
-        {
-            return false;
-        }
+    internal static bool MayWarpTo(Player bot, GameMapDefinition map) => GetLegalWarps(bot, map).Any();
 
-        if (BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(map) == true)
+    /// <summary>
+    /// Gets the entries of the warp list into the map which the bot may use, see <see cref="MayWarpTo"/>.
+    /// A map like the Lost Tower has one for each floor, each with its own level requirement.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="map">The map.</param>
+    /// <returns>The warp entries.</returns>
+    internal static IEnumerable<WarpInfo> GetLegalWarps(Player bot, GameMapDefinition map)
+    {
+        if (bot.SelectedCharacter is not { } character
+            || BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(map) == true)
         {
-            return false;
+            return [];
         }
 
         var level = GetLevel(bot);
-        return bot.GameContext.Configuration.WarpList.Any(warp =>
+        return bot.GameContext.Configuration.WarpList.Where(warp =>
             warp.Gate?.Map?.Number == map.Number
             && character.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) <= level);
+    }
+
+    /// <summary>
+    /// Finds out how the bot gets to a meeting place a player named, like a player would: through the
+    /// warp the player named ("devias3"), or the warp from which the named coordinates are closest to
+    /// walk to - the floors of the Lost Tower, for one, aren't connected by walkable ground at all.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="map">The map of the meeting place.</param>
+    /// <param name="warp">The warp the player named; <c>null</c> for the map alone.</param>
+    /// <param name="position">The coordinates the player named; <c>null</c> for none.</param>
+    /// <returns>
+    /// <c>null</c>, if the bot may not or can't get there; otherwise the gate to enter the map through
+    /// (<c>null</c> for a spawn gate) and the point to wait at (<c>null</c> for the safezone).
+    /// </returns>
+    /// <remarks>
+    /// The terrain is read from the map definition, as the map may not be loaded. A warp which the bot's
+    /// level doesn't allow is out, even when it's the one the player named - like for a player.
+    /// </remarks>
+    internal static (ExitGate? Gate, Point? Position)? FindMeetingEntry(Player bot, GameMapDefinition map, WarpInfo? warp, Point? position)
+    {
+        var legalWarps = GetLegalWarps(bot, map).ToList();
+        if (legalWarps.Count == 0)
+        {
+            return null;
+        }
+
+        if (position is { } target)
+        {
+            // Coordinates typed by hand may well point at a wall or a tree: the navigator waits next to
+            // them, within the same range as here.
+            const int waitingRange = 3;
+            var terrain = new GameMapTerrain(map);
+            var waitingPoint = terrain.WalkMap[target.X, target.Y]
+                ? target
+                : BotEventMeetingPlanner.FindStandingPoint(terrain, target, waitingRange);
+            return waitingPoint is { } point
+                   && BotNavigator.FindBestReachableWarp(legalWarps, terrain.WalkMap, point, null, true, CancellationToken.None) is { Gate: { } gate }
+                ? (gate, target)
+                : null;
+        }
+
+        if (warp is not null)
+        {
+            return legalWarps.Contains(warp) && warp.Gate is { } gate
+                ? (gate, new Point((byte)((gate.X1 + gate.X2) / 2), (byte)((gate.Y1 + gate.Y2) / 2)))
+                : null;
+        }
+
+        return map.ExitGates.Any(gate => gate.IsSpawnGate) ? (null, null) : null;
     }
 
     /// <summary>
@@ -1030,12 +1085,12 @@ public class BotChatPlugIn
         var language = GetMessageLanguage(message, configuration);
 
         // A named map wins over "here": "i'm here, devias 215 40" names the place.
-        var place = BotChatComposer.FindPlace(message, bot.GameContext.Configuration.Maps);
+        var place = BotChatComposer.FindPlace(message, bot.GameContext.Configuration.Maps, bot.GameContext.Configuration.WarpList);
         if (place is null
             && BotChatComposer.ContainsAnyKeyword(message, configuration.PartyHereKeywords)
             && requester.CurrentMap is { } requesterMap)
         {
-            place = (requesterMap.Definition, requester.Position);
+            place = (requesterMap.Definition, null, requester.Position);
         }
 
         if (place is not { } found)
@@ -1049,17 +1104,20 @@ public class BotChatPlugIn
             return;
         }
 
-        var (map, position) = found;
+        var (map, warp, position) = found;
         throttle.RemovePartyOffer(bot);
-        values["map"] = culture => map.Name.GetTranslation(culture) ?? string.Empty;
-        values["location"] = culture => BotChatComposer.FormatLocation(map.Name.GetTranslation(culture), position);
+
+        // "devias3" is told back as the player wrote it, not as the map ("Devias").
+        var placeName = warp?.Name ?? map.Name;
+        values["map"] = culture => placeName.GetTranslation(culture) ?? string.Empty;
+        values["location"] = culture => BotChatComposer.FormatLocation(placeName.GetTranslation(culture), position);
         if (!IsAvailable(bot) || !IsFreeToMeet(bot))
         {
             // Taken into another party, or busy otherwise, since it answered: it lets the player be.
             return;
         }
 
-        if (!MayWarpTo(bot, map) || !map.ExitGates.Any(gate => gate.IsSpawnGate))
+        if (FindMeetingEntry(bot, map, warp, position) is not { } entry)
         {
             if (PickLine(configuration.PartyCantGoLines) is { } cantGoLine)
             {
@@ -1069,7 +1127,7 @@ public class BotChatPlugIn
             return;
         }
 
-        bot.EventMeeting = new BotEventMeeting(map, position, DateTime.UtcNow + configuration.PartyMeetingWaitTime);
+        bot.EventMeeting = new BotEventMeeting(map, entry.Position, DateTime.UtcNow + configuration.PartyMeetingWaitTime, entry.Gate);
         if (PickLine(configuration.PartyOnTheWayLines) is { } onTheWayLine)
         {
             this.WhisperLater(bot, requester, onTheWayLine, values, language);

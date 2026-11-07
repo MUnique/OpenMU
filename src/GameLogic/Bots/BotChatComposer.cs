@@ -181,24 +181,33 @@ internal static class BotChatComposer
     }
 
     /// <summary>
-    /// Reads a meeting place from a player's message like "devias 215 40": the map whose name
-    /// (in any of its translations) is in the message, and the first two numbers after removing the
-    /// name as the coordinates.
+    /// Reads a meeting place from a player's message like "devias 215 40" or "devias3 227 227": the map
+    /// or the entry of the warp list whose name (in any of its translations) is in the message, and the
+    /// first two numbers after removing the name as the coordinates.
     /// </summary>
     /// <param name="message">The player's message.</param>
     /// <param name="maps">The maps of the game.</param>
-    /// <returns>The map and, if the message names them, the coordinates; <c>null</c> when no map is named.</returns>
+    /// <param name="warps">The warp list of the game - "devias3" or "losttower7" name a warp, not a map.</param>
+    /// <returns>
+    /// The map, the warp if the message names one, and the coordinates if the message names them;
+    /// <c>null</c> when no map is named.
+    /// </returns>
     /// <remarks>
-    /// The longest matching name wins, so "lost tower" is not taken for a map called "tower". The
-    /// name is removed before the numbers are read, so a map like "Kalima 1" keeps its digit.
+    /// The longest matching name wins, so "lost tower" is not taken for a map called "tower"; between a
+    /// map and a warp of the same name ("Devias"), the map. The name is removed before the numbers are
+    /// read, so a map like "Kalima 1" keeps its digit.
     /// </remarks>
-    internal static (GameMapDefinition Map, Point? Position)? FindPlace(string message, IEnumerable<GameMapDefinition> maps)
+    internal static (GameMapDefinition Map, WarpInfo? Warp, Point? Position)? FindPlace(string message, IEnumerable<GameMapDefinition> maps, IEnumerable<WarpInfo> warps)
     {
         var normalizedMessage = $" {Normalize(message)} ";
-        var best = maps
-            .SelectMany(map => GetNames(map).Select(name => (Map: map, Name: name)))
+        var mapNames = maps.SelectMany(map => GetNames(map.Name).Select(name => (Map: map, Warp: (WarpInfo?)null, Name: name)));
+        var warpNames = warps
+            .Where(warp => warp.Gate?.Map is not null)
+            .SelectMany(warp => GetNames(warp.Name).Select(name => (Map: warp.Gate!.Map!, Warp: (WarpInfo?)warp, Name: name)));
+        var best = mapNames.Concat(warpNames)
             .Where(candidate => normalizedMessage.Contains($" {candidate.Name} ", StringComparison.Ordinal))
             .OrderByDescending(candidate => candidate.Name.Length)
+            .ThenBy(candidate => candidate.Warp is null ? 0 : 1)
             .FirstOrDefault();
         if (best.Map is null)
         {
@@ -213,14 +222,14 @@ internal static class BotChatComposer
             .Take(2)
             .ToList();
         Point? position = numbers.Count == 2 ? new Point(numbers[0]!.Value, numbers[1]!.Value) : null;
-        return (best.Map, position);
+        return (best.Map, best.Warp, position);
 
-        static IEnumerable<string> GetNames(GameMapDefinition map)
-            => map.Name.GetTranslations()
+        static IEnumerable<string> GetNames(LocalizedString name)
+            => name.GetTranslations()
                 .Select(translation => translation.Value)
-                .Append(map.Name.ValueInNeutralLanguage)
+                .Append(name.ValueInNeutralLanguage)
                 .Select(Normalize)
-                .Where(name => name.Length > 0)
+                .Where(normalized => normalized.Length > 0)
                 .Distinct();
     }
 

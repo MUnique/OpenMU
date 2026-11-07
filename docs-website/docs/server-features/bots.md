@@ -379,12 +379,16 @@ to five free bots of the game server whose level fits; class words (`dk`, `bk`,
 `bm`, `dw`, `elf`, `mg`, `dl`, `sum`, `rf`, … — each meaning its whole class
 line) narrow it down. Each of them whispers to the player, a few seconds apart.
 The same search posted again calls five others. The player whispers back to a
-bot where to meet — `devias 215 40`, a map name alone, or `here` for where the
+bot where to meet — `devias 215 40`, a warp of the warp list like
+`devias3 227 227` or `losttower7`, a map name alone, or `here` for where the
 player stands — and the bot warps there, walks up and waits five minutes for
-the invitation. A map it may not go to (its level is too low, no warp leads
-there) it declines; a whisper without a place gets asked again. Map names are
-recognized in every translation of the map. The words, the number of bots and
-the times are part of the configuration.
+the invitation. It enters through the warp from which the place is the
+shortest walk, like a player would: the floors of the Lost Tower or the
+Dungeon can't be walked between at all, and the walk from the town of Devias
+to Devias3 takes long. A place it may not go to (its level is too low for any
+warp leading there) it declines; a whisper without a place gets asked again.
+Map and warp names are recognized in every translation. The words, the number
+of bots and the times are part of the configuration.
 
 The conversations make a town feel lived in, like the townsfolk of a
 role-playing game: "my potions are running low" — "the shop here sells them
