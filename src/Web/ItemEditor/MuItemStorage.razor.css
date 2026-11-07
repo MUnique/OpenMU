@@ -1,5 +1,4 @@
-﻿
-.mu-item-storage {
+﻿.mu-item-storage {
     --boxSize: 42px;
     --storageColumns: 8;
     background-image: url('/_content/MUnique.OpenMU.Web.ItemEditor/img/inventory_back.png');
@@ -19,4 +18,42 @@
 
 .storage-rows15 {
     height: calc(var(--boxSize) * 15);
+}
+
+.item-drop-targets {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.item-drop-target {
+    position: absolute;
+    width: var(--boxSize);
+    height: var(--boxSize);
+    pointer-events: auto;
+    background-color: transparent;
+}
+
+.item-drop-target:hover {
+    background-color: rgb(173 255 47 / 20%);
+}
+
+.item-drop-preview {
+    position: absolute;
+    z-index: 5;
+    box-sizing: border-box;
+    pointer-events: none;
+    border: 2px solid;
+}
+
+.item-drop-preview.valid {
+    border-color: greenyellow;
+    background-color: rgb(173 255 47 / 35%);
+}
+
+.item-drop-preview.invalid {
+    border-color: #ff4545;
+    background-color: rgb(255 69 69 / 30%);
 }
