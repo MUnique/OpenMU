@@ -17,7 +17,14 @@ public class DefaultDropGenerator : IDropGenerator
     /// The amount of money which is dropped at least, and added to the gained experience.
     /// </summary>
     private const int BaseMoneyDrop = 7;
+
+    /// <summary>
+    /// The maximum difference between the level of a monster and the drop level of a randomly
+    /// selected item, so that a monster doesn't drop items which are far below its level.
+    /// It doesn't apply to items which are configured explicitly in a drop item group.
+    /// </summary>
     private const int DropLevelMaxGap = 12;
+
     private const int SkillDropChancePercent = 50;
 
     private const byte DefaultMaxItemOptionLevelDrop = 3;
@@ -540,12 +547,11 @@ public class DefaultDropGenerator : IDropGenerator
             return this.GenerateItemDrop(selectedGroup, selectedGroup.PossibleItems!);
         }
 
+        // The items of the group are configured explicitly, so only their own drop level
+        // range applies. The drop level gap is just for randomly selected items, see GetPossibleList.
         var monsterLevel = (int)monster[Stats.Level];
-        var isJewel = selectedGroup.ItemType == SpecialItemType.Jewel;
-
         var filteredPossibleItems = selectedGroup.PossibleItems!
-            .Where(it => CanDropAtMonsterLevel(it, monsterLevel)
-                         && (isJewel || it.DropLevel == 0 || it.DropLevel > monsterLevel - DropLevelMaxGap))
+            .Where(it => CanDropAtMonsterLevel(it, monsterLevel))
             .ToList();
 
         return this.GenerateItemDrop(selectedGroup, filteredPossibleItems);
