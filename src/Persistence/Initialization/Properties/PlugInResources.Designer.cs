@@ -1048,5 +1048,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddHitShockSettingsPlugIn_Description text.</summary>
         public static string AddHitShockSettingsPlugIn_Description => ResourceManager.GetString("AddHitShockSettingsPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixKanturuRuins3LandingUpdatePlugIn_Name text.</summary>
+        public static string FixKanturuRuins3LandingUpdatePlugIn_Name => ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixKanturuRuins3LandingUpdatePlugIn_Description text.</summary>
+        public static string FixKanturuRuins3LandingUpdatePlugIn_Description => ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }
