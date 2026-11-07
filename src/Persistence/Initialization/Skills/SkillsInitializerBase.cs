@@ -173,7 +173,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
         if ((SkillNumber)skill.Number is SkillNumber.IceArrow)
         {
             skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
-            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 5);
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 7);
             return;
         }
 
