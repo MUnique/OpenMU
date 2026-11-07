@@ -308,12 +308,6 @@
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert die Diskriminatoren einiger antiker Gegenstände.</value>
   </data>
-  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve">
-    <value>Bonus des Muren-Feuerrings korrigieren</value>
-  </data>
-  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">
-    <value>Gibt dem Feuerring des antiken Sets Muren seinen Energie-Bonus, der als Vitalität initialisiert wurde.</value>
-  </data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve">
     <value>Buff-Fähigkeiten des Beschwörers hinzufügen</value>
   </data>
@@ -782,12 +776,6 @@
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die Monster des Crywolf-Events und ihre Spawns hinzu, lässt die Statue und die Altäre der Festung immer auf der Karte, und fügt den Warp-Eintrag der Festung und die Geländevarianten der Besetzungszustände hinzu.</value>
   </data>
-  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
-    <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
-  </data>
-  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
-    <value>Dieses Update fügt die Einladung ins Dorf des Weihnachtsmanns hinzu, die den Spieler ins Dorf des Weihnachtsmanns teleportiert, sowie ein Spawn-Tor im Dorf des Weihnachtsmanns.</value>
-  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>Kleine Flügel und Umhänge hinzufügen</value>
   </data>
@@ -874,6 +862,12 @@
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt die freien Tickets für Devil Square, Blood Castle, Illusion Temple und Chaos Castle hinzu, mit denen man das Event jeder Stufe betreten kann. Die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Goldene und silberne Boxen hinzufügen</value>
+  </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Diese Aktualisierung fügt den Goldschlüssel und den Silberschlüssel, die versiegelte goldene und silberne Box, die mit den Schlüsseln beim Chaos-Goblin geöffnet werden, sowie die goldene und silberne Box hinzu, die beim Fallenlassen einen Gegenstand oder Geld geben. Die Pakete des Item-Shops, die die Schlüssel enthalten, werden zum Verkauf angeboten.</value>
+  </data>
   <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
     <value>Kalima-Ticket hinzufügen</value>
   </data>
@@ -909,6 +903,18 @@
   </data>
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve">
+    <value>Bonus des Muren-Feuerrings korrigieren</value>
+  </data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">
+    <value>Gibt dem Feuerring des antiken Sets Muren seinen Energie-Bonus, der als Vitalität initialisiert wurde.</value>
+  </data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
+  </data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Einladung ins Dorf des Weihnachtsmanns hinzu, die den Spieler ins Dorf des Weihnachtsmanns teleportiert, sowie ein Spawn-Tor im Dorf des Weihnachtsmanns.</value>
   </data>
   <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve">
     <value>Treffer-Schock-Einstellungen hinzufügen</value>

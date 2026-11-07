@@ -287,13 +287,14 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 56 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
+That leaves 60 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
 items and the Talisman of Luck 10% for Goblin Points, and the character cards,
 the Magic Backpack, the Vault Expansion Certificate, the free tickets of Devil
-Square, Blood Castle and Illusion Temple, the reset fruits, the elite potions and
-the Talisman of Luck for WCoin (C) and (P), and the ten lucky item tickets for
-WCoin (P). Most cash shop items, like seals, scrolls and most talismans, aren't
-defined in the item configuration yet.
+Square, Blood Castle and Illusion Temple, the Kalima tickets, the reset fruits,
+the elite potions and the Talisman of Luck for WCoin (C) and (P), and the ten
+lucky item tickets and the Gold Key and Silver Key for WCoin (P). Most cash shop
+items, like seals, scrolls and most talismans, aren't defined in the item
+configuration yet.
 
 The free tickets (13/46 Devil Square, 13/47 Blood Castle, 13/61 Illusion Temple
 and 13/121 Chaos Castle, which isn't in the catalog) are created by

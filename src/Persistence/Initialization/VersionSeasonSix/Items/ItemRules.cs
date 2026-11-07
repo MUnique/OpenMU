@@ -314,6 +314,12 @@ public class ItemRules : InitializerBase
         Rule(14, 107, Blocked.Repair), // Fifth Secromicon Fragment
         Rule(14, 108, Blocked.Repair), // Sixth Secromicon Fragment
         Rule(14, 109, Blocked.Repair), // Complete Secromicon
+        Rule(14, 112, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Silver Key
+        Rule(14, 113, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Gold Key
+        Rule(14, 121, Blocked.Drop, Blocked.Repair), // Sealed Golden Box
+        Rule(14, 122, Blocked.Drop, Blocked.Repair), // Sealed Silver Box
+        Rule(14, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Golden Box
+        Rule(14, 124, Blocked.Trade, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Silver Box
         Rule(14, 133, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Elite SD Potion
         Rule(14, 140, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Scroll of Healing
         Rule(14, 160, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Jewel of Extension
