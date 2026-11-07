@@ -132,9 +132,34 @@ internal static class MoneyDistribution
     /// <returns><c>True</c>, if the player received money; Otherwise, <c>false</c>.</returns>
     public static bool TryPay(Player player, uint amount)
     {
+        var amountToAdd = GetAmountToAdd(player, amount);
+        return amountToAdd > 0 && player.TryAddMoney(amountToAdd);
+    }
+
+    /// <summary>
+    /// Determines whether <see cref="TryPay"/> would give the player any money, without paying it.
+    /// </summary>
+    /// <param name="player">The player which should receive the money.</param>
+    /// <param name="amount">The amount, before the money rate of the player is applied.</param>
+    /// <returns><c>True</c>, if the player would receive money; Otherwise, <c>false</c>.</returns>
+    public static bool CanPay(Player player, uint amount)
+    {
+        var amountToAdd = GetAmountToAdd(player, amount);
+        return amountToAdd > 0 && player.CanAddMoney(amountToAdd);
+    }
+
+    /// <summary>
+    /// Gets the money which is added to the inventory of the player for the amount, with their
+    /// <see cref="Stats.MoneyAmountRate"/> and the configured pick up clamp applied.
+    /// </summary>
+    /// <param name="player">The player which should receive the money.</param>
+    /// <param name="amount">The amount, before the money rate of the player is applied.</param>
+    /// <returns>The money to add; zero, if the player gets nothing.</returns>
+    private static int GetAmountToAdd(Player player, uint amount)
+    {
         if (amount == 0)
         {
-            return false;
+            return 0;
         }
 
         // The rate is applied in double precision: a float multiplication would round money amounts
@@ -142,7 +167,7 @@ internal static class MoneyDistribution
         var scaled = (long)(amount * (double)(player.Attributes?[Stats.MoneyAmountRate] ?? 1.0f));
         if (scaled <= 0)
         {
-            return false;
+            return 0;
         }
 
         var amountToAdd = (int)Math.Min(scaled, int.MaxValue);
@@ -150,13 +175,9 @@ internal static class MoneyDistribution
         {
             var maximumMoney = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
             amountToAdd = (int)Math.Min(amountToAdd, Math.Max(0, maximumMoney - player.Money));
-            if (amountToAdd <= 0)
-            {
-                return false;
-            }
         }
 
-        return player.TryAddMoney(amountToAdd);
+        return Math.Max(amountToAdd, 0);
     }
 
     /// <summary>
