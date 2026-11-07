@@ -30,8 +30,6 @@ public class EditItemDropsTests
 
     private CultureInfo _previousUiCulture = null!;
 
-    private BasicModel.GameConfiguration _configuration = null!;
-
     private BasicModel.GameMapDefinition _map = null!;
 
     /// <summary>
@@ -43,16 +41,16 @@ public class EditItemDropsTests
         this._previousUiCulture = CultureInfo.CurrentUICulture;
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
 
-        this._configuration = new BasicModel.GameConfiguration();
+        var configuration = new BasicModel.GameConfiguration();
         this._map = new BasicModel.GameMapDefinition { Id = Guid.NewGuid(), Number = 0, Name = "Lorencia" };
-        this._configuration.Maps.Add(this._map);
+        configuration.Maps.Add(this._map);
 
         var persistenceContext = new Mock<IContext>();
         persistenceContext.Setup(c => c.CreateNew<DropItemGroup>(It.IsAny<object?[]>()))
             .Returns(() => new BasicModel.DropItemGroup());
         var dataSource = new Mock<IDataSource<GameConfiguration>>();
         dataSource.Setup(s => s.GetContextAsync(It.IsAny<CancellationToken>())).ReturnsAsync(persistenceContext.Object);
-        dataSource.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(this._configuration);
+        dataSource.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(configuration);
 
         this._context = new BunitContext();
         this._context.JSInterop.Mode = JSRuntimeMode.Loose;
