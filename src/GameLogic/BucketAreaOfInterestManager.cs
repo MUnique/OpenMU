@@ -96,11 +96,11 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
     }
 
     /// <inheritdoc/>
-    public async ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true)
+    public async ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true, bool notifyObservers = true)
     {
         var differentBucket = await this.MoveObjectOnMapAsync(obj, target, moveLock, moveType).ConfigureAwait(false);
 
-        if (obj is IObservable observable)
+        if (notifyObservers && obj is IObservable observable)
         {
             await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(obj, moveType), notifyMovedObject).ConfigureAwait(false);
         }
