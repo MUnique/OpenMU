@@ -209,7 +209,11 @@ public class ItemConsumptionTest
         Assert.That(upgradeableItem.ItemOptions.Count, Is.EqualTo(1));
 
         // then adding fails, so option needs to be removed
-        consumeHandler.Configuration = new LifeJewelConsumeHandlerPlugInConfiguration { SuccessChance = 0 };
+        consumeHandler.Configuration = new ItemUpgradeConfiguration
+        {
+            SuccessChance = 0,
+            FailResult = ItemUpgradeConsumeHandlerPlugIn.ItemFailResult.RemoveOption,
+        };
         var jol2 = this.GetItem();
         await player.Inventory.AddItemAsync(ItemSlot, jol2).ConfigureAwait(false);
         jol2.Durability = 1;
@@ -228,12 +232,14 @@ public class ItemConsumptionTest
     {
         var consumeHandler = new LifeJewelConsumeHandlerPlugIn();
 
-        var configuration = consumeHandler.CreateDefaultConfig() as LifeJewelConsumeHandlerPlugInConfiguration;
+        var configuration = consumeHandler.CreateDefaultConfig() as ItemUpgradeConfiguration;
 
-        Assert.That(consumeHandler.Configuration, Is.Null, "The default configuration is only applied by the plugin manager.");
         Assert.That(configuration, Is.Not.Null);
         Assert.That(configuration!.SuccessChance, Is.EqualTo(0.5));
         Assert.That(configuration.FailResult, Is.EqualTo(ItemUpgradeConsumeHandlerPlugIn.ItemFailResult.RemoveOption));
+        Assert.That(configuration.AddsOption, Is.True);
+        Assert.That(configuration.IncreasesOption, Is.True);
+        Assert.That(configuration.OptionType, Is.EqualTo(ItemOptionTypes.Option));
     }
 
     /// <summary>
@@ -254,7 +260,7 @@ public class ItemConsumptionTest
 
         Assert.That(upgradeableItem.ItemOptions.Single().Level, Is.EqualTo(1));
 
-        consumeHandler.Configuration = new LifeJewelConsumeHandlerPlugInConfiguration
+        consumeHandler.Configuration = new ItemUpgradeConfiguration
         {
             SuccessChance = 0,
             FailResult = ItemUpgradeConsumeHandlerPlugIn.ItemFailResult.None,
@@ -289,7 +295,7 @@ public class ItemConsumptionTest
 
         Assert.That(upgradeableItem.ItemOptions.Single().Level, Is.EqualTo(3));
 
-        consumeHandler.Configuration = new LifeJewelConsumeHandlerPlugInConfiguration
+        consumeHandler.Configuration = new ItemUpgradeConfiguration
         {
             SuccessChance = 0,
             FailResult = ItemUpgradeConsumeHandlerPlugIn.ItemFailResult.SetOptionToBaseLevel,
@@ -313,11 +319,14 @@ public class ItemConsumptionTest
         var plugInConfiguration = new PlugInConfiguration { TypeId = typeof(LifeJewelConsumeHandlerPlugIn).GUID };
         plugInConfiguration.SetConfiguration(consumeHandler.CreateDefaultConfig(), referenceHandler: null);
 
-        var restored = plugInConfiguration.GetConfiguration<LifeJewelConsumeHandlerPlugInConfiguration>(referenceHandler: null);
+        var restored = plugInConfiguration.GetConfiguration<ItemUpgradeConfiguration>(referenceHandler: null);
 
         Assert.That(restored, Is.Not.Null);
         Assert.That(restored!.SuccessChance, Is.EqualTo(0.5));
         Assert.That(restored.FailResult, Is.EqualTo(ItemUpgradeConsumeHandlerPlugIn.ItemFailResult.RemoveOption));
+        Assert.That(restored.AddsOption, Is.True);
+        Assert.That(restored.IncreasesOption, Is.True);
+        Assert.That(restored.OptionType, Is.EqualTo(ItemOptionTypes.Option));
     }
 
     /// <summary>
@@ -613,7 +622,7 @@ public class ItemConsumptionTest
     {
         return new LifeJewelConsumeHandlerPlugIn
         {
-            Configuration = new LifeJewelConsumeHandlerPlugInConfiguration
+            Configuration = new ItemUpgradeConfiguration
             {
                 SuccessChance = successChance,
                 FailResult = failResult,

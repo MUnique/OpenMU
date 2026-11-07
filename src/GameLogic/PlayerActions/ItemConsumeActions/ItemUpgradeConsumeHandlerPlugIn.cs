@@ -1,4 +1,4 @@
-// -----------------------------------------------------------------------
+﻿// -----------------------------------------------------------------------
 // <copyright file="ItemUpgradeConsumeHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -9,19 +9,29 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// An item consume handler which upgrades the target item.
 /// </summary>
-public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn
+/// <remarks>
+/// The upgrade behaviour is configurable, see <see cref="ItemUpgradeConfiguration"/>.
+/// A concrete handler defines its default configuration by the one which it passes to its constructor.
+/// </remarks>
+public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandlerPlugIn, ISupportCustomConfiguration<ItemUpgradeConfiguration>, ISupportDefaultCustomConfiguration
 {
+    private readonly ItemUpgradeConfiguration _defaultConfiguration;
+
+    private ItemUpgradeConfiguration _configuration;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemUpgradeConsumeHandlerPlugIn"/> class.
     /// </summary>
-    /// <param name="configuration">The configuration.</param>
+    /// <param name="configuration">The default configuration of the concrete handler.</param>
     internal ItemUpgradeConsumeHandlerPlugIn(ItemUpgradeConfiguration configuration)
     {
-        this.UpgradeConfiguration = configuration;
+        this._defaultConfiguration = configuration;
+        this._configuration = configuration;
     }
 
     /// <summary>
@@ -45,15 +55,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         RemoveOption,
     }
 
-    /// <summary>
-    /// Gets the upgrade configuration.
-    /// </summary>
-    /// <remarks>
-    /// The members <see cref="ItemUpgradeConfiguration.SuccessChance"/> and
-    /// <see cref="ItemUpgradeConfiguration.FailResult"/> are settable, so that a derived handler
-    /// can apply a custom configuration to them.
-    /// </remarks>
-    internal ItemUpgradeConfiguration UpgradeConfiguration { get; }
+    /// <inheritdoc />
+    public ItemUpgradeConfiguration? Configuration
+    {
+        get => this._configuration;
+        set => this._configuration = this.NormalizeConfiguration(value);
+    }
 
     /// <inheritdoc/>
     protected override bool ModifyItem(Item item, IContext persistenceContext)
@@ -74,7 +81,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     /// <summary>
     /// Checks if an item can have the configured option.
     /// </summary>
-    /// <param name="item">The item.</param>
+    /// <param name="item">The item to upgrade.</param>
     /// <returns>Flag indicating whether the item can have the option.</returns>
     /// <remarks>
     /// Only options with level-dependent values can be added and increased by a jewel.
@@ -92,12 +99,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
     /// <returns>Flag indicating whether the item option was upgraded.</returns>
     protected virtual bool TryUpgradeItemOption(Item item)
     {
-        if (!this.UpgradeConfiguration.IncreasesOption)
+        if (!this._configuration.IncreasesOption)
         {
             return false;
         }
 
-        var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.UpgradeConfiguration.OptionType);
+        var itemOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this._configuration.OptionType);
         var increasableOption = itemOption.ItemOption;
         var higherOptionPossible = increasableOption?.LevelDependentOptions.Any(o => o.Level > itemOption.Level && o.RequiredItemLevel <= item.Level) ?? false;
         if (!higherOptionPossible)
@@ -105,7 +112,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             return false;
         }
 
-        if (Rand.NextRandomBool(this.UpgradeConfiguration.SuccessChance))
+        if (Rand.NextRandomBool(this._configuration.SuccessChance))
         {
             itemOption.Level++;
         }
@@ -117,9 +124,30 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         return true;
     }
 
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => this._defaultConfiguration.Clone();
+
+    private ItemUpgradeConfiguration NormalizeConfiguration(ItemUpgradeConfiguration? configuration)
+    {
+        if (configuration is null)
+        {
+            return this._defaultConfiguration;
+        }
+
+        // A stored configuration of an older shape may not contain the values which the handler needs.
+        configuration.OptionType ??= this._defaultConfiguration.OptionType;
+        if (!configuration.AddsOption && !configuration.IncreasesOption)
+        {
+            configuration.AddsOption = this._defaultConfiguration.AddsOption;
+            configuration.IncreasesOption = this._defaultConfiguration.IncreasesOption;
+        }
+
+        return configuration;
+    }
+
     private void HandleFailedUpgrade(Item item, ItemOptionLink itemOption)
     {
-        switch (this.UpgradeConfiguration.FailResult)
+        switch (this._configuration.FailResult)
         {
             case ItemFailResult.RemoveOption:
                 item.ItemOptions.Remove(itemOption);
@@ -135,12 +163,12 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
     private bool TryAddItemOption(Item item, IContext persistenceContext)
     {
-        if (!this.UpgradeConfiguration.AddsOption || item.Definition is null)
+        if (!this._configuration.AddsOption || item.Definition is null)
         {
             return false;
         }
 
-        if (Rand.NextRandomBool(this.UpgradeConfiguration.SuccessChance))
+        if (Rand.NextRandomBool(this._configuration.SuccessChance))
         {
             var possibleOptions = item.Definition.PossibleItemOptions.
                 SelectMany(o => o.PossibleOptions).
@@ -152,7 +180,7 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
             }
 
             var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            if (this.UpgradeConfiguration.OptionType == ItemOptionTypes.HarmonyOption)
+            if (this._configuration.OptionType == ItemOptionTypes.HarmonyOption)
             {
                 // Str and agi reduction options are not always applicable, and so should be removed from the pool
                 if (!item.Definition.Requirements.Any(r => r.Attribute == Stats.TotalStrengthRequirementValue)
@@ -187,72 +215,11 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
     private bool IsUpgradableOption(IncreasableItemOption option)
     {
-        return option.OptionType == this.UpgradeConfiguration.OptionType && option.LevelDependentOptions.Any();
+        return option.OptionType == this._configuration.OptionType && option.LevelDependentOptions.Any();
     }
 
     private bool ItemHasOptionAlready(Item item)
     {
-        return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this.UpgradeConfiguration.OptionType);
-    }
-
-    /// <summary>
-    /// The upgrade configuration.
-    /// </summary>
-    internal class ItemUpgradeConfiguration
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ItemUpgradeConfiguration"/> class.
-        /// </summary>
-        /// <param name="optionType">Type of the option.</param>
-        /// <param name="addsOption">if set to <c>true</c> [adds option].</param>
-        /// <param name="increasesOption">if set to <c>true</c> [increases option].</param>
-        /// <param name="successChance">The success chance.</param>
-        /// <param name="failResult">The fail result.</param>
-        public ItemUpgradeConfiguration(ItemOptionType optionType, bool addsOption, bool increasesOption, double successChance, ItemFailResult failResult)
-        {
-            this.OptionType = optionType;
-            this.AddsOption = addsOption;
-            this.IncreasesOption = increasesOption;
-            this.SuccessChance = successChance;
-            this.FailResult = failResult;
-        }
-
-        /// <summary>
-        /// Gets the type of the option.
-        /// </summary>
-        public ItemOptionType OptionType { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the handler adds option, if the item does not already have it.
-        /// </summary>
-        public bool AddsOption { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the handler increases the option.
-        /// </summary>
-        public bool IncreasesOption { get; set; }
-
-        /// <summary>
-        /// Gets or sets the success chance between 0 and 1.
-        /// </summary>
-        public double SuccessChance { get; set; }
-
-        /// <summary>
-        /// Gets or sets what should happen with the item if the upgrade fails because of no success.
-        /// </summary>
-        public ItemFailResult FailResult { get; set; }
-
-        /// <summary>
-        /// Gets or sets the option type which can boost the success rate.
-        /// </summary>
-        /// <remarks>
-        /// e.g. luck option which adds 25 per cent.
-        /// </remarks>
-        public ItemOptionType? BoostOptionType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the success chance boost if the target item has the option of type specified in <see cref="BoostOptionType"/>.
-        /// </summary>
-        public double SuccessChanceBoost { get; set; }
+        return item.ItemOptions.Any(o => o.ItemOption?.OptionType == this._configuration.OptionType);
     }
 }

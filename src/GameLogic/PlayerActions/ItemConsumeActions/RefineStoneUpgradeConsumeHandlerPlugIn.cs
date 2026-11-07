@@ -26,7 +26,12 @@ public abstract class RefineStoneUpgradeConsumeHandlerPlugIn : ItemUpgradeConsum
     /// <inheritdoc/>
     protected override bool TryUpgradeItemOption(Item item)
     {
-        var harmonyOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.UpgradeConfiguration.OptionType);
+        if (this.Configuration is not { } configuration)
+        {
+            return base.TryUpgradeItemOption(item);
+        }
+
+        var harmonyOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == configuration.OptionType);
         var levelOptions = harmonyOption.ItemOption?.LevelDependentOptions;
 
         if (levelOptions?.FirstOrDefault()?.PowerUpDefinition?.TargetAttribute == Stats.MinimumPhysBaseDmg)
