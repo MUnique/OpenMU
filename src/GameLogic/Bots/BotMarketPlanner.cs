@@ -63,6 +63,9 @@ internal static class BotMarketPlanner
 
         /// <summary>A player took the bot into a party.</summary>
         JoinedParty,
+
+        /// <summary>The game didn't open the store, e.g. because of a price in a currency which isn't allowed.</summary>
+        StoreNotOpened,
     }
 
     /// <summary>

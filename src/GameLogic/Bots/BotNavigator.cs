@@ -1171,6 +1171,38 @@ internal sealed class BotNavigator : AsyncDisposable
         this._emptyGroundSince = null;
     }
 
+    /// <summary>
+    /// Opens the personal store at the stall, as it runs inside the MU Helper tick.
+    /// </summary>
+    /// <param name="shift">The market shift.</param>
+    /// <returns>The task.</returns>
+    internal async ValueTask OpenMarketStoreAsync(BotMarketShift shift)
+    {
+        if (!ReferenceEquals(this._player.MarketShift, shift) || shift.IsEnding)
+        {
+            return;
+        }
+
+        await MarketStoreOpenAction.OpenStoreAsync(this._player, shift.StoreName).ConfigureAwait(false);
+        if (this._player.ShopStorage?.StoreOpen ?? false)
+        {
+            // What the bot has now is its own - every zen and item which comes in later is income (see
+            // BotMerchandise.RemoveIncomeAsync).
+            shift.MoneyAtOpen = this._player.Money;
+            shift.ItemsAtOpen = this._player.Inventory?.Items.ToHashSet() ?? [];
+            shift.LastSaleUtc = DateTime.UtcNow;
+            shift.IsStoreOpened = true;
+            this._player.Logger.LogDebug("Bot '{Name}' opened its store '{Store}' at {Stall}.", this._player.Name, shift.StoreName, shift.Stall);
+        }
+        else
+        {
+            // E.g. a price in a currency which isn't allowed (anymore). It ends like any other shift, so the
+            // bot waits for its next one instead of coming back right away to fail again.
+            var configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()?.Configuration;
+            this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreNotOpened);
+        }
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1994,36 +2026,6 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// Opens the personal store at the stall, as it runs inside the MU Helper tick.
-    /// </summary>
-    private async ValueTask OpenMarketStoreAsync(BotMarketShift shift)
-    {
-        if (!ReferenceEquals(this._player.MarketShift, shift) || shift.IsEnding)
-        {
-            return;
-        }
-
-        await MarketStoreOpenAction.OpenStoreAsync(this._player, shift.StoreName).ConfigureAwait(false);
-        if (this._player.ShopStorage?.StoreOpen ?? false)
-        {
-            // What the bot has now is its own - every zen and item which comes in later is income (see
-            // BotMerchandise.RemoveIncomeAsync).
-            shift.MoneyAtOpen = this._player.Money;
-            shift.ItemsAtOpen = this._player.Inventory?.Items.ToHashSet() ?? [];
-            shift.LastSaleUtc = DateTime.UtcNow;
-            shift.IsStoreOpened = true;
-            this._player.Logger.LogDebug("Bot '{Name}' opened its store '{Store}' at {Stall}.", this._player.Name, shift.StoreName, shift.Stall);
-        }
-        else
-        {
-            // E.g. a price in a currency which isn't allowed (anymore): the bot can't sell, so it leaves.
-            this._player.Logger.LogDebug("Bot '{Name}' couldn't open its store - it ends its market shift.", this._player.Name);
-            shift.IsEnding = true;
-            this._player.PendingBotActions.Enqueue(() => this.CloseMarketStoreAsync(shift));
-        }
     }
 
     /// <summary>
