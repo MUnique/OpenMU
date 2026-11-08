@@ -187,8 +187,6 @@
   <data name="AddMaximumAllianceSizeUpdatePlugInSeason6_Description" xml:space="preserve"><value>为 Season 6 游戏配置添加 MaximumAllianceSize 全局基础属性，默认值为 5。</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Name" xml:space="preserve"><value>修正套装物品识别值</value></data>
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve"><value>修正部分套装物品的识别值。</value></data>
-  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>修正 Muren 套装火之指环的加成</value></data>
-  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>将 Muren 古代套装中火之指环的加成由体力修正为智力。</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve"><value>添加召唤术师辅助技能</value></data>
   <data name="AddSummonerBuffSkillsPlugIn_Description" xml:space="preserve"><value>添加昏睡术、破御阵、伤害反射和虚弱阵，并修正三代翅膀的完全反射属性。</value></data>
   <data name="WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name" xml:space="preserve"><value>补充魔法师与格斗家技能</value></data>
@@ -355,12 +353,6 @@
   <data name="AddCrywolfEventUpdatePlugIn_Description" xml:space="preserve">
     <value>添加狼魂要塞活动的怪物及其刷新点，使要塞的神狼雕像和护台始终位于地图上，并添加要塞的传送条目和各占领状态的地形。</value>
   </data>
-  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
-    <value>添加圣诞村邀请函</value>
-  </data>
-  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
-    <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
-  </data>
   <data name="AddSmallWingsUpdatePlugIn_Name" xml:space="preserve">
     <value>添加小翅膀和小披风</value>
   </data>
@@ -423,6 +415,12 @@
   <data name="AddFreeTicketItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>补充恶魔广场、血色城堡、幻影寺院和赤色要塞的自由入场券，可进入任意等级的活动。包含这些入场券的游戏商城礼包将开始出售。</value>
   </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加金箱和银箱</value>
+  </data>
+  <data name="AddGoblinBoxesUpdatePlugIn_Description" xml:space="preserve">
+    <value>补充金钥匙和银钥匙、可在混沌哥布林处用钥匙打开的封印的金箱和封印的银箱，以及丢弃后会获得物品或金币的金箱和银箱。包含钥匙的游戏商城礼包将开始出售。</value>
+  </data>
   <data name="AddKalimaTicketUpdatePlugIn_Name" xml:space="preserve">
     <value>添加卡利玛门票</value>
   </data>
@@ -458,5 +456,13 @@
   </data>
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>添加幸运符咒（按其耐久度的百分比提高合成成功率）和混沌合成符咒（+10 至 +15 物品强化失败时保留物品）。它们会被加入可使用它们的合成中，包含它们的游戏商城礼包将开始出售。</value>
+  </data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>修正 Muren 套装火之指环的加成</value></data>
+  <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>将 Muren 古代套装中火之指环的加成由体力修正为智力。</value></data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加圣诞村邀请函</value>
+  </data>
+  <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
 </root>

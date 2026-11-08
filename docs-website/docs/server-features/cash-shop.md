@@ -121,6 +121,21 @@ inventory, with the item level and quantity of the product. If the inventory
 doesn't have space for all of them, nothing is added and the item stays in the
 storage.
 
+### Gold and Silver Keys
+
+The Gold Key and the Silver Key open a Sealed Golden Box and a Sealed Silver
+Box. Put a key together with its sealed box into the chaos machine of the
+chaos goblin; the combination always succeeds, costs no money and creates a
+Golden Box or a Silver Box. Like a *Box of Luck*, an opened box is used by
+dropping it: it gives an excellent item, a jewel, or money otherwise. The
+Golden Box has the better contents. Their drop groups can be changed on the
+**Item drops** page (*Item box drops*).
+
+The sealed boxes don't drop from monsters by default, because their original
+source and chances aren't known. Add them to a drop group to make the keys
+useful. Existing databases get the keys and boxes with the configuration update
+*Add golden and silver boxes*.
+
 ### Reset fruits
 
 The reset fruits of strength, agility, vitality, energy and command (the last

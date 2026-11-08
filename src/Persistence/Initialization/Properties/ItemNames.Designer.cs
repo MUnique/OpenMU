@@ -4872,10 +4872,38 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
-        /// <summary>Gets InvitationToSantaVillage from the configuration name resources.</summary>
-        public static string InvitationToSantaVillage {
+        /// <summary>Gets ResetFruitStrength from the configuration name resources.</summary>
+        public static string ResetFruitStrength {
             get {
-                return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
+                return ResourceManager.GetString("ResetFruitStrength", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitAgility from the configuration name resources.</summary>
+        public static string ResetFruitAgility {
+            get {
+                return ResourceManager.GetString("ResetFruitAgility", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitVitality from the configuration name resources.</summary>
+        public static string ResetFruitVitality {
+            get {
+                return ResourceManager.GetString("ResetFruitVitality", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitEnergy from the configuration name resources.</summary>
+        public static string ResetFruitEnergy {
+            get {
+                return ResourceManager.GetString("ResetFruitEnergy", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ResetFruitCommand from the configuration name resources.</summary>
+        public static string ResetFruitCommand {
+            get {
+                return ResourceManager.GetString("ResetFruitCommand", resourceCulture);
             }
         }
 
@@ -4949,38 +4977,45 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
-        /// <summary>Gets ResetFruitStrength from the configuration name resources.</summary>
-        public static string ResetFruitStrength {
+        /// <summary>Gets SilverKey from the configuration name resources.</summary>
+        public static string SilverKey {
             get {
-                return ResourceManager.GetString("ResetFruitStrength", resourceCulture);
+                return ResourceManager.GetString("SilverKey", resourceCulture);
             }
         }
 
-        /// <summary>Gets ResetFruitAgility from the configuration name resources.</summary>
-        public static string ResetFruitAgility {
+        /// <summary>Gets GoldKey from the configuration name resources.</summary>
+        public static string GoldKey {
             get {
-                return ResourceManager.GetString("ResetFruitAgility", resourceCulture);
+                return ResourceManager.GetString("GoldKey", resourceCulture);
             }
         }
 
-        /// <summary>Gets ResetFruitVitality from the configuration name resources.</summary>
-        public static string ResetFruitVitality {
+        /// <summary>Gets SealedGoldenBox from the configuration name resources.</summary>
+        public static string SealedGoldenBox {
             get {
-                return ResourceManager.GetString("ResetFruitVitality", resourceCulture);
+                return ResourceManager.GetString("SealedGoldenBox", resourceCulture);
             }
         }
 
-        /// <summary>Gets ResetFruitEnergy from the configuration name resources.</summary>
-        public static string ResetFruitEnergy {
+        /// <summary>Gets SealedSilverBox from the configuration name resources.</summary>
+        public static string SealedSilverBox {
             get {
-                return ResourceManager.GetString("ResetFruitEnergy", resourceCulture);
+                return ResourceManager.GetString("SealedSilverBox", resourceCulture);
             }
         }
 
-        /// <summary>Gets ResetFruitCommand from the configuration name resources.</summary>
-        public static string ResetFruitCommand {
+        /// <summary>Gets GoldenBox from the configuration name resources.</summary>
+        public static string GoldenBox {
             get {
-                return ResourceManager.GetString("ResetFruitCommand", resourceCulture);
+                return ResourceManager.GetString("GoldenBox", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SilverBox from the configuration name resources.</summary>
+        public static string SilverBox {
+            get {
+                return ResourceManager.GetString("SilverBox", resourceCulture);
             }
         }
 
@@ -5429,6 +5464,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string TalismanOfChaosAssembly {
             get {
                 return ResourceManager.GetString("TalismanOfChaosAssembly", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets InvitationToSantaVillage from the configuration name resources.</summary>
+        public static string InvitationToSantaVillage {
+            get {
+                return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
             }
         }
     }

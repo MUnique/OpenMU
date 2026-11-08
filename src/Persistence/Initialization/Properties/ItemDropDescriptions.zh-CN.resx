@@ -201,4 +201,22 @@
   <data name="OldJewelleryCaseMoney" xml:space="preserve">
     <value>古旧首饰盒：金币</value>
   </data>
+  <data name="GoldenBoxExcellentItems" xml:space="preserve">
+    <value>金箱：卓越物品</value>
+  </data>
+  <data name="GoldenBoxJewels" xml:space="preserve">
+    <value>金箱：宝石</value>
+  </data>
+  <data name="GoldenBoxMoney" xml:space="preserve">
+    <value>金箱：金币</value>
+  </data>
+  <data name="SilverBoxExcellentItems" xml:space="preserve">
+    <value>银箱：卓越物品</value>
+  </data>
+  <data name="SilverBoxJewels" xml:space="preserve">
+    <value>银箱：宝石</value>
+  </data>
+  <data name="SilverBoxMoney" xml:space="preserve">
+    <value>银箱：金币</value>
+  </data>
 </root>
