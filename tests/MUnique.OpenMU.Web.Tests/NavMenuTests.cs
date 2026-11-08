@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests;
 
+using MUnique.OpenMU.Web.Tests.AdminAuth;
 using System.Threading;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,7 @@ public class NavMenuTests
     [Test]
     public void RendersAfterServicesAreDisposed()
     {
-        using var context = CreateContext();
+        using var context = CreateContext(AdminPolicies.Administrator);
         var menu = context.Render<NavMenu>();
         Assert.That(menu.FindAll("a[href='network-analyzer']"), Has.Count.EqualTo(1));
 

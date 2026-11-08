@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.Tests.Mcp;
 
 using Bunit;
+using MUnique.OpenMU.Web.Tests.AdminAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -35,6 +36,7 @@ public sealed class OperationalPanelErrorTests
     public async Task ServerControlsContainAuditFailuresAsync(ServerState state, string buttonClass)
     {
         using var context = new BunitContext();
+        context.AddAdministratorAuthorization();
         var server = new Mock<IGameServer>();
         server.SetupGet(s => s.Id).Returns(4);
         server.SetupGet(s => s.Type).Returns(ServerType.GameServer);

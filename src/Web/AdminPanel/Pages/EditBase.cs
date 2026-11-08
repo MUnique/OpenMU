@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -115,6 +116,17 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     public ILogger<EditBase>? Logger { get; set; }
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
+
+    /// <summary>
+    /// Gets the authorization policy which is required to save the changes.
+    /// </summary>
+    protected virtual string SavePolicy => AdminPolicies.Administrator;
 
     /// <summary>
     /// Gets the data source of the type which is edited.
@@ -232,6 +244,12 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     {
         try
         {
+            if (!await this.PolicyGuard.IsAuthorizedAsync(this.SavePolicy).ConfigureAwait(true))
+            {
+                this.ToastService.ShowError(Resources.ChangeNotPermitted);
+                return;
+            }
+
             if (!await this.HasCurrentContextAsync().ConfigureAwait(true))
             {
                 this.ShowContextChangedMessage();

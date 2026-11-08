@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components;
@@ -44,6 +45,12 @@ public abstract class MapEditorPageBase<TEditor> : ComponentBase, IDisposable
     /// Gets the caption of the page.
     /// </summary>
     protected abstract string Caption { get; }
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    private AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the modal service.
@@ -266,6 +273,12 @@ public abstract class MapEditorPageBase<TEditor> : ComponentBase, IDisposable
 
     private async Task SaveChangesAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             var context = await this.GameConfigurationSource.GetContextAsync().ConfigureAwait(true);

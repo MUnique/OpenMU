@@ -15,6 +15,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -51,6 +52,12 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
     {
         this._additionEditContext = new EditContext(this._addition);
     }
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the data source.
@@ -493,6 +500,12 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             if (this._persistenceContext is { } context)

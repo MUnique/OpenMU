@@ -11,18 +11,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Network.Analyzer.Archive;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>
 /// Controller which offers the archived sessions of the observed accounts as a download.
 /// </summary>
 /// <remarks>
 /// The archived files are not served statically: they contain the traffic of a player in plain
-/// text, including its login packet. Like every other controller of the admin panel, this one
-/// requires an authenticated user. The attribute is required, because not every host requires
-/// an authorization for all of its controllers, e.g. the admin panel of the distributed deployment
-/// also offers endpoints which are called by dapr.
+/// text, including its login packet. That's why it requires an administrator, like the network
+/// analyzer page. The attribute is required, because not every host requires an authorization for
+/// all of its controllers, e.g. the admin panel of the distributed deployment also offers endpoints
+/// which are called by dapr.
 /// </remarks>
-[Authorize]
+[Authorize(Policy = AdminPolicies.Administrator)]
 [Route("api/network-archive/")]
 public class NetworkArchiveController : Controller
 {

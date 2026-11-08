@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests.Pages;
 
+using MUnique.OpenMU.Web.Tests.AdminAuth;
 using System.Threading;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,7 @@ public sealed class EditDownloadLinkTests
     public void DownloadLinkIsRelativeToTheBaseAddress()
     {
         using var context = new BunitContext();
+        context.AddAdministratorAuthorization();
         var persistenceContext = new Mock<IContext>();
         persistenceContext.Setup(c => c.GetAsync<GameConfiguration>(It.IsAny<CancellationToken>())).ReturnsAsync([new GameConfiguration()]);
         var provider = new Mock<IPersistenceContextProvider>();

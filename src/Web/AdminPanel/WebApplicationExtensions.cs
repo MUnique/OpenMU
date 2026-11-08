@@ -148,7 +148,7 @@ public static class WebApplicationExtensions
         app.UseAdminPanelAuth();
 
         // The log files may contain sensitive information, so they are only served to authorized users.
-        app.UseAuthorizedPath("/logs");
+        app.UseAuthorizedPath("/logs", AdminPolicies.Administrator);
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),

@@ -132,9 +132,14 @@ Each user has one role. They build up on each other:
 
 | Role | May do |
 |---|---|
-| **Viewer** | See the servers, accounts and the configuration |
-| **Operator** | Everything above, plus operating the servers and editing accounts |
-| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files, the logging configuration and the user management |
+| **Viewer** | See the servers, the accounts, the guilds and the leaderboards |
+| **Operator** | Everything above, plus operating the servers, editing accounts and the live maps, where players can be disconnected and banned |
+| **Administrator** | Everything above, plus the game configuration, adding and removing servers, the network analyzer, the setup, plugins, configuration updates, log files, the logging configuration and the user management |
+
+In the distributed deployment, the live maps are served by the game servers
+themselves. The nginx configuration asks the admin panel whether the user is
+logged in as an Operator or Administrator before it passes a request on to a
+game server.
 
 Give each administrator their own user, so you can remove one without changing
 everybody else's password.
