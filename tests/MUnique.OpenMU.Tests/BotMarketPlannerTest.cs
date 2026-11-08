@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the decisions of a market shift of a bot (<see cref="BotMarketPlanner"/>): where it puts its
@@ -386,6 +387,31 @@ public class BotMarketPlannerTest
         Assert.That(bot.Money, Is.EqualTo(1000));
         Assert.That(bot.Inventory.Items, Does.Contain(ownJewel));
         Assert.That(bot.Inventory.Items, Does.Not.Contain(paidJewel));
+    }
+
+    /// <summary>
+    /// A bot whose store the game doesn't open ends its shift like any other one, so it waits for its
+    /// next shift instead of coming back right away to fail again.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask FailedStoreOpeningWaitsForTheNextShiftAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext([new PlugInConfiguration { TypeId = typeof(BotMerchantPlugIn).GUID, IsActive = true }]);
+        var configuration = new BotMerchantConfiguration();
+        gameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()!.Configuration = configuration;
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        Assert.That(await bot.ShopStorage!.AddItemAsync(InventoryConstants.FirstStoreItemSlotIndex, CreateItem()).ConfigureAwait(false), Is.True);
+        var shift = CreateShift();
+        bot.MarketShift = shift;
+        var before = DateTime.UtcNow;
+
+        await new BotNavigator(bot).OpenMarketStoreAsync(shift).ConfigureAwait(false);
+        await bot.DrainPendingBotActionsAsync().ConfigureAwait(false);
+
+        Assert.That(bot.ShopStorage.StoreOpen, Is.False);
+        Assert.That(bot.MarketShift, Is.Null);
+        Assert.That(bot.NextMarketShiftUtc, Is.GreaterThanOrEqualTo(before + configuration.TimeBetweenShifts));
     }
 
     private static BotMarketShift CreateShift()
