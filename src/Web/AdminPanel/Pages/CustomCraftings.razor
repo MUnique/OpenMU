@@ -1,0 +1,359 @@
+@page "/edit-config/custom-craftings"
+@page "/edit-config/MUnique.OpenMU.Web.AdminPanel.Pages.CustomCraftingsDefinition/"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
+
+@using MUnique.OpenMU.DataModel.Configuration.ItemCrafting
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+<PageTitle>OpenMU: @Resources.CustomCraftings</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption='@Resources.CustomCraftings' />
+<h1>@Resources.CustomCraftings</h1>
+<p class="text-muted">@Resources.CustomCraftingsDescription</p>
+
+@if (this._loading)
+{
+    <p>@Resources.Loading</p>
+}
+else if (this._gameConfiguration is null || this._context is null)
+{
+    <div class="alert alert-danger">@Resources.CustomCraftingsLoadFailed</div>
+}
+else
+{
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button type="button" role="tab" id="tab-available-recipes" aria-controls="panel-available-recipes" aria-selected="@(this._activeTab == ActiveTab.AvailableRecipes ? "true" : "false")"
+                    class="nav-link @(this._activeTab == ActiveTab.AvailableRecipes ? "active" : null)"
+                    @onclick="() => this._activeTab = ActiveTab.AvailableRecipes">
+                @Resources.CustomCraftingsAvailableRecipes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" role="tab" id="tab-create-recipe" aria-controls="panel-create-recipe" aria-selected="@(this._activeTab == ActiveTab.CreateRecipe ? "true" : "false")"
+                    class="nav-link @(this._activeTab == ActiveTab.CreateRecipe ? "active" : null)"
+                    @onclick="() => this._activeTab = ActiveTab.CreateRecipe">
+                @Resources.CustomCraftingsCreateRecipeTab
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button type="button" role="tab" id="tab-all-recipes" aria-controls="panel-all-recipes" aria-selected="@(this._activeTab == ActiveTab.AllRecipes ? "true" : "false")"
+                    class="nav-link @(this._activeTab == ActiveTab.AllRecipes ? "active" : null)"
+                    @onclick="() => this._activeTab = ActiveTab.AllRecipes">
+                @Resources.CustomCraftingsAllRecipesTab
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content pt-3">
+    @if (this._activeTab == ActiveTab.AvailableRecipes)
+    {
+        <div role="tabpanel" id="panel-available-recipes" aria-labelledby="tab-available-recipes">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="availableRecipesNpc">@Resources.CustomCraftingsNpc</label>
+                    <InputSelect id="availableRecipesNpc" class="form-select" @bind-Value="this._selectedNpcId" @bind-Value:after="this.ResetRecipePageAsync">
+                        <option value="">@Resources.CustomCraftingsSelectNpc</option>
+                        @foreach (var npc in this._npcs)
+                        {
+                            <option value="@npc.GetId()">@LocalizedName(npc.Designation) (@npc.Number)</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            @if (this.SelectedNpc is { } selectedNpc)
+            {
+                <h2 class="h4">@Resources.CustomCraftingsRecipes — @LocalizedName(selectedNpc.Designation)</h2>
+                @if (selectedNpc.ItemCraftings.Count == 0)
+                {
+                    <p class="text-muted">@Resources.CustomCraftingsNoRecipes</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <QuickGrid Items="@selectedNpc.ItemCraftings.AsQueryable()" Pagination="@this._pagination" Theme="none" Class="table table-striped">
+                            <PropertyColumn Title="@Resources.CustomCraftingsNumber" Property="@(crafting => crafting.Number)" Sortable="true" />
+                            <TemplateColumn Title="@Resources.ConfigurationEntryName">@LocalizedName(context.Name)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsHandler">@(string.IsNullOrEmpty(context.ItemCraftingHandlerClassName) ? "—" : context.ItemCraftingHandlerClassName)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsSuccessRate">@CraftingSuccessRate(context)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsRequiredItems">@CraftingRequirements(context)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.CustomCraftingsResults">@CraftingResults(context)</TemplateColumn>
+                            <TemplateColumn Title="@Resources.Action">
+                                @if (CanDeleteRecipe(context))
+                                {
+                                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => this.DeleteRecipeAsync(selectedNpc, context)">@Resources.Delete</button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </TemplateColumn>
+                        </QuickGrid>
+                    </div>
+                    <LocalizedPaginator State="@this._pagination" />
+                }
+            }
+        </div>
+    }
+    else if (this._activeTab == ActiveTab.AllRecipes)
+    {
+        <div role="tabpanel" id="panel-all-recipes" aria-labelledby="tab-all-recipes">
+            <div class="input-group mb-3" style="max-width: 32rem">
+                <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+                <input class="form-control" type="search" @bind="this._allRecipesSearch" @bind:event="oninput" @bind:after="this.ResetAllRecipesPageAsync" placeholder="@Resources.Search ..." />
+            </div>
+            @if (this._npcs.SelectMany(npc => npc.ItemCraftings).Any())
+            {
+                <div class="table-responsive">
+                    <QuickGrid Items="@this.FilteredAllRecipes" Pagination="@this._allRecipesPagination" Theme="none" Class="table table-striped">
+                        <TemplateColumn Title="@Resources.CustomCraftingsNpc">@LocalizedName(context.Npc.Designation) (@context.Npc.Number)</TemplateColumn>
+                        <PropertyColumn Title="@Resources.CustomCraftingsNumber" Property="@(entry => entry.Crafting.Number)" Sortable="true" />
+                        <TemplateColumn Title="@Resources.ConfigurationEntryName">@LocalizedName(context.Crafting.Name)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsHandler">@(string.IsNullOrEmpty(context.Crafting.ItemCraftingHandlerClassName) ? "—" : context.Crafting.ItemCraftingHandlerClassName)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsSuccessRate">@CraftingSuccessRate(context.Crafting)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsRequiredItems">@CraftingRequirements(context.Crafting)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.CustomCraftingsResults">@CraftingResults(context.Crafting)</TemplateColumn>
+                        <TemplateColumn Title="@Resources.Action">
+                            @if (CanDeleteRecipe(context.Crafting))
+                            {
+                                <button type="button" class="btn btn-sm btn-danger" @onclick="() => this.DeleteRecipeAsync(context.Npc, context.Crafting)">@Resources.Delete</button>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </TemplateColumn>
+                    </QuickGrid>
+                </div>
+                <LocalizedPaginator State="@this._allRecipesPagination" />
+            }
+            else
+            {
+                <p class="text-muted">@Resources.CustomCraftingsNoRecipesAnywhere</p>
+            }
+        </div>
+    }
+    else
+    {
+        <div role="tabpanel" id="panel-create-recipe" aria-labelledby="tab-create-recipe">
+    <EditForm Model="this._form" OnSubmit="this.OnSubmitAsync">
+        <DataAnnotationsValidator />
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label" for="craftingNpc">@Resources.CustomCraftingsNpc</label>
+                <InputSelect id="craftingNpc" class="form-select" @bind-Value="this._selectedNpcId" @bind-Value:after="this.ResetRecipePageAsync">
+                    <option value="">@Resources.CustomCraftingsSelectNpc</option>
+                    @foreach (var npc in this._npcs)
+                    {
+                        <option value="@npc.GetId()">@LocalizedName(npc.Designation) (@npc.Number)</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="recipeName">@Resources.CustomCraftingsName</label>
+                <InputText id="recipeName" class="form-control" @bind-Value="this._form.Name" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="successRate">@Resources.CustomCraftingsSuccessRate</label>
+                <InputNumber id="successRate" class="form-control" min="0" max="100" @bind-Value="this._form.SuccessPercent" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="maximumSuccessRate">@Resources.CustomCraftingsMaximumSuccessRate</label>
+                <InputNumber id="maximumSuccessRate" class="form-control" min="0" max="100" @bind-Value="this._form.MaximumSuccessPercent" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="zenCost">@Resources.CustomCraftingsZenCost</label>
+                <InputNumber id="zenCost" class="form-control" min="0" @bind-Value="this._form.Money" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" for="zenPerPercent">@Resources.CustomCraftingsZenPerSuccessPercent</label>
+                <InputNumber id="zenPerPercent" class="form-control" min="0" @bind-Value="this._form.MoneyPerFinalSuccessPercentage" />
+            </div>
+        </div>
+
+        <h2 class="h4 mt-4">@Resources.CustomCraftingsRequiredItems</h2>
+        @if (this._form.Requirements.Count > 0)
+        {
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">@Resources.ConfigurationEntryName</th>
+                            <th scope="col">@Resources.CustomCraftingsRequiredQuantity</th>
+                            <th scope="col">@Resources.CustomCraftingsLevelRange</th>
+                            <th scope="col">@Resources.CustomCraftingsRequiredOptionsShort</th>
+                            <th scope="col">@Resources.CustomCraftingsOnSuccess</th>
+                            <th scope="col">@Resources.CustomCraftingsOnFailure</th>
+                            <th scope="col"><span class="visually-hidden">@Resources.Action</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var requirement in this._form.Requirements)
+                    {
+                        <tr @key="requirement">
+                            <td>@RequirementItemName(requirement)</td>
+                            <td>@RequiredAmountSummary(requirement)</td>
+                            <td>+@(requirement.MinimumLevel)–+@(requirement.MaximumLevel)</td>
+                            <td>@RequirementOptions(requirement)</td>
+                            <td>@MixResultCaption(requirement.SuccessResult)</td>
+                            <td>@MixResultCaption(requirement.FailResult)</td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger" title="@Resources.Delete" @onclick="() => this.RemoveRequirement(requirement)">×</button></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <div class="border rounded p-2 mb-3">
+            <div class="row g-2 align-items-start">
+                <div class="col-md-3">
+                    <label class="form-label" for="requiredItem">@Resources.ConfigurationEntryName</label>
+                    <InputSelect id="requiredItem" class="form-select form-select-sm" @bind-Value="this._requirementDraft.ItemId">
+                        <option value="">@Resources.CustomCraftingsSelectItem</option>
+                        @foreach (var item in this._items)
+                        {
+                            <option value="@item.GetId()">@ItemCaption(item)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-6 col-md-1">
+                    <label class="form-label" for="requiredMinimumAmount">@RequiredMinimumAmountLabel</label>
+                    <InputNumber id="requiredMinimumAmount" class="form-control form-control-sm" min="1" max="255" @bind-Value="this._requirementDraft.MinimumAmount" />
+                </div>
+                <div class="col-6 col-md-1">
+                    <label class="form-label" for="requiredMaximumAmount">@RequiredMaximumAmountLabel</label>
+                    <InputNumber id="requiredMaximumAmount" class="form-control form-control-sm" min="1" max="255" @bind-Value="this._requirementDraft.MaximumAmount" />
+                </div>
+                <div class="col-6 col-md-1">
+                    <label class="form-label" for="requiredMinimumLevel">@Resources.CustomCraftingsMinimumLevelShort</label>
+                    <InputNumber id="requiredMinimumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._requirementDraft.MinimumLevel" />
+                </div>
+                <div class="col-6 col-md-1">
+                    <label class="form-label" for="requiredMaximumLevel">@Resources.CustomCraftingsMaximumLevelShort</label>
+                    <InputNumber id="requiredMaximumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._requirementDraft.MaximumLevel" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="requiredOptions">@Resources.CustomCraftingsRequiredOptionsShort</label>
+                    <InputSelect id="requiredOptions" class="form-select form-select-sm" size="3" multiple @bind-Value="this._requirementDraft.OptionTypeIds">
+                        @foreach (var optionType in this._optionTypes)
+                        {
+                            <option value="@optionType.GetId()">@LocalizedName(optionType.Name)</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row g-2 align-items-end mt-1">
+                <div class="col-md-3">
+                    <label class="form-label" for="requiredOnSuccess">@Resources.CustomCraftingsOnSuccess</label>
+                    <InputSelect id="requiredOnSuccess" class="form-select form-select-sm" @bind-Value="this._requirementDraft.SuccessResult">
+                        @foreach (var mixResult in Enum.GetValues<MixResult>())
+                        {
+                            <option value="@mixResult">@MixResultCaption(mixResult)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="requiredOnFailure">@Resources.CustomCraftingsOnFailure</label>
+                    <InputSelect id="requiredOnFailure" class="form-select form-select-sm" @bind-Value="this._requirementDraft.FailResult">
+                        @foreach (var mixResult in Enum.GetValues<MixResult>())
+                        {
+                            <option value="@mixResult">@MixResultCaption(mixResult)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-sm btn-success w-100" @onclick="this.AddRequirement">@Resources.CustomCraftingsAddRequiredItem</button>
+                </div>
+            </div>
+            <div class="form-text mt-2">@RequiredAmountHint</div>
+        </div>
+
+        <h2 class="h4 mt-4">@Resources.CustomCraftingsResults</h2>
+        <div class="row g-2 mb-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label" for="resultSelection">@Resources.CustomCraftingsResultSelection</label>
+                <InputSelect id="resultSelection" class="form-select form-select-sm" @bind-Value="this._form.ResultItemSelection">
+                    @foreach (var selection in Enum.GetValues<ResultItemSelection>())
+                    {
+                        <option value="@selection">@ResultSelectionCaption(selection)</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        @if (this._form.Results.Count > 0)
+        {
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">@Resources.ConfigurationEntryName</th>
+                            <th scope="col">@Resources.CustomCraftingsLevelRange</th>
+                            <th scope="col">@Resources.CustomCraftingsResultQuantityOrDurability</th>
+                            <th scope="col"><span class="visually-hidden">@Resources.Action</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var result in this._form.Results)
+                    {
+                        <tr @key="result">
+                            <td>@ResultItemName(result)</td>
+                            <td>+@(result.MinimumLevel)–+@(result.MaximumLevel)</td>
+                            <td>@ResultQuantityOrDurabilitySummary(result)</td>
+                            <td><button type="button" class="btn btn-sm btn-outline-danger" title="@Resources.Delete" @onclick="() => this.RemoveResult(result)">×</button></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <div class="border rounded p-2 mb-3">
+            <div class="row g-2 align-items-start">
+                <div class="col-md-5">
+                    <label class="form-label" for="resultItem">@Resources.ConfigurationEntryName</label>
+                    <InputSelect id="resultItem" class="form-select form-select-sm" @bind-Value="this._resultDraft.ItemId" @bind-Value:after="this.OnResultItemChanged">
+                        <option value="">@Resources.CustomCraftingsSelectItem</option>
+                        @foreach (var item in this._items)
+                        {
+                            <option value="@item.GetId()">@ItemCaption(item)</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="col-6 col-md-1">
+                    <label class="form-label" for="resultMinimumLevel">@Resources.CustomCraftingsMinimumLevelShort</label>
+                    <InputNumber id="resultMinimumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._resultDraft.MinimumLevel" />
+                </div>
+                <div class="col-6 col-md-1">
+                    <label class="form-label" for="resultMaximumLevel">@Resources.CustomCraftingsMaximumLevelShort</label>
+                    <InputNumber id="resultMaximumLevel" class="form-control form-control-sm" min="0" max="15" @bind-Value="this._resultDraft.MaximumLevel" />
+                </div>
+                @if (this.SelectedResultIsStackable || this.SelectedResultHasDurability)
+                {
+                    <div class="col-6 col-md-2">
+                        <label class="form-label" for="resultQuantityOrDurability">@ResultQuantityOrDurabilityLabel</label>
+                        <InputNumber id="resultQuantityOrDurability" class="form-control form-control-sm" min="@ResultQuantityOrDurabilityMinimum" max="@ResultQuantityOrDurabilityMaximum" @bind-Value="this._resultDraft.Durability" />
+                        <div class="form-text">@ResultQuantityOrDurabilityHint</div>
+                    </div>
+                }
+                else if (this.SelectedResultItem is not null)
+                {
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">@ResultQuantityOrDurabilityLabel</label>
+                        <div class="form-control form-control-sm bg-light">@ResultQuantityOrDurabilityHint</div>
+                    </div>
+                }
+                <div class="col-md-2 pt-4">
+                    <button type="button" class="btn btn-sm btn-success w-100" @onclick="this.AddResult">@Resources.CustomCraftingsAddResult</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary" disabled="@this._saving">@Resources.CustomCraftingsCreate</button>
+            <button type="button" class="btn btn-secondary ms-2" @onclick="this.DiscardAsync" disabled="@this._saving">@Resources.DiscardChanges</button>
+        </div>
+    </EditForm>
+        </div>
+    }
+    </div>
+}

@@ -46,8 +46,9 @@ public class SimpleItemCraftingRateTest
     /// The rate is a byte, and the division result used to be cast to it, so such a price wrapped around
     /// to a small rate instead.
     /// </summary>
-    [Test]
-    public async ValueTask ExpensiveItemsGiveTheMaximumRateAsync()
+    [TestCase(1, (byte)100)]
+    [TestCase(0, (byte)47)]
+    public async ValueTask ExpensiveItemsUseConfiguredRateWhenPriceDivisorIsDisabledAsync(int priceDivisor, byte expectedRate)
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
         var priceCalculator = new ItemPriceCalculator();
@@ -70,7 +71,7 @@ public class SimpleItemCraftingRateTest
         Assert.That(item, Is.Not.Null, "The test needs an item which is worth more than 255 zen.");
         await player.TemporaryStorage!.AddItemAsync(item!).ConfigureAwait(false);
 
-        var settings = new Persistence.BasicModel.SimpleCraftingSettings { NpcPriceDivisor = 1 };
+        var settings = new Persistence.BasicModel.SimpleCraftingSettings { NpcPriceDivisor = priceDivisor, SuccessPercent = 47 };
         var requiredItem = new Persistence.BasicModel.ItemCraftingRequiredItem { MinimumAmount = 1, MaximumAmount = 1, MaximumItemLevel = 15 };
         requiredItem.PossibleItems.Add(item!.Definition!);
         settings.RequiredItems.Add(requiredItem);
@@ -78,6 +79,6 @@ public class SimpleItemCraftingRateTest
         var result = new SimpleItemCraftingHandler(settings).TryGetRequiredItems(player, out _, out var successRate);
 
         Assert.That(result, Is.Null);
-        Assert.That(successRate, Is.EqualTo(100));
+        Assert.That(successRate, Is.EqualTo(expectedRate));
     }
 }

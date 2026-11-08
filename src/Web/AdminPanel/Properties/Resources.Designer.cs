@@ -2740,6 +2740,690 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string for CustomCraftingsAddRequiredItem.
+        /// </summary>
+        public static string CustomCraftingsAddRequiredItem {
+            get {
+                return ResourceManager.GetString("CustomCraftingsAddRequiredItem", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsAddResult.
+        /// </summary>
+        public static string CustomCraftingsAddResult {
+            get {
+                return ResourceManager.GetString("CustomCraftingsAddResult", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsAllRecipesTab.
+        /// </summary>
+        public static string CustomCraftingsAllRecipesTab {
+            get {
+                return ResourceManager.GetString("CustomCraftingsAllRecipesTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsAmount.
+        /// </summary>
+        public static string CustomCraftingsAmount {
+            get {
+                return ResourceManager.GetString("CustomCraftingsAmount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsAvailableRecipes.
+        /// </summary>
+        public static string CustomCraftingsAvailableRecipes {
+            get {
+                return ResourceManager.GetString("CustomCraftingsAvailableRecipes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsCreate.
+        /// </summary>
+        public static string CustomCraftingsCreate {
+            get {
+                return ResourceManager.GetString("CustomCraftingsCreate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsCreated.
+        /// </summary>
+        public static string CustomCraftingsCreated {
+            get {
+                return ResourceManager.GetString("CustomCraftingsCreated", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsCreateRecipeTab.
+        /// </summary>
+        public static string CustomCraftingsCreateRecipeTab {
+            get {
+                return ResourceManager.GetString("CustomCraftingsCreateRecipeTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDefaultDurability.
+        /// </summary>
+        public static string CustomCraftingsDefaultDurability {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDefaultDurability", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDefaultStackQuantity.
+        /// </summary>
+        public static string CustomCraftingsDefaultStackQuantity {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDefaultStackQuantity", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDeleteConfirmation.
+        /// </summary>
+        public static string CustomCraftingsDeleteConfirmation {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDeleteConfirmation", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDeleted.
+        /// </summary>
+        public static string CustomCraftingsDeleted {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDeleted", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDescription.
+        /// </summary>
+        public static string CustomCraftingsDescription {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDescription", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDurability.
+        /// </summary>
+        public static string CustomCraftingsDurability {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDurability", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDurabilityHint.
+        /// </summary>
+        public static string CustomCraftingsDurabilityHint {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDurabilityHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsDurabilitySummary.
+        /// </summary>
+        public static string CustomCraftingsDurabilitySummary {
+            get {
+                return ResourceManager.GetString("CustomCraftingsDurabilitySummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsFormInvalid.
+        /// </summary>
+        public static string CustomCraftingsFormInvalid {
+            get {
+                return ResourceManager.GetString("CustomCraftingsFormInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsHandler.
+        /// </summary>
+        public static string CustomCraftingsHandler {
+            get {
+                return ResourceManager.GetString("CustomCraftingsHandler", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsItemCountSummary.
+        /// </summary>
+        public static string CustomCraftingsItemCountSummary {
+            get {
+                return ResourceManager.GetString("CustomCraftingsItemCountSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsLevelRange.
+        /// </summary>
+        public static string CustomCraftingsLevelRange {
+            get {
+                return ResourceManager.GetString("CustomCraftingsLevelRange", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsLoadFailed.
+        /// </summary>
+        public static string CustomCraftingsLoadFailed {
+            get {
+                return ResourceManager.GetString("CustomCraftingsLoadFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumAmount.
+        /// </summary>
+        public static string CustomCraftingsMaximumAmount {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumAmount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumAmountShort.
+        /// </summary>
+        public static string CustomCraftingsMaximumAmountShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumAmountShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumItemCountShort.
+        /// </summary>
+        public static string CustomCraftingsMaximumItemCountShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumItemCountShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumLevel.
+        /// </summary>
+        public static string CustomCraftingsMaximumLevel {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumLevel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumLevelShort.
+        /// </summary>
+        public static string CustomCraftingsMaximumLevelShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumLevelShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumStackQuantityShort.
+        /// </summary>
+        public static string CustomCraftingsMaximumStackQuantityShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumStackQuantityShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMaximumSuccessRate.
+        /// </summary>
+        public static string CustomCraftingsMaximumSuccessRate {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMaximumSuccessRate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMinimumAmount.
+        /// </summary>
+        public static string CustomCraftingsMinimumAmount {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMinimumAmount", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMinimumAmountShort.
+        /// </summary>
+        public static string CustomCraftingsMinimumAmountShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMinimumAmountShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMinimumItemCountShort.
+        /// </summary>
+        public static string CustomCraftingsMinimumItemCountShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMinimumItemCountShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMinimumLevel.
+        /// </summary>
+        public static string CustomCraftingsMinimumLevel {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMinimumLevel", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMinimumLevelShort.
+        /// </summary>
+        public static string CustomCraftingsMinimumLevelShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMinimumLevelShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMinimumStackQuantityShort.
+        /// </summary>
+        public static string CustomCraftingsMinimumStackQuantityShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMinimumStackQuantityShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMixResult_ChaosWeaponAndFirstWingsDowngradedRandom.
+        /// </summary>
+        public static string CustomCraftingsMixResult_ChaosWeaponAndFirstWingsDowngradedRandom {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMixResult_ChaosWeaponAndFirstWingsDowngradedRandom", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMixResult_Disappear.
+        /// </summary>
+        public static string CustomCraftingsMixResult_Disappear {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMixResult_Disappear", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMixResult_StaysAsIs.
+        /// </summary>
+        public static string CustomCraftingsMixResult_StaysAsIs {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMixResult_StaysAsIs", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsMixResult_ThirdWingsDowngradedRandom.
+        /// </summary>
+        public static string CustomCraftingsMixResult_ThirdWingsDowngradedRandom {
+            get {
+                return ResourceManager.GetString("CustomCraftingsMixResult_ThirdWingsDowngradedRandom", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsName.
+        /// </summary>
+        public static string CustomCraftingsName {
+            get {
+                return ResourceManager.GetString("CustomCraftingsName", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsNoAvailableNumber.
+        /// </summary>
+        public static string CustomCraftingsNoAvailableNumber {
+            get {
+                return ResourceManager.GetString("CustomCraftingsNoAvailableNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsNoRecipes.
+        /// </summary>
+        public static string CustomCraftingsNoRecipes {
+            get {
+                return ResourceManager.GetString("CustomCraftingsNoRecipes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsNoRecipesAnywhere.
+        /// </summary>
+        public static string CustomCraftingsNoRecipesAnywhere {
+            get {
+                return ResourceManager.GetString("CustomCraftingsNoRecipesAnywhere", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsNpc.
+        /// </summary>
+        public static string CustomCraftingsNpc {
+            get {
+                return ResourceManager.GetString("CustomCraftingsNpc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsNumber.
+        /// </summary>
+        public static string CustomCraftingsNumber {
+            get {
+                return ResourceManager.GetString("CustomCraftingsNumber", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsOnFailure.
+        /// </summary>
+        public static string CustomCraftingsOnFailure {
+            get {
+                return ResourceManager.GetString("CustomCraftingsOnFailure", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsOnSuccess.
+        /// </summary>
+        public static string CustomCraftingsOnSuccess {
+            get {
+                return ResourceManager.GetString("CustomCraftingsOnSuccess", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRandomItem.
+        /// </summary>
+        public static string CustomCraftingsRandomItem {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRandomItem", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRecipes.
+        /// </summary>
+        public static string CustomCraftingsRecipes {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRecipes", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsReferencedResult.
+        /// </summary>
+        public static string CustomCraftingsReferencedResult {
+            get {
+                return ResourceManager.GetString("CustomCraftingsReferencedResult", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredAmountHint.
+        /// </summary>
+        public static string CustomCraftingsRequiredAmountHint {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredAmountHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredItemAmountHint.
+        /// </summary>
+        public static string CustomCraftingsRequiredItemAmountHint {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredItemAmountHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredItems.
+        /// </summary>
+        public static string CustomCraftingsRequiredItems {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredItems", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredOptions.
+        /// </summary>
+        public static string CustomCraftingsRequiredOptions {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredOptions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredOptionsShort.
+        /// </summary>
+        public static string CustomCraftingsRequiredOptionsShort {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredOptionsShort", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredQuantity.
+        /// </summary>
+        public static string CustomCraftingsRequiredQuantity {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredQuantity", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequiredStackAmountHint.
+        /// </summary>
+        public static string CustomCraftingsRequiredStackAmountHint {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequiredStackAmountHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsRequirementInvalid.
+        /// </summary>
+        public static string CustomCraftingsRequirementInvalid {
+            get {
+                return ResourceManager.GetString("CustomCraftingsRequirementInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsResultInvalid.
+        /// </summary>
+        public static string CustomCraftingsResultInvalid {
+            get {
+                return ResourceManager.GetString("CustomCraftingsResultInvalid", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsResultQuantityOrDurability.
+        /// </summary>
+        public static string CustomCraftingsResultQuantityOrDurability {
+            get {
+                return ResourceManager.GetString("CustomCraftingsResultQuantityOrDurability", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsResults.
+        /// </summary>
+        public static string CustomCraftingsResults {
+            get {
+                return ResourceManager.GetString("CustomCraftingsResults", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsResultSelection.
+        /// </summary>
+        public static string CustomCraftingsResultSelection {
+            get {
+                return ResourceManager.GetString("CustomCraftingsResultSelection", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsResultSelection_All.
+        /// </summary>
+        public static string CustomCraftingsResultSelection_All {
+            get {
+                return ResourceManager.GetString("CustomCraftingsResultSelection_All", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsResultSelection_Any.
+        /// </summary>
+        public static string CustomCraftingsResultSelection_Any {
+            get {
+                return ResourceManager.GetString("CustomCraftingsResultSelection_Any", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsSelectItem.
+        /// </summary>
+        public static string CustomCraftingsSelectItem {
+            get {
+                return ResourceManager.GetString("CustomCraftingsSelectItem", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsSelectNpc.
+        /// </summary>
+        public static string CustomCraftingsSelectNpc {
+            get {
+                return ResourceManager.GetString("CustomCraftingsSelectNpc", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsSingleItem.
+        /// </summary>
+        public static string CustomCraftingsSingleItem {
+            get {
+                return ResourceManager.GetString("CustomCraftingsSingleItem", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsSingleItemHint.
+        /// </summary>
+        public static string CustomCraftingsSingleItemHint {
+            get {
+                return ResourceManager.GetString("CustomCraftingsSingleItemHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsStackAmountSummary.
+        /// </summary>
+        public static string CustomCraftingsStackAmountSummary {
+            get {
+                return ResourceManager.GetString("CustomCraftingsStackAmountSummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsStackQuantity.
+        /// </summary>
+        public static string CustomCraftingsStackQuantity {
+            get {
+                return ResourceManager.GetString("CustomCraftingsStackQuantity", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsStackQuantityHint.
+        /// </summary>
+        public static string CustomCraftingsStackQuantityHint {
+            get {
+                return ResourceManager.GetString("CustomCraftingsStackQuantityHint", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsStackQuantitySummary.
+        /// </summary>
+        public static string CustomCraftingsStackQuantitySummary {
+            get {
+                return ResourceManager.GetString("CustomCraftingsStackQuantitySummary", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsSuccessRate.
+        /// </summary>
+        public static string CustomCraftingsSuccessRate {
+            get {
+                return ResourceManager.GetString("CustomCraftingsSuccessRate", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsValidationFailed.
+        /// </summary>
+        public static string CustomCraftingsValidationFailed {
+            get {
+                return ResourceManager.GetString("CustomCraftingsValidationFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsZenCost.
+        /// </summary>
+        public static string CustomCraftingsZenCost {
+            get {
+                return ResourceManager.GetString("CustomCraftingsZenCost", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string for CustomCraftingsZenPerSuccessPercent.
+        /// </summary>
+        public static string CustomCraftingsZenPerSuccessPercent {
+            get {
+                return ResourceManager.GetString("CustomCraftingsZenPerSuccessPercent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Custom Craftings.
+        /// </summary>
+        public static string CustomCraftings {
+            get {
+                return ResourceManager.GetString("CustomCraftings", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Dashboard.
         /// </summary>
         public static string Dashboard {
