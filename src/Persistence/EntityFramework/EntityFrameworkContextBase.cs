@@ -143,6 +143,13 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
     }
 
     /// <inheritdoc />
+    public void AttachWithoutParent(object item)
+    {
+        using var l = this._lock.Lock();
+        this.AttachWithoutParentInternal(item);
+    }
+
+    /// <inheritdoc />
     public T CreateNew<T>(params object?[] args)
         where T : class
     {
@@ -493,6 +500,14 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 
             return;
         }
+    }
+
+    private void AttachWithoutParentInternal(object item)
+    {
+        // Entry.State only tracks this entity. DbContext.Attach would traverse the item's
+        // RawItemStorage back-reference, reattaching all sibling items in the target inventory.
+        this.Context.Entry(item).State = EntityState.Unchanged;
+        this.ForEachAggregate(item, member => this.Context.Entry(member).State = EntityState.Unchanged, stopAtSharedConfiguration: false);
     }
 
     private bool DetachInternal(object item)
