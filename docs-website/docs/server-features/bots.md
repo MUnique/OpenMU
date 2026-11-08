@@ -323,10 +323,12 @@ level 60. Each price class has its currency - zen or a jewel - with surcharges
 per level above +7 and per additional option, and ancient items and the best
 excellent items of the higher sets cost more. For each kind of jewel, the
 currency (zen or another jewel) and the price are set separately; by default,
-the jewels are sold for their value in zen. Prices in jewels need the `Player
-shop currencies` plugin with these jewels; goods whose currency isn't allowed
-are sold to the NPC as before. Players of the original client can only buy
-goods for zen.
+the jewels are sold for their value in zen. A store holds at most two jewels of
+a kind (`Jewels: maximum per kind`): Jewels of Chaos are the most common loot,
+and with more, many stalls offered nothing else. Prices in jewels need the
+`Player shop currencies` plugin with these jewels; goods whose currency isn't
+allowed are sold to the NPC as before. Players of the original client can only
+buy goods for zen.
 
 A zen price isn't exact to the last coin: when a good goes into the store, its
 price is drawn within 10 % up or down and rounded the way a player would ask
