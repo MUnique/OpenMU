@@ -115,14 +115,16 @@ internal class IllusionTempleDataTest
     }
 
     /// <summary>
-    /// Repairs the ticket reference of existing temples both before and after the version-one item renumbering.
-    /// The legacy initializer selected the Scroll of Blood definition while it still had number 51.
+    /// Tests that the update leaves the illusion temple items of a configuration with the original numbering as
+    /// they are, and the temples with the ticket 13/51, the Scroll of Blood, from every installed version.
+    /// Version one used to swap the numbers of the Illusion Sorcerer Covenant and the Scroll of Blood here.
     /// </summary>
-    /// <param name="numbersAlreadyCorrected">Whether version one already corrected the item numbers.</param>
+    /// <param name="installedVersion">The installed version of the update.</param>
     /// <returns>The task.</returns>
-    [TestCase(false)]
-    [TestCase(true)]
-    public async Task UpdateRepairsExistingTempleTicketBindingAsync(bool numbersAlreadyCorrected)
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    public async Task UpdateKeepsOriginalTicketItemsAsync(int installedVersion)
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
@@ -130,44 +132,71 @@ internal class IllusionTempleDataTest
 
         using var context = contextProvider.CreateNewContext();
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
-        var covenant = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 51 });
-        var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
-        var covenantId = ((IIdentifiable)covenant).Id;
-        var scrollId = ((IIdentifiable)scrollOfBlood).Id;
-        var definitions = GetTempleDefinitions(gameConfiguration);
-        if (!numbersAlreadyCorrected)
-        {
-            covenant.Number = 50;
-            scrollOfBlood.Number = 51;
-        }
+        var expected = IllusionTempleTicketItemsTest.CaptureItems(gameConfiguration);
+        var covenant = IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.CovenantNumber);
+        var ticket = IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.TicketNumber);
 
-        // Keep every existing definition: only its legacy ticket binding is reproduced.
-        foreach (var definition in definitions)
-        {
-            definition.TicketItem = scrollOfBlood;
-        }
-
-        var itemsBefore = gameConfiguration.Items.ToArray();
-        var levelsBefore = definitions.Select(definition => definition.TicketItemLevel).ToArray();
         var update = new IllusionTempleDataUpdatePlugIn();
         var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
-        installedUpdate.Version = numbersAlreadyCorrected ? 1 : 0;
+        installedUpdate.Version = installedVersion;
         for (var application = 0; application < 2; application++)
         {
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
+            IllusionTempleTicketItemsTest.AssertItems(gameConfiguration, expected);
+            Assert.That(IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.CovenantNumber), Is.SameAs(covenant));
+            Assert.That(IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.TicketNumber), Is.SameAs(ticket));
+            Assert.That(GetTempleDefinitions(gameConfiguration).Select(definition => definition.TicketItem), Has.All.SameAs(ticket));
+        }
+    }
+
+    /// <summary>
+    /// Tests that the update repairs a configuration whose items version one renumbered: the two item definitions
+    /// get the original data of their numbers back without being renumbered again, so the one at 13/51, which
+    /// owned tickets reference, becomes the Scroll of Blood. Temple definitions which existed before version one
+    /// kept the item definition which got the number 50, and get the ticket 13/51.
+    /// </summary>
+    /// <param name="templesExistedBefore">Whether the temple definitions existed before version one.</param>
+    /// <returns>The task.</returns>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task UpdateRestoresTicketItemsRenumberedByVersionOneAsync(bool templesExistedBefore)
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var expected = IllusionTempleTicketItemsTest.CaptureItems(gameConfiguration);
+        var definitions = GetTempleDefinitions(gameConfiguration);
+        IllusionTempleTicketItemsTest.RenumberLikeVersionOne(gameConfiguration);
+        var ownedTicketDefinition = IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.TicketNumber);
+        var covenant = IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.CovenantNumber);
+        if (!templesExistedBefore)
+        {
+            foreach (var definition in definitions)
+            {
+                definition.TicketItem = ownedTicketDefinition;
+            }
+        }
+
+        var levelsBefore = definitions.Select(definition => definition.TicketItemLevel).ToArray();
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 1;
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            IllusionTempleTicketItemsTest.AssertItems(gameConfiguration, expected);
             Assert.Multiple(() =>
             {
-                Assert.That(definitions.Select(definition => definition.TicketItem), Has.All.SameAs(covenant));
-                Assert.That(covenant.Number, Is.EqualTo(51));
-                Assert.That(scrollOfBlood.Number, Is.EqualTo(50));
-                Assert.That(((IIdentifiable)covenant).Id, Is.EqualTo(covenantId));
-                Assert.That(((IIdentifiable)scrollOfBlood).Id, Is.EqualTo(scrollId));
+                Assert.That(IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.TicketNumber), Is.SameAs(ownedTicketDefinition));
+                Assert.That(IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.CovenantNumber), Is.SameAs(covenant));
+                Assert.That(definitions.Select(definition => definition.TicketItem), Has.All.SameAs(ownedTicketDefinition));
                 Assert.That(GetTempleDefinitions(gameConfiguration), Has.Count.EqualTo(definitions.Count));
-                Assert.That(definitions.All(original => gameConfiguration.MiniGameDefinitions.Any(current => ReferenceEquals(current, original))), Is.True);
                 Assert.That(definitions.Select(definition => definition.TicketItemLevel), Is.EqualTo(levelsBefore));
-                Assert.That(gameConfiguration.Items, Has.Count.EqualTo(itemsBefore.Length));
-                Assert.That(itemsBefore.All(original => gameConfiguration.Items.Any(current => ReferenceEquals(current, original))), Is.True);
             });
         }
     }
@@ -176,12 +205,12 @@ internal class IllusionTempleDataTest
     /// Owner-selected tickets and detached definitions with the legacy ticket's id are not defaults to repair.
     /// </summary>
     /// <param name="customization">The owner-selected ticket, detached reference, definition id or ticket level to preserve.</param>
+    /// <param name="installedVersion">The installed version of the update.</param>
     /// <returns>The task.</returns>
-    [TestCase("owned-ticket")]
-    [TestCase("detached-ticket")]
-    [TestCase("definition-id")]
-    [TestCase("ticket-level")]
-    public async Task UpdatePreservesCustomizedTempleTicketBindingAsync(string customization)
+    [Test]
+    public async Task UpdatePreservesCustomizedTempleTicketBindingAsync(
+        [Values("owned-ticket", "detached-ticket", "definition-id", "ticket-level")] string customization,
+        [Values(1, 2)] int installedVersion)
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
@@ -189,6 +218,9 @@ internal class IllusionTempleDataTest
 
         using var context = contextProvider.CreateNewContext();
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+
+        // Version one renumbered the Scroll of Blood to 50, which is the state in which seeded bindings are repaired.
+        IllusionTempleTicketItemsTest.RenumberLikeVersionOne(gameConfiguration);
         var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
         var selectedTicket = customization == "owned-ticket"
             ? gameConfiguration.Items.Single(item => item is { Group: 13, Number: 18 })
@@ -216,6 +248,8 @@ internal class IllusionTempleDataTest
         definition.TicketItemLevel = selectedLevel;
 
         var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = installedVersion;
         for (var application = 0; application < 2; application++)
         {
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -231,7 +265,7 @@ internal class IllusionTempleDataTest
     /// </summary>
     /// <returns>The task.</returns>
     [Test]
-    public async Task VersionTwoPreservesVersionOneContentCustomizationsAsync()
+    public async Task LaterVersionsPreserveVersionOneContentCustomizationsAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
@@ -266,7 +300,7 @@ internal class IllusionTempleDataTest
             Assert.That(map.MonsterSpawns.Any(current => ReferenceEquals(current, spawn)), Is.True);
             Assert.That((spawn.Quantity, spawn.X1, spawn.X2, spawn.Y1, spawn.Y2), Is.EqualTo(spawnSettings));
             Assert.That(definition.TicketItem, Is.SameAs(ticket));
-            Assert.That(installedUpdate.Version, Is.EqualTo(2));
+            Assert.That(installedUpdate.Version, Is.EqualTo(update.Version));
         }
     }
 
@@ -296,12 +330,6 @@ internal class IllusionTempleDataTest
         {
             gameConfiguration.MiniGameDefinitions.Remove(definition);
         }
-
-        // The ticket and the Scroll of Blood used to have their numbers swapped.
-        var covenant = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 51 });
-        var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
-        covenant.Number = 50;
-        scrollOfBlood.Number = 51;
 
         gameConfiguration.Items.Remove(gameConfiguration.Items.Single(item => item is { Group: 14, Number: 64 }));
 
@@ -358,12 +386,17 @@ internal class IllusionTempleDataTest
 
     private static void AssertItems(GameConfiguration gameConfiguration)
     {
-        // The event ticket is looked up as group 13, number 51 by the initializer, and the update
-        // corrects databases which still carry the two swapped numbers.
+        // The event ticket is the Scroll of Blood, group 13, number 51, which the chaos goblin combines from an
+        // Old Scroll and an Illusion Sorcerer Covenant, number 50. The game client knows them by these numbers
+        // and sizes.
         var ticket = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 51 });
-        Assert.That(ticket.Name.ValueInNeutralLanguage, Is.EqualTo("Illusion Sorcerer Covenant"));
-        var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
-        Assert.That(scrollOfBlood.Name.ValueInNeutralLanguage, Is.EqualTo("Scroll of Blood"));
+        Assert.That(ticket.Name.ValueInNeutralLanguage, Is.EqualTo("Scroll of Blood"));
+        Assert.That((int)ticket.Width, Is.EqualTo(2));
+        Assert.That((int)ticket.Height, Is.EqualTo(2));
+        var covenant = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
+        Assert.That(covenant.Name.ValueInNeutralLanguage, Is.EqualTo("Illusion Sorcerer Covenant"));
+        Assert.That((int)covenant.Width, Is.EqualTo(1));
+        Assert.That((int)covenant.Height, Is.EqualTo(2));
 
         // The sacred relic, which the game logic looks up by group and number.
         Assert.That(gameConfiguration.Items.Count(item => item is { Group: 14, Number: 64 }), Is.EqualTo(1), "sacred relic");

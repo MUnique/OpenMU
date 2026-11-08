@@ -7,7 +7,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
-/// Crafting for Illusion Temple Event Tickets.
+/// Crafting for Illusion Temple Event Tickets, the Scroll of Blood, which is combined from an Old Scroll and an
+/// Illusion Sorcerer Covenant of the same level.
 /// </summary>
 public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
 {
@@ -15,7 +16,7 @@ public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
     /// Initializes a new instance of the <see cref="IllusionTempleTicketCrafting"/> class.
     /// </summary>
     public IllusionTempleTicketCrafting()
-        : base("Illusion Sorcerer Covenant", "Old Scroll", "Scroll of Blood")
+        : base("Scroll of Blood", "Old Scroll", "Illusion Sorcerer Covenant")
     {
     }
 
