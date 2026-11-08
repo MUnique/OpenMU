@@ -73,7 +73,9 @@
                 </AuthorizeView>
                 @if (this.GameConfigurationId is { } gameConfigurationId )
                 {
-                    <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
+                    <AuthorizeView Policy="@AdminPolicies.Administrator">
+                        <ConfigNavMenu GameConfigurationId="@gameConfigurationId" />
+                    </AuthorizeView>
                 }
             }
             <li class="nav-item px-3 dropdown@(this._expandSystem ? " expanded" : "")">
@@ -141,9 +143,11 @@
                         }
                         @if (this.IsNetworkAnalyzerAvailable)
                         {
-                            <NavLink class="dropdown-item" href="network-analyzer" @onclick="() => NavigationHistory.Clear()">
-                                <span class="oi oi-pulse" aria-hidden="true"></span> @Resources.NetworkAnalyzer
-                            </NavLink>
+                            <AuthorizeView Policy="@AdminPolicies.Administrator">
+                                <NavLink class="dropdown-item" href="network-analyzer" @onclick="() => NavigationHistory.Clear()">
+                                    <span class="oi oi-pulse" aria-hidden="true"></span> @Resources.NetworkAnalyzer
+                                </NavLink>
+                            </AuthorizeView>
                         }
                     </div>
                 </li>

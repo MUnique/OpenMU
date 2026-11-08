@@ -14,6 +14,7 @@ using Microsoft.JSInterop;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -31,6 +32,12 @@ public partial class Merchants : ComponentBase, IDisposable
     private MerchantStorageViewModel? _selectedMerchant;
     private IContext? _persistenceContext;
     private IDisposable? _navigationLockDisposable;
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the data source.
@@ -158,6 +165,12 @@ public partial class Merchants : ComponentBase, IDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             if (this._persistenceContext is { } context)

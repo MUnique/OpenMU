@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -37,6 +38,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public string TypeString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the data source.
@@ -191,6 +198,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task OnDeleteButtonClickAsync(ViewModel viewModel)
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             var dialogResult = await this.ModalService.ShowQuestionAsync(Resources.ConfirmDelete, string.Format(Resources.ConfirmDeleteEntry, viewModel.Name)).ConfigureAwait(true);
@@ -225,6 +238,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task OnCreateButtonClickAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         var cancellationToken = this._disposeCts?.Token ?? default;
         var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         var creationContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type!, true, gameConfiguration);
@@ -278,6 +297,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task OnDuplicateButtonClickAsync(ViewModel viewModel)
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             var cancellationToken = this._disposeCts?.Token ?? default;
