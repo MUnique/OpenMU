@@ -6,7 +6,7 @@ description: Create, reinstall and update the OpenMU database from the admin pan
 
 # Setup
 
-**Navigation:** *Setup* — route `/setup`
+**Navigation:** *System → Setup* — route `/setup`
 
 The setup page is where the database is created, reinstalled and updated. It is
 the first page you need on a fresh installation, and it is the only page shown in

@@ -70,7 +70,10 @@ example the [server-side AI bots](../server-features/bots.md).
 ## Layout
 
 * **Navigation menu** (left) — the pages listed above. The *Configuration*
-  entry is a drop-down with the game configuration pages.
+  entry is a drop-down with the game configuration pages. The *System* group
+  holds Setup, Updates, Captions, Users, API keys and Discord, and the
+  *Inspect* group holds Log files, Logging configuration and the Network
+  analyzer. Click a group to expand or collapse it.
 * **Breadcrumb** (top) — the generic edit pages can nest deeply into the
   configuration; the breadcrumb is how you get back out.
 * **Configuration search** — a search box which finds configuration objects by

@@ -5596,6 +5596,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Inspect.
+        /// </summary>
+        public static string Inspect {
+            get {
+                return ResourceManager.GetString("Inspect", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Installed on {0}..
         /// </summary>
         public static string InstalledOn {
