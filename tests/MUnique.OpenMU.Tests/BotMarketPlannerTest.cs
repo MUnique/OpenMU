@@ -414,6 +414,49 @@ public class BotMarketPlannerTest
         Assert.That(bot.NextMarketShiftUtc, Is.GreaterThanOrEqualTo(before + configuration.TimeBetweenShifts));
     }
 
+    /// <summary>
+    /// The income of a sale is removed in the next tick of the bot. A bot which logs out before that
+    /// tick removes it on the way out - otherwise the logout would save the income with the bot.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask IncomeIsRemovedWhenTheBotLogsOutRightAfterASaleAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var buyer = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var template = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var bot = new BotPlayer(gameContext) { Account = template.Account };
+        await bot.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+        await bot.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+        await bot.PlayerState.TryAdvanceToAsync(PlayerState.CharacterSelection).ConfigureAwait(false);
+        await bot.SetSelectedCharacterAsync(template.SelectedCharacter!).ConfigureAwait(false);
+        var character = bot.SelectedCharacter!;
+        var inventory = bot.Inventory!;
+        var shopStorage = bot.ShopStorage!;
+
+        await AddPricedGoodsAsync(bot, 2).ConfigureAwait(false);
+        bot.Money = 1000;
+        var shift = CreateShift();
+        shift.MoneyAtOpen = bot.Money;
+        shift.ItemsAtOpen = inventory.Items.ToHashSet();
+        shift.IsStoreOpened = true;
+        shopStorage.StoreOpen = true;
+        bot.MarketShift = shift;
+
+        bot.Money += 810_000;
+        var paidJewel = CreateItem();
+        Assert.That(await inventory.AddItemAsync(paidJewel).ConfigureAwait(false), Is.True);
+        new BotMerchantPlugIn().ItemSold(bot, shopStorage.Items.First(), buyer);
+        Assert.That(bot.PendingBotActions, Is.Not.Empty);
+
+        await bot.DisconnectAsync().ConfigureAwait(false);
+
+        Assert.That(character.Inventory!.Money, Is.EqualTo(1000));
+        Assert.That(inventory.Items, Does.Not.Contain(paidJewel));
+        Assert.That(shopStorage.StoreOpen, Is.False);
+        Assert.That(bot.MarketShift, Is.Null);
+    }
+
     private static BotMarketShift CreateShift()
         => new(new GameMapDefinition { Number = BotMerchantConfiguration.DefaultMarketMapNumber }, Arrival, "Good stuff", Now, Now.AddMinutes(60));
 

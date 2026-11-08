@@ -187,9 +187,6 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>The game's own action to open a personal store, with all its checks of the prices.</summary>
     private static readonly OpenStoreAction MarketStoreOpenAction = new();
 
-    /// <summary>The game's own action to close a personal store, which tells the players around.</summary>
-    private static readonly CloseStoreAction MarketStoreCloseAction = new();
-
     /// <summary>
     /// Cache of which maps' safezone spawn gates have a walkable tile, so a bot may safely be sent
     /// there. Keyed by the resolved safezone map's id, not its number: map numbers are not unique -
@@ -2046,17 +2043,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private async ValueTask CloseMarketStoreAsync(BotMarketShift shift)
     {
-        if (this._player.ShopStorage?.StoreOpen ?? false)
-        {
-            await MarketStoreCloseAction.CloseStoreAsync(this._player).ConfigureAwait(false);
-        }
-
-        if (shift.IsStoreOpened)
-        {
-            await BotMerchandise.RemoveIncomeAsync(this._player, shift).ConfigureAwait(false);
-            await BotMerchandise.RetireUnsoldGoodsAsync(this._player).ConfigureAwait(false);
-        }
-
+        await BotMerchandise.CloseShiftStoreAsync(this._player, shift).ConfigureAwait(false);
         if (ReferenceEquals(this._player.MarketShift, shift))
         {
             this._player.MarketShift = null;
