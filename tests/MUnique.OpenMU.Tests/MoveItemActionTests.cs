@@ -285,6 +285,148 @@ public class MoveItemActionTests
     }
 
     /// <summary>
+    /// Verifies that a successful change to either trader's offer resets both confirmations.
+    /// </summary>
+    [TestCase(Storages.Inventory, Storages.Trade)]
+    [TestCase(Storages.Trade, Storages.Inventory)]
+    [TestCase(Storages.Trade, Storages.Trade)]
+    public async ValueTask SuccessfulTradeItemMoveResetsBothConfirmationsAsync(Storages fromStorage, Storages toStorage)
+    {
+        var trader = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var partner = await CreateTestPlayerAsync().ConfigureAwait(false);
+        trader.Money = 1_000;
+        partner.Money = 2_000;
+        var offeredItem = CreateItem(CreateDefinition(), 1);
+        var partnerItem = CreateItem(CreateDefinition(), 1);
+        await trader.Inventory!.AddItemAsync(20, offeredItem).ConfigureAwait(false);
+        await partner.Inventory!.AddItemAsync(20, partnerItem).ConfigureAwait(false);
+
+        await new TradeRequestAction().RequestTradeAsync(trader, partner).ConfigureAwait(false);
+        await new TradeAcceptAction().HandleTradeAcceptAsync(partner, true).ConfigureAwait(false);
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+
+        var moveAction = new MoveItemAction();
+        if (fromStorage == Storages.Trade)
+        {
+            await moveAction.MoveItemAsync(trader, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        }
+
+        await moveAction.MoveItemAsync(partner, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        var tradeButtonAction = new TradeButtonAction();
+        await tradeButtonAction.TradeButtonChangedAsync(partner, TradeButtonState.Checked).ConfigureAwait(false);
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+
+        var traderButtonView = Mock.Get(trader.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()!);
+        var partnerButtonView = Mock.Get(partner.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()!);
+        traderButtonView.Invocations.Clear();
+        partnerButtonView.Invocations.Clear();
+
+        var fromSlot = fromStorage == Storages.Trade ? (byte)0 : (byte)20;
+        var toSlot = toStorage == Storages.Trade ? (byte)1 : (byte)21;
+        await moveAction.MoveItemAsync(trader, fromSlot, fromStorage, toSlot, toStorage).ConfigureAwait(false);
+
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(traderButtonView.Invocations, Has.Count.EqualTo(1));
+        traderButtonView.Verify(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red), Times.Once);
+        Assert.That(partnerButtonView.Invocations, Has.Count.EqualTo(1));
+        partnerButtonView.Verify(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red), Times.Once);
+
+        var sourceStorage = fromStorage == Storages.Trade ? trader.TemporaryStorage! : trader.Inventory;
+        var offeredItemLocation = toStorage == Storages.Trade
+            ? trader.TemporaryStorage!.GetItem(toSlot)
+            : trader.Inventory.GetItem(toSlot);
+        Assert.That(sourceStorage.GetItem(fromSlot), Is.Null);
+        Assert.That(offeredItemLocation, Is.SameAs(offeredItem));
+        Assert.That(offeredItem.ItemSlot, Is.EqualTo(toSlot));
+        Assert.That(
+            trader.Inventory.Items.Concat(trader.TemporaryStorage!.Items).Count(item => ReferenceEquals(item, offeredItem)),
+            Is.EqualTo(1));
+        Assert.That(trader.Money, Is.EqualTo(1_000));
+        Assert.That(partner.Money, Is.EqualTo(2_000));
+
+        await tradeButtonAction.TradeButtonChangedAsync(trader, TradeButtonState.Checked).ConfigureAwait(false);
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.TemporaryStorage!.GetItem(0), Is.SameAs(partnerItem));
+
+        await tradeButtonAction.TradeButtonChangedAsync(partner, TradeButtonState.Checked).ConfigureAwait(false);
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        Mock.Get(trader.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!)
+            .Verify(view => view.TradeFinishedAsync(TradeResult.Success), Times.Once);
+        Mock.Get(partner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!)
+            .Verify(view => view.TradeFinishedAsync(TradeResult.Success), Times.Once);
+
+        Assert.That(trader.Inventory.Items.Contains(partnerItem), Is.True);
+        Assert.That(partner.Inventory.Items.Contains(partnerItem), Is.False);
+        Assert.That(trader.Inventory.Items.Contains(offeredItem), Is.EqualTo(toStorage != Storages.Trade));
+        Assert.That(partner.Inventory.Items.Contains(offeredItem), Is.EqualTo(toStorage == Storages.Trade));
+        Assert.That(trader.Inventory.Items.Concat(partner.Inventory.Items).Count(item => ReferenceEquals(item, offeredItem)), Is.EqualTo(1));
+        Assert.That(trader.Inventory.Items.Concat(partner.Inventory.Items).Count(item => ReferenceEquals(item, partnerItem)), Is.EqualTo(1));
+        Assert.That(trader.TemporaryStorage.Items, Is.Empty);
+        Assert.That(partner.TemporaryStorage.Items, Is.Empty);
+        Assert.That(trader.Money, Is.EqualTo(1_000));
+        Assert.That(partner.Money, Is.EqualTo(2_000));
+    }
+
+    /// <summary>
+    /// Verifies that a failed offer move and an inventory-only move do not clear the partner's confirmation.
+    /// </summary>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async ValueTask UnsuccessfulOrInventoryOnlyMoveKeepsPartnerConfirmationAsync(bool tryBlockedTradeMove)
+    {
+        var trader = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var partner = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var source = CreateItem(CreateDefinition(), 1);
+        var partnerItem = CreateItem(CreateDefinition(), 1);
+        var blocker = CreateItem(CreateDefinition(), 1);
+        await trader.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+        await partner.Inventory!.AddItemAsync(20, partnerItem).ConfigureAwait(false);
+
+        await new TradeRequestAction().RequestTradeAsync(trader, partner).ConfigureAwait(false);
+        await new TradeAcceptAction().HandleTradeAcceptAsync(partner, true).ConfigureAwait(false);
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        if (tryBlockedTradeMove)
+        {
+            await trader.TemporaryStorage!.AddItemAsync(0, blocker).ConfigureAwait(false);
+        }
+
+        var moveAction = new MoveItemAction();
+        await moveAction.MoveItemAsync(partner, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        await new TradeButtonAction().TradeButtonChangedAsync(partner, TradeButtonState.Checked).ConfigureAwait(false);
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+
+        if (tryBlockedTradeMove)
+        {
+            await moveAction.MoveItemAsync(trader, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+        }
+        else
+        {
+            await moveAction.MoveItemAsync(trader, 20, Storages.Inventory, 21, Storages.Inventory).ConfigureAwait(false);
+        }
+
+        Assert.That(trader.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+        Assert.That(partner.TemporaryStorage!.GetItem(0), Is.SameAs(partnerItem));
+        if (tryBlockedTradeMove)
+        {
+            Assert.That(trader.Inventory.GetItem(20), Is.SameAs(source));
+            Assert.That(trader.TemporaryStorage!.GetItem(0), Is.SameAs(blocker));
+        }
+        else
+        {
+            Assert.That(trader.Inventory.GetItem(20), Is.Null);
+            Assert.That(trader.Inventory.GetItem(21), Is.SameAs(source));
+        }
+    }
+
+    /// <summary>
     /// Verifies that logging out and back in after an inventory to vault move keeps a single persisted copy.
     /// </summary>
     [Test]
