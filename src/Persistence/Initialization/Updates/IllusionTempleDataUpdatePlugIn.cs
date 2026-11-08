@@ -94,6 +94,32 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     private const int DefaultMinimumPlayerCount = 2;
 
     /// <summary>
+    /// The item group of the illusion temple ticket items.
+    /// </summary>
+    private const byte TicketItemGroup = 13;
+
+    /// <summary>
+    /// The number of the Illusion Sorcerer Covenant, which drops from monsters.
+    /// </summary>
+    private const short CovenantItemNumber = 50;
+
+    /// <summary>
+    /// The number of the Scroll of Blood, the ticket, which the chaos goblin combines from an Old Scroll and an
+    /// Illusion Sorcerer Covenant.
+    /// </summary>
+    private const short ScrollOfBloodItemNumber = 51;
+
+    /// <summary>
+    /// The neutral name of the Illusion Sorcerer Covenant.
+    /// </summary>
+    private const string CovenantName = "Illusion Sorcerer Covenant";
+
+    /// <summary>
+    /// The neutral name of the Scroll of Blood.
+    /// </summary>
+    private const string ScrollOfBloodName = "Scroll of Blood";
+
+    /// <summary>
     /// The map numbers of the six illusion temples, and the arena monster NPC number range (base id and
     /// how many ids to cycle through) which each of them roams with - temple 6 has none.
     /// </summary>
@@ -188,15 +214,21 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override int Version => 2;
+    public override int Version => 3;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 07, 29, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 5, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 8, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Version one swapped the numbers of the Illusion Sorcerer Covenant and the Scroll of Blood, believing the
+    /// covenant was the ticket. It's the other way around, so version three leaves the original numbers as they
+    /// are, and gives a database which got the swap the original item data back (see <see cref="RestoreTicketItems"/>).
+    /// It replaces the ticket binding repair of version two, which pointed the temples at the covenant.
+    /// </remarks>
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
     {
         // Replaying version one's content changes could overwrite owner-customized spawns or safezones.
@@ -205,7 +237,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
             await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
         }
 
-        this.FixTicketBindings(gameConfiguration);
+        RestoreTicketItems(gameConfiguration);
     }
 
     /// <inheritdoc />
@@ -213,7 +245,6 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
 #pragma warning restore CS1998
     {
-        this.FixTicketItemNumbers(gameConfiguration);
         this.AddRelicItem(context, gameConfiguration);
         this.AddArenaMonsterDefinitions(context, gameConfiguration);
         this.AddMapSpawns(context, gameConfiguration);
@@ -243,47 +274,103 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <summary>
-    /// The illusion temple ticket ("Illusion Sorcerer Covenant") and the "Scroll of Blood" item used to
-    /// have their numbers swapped (50/51) - <see cref="IllusionTempleInitializer"/> looks the ticket up
-    /// by Group 13, Number 51, so an existing database still using the old numbering needs the two
-    /// numbers corrected. Only the Number field is touched, so already-owned instances of either item
-    /// keep referencing the same, unchanged, item definition entity.
+    /// Gives the items 13/50 and 13/51 their original data back, if the configuration has the data of the
+    /// two swapped, and points the seeded temple definitions at the ticket 13/51.
     /// </summary>
-    private void FixTicketItemNumbers(GameConfiguration gameConfiguration)
+    /// <remarks>
+    /// Version one of this update swapped the numbers of the two item definitions, and the data initialization of
+    /// the same time created them with swapped data. The game client knows the items by their numbers, so the
+    /// numbers stay and the data is swapped back instead: an owned item which the client shows as the Scroll of
+    /// Blood stays the ticket, and the item 13/50 drops again. The swapped state is recognized by the names, so
+    /// nothing changes on a configuration which has the original data.
+    /// </remarks>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    private static void RestoreTicketItems(GameConfiguration gameConfiguration)
     {
         // The names are matched in the neutral language: item names became a LocalizedString, whose
         // serialized value carries the translations and the resource metadata, so comparing it to a
         // plain string would never match on a database which has been localized.
-        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Name.ValueInNeutralLanguage == "Illusion Sorcerer Covenant");
-        var scrollOfBlood = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Name.ValueInNeutralLanguage == "Scroll of Blood");
-        if (covenant is { Number: 50 } && scrollOfBlood is { Number: 51 })
-        {
-            covenant.Number = 51;
-            scrollOfBlood.Number = 50;
-        }
-    }
-
-    /// <summary>
-    /// Repairs the seeded ticket references left pointing at the Scroll of Blood after version one's renumbering.
-    /// Only owned item instances and the unchanged default temple definition ids and ticket levels are recognized.
-    /// </summary>
-    private void FixTicketBindings(GameConfiguration gameConfiguration)
-    {
-        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 51 && item.Name.ValueInNeutralLanguage == "Illusion Sorcerer Covenant");
-        var scrollOfBlood = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 50 && item.Name.ValueInNeutralLanguage == "Scroll of Blood");
-        if (covenant is null || scrollOfBlood is null)
+        // The items are named by their numbers, which is what they are after the restoration.
+        var ticket = gameConfiguration.Items.FirstOrDefault(item => item.Group == TicketItemGroup && item.Number == ScrollOfBloodItemNumber && item.Name.ValueInNeutralLanguage == CovenantName);
+        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == TicketItemGroup && item.Number == CovenantItemNumber && item.Name.ValueInNeutralLanguage == ScrollOfBloodName);
+        if (ticket is null || covenant is null)
         {
             return;
         }
 
+        RepairTicketBindings(gameConfiguration, ticket, covenant);
+        RepairMerchantStoreItems(gameConfiguration, ticket, covenant);
+        SwapData(ticket, covenant);
+        SwapDropItemGroups(gameConfiguration, ticket, covenant);
+    }
+
+    /// <summary>
+    /// Points the seeded temple definitions which reference the item 13/50 at the ticket 13/51.
+    /// A database which had temple definitions before version one of this update renumbered the items kept
+    /// them on the item definition which got the number 50. Only the unchanged default temple definition ids and ticket levels, and only the item
+    /// definition of this configuration are recognized, so a ticket which the server owner selected stays.
+    /// </summary>
+    private static void RepairTicketBindings(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
         foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(definition =>
                      definition.Type == MiniGameType.IllusionTemple
                      && definition.GameLevel is >= 1 and <= 6
                      && definition.TicketItemLevel == definition.GameLevel
                      && definition.GetId() == GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.IllusionTemple, definition.GameLevel)
-                     && ReferenceEquals(definition.TicketItem, scrollOfBlood)))
+                     && ReferenceEquals(definition.TicketItem, covenant)))
         {
-            definition.TicketItem = covenant;
+            definition.TicketItem = ticket;
+        }
+    }
+
+    /// <summary>
+    /// Points the items of the merchant stores which reference the ticket 13/51 at the item 13/50.
+    /// No merchant sells the ticket, but a merchant of the original data sells the Illusion Sorcerer Covenant,
+    /// whose item definition version one of this update renumbered to 51.
+    /// </summary>
+    private static void RepairMerchantStoreItems(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
+        foreach (var item in gameConfiguration.Monsters
+                     .SelectMany(monster => monster.MerchantStore?.Items ?? Enumerable.Empty<Item>())
+                     .Where(item => ReferenceEquals(item.Definition, ticket)))
+        {
+            item.Definition = covenant;
+        }
+    }
+
+    /// <summary>
+    /// Swaps the data which the data initialization sets for each event item, except the number.
+    /// The other data, like the item rules, the price definition and the game version, is set by the number,
+    /// so it already fits.
+    /// </summary>
+    private static void SwapData(ItemDefinition first, ItemDefinition second)
+    {
+        (first.Name, second.Name) = (second.Name, first.Name);
+        (first.Width, second.Width) = (second.Width, first.Width);
+        (first.Height, second.Height) = (second.Height, first.Height);
+        (first.Durability, second.Durability) = (second.Durability, first.Durability);
+        (first.MaximumItemLevel, second.MaximumItemLevel) = (second.MaximumItemLevel, first.MaximumItemLevel);
+        (first.DropsFromMonsters, second.DropsFromMonsters) = (second.DropsFromMonsters, first.DropsFromMonsters);
+        (first.DropLevel, second.DropLevel) = (second.DropLevel, first.DropLevel);
+        (first.MaximumDropLevel, second.MaximumDropLevel) = (second.MaximumDropLevel, first.MaximumDropLevel);
+    }
+
+    /// <summary>
+    /// Swaps the two item definitions in the drop item groups which contain one of them, which are the groups of
+    /// the Illusion Sorcerer Covenant, one for each item level.
+    /// </summary>
+    private static void SwapDropItemGroups(GameConfiguration gameConfiguration, ItemDefinition first, ItemDefinition second)
+    {
+        foreach (var group in gameConfiguration.DropItemGroups)
+        {
+            var containsFirst = group.PossibleItems.Contains(first);
+            if (containsFirst == group.PossibleItems.Contains(second))
+            {
+                continue;
+            }
+
+            group.PossibleItems.Remove(containsFirst ? first : second);
+            group.PossibleItems.Add(containsFirst ? second : first);
         }
     }
 
