@@ -114,9 +114,20 @@ public sealed class IllusionTempleContext : MiniGameContext
     private const ushort WeakenSkillNumber = 213;
 
     /// <summary>
-    /// The skill point cost of every special skill.
+    /// The skill point cost of the special skills, as in the original game: 5 for Order of
+    /// Protection, Restraint and Weaken, 10 for Tracking (see <see cref="SkillCost"/>).
     /// </summary>
-    private const byte SpecialSkillCost = 10;
+    private const byte SpecialSkillCost = 5;
+
+    /// <summary>
+    /// The skill point cost of the Tracking skill (212).
+    /// </summary>
+    private const byte TrackingSkillCost = 10;
+
+    /// <summary>
+    /// The team which reaches this score wins at once, as in the original game.
+    /// </summary>
+    private const int WinningScore = 7;
 
     /// <summary>
     /// The maximum distance from which the "Restraint" and "Weaken" special skills can target someone.
@@ -384,6 +395,13 @@ public sealed class IllusionTempleContext : MiniGameContext
         // the cyclic state update (ShowRemainingTimeLoopAsync).
         await this.UpdateStateForAllAsync().ConfigureAwait(false);
 
+        if (this.Score.GetScore(playerTeam) >= WinningScore)
+        {
+            // No next statue: the game ends with this point.
+            this.FinishEvent();
+            return;
+        }
+
         // The next statue doesn't appear immediately - just like in the original event, there's a
         // short delay after a scored point. This runs in the background so the delivering player's
         // action isn't held up by it.
@@ -417,7 +435,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
-        if (this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) < SpecialSkillCost)
+        if (this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) < SkillCost(skillNumber))
         {
             await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
                 p => p.ShowSkillUsageResultAsync(false, skillNumber, player.Id, targetObjectIndex)).ConfigureAwait(false);
@@ -436,7 +454,7 @@ public sealed class IllusionTempleContext : MiniGameContext
 
         if (success)
         {
-            await this.AwardSkillPointsAsync(player, -SpecialSkillCost).ConfigureAwait(false);
+            await this.AwardSkillPointsAsync(player, -SkillCost(skillNumber)).ConfigureAwait(false);
         }
 
         await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
@@ -799,6 +817,13 @@ public sealed class IllusionTempleContext : MiniGameContext
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
             p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.Ended)).AsTask()).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Gets the skill point cost of a special skill.
+    /// </summary>
+    /// <param name="skillNumber">The skill number.</param>
+    /// <returns>The cost in skill points.</returns>
+    private static byte SkillCost(ushort skillNumber) => skillNumber == TrackingSkillNumber ? TrackingSkillCost : SpecialSkillCost;
 
     /// <summary>
     /// Determines whether the given reward is one of the experience reward types, which are granted
