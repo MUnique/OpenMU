@@ -109,9 +109,23 @@ public sealed class BotPlayer : OfflinePlayer
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// A bot on a market shift settles it before the base class saves it on the way out (see
+    /// <see cref="BotMerchandise.EndShiftOnLogoutAsync"/>).
+    /// </remarks>
     protected override async ValueTask InternalDisconnectAsync()
     {
         await this.StopNavigatorAsync().ConfigureAwait(false);
+        try
+        {
+            // The MU Helper tick keeps running until the base class stops it; it holds the same lock.
+            await this.RunPersistenceExclusiveAsync(() => BotMerchandise.EndShiftOnLogoutAsync(this)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, "Bot '{Name}' couldn't end its market shift on logout.", this.Name);
+        }
+
         await base.InternalDisconnectAsync().ConfigureAwait(false);
     }
 

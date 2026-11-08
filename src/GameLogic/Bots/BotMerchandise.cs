@@ -36,6 +36,9 @@ internal static class BotMerchandise
 
     private static readonly SetItemPriceAction PriceAction = new();
 
+    /// <summary>The game's own action to close a personal store, which tells the players around.</summary>
+    private static readonly CloseStoreAction StoreCloseAction = new();
+
     /// <summary>
     /// The excellent options which the players look for: on armor the damage decrease, defense success
     /// rate and damage reflection, on weapons the excellent damage rate, the damage increases and the
@@ -278,13 +281,62 @@ internal static class BotMerchandise
     }
 
     /// <summary>
+    /// Closes the store of the market shift, removes the last income and retires the goods which found
+    /// no buyer for too long.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <param name="shift">The market shift.</param>
+    /// <remarks>
+    /// Runs in the tick of the bot (see <see cref="OfflinePlayer.PendingBotActions"/>), or under its
+    /// persistence lock when it logs out (see <see cref="EndShiftOnLogoutAsync"/>). The store is closed
+    /// first: closing takes the store lock of the purchases, so no sale can add income afterward.
+    /// </remarks>
+    /// <returns>The task.</returns>
+    internal static async ValueTask CloseShiftStoreAsync(OfflinePlayer bot, BotMarketShift shift)
+    {
+        if (bot.ShopStorage?.StoreOpen ?? false)
+        {
+            await StoreCloseAction.CloseStoreAsync(bot).ConfigureAwait(false);
+        }
+
+        if (shift.IsStoreOpened)
+        {
+            await RemoveIncomeAsync(bot, shift).ConfigureAwait(false);
+            await RetireUnsoldGoodsAsync(bot).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Ends the market shift of a bot which logs out: closes its store and removes the income of the
+    /// sales whose removal is still queued for a tick which won't come anymore.
+    /// </summary>
+    /// <param name="bot">The bot.</param>
+    /// <remarks>
+    /// Runs before the logout saves the bot - otherwise the income of the last sales would be saved and
+    /// stay with the bot. The shift lives in memory only, so after the next login nothing could tell
+    /// the income from the own money anymore.
+    /// </remarks>
+    /// <returns>The task.</returns>
+    internal static async ValueTask EndShiftOnLogoutAsync(OfflinePlayer bot)
+    {
+        if (bot.MarketShift is not { } shift)
+        {
+            return;
+        }
+
+        shift.IsEnding = true;
+        await CloseShiftStoreAsync(bot, shift).ConfigureAwait(false);
+        bot.MarketShift = null;
+    }
+
+    /// <summary>
     /// Removes the income of the shift: the zen above what the bot had when it opened its store, and the
     /// items which appeared in its inventory since then - the jewels paid for its goods. The bot buys
     /// nothing, and the jewels would fill its inventory until it can't take any payment anymore.
     /// </summary>
     /// <param name="bot">The bot.</param>
     /// <param name="shift">The market shift.</param>
-    /// <remarks>Runs in the tick of the bot (see <see cref="OfflinePlayer.PendingBotActions"/>).</remarks>
+    /// <remarks>Runs in the tick of the bot (see <see cref="OfflinePlayer.PendingBotActions"/>) or before its logout (see <see cref="EndShiftOnLogoutAsync"/>).</remarks>
     /// <returns>The task.</returns>
     internal static async ValueTask RemoveIncomeAsync(Player bot, BotMarketShift shift)
     {
