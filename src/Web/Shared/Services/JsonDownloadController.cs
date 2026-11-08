@@ -5,10 +5,13 @@
 namespace MUnique.OpenMU.Web.Shared.Services;
 
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.Json;
 
@@ -30,6 +33,18 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
     where T : class
     where TSerializable : class
 {
+    /// <summary>
+    /// The properties which are left out of the download, per type.
+    /// </summary>
+    /// <remarks>
+    /// The credentials of an account don't belong into a file which may end up in a bug report or a backup
+    /// folder. The password hash allows to crack the password offline, the other codes are stored in plain text.
+    /// </remarks>
+    private static readonly IReadOnlyDictionary<Type, string[]> ExcludedProperties = new Dictionary<Type, string[]>
+    {
+        [typeof(Account)] = [nameof(Account.PasswordHash), nameof(Account.SecurityCode), nameof(Account.VaultPassword)],
+    };
+
     private readonly IDataSource<T> _dataSource;
 
     /// <summary>
@@ -62,9 +77,40 @@ public class JsonDownloadController<T, TSerializable> : ControllerBase
             var resultStream = new MemoryStream();
             await convertibleTo.Convert().ToJsonAsync(resultStream, cancellationToken).ConfigureAwait(false);
             resultStream.Position = 0;
+            if (ExcludedProperties.TryGetValue(typeof(T), out var excludedProperties))
+            {
+                // The properties are removed from the json and not from the converted object, because the
+                // conversion may return the original object, e.g. with the in-memory persistence.
+                resultStream = await RemovePropertiesAsync(resultStream, excludedProperties, cancellationToken).ConfigureAwait(false);
+            }
+
             return this.File(resultStream, "application/json");
         }
 
         return this.NotFound();
+    }
+
+    private static async ValueTask<MemoryStream> RemovePropertiesAsync(MemoryStream json, IEnumerable<string> propertyNames, CancellationToken cancellationToken)
+    {
+        using (json)
+        {
+            var node = await JsonNode.ParseAsync(json, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (node is JsonObject jsonObject)
+            {
+                foreach (var propertyName in propertyNames)
+                {
+                    jsonObject.Remove(propertyName);
+                }
+            }
+
+            var result = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(result, new JsonWriterOptions { Indented = true }))
+            {
+                node?.WriteTo(writer);
+            }
+
+            result.Position = 0;
+            return result;
+        }
     }
 }
