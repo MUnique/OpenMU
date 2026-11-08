@@ -196,9 +196,12 @@ internal sealed class PlayerMovement : IDisposable
     /// <param name="notifyMovedObject">
     /// If set to <c>true</c>, the player is notified about its own move as well.
     /// </param>
-    public async ValueTask MoveOnMapAsync(GameMap map, Point target, MoveType moveType, bool notifyMovedObject = true)
+    /// <param name="notifyObservers">
+    /// If set to <c>false</c>, nobody is notified about the move, see <see cref="GameMap.MoveAsync"/>.
+    /// </param>
+    public async ValueTask MoveOnMapAsync(GameMap map, Point target, MoveType moveType, bool notifyMovedObject = true, bool notifyObservers = true)
     {
-        await map.MoveAsync(this._player, target, this._moveLock, moveType, notifyMovedObject).ConfigureAwait(false);
+        await map.MoveAsync(this._player, target, this._moveLock, moveType, notifyMovedObject, notifyObservers).ConfigureAwait(false);
         if (moveType is MoveType.Instant or MoveType.Teleport)
         {
             this.MarkPositionChanged();
@@ -475,8 +478,11 @@ internal sealed class PlayerMovement : IDisposable
     }
 
     /// <summary>
-    /// Moves the server-side position to the position reported by the client. The client is not
-    /// notified, because it already shows this position; other observers are notified.
+    /// Moves the server-side position to the position reported by the client at the start of a walk.
+    /// Nobody is notified: the client already shows this position, and the other players in view get
+    /// the walk right after it. An instant move would make their clients glide the character to this
+    /// position, and the walk would then turn that glide towards its target, so the character
+    /// appears to slide or fly instead of walking.
     /// Positions on blocked terrain are rejected, so a client cannot move the server onto a wall.
     /// </summary>
     /// <param name="clientPosition">The position reported by the client.</param>
@@ -526,7 +532,7 @@ internal sealed class PlayerMovement : IDisposable
             "Synchronizing server position with client position {0} (server was at {1}).",
             clientPosition,
             previousPosition);
-        await this.MoveOnMapAsync(currentMap, clientPosition, MoveType.Instant, notifyMovedObject: false).ConfigureAwait(false);
+        await this.MoveOnMapAsync(currentMap, clientPosition, MoveType.Instant, notifyMovedObject: false, notifyObservers: false).ConfigureAwait(false);
         this.ReportTakenOverPosition(previousPosition, clientPosition);
         return true;
     }
