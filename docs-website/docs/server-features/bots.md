@@ -29,6 +29,10 @@ stats, skills and starter gear. They are created once, saved like any other
 character, and reloaded on every start — a bot's progress belongs to the
 server's data, not to a process. Every bot animates one character in its own
 persistence context, so the characters of one account can play at the same time.
+Names mix the styles players pick — fantasy names, compound names like
+"DarkBlade" and short handles like "xRavenx" — so the bots don't stand out as
+one family. Names which look nearly the same, like "Hex" and "Hexx" or "Brodan"
+and "Broaedan", are drawn again: they would read like one player's alts.
 
 **Two ticks make up the mind of a bot.** The offline MU Helper AI runs twice a
 second and does what it does for a human's offline session: attack, heal, buff,
