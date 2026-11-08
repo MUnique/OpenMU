@@ -296,9 +296,13 @@ public class BotMerchantConfiguration
     /// <summary>
     /// Gets or sets how many jewels of one kind a bot puts into its store at most, so that its stall isn't full of jewels; 0 keeps the jewels out of the stores.
     /// </summary>
+    /// <remarks>
+    /// Each jewel counts as one of the <see cref="MinimumGoodsToStart"/>, and Jewels of Chaos are the most common loot.
+    /// With more than two per kind, most stores on the market held nothing but a few Jewels of Chaos.
+    /// </remarks>
     [Range(0, 32)]
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotMerchantConfiguration_MaximumJewelsPerKind_Name), Description = nameof(PlugInResources.BotMerchantConfiguration_MaximumJewelsPerKind_Description))]
-    public int MaximumJewelsPerKind { get; set; } = 5;
+    public int MaximumJewelsPerKind { get; set; } = 2;
 
     /// <summary>
     /// Gets or sets the currency for which a bot sells its surplus of the Jewel of Bless: "zen" or another jewel.
