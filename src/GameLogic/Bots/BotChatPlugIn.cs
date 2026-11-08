@@ -628,7 +628,12 @@ public class BotChatPlugIn
         if (this.Configuration is not { PartyVolunteerCount: > 0 } configuration
             || sender is OfflinePlayer
             || sender.SelectedCharacter?.Name is not { } senderName
-            || BotPartyRequest.TryParse(message, configuration.PartyRequestKeywords, configuration.PartyClassAliases) is not { } request)
+            || BotPartyRequest.TryParse(
+                message,
+                configuration.PartyRequestKeywords,
+                configuration.PartyClassAliases,
+                GetPartyEventKeywords(configuration),
+                sender.GameContext.Configuration.MiniGameDefinitions) is not { } request)
         {
             return;
         }
@@ -644,7 +649,8 @@ public class BotChatPlugIn
                           && IsFreeToMeet(bot)
                           && throttle.GetOpenPartyOffer(bot, now) is null
                           && request.IsWantedLevel(GetLevel(bot))
-                          && IsOfWantedClass(bot, request, classes));
+                          && IsOfWantedClass(bot, request, classes)
+                          && (request.MiniGame is null || BotMiniGameHandler.IsEligible(bot, request.MiniGame, out _)));
         var volunteers = throttle.TakeNewVolunteers(sender, candidates, configuration.PartyVolunteerCount, now, count => Rand.NextInt(0, count));
         var delay = TimeSpan.Zero;
         foreach (var bot in volunteers)
@@ -819,6 +825,13 @@ public class BotChatPlugIn
     }
 
     private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
+
+    private static IEnumerable<(MiniGameType Type, string Keywords)> GetPartyEventKeywords(BotChatConfiguration configuration) =>
+    [
+        (MiniGameType.BloodCastle, configuration.PartyBloodCastleKeywords),
+        (MiniGameType.DevilSquare, configuration.PartyDevilSquareKeywords),
+        (MiniGameType.ChaosCastle, configuration.PartyChaosCastleKeywords),
+    ];
 
     private static bool IsOfWantedClass(Player bot, BotPartyRequest request, ICollection<CharacterClass> classes)
     {

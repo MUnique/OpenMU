@@ -1950,7 +1950,13 @@
   <data name="BotChatConfiguration_PartyVolunteerCount_Name" xml:space="preserve"><value>Party search: answering bots</value></data>
   <data name="BotChatConfiguration_PartyVolunteerCount_Description" xml:space="preserve"><value>How many bots whisper to a player who searches party members with /post, e.g. "/post party 300-350 bk dw". The same search posted again is answered by other bots. 0 = off.</value></data>
   <data name="BotChatConfiguration_PartyRequestKeywords_Name" xml:space="preserve"><value>Party search: keywords</value></data>
-  <data name="BotChatConfiguration_PartyRequestKeywords_Description" xml:space="preserve"><value>Comma-separated words which mark a /post as a party search. The post also needs a level: "300-350", "300+", "min 300" or "300".</value></data>
+  <data name="BotChatConfiguration_PartyRequestKeywords_Description" xml:space="preserve"><value>Comma-separated words which mark a /post as a party search. The post also needs a level: "300-350", "300+", "min 300" or "300" - or an event with its level, like "bc7".</value></data>
+  <data name="BotChatConfiguration_PartyBloodCastleKeywords_Name" xml:space="preserve"><value>Party search: Blood Castle words</value></data>
+  <data name="BotChatConfiguration_PartyBloodCastleKeywords_Description" xml:space="preserve"><value>Comma-separated words for the Blood Castle in a party search. Followed by the event level, like "party bc7", they call the bots which may enter that Blood Castle.</value></data>
+  <data name="BotChatConfiguration_PartyDevilSquareKeywords_Name" xml:space="preserve"><value>Party search: Devil Square words</value></data>
+  <data name="BotChatConfiguration_PartyDevilSquareKeywords_Description" xml:space="preserve"><value>Comma-separated words for the Devil Square in a party search. Followed by the event level, like "party ds5", they call the bots which may enter that Devil Square.</value></data>
+  <data name="BotChatConfiguration_PartyChaosCastleKeywords_Name" xml:space="preserve"><value>Party search: Chaos Castle words</value></data>
+  <data name="BotChatConfiguration_PartyChaosCastleKeywords_Description" xml:space="preserve"><value>Comma-separated words for the Chaos Castle in a party search. Followed by the event level, like "party cc3", they call the bots which may enter that Chaos Castle.</value></data>
   <data name="BotChatConfiguration_PartyHereKeywords_Name" xml:space="preserve"><value>Party search: "here" words</value></data>
   <data name="BotChatConfiguration_PartyHereKeywords_Description" xml:space="preserve"><value>Comma-separated words with which the player tells an answering bot to come to where the player stands, instead of naming a map and coordinates.</value></data>
   <data name="BotChatConfiguration_PartyOfferTimeout_Name" xml:space="preserve"><value>Party search: answer timeout</value></data>

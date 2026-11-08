@@ -217,6 +217,25 @@ public class BotChatConfiguration
     public string PartyRequestKeywords { get; set; } = "party, pt, grupa, grupy, grupe, grupę, grp";
 
     /// <summary>
+    /// Gets or sets the comma-separated words for the Blood Castle in a party search: followed by the
+    /// event level, like "party bc7", they stand for the level bracket of that Blood Castle.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyBloodCastleKeywords_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyBloodCastleKeywords_Description))]
+    public string PartyBloodCastleKeywords { get; set; } = "bc, blood castle";
+
+    /// <summary>
+    /// Gets or sets the comma-separated words for the Devil Square in a party search, like "party ds5".
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyDevilSquareKeywords_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyDevilSquareKeywords_Description))]
+    public string PartyDevilSquareKeywords { get; set; } = "ds, devil square";
+
+    /// <summary>
+    /// Gets or sets the comma-separated words for the Chaos Castle in a party search, like "party cc3".
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.BotChatConfiguration_PartyChaosCastleKeywords_Name), Description = nameof(PlugInResources.BotChatConfiguration_PartyChaosCastleKeywords_Description))]
+    public string PartyChaosCastleKeywords { get; set; } = "cc, chaos castle";
+
+    /// <summary>
     /// Gets or sets the comma-separated words with which a player tells an answering bot to come to
     /// where the player stands, instead of naming a map and coordinates.
     /// </summary>

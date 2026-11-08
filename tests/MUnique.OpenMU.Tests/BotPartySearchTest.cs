@@ -29,6 +29,21 @@ public class BotPartySearchTest
         new() { Keywords = "elf", ClassNumber = 8 },
     ];
 
+    private static readonly (MiniGameType Type, string Keywords)[] EventKeywords =
+    [
+        (MiniGameType.BloodCastle, "bc, blood castle"),
+        (MiniGameType.DevilSquare, "ds, devil square"),
+        (MiniGameType.ChaosCastle, "cc, chaos castle"),
+    ];
+
+    private static readonly MiniGameDefinition[] MiniGames =
+    [
+        new() { Type = MiniGameType.BloodCastle, GameLevel = 7 },
+        new() { Type = MiniGameType.BloodCastle, GameLevel = 8 },
+        new() { Type = MiniGameType.DevilSquare, GameLevel = 5 },
+        new() { Type = MiniGameType.ChaosCastle, GameLevel = 3 },
+    ];
+
     /// <summary>
     /// A post with a party keyword and a level is a party search: a range, a minimum written as
     /// "300+", "min 300" or a single number, and optionally the wanted classes.
@@ -44,12 +59,62 @@ public class BotPartySearchTest
     [TestCase("lf party lvl 380, need BM", 380, int.MaxValue, "4")]
     public void ReadsAPartySearch(string message, int minimum, int maximum, string classes)
     {
-        var request = BotPartyRequest.TryParse(message, Keywords, Aliases);
+        var request = BotPartyRequest.TryParse(message, Keywords, Aliases, EventKeywords, MiniGames);
 
         Assert.That(request, Is.Not.Null);
         Assert.That(request!.MinimumLevel, Is.EqualTo(minimum));
         Assert.That(request.MaximumLevel, Is.EqualTo(maximum));
         Assert.That(string.Join(",", request.ClassNumbers), Is.EqualTo(classes));
+    }
+
+    /// <summary>
+    /// A post may name an event with its level instead of a level - written together or apart, short or
+    /// in full. The event's digit is no character level; a level given besides the event still counts.
+    /// </summary>
+    /// <param name="message">The posted message.</param>
+    /// <param name="type">The expected event type.</param>
+    /// <param name="gameLevel">The expected event level.</param>
+    /// <param name="minimum">The expected minimum level.</param>
+    /// <param name="classes">The expected class numbers, comma-separated.</param>
+    [TestCase("party bc7", MiniGameType.BloodCastle, 7, 0, "")]
+    [TestCase("PT BC 8 bm", MiniGameType.BloodCastle, 8, 0, "4")]
+    [TestCase("grupa Blood Castle 7", MiniGameType.BloodCastle, 7, 0, "")]
+    [TestCase("party ds5 elf", MiniGameType.DevilSquare, 5, 0, "8")]
+    [TestCase("party cc3 350+", MiniGameType.ChaosCastle, 3, 350, "")]
+    public void ReadsAnEventSearch(string message, MiniGameType type, int gameLevel, int minimum, string classes)
+    {
+        var request = BotPartyRequest.TryParse(message, Keywords, Aliases, EventKeywords, MiniGames);
+
+        Assert.That(request, Is.Not.Null);
+        Assert.That(request!.MiniGame, Is.Not.Null);
+        Assert.That(request.MiniGame!.Type, Is.EqualTo(type));
+        Assert.That(request.MiniGame.GameLevel, Is.EqualTo(gameLevel));
+        Assert.That(request.MinimumLevel, Is.EqualTo(minimum));
+        Assert.That(request.MaximumLevel, Is.EqualTo(int.MaxValue));
+        Assert.That(string.Join(",", request.ClassNumbers), Is.EqualTo(classes));
+    }
+
+    /// <summary>
+    /// A level search names no event.
+    /// </summary>
+    [Test]
+    public void ALevelSearchNamesNoEvent()
+    {
+        Assert.That(BotPartyRequest.TryParse("party 300-350", Keywords, Aliases, EventKeywords, MiniGames)!.MiniGame, Is.Null);
+    }
+
+    /// <summary>
+    /// An event level which doesn't exist makes no search - its digit is not taken for a character
+    /// level either - and an event word must stand on its own.
+    /// </summary>
+    /// <param name="message">The posted message.</param>
+    [TestCase("party bc9")]
+    [TestCase("party bc 9")]
+    [TestCase("party abc7")]
+    [TestCase("bc7 anyone?")]
+    public void IgnoresUnknownEvents(string message)
+    {
+        Assert.That(BotPartyRequest.TryParse(message, Keywords, Aliases, EventKeywords, MiniGames), Is.Null);
     }
 
     /// <summary>
@@ -61,7 +126,7 @@ public class BotPartySearchTest
     [TestCase("selling wings 300kk")]
     public void IgnoresOtherPosts(string message)
     {
-        Assert.That(BotPartyRequest.TryParse(message, Keywords, Aliases), Is.Null);
+        Assert.That(BotPartyRequest.TryParse(message, Keywords, Aliases, EventKeywords, MiniGames), Is.Null);
     }
 
     /// <summary>

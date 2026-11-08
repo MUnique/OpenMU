@@ -377,7 +377,11 @@ A player can also search party members among the bots with a post:
 `grupa`, …) and a level — `300-350`, `300+`, `min 300` or just `300` — calls up
 to five free bots of the game server whose level fits; class words (`dk`, `bk`,
 `bm`, `dw`, `elf`, `mg`, `dl`, `sum`, `rf`, … — each meaning its whole class
-line) narrow it down. Each of them whispers to the player, a few seconds apart.
+line) narrow it down. Instead of a level the post may name an event with its
+level — `/post party bc7`, `pt ds 5`, `party chaos castle 3` — and then only bots
+which may enter that event answer: the event's own level bracket (the lower one
+of the Magic Gladiator, Dark Lord, Rage Fighter and Summoner included) and the
+master class requirement of the Blood Castle 8, as configured for the event. Each of them whispers to the player, a few seconds apart.
 The same search posted again calls five others. The player whispers back to a
 bot where to meet — `devias 215 40`, a warp of the warp list like
 `devias3 227 227` or `losttower7`, a map name alone, or `here` for where the

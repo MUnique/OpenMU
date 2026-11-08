@@ -5274,6 +5274,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized BotChatConfiguration_PartyRequestKeywords_Description text.</summary>
         public static string BotChatConfiguration_PartyRequestKeywords_Description => ResourceManager.GetString("BotChatConfiguration_PartyRequestKeywords_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized BotChatConfiguration_PartyBloodCastleKeywords_Name text.</summary>
+        public static string BotChatConfiguration_PartyBloodCastleKeywords_Name => ResourceManager.GetString("BotChatConfiguration_PartyBloodCastleKeywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyBloodCastleKeywords_Description text.</summary>
+        public static string BotChatConfiguration_PartyBloodCastleKeywords_Description => ResourceManager.GetString("BotChatConfiguration_PartyBloodCastleKeywords_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyDevilSquareKeywords_Name text.</summary>
+        public static string BotChatConfiguration_PartyDevilSquareKeywords_Name => ResourceManager.GetString("BotChatConfiguration_PartyDevilSquareKeywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyDevilSquareKeywords_Description text.</summary>
+        public static string BotChatConfiguration_PartyDevilSquareKeywords_Description => ResourceManager.GetString("BotChatConfiguration_PartyDevilSquareKeywords_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyChaosCastleKeywords_Name text.</summary>
+        public static string BotChatConfiguration_PartyChaosCastleKeywords_Name => ResourceManager.GetString("BotChatConfiguration_PartyChaosCastleKeywords_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BotChatConfiguration_PartyChaosCastleKeywords_Description text.</summary>
+        public static string BotChatConfiguration_PartyChaosCastleKeywords_Description => ResourceManager.GetString("BotChatConfiguration_PartyChaosCastleKeywords_Description", resourceCulture)!;
+
         /// <summary>Gets the localized BotChatConfiguration_PartyHereKeywords_Name text.</summary>
         public static string BotChatConfiguration_PartyHereKeywords_Name => ResourceManager.GetString("BotChatConfiguration_PartyHereKeywords_Name", resourceCulture)!;
 
