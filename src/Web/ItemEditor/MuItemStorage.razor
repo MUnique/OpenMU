@@ -5,14 +5,44 @@
     return;
 }
 
-<div class=@($"mu-item-storage storage-rows{this._viewModel.Rows}")>
+<div class=@($"mu-item-storage storage-rows{this._viewModel.Rows} {(this.DraggedItem is null ? string.Empty : "drag-active")}")>
     @foreach (var item in this._viewModel.Items)
     {
         <MuItem
             Model="item"
             OnClick="async () => await this.SetSelectedItemAsync(item)"
             OnItemMoved="this.OnItemMovedAsync"
+            OnDragStarted="this.OnDragStarted"
+            OnDragEnded="this.OnDragEnded"
             OnDelete="this.OnDelete"
             IsSelected="this.SelectedItem == item.Item"/>
+    }
+
+    @if (this.DraggedItem is not null)
+    {
+        <div class="item-drop-targets">
+            @for (var row = 0; row < this._viewModel.Rows; row++)
+            {
+                @for (var column = 0; column < InventoryConstants.RowSize; column++)
+                {
+                    var slot = (byte)(this._viewModel.StartIndex + (row * InventoryConstants.RowSize) + column);
+                    <div
+                        class="item-drop-target"
+                        style=@($"left: {column * 42}px; top: {row * 42}px")
+                        @ondragover="() => this.OnDragOver(slot)"
+                        @ondragover:preventDefault
+                        @ondrop="() => this.DropAsync(slot)"
+                        @ondrop:preventDefault></div>
+                }
+            }
+
+            @if (this._previewPosition is { } previewPosition && this.DraggedItem is { } draggedItem)
+            {
+                <div
+                    class=@($"item-drop-preview {this.GetPreviewValidityClass()}")
+                    style="@this.GetPreviewStyle(previewPosition, draggedItem)"
+                    aria-hidden="true"></div>
+            }
+        </div>
     }
 </div>
