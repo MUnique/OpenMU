@@ -35,25 +35,25 @@ public class AdminPolicyGuard
     /// <summary>
     /// Determines whether the current user fulfills the specified policy.
     /// </summary>
-    /// <param name="policy">The name of the policy, see <see cref="AdminPolicies"/>.</param>
+    /// <param name="policyName">The name of the policy, see <see cref="AdminPolicies"/>.</param>
     /// <returns><c>true</c>, if the current user fulfills the policy; Otherwise, <c>false</c>.</returns>
-    public async Task<bool> IsAuthorizedAsync(string policy)
+    public async Task<bool> IsAuthorizedAsync(string policyName)
     {
         var state = await this._authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
-        var result = await this._authorizationService.AuthorizeAsync(state.User, policy).ConfigureAwait(false);
+        var result = await this._authorizationService.AuthorizeAsync(state.User, policyName).ConfigureAwait(false);
         return result.Succeeded;
     }
 
     /// <summary>
     /// Makes sure that the current user fulfills the specified policy.
     /// </summary>
-    /// <param name="policy">The name of the policy, see <see cref="AdminPolicies"/>.</param>
+    /// <param name="policyName">The name of the policy, see <see cref="AdminPolicies"/>.</param>
     /// <exception cref="UnauthorizedAccessException">The current user doesn't fulfill the policy.</exception>
-    public async Task EnsureAuthorizedAsync(string policy)
+    public async Task EnsureAuthorizedAsync(string policyName)
     {
-        if (!await this.IsAuthorizedAsync(policy).ConfigureAwait(false))
+        if (!await this.IsAuthorizedAsync(policyName).ConfigureAwait(false))
         {
-            throw new UnauthorizedAccessException($"The current user doesn't fulfill the policy '{policy}'.");
+            throw new UnauthorizedAccessException($"The current user doesn't fulfill the authorization policy '{policyName}'.");
         }
     }
 }

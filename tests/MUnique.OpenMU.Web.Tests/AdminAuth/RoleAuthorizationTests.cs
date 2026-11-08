@@ -28,7 +28,7 @@ using MUnique.OpenMU.Web.API;
 /// change data directly, without an admin operation.
 /// </summary>
 [TestFixture]
-public sealed class RoleAuthorizationTests : IDisposable
+public sealed class RoleAuthorizationTests : System.IDisposable
 {
     private const string TestLoginPath = "/test-login";
 
