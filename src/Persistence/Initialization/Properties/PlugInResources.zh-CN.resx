@@ -465,4 +465,10 @@
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加雕像和护符</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加鹰雕像、山羊雕像以及（黄金）橡树和枫树护符，它们在背包中使用时提供加成。</value>
+  </data>
 </root>

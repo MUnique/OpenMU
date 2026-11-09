@@ -170,6 +170,12 @@ public class MoveItemAction
     private async ValueTask<bool> MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
         var wasEquipped = fromItemStorage == player.Inventory && fromSlot <= LastEquippableItemSlotIndex;
+        if (fromItemStorage == player.Inventory && toItemStorage != player.Inventory && item.IsInUseInsideInventory())
+        {
+            // An item which is used inside the inventory, like a charm, is only used while it stays in the inventory.
+            item.Durability = InventoryUsedItemExtensions.NotInUseDurability;
+        }
+
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
         var wasAdded = await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false);
         if (!wasAdded || (wasEquipped && !this.CompliesWithMapRequirements(player)))

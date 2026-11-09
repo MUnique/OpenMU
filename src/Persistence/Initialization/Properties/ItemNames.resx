@@ -2337,4 +2337,22 @@
   <data name="InvitationToSantaVillage" xml:space="preserve">
     <value>Invitation to Santa Village</value>
   </data>
+  <data name="HawkFigurine" xml:space="preserve">
+    <value>Hawk Figurine</value>
+  </data>
+  <data name="GoatFigurine" xml:space="preserve">
+    <value>Goat Figurine</value>
+  </data>
+  <data name="OakCharm" xml:space="preserve">
+    <value>Oak Charm</value>
+  </data>
+  <data name="MapleCharm" xml:space="preserve">
+    <value>Maple Charm</value>
+  </data>
+  <data name="GoldenOakCharm" xml:space="preserve">
+    <value>Golden Oak Charm</value>
+  </data>
+  <data name="GoldenMapleCharm" xml:space="preserve">
+    <value>Golden Maple Charm</value>
+  </data>
 </root>

@@ -5473,5 +5473,47 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
             }
         }
+
+        /// <summary>Gets HawkFigurine from the configuration name resources.</summary>
+        public static string HawkFigurine {
+            get {
+                return ResourceManager.GetString("HawkFigurine", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoatFigurine from the configuration name resources.</summary>
+        public static string GoatFigurine {
+            get {
+                return ResourceManager.GetString("GoatFigurine", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets OakCharm from the configuration name resources.</summary>
+        public static string OakCharm {
+            get {
+                return ResourceManager.GetString("OakCharm", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MapleCharm from the configuration name resources.</summary>
+        public static string MapleCharm {
+            get {
+                return ResourceManager.GetString("MapleCharm", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenOakCharm from the configuration name resources.</summary>
+        public static string GoldenOakCharm {
+            get {
+                return ResourceManager.GetString("GoldenOakCharm", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenMapleCharm from the configuration name resources.</summary>
+        public static string GoldenMapleCharm {
+            get {
+                return ResourceManager.GetString("GoldenMapleCharm", resourceCulture);
+            }
+        }
     }
 }

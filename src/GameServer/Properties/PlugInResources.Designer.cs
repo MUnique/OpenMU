@@ -8017,5 +8017,17 @@ namespace MUnique.OpenMU.GameServer.Properties {
 
         /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
         public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized InventoryItemEquipRequestHandlerPlugIn_Name text.</summary>
+        public static string InventoryItemEquipRequestHandlerPlugIn_Name => ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized InventoryItemEquipRequestHandlerPlugIn_Description text.</summary>
+        public static string InventoryItemEquipRequestHandlerPlugIn_Description => ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized InventoryItemUseChangedPlugIn_Name text.</summary>
+        public static string InventoryItemUseChangedPlugIn_Name => ResourceManager.GetString("InventoryItemUseChangedPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized InventoryItemUseChangedPlugIn_Description text.</summary>
+        public static string InventoryItemUseChangedPlugIn_Description => ResourceManager.GetString("InventoryItemUseChangedPlugIn_Description", resourceCulture)!;
     }
 }

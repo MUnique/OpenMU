@@ -922,4 +922,10 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Figuren und Talismane hinzufügen</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Falken- und Ziegenfigur sowie die (goldenen) Eichen- und Ahorntalismane hinzu, die ihre Boni geben, während sie im Inventar benutzt werden.</value>
+  </data>
 </root>

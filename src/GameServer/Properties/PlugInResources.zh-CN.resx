@@ -2526,4 +2526,16 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>IShowItemCraftingPreviewPlugIn 的扩展实现，通过特定数据包将所有内容转发到游戏客户端。</value>
   </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>背包物品使用请求处理程序</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理在背包中开始或停止使用物品（如雕像或护符）的请求。</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Name" xml:space="preserve">
+    <value>背包物品使用状态已更改</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Description" xml:space="preserve">
+    <value>IInventoryItemUseChangedPlugIn的默认实现，通过特定数据包将所有内容转发给游戏客户端。</value>
+  </data>
 </root>

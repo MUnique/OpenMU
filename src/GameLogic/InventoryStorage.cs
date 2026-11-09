@@ -113,6 +113,10 @@ public class InventoryStorage : Storage, IInventoryStorage
             {
                 await this.RaiseEquippedItemsChangedAsync(convertedItem ?? item, true).ConfigureAwait(false);
             }
+            else if ((convertedItem ?? item).IsInUseInsideInventory())
+            {
+                this.UpdateInventoryUsedItemPowerUps(convertedItem ?? item);
+            }
         }
 
         return success;
@@ -126,6 +130,11 @@ public class InventoryStorage : Storage, IInventoryStorage
         if (isEquippedItem)
         {
             await this.RaiseEquippedItemsChangedAsync(item, false).ConfigureAwait(false);
+        }
+        else if (item.IsUsedInsideInventory())
+        {
+            // An item which is used inside the inventory loses its power-ups, until it's added again.
+            this._player.Attributes?.RemoveInventoryUsedItemPowerUps(item);
         }
     }
 
@@ -148,6 +157,18 @@ public class InventoryStorage : Storage, IInventoryStorage
         foreach (AsyncEventHandler<ItemEventArgs> handler in eventHandler.GetInvocationList())
         {
             await handler(eventArgs).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Updates the power-ups of an item which is used inside the inventory, after it was added, removed or (un)used.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    private void UpdateInventoryUsedItemPowerUps(Item item)
+    {
+        if (this._player.Attributes is { } attributes && this._gameContext.ItemPowerUpFactory is { } factory)
+        {
+            attributes.UpdateInventoryUsedItemPowerUps(item, factory);
         }
     }
 
@@ -209,6 +230,11 @@ public class InventoryStorage : Storage, IInventoryStorage
         if (factory != null)
         {
             foreach (var item in this.EquippedItems)
+            {
+                this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
+            }
+
+            foreach (var item in this.Items.Where(item => item.IsInUseInsideInventory()))
             {
                 this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
             }

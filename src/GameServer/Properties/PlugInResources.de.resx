@@ -2667,4 +2667,16 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>Die erweiterte Implementierung von IShowItemCraftingPreviewPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
   </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für die Benutzung von Gegenständen im Inventar</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler für die Anfrage, einen Gegenstand im Inventar zu benutzen oder dessen Benutzung zu beenden, wie eine Figur oder einen Talisman.</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Name" xml:space="preserve">
+    <value>Benutzung eines Inventargegenstands geändert</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Description" xml:space="preserve">
+    <value>Die Standardimplementierung von IInventoryItemUseChangedPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
+  </data>
 </root>

@@ -88,6 +88,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *JewelMix*                    | 0xBC              | 100%     | 4          |                                               |
 | *CrywolfGroup*              | 0xBD              | 100%     | 10         |                                               |
 | *IllusionTempleGroup*       | 0xBF              | 100%     | 10         | Team-based PvP mini game: relic pickup/delivery, scoring, skill points, special skills, rewards |
+| *InventoryItemEquip*        | 0xBF20            | 100%     | 2          | Using figurines and charms inside the inventory |
 | FriendListRequest           | 0xC0              | 0%       | 0          | Not needed, friend list is sent automatically |
 | *FriendAdd*                   | 0xC1              | 100%     | 2          |                                               |
 | *WaitFriendAdd*               | 0xC2              | 100%     | 2          |                                               |

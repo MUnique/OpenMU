@@ -1171,4 +1171,7 @@ Inventory Extensions: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>This map is not available.</value>
   </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>The same item is already in use. Stop using it first, and then try again.</value>
+  </data>
 </root>

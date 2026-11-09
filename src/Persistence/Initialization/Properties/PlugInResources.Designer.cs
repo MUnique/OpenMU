@@ -1055,5 +1055,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixKanturuRuins3LandingUpdatePlugIn_Description text.</summary>
         public static string FixKanturuRuins3LandingUpdatePlugIn_Description => ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddFigurinesAndCharmsUpdatePlugIn_Name text.</summary>
+        public static string AddFigurinesAndCharmsUpdatePlugIn_Name => ResourceManager.GetString("AddFigurinesAndCharmsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddFigurinesAndCharmsUpdatePlugIn_Description text.</summary>
+        public static string AddFigurinesAndCharmsUpdatePlugIn_Description => ResourceManager.GetString("AddFigurinesAndCharmsUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }
