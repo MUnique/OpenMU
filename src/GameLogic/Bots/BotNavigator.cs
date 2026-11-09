@@ -162,6 +162,15 @@ internal sealed class BotNavigator : AsyncDisposable
     private const int DeathSiteAvoidanceRange = 30;
 
     /// <summary>
+    /// After this many deaths by monsters in the zone of one warp entry (see <see cref="BotMapZones"/>)
+    /// within <see cref="MonsterDeathWindow"/>, the bot keeps away from that zone for
+    /// <see cref="DangerousZoneAvoidance"/>. The safety check judges one monster at a time, so a
+    /// zone of dense packs (the top floors of the Lost Tower) can pass it and still kill the bot,
+    /// which then respawned, warped back and died again in a loop.
+    /// </summary>
+    private const int MonsterDeathThreshold = 3;
+
+    /// <summary>
     /// Share of the picks the best ranked map takes when the bot chooses where to hunt (see
     /// <see cref="PickByRank"/>); the runners-up split what is left, on the same terms. Below a half on
     /// purpose: at a half the fourth map of a level band and everything behind it share a few percent
@@ -238,6 +247,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private static readonly TimeSpan BarrenMapDuration = TimeSpan.FromMinutes(3);
 
+    /// <summary>How long deaths by monsters count toward <see cref="MonsterDeathThreshold"/>.</summary>
+    private static readonly TimeSpan MonsterDeathWindow = TimeSpan.FromMinutes(10);
+
+    /// <summary>How long the bot keeps away from a zone it died in too often (see <see cref="MonsterDeathThreshold"/>).</summary>
+    private static readonly TimeSpan DangerousZoneAvoidance = TimeSpan.FromMinutes(30);
+
     /// <summary>Cooldown for following the party leader to another map (shorter, so the group regroups quickly).</summary>
     private static readonly TimeSpan FollowWarpCooldown = TimeSpan.FromSeconds(20);
 
@@ -291,6 +306,18 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private readonly OfflinePlayer _player;
     private readonly TimeProvider _timeProvider;
+
+    /// <summary>
+    /// Deaths by monsters, noted by the death event (another thread) and evaluated in the navigation
+    /// ticks (see <see cref="UpdateAvoidedEntries"/>).
+    /// </summary>
+    private readonly ConcurrentQueue<(GameMapDefinition Map, Point Position, DateTimeOffset At)> _monsterDeaths = new();
+
+    /// <summary>The recent deaths by monsters with the warp entry whose zone they happened in.</summary>
+    private readonly List<(WarpInfo Entry, DateTimeOffset At)> _recentZoneDeaths = [];
+
+    /// <summary>The warp entries whose zones the bot keeps away from, with the end of the avoidance.</summary>
+    private readonly Dictionary<WarpInfo, DateTimeOffset> _avoidedEntries = new(ReferenceEqualityComparer.Instance);
     private readonly CancellationTokenSource _cts = new();
 
     private Timer? _timer;
@@ -363,6 +390,7 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         this._player = player;
         this._timeProvider = timeProvider;
+        this._player.Died += this.OnDied;
     }
 
     /// <summary>
@@ -656,6 +684,7 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         ground = default;
         var position = this._player.Position;
+        var avoidedZones = this.GetAvoidedZones(map.Definition);
         var attackables = map.GetAttackablesInRange(position, MonsterSeekRadius);
         var candidates = new List<(Monster Monster, double Distance)>();
         foreach (var attackable in attackables)
@@ -664,6 +693,12 @@ internal sealed class BotNavigator : AsyncDisposable
                 || !monster.IsAlive
                 || monster.IsAtSafezone())
             {
+                continue;
+            }
+
+            if (avoidedZones is { } avoided && avoided.Avoided.Contains(avoided.Zones.GetZone(monster.Position)))
+            {
+                // The bot keeps away from that zone - homing in on its monsters would lead it right back.
                 continue;
             }
 
@@ -751,10 +786,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// few hundred steps apart. Judging the whole map by its strongest monsters and entering through the
     /// first entry sent the bots to a floor which held none of them, or on a long walk. The bot's own
     /// map counts too, through the entries to the other zones - a bot on the first floor of the Lost
-    /// Tower may warp up to a better one.
+    /// Tower may warp up to a better one. Zones the bot died in too often are left out
+    /// (see <see cref="MonsterDeathThreshold"/>).
     /// </remarks>
     internal IEnumerable<(WarpInfo Warp, int Level)> GetHuntingWarps(GameMapDefinition mapDefinition, int minimumLevel)
     {
+        this.UpdateAvoidedEntries();
         if (this.GetHuntingZones(mapDefinition) is not { } hunting)
         {
             yield break;
@@ -765,7 +802,9 @@ internal sealed class BotNavigator : AsyncDisposable
             : -1;
         for (var entry = 0; entry < hunting.Entries.Count; entry++)
         {
-            if (!hunting.Zones.HasZone(entry) || entry == currentZone)
+            if (!hunting.Zones.HasZone(entry)
+                || entry == currentZone
+                || this.IsEntryAvoided(hunting.Entries[entry]))
             {
                 continue;
             }
@@ -773,6 +812,16 @@ internal sealed class BotNavigator : AsyncDisposable
             var zone = entry;
             yield return (hunting.Entries[entry], this.BestSafeLevel(mapDefinition, minimumLevel, area => hunting.Zones.IsAreaWithin(area, zone, GroundScatterSpan, HuntingRange)));
         }
+    }
+
+    /// <summary>
+    /// Notes a death by a monster for <see cref="MonsterDeathThreshold"/>.
+    /// </summary>
+    /// <param name="map">The map of the death.</param>
+    /// <param name="position">The position of the death.</param>
+    internal void RegisterMonsterDeath(GameMapDefinition map, Point position)
+    {
+        this._monsterDeaths.Enqueue((map, position, this._timeProvider.GetUtcNow()));
     }
 
     /// <summary>
@@ -858,6 +907,7 @@ internal sealed class BotNavigator : AsyncDisposable
     {
         if (disposing)
         {
+            this._player.Died -= this.OnDied;
             this._timer?.Dispose();
             this._timer = null;
             this._cts.Dispose();
@@ -2508,8 +2558,8 @@ internal sealed class BotNavigator : AsyncDisposable
 
     /// <summary>
     /// Gets a filter for the monsters of the zone the bot stands in (see <see cref="BotMapZones"/>), so
-    /// its current place is compared with the zones of the other entries on equal terms. Outside of
-    /// every zone, it's the reachable part of the map.
+    /// its current place is compared with the zones of the other entries on equal terms. A zone the bot
+    /// keeps away from holds nothing for it. Outside of every zone, it's the reachable part of the map.
     /// </summary>
     /// <returns>The filter, or <c>null</c> to judge the whole map.</returns>
     private Func<MonsterSpawnArea, bool>? GetCurrentZoneFilter()
@@ -2519,6 +2569,11 @@ internal sealed class BotNavigator : AsyncDisposable
             || hunting.Zones.GetZone(this._player.Position) is not (var zone and >= 0))
         {
             return this.GetCurrentRegionFilter();
+        }
+
+        if (this.IsEntryAvoided(hunting.Entries[zone]))
+        {
+            return _ => false;
         }
 
         return area => hunting.Zones.IsAreaWithin(area, zone, GroundScatterSpan, HuntingRange);
@@ -2538,6 +2593,73 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return (BotMapRegions.Get(mapDefinition).GetZones(entries.Select(w => w.Gate!).ToList()), entries);
+    }
+
+    private void OnDied(object? sender, DeathInformation death)
+    {
+        // Only monsters: a player's kills are handled by the revenge and death site logic of the
+        // OfflinePlayer, and an event death is part of the game.
+        if (this._player.CurrentMiniGame is null
+            && this._player.CurrentMap is { } map
+            && map.GetObject(death.KillerId) is Monster { SummonedBy: null })
+        {
+            this.RegisterMonsterDeath(map.Definition, this._player.Position);
+        }
+    }
+
+    /// <summary>
+    /// Evaluates the deaths by monsters noted since the last call: the zone of an entry where the bot
+    /// died <see cref="MonsterDeathThreshold"/> times within <see cref="MonsterDeathWindow"/> is avoided
+    /// for <see cref="DangerousZoneAvoidance"/>, so the bot settles for the next best zone instead.
+    /// </summary>
+    private void UpdateAvoidedEntries()
+    {
+        var now = this._timeProvider.GetUtcNow();
+        while (this._monsterDeaths.TryDequeue(out var death))
+        {
+            if (this.GetHuntingZones(death.Map) is not { } hunting
+                || hunting.Zones.GetZone(death.Position) is not (var zone and >= 0))
+            {
+                continue;
+            }
+
+            var entry = hunting.Entries[zone];
+            if (this.IsEntryAvoided(entry))
+            {
+                // Dying on the way out of an avoided zone doesn't make it any more avoided.
+                continue;
+            }
+
+            this._recentZoneDeaths.RemoveAll(d => now - d.At > MonsterDeathWindow);
+            this._recentZoneDeaths.Add((entry, death.At));
+            if (this._recentZoneDeaths.Count(d => ReferenceEquals(d.Entry, entry)) >= MonsterDeathThreshold)
+            {
+                this._recentZoneDeaths.RemoveAll(d => ReferenceEquals(d.Entry, entry));
+                this._avoidedEntries[entry] = now + DangerousZoneAvoidance;
+                this._player.Logger.LogInformation(
+                    "Bot {Character} died {Count} times near warp {Warp} on map {Map}; it keeps away from there for a while.",
+                    this._player.Name,
+                    MonsterDeathThreshold,
+                    entry,
+                    death.Map.Name);
+            }
+        }
+    }
+
+    private bool IsEntryAvoided(WarpInfo entry)
+    {
+        if (!this._avoidedEntries.TryGetValue(entry, out var until))
+        {
+            return false;
+        }
+
+        if (this._timeProvider.GetUtcNow() < until)
+        {
+            return true;
+        }
+
+        this._avoidedEntries.Remove(entry);
+        return false;
     }
 
     /// <summary>
@@ -2687,9 +2809,11 @@ internal sealed class BotNavigator : AsyncDisposable
         var mapRegions = BotMapRegions.Get(map.Definition);
         var region = mapRegions.GetRegion(this._player.Position);
         int[] regions = [region];
+        var isAvoided = this.GetAvoidedGroundFilter(map.Definition);
         var candidates = map.Definition.MonsterSpawns
             .Where(this.IsPermanentMonsterSpawn)
             .Where(a => region == 0 || mapRegions.IsAreaWithin(a, regions, GroundScatterSpan, HuntingRange))
+            .Where(a => isAvoided is null || !isAvoided(a))
             .Select(a => (Area: a, Level: GetMonsterLevel(a.MonsterDefinition!)))
             .Where(x => x.Level > 0)
             .ToList();
@@ -2760,6 +2884,39 @@ internal sealed class BotNavigator : AsyncDisposable
 
         groundLevel = chosen.Level;
         return this.TryPickWalkablePoint(map, chosen.Area, siteToAvoid, competitorSpots, region == 0 ? null : mapRegions, region, out ground);
+    }
+
+    /// <summary>
+    /// Gets the zones of the map which the bot keeps away from (see <see cref="MonsterDeathThreshold"/>).
+    /// </summary>
+    /// <param name="mapDefinition">The map.</param>
+    /// <returns>The zones of the map with the indexes of the avoided ones; <c>null</c> if none is avoided.</returns>
+    private (BotMapZones Zones, HashSet<int> Avoided)? GetAvoidedZones(GameMapDefinition mapDefinition)
+    {
+        this.UpdateAvoidedEntries();
+        if (this._avoidedEntries.Count == 0 || this.GetHuntingZones(mapDefinition) is not { } hunting)
+        {
+            return null;
+        }
+
+        var avoided = Enumerable.Range(0, hunting.Entries.Count).Where(i => this.IsEntryAvoided(hunting.Entries[i])).ToHashSet();
+        return avoided.Count == 0 ? null : (hunting.Zones, avoided);
+    }
+
+    /// <summary>
+    /// Gets a filter for the spawn areas which belong to zones the bot keeps away from (see
+    /// <see cref="MonsterDeathThreshold"/>), so it doesn't walk back into them on a map it can walk through.
+    /// </summary>
+    /// <param name="mapDefinition">The map.</param>
+    /// <returns>The filter, or <c>null</c> if no zone of the map is avoided.</returns>
+    private Func<MonsterSpawnArea, bool>? GetAvoidedGroundFilter(GameMapDefinition mapDefinition)
+    {
+        if (this.GetAvoidedZones(mapDefinition) is not { } avoided)
+        {
+            return null;
+        }
+
+        return area => avoided.Avoided.Contains(avoided.Zones.GetAreaZone(area, GroundScatterSpan, HuntingRange));
     }
 
     private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, IReadOnlyList<HuntingSpot> competitorSpots, BotMapRegions? mapRegions, int region, out Point point)

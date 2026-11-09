@@ -6,11 +6,13 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 using NUnit.Framework;
@@ -59,6 +61,31 @@ public class BotMapFloorTest
     }
 
     /// <summary>
+    /// A bot which keeps away from a zone doesn't home in on the monsters standing in it either - on a
+    /// map it can walk through, that would lead it right back to where it kept dying.
+    /// </summary>
+    [Test]
+    public async ValueTask MonstersOfAnAvoidedZoneAreNotHomedInOnAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateHunterAsync(gameContext).ConfigureAwait(false);
+        var (mapDefinition, _, _) = AddCorridorMap(gameContext, 12);
+        var map = new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8);
+        bot.SetCurrentMapSilently(map);
+        bot.Position = new Point(100, 10);
+        await CreateMonsterAsync(gameContext, map, CreateMonsterDefinition(UpperFloorMonsterNumber, UpperFloorMonsterLevel), new Point(110, 10)).ConfigureAwait(false);
+        var navigator = new BotNavigator(bot);
+        Assert.That(navigator.TryFindNearestMonsterGround(map, out _), Is.True);
+
+        for (var i = 0; i < 3; i++)
+        {
+            navigator.RegisterMonsterDeath(mapDefinition, new Point(150, 10));
+        }
+
+        Assert.That(navigator.TryFindNearestMonsterGround(map, out _), Is.False);
+    }
+
+    /// <summary>
     /// On a map which can be walked through in one piece, each entry is judged by the monsters closest
     /// to it on foot, so a bot enters next to the monsters it came for instead of through the first
     /// entry of the list and a long walk.
@@ -79,6 +106,33 @@ public class BotMapFloorTest
         var zones = BotMapRegions.Get(map).GetZones([firstWarp.Gate!, secondWarp.Gate!]);
         Assert.That(zones.GetAreaZone(new MonsterSpawnArea { X1 = 60, X2 = 200, Y1 = 10, Y2 = 11 }, 12, 6), Is.EqualTo(1));
         Assert.That(zones.GetAreaZone(new MonsterSpawnArea { X1 = 10, X2 = 150, Y1 = 10, Y2 = 11 }, 12, 6), Is.Zero);
+    }
+
+    /// <summary>
+    /// A bot which keeps dying to the monsters of one zone stays away from it for a while and settles
+    /// for the next best one - judging one monster at a time can't see dense packs, and without this
+    /// the bot respawned, warped back and died again in a loop.
+    /// </summary>
+    [Test]
+    public async ValueTask ZoneIsAvoidedAfterRepeatedDeathsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await CreateHunterAsync(gameContext).ConfigureAwait(false);
+        var (floorMap, lowerWarp, upperWarp) = AddTwoFloorMap(gameContext, 10);
+        bot.SetCurrentMapSilently(CreateOpenMap(11));
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 11, 9, 12, 0, 0, TimeSpan.Zero));
+        var navigator = new BotNavigator(bot, timeProvider);
+
+        navigator.RegisterMonsterDeath(floorMap, new Point(203, 203));
+        navigator.RegisterMonsterDeath(floorMap, new Point(202, 204));
+        Assert.That(navigator.GetHuntingWarps(floorMap, 0).Select(w => w.Warp), Does.Contain(upperWarp), "two deaths are not enough");
+
+        timeProvider.Advance(TimeSpan.FromMinutes(1));
+        navigator.RegisterMonsterDeath(floorMap, new Point(204, 202));
+        Assert.That(navigator.GetHuntingWarps(floorMap, 0).ToList(), Is.EquivalentTo(new[] { (lowerWarp, (int)LowerFloorMonsterLevel) }));
+
+        timeProvider.Advance(TimeSpan.FromMinutes(31));
+        Assert.That(navigator.GetHuntingWarps(floorMap, 0).Select(w => w.Warp), Does.Contain(upperWarp), "the avoidance ends");
     }
 
     /// <summary>
@@ -232,6 +286,33 @@ public class BotMapFloorTest
         gameContext.Configuration.WarpList.Add(firstWarp);
         gameContext.Configuration.WarpList.Add(secondWarp);
         return (map, firstWarp, secondWarp);
+    }
+
+    private static async ValueTask<Monster> CreateMonsterAsync(IGameContext gameContext, GameMap map, MonsterDefinition definition, Point position)
+    {
+        var spawnArea = new MonsterSpawnArea
+        {
+            MonsterDefinition = definition,
+            GameMap = map.Definition,
+            X1 = position.X,
+            X2 = position.X,
+            Y1 = position.Y,
+            Y2 = position.Y,
+            Quantity = 1,
+        };
+
+        var monster = new Monster(
+            spawnArea,
+            definition,
+            map,
+            NullDropGenerator.Instance,
+            new Mock<INpcIntelligence>().Object,
+            gameContext.PlugInManager,
+            gameContext.PathFinderPool);
+        monster.Initialize();
+        monster.Attributes[Stats.CurrentHealth] = 1;
+        await map.AddAsync(monster).ConfigureAwait(false);
+        return monster;
     }
 
     private static GameMapDefinition CreateTwoFloorMap(byte number)
