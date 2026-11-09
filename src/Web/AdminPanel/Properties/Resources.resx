@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -2709,5 +2709,14 @@
   </data>
   <data name="Inspect" xml:space="preserve">
     <value>Inspect</value>
+  </data>
+  <data name="Mixes" xml:space="preserve">
+    <value>Mixes</value>
+  </data>
+  <data name="MixesPageDescription" xml:space="preserve">
+    <value>The mixes of the chaos machine and the other NPCs which offer them, grouped by the NPC. Here you see the success rates and what happens to the required items when a mix fails.</value>
+  </data>
+  <data name="NoChaosMixes" xml:space="preserve">
+    <value>The game configuration contains no chaos machine mixes.</value>
   </data>
 </root>

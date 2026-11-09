@@ -45,6 +45,7 @@ const sidebars = {
         "admin-panel/online-accounts",
         "admin-panel/game-configuration",
         "admin-panel/item-drops",
+        "admin-panel/mixes",
         "admin-panel/plugins",
         "admin-panel/chat-commands",
         "admin-panel/map-editor",
