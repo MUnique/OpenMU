@@ -3189,5 +3189,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The place has been saved. Use the talisman again to return to it..
+        /// </summary>
+        public static string MobilityTalismanPlaceSaved {
+            get {
+                return ResourceManager.GetString("MobilityTalismanPlaceSaved", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to No place has been saved with a Talisman of Mobility..
+        /// </summary>
+        public static string MobilityTalismanNoPlaceSaved {
+            get {
+                return ResourceManager.GetString("MobilityTalismanNoPlaceSaved", resourceCulture);
+            }
+        }
     }
 }

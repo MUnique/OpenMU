@@ -1851,4 +1851,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
   </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Talisman of Mobility Consume Handler</value>
+  </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the Talisman of Mobility. The first usage saves the place of the character, the second one warps it back to the saved place.</value>
+  </data>
 </root>

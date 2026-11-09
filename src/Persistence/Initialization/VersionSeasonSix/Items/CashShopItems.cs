@@ -37,6 +37,25 @@ internal class CashShopItems : InitializerBase
         this.CreateItem(14, 163, LocalizedString.FromResource(() => ItemNames.VaultExpansionCertificate));
         this.CreateItem(14, 169, LocalizedString.FromResource(() => ItemNames.RageFighterCharacterCard));
         this.CreateResetFruits();
+        this.CreateTalismanOfMobility();
+    }
+
+    /// <summary>
+    /// Creates the Talisman of Mobility, if it doesn't exist yet. Like in the client, it has a durability of 2:
+    /// the first usage saves the place of the character, the second one warps it back,
+    /// see <see cref="GameLogic.PlayerActions.ItemConsumeActions.TalismanOfMobilityConsumeHandlerPlugIn"/>.
+    /// The rules which block trading and selling it are applied by the <see cref="ItemRules"/>.
+    /// </summary>
+    /// <returns>The created item, or <c>null</c>, if it already existed.</returns>
+    internal ItemDefinition? CreateTalismanOfMobility()
+    {
+        var talisman = this.CreateItem(13, 70, LocalizedString.FromResource(() => ItemNames.TalismanOfMobility));
+        if (talisman is not null)
+        {
+            talisman.Durability = 2;
+        }
+
+        return talisman;
     }
 
     /// <summary>

@@ -240,6 +240,19 @@ sell the card.
 While the plugin of a special item is deactivated, its packages can't be bought,
 and bought items stay in the storage until the plugin is active again.
 
+### Talisman of Mobility
+
+The Talisman of Mobility can be used twice. The first use saves the place of
+the character, the second one warps the character back to it and uses the
+talisman up. The place is kept when the character leaves the game; saving
+another place replaces it. The talisman can't be used in mini games and duels.
+The plugin *Talisman of Mobility Consume Handler* can be deactivated on the
+**Plugins** page.
+
+The item exists in a new Season 6 database. Existing databases get it with the
+optional configuration update *Add the Talisman of Mobility*, which also puts
+its packages on sale.
+
 ### Invitation to Santa Village
 
 The Invitation to Santa Village can be used ten times. Each use warps the

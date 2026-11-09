@@ -1018,4 +1018,10 @@ Inventarerweiterungen: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Diese Karte ist nicht verfügbar.</value>
   </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>Der Ort wurde gespeichert. Benutze den Talisman erneut, um zu ihm zurückzukehren.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>Mit einem Talisman der Mobilität wurde kein Ort gespeichert.</value>
+  </data>
 </root>
