@@ -172,14 +172,15 @@ public class LuckyCoinActions
             return LuckyCoinExchangeResult.InventoryFull;
         }
 
-        await RemoveCoinsAsync(player, coins, coinCount).ConfigureAwait(false);
+        // The reward is added before the coins are removed, so that the player keeps the coins when it fails.
         if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
         {
-            // Can't happen, because removing the coins only frees space.
             await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
             player.Logger.LogError("The lucky coin reward {item} of player {player} couldn't be added to the inventory.", item, player);
             return LuckyCoinExchangeResult.InventoryFull;
         }
+
+        await RemoveCoinsAsync(player, coins, coinCount).ConfigureAwait(false);
 
         player.Logger.LogInformation("Player {player} exchanged {coinCount} lucky coins for {item}.", player, coinCount, item);
         await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
