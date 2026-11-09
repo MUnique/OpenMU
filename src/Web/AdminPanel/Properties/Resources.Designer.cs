@@ -85,6 +85,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Your account is not permitted to make this change..
+        /// </summary>
+        public static string ChangeNotPermitted {
+            get {
+                return ResourceManager.GetString("ChangeNotPermitted", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Account.
         /// </summary>
         public static string Account {
@@ -5592,6 +5601,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string InitializingGameServerInfo {
             get {
                 return ResourceManager.GetString("InitializingGameServerInfo", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Inspect.
+        /// </summary>
+        public static string Inspect {
+            get {
+                return ResourceManager.GetString("Inspect", resourceCulture);
             }
         }
 

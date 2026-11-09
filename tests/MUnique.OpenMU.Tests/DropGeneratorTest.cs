@@ -80,6 +80,69 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that an item which is configured in a drop group of the map drops from monsters
+    /// which are much stronger than its drop level, e.g. Loch's Feather (drop level 78) in Icarus.
+    /// </summary>
+    /// <param name="monsterLevel">The level of the monster.</param>
+    [TestCase(82)]
+    [TestCase(89)]
+    [TestCase(90)]
+    [TestCase(100)]
+    public async ValueTask TestMapGroupItemDropsRegardlessOfLevelGapAsync(byte monsterLevel)
+    {
+        var feather = this.CreateItemDefinition(13, 14, 78);
+        var dropGroup = this.CreateDropItemGroup(feather);
+        dropGroup.ItemType = SpecialItemType.None;
+        dropGroup.MinimumMonsterLevel = 82;
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, monsterLevel), 1, player).ConfigureAwait(false);
+
+        Assert.That(items.FirstOrDefault()?.Definition, Is.EqualTo(feather));
+    }
+
+    /// <summary>
+    /// Tests that the maximum drop level of an item still applies to the drop groups of the map.
+    /// </summary>
+    [Test]
+    public async ValueTask TestMapGroupItemRespectsMaximumDropLevelAsync()
+    {
+        var feather = this.CreateItemDefinition(13, 14, 78, 89);
+        var dropGroup = this.CreateDropItemGroup(feather);
+        dropGroup.ItemType = SpecialItemType.None;
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 90), 1, player).ConfigureAwait(false);
+
+        Assert.That(items, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a random item drop still skips items whose drop level is far below the monster level.
+    /// </summary>
+    [Test]
+    public async ValueTask TestRandomDropSkipsItemsFarBelowMonsterLevelAsync()
+    {
+        var lowItem = this.CreateItemDefinition(0, 1, 78);
+        var fittingItem = this.CreateItemDefinition(0, 2, 95);
+        lowItem.DropsFromMonsters = true;
+        fittingItem.DropsFromMonsters = true;
+        var monster = this.GetMonster(1, 100);
+        monster.DropItemGroups.Add(10000, SpecialItemType.RandomItem, false);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(lowItem, fittingItem), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        Assert.That(items.FirstOrDefault()?.Definition, Is.EqualTo(fittingItem));
+    }
+
+    /// <summary>
     /// Tests that inactive items are not dropped, but the active items of the same drop group.
     /// </summary>
     [Test]

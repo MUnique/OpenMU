@@ -2079,8 +2079,20 @@
   <data name="DoppelgangerFreeTicket" xml:space="preserve">
     <value>生魂广场自由入场券</value>
   </data>
-  <data name="InvitationToSantaVillage" xml:space="preserve">
-    <value>圣诞村邀请函</value>
+  <data name="ResetFruitStrength" xml:space="preserve">
+    <value>力量重置果实</value>
+  </data>
+  <data name="ResetFruitAgility" xml:space="preserve">
+    <value>敏捷重置果实</value>
+  </data>
+  <data name="ResetFruitVitality" xml:space="preserve">
+    <value>体力重置果实</value>
+  </data>
+  <data name="ResetFruitEnergy" xml:space="preserve">
+    <value>智力重置果实</value>
+  </data>
+  <data name="ResetFruitCommand" xml:space="preserve">
+    <value>统率重置果实</value>
   </data>
   <data name="DevilSquareFreeTicket" xml:space="preserve">
     <value>恶魔广场自由入场券</value>
@@ -2112,20 +2124,23 @@
   <data name="CursedCastleWater" xml:space="preserve">
     <value>诅咒城堡之水</value>
   </data>
-  <data name="ResetFruitStrength" xml:space="preserve">
-    <value>力量重置果实</value>
+  <data name="SilverKey" xml:space="preserve">
+    <value>银钥匙</value>
   </data>
-  <data name="ResetFruitAgility" xml:space="preserve">
-    <value>敏捷重置果实</value>
+  <data name="GoldKey" xml:space="preserve">
+    <value>金钥匙</value>
   </data>
-  <data name="ResetFruitVitality" xml:space="preserve">
-    <value>体力重置果实</value>
+  <data name="SealedGoldenBox" xml:space="preserve">
+    <value>封印的金箱</value>
   </data>
-  <data name="ResetFruitEnergy" xml:space="preserve">
-    <value>智力重置果实</value>
+  <data name="SealedSilverBox" xml:space="preserve">
+    <value>封印的银箱</value>
   </data>
-  <data name="ResetFruitCommand" xml:space="preserve">
-    <value>统率重置果实</value>
+  <data name="GoldenBox" xml:space="preserve">
+    <value>金箱</value>
+  </data>
+  <data name="SilverBox" xml:space="preserve">
+    <value>银箱</value>
   </data>
   <data name="KalimaTicket" xml:space="preserve">
     <value>卡利玛门票</value>
@@ -2318,5 +2333,8 @@
   </data>
   <data name="TalismanOfChaosAssembly" xml:space="preserve">
     <value>混沌合成符咒</value>
+  </data>
+  <data name="InvitationToSantaVillage" xml:space="preserve">
+    <value>圣诞村邀请函</value>
   </data>
 </root>

@@ -735,6 +735,9 @@
   <data name="AccessDeniedDescription" xml:space="preserve">
     <value>Ihr Konto ist nicht berechtigt, diese Seite zu öffnen.</value>
   </data>
+  <data name="ChangeNotPermitted" xml:space="preserve">
+    <value>Ihr Konto ist nicht berechtigt, diese Änderung vorzunehmen.</value>
+  </data>
   <data name="AccountSecurity" xml:space="preserve">
     <value>Kontosicherheit</value>
   </data>
@@ -2598,5 +2601,8 @@
   </data>
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Speichere oder verwirf zuerst die ausstehenden Änderungen.</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Untersuchen</value>
   </data>
 </root>

@@ -135,6 +135,11 @@ public sealed class ItemPickupHandler
 
     private bool ShouldPickUpDrop(IIdentifiable drop)
     {
+        if (drop is DroppedMoney money && !this.CanTakeMoney(money))
+        {
+            return false;
+        }
+
         if (this._config!.PickAllItems)
         {
             return true;
@@ -156,6 +161,19 @@ public sealed class ItemPickupHandler
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Determines whether picking up the money would give the player anything.
+    /// </summary>
+    /// <remarks>
+    /// A player at the money limit is refused every money drop. Walking to it anyway kept a player near
+    /// the limit going back and forth between the money and its fight, every time the drop was no longer
+    /// ignored. In a party, another member may take the money, so it's still picked up.
+    /// </remarks>
+    private bool CanTakeMoney(DroppedMoney money)
+    {
+        return this._player.Party is not null || MoneyDistribution.CanPay(this._player, money.Amount);
     }
 
     private bool ShouldPickUp(Item item)

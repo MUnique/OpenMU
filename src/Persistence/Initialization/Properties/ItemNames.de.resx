@@ -1698,30 +1698,6 @@
   <data name="PandaTransformationRing" xml:space="preserve">
     <value>Panda-Verwandlungsring</value>
   </data>
-  <data name="LethalWizardsRing" xml:space="preserve">
-    <value>Ring des tödlichen Zauberers</value>
-  </data>
-  <data name="SapphireRing" xml:space="preserve">
-    <value>Saphirring</value>
-  </data>
-  <data name="RubyRing" xml:space="preserve">
-    <value>Rubinring</value>
-  </data>
-  <data name="TopazRing" xml:space="preserve">
-    <value>Topasring</value>
-  </data>
-  <data name="AmethystRing" xml:space="preserve">
-    <value>Amethystring</value>
-  </data>
-  <data name="RubyNecklace" xml:space="preserve">
-    <value>Rubinhalskette</value>
-  </data>
-  <data name="EmeraldNecklace" xml:space="preserve">
-    <value>Smaragdhalskette</value>
-  </data>
-  <data name="SapphireNecklace" xml:space="preserve">
-    <value>Saphirhalskette</value>
-  </data>
   <data name="PetPanda" xml:space="preserve">
     <value>Haustier Panda</value>
   </data>
@@ -1829,18 +1805,6 @@
   </data>
   <data name="LargeShieldPotion" xml:space="preserve">
     <value>Großer SD-Trank</value>
-  </data>
-  <data name="EliteHealingPotion" xml:space="preserve">
-    <value>Elite-Heiltrank</value>
-  </data>
-  <data name="EliteManaPotion" xml:space="preserve">
-    <value>Elite-Manatrank</value>
-  </data>
-  <data name="MediumEliteHealingPotion" xml:space="preserve">
-    <value>Mittlerer Elite-Heiltrank</value>
-  </data>
-  <data name="EliteShieldPotion" xml:space="preserve">
-    <value>Elite-SD-Trank</value>
   </data>
   <data name="SmallComplexPotion" xml:space="preserve">
     <value>Kleiner Komplextrank</value>
@@ -2087,6 +2051,60 @@
   </data>
   <data name="CursedCastleWater" xml:space="preserve">
     <value>Verfluchtes Burgwasser</value>
+  </data>
+  <data name="SilverKey" xml:space="preserve">
+    <value>Silberschlüssel</value>
+  </data>
+  <data name="GoldKey" xml:space="preserve">
+    <value>Goldschlüssel</value>
+  </data>
+  <data name="SealedGoldenBox" xml:space="preserve">
+    <value>Versiegelte goldene Box</value>
+  </data>
+  <data name="SealedSilverBox" xml:space="preserve">
+    <value>Versiegelte silberne Box</value>
+  </data>
+  <data name="GoldenBox" xml:space="preserve">
+    <value>Goldene Box</value>
+  </data>
+  <data name="SilverBox" xml:space="preserve">
+    <value>Silberne Box</value>
+  </data>
+  <data name="LethalWizardsRing" xml:space="preserve">
+    <value>Ring des tödlichen Zauberers</value>
+  </data>
+  <data name="SapphireRing" xml:space="preserve">
+    <value>Saphirring</value>
+  </data>
+  <data name="RubyRing" xml:space="preserve">
+    <value>Rubinring</value>
+  </data>
+  <data name="TopazRing" xml:space="preserve">
+    <value>Topasring</value>
+  </data>
+  <data name="AmethystRing" xml:space="preserve">
+    <value>Amethystring</value>
+  </data>
+  <data name="RubyNecklace" xml:space="preserve">
+    <value>Rubinhalskette</value>
+  </data>
+  <data name="EmeraldNecklace" xml:space="preserve">
+    <value>Smaragdhalskette</value>
+  </data>
+  <data name="SapphireNecklace" xml:space="preserve">
+    <value>Saphirhalskette</value>
+  </data>
+  <data name="EliteHealingPotion" xml:space="preserve">
+    <value>Elite-Heiltrank</value>
+  </data>
+  <data name="EliteManaPotion" xml:space="preserve">
+    <value>Elite-Manatrank</value>
+  </data>
+  <data name="MediumEliteHealingPotion" xml:space="preserve">
+    <value>Mittlerer Elite-Heiltrank</value>
+  </data>
+  <data name="EliteShieldPotion" xml:space="preserve">
+    <value>Elite-SD-Trank</value>
   </data>
   <data name="SphinxHelm" xml:space="preserve">
     <value>Sphinxhelm</value>

@@ -56,6 +56,15 @@ public interface IContext : IDisposable
     void Attach(object item);
 
     /// <summary>
+    /// Attaches an item and its aggregate members without traversing its parent storage.
+    /// This prevents an incoming trade item from recursively attaching unrelated inventory items
+    /// which might already be tracked by the receiving player's context.
+    /// </summary>
+    /// <param name="item">The incoming item.</param>
+    /// <remarks>Persistence providers without change-tracking graphs may use the regular attachment.</remarks>
+    void AttachWithoutParent(object item) => this.Attach(item);
+
+    /// <summary>
     /// Creates a new instance of <typeparamref name="T" />.
     /// Attention: This operation needs a currently used context in the current thread!.
     /// </summary>

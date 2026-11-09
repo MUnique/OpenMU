@@ -7,7 +7,7 @@ description: Manage who is allowed to log into the admin panel.
 
 # Admin panel users
 
-**Navigation:** *Users* — route `/users`
+**Navigation:** *System → Users* — route `/users`
 
 These are the users which may log into the **admin panel** — they are not game
 accounts. Game accounts are managed on the [Accounts page](accounts.md).

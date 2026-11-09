@@ -21,25 +21,37 @@
     }
     <div class="container editor-container" id="@this.FieldIdentifier.FieldName">
         <div class="row editor-row">
-            <div class="col-4 left-column">
+            <div class="col-4 left-column" @ref="this._scrollContainer">
                 @if (this._storageType == StorageType.Inventory)
                 {
                     <div class="equipped-box">
                         <EquippedItems
                             @bind-Value="@CurrentValue"
                             SelectedItem="@this._selectedItem"
-                            SelectedItemChanged="this.OnSelectedItemChanged"/>
+                            DraggedItem="@this._draggedItem?.Item"
+                            DraggedColumnOffset="@(this._draggedItem?.ColumnOffset ?? (byte)0)"
+                            DraggedRowOffset="@(this._draggedItem?.RowOffset ?? (byte)0)"
+                            SelectedItemChanged="this.OnSelectedItemChanged"
+                            OnDragStarted="this.OnItemDragStarted"
+                            OnDragEnded="this.OnItemDragEnded"
+                            OnItemDropped="this.OnItemDroppedAsync"/>
                     </div>
                 }
-                
+
                 <div>
                     <MuItemStorage
                         @bind-Value="@CurrentValue"
                         class="@CssClass"
                         StorageType="@this._storageType"
-                                   NumberOfExtensions="@this._numberOfExtensions"
+                        NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
+                        DraggedItem="@this._draggedItem?.Item"
+                        DraggedColumnOffset="@(this._draggedItem?.ColumnOffset ?? (byte)0)"
+                        DraggedRowOffset="@(this._draggedItem?.RowOffset ?? (byte)0)"
                         SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDragStarted="this.OnItemDragStarted"
+                        OnDragEnded="this.OnItemDragEnded"
+                        OnItemDropped="this.OnItemDroppedAsync"
                         OnDelete="this.OnItemDeleteClickAsync"/>
                 </div>
                 @for (byte i = 0; i < this._numberOfExtensions; i++)
@@ -51,7 +63,13 @@
                         NumberOfExtensions="@this._numberOfExtensions"
                         ExtensionIndex="@i"
                         SelectedItem="@this._selectedItem"
+                        DraggedItem="@this._draggedItem?.Item"
+                        DraggedColumnOffset="@(this._draggedItem?.ColumnOffset ?? (byte)0)"
+                        DraggedRowOffset="@(this._draggedItem?.RowOffset ?? (byte)0)"
                         SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDragStarted="this.OnItemDragStarted"
+                        OnDragEnded="this.OnItemDragEnded"
+                        OnItemDropped="this.OnItemDroppedAsync"
                         OnDelete="this.OnItemDeleteClickAsync"/>
                 }
                 @if (this._storageType == StorageType.Inventory)
@@ -62,7 +80,13 @@
                         StorageType="StorageType.PersonalStore"
                         NumberOfExtensions="@this._numberOfExtensions"
                         SelectedItem="@this._selectedItem"
+                        DraggedItem="@this._draggedItem?.Item"
+                        DraggedColumnOffset="@(this._draggedItem?.ColumnOffset ?? (byte)0)"
+                        DraggedRowOffset="@(this._draggedItem?.RowOffset ?? (byte)0)"
                         SelectedItemChanged="this.OnSelectedItemChanged"
+                        OnDragStarted="this.OnItemDragStarted"
+                        OnDragEnded="this.OnItemDragEnded"
+                        OnItemDropped="this.OnItemDroppedAsync"
                         OnDelete="this.OnItemDeleteClickAsync"/>
                 }
             </div>
@@ -100,7 +124,13 @@
 
 @code {
 
+    private static readonly string AutoScrollModulePath = $"./_content/{typeof(ItemStorageField).Assembly.GetName().Name}/Components/Form/{nameof(ItemStorageField)}.razor.js";
+
     private InventoryPlacementService? _placementService;
+
+    private ElementReference _scrollContainer;
+
+    private IJSObjectReference? _autoScrollModule;
 
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
@@ -122,6 +152,8 @@
     public IContext PersistenceContext { get; set; } = null!;
 
     private Item? _selectedItem;
+
+    private (Item Item, byte ColumnOffset, byte RowOffset)? _draggedItem;
 
     private StorageType _storageType;
 
@@ -171,6 +203,79 @@
         this.StateHasChanged();
     }
 
+    private async Task OnItemDragStarted((Item Item, byte ColumnOffset, byte RowOffset) drag)
+    {
+        this._draggedItem = drag;
+        this.StateHasChanged();
+
+        try
+        {
+            this._autoScrollModule ??= await this.JsRuntime
+                .InvokeAsync<IJSObjectReference>("import", AutoScrollModulePath)
+                .ConfigureAwait(true);
+            await this._autoScrollModule.InvokeVoidAsync("start", this._scrollContainer).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is already gone, so there is nothing to scroll anymore.
+        }
+    }
+
+    private async Task OnItemDragEnded()
+    {
+        if (this._autoScrollModule is { } module)
+        {
+            try
+            {
+                await module.InvokeVoidAsync("stop").ConfigureAwait(true);
+            }
+            catch (JSDisconnectedException)
+            {
+                // The circuit is already gone, so there is nothing to stop.
+            }
+        }
+
+        if (this._draggedItem is not null)
+        {
+            this._draggedItem = null;
+            this.StateHasChanged();
+        }
+    }
+
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+
+    private void OnItemDroppedAsync((byte Slot, int StartIndex, int Rows, bool IsEquipmentSlot) target)
+    {
+        if (this._draggedItem is not { } drag || this.Value is not { } storage)
+        {
+            return;
+        }
+
+        var moved = false;
+        if (target.IsEquipmentSlot)
+        {
+            moved = this._placementService!.TryEquipItem(drag.Item, target.Slot, storage.Items);
+        }
+        else if (target.Rows > 0)
+        {
+            var destinationSlot = target.Slot - (drag.RowOffset * InventoryConstants.RowSize) - drag.ColumnOffset;
+            var sectionEnd = target.StartIndex + (target.Rows * InventoryConstants.RowSize);
+            if (destinationSlot >= target.StartIndex && destinationSlot < sectionEnd)
+            {
+                moved = this._placementService!.TryMoveItem(drag.Item, (byte)destinationSlot, storage.Items, target.StartIndex, target.Rows);
+            }
+        }
+
+        if (moved)
+        {
+            this._selectedItem = drag.Item;
+        }
+
+        this._draggedItem = null;
+        this.StateHasChanged();
+    }
+
     private async Task OnItemDeleteClickAsync()
     {
         if (this._selectedItem is null)
@@ -193,14 +298,14 @@
         {
             var item = this.PersistenceContext.CreateNew<Item>();
             var freeSlot = this._placementService!.FindFreeSlot(item, itemStorage.Items);
-            
+
             if (freeSlot is { } slot)
             {
                 item.ItemSlot = slot;
                 itemStorage.Items.Add(item);
                 this._selectedItem = item;
             }
-            
+
             await this.InvokeAsync(this.StateHasChanged);
         }
     }
@@ -220,17 +325,17 @@
 
         var duplicate = this.CreateDuplicateItem();
         duplicate.ItemSlot = freeSlot.Value;
-        
+
         this.Value!.Items.Add(duplicate);
         this.StateHasChanged();
-        
+
         return Task.CompletedTask;
     }
 
     private bool CanDuplicateItem()
     {
-        return this._selectedItem is not null 
-            && this.Value is not null 
+        return this._selectedItem is not null
+            && this.Value is not null
             && this._selectedItem.Definition is not null;
     }
 
@@ -244,12 +349,5 @@
     private byte? FindFreeSlot()
     {
         return this._placementService!.FindFreeSlot(this._selectedItem!, this.Value!.Items);
-    }
-
-    private void AddItemToStorage(Item item)
-    {
-        this.Value!.Items.Add(item);
-        this._selectedItem = item;
-        this.StateHasChanged();
     }
 }

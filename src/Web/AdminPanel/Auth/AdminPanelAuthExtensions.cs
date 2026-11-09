@@ -85,6 +85,7 @@ public static class AdminPanelAuthExtensions
         services.AddScoped<AdminLoginService>();
         services.AddScoped<AuthenticatorSetupService>();
         services.AddScoped<CurrentAdminUserService>();
+        services.AddScoped<AdminPolicyGuard>();
 
         services.AddIdentityCore<AdminUser>(options =>
             {
@@ -174,16 +175,17 @@ public static class AdminPanelAuthExtensions
     }
 
     /// <summary>
-    /// Requires the default authorization policy for all requests below the specified path.
+    /// Requires an authorization policy for all requests below the specified path.
     /// </summary>
     /// <param name="app">The application builder.</param>
     /// <param name="path">The path, e.g. <c>/logs</c>.</param>
+    /// <param name="policyName">The name of the required policy, see <see cref="AdminPolicies"/>.</param>
     /// <returns>The same instance, to allow chaining of further calls.</returns>
     /// <remarks>
     /// Static files are served by a middleware and not by an endpoint, so they are not covered by
     /// the authorization of the endpoint routing. The log files must not be readable by anyone.
     /// </remarks>
-    public static IApplicationBuilder UseAuthorizedPath(this IApplicationBuilder app, string path)
+    public static IApplicationBuilder UseAuthorizedPath(this IApplicationBuilder app, string path, string policyName)
     {
         return app.Use(async (context, next) =>
         {
@@ -195,11 +197,20 @@ public static class AdminPanelAuthExtensions
 
             var policyProvider = context.RequestServices.GetRequiredService<IAuthorizationPolicyProvider>();
             var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
-            var policy = await policyProvider.GetDefaultPolicyAsync().ConfigureAwait(false);
+            var policy = await policyProvider.GetPolicyAsync(policyName).ConfigureAwait(false)
+                         ?? throw new InvalidOperationException($"The authorization policy '{policyName}' is not defined.");
             var result = await authorizationService.AuthorizeAsync(context.User, null, policy).ConfigureAwait(false);
             if (!result.Succeeded)
             {
-                await context.ChallengeAsync().ConfigureAwait(false);
+                if (context.User.Identity?.IsAuthenticated is true)
+                {
+                    await context.ForbidAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    await context.ChallengeAsync().ConfigureAwait(false);
+                }
+
                 return;
             }
 

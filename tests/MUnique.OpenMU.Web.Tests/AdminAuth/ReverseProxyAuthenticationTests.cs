@@ -101,6 +101,28 @@ public class ReverseProxyAuthenticationTests
     }
 
     /// <summary>
+    /// Tests that the proxy can require a minimum role, e.g. for the live map of the game servers.
+    /// </summary>
+    /// <param name="assignedRole">The role which is assigned to the user.</param>
+    /// <param name="requiredRole">The role which the proxy requires.</param>
+    /// <returns>The status code of the answer.</returns>
+    [TestCase("Viewer", "Operator", ExpectedResult = StatusCodes.Status403Forbidden)]
+    [TestCase("Operator", "Operator", ExpectedResult = StatusCodes.Status204NoContent)]
+    [TestCase("Administrator", "Operator", ExpectedResult = StatusCodes.Status204NoContent)]
+    [TestCase("Operator", "Administrator", ExpectedResult = StatusCodes.Status403Forbidden)]
+    [TestCase("Administrator", "CashShop", ExpectedResult = StatusCodes.Status403Forbidden)]
+    [TestCase("Administrator", "Unknown", ExpectedResult = StatusCodes.Status403Forbidden)]
+    [TestCase("Administrator", "", ExpectedResult = StatusCodes.Status403Forbidden)]
+    public async Task<int> RequiredRoleIsCheckedAsync(string assignedRole, string requiredRole)
+    {
+        var user = await this.AddUserAsync("tester", assignedRole).ConfigureAwait(false);
+
+        var result = await this._service.AuthenticateAsync(CreatePrincipal(user), requiredRole).ConfigureAwait(false);
+
+        return result.StatusCode;
+    }
+
+    /// <summary>
     /// Tests that the cookie of a disabled user isn't accepted anymore.
     /// </summary>
     [Test]

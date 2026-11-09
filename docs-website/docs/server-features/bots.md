@@ -29,12 +29,18 @@ stats, skills and starter gear. They are created once, saved like any other
 character, and reloaded on every start — a bot's progress belongs to the
 server's data, not to a process. Every bot animates one character in its own
 persistence context, so the characters of one account can play at the same time.
+Names mix the styles players pick — fantasy names, compound names like
+"DarkBlade" and short handles like "xRavenx" — so the bots don't stand out as
+one family. Names which look nearly the same, like "Hex" and "Hexx" or "Brodan"
+and "Broaedan", are drawn again: they would read like one player's alts.
 
 **Two ticks make up the mind of a bot.** The offline MU Helper AI runs twice a
 second and does what it does for a human's offline session: attack, heal, buff,
-pick items up. On top of it, a bot navigator runs every second and decides the
-things an offline session never had to: where to hunt, when to travel or warp,
-when to go shopping, whom to follow. Everything a bot changes about itself —
+pick items up. On top of it, a bot navigator runs twice a second as well and
+decides the things an offline session never had to: where to hunt, when to travel
+or warp, when to go shopping, whom to follow. A bot travels in short hops, so it
+can stop for a monster on the way; the navigator starts the next hop as soon as
+one ends. Everything a bot changes about itself —
 equipping, jewels, resets, master points — is queued into the AI tick, so it
 never runs while the combat handler is working on the same character.
 
@@ -307,7 +313,8 @@ any level, since it is the player who invites, and once it joins it stays for th
 whole session. A living player takes precedence over the bot's own company
 — a bot hunting with other bots leaves them for the inviter, and breaks that bot
 party up if it was leading it, so a player never has to guess which bot happens
-to be free. In a party the bot follows its leader and defers a due reset, leaving
+to be free. In a party the bot follows its leader — in town too, and back from a
+fight once it falls more than twelve tiles behind — and defers a due reset, leaving
 only on the engine's own terms: when the party disbands, when it is kicked,
 when the leader enters a map it may not access, ten minutes after every human
 companion has disconnected without reconnecting, or before the bot's own logout

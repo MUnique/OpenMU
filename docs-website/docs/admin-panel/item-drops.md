@@ -53,6 +53,11 @@ What exactly drops for a selected group depends on its *possible items* and its
 random item which fits to the monster level, a random excellent or ancient item,
 or money — the amount of money is the experience the monster gave, plus 7.
 
+The possible items of a group drop at every monster level from their *drop
+level* up to their *maximum drop level*. A random item, on the other hand, is
+only one whose drop level is less than 12 levels below the monster level, so
+that strong monsters don't drop items of the beginner maps.
+
 ## Sections
 
 ### General settings

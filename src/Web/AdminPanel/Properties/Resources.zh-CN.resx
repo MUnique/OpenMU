@@ -774,6 +774,9 @@
   <data name="AccessDeniedDescription" xml:space="preserve">
     <value>您的账号无权访问此页面。</value>
   </data>
+  <data name="ChangeNotPermitted" xml:space="preserve">
+    <value>您的账号无权进行此更改。</value>
+  </data>
   <data name="AccountSecurity" xml:space="preserve">
     <value>账号安全</value>
   </data>
@@ -2766,5 +2769,8 @@
   </data>
   <data name="LogLevelOverridesInvalid" xml:space="preserve">
     <value>每个日志来源都必须填写名称，且名称不能重复。</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>检查</value>
   </data>
 </root>

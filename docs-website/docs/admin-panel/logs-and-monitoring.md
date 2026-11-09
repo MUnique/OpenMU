@@ -11,7 +11,7 @@ the entries which fit your deployment.
 
 ## Log files (all-in-one)
 
-**Navigation:** *Log files* — route `/logfiles`
+**Navigation:** *Inspect → Log files* — route `/logfiles`
 
 In the all-in-one deployment (and when running from source), the admin panel
 shows the log files of the server process itself.
@@ -42,7 +42,8 @@ file, so a very large log stays fast.
 
 ### Configuring what is logged
 
-**Navigation:** *Logging Configuration* — route `/logging-configuration`
+**Navigation:** *Inspect → Logging Configuration* — route
+`/logging-configuration`
 (administrators only)
 
 Logging is configured in `appsettings.json` with

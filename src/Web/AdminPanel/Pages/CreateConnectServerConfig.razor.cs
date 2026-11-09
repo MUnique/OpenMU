@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -24,6 +25,12 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
 
     private ConnectServerViewModel? _viewModel;
     private bool _isProcessing;
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the context provider.
@@ -140,6 +147,12 @@ public partial class CreateConnectServerConfig : ComponentBase, IAsyncDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             this._isProcessing = true;

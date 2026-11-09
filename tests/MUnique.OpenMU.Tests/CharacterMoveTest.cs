@@ -101,6 +101,30 @@ public class CharacterMoveTest
     }
 
     /// <summary>
+    /// Tests if the other players in view only get the walk, when the walk starts at a position which
+    /// differs from the server position. An instant move before it would make their clients glide the
+    /// character instead of letting it walk.
+    /// </summary>
+    [Test]
+    public async ValueTask TestWalkStartSynchronizationIsNotSentToObserversAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var observer = await PlayerTestHelper.CreatePlayerAsync(player.GameContext).ConfigureAwait(false);
+        await player.AddObserverAsync(observer).ConfigureAwait(false);
+        player.Position = new Point((byte)(StartPoint.X - 2), StartPoint.Y);
+
+        var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, StartPoint.X, StartPoint.Y, 0x44, 0x33, 0x44 };
+        await new CharacterWalkHandlerPlugIn().HandlePacketAsync(player, packet).ConfigureAwait(false);
+
+        Assert.That(player.WalkTarget, Is.EqualTo(EndPoint));
+        var observerView = Mock.Get(observer.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!);
+        observerView.Verify(p => p.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
+        observerView.Verify(p => p.ObjectMovedAsync(player, MoveType.Walk), Times.Once);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!)
+            .Verify(p => p.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
+    }
+
+    /// <summary>
     /// Tests if a reported stop position which the current walk doesn't pass through, and which
     /// isn't next to our position, ends the walk where we are and tells the player, so it can't be used
     /// to leave the path and the client doesn't stay apart from us.
