@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ClearFilter" xml:space="preserve"><value>清除筛选</value></data>
+  <data name="FilterContains" xml:space="preserve"><value>包含</value></data>
+  <data name="FilterEndsWith" xml:space="preserve"><value>结尾是</value></data>
+  <data name="FilterMonsters" xml:space="preserve"><value>筛选怪物</value></data>
+  <data name="FilterMonstersPlaceholder" xml:space="preserve"><value>名称或名称的一部分</value></data>
+  <data name="FilterStartsWith" xml:space="preserve"><value>开头是</value></data>
+  <data name="MatchingMonsters" xml:space="preserve"><value>找到 {0} 只符合条件的怪物</value></data>
+  <data name="NoMatchingMonsters" xml:space="preserve"><value>此地图上没有符合条件的怪物</value></data>
+</root>

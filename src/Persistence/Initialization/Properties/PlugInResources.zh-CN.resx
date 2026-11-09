@@ -465,4 +465,8 @@
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
+  <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve"><value>添加受击硬直设置</value></data>
+  <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>添加全局受击硬直概率和伤害阈值设置，以及独角兽标记，使骑乘独角兽的玩家免受受击硬直效果。</value></data>
+  <data name="FixKanturuRuins3LandingUpdatePlugIn_Name" xml:space="preserve"><value>修正坎特鲁废墟 3 的传送落点区域</value></data>
+  <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>将坎特鲁废墟 3 的原始传送落点区域缩小至可行走地形。自定义目的地和无关设置保持不变。</value></data>
 </root>

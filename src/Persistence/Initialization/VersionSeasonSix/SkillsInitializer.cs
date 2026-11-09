@@ -1039,7 +1039,11 @@ internal class SkillsInitializer : SkillsInitializerBase
             skill.SkillType = replacedSkill.SkillType;
             skill.Target = replacedSkill.Target;
             skill.TargetRestriction = replacedSkill.TargetRestriction;
-            skill.MagicEffectDef ??= replacedSkill.MagicEffectDef;
+
+            if (skill.MagicEffectDef is null || skill.ElementalModifierTarget is not null)
+            {
+                skill.MagicEffectDef = replacedSkill.MagicEffectDef;
+            }
 
             if (replacedSkill.AreaSkillSettings is { } areaSkillSettings)
             {
