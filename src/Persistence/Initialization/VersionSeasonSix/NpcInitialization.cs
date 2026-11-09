@@ -719,6 +719,7 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             def.Number = 478;
             def.Designation = LocalizedString.FromResource(() => MonsterNames.DelgadoLuckyCoins);
             def.ObjectKind = NpcObjectKind.PassiveNpc;
+            def.NpcWindow = NpcWindow.DelgadoLuckyCoinRegistration;
             this.GameConfiguration.Monsters.Add(def);
             def.SetGuid(def.Number);
         }

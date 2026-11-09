@@ -922,4 +922,10 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="AddLuckyCoinUpdatePlugIn_Name" xml:space="preserve">
+    <value>Glücksmünze hinzufügen</value>
+  </data>
+  <data name="AddLuckyCoinUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Glücksmünze hinzu, die beim NPC Delgado in Devias registriert oder gegen Gegenstände getauscht wird, und öffnet seinen Glücksmünzen-Dialog.</value>
+  </data>
 </root>

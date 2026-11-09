@@ -31,6 +31,33 @@ public class Misc : InitializerBase
         this.CreateLostMap();
         this.CreateSymbolOfKundun();
         this.CreateRena();
+        this.CreateLuckyCoin();
+    }
+
+    /// <summary>
+    /// Creates the lucky coin, if it doesn't exist yet. It's registered and exchanged at the NPC Delgado,
+    /// see <see cref="GameLogic.PlayerActions.Items.LuckyCoinActions"/>. Like in the client, the coins are stacked,
+    /// so the durability is the count of the coins.
+    /// </summary>
+    /// <returns>The created item, or <c>null</c>, if it already existed.</returns>
+    internal ItemDefinition? CreateLuckyCoin()
+    {
+        if (this.GameConfiguration.Items.Any(item => item.Group == 14 && item.Number == 100))
+        {
+            return null;
+        }
+
+        var itemDefinition = this.Context.CreateNew<ItemDefinition>();
+        itemDefinition.Name = LocalizedString.FromResource(() => ItemNames.LuckyCoin);
+        itemDefinition.Number = 100;
+        itemDefinition.Group = 14;
+        itemDefinition.DropsFromMonsters = false;
+        itemDefinition.Durability = 255;
+        itemDefinition.Width = 1;
+        itemDefinition.Height = 1;
+        itemDefinition.SetGuid(itemDefinition.Group, itemDefinition.Number);
+        this.GameConfiguration.Items.Add(itemDefinition);
+        return itemDefinition;
     }
 
     private void CreateLostMap()

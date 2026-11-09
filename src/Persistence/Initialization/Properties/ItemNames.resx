@@ -2337,4 +2337,7 @@
   <data name="InvitationToSantaVillage" xml:space="preserve">
     <value>Invitation to Santa Village</value>
   </data>
+  <data name="LuckyCoin" xml:space="preserve">
+    <value>Lucky Coin</value>
+  </data>
 </root>

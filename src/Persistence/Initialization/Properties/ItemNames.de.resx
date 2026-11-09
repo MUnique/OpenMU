@@ -2253,4 +2253,7 @@
   <data name="ScrollOfHealing" xml:space="preserve">
     <value>Schriftrolle der Heilung</value>
   </data>
+  <data name="LuckyCoin" xml:space="preserve">
+    <value>Glücksmünze</value>
+  </data>
 </root>

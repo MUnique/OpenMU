@@ -28731,6 +28731,315 @@ public readonly struct ChainTarget
 
 
 /// <summary>
+/// Is sent by the server when: After the player opened the lucky coin registration dialog of the NPC Delgado, which requests the count of the registered coins.
+/// Causes reaction on client side: The client shows the count of the registered lucky coins in the dialog.
+/// </summary>
+public readonly struct LuckyCoinCountResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LuckyCoinCountResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LuckyCoinCountResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LuckyCoinCountResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LuckyCoinCountResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0B;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public uint Count
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LuckyCoinCountResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LuckyCoinCountResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LuckyCoinCountResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LuckyCoinCountResponse packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to register a lucky coin at the NPC Delgado.
+/// Causes reaction on client side: The client unlocks the register button. When the coin was registered, it shows the new count of the registered coins; otherwise, it shows a message.
+/// </summary>
+public readonly struct LuckyCoinRegistrationResponse
+{
+    /// <summary>
+    /// Defines the result of the lucky coin registration request.
+    /// </summary>
+    public enum LuckyCoinRegistrationResult
+    {
+        /// <summary>
+        /// The player has no lucky coin in the inventory.
+        /// </summary>
+            NotEnoughItems = 0,
+
+        /// <summary>
+        /// The lucky coin was registered.
+        /// </summary>
+            Registered = 1,
+
+        /// <summary>
+        /// The account already applied, and it can only apply once.
+        /// </summary>
+            AlreadyApplied = 100,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LuckyCoinRegistrationResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LuckyCoinRegistrationResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LuckyCoinRegistrationResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LuckyCoinRegistrationResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0C;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public LuckyCoinRegistrationResponse.LuckyCoinRegistrationResult Result
+    {
+        get => (LuckyCoinRegistrationResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public uint Count
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LuckyCoinRegistrationResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LuckyCoinRegistrationResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LuckyCoinRegistrationResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LuckyCoinRegistrationResponse packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player requested to exchange lucky coins for an item at the NPC Delgado.
+/// Causes reaction on client side: The client unlocks the exchange buttons and shows a message about the result.
+/// </summary>
+public readonly struct LuckyCoinExchangeResponse
+{
+    /// <summary>
+    /// Defines the result of the lucky coin exchange request.
+    /// </summary>
+    public enum LuckyCoinExchangeResult
+    {
+        /// <summary>
+        /// The player doesn't have enough lucky coins in the inventory.
+        /// </summary>
+            NotEnoughItems = 0,
+
+        /// <summary>
+        /// The lucky coins were exchanged for an item.
+        /// </summary>
+            Exchanged = 1,
+
+        /// <summary>
+        /// The inventory has not enough space for the item. The client asks for a free space of 2 x 4.
+        /// </summary>
+            InventoryFull = 2,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LuckyCoinExchangeResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LuckyCoinExchangeResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LuckyCoinExchangeResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LuckyCoinExchangeResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xBF;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0D;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the result.
+    /// </summary>
+    public LuckyCoinExchangeResponse.LuckyCoinExchangeResult Result
+    {
+        get => (LuckyCoinExchangeResult)this._data.Span[4];
+        set => this._data.Span[4] = (byte)value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LuckyCoinExchangeResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LuckyCoinExchangeResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LuckyCoinExchangeResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LuckyCoinExchangeResponse packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player requested to enter the doppelganger event through the NPC Lugard.
 /// Causes reaction on client side: On failure, the client locks the enter button of the doppelganger entry dialog and may show a message.
 /// </summary>

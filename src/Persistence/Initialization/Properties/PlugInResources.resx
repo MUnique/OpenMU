@@ -438,4 +438,6 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>Adds the global hit-shock chance and damage threshold settings, and the Uniria marker so Uniria-equipped players are excluded from hit shock.</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Name" xml:space="preserve"><value>Fix Kanturu Ruins 3 landing area</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept.</value></data>
+  <data name="AddLuckyCoinUpdatePlugIn_Name" xml:space="preserve"><value>Add the lucky coin</value></data>
+  <data name="AddLuckyCoinUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the lucky coin, which is registered or exchanged for items at the NPC Delgado in Devias, and opens his lucky coin dialog.</value></data>
 </root>

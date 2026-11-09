@@ -465,4 +465,10 @@
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
+  <data name="AddLuckyCoinUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加幸运币</value>
+  </data>
+  <data name="AddLuckyCoinUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加幸运币，可在德维亚斯的NPC德尔加多处登记或兑换物品，并打开他的幸运币对话框。</value>
+  </data>
 </root>
