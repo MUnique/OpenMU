@@ -28,9 +28,10 @@ The plugin **Lucky coin event** is configured on the
 [Plugins](../admin-panel/plugins.md) page. When it's deactivated, the coins
 can't be registered or exchanged.
 
-| Setting | Default | Meaning |
-|---|---|---|
-| Rewards | none | The possible items of the exchange. Each reward has the count of coins (10, 20 or 30), the group and number of the item and its level. One of the rewards for the exchanged count of coins is chosen randomly. |
+* **Rewards** (default: none): the possible items of the exchange. Each reward
+  has the count of coins (10, 20 or 30), the group and number of the item and
+  its level. One of the rewards for the exchanged count of coins is chosen
+  randomly.
 
 The rewards of the original game are not known, so there are none by default.
 Without a reward for a count of coins, the exchange of that count is refused,
