@@ -1,5 +1,5 @@
 ---
-title: Mixes
+sidebar_label: Mixes
 sidebar_position: 7.6
 description: Configure the success rates and the fail results of the chaos machine mixes on one page.
 ---

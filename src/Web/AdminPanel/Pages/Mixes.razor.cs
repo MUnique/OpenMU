@@ -29,7 +29,7 @@ public partial class Mixes : ComponentBase, IAsyncDisposable
 
     private Task? _loadTask;
 
-    private string? _filter;
+    private string? _filter = string.Empty;
 
     /// <summary>
     /// Gets or sets the data source of the game configuration.
