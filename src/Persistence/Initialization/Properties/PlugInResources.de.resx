@@ -922,4 +922,10 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="AddSealItemDropRateUpdatePlugIn_Name" xml:space="preserve">
+    <value>Item-Droprate der Siegel hinzufügen</value>
+  </data>
+  <data name="AddSealItemDropRateUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt dem Siegel des Wohlstands, dem Siegel der Göttlichkeit und dem Meistersiegel des Wohlstands die Item-Droprate von 150 % hinzu, und fügt das zweite Siegel des Wohlstands (13/116) hinzu, das nur die Item-Droprate erhöht.</value>
+  </data>
 </root>

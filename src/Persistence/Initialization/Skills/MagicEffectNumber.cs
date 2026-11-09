@@ -366,6 +366,11 @@ internal enum MagicEffectNumber : short
     MaxShieldBoostAura = 0x72,
 
     /// <summary>
+    /// The effect of the second seal of wealth (13/116), which only raises the item drop rate.
+    /// </summary>
+    SealOfWealthItemDrop = 0x77,
+
+    /// <summary>
     /// The scroll of healing effect.
     /// </summary>
     ScrollOfHealing = 0x79,

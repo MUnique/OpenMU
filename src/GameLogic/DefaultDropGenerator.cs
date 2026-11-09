@@ -94,7 +94,8 @@ public class DefaultDropGenerator : IDropGenerator
         }
 
         uint money = 0;
-        var (droppedItems, moneyResult) = this.GenerateDrops(monster, gainedExperience);
+        var itemDropRate = 1.0 + (player.Attributes?[Stats.BonusItemDropRate] ?? 0);
+        var (droppedItems, moneyResult) = this.GenerateDrops(monster, gainedExperience, itemDropRate);
         if (moneyResult > 0)
         {
             money = moneyResult;
@@ -280,7 +281,18 @@ public class DefaultDropGenerator : IDropGenerator
         return itemDefinition.MaximumDropLevel is not { } maxDropLevel || monsterLevel <= maxDropLevel;
     }
 
-    private (IList<Item>? Items, uint Money) GenerateDrops(MonsterDefinition monster, int gainedExperience)
+    /// <summary>
+    /// Gets the chance of a drop item group, raised by the item drop rate when it drops items.
+    /// </summary>
+    /// <param name="group">The drop item group.</param>
+    /// <param name="itemDropRate">The item drop rate of the player, 1.0 by default.</param>
+    /// <returns>The chance of the group.</returns>
+    private static double GetChance(DropItemGroup group, double itemDropRate)
+    {
+        return group.ItemType == SpecialItemType.Money ? group.Chance : group.Chance * itemDropRate;
+    }
+
+    private (IList<Item>? Items, uint Money) GenerateDrops(MonsterDefinition monster, int gainedExperience, double itemDropRate)
     {
         uint money = 0;
         List<Item>? droppedItems = null;
@@ -315,12 +327,12 @@ public class DefaultDropGenerator : IDropGenerator
             double totalChance = 0;
             foreach (var group in this._chanceDropGroups)
             {
-                totalChance += group.Chance;
+                totalChance += GetChance(group, itemDropRate);
             }
 
             for (int i = 0; i < remainingDrops; i++)
             {
-                var group = this.SelectRandomGroup(this._chanceDropGroups, totalChance);
+                var group = this.SelectRandomGroup(this._chanceDropGroups, totalChance, itemDropRate);
                 if (group is null)
                 {
                     continue;
@@ -570,7 +582,7 @@ public class DefaultDropGenerator : IDropGenerator
         };
     }
 
-    private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> groups, double totalChance)
+    private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> groups, double totalChance, double itemDropRate = 1.0)
     {
         var remainingThreshold = this._randomizer.NextDouble();
         if (totalChance > 1.0)
@@ -580,9 +592,10 @@ public class DefaultDropGenerator : IDropGenerator
 
         foreach (var group in groups)
         {
-            if (remainingThreshold > group.Chance)
+            var chance = GetChance(group, itemDropRate);
+            if (remainingThreshold > chance)
             {
-                remainingThreshold -= group.Chance;
+                remainingThreshold -= chance;
             }
             else
             {

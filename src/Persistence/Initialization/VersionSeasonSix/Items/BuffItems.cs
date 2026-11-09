@@ -27,6 +27,12 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 internal class BuffItems : InitializerBase
 {
     /// <summary>
+    /// The bonus item drop rate of the Seals of Wealth and Divinity and the Master Seal of Wealth.
+    /// The game client shows it as an item drop rate of 150 %.
+    /// </summary>
+    internal const float SealItemDropRateBonus = 0.5f;
+
+    /// <summary>
     /// The sub type of the effects of the seals which increase or block the gained experience.
     /// Only one of them can be active at the same time.
     /// </summary>
@@ -36,6 +42,11 @@ internal class BuffItems : InitializerBase
     /// The sub type of the effect of the seal of divinity.
     /// </summary>
     private const byte RecoverySealSubType = 13;
+
+    /// <summary>
+    /// The sub type of the effect of the second seal of wealth (13/116), which only raises the item drop rate.
+    /// </summary>
+    private const byte ItemDropSealSubType = 76;
 
     /// <summary>
     /// The sub type of the effects of the elixirs. Only one of them can be active at the same time.
@@ -90,13 +101,15 @@ internal class BuffItems : InitializerBase
         {
             // Seals. Their experience rates only apply to the normal or to the master experience.
             // The seals which change the experience share a sub type, so they don't stack.
+            // An item drop rate of 150 % in the client data is a bonus item drop rate of 0.5.
             this.CreateItem(13, 43, 1, 1, () => ItemNames.SealOfAscension, MagicEffectNumber.SealAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 1.5f)),
-            this.CreateItem(13, 44, 1, 1, () => ItemNames.SealOfWealth, MagicEffectNumber.SealWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 2f)),
+            this.CreateItem(13, 44, 1, 1, () => ItemNames.SealOfWealth, MagicEffectNumber.SealWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 2f), Boost.Add(Stats.BonusItemDropRate, SealItemDropRateBonus)),
             this.CreateItem(13, 45, 1, 1, () => ItemNames.SealOfSustenance, MagicEffectNumber.SealSustenance, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 0f), Boost.Multiply(Stats.MasterExperienceRate, 0f), Boost.Multiply(Stats.BonusExperienceRate, 0f)),
             this.CreateItem(13, 62, 1, 1, () => ItemNames.SealOfHealing, MagicEffectNumber.SealOfHealing, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.ExperienceRate, 1.5f), Boost.Add(Stats.HealthRecoveryMultiplier, 0.05f)),
-            this.CreateItem(13, 63, 1, 1, () => ItemNames.SealOfDivinity, MagicEffectNumber.SealOfDivinity, RecoverySealSubType, SealDuration, false, Boost.Add(Stats.ManaRecoveryMultiplier, 0.05f)),
+            this.CreateItem(13, 63, 1, 1, () => ItemNames.SealOfDivinity, MagicEffectNumber.SealOfDivinity, RecoverySealSubType, SealDuration, false, Boost.Add(Stats.BonusItemDropRate, SealItemDropRateBonus), Boost.Add(Stats.ManaRecoveryMultiplier, 0.05f)),
             this.CreateItem(13, 93, 1, 1, () => ItemNames.MasterSealOfAscension, MagicEffectNumber.MasterSealOfAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 1.5f)),
-            this.CreateItem(13, 94, 1, 1, () => ItemNames.MasterSealOfWealth, MagicEffectNumber.MasterSealOfWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 2f)),
+            this.CreateItem(13, 94, 1, 1, () => ItemNames.MasterSealOfWealth, MagicEffectNumber.MasterSealOfWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 2f), Boost.Add(Stats.BonusItemDropRate, SealItemDropRateBonus)),
+            this.CreateItem(13, 116, 1, 1, () => ItemNames.SealOfWealth, MagicEffectNumber.SealOfWealthItemDrop, ItemDropSealSubType, SealDuration, false, Boost.Add(Stats.BonusItemDropRate, SealItemDropRateBonus)),
 
             // Auras, which increase the maximum by the character level.
             this.CreateItem(13, 104, 1, 1, () => ItemNames.MaxAgBoostAura, MagicEffectNumber.MaxAbilityBoostAura, 58, AuraDuration, false, Boost.PerLevel(Stats.MaximumAbility, 1f)),
