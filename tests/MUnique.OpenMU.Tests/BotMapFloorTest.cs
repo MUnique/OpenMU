@@ -255,6 +255,67 @@ public class BotMapFloorTest
         Assert.That(bot.CurrentMap, Is.SameAs(botMap));
     }
 
+    /// <summary>
+    /// A follower pays the fare of its warp to the leader, like a player using the warp list.
+    /// </summary>
+    [Test]
+    public async ValueTask FollowerPaysTheFareOfItsWarpAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 11, 9, 12, 0, 0, TimeSpan.Zero));
+        var navigator = new BotNavigator(bot, timeProvider);
+        var (floorMap, _, upperWarp) = AddTwoFloorMap(gameContext, 15);
+        upperWarp.Costs = 3000;
+        var botMap = CreateOpenMap(16);
+        bot.Attributes![Stats.Level] = 100;
+        bot.Money = 10000;
+        bot.SetCurrentMapSilently(botMap);
+        bot.SelectedCharacter!.CurrentMap = botMap.Definition;
+        leader.SetCurrentMapSilently(new GameMap(floorMap, TimeSpan.FromMinutes(1), 8));
+        leader.Position = new Point(203, 203);
+
+        await navigator.TryHandleCrossMapLeaderFollowAsync(botMap, leader, CancellationToken.None).ConfigureAwait(false);
+        timeProvider.Advance(TimeSpan.FromSeconds(20));
+        await navigator.TryHandleCrossMapLeaderFollowAsync(botMap, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.Money, Is.EqualTo(7000));
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 205));
+    }
+
+    /// <summary>
+    /// A follower which can't afford any warp to its leader saves up for it, while one on the leader's
+    /// part of the map needs no warp at all.
+    /// </summary>
+    [Test]
+    public async ValueTask FollowerWithoutTheFareSavesUpForItAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var (floorMap, lowerWarp, upperWarp) = AddTwoFloorMap(gameContext, 17);
+        lowerWarp.Costs = 3000;
+        upperWarp.Costs = 5000;
+        var map = new GameMap(floorMap, TimeSpan.FromMinutes(1), 8);
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(map);
+        bot.Position = new Point(12, 12);
+        leader.SetCurrentMapSilently(map);
+        leader.Position = new Point(203, 203);
+        var navigator = new BotNavigator(bot);
+
+        bot.Money = 1000;
+        Assert.That(navigator.IsSavingForFollowFare(map, leader), Is.True);
+
+        bot.Money = 3000;
+        Assert.That(navigator.IsSavingForFollowFare(map, leader), Is.False, "the cheaper entry is affordable");
+
+        bot.Money = 0;
+        leader.Position = new Point(14, 14);
+        Assert.That(navigator.IsSavingForFollowFare(map, leader), Is.False, "the leader can be reached on foot");
+    }
+
     private static async ValueTask<GameLogic.Offline.OfflinePlayer> CreateHunterAsync(IGameContext gameContext)
     {
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
@@ -428,13 +489,14 @@ public class BotMapFloorTest
         return gate;
     }
 
-    private static WarpInfo CreateWarpInfo(string name, ExitGate gate)
+    private static WarpInfo CreateWarpInfo(string name, ExitGate gate, int costs = 0)
     {
         return new MUnique.OpenMU.Persistence.BasicModel.WarpInfo
         {
             Id = Guid.NewGuid(),
             Name = name,
             Gate = gate,
+            Costs = costs,
         };
     }
 

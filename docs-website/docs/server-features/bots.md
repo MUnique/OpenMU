@@ -333,7 +333,9 @@ whole session. A living player takes precedence over the bot's own company
 party up if it was leading it, so a player never has to guess which bot happens
 to be free. In a party the bot follows its leader — in town too, back from a
 fight once it falls more than twelve tiles behind, and to another map through the
-warp entry closest to the leader, so it lands on the leader's floor — and defers a due reset, leaving
+warp entry closest to the leader, so it lands on the leader's floor. It pays that
+warp like a player; one which can't afford it hunts where it stands, without trips
+of its own, until it can — and defers a due reset, leaving
 only on the engine's own terms: when the party disbands, when it is kicked,
 when the leader enters a map it may not access, ten minutes after every human
 companion has disconnected without reconnecting, or before the bot's own logout

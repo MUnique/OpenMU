@@ -530,29 +530,49 @@ internal sealed class BotNavigator : AsyncDisposable
             return true;
         }
 
-        // Prefer the legal warp entry closest to the leader. Landing on the map's spawn gate instead
-        // left the follower on the wrong floor of a multi-floor map (Lost Tower, Dungeon), where it had
-        // to wait out the warp cooldown for a second warp to the leader's floor. When no warp entry
-        // can reach the leader, a spawn gate of the leader's map is next; maps without one (the
-        // Dungeon has no town) fall back to the warp list gate. Without that fallback a follower
-        // could neither warp after its leader nor hunt (following consumed its ticks), and only the
-        // stuck watchdog kept it twitching between hunting grounds.
+        // The follower warps like a player: through a warp entry it pays for (see
+        // IsSavingForFollowFare for one which can't). It prefers the affordable entry closest to the
+        // leader - landing on the map's spawn gate instead left it on the wrong floor of a multi-floor
+        // map (Lost Tower, Dungeon), where it had to wait out the warp cooldown for a second warp to
+        // the leader's floor. When no entry can reach the leader, the cheapest one will do. Only on
+        // its class home map without any legal entry, it walks home through the spawn gate for free -
+        // like the home retreat of the map choice. Without a fallback a follower could neither warp
+        // after its leader nor hunt (following consumed its ticks), and only the stuck watchdog kept
+        // it twitching between hunting grounds.
         if (this._timeProvider.GetUtcNow() - this._lastWarpUtc >= FollowWarpCooldown
-            && leader.CurrentMap is { } leaderMap
-            && (this.FindBestReachableLegalWarp(leaderMap, leader.Position, cancellationToken)?.Gate
-                ?? leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom()
-                ?? warpListGate) is { } leaderGate)
+            && leader.CurrentMap is { } leaderMap)
         {
+            var fare = this.FindBestReachableLegalWarp(leaderMap, leader.Position, cancellationToken)
+                       ?? this.GetLegalWarps(leaderMap.Definition)
+                           .Where(w => w.Gate is not null && this.CanAffordWarp(w))
+                           .MinBy(w => w.Costs);
+            var homeGate = fare is null && warpListGate is null
+                ? leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom()
+                : null;
+            if (fare is null && homeGate is null)
+            {
+                return true;
+            }
+
             this._lastWarpUtc = this._timeProvider.GetUtcNow();
             this._nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
             this._hasDestination = false;
             this._travelPath = null;
             this._player.Logger.LogDebug(
-                "Bot {Character} following party leader {Leader} to map {Map}.",
+                "Bot {Character} following party leader {Leader} to map {Map} through {Warp} (fare {Fare} zen).",
                 this._player.Name,
                 leader.Name,
-                leaderMap.Definition.Name);
-            await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+                leaderMap.Definition.Name,
+                fare?.ToString() ?? "its spawn gate",
+                fare?.Costs ?? 0);
+            if (fare is not null)
+            {
+                await WarpAction.WarpToAsync(this._player, fare).ConfigureAwait(false);
+            }
+            else
+            {
+                await this._player.WarpToAsync(homeGate!).ConfigureAwait(false);
+            }
 
             // Where the bot ACTUALLY ended up: a gate landing on a blocked tile recovers it to the
             // safezone map, which isn't always the leader's (see TryWarpToBetterMapAsync).
@@ -611,12 +631,15 @@ internal sealed class BotNavigator : AsyncDisposable
         this._lastWarpUtc = this._timeProvider.GetUtcNow();
         this._travelPath = null;
         this._player.Logger.LogDebug(
-            "Bot {Character} following party leader {Leader} within map {Map} through warp {Warp}.",
+            "Bot {Character} following party leader {Leader} within map {Map} through warp {Warp} (fare {Fare} zen).",
             this._player.Name,
             leader.Name,
             map.Definition.Name,
-            leaderWarp.Name);
-        await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
+            leaderWarp.Name,
+            leaderWarp.Costs);
+
+        // Paid like a player's warp, which also checks every requirement the game checks.
+        await WarpAction.WarpToAsync(this._player, leaderWarp).ConfigureAwait(false);
         await this.TryPersistCurrentMapAsync(this._player.CurrentMap?.Definition ?? map.Definition).ConfigureAwait(false);
         return true;
     }
@@ -641,6 +664,41 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         return this._timeProvider.GetUtcNow() - this._leaderOnMapSinceUtc >= LeaderSettleTime;
+    }
+
+    /// <summary>
+    /// Whether the bot needs a warp to reach its leader - he is on another map, or on a part of the
+    /// same map it can't walk to (see <see cref="BotMapRegions"/>) - but can't afford any warp entry
+    /// which it may legally take there.
+    /// </summary>
+    /// <param name="map">The bot's current map.</param>
+    /// <param name="leader">The party leader.</param>
+    /// <returns>True, if the bot has to save up for the fare.</returns>
+    /// <remarks>
+    /// A map the bot may not enter at all is not a matter of saving: the follow logic makes the bot
+    /// leave the party then (see <see cref="TryHandleCrossMapLeaderFollowAsync"/>).
+    /// </remarks>
+    internal bool IsSavingForFollowFare(GameMap map, Player leader)
+    {
+        if (leader.CurrentMap is not { } leaderMap
+            || leaderMap.Definition.TryGetRequirementError(this._player, out _))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(leaderMap, map))
+        {
+            var regions = BotMapRegions.Get(map.Definition);
+            var ownRegion = regions.GetRegion(this._player.Position);
+            var leaderRegion = regions.GetRegion(leader.Position);
+            if (ownRegion == 0 || leaderRegion == 0 || ownRegion == leaderRegion)
+            {
+                return false;
+            }
+        }
+
+        var entries = this.GetLegalWarps(leaderMap.Definition).Where(w => w.Gate is not null).ToList();
+        return entries.Count > 0 && !entries.Any(this.CanAffordWarp);
     }
 
     /// <summary>
@@ -1099,6 +1157,16 @@ internal sealed class BotNavigator : AsyncDisposable
         // Resolved here (not just before the follow branch) so the tether below holds on every tick,
         // including ticks that return early while walking or on an errand.
         var leaderToFollow = this.GetPartyLeaderToFollow();
+
+        // A follower which can't pay the fare to its leader stays in the party and hunts where it
+        // stands, like a bot without a party - but without warps of its own, which would spend what
+        // it is saving - until it can afford the trip.
+        var isSavingForFollowFare = leaderToFollow is not null && this.IsSavingForFollowFare(map, leaderToFollow);
+        if (isSavingForFollowFare)
+        {
+            leaderToFollow = null;
+        }
+
         var isTetheredToLeader = leaderToFollow is not null
             && ReferenceEquals(leaderToFollow.CurrentMap, map)
             && !inSafezone;
@@ -1240,6 +1308,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // of moving on to their level's maps. TryWarpToBetterMapAsync itself only fires when another
         // map is meaningfully better (margin + cooldown), so a bot on an adequate map stays put.
         if (leaderToFollow is null
+            && !isSavingForFollowFare
             && await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
         {
             return;
@@ -1308,7 +1377,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._emptyGroundSince = null;
 
-        if (leaderToFollow is null && await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
+        if (leaderToFollow is null && !isSavingForFollowFare && await this.TryWarpToBetterMapAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -2231,7 +2300,8 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Gets the legal warp entry whose complete landing area has the shortest walkable route to a target.
+    /// Gets the legal warp entry the bot can afford whose complete landing area has the shortest walkable
+    /// route to a target.
     /// </summary>
     /// <param name="map">The target map.</param>
     /// <param name="target">The target position.</param>
@@ -2254,7 +2324,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // A gate the bot already stands on would not move it; on another map, the same coordinates mean nothing.
         var isBotsMap = ReferenceEquals(this._player.CurrentMap, map);
         var candidates = this.GetLegalWarps(map.Definition)
-            .Where(candidate => candidate.Gate is not null)
+            .Where(candidate => candidate.Gate is not null && this.CanAffordWarp(candidate))
             .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints().ToArray()))
             .Where(candidate => !isBotsMap || !candidate.LandingPoints.Contains(this._player.Position))
             .ToArray();
