@@ -5088,5 +5088,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>Gets the localized TalismanOfMobilityConsumeHandlerPlugIn_Name text.</summary>
+        public static string TalismanOfMobilityConsumeHandlerPlugIn_Name => ResourceManager.GetString("TalismanOfMobilityConsumeHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized TalismanOfMobilityConsumeHandlerPlugIn_Description text.</summary>
+        public static string TalismanOfMobilityConsumeHandlerPlugIn_Description => ResourceManager.GetString("TalismanOfMobilityConsumeHandlerPlugIn_Description", resourceCulture)!;
     }
 }

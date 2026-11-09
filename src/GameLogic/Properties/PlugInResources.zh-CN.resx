@@ -1793,4 +1793,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>处理中瓶精华治疗药水的使用和消耗，立即恢复部分生命值。</value>
   </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>机动护身符使用</value>
+  </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理机动护身符。第一次使用保存角色的位置，第二次使用将角色传送回保存的位置。</value>
+  </data>
 </root>

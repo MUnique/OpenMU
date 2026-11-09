@@ -75,6 +75,11 @@ public class ItemConstants
     public static ItemIdentifier CommandResetFruit => new(58, 13);
 
     /// <summary>
+    /// Gets the identifier for the Talisman of Mobility, which saves a place and warps the player back to it.
+    /// </summary>
+    public static ItemIdentifier TalismanOfMobility => new(70, 13);
+
+    /// <summary>
     /// Gets the identifier for the fenrir.
     /// </summary>
     public static ItemIdentifier Fenrir => new(37, 13);

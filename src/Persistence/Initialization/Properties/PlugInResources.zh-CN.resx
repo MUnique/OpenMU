@@ -465,4 +465,10 @@
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加机动护身符</value>
+  </data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加机动护身符，可保存一个位置并将角色传送回该位置。包含它的游戏内商城礼包将开始出售。</value>
+  </data>
 </root>

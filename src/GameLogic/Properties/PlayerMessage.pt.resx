@@ -1171,4 +1171,10 @@ Extensões de inventário: {18}</value>
   <data name="MiniGameTicketRequired" xml:space="preserve">
     <value>Você precisa de um ingresso para entrar neste evento.</value>
   </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>O local foi salvo. Use o talismã novamente para voltar a ele.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>Nenhum local foi salvo com um Talismã da Mobilidade.</value>
+  </data>
 </root>

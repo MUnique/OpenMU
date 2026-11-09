@@ -1171,4 +1171,10 @@ Inventory Extensions: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>This map is not available.</value>
   </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>The place has been saved. Use the talisman again to return to it.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>No place has been saved with a Talisman of Mobility.</value>
+  </data>
 </root>
