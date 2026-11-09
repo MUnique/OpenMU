@@ -41,6 +41,12 @@ public class PlayerLosesMoneyAfterDeathPlugIn : IAttackableGotKilledPlugIn, ISup
             return;
         }
 
+        if (attributes[Stats.DeathPenaltyProtection] > 0)
+        {
+            // E.g. the Talisman of Guardian protects from the death penalty.
+            return;
+        }
+
         this.Configuration ??= CreateDefaultConfiguration();
         var losses = this.GetLossPercentage((int)attributes[Stats.Level], characterClass.IsMasterClass);
         var inventoryLoss = (int)(player.Money * losses.InventoryLoss / 100.0);

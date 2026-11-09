@@ -20,7 +20,7 @@ internal class BuffItemsDataTest
 {
     private static readonly (byte Group, short Number)[] BuffItems =
     [
-        (13, 43), (13, 44), (13, 45), (13, 62), (13, 63), (13, 93), (13, 94), (13, 104), (13, 105),
+        (13, 43), (13, 44), (13, 45), (13, 62), (13, 63), (13, 81), (13, 82), (13, 93), (13, 94), (13, 104), (13, 105),
         (14, 72), (14, 73), (14, 74), (14, 75), (14, 76), (14, 77), (14, 78), (14, 79), (14, 80), (14, 81), (14, 82),
         (14, 97), (14, 98), (14, 140),
     ];
@@ -98,6 +98,38 @@ internal class BuffItemsDataTest
         Assert.That(configuration.Packages.SelectMany(p => p.Products), Has.None.Matches<CashShopProduct>(p => p.ItemDefinition is { } item && IsBuffItem(item)));
     }
 
+    /// <summary>
+    /// Tests that the update adds the protection talismans and the attributes of their effects to a database
+    /// which was created before they existed, and that applying it twice doesn't add anything twice.
+    /// </summary>
+    [Test]
+    public async Task UpdateAddsProtectionTalismansAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var attributes = new[] { Stats.DeathPenaltyProtection, Stats.ItemDurabilityProtection };
+        foreach (var talisman in gameConfiguration.Items.Where(i => i is { Group: 13, Number: 81 or 82 }).ToList())
+        {
+            gameConfiguration.Items.Remove(talisman);
+            gameConfiguration.MagicEffects.Remove(talisman.ConsumeEffect!);
+        }
+
+        foreach (var attribute in gameConfiguration.Attributes.Where(attributes.Contains).ToList())
+        {
+            gameConfiguration.Attributes.Remove(attribute);
+        }
+
+        var effectCount = gameConfiguration.MagicEffects.Count;
+
+        var update = new AddProtectionTalismansUpdatePlugIn();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.MagicEffects, Has.Count.EqualTo(effectCount + 2));
+        Assert.That(gameConfiguration.Attributes.Count(attributes.Contains), Is.EqualTo(2));
+        AssertBuffItems(gameConfiguration);
+    }
+
     private static void RemoveBuffItems(GameConfiguration gameConfiguration)
     {
         foreach (var item in gameConfiguration.Items.Where(IsBuffItem).ToList())
@@ -121,6 +153,8 @@ internal class BuffItemsDataTest
             AssertEffect(gameConfiguration, 13, 45, "Seal of Sustenance", 1, 1, 0x1F, 24, 1800, (Stats.ExperienceRate, 0f, AggregateType.Multiplicate), (Stats.MasterExperienceRate, 0f, AggregateType.Multiplicate), (Stats.BonusExperienceRate, 0f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 13, 62, "Seal of Healing", 1, 1, 87, 24, 1800, (Stats.ExperienceRate, 1.5f, AggregateType.Multiplicate), (Stats.HealthRecoveryMultiplier, 0.05f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 13, 63, "Seal of Divinity", 1, 1, 88, 13, 1800, (Stats.ManaRecoveryMultiplier, 0.05f, AggregateType.AddRaw));
+            AssertEffect(gameConfiguration, 13, 81, "Talisman of Guardian", 1, 1, 0x63, 77, 1800, (Stats.DeathPenaltyProtection, 1f, AggregateType.AddRaw));
+            AssertEffect(gameConfiguration, 13, 82, "Talisman of Item Protection", 1, 1, 0x64, 78, 1800, (Stats.ItemDurabilityProtection, 1f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 13, 93, "Master Seal of Ascension", 1, 1, 101, 24, 1800, (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 13, 94, "Master Seal of Wealth", 1, 1, 102, 24, 1800, (Stats.MasterExperienceRate, 2f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 14, 72, "Scroll of Quickness", 2, 2, 0x2C, 67, 1800, (Stats.AttackSpeedAny, 15f, AggregateType.AddRaw));

@@ -465,4 +465,10 @@
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加保护护身符</value>
+  </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加守护护身符（防止死亡惩罚）和物品保护护身符（保持已装备物品的耐久度）。</value>
+  </data>
 </root>

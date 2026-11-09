@@ -48,6 +48,16 @@ internal class BuffItems : InitializerBase
     private const byte DamageRateScrollSubType = 14;
 
     /// <summary>
+    /// The sub type of the effect of the Talisman of Guardian.
+    /// </summary>
+    private const byte DeathPenaltyTalismanSubType = 77;
+
+    /// <summary>
+    /// The sub type of the effect of the Talisman of Item Protection.
+    /// </summary>
+    private const byte ItemProtectionTalismanSubType = 78;
+
+    /// <summary>
     /// The defense which the game client shows for the scroll of defense.
     /// </summary>
     /// <remarks>
@@ -63,6 +73,8 @@ internal class BuffItems : InitializerBase
     private static readonly TimeSpan AuraDuration = TimeSpan.FromMinutes(30);
 
     private static readonly TimeSpan ElixirDuration = TimeSpan.FromDays(10);
+
+    private static readonly TimeSpan TalismanDuration = TimeSpan.FromMinutes(30);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuffItems"/> class.
@@ -97,6 +109,10 @@ internal class BuffItems : InitializerBase
             this.CreateItem(13, 63, 1, 1, () => ItemNames.SealOfDivinity, MagicEffectNumber.SealOfDivinity, RecoverySealSubType, SealDuration, false, Boost.Add(Stats.ManaRecoveryMultiplier, 0.05f)),
             this.CreateItem(13, 93, 1, 1, () => ItemNames.MasterSealOfAscension, MagicEffectNumber.MasterSealOfAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 1.5f)),
             this.CreateItem(13, 94, 1, 1, () => ItemNames.MasterSealOfWealth, MagicEffectNumber.MasterSealOfWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 2f)),
+
+            // Talismans, which protect from the death penalty and from the durability loss of the equipped items.
+            this.CreateItem(13, 81, 1, 1, () => ItemNames.TalismanOfGuardian, MagicEffectNumber.TalismanOfGuardian, DeathPenaltyTalismanSubType, TalismanDuration, false, Boost.Add(Stats.DeathPenaltyProtection, 1f)),
+            this.CreateItem(13, 82, 1, 1, () => ItemNames.TalismanOfItemProtection, MagicEffectNumber.TalismanOfItemProtection, ItemProtectionTalismanSubType, TalismanDuration, false, Boost.Add(Stats.ItemDurabilityProtection, 1f)),
 
             // Auras, which increase the maximum by the character level.
             this.CreateItem(13, 104, 1, 1, () => ItemNames.MaxAgBoostAura, MagicEffectNumber.MaxAbilityBoostAura, 58, AuraDuration, false, Boost.PerLevel(Stats.MaximumAbility, 1f)),
@@ -168,7 +184,7 @@ internal class BuffItems : InitializerBase
         {
             var powerUp = this.Context.CreateNew<PowerUpDefinition>();
             effect.PowerUpDefinitions.Add(powerUp);
-            powerUp.TargetAttribute = boost.Target.GetPersistent(this.GameConfiguration);
+            powerUp.TargetAttribute = this.GetOrCreateAttribute(boost.Target);
             powerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUp.Boost.ConstantValue.AggregateType = boost.AggregateType;
             if (boost.IsPerLevel)
@@ -187,6 +203,24 @@ internal class BuffItems : InitializerBase
         }
 
         return effect;
+    }
+
+    /// <summary>
+    /// Gets the persistent attribute definition. When an update adds an item whose effect needs an attribute which
+    /// was introduced after the database was created, the attribute is added to the configuration.
+    /// </summary>
+    /// <param name="attribute">The attribute.</param>
+    /// <returns>The persistent attribute definition.</returns>
+    private AttributeDefinition GetOrCreateAttribute(AttributeDefinition attribute)
+    {
+        if (this.GameConfiguration.Attributes.FirstOrDefault(a => a.Id == attribute.Id) is { } persistent)
+        {
+            return persistent;
+        }
+
+        persistent = this.Context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description);
+        this.GameConfiguration.Attributes.Add(persistent);
+        return persistent;
     }
 
     /// <summary>

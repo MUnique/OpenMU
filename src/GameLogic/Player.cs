@@ -1333,6 +1333,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="decrement">The decrement.</param>
     public async ValueTask DecreaseItemDurabilityAsync(Item item, double decrement)
     {
+        if (this.Attributes?[Stats.ItemDurabilityProtection] > 0
+            && item.ItemSlot != InventoryConstants.PetSlot
+            && !item.IsTrainablePet())
+        {
+            // E.g. the Talisman of Item Protection keeps the durability of all equipped items, except pets.
+            return;
+        }
+
         var previousFactor = item.GetCurrentDurabilityFactor();
         if (item.DecreaseDurability(decrement))
         {
