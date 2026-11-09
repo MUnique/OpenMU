@@ -173,7 +173,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
         if ((SkillNumber)skill.Number is SkillNumber.IceArrow)
         {
             skill.ElementalModifierTarget = Stats.IceResistance.GetPersistent(this.GameConfiguration);
-            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 5);
+            skill.MagicEffectDef = this.CreateEffect(ElementalType.Ice, MagicEffectNumber.Freeze, Stats.IsFrozen, 7);
             return;
         }
 
@@ -211,7 +211,7 @@ internal abstract class SkillsInitializerBase : InitializerBase
             case ElementalType.Poison:
                 skill.ElementalModifierTarget = Stats.PoisonResistance.GetPersistent(this.GameConfiguration);
 
-                // Poison Skill applies damage 7 times, while decay three times. We assume that we apply each damage
+                // Poison Skill applies damage 6 times, while decay three times. We assume that we apply each damage
                 // every 3 seconds. We leave one or two extra seconds, so that the damage is applied for sure.
                 var durationInSeconds = skill.Number == (short)SkillNumber.Poison ? 20 : 10;
                 skill.MagicEffectDef = this.CreateEffect(ElementalType.Poison, MagicEffectNumber.Poisoned, Stats.IsPoisoned, durationInSeconds);
