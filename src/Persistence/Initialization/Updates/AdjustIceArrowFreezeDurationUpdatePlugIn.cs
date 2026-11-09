@@ -12,7 +12,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits.
-/// Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str with their base skills magic effects.
+/// Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AdjustIceArrowFreezeDurationUpdatePlugIn_Name), Description = nameof(PlugInResources.AdjustIceArrowFreezeDurationUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -21,7 +21,7 @@ public class AdjustIceArrowFreezeDurationUpdatePlugIn : UpdatePlugInBase
 {
     private const float OriginalDurationInSeconds = 5;
     private const float UpdatedDurationInSeconds = 7;
-    private const float OriginalIcedDurationInSeconds = 10;
+    private const float OriginalIcedOrPoisonedDurationInSeconds = 10;
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
@@ -33,7 +33,7 @@ public class AdjustIceArrowFreezeDurationUpdatePlugIn : UpdatePlugInBase
     public override string Description => PlugInResources.AdjustIceArrowFreezeDurationUpdatePlugIn_Description;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 11, 6, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 11, 9, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
@@ -51,6 +51,7 @@ public class AdjustIceArrowFreezeDurationUpdatePlugIn : UpdatePlugInBase
         UpdateMasterSkillEffect(gameConfiguration, SkillNumber.IceArrow, SkillNumber.IceArrowStrengthener);
         UpdateMasterSkillEffect(gameConfiguration, SkillNumber.ChainDrive, SkillNumber.ChainDriveStrengthener);
         UpdateMasterSkillEffect(gameConfiguration, SkillNumber.StrikeofDestruction, SkillNumber.StrikeofDestrStr);
+        UpdateMasterSkillEffect(gameConfiguration, SkillNumber.Poison, SkillNumber.PoisonStrengthener);
 
         return ValueTask.CompletedTask;
     }
@@ -61,19 +62,23 @@ public class AdjustIceArrowFreezeDurationUpdatePlugIn : UpdatePlugInBase
         var masterSkill = gameConfiguration.Skills.FirstOrDefault(skill => skill.Number == (short)masterSkillNumber);
         if (baseSkill?.MagicEffectDef is { } baseMagicEffect
             && masterSkill is not null
-            && IsDefaultIcedEffect(masterSkill.MagicEffectDef, gameConfiguration))
+            && IsDefaultIcedOrPoisonedEffect(masterSkill.MagicEffectDef, gameConfiguration))
         {
             masterSkill.MagicEffectDef = baseMagicEffect;
         }
     }
 
-    private static bool IsDefaultIcedEffect(MagicEffectDefinition? effect, GameConfiguration gameConfiguration)
+    private static bool IsDefaultIcedOrPoisonedEffect(MagicEffectDefinition? effect, GameConfiguration gameConfiguration)
     {
         return effect is not null
-               && effect.Number == (short)MagicEffectNumber.Iced
-               && effect.SubType == (byte)(0xFF - ElementalType.Ice)
-               && effect.Duration?.ConstantValue.Value == OriginalIcedDurationInSeconds
-               && effect.Chance is null
-               && effect.PowerUpDefinitions.Any(pu => pu.TargetAttribute == Stats.IsIced.GetPersistent(gameConfiguration));
+            && effect.Chance is null
+            && ((effect.Number == (short)MagicEffectNumber.Iced
+                    && effect.SubType == (byte)(0xFF - ElementalType.Ice)
+                    && effect.Duration?.ConstantValue.Value == OriginalIcedOrPoisonedDurationInSeconds
+                    && effect.PowerUpDefinitions.Any(pu => pu.TargetAttribute == Stats.IsIced.GetPersistent(gameConfiguration)))
+                || (effect.Number == (short)MagicEffectNumber.Poisoned
+                    && effect.SubType == (byte)(0xFF - ElementalType.Poison)
+                    && effect.Duration?.ConstantValue.Value == OriginalIcedOrPoisonedDurationInSeconds
+                    && effect.PowerUpDefinitions.Any(pu => pu.TargetAttribute == Stats.IsPoisoned.GetPersistent(gameConfiguration))));
     }
 }
