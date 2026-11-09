@@ -128,6 +128,17 @@ itself on a map it may not be on (after a reset, for instance) leaves for the
 best map it may use. The map it reached is persisted, so a restarted bot wakes up
 where it stopped.
 
+A map is judged per warp entry, by the monsters closest to that entry on foot.
+Some maps hold parts which can't be walked between at all - the seven floors of
+the Lost Tower, the three parts of the Dungeon - and even a map which can be walked
+through in one piece has very different monsters near its entries: in Elvenland
+the first entry leads to level 4 to 13, the third to level 30 to 48, about 180
+steps away. So a bot enters through the entry next to the monsters it came for,
+may warp to a better floor or zone of the map it is already on, and only picks
+hunting grounds it can walk to. The split of each map is computed from its terrain
+once and kept for the lifetime of the server, so terrain edited in the admin panel
+needs a restart to be taken into account.
+
 Which map it goes to is drawn rather than maximized. The maps of a level band
 differ by a few monster levels, so always taking the strongest one made it every
 bot's answer and left the rest of the band deserted. The best map still wins
@@ -143,6 +154,13 @@ minutes, and steps down to easier ground one notch at a time until it finds
 something it can farm; the regular map choice carries it back up as its level and
 gear recover. A bot which cannot afford any trip at all walks home to its class
 town for free, so it is never stranded on ground it cannot earn on.
+
+The survival check judges one monster at a time, so ground with dense packs can
+pass it and still be too much. A bot which dies to monsters three times within ten
+minutes in the zone of one warp entry keeps away from that zone for half an hour:
+it neither warps there nor picks its hunting grounds or targets there, and settles
+for the next best zone - another floor of the same map or another map. In a party
+only the leader's own deaths count, as the leader decides where the party hunts.
 
 ### Fighting and progressing
 
@@ -313,8 +331,9 @@ any level, since it is the player who invites, and once it joins it stays for th
 whole session. A living player takes precedence over the bot's own company
 — a bot hunting with other bots leaves them for the inviter, and breaks that bot
 party up if it was leading it, so a player never has to guess which bot happens
-to be free. In a party the bot follows its leader — in town too, and back from a
-fight once it falls more than twelve tiles behind — and defers a due reset, leaving
+to be free. In a party the bot follows its leader — in town too, back from a
+fight once it falls more than twelve tiles behind, and to another map through the
+warp entry closest to the leader, so it lands on the leader's floor — and defers a due reset, leaving
 only on the engine's own terms: when the party disbands, when it is kicked,
 when the leader enters a map it may not access, ten minutes after every human
 companion has disconnected without reconnecting, or before the bot's own logout
