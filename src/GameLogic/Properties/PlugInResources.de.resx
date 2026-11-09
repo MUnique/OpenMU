@@ -1497,6 +1497,12 @@
   <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve">
     <value>Lässt einen Spieler eines laufenden Soccer-Spiels auf dem Soccer-Feld erscheinen.</value>
   </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Name" xml:space="preserve">
+    <value>Talisman der Wiederbelebung</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Description" xml:space="preserve">
+    <value>Lässt einen toten Spieler am Ort seines Todes wieder erscheinen, wenn er einen Talisman der Wiederbelebung trägt, der dabei verbraucht wird. Gilt nicht in Minispielen, Duellen und Gildenkriegen.</value>
+  </data>
   <data name="PetExperiencePlugIn_Name" xml:space="preserve">
     <value>Haustier-Erfahrung</value>
   </data>

@@ -922,4 +922,10 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="AddTalismanOfResurrectionUpdatePlugIn_Name" xml:space="preserve">
+    <value>Talisman der Wiederbelebung hinzufügen</value>
+  </data>
+  <data name="AddTalismanOfResurrectionUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt den Talisman der Wiederbelebung hinzu, der einen toten Spieler am Ort seines Todes wieder erscheinen lässt. Die Pakete des In-Game-Shops, die ihn enthalten, werden zum Verkauf angeboten.</value>
+  </data>
 </root>

@@ -2337,4 +2337,7 @@
   <data name="InvitationToSantaVillage" xml:space="preserve">
     <value>Invitation to Santa Village</value>
   </data>
+  <data name="TalismanOfResurrection" xml:space="preserve">
+    <value>Talisman of Resurrection</value>
+  </data>
 </root>
