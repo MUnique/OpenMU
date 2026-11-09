@@ -228,6 +228,33 @@ public class BotMapFloorTest
         Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 205));
     }
 
+    /// <summary>
+    /// A follower which misses a requirement of the leader's map - like wings for Icarus - leaves the
+    /// party instead of following, as a player couldn't enter the map either.
+    /// </summary>
+    [Test]
+    public async ValueTask FollowerLeavesThePartyWhenItMissesARequirementOfTheLeadersMapAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var (floorMap, _, _) = AddTwoFloorMap(gameContext, 13);
+        floorMap.MapRequirements.Add(new MUnique.OpenMU.Persistence.BasicModel.AttributeRequirement { Attribute = Stats.CanFly, MinimumValue = 1 });
+        var botMap = CreateOpenMap(14);
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(botMap);
+        leader.SetCurrentMapSilently(new GameMap(floorMap, TimeSpan.FromMinutes(1), 8));
+        leader.Position = new Point(203, 203);
+        var party = gameContext.PartyManager.CreateParty();
+        await party.AddAsync(leader).ConfigureAwait(false);
+        await party.AddAsync(bot).ConfigureAwait(false);
+
+        await new BotNavigator(bot).TryHandleCrossMapLeaderFollowAsync(botMap, leader, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(bot.Party, Is.Null);
+        Assert.That(bot.CurrentMap, Is.SameAs(botMap));
+    }
+
     private static async ValueTask<GameLogic.Offline.OfflinePlayer> CreateHunterAsync(IGameContext gameContext)
     {
         var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);

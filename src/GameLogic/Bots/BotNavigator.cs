@@ -499,13 +499,15 @@ internal sealed class BotNavigator : AsyncDisposable
 
         ExitGate? warpListGate = null;
         if (leader.CurrentMap is { } targetMap
-            && (this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
-                ? (warpListGate = leaderWarp.Gate) is null
-                : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number))
+            && ((this.TryGetLegalWarp(targetMap.Definition, out var leaderWarp)
+                    ? (warpListGate = leaderWarp.Gate) is null
+                    : targetMap.Definition.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number)
+                || targetMap.Definition.TryGetRequirementError(this._player, out _)))
         {
-            // The leader moved to a map the bot's plain character level cannot legally enter
-            // (level gates map access, the same rule as everywhere else). Rather than trail
-            // behind unreachable or sneak in through a back door, the bot leaves the group.
+            // The leader moved to a map the bot cannot legally enter: its plain character level is
+            // too low (level gates map access, the same rule as everywhere else), or it misses one of
+            // the map's own requirements - like wings for Icarus, which the map choice checks too.
+            // Rather than trail behind unreachable or sneak in through a back door, the bot leaves the group.
             if (this._player.Party is { } party)
             {
                 this._player.Logger.LogDebug(
