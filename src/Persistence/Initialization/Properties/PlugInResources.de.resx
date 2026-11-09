@@ -922,4 +922,10 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Einfrierdauer des Eis-Pfeils anpassen</value>
+  </data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt ihre Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert. Außerdem werden die Magieeffekte von Ice Arrow Str, Chain Drive Str, Strike of Destruction Str und Poison Str an die Magieeffekte ihrer Basisfähigkeiten angeglichen.</value>
+  </data>
 </root>

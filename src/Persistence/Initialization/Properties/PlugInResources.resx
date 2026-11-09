@@ -438,4 +438,6 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>Adds the global hit-shock chance and damage threshold settings, and the Uniria marker so Uniria-equipped players are excluded from hit shock.</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Name" xml:space="preserve"><value>Fix Kanturu Ruins 3 landing area</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept.</value></data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve"><value>Adjust Ice Arrow freeze duration</value></data>
+  <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects.</value></data>
 </root>
