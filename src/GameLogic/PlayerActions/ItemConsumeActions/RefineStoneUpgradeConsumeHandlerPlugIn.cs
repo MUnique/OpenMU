@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="RefineStoneUpgradeConsumeHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -26,7 +26,12 @@ public abstract class RefineStoneUpgradeConsumeHandlerPlugIn : ItemUpgradeConsum
     /// <inheritdoc/>
     protected override bool TryUpgradeItemOption(Item item)
     {
-        var harmonyOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == this.Configuration.OptionType);
+        if (this.Configuration is not { } configuration)
+        {
+            return base.TryUpgradeItemOption(item);
+        }
+
+        var harmonyOption = item.ItemOptions.First(o => o.ItemOption?.OptionType == configuration.OptionType);
         var levelOptions = harmonyOption.ItemOption?.LevelDependentOptions;
 
         if (levelOptions?.FirstOrDefault()?.PowerUpDefinition?.TargetAttribute == Stats.MinimumPhysBaseDmg)
