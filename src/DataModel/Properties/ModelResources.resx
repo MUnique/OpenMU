@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -1239,6 +1239,18 @@
   </data>
   <data name="DropItemGroup_PossibleItems_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="DropItemGroup_ExcellentOptionsAddChance_Caption" xml:space="preserve">
+    <value>Excellent Option Chance</value>
+  </data>
+  <data name="DropItemGroup_ExcellentOptionsAddChance_Description" xml:space="preserve">
+    <value>Chance for each excellent option, when this group drops excellent items. Leave empty to use the chance of the excellent option definition of the item.</value>
+  </data>
+  <data name="DropItemGroup_ExcellentOptionsMaximumOptionsPerItem_Caption" xml:space="preserve">
+    <value>Maximum Excellent Options per Item</value>
+  </data>
+  <data name="DropItemGroup_ExcellentOptionsMaximumOptionsPerItem_Description" xml:space="preserve">
+    <value>How many excellent options an item of this group can get at most. Leave empty to use the value of the excellent option definition of the item. The first option is always added without a chance.</value>
   </data>
   <data name="DuelArea_TypeCaption" xml:space="preserve">
     <value>Duel Area</value>

@@ -153,6 +153,18 @@ map drop groups, a group has:
 
 ![Item box drops](/img/admin-panel/item-box-drops.png)
 
+A group of type `Excellent` can override how many excellent options an item gets
+and the chance for each additional one:
+
+| Field | Meaning |
+|---|---|
+| Excellent option chance | The chance per excellent option. Empty uses the chance of the excellent option definition of the item. |
+| Maximum excellent options per item | How many excellent options an item can get at most. Empty uses the value of the item's excellent option definition. The first option is always added without a chance. |
+
+This is how a server can make only e.g. *Box of Kundun +5* drop items with up to
+six excellent options, while the lower boxes and the normal drops stay as they
+are. The same fields exist on map and monster drop groups.
+
 To add drops to an item which has none yet, select it at the bottom of the
 section and click **Add drop item group**.
 

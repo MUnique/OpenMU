@@ -81,6 +81,10 @@ public partial class DropItemGroupTable
 
     private static double FromPercent(double percent) => Math.Clamp(percent / 100.0, 0.0, 1.0);
 
+    private static double? ToPercent(float? chance) => chance is { } value ? Math.Round(value * 100.0, 8) : null;
+
+    private static float? FromPercent(double? percent) => percent is { } value ? (float)Math.Clamp(value / 100.0, 0.0, 1.0) : null;
+
     private static void SetDescription(DropItemGroup group, string? text)
     {
         group.Description = group.Description.WithTranslation(NeutralCulture, text);
