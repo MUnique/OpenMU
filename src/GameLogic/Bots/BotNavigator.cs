@@ -733,6 +733,43 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// Gets the legal warp entries to a map which the bot could hunt through, each with the level of the
+    /// strongest safe monster in its zone (see <see cref="BotMapZones"/> and <see cref="BestSafeLevel"/>).
+    /// </summary>
+    /// <param name="mapDefinition">The map.</param>
+    /// <param name="minimumLevel">The lowest monster level worth counting.</param>
+    /// <returns>The warp entries with their monster level.</returns>
+    /// <remarks>
+    /// Each entry only counts the monsters closer to it on foot than to any other entry: the floors of
+    /// the Lost Tower can't be walked between at all, and the zones of Elvenland or Atlans lie up to a
+    /// few hundred steps apart. Judging the whole map by its strongest monsters and entering through the
+    /// first entry sent the bots to a floor which held none of them, or on a long walk. The bot's own
+    /// map counts too, through the entries to the other zones - a bot on the first floor of the Lost
+    /// Tower may warp up to a better one.
+    /// </remarks>
+    internal IEnumerable<(WarpInfo Warp, int Level)> GetHuntingWarps(GameMapDefinition mapDefinition, int minimumLevel)
+    {
+        if (this.GetHuntingZones(mapDefinition) is not { } hunting)
+        {
+            yield break;
+        }
+
+        var currentZone = ReferenceEquals(mapDefinition, this._player.CurrentMap?.Definition)
+            ? hunting.Zones.GetZone(this._player.Position)
+            : -1;
+        for (var entry = 0; entry < hunting.Entries.Count; entry++)
+        {
+            if (!hunting.Zones.HasZone(entry) || entry == currentZone)
+            {
+                continue;
+            }
+
+            var zone = entry;
+            yield return (hunting.Entries[entry], this.BestSafeLevel(mapDefinition, minimumLevel, area => hunting.Zones.IsAreaWithin(area, zone, GroundScatterSpan, HuntingRange)));
+        }
+    }
+
+    /// <summary>
     /// Hunts around the party leader on the same map: monsters within hunting range
     /// (<see cref="HuntingRange"/>, mirroring the follower's effective combat range of
     /// <see cref="Bots.BotMuHelperSettings.HuntingRange"/>) of the leader are fought via the combat
@@ -1796,7 +1833,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // level is off-limits regardless of its strength - a real character of that level cannot be
         // there, so neither may the bot (e.g. a veteran stranded on a high map after its reset).
         var currentMap = this._player.CurrentMap?.Definition;
-        var mapIsHostile = currentMap is not null && this.BestSafeLevel(currentMap) == 0;
+        var mapIsHostile = currentMap is not null && this.BestSafeLevel(currentMap, 0, this.GetCurrentRegionFilter()) == 0;
         var mapIsIllegal = currentMap is not null
                            && !this.TryGetLegalWarp(currentMap, out _)
                            && currentMap.Number != this._player.SelectedCharacter?.CharacterClass?.HomeMap?.Number;
@@ -1847,10 +1884,11 @@ internal sealed class BotNavigator : AsyncDisposable
         this._travelPath = null;
         this._player.HuntingSpot = null;
         this._player.Logger.LogDebug(
-            "Bot {Character} (level {Level}) warping to map {Map} (monsters ~{MonsterLevel}, fare {Fare} zen).",
+            "Bot {Character} (level {Level}) warping to map {Map} through {Warp} (monsters ~{MonsterLevel}, fare {Fare} zen).",
             this._player.Name,
             botLevel,
             targetMap!.Name,
+            fare?.ToString() ?? "its spawn gate",
             targetLevel,
             fare?.Costs ?? 0);
 
@@ -2407,12 +2445,15 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     /// <param name="mapDefinition">The map to judge.</param>
     /// <param name="minimumLevel">The lowest monster level worth counting.</param>
-    private int BestSafeLevel(GameMapDefinition mapDefinition, int minimumLevel = 0)
+    /// <param name="isWithin">Limits the judgement to a part of the map (see <see cref="BotMapRegions"/> and
+    /// <see cref="BotMapZones"/>); <c>null</c> to judge the whole map.</param>
+    private int BestSafeLevel(GameMapDefinition mapDefinition, int minimumLevel = 0, Func<MonsterSpawnArea, bool>? isWithin = null)
     {
         var best = 0;
         foreach (var area in mapDefinition.MonsterSpawns)
         {
-            if (!this.IsPermanentMonsterSpawn(area))
+            if (!this.IsPermanentMonsterSpawn(area)
+                || (isWithin is not null && !isWithin(area)))
             {
                 continue;
             }
@@ -2441,6 +2482,57 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// Gets a filter for the monsters the bot can walk to from where it stands (see <see cref="BotMapRegions"/>).
+    /// </summary>
+    /// <returns>The filter, or <c>null</c> if the bot is on no map or stands on a tile which is not walkable.</returns>
+    private Func<MonsterSpawnArea, bool>? GetCurrentRegionFilter()
+    {
+        if (this._player.CurrentMap?.Definition is not { } current
+            || BotMapRegions.Get(current) is not { } regions
+            || regions.GetRegion(this._player.Position) is not (var region and not 0))
+        {
+            return null;
+        }
+
+        int[] reachable = [region];
+        return area => regions.IsAreaWithin(area, reachable, GroundScatterSpan, HuntingRange);
+    }
+
+    /// <summary>
+    /// Gets a filter for the monsters of the zone the bot stands in (see <see cref="BotMapZones"/>), so
+    /// its current place is compared with the zones of the other entries on equal terms. Outside of
+    /// every zone, it's the reachable part of the map.
+    /// </summary>
+    /// <returns>The filter, or <c>null</c> to judge the whole map.</returns>
+    private Func<MonsterSpawnArea, bool>? GetCurrentZoneFilter()
+    {
+        if (this._player.CurrentMap?.Definition is not { } current
+            || this.GetHuntingZones(current) is not { } hunting
+            || hunting.Zones.GetZone(this._player.Position) is not (var zone and >= 0))
+        {
+            return this.GetCurrentRegionFilter();
+        }
+
+        return area => hunting.Zones.IsAreaWithin(area, zone, GroundScatterSpan, HuntingRange);
+    }
+
+    /// <summary>
+    /// Gets the zones of a map for the warp entries the bot may legally use (see <see cref="BotMapZones"/>).
+    /// </summary>
+    /// <param name="mapDefinition">The map.</param>
+    /// <returns>The zones with their entries, in the same order; <c>null</c>, if the bot may use no entry.</returns>
+    private (BotMapZones Zones, IReadOnlyList<WarpInfo> Entries)? GetHuntingZones(GameMapDefinition mapDefinition)
+    {
+        var entries = this.GetLegalWarps(mapDefinition).Where(w => w.Gate is not null).ToList();
+        if (entries.Count == 0)
+        {
+            return null;
+        }
+
+        return (BotMapRegions.Get(mapDefinition).GetZones(entries.Select(w => w.Gate!).ToList()), entries);
+    }
+
+    /// <summary>
     /// Picks the legally warpable map with the strongest monsters the bot can safely fight among those
     /// EASIER than where it stands now - one step down, not a retreat to the starter map. Used when the
     /// current map pays nothing (see <see cref="BarrenMapDuration"/>): the bot keeps stepping down every
@@ -2460,7 +2552,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // With nothing safe here at all, every huntable map is a step down - the comparison must not
         // rule them all out.
-        var currentLevel = current is null ? int.MaxValue : this.BestSafeLevel(current);
+        var currentLevel = current is null ? int.MaxValue : this.BestSafeLevel(current, 0, this.GetCurrentZoneFilter());
         if (currentLevel <= 0)
         {
             currentLevel = int.MaxValue;
@@ -2468,25 +2560,24 @@ internal sealed class BotNavigator : AsyncDisposable
 
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
-            if (ReferenceEquals(candidate, current))
+            // The whole map is an upper bound for every part of it, and cheap to judge.
+            var mapBest = this.BestSafeLevel(candidate);
+            if (mapBest <= 0
+                || mapBest <= monsterLevel
+                || candidate.TryGetRequirementError(this._player, out _)
+                || !HasWalkableSpawnGate(candidate))
             {
                 continue;
             }
 
-            var best = this.BestSafeLevel(candidate);
-            if (best <= 0 || best >= currentLevel || best <= monsterLevel)
+            foreach (var (candidateWarp, best) in this.GetHuntingWarps(candidate, 0))
             {
-                continue;
-            }
-
-            if (!candidate.TryGetRequirementError(this._player, out _)
-                && this.TryGetLegalWarp(candidate, out var candidateWarp)
-                && this.CanAffordWarp(candidateWarp)
-                && HasWalkableSpawnGate(candidate))
-            {
-                warp = candidateWarp;
-                mapDefinition = candidate;
-                monsterLevel = best;
+                if (best > 0 && best < currentLevel && best > monsterLevel && this.CanAffordWarp(candidateWarp))
+                {
+                    warp = candidateWarp;
+                    mapDefinition = candidate;
+                    monsterLevel = best;
+                }
             }
         }
 
@@ -2494,8 +2585,9 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
-    /// Picks the legally warpable map (other than the current one) that offers the strongest monsters the
-    /// bot can still safely handle if it is meaningfully better than the current map, with its warp gate.
+    /// Picks the legally warpable map (other than the current one, or another part of it, see
+    /// <see cref="GetHuntingWarps"/>) that offers the strongest monsters the bot can still safely handle
+    /// if it is meaningfully better than where the bot stands, with its warp gate.
     /// In escape mode (fleeing a hostile or illegal map) any legal map with something safe to hunt counts,
     /// no matter how it compares to the current one.
     /// </summary>
@@ -2521,27 +2613,35 @@ internal sealed class BotNavigator : AsyncDisposable
         monsterLevel = 0;
 
         var current = this._player.CurrentMap?.Definition;
-        var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current, minimumMonsterLevel)) + WarpImprovementMargin;
+        var threshold = escape ? 1 : (current is null ? 0 : this.BestSafeLevel(current, minimumMonsterLevel, this.GetCurrentZoneFilter())) + WarpImprovementMargin;
 
         var candidates = new List<(WarpInfo Warp, GameMapDefinition Map, int Level)>();
         foreach (var candidate in this._player.GameContext.Configuration.Maps)
         {
-            if (ReferenceEquals(candidate, current))
+            // The whole map is an upper bound for every part of it, and cheap to judge.
+            if (this.BestSafeLevel(candidate, minimumMonsterLevel) < threshold
+                || candidate.TryGetRequirementError(this._player, out _)
+                || !HasWalkableSpawnGate(candidate))
             {
                 continue;
             }
 
-            var best = this.BestSafeLevel(candidate, minimumMonsterLevel);
-            if (best < threshold || candidate.TryGetRequirementError(this._player, out _))
+            // One candidate per map, through the entry to its best part: the ranking below spreads the
+            // bots over maps, and several floors of one map must not crowd the others out of it.
+            (WarpInfo Warp, int Level)? bestEntry = null;
+            foreach (var entry in this.GetHuntingWarps(candidate, minimumMonsterLevel))
             {
-                continue;
+                if (entry.Level >= threshold
+                    && entry.Level > (bestEntry?.Level ?? 0)
+                    && this.CanAffordWarp(entry.Warp))
+                {
+                    bestEntry = entry;
+                }
             }
 
-            if (this.TryGetLegalWarp(candidate, out var candidateWarp)
-                && this.CanAffordWarp(candidateWarp)
-                && HasWalkableSpawnGate(candidate))
+            if (bestEntry is { } chosen)
             {
-                candidates.Add((candidateWarp, candidate, best));
+                candidates.Add((chosen.Warp, candidate, chosen.Level));
             }
         }
 
@@ -2574,8 +2674,14 @@ internal sealed class BotNavigator : AsyncDisposable
         ground = default;
         groundLevel = 0;
 
+        // Only grounds in the part of the map the bot can walk to: on the Lost Tower, the strongest
+        // monsters stand on a floor above, and picking them made every walk fail and the bot stand idle.
+        var mapRegions = BotMapRegions.Get(map.Definition);
+        var region = mapRegions.GetRegion(this._player.Position);
+        int[] regions = [region];
         var candidates = map.Definition.MonsterSpawns
             .Where(this.IsPermanentMonsterSpawn)
+            .Where(a => region == 0 || mapRegions.IsAreaWithin(a, regions, GroundScatterSpan, HuntingRange))
             .Select(a => (Area: a, Level: GetMonsterLevel(a.MonsterDefinition!)))
             .Where(x => x.Level > 0)
             .ToList();
@@ -2645,10 +2751,10 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         groundLevel = chosen.Level;
-        return this.TryPickWalkablePoint(map, chosen.Area, siteToAvoid, competitorSpots, out ground);
+        return this.TryPickWalkablePoint(map, chosen.Area, siteToAvoid, competitorSpots, region == 0 ? null : mapRegions, region, out ground);
     }
 
-    private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, IReadOnlyList<HuntingSpot> competitorSpots, out Point point)
+    private bool TryPickWalkablePoint(GameMap map, MonsterSpawnArea area, Point? avoidCenter, IReadOnlyList<HuntingSpot> competitorSpots, BotMapRegions? mapRegions, int region, out Point point)
     {
         int minX = Math.Min(area.X1, area.X2);
         int maxX = Math.Max(area.X1, area.X2);
@@ -2672,7 +2778,9 @@ internal sealed class BotNavigator : AsyncDisposable
                 : new Point((byte)Rand.NextInt(minX, maxX + 1), (byte)Rand.NextInt(minY, maxY + 1));
             int x = candidate.X;
             int y = candidate.Y;
-            if (!map.Terrain.WalkMap[x, y] || map.Terrain.SafezoneMap[x, y])
+            if (!map.Terrain.WalkMap[x, y]
+                || map.Terrain.SafezoneMap[x, y]
+                || (mapRegions is not null && mapRegions.GetRegion(candidate) != region))
             {
                 continue;
             }
