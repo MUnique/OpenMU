@@ -1,0 +1,45 @@
+@page "/mixes"
+
+@using MUnique.OpenMU.DataModel.Configuration
+@using MUnique.OpenMU.Persistence
+@using MUnique.OpenMU.Web.AdminPanel.Components.ItemDrops
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+@using MUnique.OpenMU.Web.Shared.Components.Form
+
+<PageTitle>OpenMU: @Resources.Mixes</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.Mixes" />
+
+<h1>@Resources.Mixes</h1>
+<p class="text-muted">@Resources.MixesPageDescription</p>
+
+@if (this._gameConfiguration is null)
+{
+    return;
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <input type="search" class="form-control form-control-sm" style="max-width: 24rem" placeholder="@($"{Resources.Search}...")"
+           @bind="this._filter" @bind:event="oninput" />
+</div>
+
+@if (!this.CraftingGroups.Any())
+{
+    <p class="text-muted fst-italic">@Resources.NoChaosMixes</p>
+}
+
+@foreach (var (category, craftings) in this.CraftingGroups)
+{
+    <CollapsibleSection Title="@category.Title" Badge="@craftings.Count.ToString()">
+        @foreach (var mix in craftings)
+        {
+            <CollapsibleSection Title="@($"{mix.Number} - {mix.Name.ToString()}")" Description="@mix.ItemCraftingHandlerClassName">
+                <CascadingValue TValue="IContext" Value="category.Context">
+                    <AutoForm Model="mix"
+                              OnValidSubmit="() => this.OnSaveAsync(category)"
+                              OnCancel="this.GetDiscardCallback(category)"
+                              IsProcessing="category.IsSaving" />
+                </CascadingValue>
+            </CollapsibleSection>
+        }
+    </CollapsibleSection>
+}
