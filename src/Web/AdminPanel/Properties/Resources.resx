@@ -1534,6 +1534,9 @@
   <data name="MapDropItemGroupsDescription" xml:space="preserve">
     <value>Drop groups which apply to monsters on the assigned maps. Groups which are not assigned to any map don't drop.</value>
   </data>
+  <data name="NotAssignedToAnyMap" xml:space="preserve">
+    <value>Not assigned to any map</value>
+  </data>
   <data name="MaximumDropLevel" xml:space="preserve">
     <value>Maximum drop level</value>
   </data>

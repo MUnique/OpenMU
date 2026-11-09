@@ -1,4 +1,4 @@
-﻿// <copyright file="EditItemDrops.razor.cs" company="MUnique">
+// <copyright file="EditItemDrops.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -401,7 +401,13 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
 
     private void OnAddMapGroup()
     {
-        this.CreateGroup();
+        // A new map group is assigned to all maps, so that it takes effect right away.
+        // The maps can be adjusted afterwards, like with the 'Assign to all maps' button.
+        var group = this.CreateGroup();
+        foreach (var map in this._maps)
+        {
+            map.DropItemGroups.Add(group);
+        }
     }
 
     private void OnAddMonsterGroup(MonsterDefinition monster)

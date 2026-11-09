@@ -114,8 +114,11 @@ level. The possible items of a map group are additionally filtered by the
 monster level, so that e.g. a high level item doesn't drop from a low level
 monster.
 
-A group which isn't assigned to any map doesn't drop anywhere.
-**Add drop item group** creates a new one, the 🗑 button deletes a group.
+A group which isn't assigned to any map doesn't drop anywhere; such a group is
+marked with **Not assigned to any map** in the list. **Add drop item group**
+creates a new one and assigns it to all maps, so that it takes effect right away;
+remove the maps it shouldn't apply to in its details. The 🗑 button deletes a
+group.
 
 ### Monster drops
 

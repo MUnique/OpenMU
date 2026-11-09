@@ -70,6 +70,13 @@ public partial class DropItemGroupTable
     public string? RemoveTitle { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether a warning is shown for groups which are not assigned to any map.
+    /// Such groups don't drop anywhere, see <see cref="Maps"/>.
+    /// </summary>
+    [Parameter]
+    public bool WarnWhenUnassigned { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback which is called when the map assignment of a group changed.
     /// </summary>
     [Parameter]
