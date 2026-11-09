@@ -1793,4 +1793,15 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>处理中瓶精华治疗药水的使用和消耗，立即恢复部分生命值。</value>
   </data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Name" xml:space="preserve"><value>开启幻影寺院活动命令</value></data>
+  <data name="StartIllusionTempleEventChatCommandPlugIn_Description" xml:space="preserve"><value>处理 /startit 命令，在下一个允许的时机开启幻影寺院活动。</value></data>
+  <data name="LoginTimeoutPlugIn_Name" xml:space="preserve"><value>登录超时</value></data>
+  <data name="LoginTimeoutPlugIn_Description" xml:space="preserve"><value>客户端连接后若未在设定时间内登录，则断开连接。</value></data>
+  <data name="LoginTimeoutPlugInConfiguration_Timeout_Caption" xml:space="preserve"><value>超时时长</value></data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院石像交互</value></data>
+  <data name="IllusionTempleStoneStatueTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院石像的交互，玩家可从石像处取得圣物。</value></data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院盟军物品仓库交互</value></data>
+  <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
+  <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
 </root>
