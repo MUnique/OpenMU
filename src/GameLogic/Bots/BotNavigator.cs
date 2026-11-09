@@ -551,7 +551,10 @@ internal sealed class BotNavigator : AsyncDisposable
                 leader.Name,
                 leaderMap.Definition.Name);
             await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
-            await this.TryPersistCurrentMapAsync(leaderMap.Definition).ConfigureAwait(false);
+
+            // Where the bot ACTUALLY ended up: a gate landing on a blocked tile recovers it to the
+            // safezone map, which isn't always the leader's (see TryWarpToBetterMapAsync).
+            await this.TryPersistCurrentMapAsync(this._player.CurrentMap?.Definition ?? leaderMap.Definition).ConfigureAwait(false);
         }
 
         return true;
@@ -612,7 +615,7 @@ internal sealed class BotNavigator : AsyncDisposable
             map.Definition.Name,
             leaderWarp.Name);
         await this._player.WarpToAsync(leaderGate).ConfigureAwait(false);
-        await this.TryPersistCurrentMapAsync(map.Definition).ConfigureAwait(false);
+        await this.TryPersistCurrentMapAsync(this._player.CurrentMap?.Definition ?? map.Definition).ConfigureAwait(false);
         return true;
     }
 
