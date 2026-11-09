@@ -181,7 +181,7 @@ internal class BuffItems : InitializerBase
         {
             var powerUp = this.Context.CreateNew<PowerUpDefinition>();
             effect.PowerUpDefinitions.Add(powerUp);
-            powerUp.TargetAttribute = boost.Target.GetPersistent(this.GameConfiguration);
+            powerUp.TargetAttribute = this.GetOrCreateAttribute(boost.Target);
             powerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUp.Boost.ConstantValue.AggregateType = boost.AggregateType;
             if (boost.IsPerLevel)
@@ -200,6 +200,24 @@ internal class BuffItems : InitializerBase
         }
 
         return effect;
+    }
+
+    /// <summary>
+    /// Gets the persistent attribute definition. When an update adds an item whose effect needs an attribute which
+    /// was introduced after the database was created, the attribute is added to the configuration.
+    /// </summary>
+    /// <param name="attribute">The attribute.</param>
+    /// <returns>The persistent attribute definition.</returns>
+    private AttributeDefinition GetOrCreateAttribute(AttributeDefinition attribute)
+    {
+        if (this.GameConfiguration.Attributes.FirstOrDefault(a => a.Id == attribute.Id) is { } persistent)
+        {
+            return persistent;
+        }
+
+        persistent = this.Context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description);
+        this.GameConfiguration.Attributes.Add(persistent);
+        return persistent;
     }
 
     /// <summary>

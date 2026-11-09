@@ -120,6 +120,8 @@ internal class BuffItemsDataTest
         gameConfiguration.Items.Remove(secondSeal);
         gameConfiguration.MagicEffects.Remove(secondSeal.ConsumeEffect!);
 
+        // The update of the buff items runs before and adds the second seal together with the attribute.
+        await new AddBuffItemsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         var update = new AddSealItemDropRateUpdatePlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
