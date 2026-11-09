@@ -136,7 +136,7 @@ public class BotLeaderFollowMapIdentityTest
         leader.SetCurrentMapSilently(map);
         leader.Position = new Point(200, 200);
 
-        var consumed = await navigator.TryHandleCrossMapLeaderFollowAsync(map, leader).ConfigureAwait(false);
+        var consumed = await navigator.TryHandleCrossMapLeaderFollowAsync(map, leader, CancellationToken.None).ConfigureAwait(false);
 
         Assert.That(consumed, Is.False);
         Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero);

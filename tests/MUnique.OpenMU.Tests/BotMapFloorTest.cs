@@ -4,12 +4,14 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
 using NUnit.Framework;
 using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
@@ -18,7 +20,7 @@ using MonsterSpawnArea = MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea;
 
 /// <summary>
 /// Tests how bots deal with maps whose parts cannot be walked between, like the floors of the
-/// Lost Tower, or lie far apart: hunting there through the right warp entry.
+/// Lost Tower: hunting there through the right warp entry, and following a leader to his floor.
 /// </summary>
 [TestFixture]
 public class BotMapFloorTest
@@ -133,6 +135,43 @@ public class BotMapFloorTest
         Assert.That(bot.HuntingSpot, Is.Not.Null);
         Assert.That(bot.HuntingSpot!.Position.X, Is.InRange(10, 15));
         Assert.That(bot.HuntingSpot.Position.Y, Is.InRange(10, 15));
+    }
+
+    /// <summary>
+    /// A follower warps straight to the floor of its leader with a single warp, instead of landing on
+    /// the map's spawn gate on another floor first and waiting out the warp cooldown for a second one.
+    /// </summary>
+    [Test]
+    public async ValueTask FollowerWarpsStraightToTheFloorOfItsLeaderAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var leader = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 11, 9, 12, 0, 0, TimeSpan.Zero));
+        var navigator = new BotNavigator(bot, timeProvider);
+        var mapChangeRecorder = new MapChangeRecordingPlugIn(bot);
+        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangedPlugIn>(mapChangeRecorder);
+
+        var (floorMap, _, _) = AddTwoFloorMap(gameContext, 6);
+        floorMap.ExitGates.Single(g => g.X1 == 10).IsSpawnGate = true;
+        var leaderMap = new GameMap(floorMap, TimeSpan.FromMinutes(1), 8);
+        var botMap = CreateOpenMap(7);
+
+        bot.Attributes![Stats.Level] = 100;
+        bot.SetCurrentMapSilently(botMap);
+        bot.SelectedCharacter!.CurrentMap = botMap.Definition;
+        leader.SetCurrentMapSilently(leaderMap);
+        leader.Position = new Point(203, 203);
+
+        Assert.That(await navigator.TryHandleCrossMapLeaderFollowAsync(botMap, leader, CancellationToken.None).ConfigureAwait(false), Is.True);
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.Zero, "the leader has not settled yet");
+
+        timeProvider.Advance(TimeSpan.FromSeconds(20));
+        Assert.That(await navigator.TryHandleCrossMapLeaderFollowAsync(botMap, leader, CancellationToken.None).ConfigureAwait(false), Is.True);
+
+        Assert.That(mapChangeRecorder.MapChangeCount, Is.EqualTo(1));
+        Assert.That(bot.SelectedCharacter.PositionX, Is.InRange(200, 205));
+        Assert.That(bot.SelectedCharacter.PositionY, Is.InRange(200, 205));
     }
 
     private static async ValueTask<GameLogic.Offline.OfflinePlayer> CreateHunterAsync(IGameContext gameContext)
@@ -300,6 +339,43 @@ public class BotMapFloorTest
             this.Range = 1;
             this.SkillType = SkillType.DirectHit;
             this.DamageType = DamageType.Curse;
+        }
+    }
+
+    [Guid("3C0E7B5A-9F42-4D1B-8E6A-2B7D5C9F1A34")]
+    private sealed class MapChangeRecordingPlugIn : IPlayerStateChangedPlugIn
+    {
+        private readonly Player _observedPlayer;
+
+        public MapChangeRecordingPlugIn(Player observedPlayer)
+        {
+            this._observedPlayer = observedPlayer;
+        }
+
+        public int MapChangeCount { get; private set; }
+
+        public ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
+        {
+            if (ReferenceEquals(player, this._observedPlayer)
+                && previousState != PlayerState.ChangingMap
+                && currentState == PlayerState.ChangingMap)
+            {
+                this.MapChangeCount++;
+            }
+
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class ManualTimeProvider(DateTimeOffset utcNow) : TimeProvider
+    {
+        private DateTimeOffset _utcNow = utcNow;
+
+        public override DateTimeOffset GetUtcNow() => this._utcNow;
+
+        public void Advance(TimeSpan timeSpan)
+        {
+            this._utcNow += timeSpan;
         }
     }
 }

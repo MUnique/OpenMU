@@ -459,9 +459,10 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     /// <param name="map">The bot's current map.</param>
     /// <param name="leader">The party leader.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>True, if evaluation should stop because a follow action was taken or the leader is on
     /// another map; false, if the bot can continue its normal local behavior.</returns>
-    internal async ValueTask<bool> TryHandleCrossMapLeaderFollowAsync(GameMap map, Player leader)
+    internal async ValueTask<bool> TryHandleCrossMapLeaderFollowAsync(GameMap map, Player leader, CancellationToken cancellationToken)
     {
         if (ReferenceEquals(leader.CurrentMap, map))
         {
@@ -499,13 +500,18 @@ internal sealed class BotNavigator : AsyncDisposable
             return true;
         }
 
-        // Prefer a spawn gate of the leader's map; maps without one (the Dungeon has no town)
-        // fall back to the warp list gate - the same spot the leader warped to. Without the
-        // fallback a follower could neither warp after its leader nor hunt (following consumed
-        // its ticks), and only the stuck watchdog kept it twitching between hunting grounds.
+        // Prefer the legal warp entry closest to the leader. Landing on the map's spawn gate instead
+        // left the follower on the wrong floor of a multi-floor map (Lost Tower, Dungeon), where it had
+        // to wait out the warp cooldown for a second warp to the leader's floor. When no warp entry
+        // can reach the leader, a spawn gate of the leader's map is next; maps without one (the
+        // Dungeon has no town) fall back to the warp list gate. Without that fallback a follower
+        // could neither warp after its leader nor hunt (following consumed its ticks), and only the
+        // stuck watchdog kept it twitching between hunting grounds.
         if (this._timeProvider.GetUtcNow() - this._lastWarpUtc >= FollowWarpCooldown
             && leader.CurrentMap is { } leaderMap
-            && (leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() ?? warpListGate) is { } leaderGate)
+            && (this.FindBestReachableLegalWarp(leaderMap, leader.Position, cancellationToken)?.Gate
+                ?? leaderMap.Definition.ExitGates.Where(g => g.IsSpawnGate).SelectRandom()
+                ?? warpListGate) is { } leaderGate)
         {
             this._lastWarpUtc = this._timeProvider.GetUtcNow();
             this._nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
@@ -1163,7 +1169,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // if the leader idles in town or is wedged, its followers idle with him.
         if (leaderToFollow is not null)
         {
-            if (await this.TryHandleCrossMapLeaderFollowAsync(map, leaderToFollow).ConfigureAwait(false))
+            if (await this.TryHandleCrossMapLeaderFollowAsync(map, leaderToFollow, cancellationToken).ConfigureAwait(false))
             {
                 return;
             }
@@ -2190,10 +2196,12 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </remarks>
     private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
     {
+        // A gate the bot already stands on would not move it; on another map, the same coordinates mean nothing.
+        var isBotsMap = ReferenceEquals(this._player.CurrentMap, map);
         var candidates = this.GetLegalWarps(map.Definition)
             .Where(candidate => candidate.Gate is not null)
             .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints().ToArray()))
-            .Where(candidate => !candidate.LandingPoints.Contains(this._player.Position))
+            .Where(candidate => !isBotsMap || !candidate.LandingPoints.Contains(this._player.Position))
             .ToArray();
         if (candidates.Length == 0)
         {
