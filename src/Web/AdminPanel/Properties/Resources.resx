@@ -2659,6 +2659,13 @@
   <data name="Leaderboards" xml:space="preserve">
     <value>Leaderboards</value>
   </data>
+  <data name="LeaderboardMiniGame_DevilSquare" xml:space="preserve"><value>Devil Square</value></data>
+  <data name="LeaderboardMiniGame_BloodCastle" xml:space="preserve"><value>Blood Castle</value></data>
+  <data name="LeaderboardMiniGame_ChaosCastle" xml:space="preserve"><value>Chaos Castle</value></data>
+  <data name="LeaderboardMiniGame_IllusionTemple" xml:space="preserve"><value>Illusion Temple</value></data>
+  <data name="LeaderboardMiniGame_Doppelganger" xml:space="preserve"><value>Doppelganger</value></data>
+  <data name="LeaderboardMiniGame_Kanturu" xml:space="preserve"><value>Kanturu</value></data>
+  <data name="LeaderboardMiniGame_ImperialGuardian" xml:space="preserve"><value>Imperial Guardian</value></data>
   <data name="LeaderboardsDescription" xml:space="preserve">
     <value>The best characters of the mini games which save their ranking statistics, ranked by the sum of their scores. Bots are not included.</value>
   </data>
