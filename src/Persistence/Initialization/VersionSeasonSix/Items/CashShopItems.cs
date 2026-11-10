@@ -70,8 +70,9 @@ internal class CashShopItems : InitializerBase
     /// <summary>
     /// Creates the figurines and charms, which don't exist yet. They're used inside the inventory
     /// with a right click, see <see cref="GameLogic.PlayerActions.Items.UseInventoryItemAction"/>.
-    /// Like in the client, their durability is 255 when they're not in use, and their bonuses are the ones
-    /// which the client shows. The worn horseshoe (13/134) increases the item drop rate, for which there's no attribute yet.
+    /// Their durability is 1, so that they're not stackable; the game logic sets the durability of an item
+    /// to 255 when it's added to the inventory, which tells the client that it's not in use.
+    /// Their bonuses are the ones which the client shows. The worn horseshoe (13/134) increases the item drop rate, for which there's no attribute yet.
     /// </summary>
     /// <returns>The created items.</returns>
     internal IReadOnlyList<ItemDefinition> CreateFigurinesAndCharms()
@@ -86,7 +87,7 @@ internal class CashShopItems : InitializerBase
             }
 
             item.Height = height;
-            item.Durability = 255;
+            item.Durability = 1;
             foreach (var (attribute, value) in bonuses)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(attribute, value, AggregateType.AddRaw));

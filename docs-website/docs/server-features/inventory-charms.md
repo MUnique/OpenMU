@@ -4,8 +4,6 @@ sidebar_label: Figurines and charms
 description: Figurines and charms give a bonus while used in the inventory.
 ---
 
-# Figurines and charms
-
 The figurines and charms are items of the in-game shop. They are not worn in
 an equipment slot. Instead, the player right clicks them inside the inventory
 to use them, and the bonus applies as long as they stay in use there. Another
@@ -29,10 +27,25 @@ admin panel.
 * Only one item of the same kind can be in use at the same time. Using a
   second one is refused with a message.
 * The item keeps its state when it is moved inside the inventory.
-* When the item leaves the inventory, for example into the vault, it is no
-  longer in use, and the bonus is removed.
+* When the item leaves the inventory, for example when it is dropped or moved
+  into the vault, it is no longer in use, and the bonus is removed.
 * Like in the original game, the state is stored in the durability of the
-  item: 254 means in use, 255 means not in use.
+  item: 254 means in use, 255 means not in use. A new item starts with 255
+  when it is added to the inventory. The item definitions have a durability
+  of 1, so the items are not stackable.
+
+## Configuration
+
+The *Items used inside the inventory* feature plugin defines which items can
+be used inside the inventory. By default, these are the items 13/128 to
+13/134. When the plugin is deactivated, no item can be used this way.
+
+## Update of existing databases
+
+The update *Add the figurines and charms* adds the items, and links the
+products of the cash shop to them. Their packages were not for sale before,
+because their products had no item. The update leaves them that way, so the
+administrator can put them on sale in the admin panel.
 
 ## Protocol
 

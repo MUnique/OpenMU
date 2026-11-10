@@ -50,6 +50,30 @@ internal class FigurinesAndCharmsDataTest
         AssertItemData(gameConfiguration);
     }
 
+    /// <summary>
+    /// Tests that the update links the products of the cash shop to the items,
+    /// which have no item definition in a database which was created before the items existed.
+    /// </summary>
+    [Test]
+    public async Task UpdateLinksCashShopProductsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var products = gameConfiguration.CashShopConfiguration!.Packages
+            .SelectMany(package => package.Products)
+            .Where(product => product.ItemDefinition is { } definition && IsFigurineOrCharm(definition))
+            .ToList();
+        Assert.That(products.Select(product => product.ProductSequence).Distinct(), Is.EquivalentTo(new[] { 459, 460, 461, 462 }));
+        products.ForEach(product => product.ItemDefinition = null);
+        gameConfiguration.Items.Where(IsFigurineOrCharm).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
+
+        await new AddFigurinesAndCharmsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(products, Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is { Group: 13 } definition && gameConfiguration.Items.Contains(definition)));
+        Assert.That(products.Where(product => product.ProductSequence == 459).Select(product => product.ItemDefinition!.Number), Has.All.EqualTo(128));
+        Assert.That(products.Where(product => product.ProductSequence == 462).Select(product => product.ItemDefinition!.Number), Has.All.EqualTo(132));
+    }
+
     private static bool IsFigurineOrCharm(ItemDefinition item) => item.Group == 13 && Numbers.Contains(item.Number);
 
     private static void AssertItemData(GameConfiguration gameConfiguration)
@@ -57,7 +81,7 @@ internal class FigurinesAndCharmsDataTest
         var items = gameConfiguration.Items.Where(IsFigurineOrCharm).ToList();
         Assert.That(items.Select(item => item.Number), Is.EquivalentTo(Numbers));
         Assert.That(items, Has.All.Matches<ItemDefinition>(item =>
-            item.Durability == 255
+            item.Durability == 1
             && item.ItemSlot is null
             && item.Name.ValueInNeutralLanguage.Length > 0));
 

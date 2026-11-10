@@ -265,23 +265,6 @@ public class ItemConstants
     public static ItemIdentifier MoonstonePendant => new(38, 13);
 
     /// <summary>
-    /// Gets the items which are used inside the inventory instead of being equipped: the figurines (group 13, number 128 and 129),
-    /// the charms (130 to 133) and the worn horseshoe (134). The game client only requests to use these items with a right click
-    /// in the inventory (packet BF 20). The durability of such an item tells whether it's in use,
-    /// see <see cref="InventoryUsedItemExtensions"/>.
-    /// </summary>
-    public static IReadOnlyList<ItemIdentifier> ItemsUsedInsideInventory { get; } =
-    [
-        new(128, 13),
-        new(129, 13),
-        new(130, 13),
-        new(131, 13),
-        new(132, 13),
-        new(133, 13),
-        new(134, 13),
-    ];
-
-    /// <summary>
     /// Gets all scrolls.
     /// </summary>
     public static ItemIdentifier AllScrolls => new(null, 15);

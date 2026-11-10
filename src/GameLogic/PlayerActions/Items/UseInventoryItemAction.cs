@@ -8,7 +8,7 @@ using MUnique.OpenMU.GameLogic.Views.Inventory;
 
 /// <summary>
 /// The action to start or stop using an item inside the inventory, like a figurine or a charm,
-/// see <see cref="ItemConstants.ItemsUsedInsideInventory"/>.
+/// see <see cref="InventoryItemUseConfiguration"/>.
 /// While such an item is in use, its power-ups apply.
 /// </summary>
 public class UseInventoryItemAction
@@ -25,15 +25,13 @@ public class UseInventoryItemAction
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || player.Inventory?.GetItem(slot) is not { } item
             || slot <= InventoryConstants.LastEquippableItemSlotIndex
-            || !item.IsUsedInsideInventory()
+            || !item.IsUsedInsideInventory(player.GameContext)
             || player.Attributes is not { } attributes)
         {
             return;
         }
 
-        var currentDurability = (int)item.Durability;
-        if (requestedDurability is not (InventoryUsedItemExtensions.InUseDurability or InventoryUsedItemExtensions.NotInUseDurability)
-            || currentDurability is not (InventoryUsedItemExtensions.InUseDurability or InventoryUsedItemExtensions.NotInUseDurability))
+        if (requestedDurability is not (InventoryUsedItemExtensions.InUseDurability or InventoryUsedItemExtensions.NotInUseDurability))
         {
             player.Logger.LogWarning("Player {player} requested durability {requestedDurability} for {item}, which isn't possible.", player, requestedDurability, item);
             await player.InvokeViewPlugInAsync<IInventoryItemUseChangedPlugIn>(p => p.InventoryItemUseChangedAsync(item)).ConfigureAwait(false);
@@ -41,7 +39,7 @@ public class UseInventoryItemAction
         }
 
         if (requestedDurability == InventoryUsedItemExtensions.InUseDurability
-            && player.Inventory.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory()))
+            && player.Inventory.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory(player.GameContext)))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SameItemAlreadyInUse)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IInventoryItemUseChangedPlugIn>(p => p.InventoryItemUseChangedAsync(item)).ConfigureAwait(false);
@@ -49,7 +47,7 @@ public class UseInventoryItemAction
         }
 
         item.Durability = requestedDurability;
-        attributes.UpdateInventoryUsedItemPowerUps(item, player.GameContext.ItemPowerUpFactory);
+        attributes.UpdateInventoryUsedItemPowerUps(item, player.GameContext);
         await player.InvokeViewPlugInAsync<IInventoryItemUseChangedPlugIn>(p => p.InventoryItemUseChangedAsync(item)).ConfigureAwait(false);
     }
 }

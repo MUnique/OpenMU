@@ -1804,4 +1804,10 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
+    <value>在背包中使用的物品</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Description" xml:space="preserve">
+    <value>雕像和护身符等物品在背包中使用。物品使用期间，其加成生效。</value>
+  </data>
 </root>

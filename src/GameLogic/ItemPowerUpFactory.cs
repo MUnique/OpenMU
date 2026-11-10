@@ -58,7 +58,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         }
 
         if ((item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex)
-            && !item.IsInUseInsideInventory())
+            && !item.HasInUseState())
         {
             yield break;
         }
