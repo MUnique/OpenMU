@@ -222,6 +222,30 @@ public class GuildActionTest : GuildTestBase
     }
 
     /// <summary>
+    /// Verifies that a second relationship request keeps the first one pending on the target guild master.
+    /// </summary>
+    [Test]
+    public async ValueTask SecondRelationshipRequestKeepsFirstPendingRequestAsync()
+    {
+        var memberGuildId = await this.CreateSecondGuildForPlayerAsync().ConfigureAwait(false);
+        var masterGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        this._guildMasterPlayer.GuildStatus = new GuildMemberStatus(masterGuildId, GuildPosition.GuildMaster);
+        this._player.GuildStatus = new GuildMemberStatus(memberGuildId, GuildPosition.GuildMaster);
+        var firstRequester = await PlayerTestHelper.CreatePlayerAsync(this._guildMasterPlayer.GameContext).ConfigureAwait(false);
+        var firstRequest = ((Player?)firstRequester, ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Join);
+        this._guildMasterPlayer.PendingAllianceRequest = firstRequest;
+        var action = new GuildRelationshipChangeAction();
+
+        await action.RequestAsync(this._player, this._guildMasterPlayer.Id, ViewGuildRelationshipType.Hostility, ViewGuildRelationshipRequestType.Join).ConfigureAwait(false);
+
+        Assert.That(this._guildMasterPlayer.PendingAllianceRequest, Is.EqualTo(firstRequest));
+        Mock.Get(this._guildMasterPlayer.ViewPlugIns.GetPlugIn<IShowGuildRelationshipRequestPlugIn>()!)
+            .Verify(view => view.ShowRequestAsync(It.IsAny<Player>(), It.IsAny<ViewGuildRelationshipType>(), It.IsAny<ViewGuildRelationshipRequestType>()), Times.Never());
+        Mock.Get(this._player.ViewPlugIns.GetPlugIn<IGuildRelationshipChangeResultPlugIn>()!)
+            .Verify(view => view.ShowResultAsync(ViewGuildRelationshipType.Hostility, ViewGuildRelationshipRequestType.Join, GuildRelationshipChangeResultType.RequestCancelled, this._guildMasterPlayer.Id), Times.Once);
+    }
+
+    /// <summary>
     /// Verifies that a member-guild master cannot remove another guild from the alliance.
     /// </summary>
     [Test]
