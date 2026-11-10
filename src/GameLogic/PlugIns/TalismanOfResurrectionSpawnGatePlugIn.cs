@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.CastleSiege;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.PlugIns;
 
@@ -13,13 +15,19 @@ using MUnique.OpenMU.PlugIns;
 /// in its inventory. One talisman is used up by it.
 /// </summary>
 /// <remarks>
-/// It doesn't apply in mini games, duels and guild wars, which have their own spawn gates.
+/// It doesn't apply in mini games, duels, guild wars and to the participants of a running castle siege,
+/// which have their own spawn gates. It also doesn't apply when the player doesn't fulfill the requirements
+/// of the map anymore, e.g. when it lost its wings on Icarus, so that it's evacuated to the safezone.
+/// The item is configurable, by default it's the Talisman of Resurrection (13/69).
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.TalismanOfResurrectionSpawnGatePlugIn_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.TalismanOfResurrectionSpawnGatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
 [Guid("5C057E6E-FECF-4216-AB78-1918AB00224E")]
-public class TalismanOfResurrectionSpawnGatePlugIn : IPlayerSpawnGateSelectionPlugIn
+public class TalismanOfResurrectionSpawnGatePlugIn : IPlayerSpawnGateSelectionPlugIn, ISupportCustomConfiguration<TalismanOfResurrectionSpawnGatePlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
+    /// <inheritdoc />
+    public TalismanOfResurrectionSpawnGatePlugInConfiguration? Configuration { get; set; }
+
     /// <inheritdoc />
     public async ValueTask SelectSpawnGateAsync(Player player, SpawnGateSelectionArgs args)
     {
@@ -29,8 +37,10 @@ public class TalismanOfResurrectionSpawnGatePlugIn : IPlayerSpawnGateSelectionPl
             || player.CurrentMiniGame is not null
             || player.DuelRoom is not null
             || player.GuildWarContext is not null
+            || IsCastleSiegeParticipant(player)
+            || map.Definition.TryGetRequirementError(player, out _)
             || player.Inventory is not { } inventory
-            || inventory.Items.FirstOrDefault(IsTalismanOfResurrection) is not { } talisman)
+            || inventory.Items.FirstOrDefault(this.IsTalismanOfResurrection) is not { } talisman)
         {
             return;
         }
@@ -51,10 +61,23 @@ public class TalismanOfResurrectionSpawnGatePlugIn : IPlayerSpawnGateSelectionPl
         await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
     }
 
-    private static bool IsTalismanOfResurrection(Item item)
+    /// <inheritdoc />
+    public object CreateDefaultConfig()
     {
+        return new TalismanOfResurrectionSpawnGatePlugInConfiguration();
+    }
+
+    private static bool IsCastleSiegeParticipant(Player player)
+    {
+        return CastleSiegeContextResolver.GetContext(player) is { CurrentState: CastleSiegeState.Start } context
+               && context.GetPlayerJoinSide(player) != CastleSiegeJoinSide.None;
+    }
+
+    private bool IsTalismanOfResurrection(Item item)
+    {
+        var configuration = this.Configuration ??= new TalismanOfResurrectionSpawnGatePlugInConfiguration();
         return item.Definition is { } definition
-               && definition.Group == ItemConstants.TalismanOfResurrection.Group
-               && definition.Number == ItemConstants.TalismanOfResurrection.Number;
+               && definition.Group == configuration.ItemGroup
+               && definition.Number == configuration.ItemNumber;
     }
 }

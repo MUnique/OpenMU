@@ -2016,4 +2016,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch des mittleren Elite-Heiltranks verarbeitet. Er stellt einen Teil der Lebenspunkte sofort wieder her.</value>
   </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption" xml:space="preserve">
+    <value>Gegenstandsgruppe</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption" xml:space="preserve">
+    <value>Gegenstandsnummer</value>
+  </data>
 </root>

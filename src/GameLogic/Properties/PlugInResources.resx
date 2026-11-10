@@ -1853,4 +1853,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
   </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption" xml:space="preserve">
+    <value>Item number</value>
+  </data>
 </root>

@@ -1810,4 +1810,10 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption" xml:space="preserve">
+    <value>物品组</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption" xml:space="preserve">
+    <value>物品编号</value>
+  </data>
 </root>

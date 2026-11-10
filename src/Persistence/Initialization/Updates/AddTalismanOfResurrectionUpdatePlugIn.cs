@@ -15,20 +15,10 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the Talisman of Resurrection and puts the packages of the in-game shop which contain it on sale.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddTalismanOfResurrectionUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddTalismanOfResurrectionUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
+[Display(Name = nameof(PlugInResources.AddTalismanOfResurrectionUpdatePlugIn_Name), Description = nameof(PlugInResources.AddTalismanOfResurrectionUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("363C62F6-E039-42C3-B5EC-1990C4C71A16")]
 public class AddTalismanOfResurrectionUpdatePlugIn : UpdatePlugInBase
 {
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add the Talisman of Resurrection";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update adds the Talisman of Resurrection, which respawns a dead player at the place of its death. The packages of the in-game shop which contain it are put on sale.";
-
     /// <summary>
     /// The product sequence of the products of the in-game shop which contain the Talisman of Resurrection.
     /// </summary>
@@ -38,10 +28,10 @@ public class AddTalismanOfResurrectionUpdatePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => PlugInResources.AddTalismanOfResurrectionUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => PlugInResources.AddTalismanOfResurrectionUpdatePlugIn_Description;
 
     /// <inheritdoc />
     /// <remarks>

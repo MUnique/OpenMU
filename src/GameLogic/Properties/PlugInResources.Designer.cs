@@ -5094,5 +5094,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture)!;
     }
 }
