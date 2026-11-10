@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="IllusionTempleBattleStartedMessage" xml:space="preserve"><value>战斗开始！</value></data>
+  <data name="IllusionTempleRelicDroppedFormat" xml:space="preserve"><value>{0} 丢下了圣物！</value></data>
+  <data name="IllusionTempleRelicPickedUpFormat" xml:space="preserve"><value>{0} 拿到了圣物！</value></data>
+  <data name="IllusionTempleScoreFormat" xml:space="preserve"><value>比分 - 盟军：{0} | 幻影军：{1}</value></data>
+  <data name="IllusionTempleStatueSpawnedMessage" xml:space="preserve"><value>新的圣物出现了！</value></data>
+  <data name="MiniGameCharacterLevelTooHighFormat" xml:space="preserve"><value>你的等级过高。参加此活动的等级不能超过 {0} 级。</value></data>
+  <data name="MiniGameCharacterLevelTooLowFormat" xml:space="preserve"><value>你的等级过低。参加此活动至少需要达到 {0} 级。</value></data>
+  <data name="MiniGameEnterFailed" xml:space="preserve"><value>无法进入此活动。</value></data>
+  <data name="MiniGameEntranceFeeRequiredFormat" xml:space="preserve"><value>参加此活动需要支付 {0} 金币。</value></data>
+  <data name="MiniGameNotConfigured" xml:space="preserve"><value>此服务器尚未配置该活动，无法开启。</value></data>
+  <data name="MiniGameNotDuringGuildWar" xml:space="preserve"><value>战盟战争期间无法参加此活动。</value></data>
+  <data name="MiniGameNotOpenFormat" xml:space="preserve"><value>{0} 当前尚未开放。</value></data>
+  <data name="MiniGamePlayerKillersCantEnter" xml:space="preserve"><value>红名玩家无法进入！</value></data>
+  <data name="MiniGameTicketRequired" xml:space="preserve"><value>参加此活动需要入场券。</value></data>
+  <data name="NoKalimaGateInKalima" xml:space="preserve"><value>无法在卡利玛创建卡利玛之门。</value></data>
+</root>

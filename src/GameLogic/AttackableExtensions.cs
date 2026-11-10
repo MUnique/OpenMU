@@ -286,7 +286,6 @@ public static class AttackableExtensions
 
         if (dmg > 0)
         {
-            // To-do: Ice arrow magic effect duration is reduced by 1s for every successful hit (dmg >0)
             if (isCombo)
             {
                 dmg += (int)attacker.Attributes[Stats.ComboBonus];
