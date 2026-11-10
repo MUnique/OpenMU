@@ -1804,4 +1804,10 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="LuckyCoinFeaturePlugIn_Name" xml:space="preserve">
+    <value>幸运币活动</value>
+  </data>
+  <data name="LuckyCoinFeaturePlugIn_Description" xml:space="preserve">
+    <value>玩家可以在NPC德尔加多处登记幸运币，或用10、20或30枚幸运币兑换一件物品。兑换的奖励在此配置。</value>
+  </data>
 </root>

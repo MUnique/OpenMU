@@ -265,6 +265,11 @@ public class ItemConstants
     public static ItemIdentifier MoonstonePendant => new(38, 13);
 
     /// <summary>
+    /// Gets the identifier for the lucky coin (group 14, number 100), which is registered and exchanged at the NPC Delgado.
+    /// </summary>
+    public static ItemIdentifier LuckyCoin => new(100, 14);
+
+    /// <summary>
     /// Gets all scrolls.
     /// </summary>
     public static ItemIdentifier AllScrolls => new(null, 15);

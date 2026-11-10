@@ -10474,6 +10474,110 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>BF</Code>
+      <SubCode>0B</SubCode>
+      <Name>LuckyCoinCountResponse</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player opened the lucky coin registration dialog of the NPC Delgado, which requests the count of the registered coins.</SentWhen>
+      <CausedReaction>The client shows the count of the registered lucky coins in the dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0C</SubCode>
+      <Name>LuckyCoinRegistrationResponse</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to register a lucky coin at the NPC Delgado.</SentWhen>
+      <CausedReaction>The client unlocks the register button. When the coin was registered, it shows the new count of the registered coins; otherwise, it shows a message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LuckyCoinRegistrationResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>LuckyCoinRegistrationResult</Name>
+          <Description>Defines the result of the lucky coin registration request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotEnoughItems</Name>
+              <Description>The player has no lucky coin in the inventory.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Registered</Name>
+              <Description>The lucky coin was registered.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyApplied</Name>
+              <Description>The account already applied, and it can only apply once.</Description>
+              <Value>100</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0D</SubCode>
+      <Name>LuckyCoinExchangeResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to exchange lucky coins for an item at the NPC Delgado.</SentWhen>
+      <CausedReaction>The client unlocks the exchange buttons and shows a message about the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LuckyCoinExchangeResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>LuckyCoinExchangeResult</Name>
+          <Description>Defines the result of the lucky coin exchange request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotEnoughItems</Name>
+              <Description>The player doesn't have enough lucky coins in the inventory.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Exchanged</Name>
+              <Description>The lucky coins were exchanged for an item.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The inventory has not enough space for the item. The client asks for a free space of 2 x 4.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
       <SubCode>0E</SubCode>
       <Name>DoppelgangerEnterResult</Name>
       <Length>5</Length>

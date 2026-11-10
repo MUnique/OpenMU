@@ -158,6 +158,11 @@ public class Stats
     public static AttributeDefinition TotalRegisteredRenas { get; } = new(new Guid("56C2D3B4-4F5A-6B7C-8D9E-0F1A2B3C4D5E"), "Total Registered Renas", "Total registered items (all-time counter)");
 
     /// <summary>
+    /// Gets the attribute definition of the count of the lucky coins which a character registered at the NPC Delgado.
+    /// </summary>
+    public static AttributeDefinition RegisteredLuckyCoins { get; } = new(new Guid("7D4A0CDF-124F-4CFF-89FF-357A2001B041"), "Registered Lucky Coins", "The count of the lucky coins which were registered at the NPC Delgado.");
+
+    /// <summary>
     /// Gets the zen amount rate attribute definition.
     /// </summary>
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
