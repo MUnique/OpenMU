@@ -69,7 +69,7 @@ public class LuckyCoinActions
     public async ValueTask ExchangeAsync(Player player, int coinCount)
     {
         if (!CanUseLuckyCoinDialog(player)
-            || LuckyCoinFeaturePlugIn.GetConfiguration(player.GameContext) is not { } configuration
+            || LuckyCoinFeaturePlugIn.GetActiveConfiguration(player.GameContext) is not { } configuration
             || player.Inventory is not { } inventory)
         {
             return;
@@ -82,7 +82,7 @@ public class LuckyCoinActions
     private static bool CanUseLuckyCoinDialog(Player player)
     {
         return player.OpenedNpc?.Definition.NpcWindow == NpcWindow.DelgadoLuckyCoinRegistration
-               && LuckyCoinFeaturePlugIn.GetConfiguration(player.GameContext) is not null;
+               && LuckyCoinFeaturePlugIn.GetActiveConfiguration(player.GameContext) is not null;
     }
 
     private static List<Item> GetCoins(Player player)

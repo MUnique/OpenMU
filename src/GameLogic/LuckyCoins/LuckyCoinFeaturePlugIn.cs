@@ -24,7 +24,7 @@ public class LuckyCoinFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguratio
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <returns>The configuration; <c>null</c>, if the lucky coin event is deactivated.</returns>
-    public static LuckyCoinConfiguration? GetConfiguration(IGameContext gameContext)
+    public static LuckyCoinConfiguration? GetActiveConfiguration(IGameContext gameContext)
     {
         return gameContext.FeaturePlugIns.GetPlugIn<LuckyCoinFeaturePlugIn>() is { } plugIn
             ? plugIn.Configuration ?? new LuckyCoinConfiguration()

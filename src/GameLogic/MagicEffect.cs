@@ -16,6 +16,8 @@ using MUnique.OpenMU.PlugIns;
 public class MagicEffect : AsyncDisposable
 {
     private readonly Timer _finishTimer;
+    private readonly Lock _timerSync = new();
+    private long _finishAtTimestamp;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MagicEffect"/> class.
@@ -44,6 +46,7 @@ public class MagicEffect : AsyncDisposable
         this.PowerUpElements = powerUps;
         this.Definition = definition;
         this.Duration = duration;
+        this._finishAtTimestamp = GetTimestampAfter(duration);
         this._finishTimer = new Timer(this.OnTimerTimeout, null, (int)this.Duration.TotalMilliseconds, Timeout.Infinite);
     }
 
@@ -61,6 +64,20 @@ public class MagicEffect : AsyncDisposable
     /// Gets or sets the duration of the effect.
     /// </summary>
     public TimeSpan Duration { get; set; }
+
+    /// <summary>
+    /// Gets the time remaining before the effect times out.
+    /// </summary>
+    public TimeSpan TimeLeft
+    {
+        get
+        {
+            var remainingTicks = Interlocked.Read(ref this._finishAtTimestamp) - Stopwatch.GetTimestamp();
+            return remainingTicks > 0
+                ? TimeSpan.FromSeconds((double)remainingTicks / Stopwatch.Frequency)
+                : TimeSpan.Zero;
+        }
+    }
 
     /// <summary>
     /// Gets the value.
@@ -93,12 +110,39 @@ public class MagicEffect : AsyncDisposable
     /// </summary>
     public void ResetTimer()
     {
-        if (this.IsDisposed)
+        lock (this._timerSync)
         {
-            throw new ObjectDisposedException(nameof(MagicEffect));
-        }
+            if (this.IsDisposed || this.IsDisposing)
+            {
+                throw new ObjectDisposedException(nameof(MagicEffect));
+            }
 
-        this._finishTimer.Change((int)this.Duration.TotalMilliseconds, Timeout.Infinite);
+            this.ChangeTimer(this.Duration);
+        }
+    }
+
+    /// <summary>
+    /// Decreases the timer by a given amount of <paramref name="seconds"/>.
+    /// </summary>
+    /// <param name="seconds">The seconds to decrease the timer for.</param>
+    public void DecreaseTimer(int seconds)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(seconds);
+
+        lock (this._timerSync)
+        {
+            if (this.IsDisposed || this.IsDisposing)
+            {
+                throw new ObjectDisposedException(nameof(MagicEffect));
+            }
+
+            var remainingTicks = Interlocked.Read(ref this._finishAtTimestamp) - Stopwatch.GetTimestamp();
+            var remainingTime = remainingTicks > 0
+                ? TimeSpan.FromSeconds((double)remainingTicks / Stopwatch.Frequency)
+                : TimeSpan.Zero;
+            var shortenedTime = remainingTime - TimeSpan.FromSeconds(seconds);
+            this.ChangeTimer(shortenedTime > TimeSpan.Zero ? shortenedTime : TimeSpan.Zero);
+        }
     }
 
     /// <inheritdoc/>
@@ -109,6 +153,11 @@ public class MagicEffect : AsyncDisposable
         this.EffectTimeOut = null;
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    private static long GetTimestampAfter(TimeSpan duration)
+    {
+        return Stopwatch.GetTimestamp() + (long)(duration.TotalSeconds * Stopwatch.Frequency);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -142,6 +191,12 @@ public class MagicEffect : AsyncDisposable
         {
             Debug.Fail(ex.Message, ex.StackTrace);
         }
+    }
+
+    private void ChangeTimer(TimeSpan duration)
+    {
+        Interlocked.Exchange(ref this._finishAtTimestamp, GetTimestampAfter(duration));
+        this._finishTimer.Change((int)duration.TotalMilliseconds, Timeout.Infinite);
     }
 
     /// <summary>
