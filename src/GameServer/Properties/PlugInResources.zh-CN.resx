@@ -2526,4 +2526,10 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>IShowItemCraftingPreviewPlugIn 的扩展实现，通过特定数据包将所有内容转发到游戏客户端。</value>
   </data>
+  <data name="IllusionTempleEnterHandlerPlugIn_Name" xml:space="preserve"><value>幻影寺院入场请求处理器</value></data>
+  <data name="IllusionTempleEnterHandlerPlugIn_Description" xml:space="preserve"><value>处理幻影寺院入场请求数据包。</value></data>
+  <data name="IllusionTempleRewardRequestHandlerPlugIn_Name" xml:space="preserve"><value>幻影寺院奖励请求处理器</value></data>
+  <data name="IllusionTempleRewardRequestHandlerPlugIn_Description" xml:space="preserve"><value>处理玩家关闭活动结果窗口时发送的幻影寺院奖励请求数据包。</value></data>
+  <data name="IllusionTempleSkillRequestHandlerPlugIn_Name" xml:space="preserve"><value>幻影寺院技能请求处理器</value></data>
+  <data name="IllusionTempleSkillRequestHandlerPlugIn_Description" xml:space="preserve"><value>处理幻影寺院特殊技能请求数据包。</value></data>
 </root>
