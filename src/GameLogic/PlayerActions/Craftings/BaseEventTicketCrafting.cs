@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -110,8 +111,8 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex, byte successRate)
     {
         var item = player.PersistenceContext.CreateNew<Item>();
-        item.Definition = player.GameContext.Configuration.Items.First(i => i.Name.ValueInNeutralLanguage == this._resultItemName);
         item.Level = this.GetEventLevel(requiredItems);
+        item.Definition = this.GetResultItemDefinition(player, item.Level);
         item.Durability = 1;
         if (player.TemporaryStorage is { } temporaryStorage)
         {
@@ -119,6 +120,17 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
         }
 
         return new List<Item> { item };
+    }
+
+    /// <summary>
+    /// Gets the item definition of the ticket which the crafting creates.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="eventLevel">The event level, which is the item level of the ticket.</param>
+    /// <returns>The item definition with the name of the result item.</returns>
+    protected virtual ItemDefinition GetResultItemDefinition(Player player, byte eventLevel)
+    {
+        return player.GameContext.Configuration.Items.First(i => i.Name.ValueInNeutralLanguage == this._resultItemName);
     }
 
     private byte GetEventLevel(IList<CraftingRequiredItemLink> requiredItems)
