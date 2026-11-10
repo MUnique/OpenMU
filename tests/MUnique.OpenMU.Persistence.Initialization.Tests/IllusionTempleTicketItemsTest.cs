@@ -128,7 +128,7 @@ internal class IllusionTempleTicketItemsTest
             AssertItems(gameConfiguration, expected);
             Assert.That(GetItem(gameConfiguration, TicketNumber), Is.SameAs(ownedTicketDefinition));
             Assert.That(GetItem(gameConfiguration, CovenantNumber), Is.SameAs(covenant));
-            Assert.That(installedUpdate.Version, Is.EqualTo(3));
+            Assert.That(installedUpdate.Version, Is.EqualTo(update.Version));
         }
     }
 
