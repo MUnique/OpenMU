@@ -2253,4 +2253,22 @@
   <data name="ScrollOfHealing" xml:space="preserve">
     <value>Schriftrolle der Heilung</value>
   </data>
+  <data name="HawkFigurine" xml:space="preserve">
+    <value>Falkenfigur</value>
+  </data>
+  <data name="GoatFigurine" xml:space="preserve">
+    <value>Ziegenfigur</value>
+  </data>
+  <data name="OakCharm" xml:space="preserve">
+    <value>Eichentalisman</value>
+  </data>
+  <data name="MapleCharm" xml:space="preserve">
+    <value>Ahorntalisman</value>
+  </data>
+  <data name="GoldenOakCharm" xml:space="preserve">
+    <value>Goldener Eichentalisman</value>
+  </data>
+  <data name="GoldenMapleCharm" xml:space="preserve">
+    <value>Goldener Ahorntalisman</value>
+  </data>
 </root>

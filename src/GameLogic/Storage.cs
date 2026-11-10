@@ -141,7 +141,7 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc/>
-    public async ValueTask<bool> AddItemAsync(Item item)
+    public virtual async ValueTask<bool> AddItemAsync(Item item)
     {
         var freeSlot = this.CheckInvSpace(item);
         if (freeSlot is null)

@@ -1018,4 +1018,7 @@ Inventarerweiterungen: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Diese Karte ist nicht verfügbar.</value>
   </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>Der gleiche Gegenstand wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
+  </data>
 </root>

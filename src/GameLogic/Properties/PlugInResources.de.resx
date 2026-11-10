@@ -2010,4 +2010,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch des mittleren Elite-Heiltranks verarbeitet. Er stellt einen Teil der Lebenspunkte sofort wieder her.</value>
   </data>
+  <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
+    <value>Im Inventar benutzte Gegenstände</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Description" xml:space="preserve">
+    <value>Gegenstände wie die Figuren und Talismane werden im Inventar benutzt. Solange so ein Gegenstand benutzt wird, gelten seine Boni.</value>
+  </data>
 </root>

@@ -2771,4 +2771,16 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Inventory item use request handler</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler for the request to start or stop using an item inside the inventory, like a figurine or a charm.</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Name" xml:space="preserve">
+    <value>Inventory item use changed</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Description" xml:space="preserve">
+    <value>The default implementation of the IInventoryItemUseChangedPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
 </root>

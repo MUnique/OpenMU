@@ -170,6 +170,11 @@ public class MoveItemAction
     private async ValueTask<bool> MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
         var wasEquipped = fromItemStorage == player.Inventory && fromSlot <= LastEquippableItemSlotIndex;
+
+        // An item which is used inside the inventory, like a charm, stays in use while it's moved inside the inventory.
+        using var keepInventoryUse = fromItemStorage == player.Inventory && toItemStorage == player.Inventory && toSlot > LastEquippableItemSlotIndex
+            ? player.Inventory.AsInventoryStorage?.KeepInventoryUseWhileMoving(item)
+            : null;
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
         var wasAdded = await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false);
         if (!wasAdded || (wasEquipped && !this.CompliesWithMapRequirements(player)))

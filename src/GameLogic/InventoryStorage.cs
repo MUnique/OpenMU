@@ -19,6 +19,8 @@ public class InventoryStorage : Storage, IInventoryStorage
 
     private readonly Player _player;
 
+    private Item? _itemMovedInsideInventory;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="InventoryStorage" /> class.
     /// </summary>
@@ -113,6 +115,22 @@ public class InventoryStorage : Storage, IInventoryStorage
             {
                 await this.RaiseEquippedItemsChangedAsync(convertedItem ?? item, true).ConfigureAwait(false);
             }
+            else
+            {
+                this.OnItemAddedToInventory(convertedItem ?? item);
+            }
+        }
+
+        return success;
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<bool> AddItemAsync(Item item)
+    {
+        var success = await base.AddItemAsync(item).ConfigureAwait(false);
+        if (success && !this.IsWearingSlot(item.ItemSlot))
+        {
+            this.OnItemAddedToInventory(item);
         }
 
         return success;
@@ -127,6 +145,23 @@ public class InventoryStorage : Storage, IInventoryStorage
         {
             await this.RaiseEquippedItemsChangedAsync(item, false).ConfigureAwait(false);
         }
+        else
+        {
+            this.OnItemRemovedFromInventory(item);
+        }
+    }
+
+    /// <summary>
+    /// Keeps the use state and the power-ups of an item which is used inside the inventory,
+    /// while it's moved to another slot of the inventory, until the returned object is disposed.
+    /// Otherwise, removing the item would stop its use, like when it leaves the inventory.
+    /// </summary>
+    /// <param name="item">The item which is moved inside the inventory.</param>
+    /// <returns>The object which ends keeping the use state when it's disposed.</returns>
+    public IDisposable KeepInventoryUseWhileMoving(Item item)
+    {
+        this._itemMovedInsideInventory = item;
+        return new MoveInsideInventoryScope(this);
     }
 
     /// <summary>
@@ -149,6 +184,52 @@ public class InventoryStorage : Storage, IInventoryStorage
         {
             await handler(eventArgs).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Handles an item which was added to an inventory slot which isn't equippable.
+    /// An item which is used inside the inventory gets its power-ups while it's in use.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    private void OnItemAddedToInventory(Item item)
+    {
+        if (this._player.Attributes is not { } attributes
+            || !item.IsUsedInsideInventory(this._gameContext))
+        {
+            return;
+        }
+
+        if (item.IsInUseInsideInventory(this._gameContext) && attributes.ItemPowerUps.ContainsKey(item))
+        {
+            // It's still in use, e.g. after it was moved inside the inventory.
+            return;
+        }
+
+        if ((int)item.Durability != InventoryUsedItemExtensions.InUseDurability
+            || this.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory(this._gameContext)))
+        {
+            // A new item starts without being used, and only one item of the same kind can be used at the same time.
+            item.Durability = InventoryUsedItemExtensions.NotInUseDurability;
+        }
+
+        attributes.UpdateInventoryUsedItemPowerUps(item, this._gameContext);
+    }
+
+    /// <summary>
+    /// Handles an item which was removed from an inventory slot which isn't equippable.
+    /// An item which is used inside the inventory stops being used when it leaves the inventory, e.g. when it's dropped.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    private void OnItemRemovedFromInventory(Item item)
+    {
+        if (item == this._itemMovedInsideInventory
+            || !item.IsUsedInsideInventory(this._gameContext))
+        {
+            return;
+        }
+
+        item.Durability = InventoryUsedItemExtensions.NotInUseDurability;
+        this._player.Attributes?.RemoveInventoryUsedItemPowerUps(item);
     }
 
     private bool IsWearingSlot(int slot)
@@ -205,10 +286,14 @@ public class InventoryStorage : Storage, IInventoryStorage
             powerUp.Dispose();
         }
 
-        var factory = this._gameContext?.ItemPowerUpFactory;
-        if (factory != null)
+        if (this._gameContext?.ItemPowerUpFactory is { } factory)
         {
             foreach (var item in this.EquippedItems)
+            {
+                this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
+            }
+
+            foreach (var item in this.Items.Where(item => item.IsInUseInsideInventory(this._gameContext)))
             {
                 this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
             }
@@ -238,5 +323,28 @@ public class InventoryStorage : Storage, IInventoryStorage
 
         var factory = this._gameContext.ItemPowerUpFactory;
         this._player.Attributes.ItemSetPowerUps = factory.GetSetPowerUps(this.EquippedItems, this._player.Attributes, this._player.GameContext.Configuration).ToList();
+    }
+
+    /// <summary>
+    /// The scope in which an item is moved inside the inventory, see <see cref="KeepInventoryUseWhileMoving"/>.
+    /// </summary>
+    private sealed class MoveInsideInventoryScope : IDisposable
+    {
+        private readonly InventoryStorage _inventory;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MoveInsideInventoryScope"/> class.
+        /// </summary>
+        /// <param name="inventory">The inventory.</param>
+        public MoveInsideInventoryScope(InventoryStorage inventory)
+        {
+            this._inventory = inventory;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            this._inventory._itemMovedInsideInventory = null;
+        }
     }
 }

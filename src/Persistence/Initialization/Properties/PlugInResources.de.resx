@@ -928,4 +928,10 @@
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt ihre Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert. Außerdem werden die Magieeffekte von Ice Arrow Str, Chain Drive Str, Strike of Destruction Str und Poison Str an die Magieeffekte ihrer Basisfähigkeiten angeglichen.</value>
   </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Figuren und Talismane hinzufügen</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Falken- und Ziegenfigur sowie die (goldenen) Eichen- und Ahorntalismane hinzu, die ihre Boni geben, während sie im Inventar benutzt werden.</value>
+  </data>
 </root>

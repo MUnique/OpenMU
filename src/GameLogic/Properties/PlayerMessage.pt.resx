@@ -1171,4 +1171,7 @@ Extensões de inventário: {18}</value>
   <data name="MiniGameTicketRequired" xml:space="preserve">
     <value>Você precisa de um ingresso para entrar neste evento.</value>
   </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>O mesmo item já está em uso. Pare de usá-lo primeiro e tente novamente.</value>
+  </data>
 </root>
