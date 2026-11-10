@@ -229,7 +229,8 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// Version one swapped the numbers of the Illusion Sorcerer Covenant and the Scroll of Blood, believing the
     /// covenant was the ticket. It's the other way around, so version three leaves the original numbers as they
     /// are, and gives a database which got the swap the original item data back (see <see cref="RestoreTicketItems"/>).
-    /// It replaces the ticket binding repair of version two, which pointed the temples at the covenant.
+    /// The ticket binding repair of version two pointed the temples which reference 13/50 at 13/51, then named the
+    /// covenant; the restoration still makes that move, as 13/51 becomes the Scroll of Blood.
     /// </remarks>
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
     {
