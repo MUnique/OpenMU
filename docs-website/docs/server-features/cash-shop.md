@@ -240,6 +240,18 @@ sell the card.
 While the plugin of a special item is deactivated, its packages can't be bought,
 and bought items stay in the storage until the plugin is active again.
 
+### Talisman of Resurrection
+
+When a character dies while it carries a Talisman of Resurrection in its
+inventory, it's respawned at the place of its death instead of the safezone, and
+one talisman is used up. It doesn't apply in mini games, duels and guild wars,
+which have their own spawn places. The plugin *Talisman of Resurrection* can be
+deactivated on the **Plugins** page.
+
+The item exists in a new Season 6 database. Existing databases get it with the
+optional configuration update *Add the Talisman of Resurrection*, which also
+puts its packages on sale.
+
 ### Invitation to Santa Village
 
 The Invitation to Santa Village can be used ten times. Each use warps the

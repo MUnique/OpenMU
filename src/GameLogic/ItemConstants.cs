@@ -75,6 +75,11 @@ public class ItemConstants
     public static ItemIdentifier CommandResetFruit => new(58, 13);
 
     /// <summary>
+    /// Gets the identifier for the Talisman of Resurrection, which respawns a dead player at the place of its death.
+    /// </summary>
+    public static ItemIdentifier TalismanOfResurrection => new(69, 13);
+
+    /// <summary>
     /// Gets the identifier for the fenrir.
     /// </summary>
     public static ItemIdentifier Fenrir => new(37, 13);

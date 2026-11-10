@@ -1432,6 +1432,12 @@
   <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve">
     <value>将正在参加足球比赛的玩家生成在足球场上。</value>
   </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Name" xml:space="preserve">
+    <value>复活护身符</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Description" xml:space="preserve">
+    <value>携带复活护身符的玩家死亡后在死亡地点复活，并消耗该护身符。不适用于小游戏、决斗和战盟战。</value>
+  </data>
   <data name="PetExperiencePlugIn_Name" xml:space="preserve">
     <value>宠物经验分配</value>
   </data>
@@ -1804,4 +1810,10 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption" xml:space="preserve">
+    <value>物品组</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption" xml:space="preserve">
+    <value>物品编号</value>
+  </data>
 </root>

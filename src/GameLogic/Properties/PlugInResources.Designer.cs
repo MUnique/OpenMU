@@ -4702,6 +4702,12 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>Gets the localized SoccerSpawnGatePlugIn_Description text.</summary>
         public static string SoccerSpawnGatePlugIn_Description => ResourceManager.GetString("SoccerSpawnGatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Name text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Name => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Description text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Description => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized PetExperiencePlugIn_Name text.</summary>
         public static string PetExperiencePlugIn_Name => ResourceManager.GetString("PetExperiencePlugIn_Name", resourceCulture)!;
 
@@ -5088,5 +5094,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture)!;
+
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture)!;
     }
 }

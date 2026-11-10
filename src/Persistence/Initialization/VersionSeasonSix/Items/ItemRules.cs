@@ -200,6 +200,7 @@ public class ItemRules : InitializerBase
         Rule(13, 65, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Spirit of Guardian
         Rule(13, 67, Blocked.Repair), // Pet Rudolf
         Rule(13, 68, Blocked.Repair), // Snowman Transformation Ring
+        Rule(13, 69, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Resurrection
         Rule(13, 76, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Panda Ring
         Rule(13, 80, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Panda
         Rule(13, 93, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Ascension

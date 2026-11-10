@@ -1427,6 +1427,8 @@
   <data name="DuelSpawnGatePlugIn_Description" xml:space="preserve"><value>Spawns a player which is in a duel at its side of the duel area.</value></data>
   <data name="SoccerSpawnGatePlugIn_Name" xml:space="preserve"><value>SoccerSpawnGatePlugIn</value></data>
   <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve"><value>Spawns a player of a running soccer match on the soccer ground.</value></data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Name" xml:space="preserve"><value>Talisman of Resurrection</value></data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Description" xml:space="preserve"><value>Respawns a dead player at the place of its death, when it carries a Talisman of Resurrection, which is used up. It doesn't apply in mini games, duels and guild wars.</value></data>
   <data name="PetExperiencePlugIn_Name" xml:space="preserve"><value>PetExperiencePlugIn</value></data>
   <data name="PetExperiencePlugIn_Description" xml:space="preserve"><value>Gives the trainable pets of a player a share of the experience which the player gained for a kill.</value></data>
   <data name="PeriodicInvasionConfiguration_ForceSingleMap_Name" xml:space="preserve"><value>Force Single Map</value></data>
@@ -1850,5 +1852,11 @@
   </data>
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption" xml:space="preserve">
+    <value>Item number</value>
   </data>
 </root>
