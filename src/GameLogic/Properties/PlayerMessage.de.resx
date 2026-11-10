@@ -1018,4 +1018,7 @@ Inventarerweiterungen: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Diese Karte ist nicht verfügbar.</value>
   </data>
+  <data name="ItemCantBeUsedOnThisMap" xml:space="preserve">
+    <value>Dieser Gegenstand kann auf dieser Karte nicht benutzt werden.</value>
+  </data>
 </root>

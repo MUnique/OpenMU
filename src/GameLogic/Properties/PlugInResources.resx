@@ -1851,4 +1851,19 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
   </data>
+  <data name="GladiatorsHonorConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gladiator's Honor consume handler</value>
+  </data>
+  <data name="GladiatorsHonorConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Applies the effect of the Gladiator's Honor, which can only be used in Vulcanus.</value>
+  </data>
+  <data name="VulcanusExperiencePlugIn_Name" xml:space="preserve">
+    <value>Vulcanus experience bonus</value>
+  </data>
+  <data name="VulcanusExperiencePlugIn_Description" xml:space="preserve">
+    <value>Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator's Honor.</value>
+  </data>
+  <data name="VulcanusMapConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>Map number</value>
+  </data>
 </root>

@@ -3189,5 +3189,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be used on this map..
+        /// </summary>
+        public static string ItemCantBeUsedOnThisMap {
+            get {
+                return ResourceManager.GetString("ItemCantBeUsedOnThisMap", resourceCulture);
+            }
+        }
     }
 }

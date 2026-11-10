@@ -20,7 +20,7 @@ internal class BuffItemsDataTest
 {
     private static readonly (byte Group, short Number)[] BuffItems =
     [
-        (13, 43), (13, 44), (13, 45), (13, 62), (13, 63), (13, 93), (13, 94), (13, 104), (13, 105),
+        (13, 43), (13, 44), (13, 45), (13, 62), (13, 63), (13, 93), (13, 94), (13, 95), (13, 104), (13, 105),
         (14, 72), (14, 73), (14, 74), (14, 75), (14, 76), (14, 77), (14, 78), (14, 79), (14, 80), (14, 81), (14, 82),
         (14, 97), (14, 98), (14, 140),
     ];
@@ -123,6 +123,7 @@ internal class BuffItemsDataTest
             AssertEffect(gameConfiguration, 13, 63, "Seal of Divinity", 1, 1, 88, 13, 1800, (Stats.ManaRecoveryMultiplier, 0.05f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 13, 93, "Master Seal of Ascension", 1, 1, 101, 24, 1800, (Stats.MasterExperienceRate, 1.5f, AggregateType.Multiplicate));
             AssertEffect(gameConfiguration, 13, 94, "Master Seal of Wealth", 1, 1, 102, 24, 1800, (Stats.MasterExperienceRate, 2f, AggregateType.Multiplicate));
+            AssertEffect(gameConfiguration, 13, 95, "Gladiator's Honor", 1, 1, 103, 79, 1800, (Stats.VulcanusExperienceRate, 0.2f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 14, 72, "Scroll of Quickness", 2, 2, 0x2C, 67, 1800, (Stats.AttackSpeedAny, 15f, AggregateType.AddRaw));
             AssertEffect(gameConfiguration, 14, 73, "Scroll of Defense", 2, 2, 0x2D, 68, 1800, (Stats.DefenseFinal, 30f, AggregateType.AddFinal));
             AssertEffect(gameConfiguration, 14, 74, "Scroll of Wrath", 2, 2, 0x2E, 69, 1800, (Stats.PhysicalBaseDmg, 30f, AggregateType.AddFinal));

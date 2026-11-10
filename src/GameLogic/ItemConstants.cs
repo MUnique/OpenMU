@@ -85,6 +85,11 @@ public class ItemConstants
     public static ItemIdentifier InvitationToSantaVillage => new(66, 13);
 
     /// <summary>
+    /// Gets the identifier for the Gladiator's Honor, which increases the experience in Vulcanus.
+    /// </summary>
+    public static ItemIdentifier GladiatorsHonor => new(95, 13);
+
+    /// <summary>
     /// Gets the identifier for the demon.
     /// </summary>
     public static ItemIdentifier Demon => new(64, 13);
