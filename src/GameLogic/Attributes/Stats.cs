@@ -1483,6 +1483,20 @@ public class Stats
     public static AttributeDefinition HitShockDamageThreshold { get; } = new(new Guid("22F07E43-9A6A-4007-9EB4-D1B549F7FDC3"), "Hit Shock Damage Threshold", "The minimum damage required for a hit to cause hit shock.");
 
     /// <summary>
+    /// Gets the shield ratio attribute definition.
+    /// </summary>
+    public static AttributeDefinition ShieldRatio { get; } = new(new Guid("7D2F9A1E-4C6B-48D3-A7F1-9E2C5B8D4A6F"), "Shield Ratio", "The ratio that defines how much of the hit damage goes to shield.")
+    {
+        MaximumValue = 1,
+    };
+
+    /// <summary>
+    /// Gets the over-shield burst damage ratio attribute definition.
+    /// </summary>
+    /// <remarks>The health damage ratio that when overcome triggers the shield burst effect.</remarks>
+    public static AttributeDefinition OverShieldBurstDamageRatio { get; } = new(new Guid("9A2D4F7C-B6E1-4A83-9D2F-1C7E5B3A8D4F"), "Over-shield Burst Damage Ratio", "The over-shield health damage ratio that triggers a shield burst effect to be displayed.");
+
+    /// <summary>
     /// Gets the is uniria equipped attribute definition.
     /// </summary>
     public static AttributeDefinition IsUniriaEquipped { get; } = new(new Guid("68338496-A8C6-4884-B595-64390861E7E6"), "Is Uniria Equipped", string.Empty);

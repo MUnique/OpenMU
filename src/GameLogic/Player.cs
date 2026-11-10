@@ -1723,8 +1723,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
         if (oversd < 0)
         {
-            this.Attributes[Stats.CurrentShield] = 0;
             healthDamage += (uint)(oversd * (-1));
+
+            if (this.Attributes[Stats.CurrentShield] > 0
+                && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
+                && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio])
+            {
+                await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.ShieldBurst), true).ConfigureAwait(false);
+            }
+
+            this.Attributes[Stats.CurrentShield] = 0;
         }
         else
         {

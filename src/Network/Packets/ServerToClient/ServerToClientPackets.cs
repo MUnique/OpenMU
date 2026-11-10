@@ -13533,9 +13533,9 @@ public readonly struct ShowEffect
             LevelUp = 16,
 
         /// <summary>
-        /// The players shield depleted.
+        /// The player's shield depleted with significant damage to health.
         /// </summary>
-            ShieldLost = 17,
+            ShieldBurst = 17,
     }
 
     private readonly Memory<byte> _data;
