@@ -133,6 +133,30 @@ internal class IllusionTempleTicketItemsTest
     }
 
     /// <summary>
+    /// Tests that the update changes neither item when only one of the two has the swapped name, because the server
+    /// owner renamed the other: the data of one item alone can't be swapped.
+    /// </summary>
+    /// <param name="renamedNumber">The number of the item which the server owner renamed.</param>
+    /// <returns>The task.</returns>
+    [TestCase(CovenantNumber)]
+    [TestCase(TicketNumber)]
+    public async Task UpdateKeepsPartlySwappedItemsAsync(short renamedNumber)
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        Swap(gameConfiguration, SwappedState.RenumberedByUpdate);
+        GetItem(gameConfiguration, renamedNumber).Name = "Renamed by the owner";
+        var expected = CaptureItems(gameConfiguration);
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 2;
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        AssertItems(gameConfiguration, expected);
+    }
+
+    /// <summary>
     /// Captures the data of the two items, and the data which references them: the drop item groups, the mini
     /// game definitions which have them as ticket, and the items of the merchant stores.
     /// </summary>
