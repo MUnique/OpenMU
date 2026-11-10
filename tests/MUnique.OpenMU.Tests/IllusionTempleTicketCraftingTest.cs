@@ -76,6 +76,37 @@ public class IllusionTempleTicketCraftingTest
     }
 
     /// <summary>
+    /// Tests that the combination gives the ticket which the temple of the level accepts, also when the server
+    /// owner selected another ticket item, so the crafting and the temples stay in step.
+    /// </summary>
+    [Test]
+    public async ValueTask CombinationGivesTheTicketOfTheTempleAsync()
+    {
+        const byte level = 3;
+        var temple = this._gameConfiguration.MiniGameDefinitions.Single(definition => definition.Type == MiniGameType.IllusionTemple && definition.TicketItemLevel == level);
+        var originalTicket = temple.TicketItem;
+        var selectedTicket = this.GetItem(EventItemGroup, OldScrollNumber);
+        temple.TicketItem = selectedTicket;
+        try
+        {
+            var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+            await this.AddToChaosMachineAsync(player, EventItemGroup, OldScrollNumber, level).ConfigureAwait(false);
+            await this.AddToChaosMachineAsync(player, EventItemGroup, CovenantNumber, level).ConfigureAwait(false);
+            await this.AddJewelOfChaosAsync(player).ConfigureAwait(false);
+            var crafting = new TestableIllusionTempleTicketCrafting();
+
+            Assert.That(crafting.TryGetRequiredItems(player, out var requiredItems, out _), Is.Null);
+            var result = await crafting.CreateResultItemsAsync(requiredItems, player).ConfigureAwait(false);
+
+            Assert.That(result.Single().Definition, Is.SameAs(selectedTicket));
+        }
+        finally
+        {
+            temple.TicketItem = originalTicket;
+        }
+    }
+
+    /// <summary>
     /// Tests that the Scroll of Blood is no ingredient: it is the result, so an Old Scroll and a Scroll of Blood
     /// are refused.
     /// </summary>
