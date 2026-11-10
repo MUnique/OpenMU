@@ -37,7 +37,8 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     internal const string PlugInDescription = "This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC. "
                                               + "If the items 13/50 and 13/51 have swapped data (Scroll of Blood and Illusion Sorcerer Covenant), it gives them their original data back: "
                                               + "names, sizes, durability, levels and drops, the drop item groups, the temple tickets and the merchant items of 13/51. "
-                                              + "If only one of the two has the swapped name, it changes neither.";
+                                              + "If only one of the two has the swapped name, it changes neither. "
+                                              + "References to the two items which you added yourself (craftings, quests, item drops, plug-in settings) stay as they are: check them after the update.";
 
     /// <summary>
     /// The number of the Mirage NPC, which opens the illusion temple dialog.
