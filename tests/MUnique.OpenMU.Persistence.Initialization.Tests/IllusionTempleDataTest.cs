@@ -202,14 +202,66 @@ internal class IllusionTempleDataTest
     }
 
     /// <summary>
-    /// Owner-selected tickets and detached definitions with the legacy ticket's id are not defaults to repair.
+    /// A temple definition with an own id or ticket level which references 13/50, the Scroll of Blood of the swapped
+    /// data, follows it to the ticket 13/51 and keeps its id and ticket level, so it doesn't accept the Illusion
+    /// Sorcerer Covenant.
     /// </summary>
-    /// <param name="customization">The owner-selected ticket, detached reference, definition id or ticket level to preserve.</param>
+    /// <param name="customization">The customized definition id or ticket level.</param>
+    /// <param name="installedVersion">The installed version of the update.</param>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateMovesCustomizedTempleToTicketAsync(
+        [Values("definition-id", "ticket-level")] string customization,
+        [Values(1, 2)] int installedVersion)
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        IllusionTempleTicketItemsTest.RenumberLikeVersionOne(gameConfiguration);
+        var swappedScrollOfBlood = IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.CovenantNumber);
+        var ticket = IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.TicketNumber);
+
+        var definition = GetTempleDefinitions(gameConfiguration).Single(temple => temple.GameLevel == 6);
+        if (customization == "definition-id")
+        {
+            ((IIdentifiable)definition).Id = Guid.NewGuid();
+        }
+
+        var definitionId = ((IIdentifiable)definition).Id;
+        definition.TicketItem = swappedScrollOfBlood;
+        var selectedLevel = customization == "ticket-level" ? 3 : 6;
+        definition.TicketItemLevel = selectedLevel;
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = installedVersion;
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(definition.TicketItem, Is.SameAs(ticket));
+                Assert.That(ticket.Name.ValueInNeutralLanguage, Is.EqualTo("Scroll of Blood"));
+                Assert.That(definition.TicketItemLevel, Is.EqualTo(selectedLevel));
+                Assert.That(((IIdentifiable)definition).Id, Is.EqualTo(definitionId));
+            });
+        }
+    }
+
+    /// <summary>
+    /// A ticket of another item, and a detached item definition with the id of the swapped Scroll of Blood, aren't
+    /// item definitions of this configuration which the update restores, so the temple keeps them.
+    /// </summary>
+    /// <param name="customization">The owner-selected ticket or detached reference to preserve.</param>
     /// <param name="installedVersion">The installed version of the update.</param>
     /// <returns>The task.</returns>
     [Test]
     public async Task UpdatePreservesCustomizedTempleTicketBindingAsync(
-        [Values("owned-ticket", "detached-ticket", "definition-id", "ticket-level")] string customization,
+        [Values("owned-ticket", "detached-ticket")] string customization,
         [Values(1, 2)] int installedVersion)
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
@@ -219,7 +271,7 @@ internal class IllusionTempleDataTest
         using var context = contextProvider.CreateNewContext();
         var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
 
-        // Version one renumbered the Scroll of Blood to 50, which is the state in which seeded bindings are repaired.
+        // Version one renumbered the Scroll of Blood to 50, which is the state in which the update moves bindings.
         IllusionTempleTicketItemsTest.RenumberLikeVersionOne(gameConfiguration);
         var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
         var selectedTicket = customization == "owned-ticket"
@@ -237,15 +289,7 @@ internal class IllusionTempleDataTest
         }
 
         var definition = GetTempleDefinitions(gameConfiguration).Single(temple => temple.GameLevel == 6);
-        if (customization == "definition-id")
-        {
-            ((IIdentifiable)definition).Id = Guid.NewGuid();
-        }
-
-        var definitionId = ((IIdentifiable)definition).Id;
         definition.TicketItem = selectedTicket;
-        var selectedLevel = customization == "ticket-level" ? 3 : 6;
-        definition.TicketItemLevel = selectedLevel;
 
         var update = new IllusionTempleDataUpdatePlugIn();
         var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
@@ -255,8 +299,6 @@ internal class IllusionTempleDataTest
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
             Assert.That(definition.TicketItem, Is.SameAs(selectedTicket));
-            Assert.That(definition.TicketItemLevel, Is.EqualTo(selectedLevel));
-            Assert.That(((IIdentifiable)definition).Id, Is.EqualTo(definitionId));
         }
     }
 

@@ -275,7 +275,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
 
     /// <summary>
     /// Gives the items 13/50 and 13/51 their original data back, if the configuration has the data of the
-    /// two swapped, and points the seeded temple definitions at the ticket 13/51.
+    /// two swapped, and points the mini game definitions which reference 13/50 at the ticket 13/51.
     /// </summary>
     /// <remarks>
     /// Version one of this update swapped the numbers of the two item definitions, and the data initialization of
@@ -305,19 +305,16 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <summary>
-    /// Points the seeded temple definitions which reference the item 13/50 at the ticket 13/51.
+    /// Points the mini game definitions which reference the item 13/50 at the ticket 13/51.
     /// A database which had temple definitions before version one of this update renumbered the items kept
-    /// them on the item definition which got the number 50. Only the unchanged default temple definition ids and ticket levels, and only the item
-    /// definition of this configuration are recognized, so a ticket which the server owner selected stays.
+    /// them on the item definition which got the number 50, and a server owner who chose a ticket in the
+    /// swapped state chose 13/50 as the Scroll of Blood. That item definition becomes the Illusion Sorcerer
+    /// Covenant, so every definition follows the Scroll of Blood to 13/51, also one with an own id or ticket
+    /// level. A ticket of another item, or of an item definition of another configuration, stays.
     /// </summary>
     private static void RepairTicketBindings(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
     {
-        foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(definition =>
-                     definition.Type == MiniGameType.IllusionTemple
-                     && definition.GameLevel is >= 1 and <= 6
-                     && definition.TicketItemLevel == definition.GameLevel
-                     && definition.GetId() == GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.IllusionTemple, definition.GameLevel)
-                     && ReferenceEquals(definition.TicketItem, covenant)))
+        foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(definition => ReferenceEquals(definition.TicketItem, covenant)))
         {
             definition.TicketItem = ticket;
         }
