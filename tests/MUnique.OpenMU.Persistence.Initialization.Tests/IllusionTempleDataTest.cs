@@ -182,6 +182,7 @@ internal class IllusionTempleDataTest
         }
 
         var levelsBefore = definitions.Select(definition => definition.TicketItemLevel).ToArray();
+        var itemsBefore = gameConfiguration.Items.ToArray();
         var update = new IllusionTempleDataUpdatePlugIn();
         var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
         installedUpdate.Version = 1;
@@ -196,7 +197,10 @@ internal class IllusionTempleDataTest
                 Assert.That(IllusionTempleTicketItemsTest.GetItem(gameConfiguration, IllusionTempleTicketItemsTest.CovenantNumber), Is.SameAs(covenant));
                 Assert.That(definitions.Select(definition => definition.TicketItem), Has.All.SameAs(ownedTicketDefinition));
                 Assert.That(GetTempleDefinitions(gameConfiguration), Has.Count.EqualTo(definitions.Count));
+                Assert.That(definitions.All(original => gameConfiguration.MiniGameDefinitions.Any(current => ReferenceEquals(current, original))), Is.True);
                 Assert.That(definitions.Select(definition => definition.TicketItemLevel), Is.EqualTo(levelsBefore));
+                Assert.That(gameConfiguration.Items, Has.Count.EqualTo(itemsBefore.Length));
+                Assert.That(itemsBefore.All(original => gameConfiguration.Items.Any(current => ReferenceEquals(current, original))), Is.True);
             });
         }
     }
