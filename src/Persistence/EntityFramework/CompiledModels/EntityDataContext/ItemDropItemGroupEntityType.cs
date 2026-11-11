@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup),
                 baseEntityType,
-                propertyCount: 15,
+                propertyCount: 17,
                 navigationCount: 2,
                 foreignKeyCount: 2,
                 unnamedIndexCount: 2,
@@ -68,6 +68,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup).GetField("<DropEffect>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             dropEffect.SetSentinelFromProviderValue(0);
             dropEffect.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentOptionsAddChance = runtimeEntityType.AddProperty(
+                "ExcellentOptionsAddChance",
+                typeof(float?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DropItemGroup).GetProperty("ExcellentOptionsAddChance", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DropItemGroup).GetField("<ExcellentOptionsAddChance>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            excellentOptionsAddChance.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentOptionsMaximumOptionsPerItem = runtimeEntityType.AddProperty(
+                "ExcellentOptionsMaximumOptionsPerItem",
+                typeof(int?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DropItemGroup).GetProperty("ExcellentOptionsMaximumOptionsPerItem", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.DropItemGroup).GetField("<ExcellentOptionsMaximumOptionsPerItem>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            excellentOptionsMaximumOptionsPerItem.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var itemDefinitionId = runtimeEntityType.AddProperty(
                 "ItemDefinitionId",

@@ -137,6 +137,26 @@ The announcements are shown in their order; after the last one, it starts over
 with the first one. Each game server has its own rotation. The text can be translated:
 players see the translation for their language, if there is one.
 
+## Jewels and refine stones
+
+The handlers which upgrade an item option — the *Jewel of Life*, the *Jewel of
+Harmony* and the refine stones — share one configuration type, so their
+behaviour can be changed without a rebuild. Each of them has its own default
+values; the configuration contains:
+
+| Field | Meaning |
+|---|---|
+| Option type | The item option type which is upgraded: the normal item option for the Jewel of Life, the harmony option for the Harmony jewel and the refine stones. |
+| Adds the option | Whether an item without the option can get it by consuming the source item. |
+| Increases the option | Whether the level of an existing option can be increased. |
+| Success chance | The chance between 0 and 1 that an attempt succeeds. The Jewel of Life uses `0.5`. |
+| Behaviour on failure | `None` keeps the option level as it is, `SetOptionToBaseLevel` resets it to its lowest level, and `RemoveOption` removes the option. |
+| Boost option type | An option of the target item which increases the success chance, e.g. luck. |
+| Success chance boost | The additional chance when the target item has the boost option. |
+
+The value is not limited by the game client: it doesn't display a success chance
+for these jewels, so a server owner can use any value between 0 and 1.
+
 ## Writing your own plugin
 
 Implementing a plugin is documented next to the code, in the

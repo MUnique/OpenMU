@@ -2337,4 +2337,10 @@
   <data name="InvitationToSantaVillage" xml:space="preserve">
     <value>Invitation to Santa Village</value>
   </data>
+  <data name="TalismanOfGuardian" xml:space="preserve">
+    <value>Talisman of Guardian</value>
+  </data>
+  <data name="TalismanOfItemProtection" xml:space="preserve">
+    <value>Talisman of Item Protection</value>
+  </data>
 </root>

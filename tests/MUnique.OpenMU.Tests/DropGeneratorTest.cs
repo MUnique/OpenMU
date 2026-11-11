@@ -1,4 +1,4 @@
-﻿// <copyright file="DropGeneratorTest.cs" company="MUnique">
+// <copyright file="DropGeneratorTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -313,6 +313,74 @@ public class DropGeneratorTest
         Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(50));
     }
 
+    /// <summary>
+    /// Tests that a drop group can override the maximum number of excellent options of the item definition,
+    /// so that e.g. a specific level of a box of kundun can drop items with more excellent options.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropUsesMaximumOptionsOfDropGroup()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 3);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+        dropGroup.ExcellentOptionsMaximumOptionsPerItem = 3;
+        dropGroup.ExcellentOptionsAddChance = 1f;
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(3));
+    }
+
+    /// <summary>
+    /// Tests that the maximum number of excellent options of the item definition is used when the drop group doesn't override it.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropUsesMaximumOptionsOfItemDefinition()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 3, maximumOptionsPerItem: 2);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(2));
+    }
+
+    /// <summary>
+    /// Tests that a drop group which allows more excellent options than the item definition provides
+    /// doesn't try to add more than the available ones.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropStopsAtAvailableOptions()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 2);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+        dropGroup.ExcellentOptionsMaximumOptionsPerItem = 5;
+        dropGroup.ExcellentOptionsAddChance = 1f;
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(2));
+    }
+
+    private IRandomizer GetRandomizerWithIncreasingInts()
+    {
+        var randomizer = new Mock<IRandomizer>();
+        var counter = 0;
+        randomizer.Setup(r => r.NextInt(It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((int min, int max) => min + (counter++ % (max - min)));
+        randomizer.Setup(r => r.NextDouble()).Returns(0);
+        randomizer.Setup(r => r.NextRandomBool(It.IsAny<double>())).Returns(true);
+        return randomizer.Object;
+    }
+
     private static void AssertExcellentWithoutSockets(Item? item, ItemDefinition expectedDefinition)
     {
         Assert.That(item, Is.Not.Null);
@@ -341,11 +409,14 @@ public class DropGeneratorTest
         return dropGroup.Object;
     }
 
-    private ItemDefinition CreateExcellentCapableItemDefinition(byte group, short number, int maximumSockets)
+    private ItemDefinition CreateExcellentCapableItemDefinition(byte group, short number, int maximumSockets, int optionCount = 1, int maximumOptionsPerItem = 1)
     {
-        var excellentOption = new BasicModel.IncreasableItemOption { OptionType = ItemOptionTypes.Excellent };
-        var excellentOptions = new BasicModel.ItemOptionDefinition { MaximumOptionsPerItem = 1 };
-        excellentOptions.PossibleOptions.Add(excellentOption);
+        var excellentOptions = new BasicModel.ItemOptionDefinition { MaximumOptionsPerItem = maximumOptionsPerItem };
+        for (int i = 0; i < optionCount; i++)
+        {
+            // Distinct ids, because the basic model determines equality by the id.
+            excellentOptions.PossibleOptions.Add(new BasicModel.IncreasableItemOption { Id = Guid.NewGuid(), OptionType = ItemOptionTypes.Excellent });
+        }
 
         var itemDefinition = new Mock<ItemDefinition>();
         itemDefinition.SetupAllProperties();

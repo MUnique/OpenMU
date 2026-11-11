@@ -940,4 +940,10 @@
   <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve">
     <value>Entfernt die doppelt definierten Monster-Spawns: 254 im Dungeon, der deshalb doppelt so viele Monster wie vorgesehen hatte, und 2 im Lost Tower. Andere Spawns bleiben erhalten.</value>
   </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>Schutztalismane hinzufügen</value>
+  </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt den Talisman des Wächters, der vor der Todesstrafe schützt, und den Talisman des Gegenstandsschutzes hinzu, der die Haltbarkeit der ausgerüsteten Gegenstände erhält.</value>
+  </data>
 </root>

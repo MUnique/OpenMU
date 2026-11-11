@@ -444,4 +444,6 @@
   <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>Replaces the monster spawns of Devias, Noria and Elvenland, which are spread over quarters of the map, with the Season 6 layout of smaller areas and single spots. It adds the spiders to Noria and Elvenland. Customized spawns of the field monsters of these maps are overwritten. Also removes the duplicate monster spawns of Dungeon (254) and Lost Tower (2).</value></data>
   <data name="FieldMonsterSpawnsUpdatePlugInBase_Name" xml:space="preserve"><value>Remove duplicate monster spawns of Dungeon and Lost Tower</value></data>
   <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve"><value>Removes the monster spawns which are defined twice: 254 in Dungeon, which therefore had twice the intended monsters, and 2 in Lost Tower. Other spawns are kept.</value></data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve"><value>Add the protection talismans</value></data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Guardian, which protects from the death penalty, and the Talisman of Item Protection, which keeps the durability of the equipped items.</value></data>
 </root>

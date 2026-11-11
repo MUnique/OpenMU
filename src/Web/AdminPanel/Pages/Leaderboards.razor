@@ -27,7 +27,7 @@ else
                 {
                     <li class="nav-item">
                         <button type="button" class="nav-link @(miniGameType == this._selectedType ? "active" : string.Empty)" @onclick="() => this.SelectTypeAsync(miniGameType)">
-                            @CaptionHelper.SeparateWords(miniGameType.ToString())
+                            @(Resources.ResourceManager.GetString($"LeaderboardMiniGame_{miniGameType}", Resources.Culture) ?? CaptionHelper.SeparateWords(miniGameType.ToString()))
                         </button>
                     </li>
                 }
