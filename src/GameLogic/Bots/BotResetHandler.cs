@@ -115,7 +115,7 @@ internal static class BotResetHandler
 
         attributes[Stats.Resets] = resetProgression.NextResetCount;
         attributes[Stats.Level] = configuration.LevelAfterReset;
-        character.Experience = 0;
+        character.Experience = ResetCharacterAction.GetExperienceForLevel(player.GameContext, configuration.LevelAfterReset);
 
         if (configuration.ResetStats)
         {
