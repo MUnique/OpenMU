@@ -48,6 +48,16 @@ internal class BuffItems : InitializerBase
     private const byte DamageRateScrollSubType = 14;
 
     /// <summary>
+    /// The sub type of the effect of the Gladiator's Honor.
+    /// </summary>
+    private const byte GladiatorsHonorSubType = 79;
+
+    /// <summary>
+    /// The experience rate which the Gladiator's Honor adds in Vulcanus, as the game client describes it.
+    /// </summary>
+    private const float GladiatorsHonorExperienceRate = 0.2f;
+
+    /// <summary>
     /// The defense which the game client shows for the scroll of defense.
     /// </summary>
     /// <remarks>
@@ -97,6 +107,10 @@ internal class BuffItems : InitializerBase
             this.CreateItem(13, 63, 1, 1, () => ItemNames.SealOfDivinity, MagicEffectNumber.SealOfDivinity, RecoverySealSubType, SealDuration, false, Boost.Add(Stats.ManaRecoveryMultiplier, 0.05f)),
             this.CreateItem(13, 93, 1, 1, () => ItemNames.MasterSealOfAscension, MagicEffectNumber.MasterSealOfAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 1.5f)),
             this.CreateItem(13, 94, 1, 1, () => ItemNames.MasterSealOfWealth, MagicEffectNumber.MasterSealOfWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 2f)),
+
+            // The Gladiator's Honor, which can only be used in Vulcanus and only increases the experience there.
+            // The game client doesn't define its duration, so it lasts like a seal.
+            this.CreateItem(13, 95, 1, 1, () => ItemNames.GladiatorsHonor, MagicEffectNumber.GladiatorsHonor, GladiatorsHonorSubType, SealDuration, false, Boost.Add(Stats.VulcanusExperienceRate, GladiatorsHonorExperienceRate)),
 
             // Auras, which increase the maximum by the character level.
             this.CreateItem(13, 104, 1, 1, () => ItemNames.MaxAgBoostAura, MagicEffectNumber.MaxAbilityBoostAura, 58, AuraDuration, false, Boost.PerLevel(Stats.MaximumAbility, 1f)),
@@ -168,7 +182,7 @@ internal class BuffItems : InitializerBase
         {
             var powerUp = this.Context.CreateNew<PowerUpDefinition>();
             effect.PowerUpDefinitions.Add(powerUp);
-            powerUp.TargetAttribute = boost.Target.GetPersistent(this.GameConfiguration);
+            powerUp.TargetAttribute = this.GetOrCreateAttribute(boost.Target);
             powerUp.Boost = this.Context.CreateNew<PowerUpDefinitionValue>();
             powerUp.Boost.ConstantValue.AggregateType = boost.AggregateType;
             if (boost.IsPerLevel)
@@ -187,6 +201,24 @@ internal class BuffItems : InitializerBase
         }
 
         return effect;
+    }
+
+    /// <summary>
+    /// Gets the persistent attribute definition. When an update adds an item whose effect needs an attribute which
+    /// was introduced after the database was created, the attribute is added to the configuration.
+    /// </summary>
+    /// <param name="attribute">The attribute.</param>
+    /// <returns>The persistent attribute definition.</returns>
+    private AttributeDefinition GetOrCreateAttribute(AttributeDefinition attribute)
+    {
+        if (this.GameConfiguration.Attributes.FirstOrDefault(a => a.Id == attribute.Id) is { } persistent)
+        {
+            return persistent;
+        }
+
+        persistent = this.Context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description);
+        this.GameConfiguration.Attributes.Add(persistent);
+        return persistent;
     }
 
     /// <summary>

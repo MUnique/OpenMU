@@ -1804,4 +1804,19 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="GladiatorsHonorConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>角斗士的荣耀使用</value>
+  </data>
+  <data name="GladiatorsHonorConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>应用角斗士的荣耀的效果，该物品只能在囚禁之岛使用。</value>
+  </data>
+  <data name="VulcanusExperiencePlugIn_Name" xml:space="preserve">
+    <value>囚禁之岛经验加成</value>
+  </data>
+  <data name="VulcanusExperiencePlugIn_Description" xml:space="preserve">
+    <value>按玩家在囚禁之岛的经验倍率（例如角斗士的荣耀）增加其在囚禁之岛获得的经验。</value>
+  </data>
+  <data name="VulcanusMapConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>地图编号</value>
+  </data>
 </root>

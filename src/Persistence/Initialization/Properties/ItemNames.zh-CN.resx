@@ -2337,4 +2337,7 @@
   <data name="InvitationToSantaVillage" xml:space="preserve">
     <value>圣诞村邀请函</value>
   </data>
+  <data name="GladiatorsHonor" xml:space="preserve">
+    <value>角斗士的荣耀</value>
+  </data>
 </root>

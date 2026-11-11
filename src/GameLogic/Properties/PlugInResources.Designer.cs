@@ -5088,5 +5088,50 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gladiator's Honor consume handler.
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applies the effect of the Gladiator's Honor, which can only be used in Vulcanus..
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vulcanus experience bonus.
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Name {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator's Honor..
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Description {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string VulcanusMapConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("VulcanusMapConfiguration_MapNumber_Name", resourceCulture);
+            }
+        }
     }
 }

@@ -15,4 +15,7 @@
   <data name="MiniGamePlayerKillersCantEnter" xml:space="preserve"><value>红名玩家无法进入！</value></data>
   <data name="MiniGameTicketRequired" xml:space="preserve"><value>参加此活动需要入场券。</value></data>
   <data name="NoKalimaGateInKalima" xml:space="preserve"><value>无法在卡利玛创建卡利玛之门。</value></data>
+  <data name="ItemCantBeUsedOnThisMap" xml:space="preserve">
+    <value>此物品无法在此地图使用。</value>
+  </data>
 </root>
