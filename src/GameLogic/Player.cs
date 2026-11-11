@@ -1359,6 +1359,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Returns the items which are still in the temporary storage (the tray of a crafting NPC)
+    /// to the inventory and tells the client about it. Without the update, the client keeps
+    /// showing neither the tray nor the inventory slots until the next login.
+    /// </summary>
+    public async ValueTask ReturnTemporaryStorageItemsAsync()
+    {
+        if (await this._storages.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
+        {
+            await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Removes the player from the game and saves its state.
     /// </summary>
     public async ValueTask RemoveFromGameAsync()

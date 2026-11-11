@@ -119,6 +119,30 @@ internal sealed class PlayerStorages
         }
     }
 
+    /// <summary>
+    /// Returns the items which are left in the temporary storage (e.g. the tray of a crafting NPC whose
+    /// dialog was closed with items in it) back to the inventory.
+    /// </summary>
+    /// <returns><c>true</c>, if items have been moved; <c>false</c> if there was nothing to move or the inventory has no space for all of them.</returns>
+    public async ValueTask<bool> TryReturnTemporaryStorageItemsAsync()
+    {
+        if (this.Inventory is not { } inventory
+            || this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
+        {
+            return false;
+        }
+
+        var count = temporaryStorage.ItemStorage.Items.Count;
+        if (await inventory.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
+        {
+            this._player.Logger.LogInformation("Returned {count} items from the closed crafting dialog's temporary storage to the inventory of player {player}", count, this._player.Name);
+            return true;
+        }
+
+        this._player.Logger.LogWarning("Could not return {count} items from the temporary storage to the inventory of player {player}: not enough space.", count, this._player.Name);
+        return false;
+    }
+
     private async ValueTask RestoreBackupInventoryAsync(IInventoryStorage inventory, BackupItemStorage backupInventory)
     {
         inventory.Clear();
