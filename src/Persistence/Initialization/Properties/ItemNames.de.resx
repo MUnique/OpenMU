@@ -2253,4 +2253,10 @@
   <data name="ScrollOfHealing" xml:space="preserve">
     <value>Schriftrolle der Heilung</value>
   </data>
+  <data name="TalismanOfGuardian" xml:space="preserve">
+    <value>Talisman des Wächters</value>
+  </data>
+  <data name="TalismanOfItemProtection" xml:space="preserve">
+    <value>Talisman des Gegenstandsschutzes</value>
+  </data>
 </root>

@@ -346,6 +346,16 @@ internal enum MagicEffectNumber : short
     ScrollOfStrength = 0x5A,
 
     /// <summary>
+    /// The effect of the Talisman of Guardian, which protects from the death penalty.
+    /// </summary>
+    TalismanOfGuardian = 0x63,
+
+    /// <summary>
+    /// The effect of the Talisman of Item Protection, which keeps the durability of the equipped items.
+    /// </summary>
+    TalismanOfItemProtection = 0x64,
+
+    /// <summary>
     /// The master seal of ascension effect.
     /// </summary>
     MasterSealOfAscension = 0x65,
