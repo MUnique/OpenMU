@@ -64,6 +64,18 @@ npm install
 npm start
 ```
 
+## Disclaimer Regarding Private Servers
+
+OpenMU is an open-source project and is not affiliated with, operated by, or responsible for any publicly hosted MU Online private servers.
+
+While anyone is welcome to use OpenMU in accordance with its license, we strongly discourage using the name **OpenMU** for private servers or their branding, as this may falsely imply an official affiliation with the project.
+
+If you operate a server based on OpenMU, please choose a distinct name and make it clear that your server is independently operated.
+
+Attribution such as **"Powered by OpenMU"**, preferably with a link to this repository, is appreciated but not required.
+
+The OpenMU project and its maintainers do not endorse or assume responsibility for third-party servers or their operations.
+
 ## Licensing
 
 This project is released under the MIT license (see LICENSE file).
