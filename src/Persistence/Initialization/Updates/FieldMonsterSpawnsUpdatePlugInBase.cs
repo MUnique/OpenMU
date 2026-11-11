@@ -52,7 +52,17 @@ public abstract class FieldMonsterSpawnsUpdatePlugInBase : UpdatePlugInBase
         var dungeonDuplicates = Enumerable.Range(FirstDungeonDuplicateNumber, LastDungeonDuplicateNumber - FirstDungeonDuplicateNumber + 1).Select(number => (short)number);
         RemoveSpawns(gameConfiguration, Dungeon.Number, dungeonDuplicates);
         RemoveSpawns(gameConfiguration, LostTower.Number, LostTowerDuplicateNumbers);
+        this.ApplyVersionSpecificChanges(context, gameConfiguration);
         return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Applies the changes to the monster spawns which only belong to the game version.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    protected virtual void ApplyVersionSpecificChanges(IContext context, GameConfiguration gameConfiguration)
+    {
     }
 
     private static void RemoveSpawns(GameConfiguration gameConfiguration, byte mapNumber, IEnumerable<short> spawnNumbers)

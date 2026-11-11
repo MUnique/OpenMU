@@ -1061,6 +1061,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AdjustIceArrowFreezeDurationUpdatePlugIn_Description text.</summary>
         public static string AdjustIceArrowFreezeDurationUpdatePlugIn_Description => ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInSeason6_Name text.</summary>
+        public static string FieldMonsterSpawnsUpdatePlugInSeason6_Name => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInSeason6_Description text.</summary>
+        public static string FieldMonsterSpawnsUpdatePlugInSeason6_Description => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInSeason6_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInBase_Name text.</summary>
         public static string FieldMonsterSpawnsUpdatePlugInBase_Name => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInBase_Name", resourceCulture)!;
 
