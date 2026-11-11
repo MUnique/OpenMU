@@ -11405,8 +11405,8 @@
       <Name>QuestCompletionResponse</Name>
       <Length>9</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The server acknowledges the completion of a quest.</SentWhen>
-      <CausedReaction>The client shows the success and possibly requests for the next available quests.</CausedReaction>
+      <SentWhen>The server acknowledges the completion of a quest, or refuses it because the rewards don't fit.</SentWhen>
+      <CausedReaction>When the quest was completed, the client shows the success and possibly requests for the next available quests. When it was refused, the client shows a message and disables the button to complete the quest.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -11420,10 +11420,39 @@
         </Field>
         <Field>
           <Index>8</Index>
-          <Type>Boolean</Type>
-          <Name>IsQuestCompleted</Name>
+          <Type>Enum</Type>
+          <TypeName>QuestCompletionResult</TypeName>
+          <Name>Result</Name>
         </Field>
       </Fields>
+      <Enums>
+        <Enum>
+          <Name>QuestCompletionResult</Name>
+          <Description>Defines the result of a quest completion request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotCompleted</Name>
+              <Description>The quest wasn't completed.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Completed</Name>
+              <Description>The quest was completed.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>ZenLimitReached</Name>
+              <Description>The quest wasn't completed, because the money of the rewards would exceed the money limit of the inventory.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The quest wasn't completed, because the item rewards don't fit into the inventory.</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>

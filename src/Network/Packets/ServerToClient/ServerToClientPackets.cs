@@ -31566,11 +31566,37 @@ public readonly struct QuestProgressExtended
 
 
 /// <summary>
-/// Is sent by the server when: The server acknowledges the completion of a quest.
-/// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
+/// Is sent by the server when: The server acknowledges the completion of a quest, or refuses it because the rewards don't fit.
+/// Causes reaction on client side: When the quest was completed, the client shows the success and possibly requests for the next available quests. When it was refused, the client shows a message and disables the button to complete the quest.
 /// </summary>
 public readonly struct QuestCompletionResponse
 {
+    /// <summary>
+    /// Defines the result of a quest completion request.
+    /// </summary>
+    public enum QuestCompletionResult
+    {
+        /// <summary>
+        /// The quest wasn't completed.
+        /// </summary>
+            NotCompleted = 0,
+
+        /// <summary>
+        /// The quest was completed.
+        /// </summary>
+            Completed = 1,
+
+        /// <summary>
+        /// The quest wasn't completed, because the money of the rewards would exceed the money limit of the inventory.
+        /// </summary>
+            ZenLimitReached = 2,
+
+        /// <summary>
+        /// The quest wasn't completed, because the item rewards don't fit into the inventory.
+        /// </summary>
+            InventoryFull = 3,
+    }
+
     private readonly Memory<byte> _data;
 
     /// <summary>
@@ -31645,12 +31671,12 @@ public readonly struct QuestCompletionResponse
     }
 
     /// <summary>
-    /// Gets or sets the is quest completed.
+    /// Gets or sets the result.
     /// </summary>
-    public bool IsQuestCompleted
+    public QuestCompletionResponse.QuestCompletionResult Result
     {
-        get => this._data.Span[8..].GetBoolean();
-        set => this._data.Span[8..].SetBoolean(value);
+        get => (QuestCompletionResult)this._data.Span[8];
+        set => this._data.Span[8] = (byte)value;
     }
 
     /// <summary>

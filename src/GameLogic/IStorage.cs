@@ -161,6 +161,15 @@ public interface IStorage
     byte? CheckInvSpace(Item item);
 
     /// <summary>
+    /// Determines whether all the items would fit into this storage (including extensions),
+    /// after the other items were removed, without changing the storage.
+    /// </summary>
+    /// <param name="items">The items which would be added, in this order, each at the slot which <see cref="CheckInvSpace"/> would find.</param>
+    /// <param name="removedItems">The items of this storage which would be removed before.</param>
+    /// <returns><c>true</c>, if all the items would fit; otherwise, <c>false</c>.</returns>
+    bool CanAddItems(IEnumerable<Item> items, IEnumerable<Item>? removedItems = null);
+
+    /// <summary>
     /// Checks if the items of another storage will fit into this storage (including extensions), and adds them if possible.
     /// </summary>
     /// <param name="anotherStorage">The other storage.</param>

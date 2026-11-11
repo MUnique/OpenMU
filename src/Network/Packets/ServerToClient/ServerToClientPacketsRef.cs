@@ -29937,8 +29937,8 @@ public readonly ref struct QuestProgressExtendedRef
 
 
 /// <summary>
-/// Is sent by the server when: The server acknowledges the completion of a quest.
-/// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
+/// Is sent by the server when: The server acknowledges the completion of a quest, or refuses it because the rewards don't fit.
+/// Causes reaction on client side: When the quest was completed, the client shows the success and possibly requests for the next available quests. When it was refused, the client shows a message and disables the button to complete the quest.
 /// </summary>
 public readonly ref struct QuestCompletionResponseRef
 {
@@ -30016,12 +30016,12 @@ public readonly ref struct QuestCompletionResponseRef
     }
 
     /// <summary>
-    /// Gets or sets the is quest completed.
+    /// Gets or sets the result.
     /// </summary>
-    public bool IsQuestCompleted
+    public QuestCompletionResponse.QuestCompletionResult Result
     {
-        get => this._data[8..].GetBoolean();
-        set => this._data[8..].SetBoolean(value);
+        get => (QuestCompletionResponse.QuestCompletionResult)this._data[8];
+        set => this._data[8] = (byte)value;
     }
 
     /// <summary>

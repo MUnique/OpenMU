@@ -39,7 +39,25 @@ public class QuestCompletionResponsePlugIn : IQuestCompletionResponsePlugIn
         }
         else
         {
-            await this._player.Connection.SendQuestCompletionResponseAsync((ushort)quest.Number, (ushort)quest.Group, true).ConfigureAwait(false);
+            await this._player.Connection.SendQuestCompletionResponseAsync((ushort)quest.Number, (ushort)quest.Group, QuestCompletionResponse.QuestCompletionResult.Completed).ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask QuestCompletionRefusedAsync(QuestDefinition quest, QuestCompletionRefusal refusal)
+    {
+        if (quest.Group == QuestConstants.LegacyQuestGroup)
+        {
+            // The legacy quest state response has no result for a refusal.
+            return;
+        }
+
+        var result = refusal switch
+        {
+            QuestCompletionRefusal.InventoryFull => QuestCompletionResponse.QuestCompletionResult.InventoryFull,
+            QuestCompletionRefusal.ZenLimitReached => QuestCompletionResponse.QuestCompletionResult.ZenLimitReached,
+            _ => QuestCompletionResponse.QuestCompletionResult.NotCompleted,
+        };
+        await this._player.Connection.SendQuestCompletionResponseAsync((ushort)quest.Number, (ushort)quest.Group, result).ConfigureAwait(false);
     }
 }
