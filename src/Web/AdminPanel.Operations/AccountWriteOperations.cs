@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -19,7 +18,8 @@ using MUnique.OpenMU.Web.AdminPanel.API;
 /// <param name="configurations">The shared configuration source.</param>
 /// <param name="login">The login server.</param>
 /// <param name="executor">The authorization and audit service.</param>
-public sealed class AccountWriteOperations(IPersistenceContextProvider persistence, IDataSource<GameConfiguration> configurations, ILoginServer login, AdminOperationExecutor executor)
+/// <param name="registrationService">The shared native account registration service.</param>
+public sealed class AccountWriteOperations(IPersistenceContextProvider persistence, IDataSource<GameConfiguration> configurations, ILoginServer login, AdminOperationExecutor executor, AccountRegistrationService registrationService)
 {
     /// <summary>Creates a normal account using the public registration API's validation.</summary>
     /// <param name="loginName">The new login name.</param>
@@ -35,42 +35,13 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
             new { loginName, email },
             async _ =>
             {
-                var registration = new AccountRegistration { LoginName = loginName, Password = password, EMail = email };
-                var validation = new List<ValidationResult>();
-                if (!Validator.TryValidateObject(registration, new ValidationContext(registration), validation, true))
+                var result = await registrationService.RegisterAsync(new AccountRegistration { LoginName = loginName, Password = password, EMail = email }, cancellationToken).ConfigureAwait(false);
+                if (result == AccountRegistrationStatus.Invalid)
                 {
                     throw new AdminOperationException($"Use a printable ASCII login of 3-10 characters, a printable ASCII {nameof(password)} of 3-20 characters and a valid optional email address.", AdminOperationErrorKind.InvalidInput);
                 }
 
-                var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-                using var context = persistence.CreateNewPlayerContext(config);
-                if (await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null)
-                {
-                    return AdminReadResult.From(new { status = "already_exists", loginName });
-                }
-
-                var account = context.CreateNew<Account>();
-                account.LoginName = loginName;
-                account.EMail = email ?? string.Empty;
-                account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-                account.State = AccountState.Normal;
-                account.RegistrationDate = DateTime.UtcNow;
-                try
-                {
-                    await SaveAsync(context, cancellationToken).ConfigureAwait(false);
-                }
-                catch
-                {
-                    using var check = persistence.CreateNewPlayerContext(config);
-                    if (await check.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null)
-                    {
-                        return AdminReadResult.From(new { status = "already_exists", loginName });
-                    }
-
-                    throw;
-                }
-
-                return AdminReadResult.From(new { status = "created", loginName });
+                return AdminReadResult.From(new { status = result == AccountRegistrationStatus.Created ? "created" : "already_exists", loginName });
             },
             cancellationToken);
 

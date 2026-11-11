@@ -1,0 +1,23 @@
+services:
+  database:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: openmu
+      POSTGRES_USER: portal_ci_admin
+      POSTGRES_PASSWORD: ${PORTAL_CI_POSTGRES_PASSWORD:?Set a synthetic CI database password}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portal_ci_admin -d openmu"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "127.0.0.1:55432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: all-in-one_default

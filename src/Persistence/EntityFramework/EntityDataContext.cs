@@ -17,10 +17,12 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 /// </summary>
 public class EntityDataContext : ExtendedTypeContext
 {
+    // Resolve metadata through the restricted configuration context so EF Core initializes
+    // the compiled model's runtime services without requesting an administrative connection.
     private static readonly Lazy<IModel> CompleteModelValue = new(
         () =>
         {
-            using var context = new EntityDataContext();
+            using var context = new ConfigurationContext();
             return context.Model;
         },
         LazyThreadSafetyMode.PublicationOnly);
