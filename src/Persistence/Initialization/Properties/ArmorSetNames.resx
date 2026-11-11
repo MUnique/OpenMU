@@ -999,26 +999,26 @@
   <data name="BraveArmorDefenseBonusLevel15" xml:space="preserve">
     <value>Brave Defense Bonus (Level 15)</value>
   </data>
-  <data name="DestoryArmorDefenseRateBonus" xml:space="preserve">
-    <value>Destory Defense Rate Bonus</value>
+  <data name="DestroyArmorDefenseRateBonus" xml:space="preserve">
+    <value>Destroy Defense Rate Bonus</value>
   </data>
-  <data name="DestoryArmorDefenseBonusLevel10" xml:space="preserve">
-    <value>Destory Defense Bonus (Level 10)</value>
+  <data name="DestroyArmorDefenseBonusLevel10" xml:space="preserve">
+    <value>Destroy Defense Bonus (Level 10)</value>
   </data>
-  <data name="DestoryArmorDefenseBonusLevel11" xml:space="preserve">
-    <value>Destory Defense Bonus (Level 11)</value>
+  <data name="DestroyArmorDefenseBonusLevel11" xml:space="preserve">
+    <value>Destroy Defense Bonus (Level 11)</value>
   </data>
-  <data name="DestoryArmorDefenseBonusLevel12" xml:space="preserve">
-    <value>Destory Defense Bonus (Level 12)</value>
+  <data name="DestroyArmorDefenseBonusLevel12" xml:space="preserve">
+    <value>Destroy Defense Bonus (Level 12)</value>
   </data>
-  <data name="DestoryArmorDefenseBonusLevel13" xml:space="preserve">
-    <value>Destory Defense Bonus (Level 13)</value>
+  <data name="DestroyArmorDefenseBonusLevel13" xml:space="preserve">
+    <value>Destroy Defense Bonus (Level 13)</value>
   </data>
-  <data name="DestoryArmorDefenseBonusLevel14" xml:space="preserve">
-    <value>Destory Defense Bonus (Level 14)</value>
+  <data name="DestroyArmorDefenseBonusLevel14" xml:space="preserve">
+    <value>Destroy Defense Bonus (Level 14)</value>
   </data>
-  <data name="DestoryArmorDefenseBonusLevel15" xml:space="preserve">
-    <value>Destory Defense Bonus (Level 15)</value>
+  <data name="DestroyArmorDefenseBonusLevel15" xml:space="preserve">
+    <value>Destroy Defense Bonus (Level 15)</value>
   </data>
   <data name="PhantomArmorDefenseRateBonus" xml:space="preserve">
     <value>Phantom Defense Rate Bonus</value>

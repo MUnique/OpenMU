@@ -910,6 +910,12 @@
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">
     <value>Gibt dem Feuerring des antiken Sets Muren seinen Energie-Bonus, der als Vitalität initialisiert wurde.</value>
   </data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Name" xml:space="preserve">
+    <value>Namen der Rüstungssets Zerstörer und Phantom korrigieren</value>
+  </data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve">
+    <value>Tauscht die Namen der Rüstungssets Phantom (47) und Zerstörer (48) und ihrer Set-Boni, die mit dem Namen des jeweils anderen Sets initialisiert wurden, und korrigiert die Schreibweise „Destory“.</value>
+  </data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
   </data>

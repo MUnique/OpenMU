@@ -1037,6 +1037,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixMurenRingOfFireBonusPlugIn_Description text.</summary>
         public static string FixMurenRingOfFireBonusPlugIn_Description => ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixDestroyPhantomArmorNamesPlugIn_Name text.</summary>
+        public static string FixDestroyPhantomArmorNamesPlugIn_Name => ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixDestroyPhantomArmorNamesPlugIn_Description text.</summary>
+        public static string FixDestroyPhantomArmorNamesPlugIn_Description => ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSantaVillageInvitationUpdatePlugIn_Name text.</summary>
         public static string AddSantaVillageInvitationUpdatePlugIn_Name => ResourceManager.GetString("AddSantaVillageInvitationUpdatePlugIn_Name", resourceCulture)!;
 

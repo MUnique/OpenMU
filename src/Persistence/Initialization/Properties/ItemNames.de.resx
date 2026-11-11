@@ -735,7 +735,7 @@
   <data name="BraveArmor" xml:space="preserve">
     <value>Tapfere Rüstung</value>
   </data>
-  <data name="DestoryArmor" xml:space="preserve">
+  <data name="DestroyArmor" xml:space="preserve">
     <value>Zerstörerrüstung</value>
   </data>
   <data name="PhantomArmor" xml:space="preserve">
@@ -906,7 +906,7 @@
   <data name="BravePants" xml:space="preserve">
     <value>Tapfere Hose</value>
   </data>
-  <data name="DestoryPants" xml:space="preserve">
+  <data name="DestroyPants" xml:space="preserve">
     <value>Zerstörerhose</value>
   </data>
   <data name="PhantomPants" xml:space="preserve">
@@ -1236,7 +1236,7 @@
   <data name="BraveBoots" xml:space="preserve">
     <value>Tapfere Stiefel</value>
   </data>
-  <data name="DestoryBoots" xml:space="preserve">
+  <data name="DestroyBoots" xml:space="preserve">
     <value>Zerstörerstiefel</value>
   </data>
   <data name="PhantomBoots" xml:space="preserve">

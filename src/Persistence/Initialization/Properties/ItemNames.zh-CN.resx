@@ -753,11 +753,11 @@
   <data name="BraveArmor" xml:space="preserve">
     <value>勇气之铠</value>
   </data>
-  <data name="DestoryArmor" xml:space="preserve">
-    <value>巨石之铠</value>
+  <data name="DestroyArmor" xml:space="preserve">
+    <value>破灭之铠</value>
   </data>
   <data name="PhantomArmor" xml:space="preserve">
-    <value>破灭之铠</value>
+    <value>巨石之铠</value>
   </data>
   <data name="SeraphimArmor" xml:space="preserve">
     <value>恐惧之铠</value>
@@ -924,11 +924,11 @@
   <data name="BravePants" xml:space="preserve">
     <value>勇气之护腿</value>
   </data>
-  <data name="DestoryPants" xml:space="preserve">
-    <value>巨石之护腿</value>
+  <data name="DestroyPants" xml:space="preserve">
+    <value>破灭之护腿</value>
   </data>
   <data name="PhantomPants" xml:space="preserve">
-    <value>破灭之护腿</value>
+    <value>巨石之护腿</value>
   </data>
   <data name="SeraphimPants" xml:space="preserve">
     <value>恐惧之护腿</value>
@@ -1096,10 +1096,10 @@
     <value>勇气之护手</value>
   </data>
   <data name="DestroyGloves" xml:space="preserve">
-    <value>巨石之护手</value>
+    <value>破灭之护手</value>
   </data>
   <data name="PhantomGloves" xml:space="preserve">
-    <value>破灭之护手</value>
+    <value>巨石之护手</value>
   </data>
   <data name="SeraphimGloves" xml:space="preserve">
     <value>恐惧之护手</value>
@@ -1254,11 +1254,11 @@
   <data name="BraveBoots" xml:space="preserve">
     <value>勇气之靴</value>
   </data>
-  <data name="DestoryBoots" xml:space="preserve">
-    <value>巨石之靴</value>
+  <data name="DestroyBoots" xml:space="preserve">
+    <value>破灭之靴</value>
   </data>
   <data name="PhantomBoots" xml:space="preserve">
-    <value>破灭之靴</value>
+    <value>巨石之靴</value>
   </data>
   <data name="SeraphimBoots" xml:space="preserve">
     <value>恐惧之靴</value>
