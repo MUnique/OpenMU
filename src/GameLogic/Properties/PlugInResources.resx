@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -434,15 +434,6 @@
   </data>
   <data name="SummoningOrbConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the summoning orb consumption.</value>
-  </data>
-  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
-    <value>Invitation to Santa Village Consume Handler</value>
-  </data>
-  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
-    <value>Plugin which handles the invitation to the santa village, which warps the player to the santa village.</value>
-  </data>
-  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
-    <value>Map number</value>
   </data>
   <data name="TownPortalScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Town Portal Scroll Consume Handler</value>
@@ -1398,11 +1389,9 @@
   <data name="BotConfiguration_BotsPayResetCosts_Name" xml:space="preserve"><value>Bots pay reset costs</value></data>
   <data name="BotConfiguration_BotsPayResetCosts_Description" xml:space="preserve"><value>If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets).</value></data>
   <data name="BotConfiguration_JewelStockPerKind_Name" xml:space="preserve"><value>Jewel stock per kind</value></data>
-  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life/Chaos a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
+  <data name="BotConfiguration_JewelStockPerKind_Description" xml:space="preserve"><value>How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus.</value></data>
   <data name="BotConfiguration_PotionStockCharges_Name" xml:space="preserve"><value>Potion stock (charges)</value></data>
   <data name="BotConfiguration_PotionStockCharges_Description" xml:space="preserve"><value>How many healing and mana potion charges a bot buys up to at a merchant.</value></data>
-  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve"><value>Maps forbidden for bots</value></data>
-  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve"><value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value></data>
   <data name="BotConfiguration_ProofOfConceptAccounts_Name" xml:space="preserve"><value>Extra accounts to animate</value></data>
   <data name="BotConfiguration_ProofOfConceptAccounts_Description" xml:space="preserve"><value>Comma separated login names of existing accounts to animate as bots, in addition to the generated population.</value></data>
   <data name="BotSelfDefensePlugIn_Name" xml:space="preserve"><value>Bot self defense</value></data>
@@ -1850,5 +1839,62 @@
   </data>
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_OptionType_Name" xml:space="preserve">
+    <value>Option type</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_OptionType_Description" xml:space="preserve">
+    <value>The type of the item option which is upgraded: the normal option for the Jewel of Life, the harmony option for the Jewel of Harmony and the refine stones.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_AddsOption_Name" xml:space="preserve">
+    <value>Adds the option</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_AddsOption_Description" xml:space="preserve">
+    <value>Whether an item which doesn't have the option yet can get it by consuming the source item.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_IncreasesOption_Name" xml:space="preserve">
+    <value>Increases the option</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_IncreasesOption_Description" xml:space="preserve">
+    <value>Whether the level of an existing option of the item can be increased.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_SuccessChance_Name" xml:space="preserve">
+    <value>Success chance</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_SuccessChance_Description" xml:space="preserve">
+    <value>The chance between 0 and 1 that an attempt succeeds. The Jewel of Life uses 0.5.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_FailResult_Name" xml:space="preserve">
+    <value>Behaviour on failure</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_FailResult_Description" xml:space="preserve">
+    <value>What happens to the option when the random check fails: nothing, the option is set back to its base level, or the option is removed.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_BoostOptionType_Name" xml:space="preserve">
+    <value>Boost option type</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_BoostOptionType_Description" xml:space="preserve">
+    <value>An item option of the target item which increases the success chance, e.g. the luck option.</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_SuccessChanceBoost_Name" xml:space="preserve">
+    <value>Success chance boost</value>
+  </data>
+  <data name="ItemUpgradeConfiguration_SuccessChanceBoost_Description" xml:space="preserve">
+    <value>The additional success chance when the target item has the boost option type.</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Invitation to Santa Village Consume Handler</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the invitation to the santa village, which warps the player to the santa village.</value>
+  </data>
+  <data name="SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>Map number</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Name" xml:space="preserve">
+    <value>Maps forbidden for bots</value>
+  </data>
+  <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
+    <value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value>
   </data>
 </root>
