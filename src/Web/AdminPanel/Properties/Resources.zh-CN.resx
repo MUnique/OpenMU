@@ -2086,6 +2086,13 @@
   <data name="Leaderboards" xml:space="preserve">
     <value>排行榜</value>
   </data>
+  <data name="LeaderboardMiniGame_DevilSquare" xml:space="preserve"><value>恶魔广场</value></data>
+  <data name="LeaderboardMiniGame_BloodCastle" xml:space="preserve"><value>血色城堡</value></data>
+  <data name="LeaderboardMiniGame_ChaosCastle" xml:space="preserve"><value>赤色要塞</value></data>
+  <data name="LeaderboardMiniGame_IllusionTemple" xml:space="preserve"><value>幻影寺院</value></data>
+  <data name="LeaderboardMiniGame_Doppelganger" xml:space="preserve"><value>生魂广场</value></data>
+  <data name="LeaderboardMiniGame_Kanturu" xml:space="preserve"><value>提炼之塔</value></data>
+  <data name="LeaderboardMiniGame_ImperialGuardian" xml:space="preserve"><value>帝国要塞</value></data>
   <data name="LeaderboardsDescription" xml:space="preserve">
     <value>保存排名统计的小游戏中的最佳角色，按其分数总和排名。不包括机器人。</value>
   </data>
