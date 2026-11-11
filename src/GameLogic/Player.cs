@@ -2023,6 +2023,53 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Applies a class change of the selected character, which happened while it's in the game (quest
+    /// evolution), to the running attribute system. The system is built with the class of the moment of
+    /// entering the game, so without this a fresh master class would have no Master Level stat and no
+    /// master points per level up until the next login: the master level-ups would be lost silently.
+    /// Only the stat attributes and the base values are applied; the attribute combinations of the new
+    /// class follow with the next login.
+    /// </summary>
+    /// <param name="previousClass">The character class before the change.</param>
+    public void ApplyCharacterClassChange(CharacterClass previousClass)
+    {
+        if (this.SelectedCharacter is not { CharacterClass: { } newClass } character
+            || this.Attributes is not { } attributes
+            || ReferenceEquals(previousClass, newClass))
+        {
+            return;
+        }
+
+        this.AddMissingStatAttributes();
+        foreach (var statAttribute in character.Attributes)
+        {
+            attributes.TryAddStatAttribute(statAttribute);
+        }
+
+        foreach (var oldValue in previousClass.BaseAttributeValues
+                     .Where(o => !newClass.BaseAttributeValues.Any(n => n.Definition == o.Definition && n.Value == o.Value))
+                     .ToList())
+        {
+            attributes.RemoveElement(oldValue, oldValue.Definition);
+        }
+
+        foreach (var newValue in newClass.BaseAttributeValues
+                     .Where(n => !previousClass.BaseAttributeValues.Any(o => o.Definition == n.Definition && o.Value == n.Value))
+                     .ToList())
+        {
+            attributes.AddElement(newValue, newValue.Definition);
+        }
+
+        this.Logger.LogInformation(
+            "Character {Name} changed class in the game from {Previous} to {New}; master level {MasterLevel}, master points per level up {Points}.",
+            character.Name,
+            previousClass.Name,
+            newClass.Name,
+            attributes[Stats.MasterLevel],
+            attributes[Stats.MasterPointsPerLevelUp]);
+    }
+
+    /// <summary>
     /// Adds the missing stat attributes, e.g., after the character class has been changed outside the game.
     /// </summary>
     private void AddMissingStatAttributes()
