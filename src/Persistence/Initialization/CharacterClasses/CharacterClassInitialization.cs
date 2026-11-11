@@ -150,6 +150,7 @@ internal partial class CharacterClassInitialization : InitializerBase
         }
         else
         {
+            attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRatio, 1, Stats.ShieldRateIncrease));
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.IsInSafezone));
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.IsShieldRecoveryActive, 1, Stats.ShieldRecoveryEverywhere));
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ShieldRecoveryRampFactor, 1f / 15f, Stats.ShieldRecoveryHiatus));  // (3 - 2) / (25 - 10)
@@ -186,6 +187,8 @@ internal partial class CharacterClassInitialization : InitializerBase
 
         if (!this.UseClassicPvp)
         {
+            baseAttributeValues.Add(this.CreateConstValueAttribute(0.9f, Stats.ShieldRatio));
+            baseAttributeValues.Add(this.CreateConstValueAttribute(0.2f, Stats.OverShieldBurstDamageRatio));
             baseAttributeValues.Add(this.CreateConstValueAttribute(100, Stats.ShieldRecoveryMultiplier));
             baseAttributeValues.Add(this.CreateConstValueAttribute(1f / 75000, Stats.ShieldRecoveryMultiplier, AggregateType.Multiplicate)); // 1 / (30 * 100 * 25)
             baseAttributeValues.Add(this.CreateConstValueAttribute(4f / 3f, Stats.ShieldRecoveryRampFactor));   // y=mx+b: m=1/15, y=2, x=10 => b=4/3

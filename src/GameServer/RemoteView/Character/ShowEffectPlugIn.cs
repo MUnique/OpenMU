@@ -45,7 +45,7 @@ public class ShowEffectPlugIn : IShowEffectPlugIn
         return effectType switch
         {
             IShowEffectPlugIn.EffectType.LevelUp => Network.Packets.ServerToClient.ShowEffect.EffectType.LevelUp,
-            IShowEffectPlugIn.EffectType.ShieldLost => Network.Packets.ServerToClient.ShowEffect.EffectType.ShieldLost,
+            IShowEffectPlugIn.EffectType.ShieldBurst => Network.Packets.ServerToClient.ShowEffect.EffectType.ShieldBurst,
             IShowEffectPlugIn.EffectType.ShieldPotion => Network.Packets.ServerToClient.ShowEffect.EffectType.ShieldPotion,
             _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Unknown value {effectType}."),
         };

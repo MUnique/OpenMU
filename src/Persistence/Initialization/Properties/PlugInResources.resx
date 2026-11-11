@@ -324,6 +324,8 @@
   <data name="FixDuelArenaSafezoneMapUpdate_Description" xml:space="preserve"><value>Sets the safezone of duel arena to lorencia.</value></data>
   <data name="AddMovementSpeedAttributesPlugInBase_Name" xml:space="preserve"><value>Add Movement Speed Attributes</value></data>
   <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve"><value>Adds attribute-based movement speed configuration for players, monsters, items, effects, and underwater maps.</value></data>
+  <data name="AddShieldRatioAttributesPlugIn_Name" xml:space="preserve"><value>Add Shield Ratio Attributes</value></data>
+  <data name="AddShieldRatioAttributesPlugIn_Description" xml:space="preserve"><value>Adds the configurable shield damage ratio and over-shield burst threshold.</value></data>
   <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve"><value>Add System Configuration</value></data>
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>

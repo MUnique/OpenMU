@@ -337,11 +337,8 @@ public static class AttackableExtensions
             return new HitInfo(damage, 0, attributes, manaToll, petDamage, skill, triggersHitShock);
         }
 
-        var shieldRatio = 0.90;
-        shieldRatio -= attacker.Attributes[Stats.ShieldDecreaseRateIncrease];
-        shieldRatio += defender.Attributes[Stats.ShieldRateIncrease];
+        var shieldRatio = defender.Attributes[Stats.ShieldRatio] - attacker.Attributes[Stats.ShieldDecreaseRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
-        shieldRatio = Math.Min(1, shieldRatio);
         return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage, skill, triggersHitShock);
     }
 

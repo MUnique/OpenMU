@@ -626,6 +626,12 @@
   <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve">
     <value>Fügt eine attributbasierte Konfiguration der Bewegungsgeschwindigkeit für Spieler, Monster, Gegenstände, Effekte und Unterwasserkarten hinzu.</value>
   </data>
+  <data name="AddShieldRatioAttributesPlugIn_Name" xml:space="preserve">
+    <value>Attribute für das Schildverhältnis hinzufügen</value>
+  </data>
+  <data name="AddShieldRatioAttributesPlugIn_Description" xml:space="preserve">
+    <value>Fügt das konfigurierbare Verhältnis des Schildschadens und den Schwellenwert für den Über-Schild-Burst hinzu.</value>
+  </data>
   <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve">
     <value>Systemkonfiguration hinzufügen</value>
   </data>
