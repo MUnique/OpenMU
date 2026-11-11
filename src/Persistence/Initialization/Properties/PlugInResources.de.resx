@@ -934,4 +934,10 @@
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt ihre Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert. Außerdem werden die Magieeffekte von Ice Arrow Str, Chain Drive Str, Strike of Destruction Str und Poison Str an die Magieeffekte ihrer Basisfähigkeiten angeglichen.</value>
   </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>Schutztalismane hinzufügen</value>
+  </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt den Talisman des Wächters, der vor der Todesstrafe schützt, und den Talisman des Gegenstandsschutzes hinzu, der die Haltbarkeit der ausgerüsteten Gegenstände erhält.</value>
+  </data>
 </root>

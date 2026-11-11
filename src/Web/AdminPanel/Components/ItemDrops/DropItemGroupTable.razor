@@ -141,6 +141,18 @@
                                                  ValueChanged="@(monster => group.Monster = monster)" />
                                 </div>
                             }
+                            @if (group.ItemType == SpecialItemType.Excellent)
+                            {
+                                <div class="col-lg-6">
+                                    <label class="form-label fw-semibold">@Resources.ExcellentOptionsChance</label>
+                                    <input type="number" class="form-control form-control-sm" step="any" min="0" max="100"
+                                           @bind:get="ToPercent(group.ExcellentOptionsAddChance)" @bind:set="@(value => group.ExcellentOptionsAddChance = FromPercent(value))" />
+                                    <label class="form-label fw-semibold mt-2">@Resources.ExcellentOptionsMaximumOptionsPerItem</label>
+                                    <input type="number" class="form-control form-control-sm" min="0" max="20"
+                                           @bind="group.ExcellentOptionsMaximumOptionsPerItem" />
+                                    <small class="text-muted d-block">@Resources.ExcellentOptionsHint</small>
+                                </div>
+                            }
                         </div>
                     </CascadingValue>
                 </td>

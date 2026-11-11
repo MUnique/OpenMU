@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="LifeJewelConsumeHandlerPlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -13,6 +13,10 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Consume handler for the Jewel of Life which adds and increases the item option of <see cref="ItemOptionTypes.Option"/>.
 /// </summary>
+/// <remarks>
+/// The success chance and the behaviour on a failed upgrade are configurable, see
+/// <see cref="ItemUpgradeConsumeHandlerPlugIn.ItemUpgradeConfiguration"/>.
+/// </remarks>
 [Guid("8AC6592D-D51C-47C9-B491-4778C615691D")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.LifeJewelConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.LifeJewelConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]

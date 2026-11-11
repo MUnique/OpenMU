@@ -59,6 +59,16 @@ internal class BuffItems : InitializerBase
     private const byte DamageRateScrollSubType = 14;
 
     /// <summary>
+    /// The sub type of the effect of the Talisman of Guardian.
+    /// </summary>
+    private const byte DeathPenaltyTalismanSubType = 77;
+
+    /// <summary>
+    /// The sub type of the effect of the Talisman of Item Protection.
+    /// </summary>
+    private const byte ItemProtectionTalismanSubType = 78;
+
+    /// <summary>
     /// The defense which the game client shows for the scroll of defense.
     /// </summary>
     /// <remarks>
@@ -74,6 +84,8 @@ internal class BuffItems : InitializerBase
     private static readonly TimeSpan AuraDuration = TimeSpan.FromMinutes(30);
 
     private static readonly TimeSpan ElixirDuration = TimeSpan.FromDays(10);
+
+    private static readonly TimeSpan TalismanDuration = TimeSpan.FromMinutes(30);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuffItems"/> class.
@@ -110,6 +122,10 @@ internal class BuffItems : InitializerBase
             this.CreateItem(13, 93, 1, 1, () => ItemNames.MasterSealOfAscension, MagicEffectNumber.MasterSealOfAscension, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 1.5f)),
             this.CreateItem(13, 94, 1, 1, () => ItemNames.MasterSealOfWealth, MagicEffectNumber.MasterSealOfWealth, ExperienceSealSubType, SealDuration, false, Boost.Multiply(Stats.MasterExperienceRate, 2f), Boost.Add(Stats.BonusItemDropRate, SealItemDropRateBonus)),
             this.CreateItem(13, 116, 1, 1, () => ItemNames.SealOfWealth, MagicEffectNumber.SealOfWealthItemDrop, ItemDropSealSubType, SealDuration, false, Boost.Add(Stats.BonusItemDropRate, SealItemDropRateBonus)),
+
+            // Talismans, which protect from the death penalty and from the durability loss of the equipped items.
+            this.CreateItem(13, 81, 1, 1, () => ItemNames.TalismanOfGuardian, MagicEffectNumber.TalismanOfGuardian, DeathPenaltyTalismanSubType, TalismanDuration, false, Boost.Add(Stats.DeathPenaltyProtection, 1f)),
+            this.CreateItem(13, 82, 1, 1, () => ItemNames.TalismanOfItemProtection, MagicEffectNumber.TalismanOfItemProtection, ItemProtectionTalismanSubType, TalismanDuration, false, Boost.Add(Stats.ItemDurabilityProtection, 1f)),
 
             // Auras, which increase the maximum by the character level.
             this.CreateItem(13, 104, 1, 1, () => ItemNames.MaxAgBoostAura, MagicEffectNumber.MaxAbilityBoostAura, 58, AuraDuration, false, Boost.PerLevel(Stats.MaximumAbility, 1f)),

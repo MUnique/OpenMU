@@ -5473,5 +5473,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
             }
         }
+
+        /// <summary>Gets TalismanOfGuardian from the configuration name resources.</summary>
+        public static string TalismanOfGuardian {
+            get {
+                return ResourceManager.GetString("TalismanOfGuardian", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets TalismanOfItemProtection from the configuration name resources.</summary>
+        public static string TalismanOfItemProtection {
+            get {
+                return ResourceManager.GetString("TalismanOfItemProtection", resourceCulture);
+            }
+        }
     }
 }

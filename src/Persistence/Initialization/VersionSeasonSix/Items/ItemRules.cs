@@ -202,6 +202,8 @@ public class ItemRules : InitializerBase
         Rule(13, 68, Blocked.Repair), // Snowman Transformation Ring
         Rule(13, 76, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Panda Ring
         Rule(13, 80, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Panda
+        Rule(13, 81, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Guardian
+        Rule(13, 82, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Item Protection
         Rule(13, 93, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Ascension
         Rule(13, 94, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Wealth
         Rule(13, 104, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max AG Boost Aura

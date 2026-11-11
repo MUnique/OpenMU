@@ -314,6 +314,17 @@ second Seal of Wealth (13/116). It isn't sold in the in-game shop.
 Not implemented yet: the Seal of Mobility and the Party EXP Scroll.
 :::
 
+Two talismans give a protection instead of a stat. Like the seals, their buffs
+last 30 minutes and stay when the character dies:
+
+| Item | Effect |
+|---|---|
+| Talisman of Guardian | no loss of experience or zen when a monster kills the character |
+| Talisman of Item Protection | the equipped items don't lose durability, except the pet |
+
+The client's shop script has no products for them. Existing databases get them
+with the configuration update *Add the protection talismans*.
+
 The items and their packages exist in a new Season 6 database. Existing
 databases get the items with the configuration update *Add buff items*. Their
 packages in the cash shop are time-limited, so they can't be sold until items
