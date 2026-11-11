@@ -2717,4 +2717,13 @@
   <data name="Inspect" xml:space="preserve">
     <value>Inspect</value>
   </data>
+  <data name="ExcellentOptionsChance" xml:space="preserve">
+    <value>Excellent option chance (%)</value>
+  </data>
+  <data name="ExcellentOptionsMaximumOptionsPerItem" xml:space="preserve">
+    <value>Maximum excellent options per item</value>
+  </data>
+  <data name="ExcellentOptionsHint" xml:space="preserve">
+    <value>Empty means that the value of the excellent option definition of the item applies. The first option is always added without a chance.</value>
+  </data>
 </root>

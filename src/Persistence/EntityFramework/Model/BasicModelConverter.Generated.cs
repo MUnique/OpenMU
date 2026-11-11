@@ -1117,6 +1117,8 @@ internal sealed class BasicModelConverter
         target.Monster = (MUnique.OpenMU.DataModel.Configuration.MonsterDefinition)this.ConvertObject(source.Monster)!;
         target.ItemLevel = source.ItemLevel;
         target.ItemType = source.ItemType;
+        target.ExcellentOptionsAddChance = source.ExcellentOptionsAddChance;
+        target.ExcellentOptionsMaximumOptionsPerItem = source.ExcellentOptionsMaximumOptionsPerItem;
         if (source.PossibleItems is { } possibleItemsItems)
         {
             foreach (var item in possibleItemsItems)
@@ -2058,6 +2060,8 @@ internal sealed class BasicModelConverter
         target.Monster = (MUnique.OpenMU.DataModel.Configuration.MonsterDefinition)this.ConvertObject(source.Monster)!;
         target.ItemLevel = source.ItemLevel;
         target.ItemType = source.ItemType;
+        target.ExcellentOptionsAddChance = source.ExcellentOptionsAddChance;
+        target.ExcellentOptionsMaximumOptionsPerItem = source.ExcellentOptionsMaximumOptionsPerItem;
         if (source.PossibleItems is { } possibleItemsItems)
         {
             foreach (var item in possibleItemsItems)
