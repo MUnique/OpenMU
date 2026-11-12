@@ -6587,9 +6587,9 @@ public class PacketStructureTests
         Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'QuestGroup' exceeds packet boundary");
         
-        // Validate field 'IsQuestCompleted' boundary
+        // Validate field 'Result' boundary
         Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
-            "Field 'IsQuestCompleted' exceeds packet boundary");
+            "Field 'Result' exceeds packet boundary");
     }
 
     /// <summary>

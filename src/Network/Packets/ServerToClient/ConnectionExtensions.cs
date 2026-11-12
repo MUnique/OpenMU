@@ -6577,12 +6577,12 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="questNumber">The quest number.</param>
     /// <param name="questGroup">The quest group.</param>
-    /// <param name="isQuestCompleted">The is quest completed.</param>
+    /// <param name="result">The result.</param>
     /// <remarks>
-    /// Is sent by the server when: The server acknowledges the completion of a quest.
-    /// Causes reaction on client side: The client shows the success and possibly requests for the next available quests.
+    /// Is sent by the server when: The server acknowledges the completion of a quest, or refuses it because the rewards don't fit.
+    /// Causes reaction on client side: When the quest was completed, the client shows the success and possibly requests for the next available quests. When it was refused, the client shows a message and disables the button to complete the quest.
     /// </remarks>
-    public static async ValueTask SendQuestCompletionResponseAsync(this IConnection? connection, ushort @questNumber, ushort @questGroup, bool @isQuestCompleted)
+    public static async ValueTask SendQuestCompletionResponseAsync(this IConnection? connection, ushort @questNumber, ushort @questGroup, QuestCompletionResponse.QuestCompletionResult @result)
     {
         if (connection is null)
         {
@@ -6595,7 +6595,7 @@ public static class ConnectionExtensions
             var packet = new QuestCompletionResponseRef(connection.Output.GetSpan(length)[..length]);
             packet.QuestNumber = @questNumber;
             packet.QuestGroup = @questGroup;
-            packet.IsQuestCompleted = @isQuestCompleted;
+            packet.Result = @result;
 
             return packet.Header.Length;
         }

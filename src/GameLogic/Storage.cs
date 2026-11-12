@@ -219,6 +219,41 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc/>
+    public bool CanAddItems(IEnumerable<Item> items, IEnumerable<Item>? removedItems = null)
+    {
+        // The search order is the one of CheckInvSpace: this storage first, then the extensions.
+        var grids = this.GetStoragesInSearchOrder()
+            .Select(storage => (Storage: storage, UsedSlots: (bool[,])storage._usedSlots.Clone()))
+            .ToList();
+
+        foreach (var removedItem in removedItems ?? [])
+        {
+            if (removedItem.Definition is null
+                || grids.FirstOrDefault(grid => grid.Storage.ContainsSlot(removedItem.ItemSlot)) is not { Storage: { } storage } grid)
+            {
+                continue;
+            }
+
+            var slot = removedItem.ItemSlot - storage._slotOffset;
+            if (slot >= storage._boxOffset)
+            {
+                MarkSlots(grid.UsedSlots, storage.GetRowIndex(slot), storage.GetColumnIndex(slot), removedItem.Definition.Width, removedItem.Definition.Height, false);
+            }
+        }
+
+        foreach (var item in items)
+        {
+            item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
+            if (!grids.Any(grid => TryOccupyFirstFreePlace(grid.UsedSlots, item.Definition.Width, item.Definition.Height)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<bool> TryTakeAllAsync(IStorage anotherStorage)
     {
         var result = true;
@@ -381,6 +416,52 @@ public class Storage : IStorage
         return true;
     }
 
+    private static bool TryOccupyFirstFreePlace(bool[,] usedSlots, byte width, byte height)
+    {
+        var rowCount = usedSlots.GetLength(0);
+        var columnCount = usedSlots.GetLength(1);
+        for (var row = 0; row + height <= rowCount; row++)
+        {
+            for (var column = 0; column + width <= columnCount; column++)
+            {
+                if (IsFree(usedSlots, row, column, width, height))
+                {
+                    MarkSlots(usedSlots, row, column, width, height, true);
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsFree(bool[,] usedSlots, int row, int column, byte width, byte height)
+    {
+        for (var currentRow = row; currentRow < row + height; currentRow++)
+        {
+            for (var currentColumn = column; currentColumn < column + width; currentColumn++)
+            {
+                if (usedSlots[currentRow, currentColumn])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static void MarkSlots(bool[,] usedSlots, int row, int column, byte width, byte height, bool used)
+    {
+        for (var currentRow = row; currentRow < row + height && currentRow < usedSlots.GetLength(0); currentRow++)
+        {
+            for (var currentColumn = column; currentColumn < column + width && currentColumn < usedSlots.GetLength(1); currentColumn++)
+            {
+                usedSlots[currentRow, currentColumn] = used;
+            }
+        }
+    }
+
     private bool AddItem(byte slot, Item item)
     {
         var result = this.AddItemInternal((byte)(slot - this._slotOffset), item);
@@ -391,6 +472,15 @@ public class Storage : IStorage
         }
 
         return result;
+    }
+
+    private IEnumerable<Storage> GetStoragesInSearchOrder()
+    {
+        yield return this;
+        foreach (var extension in this.Extensions.OfType<Storage>().SelectMany(extension => extension.GetStoragesInSearchOrder()))
+        {
+            yield return extension;
+        }
     }
 
     private byte GetSlot(int column, int row)

@@ -74,20 +74,18 @@ public class QuestCompletionAction
             return;
         }
 
-        questState!.LastFinishedQuest = activeQuest;
-        foreach (var requiredItem in activeQuest.RequiredItems)
+        var handedInItems = GetHandedInItems(player, activeQuest);
+        if (GetRefusal(player, activeQuest, handedInItems) is { } refusal)
         {
-            var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
-            var items = player.Inventory!.Items
-                .Where(item => Equals(item.Definition, requiredItem.Item)
-                               && (requiredLevel is null || requiredLevel == item.Level))
-                .Take(requiredItem.MinimumNumber)
-                .ToList();
+            player.Logger.LogDebug("Refused, {0}.", refusal);
+            await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletionRefusedAsync(activeQuest, refusal)).ConfigureAwait(false);
+            return;
+        }
 
-            foreach (var item in items)
-            {
-                await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
-            }
+        questState!.LastFinishedQuest = activeQuest;
+        foreach (var item in handedInItems)
+        {
+            await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
         }
 
         foreach (var reward in activeQuest.Rewards)
@@ -97,6 +95,51 @@ public class QuestCompletionAction
 
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the items of the inventory which are handed in for the required items of the quest.
+    /// </summary>
+    private static List<Item> GetHandedInItems(Player player, QuestDefinition quest)
+    {
+        var handedInItems = new List<Item>();
+        foreach (var requiredItem in quest.RequiredItems)
+        {
+            var requiredLevel = requiredItem.DropItemGroup?.ItemLevel;
+            handedInItems.AddRange(player.Inventory!.Items
+                .Where(item => Equals(item.Definition, requiredItem.Item)
+                               && (requiredLevel is null || requiredLevel == item.Level))
+                .Take(requiredItem.MinimumNumber));
+        }
+
+        return handedInItems;
+    }
+
+    /// <summary>
+    /// Gets the reason why the player can't take the rewards of the quest, or <c>null</c> if the player can take them.
+    /// The space of the handed in items counts as free, because they are removed before the rewards are added.
+    /// </summary>
+    private static QuestCompletionRefusal? GetRefusal(Player player, QuestDefinition quest, IReadOnlyCollection<Item> handedInItems)
+    {
+        var itemRewards = quest.Rewards
+            .Where(reward => reward.RewardType == QuestRewardType.Item)
+            .Select(reward => reward.ItemReward)
+            .OfType<Item>()
+            .ToList();
+        if (itemRewards.Count > 0 && player.Inventory?.CanAddItems(itemRewards, handedInItems) is not true)
+        {
+            return QuestCompletionRefusal.InventoryFull;
+        }
+
+        var moneyReward = quest.Rewards
+            .Where(reward => reward.RewardType == QuestRewardType.Money)
+            .Sum(reward => (long)reward.Value);
+        if (moneyReward > 0 && (moneyReward > int.MaxValue || !player.CanAddMoney((int)moneyReward)))
+        {
+            return QuestCompletionRefusal.ZenLimitReached;
+        }
+
+        return null;
     }
 
     private static async ValueTask AddRewardAsync(Player player, QuestReward reward, QuestDefinition quest)
