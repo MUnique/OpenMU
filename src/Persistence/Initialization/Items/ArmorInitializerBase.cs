@@ -50,6 +50,33 @@ public abstract class ArmorInitializerBase : InitializerBase
     }
 
     /// <summary>
+    /// Gets the name of the set bonus of a whole set, taken from the name of its first piece.
+    /// </summary>
+    /// <param name="items">The pieces of the set.</param>
+    /// <param name="level">The item level of the defense bonus, or <c>null</c> for the defense rate bonus.</param>
+    /// <returns>The name of the set bonus.</returns>
+    internal static LocalizedString GetSetName(IEnumerable<ItemDefinition> items, byte? level)
+    {
+        var group = items.ToList();
+        var prefix = group[0].Name.ValueInNeutralLanguage.Split(' ')[0];
+        var neutral = level is { } setLevel
+            ? $"{prefix} Defense Bonus (Level {setLevel})"
+            : prefix + " Defense Rate Bonus";
+        var armorSource = group.FirstOrDefault(item => item.Group == 8)?.Name.SourceKey;
+        if (armorSource is not null && armorSource.StartsWith("ItemNames/", StringComparison.Ordinal))
+        {
+            var suffix = level is { } optionLevel ? $"DefenseBonusLevel{optionLevel}" : "DefenseRateBonus";
+            var key = armorSource["ItemNames/".Length..] + suffix;
+            if (ArmorSetNames.ResourceManager.GetString(key, System.Globalization.CultureInfo.InvariantCulture) == neutral)
+            {
+                return ArmorSetNames.ResourceManager.GetLocalizedString(key);
+            }
+        }
+
+        return neutral;
+    }
+
+    /// <summary>
     /// Builds the <see cref="ItemSetGroup"/> for whole sets.
     /// </summary>
     protected void BuildSets()
@@ -427,27 +454,6 @@ public abstract class ArmorInitializerBase : InitializerBase
 
         armor.SetGuid(armor.Group, armor.Number);
         return armor;
-    }
-
-    private static LocalizedString GetSetName(IEnumerable<ItemDefinition> items, byte? level)
-    {
-        var group = items.ToList();
-        var prefix = group[0].Name.ValueInNeutralLanguage.Split(' ')[0];
-        var neutral = level is { } setLevel
-            ? $"{prefix} Defense Bonus (Level {setLevel})"
-            : prefix + " Defense Rate Bonus";
-        var armorSource = group.FirstOrDefault(item => item.Group == 8)?.Name.SourceKey;
-        if (armorSource is not null && armorSource.StartsWith("ItemNames/", StringComparison.Ordinal))
-        {
-            var suffix = level is { } optionLevel ? $"DefenseBonusLevel{optionLevel}" : "DefenseRateBonus";
-            var key = armorSource["ItemNames/".Length..] + suffix;
-            if (ArmorSetNames.ResourceManager.GetString(key, System.Globalization.CultureInfo.InvariantCulture) == neutral)
-            {
-                return ArmorSetNames.ResourceManager.GetLocalizedString(key);
-            }
-        }
-
-        return neutral;
     }
 
     private void AddRunningMovementSpeed(ItemDefinition item, AttributeDefinition targetAttribute)

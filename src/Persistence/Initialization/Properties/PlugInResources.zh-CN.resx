@@ -459,6 +459,8 @@
   </data>
   <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>修正 Muren 套装火之指环的加成</value></data>
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>将 Muren 古代套装中火之指环的加成由体力修正为智力。</value></data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Name" xml:space="preserve"><value>修正 Phantom 与 Destroy 套装的英文名称</value></data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve"><value>交换 47 号与 48 号铠甲套装及其套装加成的英文名称（47 为 Phantom，48 为 Destroy），并修正拼写错误“Destory”。</value></data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
     <value>添加圣诞村邀请函</value>
   </data>
