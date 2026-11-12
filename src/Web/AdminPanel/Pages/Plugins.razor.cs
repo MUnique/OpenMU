@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using Microsoft.AspNetCore.Components;
+using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -35,6 +36,7 @@ public partial class Plugins
                 this.PlugInController.NameFilter = plugin.PlugInName ?? string.Empty;
                 this.PlugInController.TypeFilter = string.Empty;
                 this.PlugInController.PointFilter = Guid.Empty;
+                this.PlugInController.ActiveFilter = PlugInActiveFilter.All;
 
                 if (plugin.ConfigurationType is { })
                 {
@@ -55,6 +57,14 @@ public partial class Plugins
         if (args.Value is string guidString && Guid.TryParse(guidString, out var result))
         {
             this.PlugInController.PointFilter = result;
+        }
+    }
+
+    private void OnActiveFilterChanged(ChangeEventArgs args)
+    {
+        if (args.Value is string value && Enum.TryParse<PlugInActiveFilter>(value, out var result))
+        {
+            this.PlugInController.ActiveFilter = result;
         }
     }
 }

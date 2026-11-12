@@ -2180,6 +2180,9 @@
   <data name="Active" xml:space="preserve">
     <value>已启用</value>
   </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>未启用</value>
+  </data>
   <data name="ActiveCountFormat" xml:space="preserve">
     <value>已启用 {0} 个，共 {1} 个</value>
   </data>
