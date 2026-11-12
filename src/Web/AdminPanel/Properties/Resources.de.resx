@@ -1716,6 +1716,9 @@
   <data name="Active" xml:space="preserve">
     <value>Aktiv</value>
   </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inaktiv</value>
+  </data>
   <data name="Number" xml:space="preserve">
     <value>Nummer</value>
   </data>

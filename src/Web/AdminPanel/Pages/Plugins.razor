@@ -19,7 +19,13 @@
             <th><PlugInExtensionPointSelection SelectedPointId="@this.PlugInController.PointFilter" ExtensionPoints="@this.PlugInController.ExtensionPoints" OnSelectionChanged="@this.OnPlugInPointSelected" /></th>
             <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.PlugInController.NameFilter" @bind:event="oninput"/></div></th>
             <th><div class="input-group"><span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span><input type="search" class="form-control" placeholder="@Resources.Search" @bind="@this.PlugInController.TypeFilter" @bind:event="oninput"/></div></th>
-            <th></th>
+            <th>
+                <select class="form-select" name="activeFilter" value="@this.PlugInController.ActiveFilter" @onchange="this.OnActiveFilterChanged">
+                    <option value="@PlugInActiveFilter.All">@Resources.All</option>
+                    <option value="@PlugInActiveFilter.Active">@Resources.Active</option>
+                    <option value="@PlugInActiveFilter.Inactive">@Resources.Inactive</option>
+                </select>
+            </th>
         </FilterHeader>
         <ItemTemplate Context="item">
             <td title=@item.PlugInPointDescription>@item.PlugInPointName</td>
