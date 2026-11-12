@@ -248,6 +248,41 @@ public class MoneyDistributionTest
         return party;
     }
 
+    /// <summary>
+    /// Tests that the pick up failure is attributed to the inventory money limit when the whole
+    /// pile does not fit anymore (before, the client showed the generic "can't pick that up").
+    /// </summary>
+    [Test]
+    public async Task MoneyLimitIsReportedWhenThePileDoesNotFitAsync()
+    {
+        var (player, _) = await CreateTwoPlayersAsync().ConfigureAwait(false);
+        player.GameContext.Configuration.ClampMoneyOnPickup = false;
+        player.Money = int.MaxValue - 4899;
+
+        Assert.That(MoneyDistribution.IsInventoryMoneyLimitReached(player, 408967), Is.True);
+        Assert.That(MoneyDistribution.IsInventoryMoneyLimitReached(player, 4899), Is.False);
+        Assert.That(MoneyDistribution.TryPay(player, 408967), Is.False);
+        Assert.That(player.Money, Is.EqualTo(int.MaxValue - 4899));
+    }
+
+    /// <summary>
+    /// Tests that with the clamp enabled the pile is taken up to the limit, and only a completely
+    /// full inventory is reported as limit reached.
+    /// </summary>
+    [Test]
+    public async Task ClampTakesTheFittingPartAndReportsOnlyAFullInventoryAsync()
+    {
+        var (player, _) = await CreateTwoPlayersAsync().ConfigureAwait(false);
+        player.GameContext.Configuration.ClampMoneyOnPickup = true;
+        player.Money = int.MaxValue - 4899;
+
+        Assert.That(MoneyDistribution.IsInventoryMoneyLimitReached(player, 408967), Is.False);
+        Assert.That(MoneyDistribution.TryPay(player, 408967), Is.True);
+        Assert.That(player.Money, Is.EqualTo(int.MaxValue));
+        Assert.That(MoneyDistribution.IsInventoryMoneyLimitReached(player, 408967), Is.True);
+        Assert.That(MoneyDistribution.TryPay(player, 408967), Is.False);
+    }
+
     private static async ValueTask<(Player First, Player Second)> CreateTwoPlayersAsync()
     {
         var first = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

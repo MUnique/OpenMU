@@ -162,9 +162,7 @@ internal static class MoneyDistribution
             return 0;
         }
 
-        // The rate is applied in double precision: a float multiplication would round money amounts
-        // above the ~16.7M the float mantissa can represent exactly, before the cast to long.
-        var scaled = (long)(amount * (double)(player.Attributes?[Stats.MoneyAmountRate] ?? 1.0f));
+        var scaled = GetScaledAmount(player, amount);
         if (scaled <= 0)
         {
             return 0;
@@ -178,6 +176,40 @@ internal static class MoneyDistribution
         }
 
         return Math.Max(amountToAdd, 0);
+    }
+
+    /// <summary>
+    /// Determines whether the inventory money of the player is too full to take the given amount
+    /// (after the money rate of the player is applied), so that a pick up fails because of the
+    /// <see cref="DataModel.Configuration.GameConfiguration.MaximumInventoryMoney"/> and not because of
+    /// distance, party or anything else.
+    /// </summary>
+    /// <param name="player">The player which tried to pick up the money.</param>
+    /// <param name="amount">The amount, before the money rate of the player is applied.</param>
+    /// <returns><c>True</c>, if the player can't take the money because the inventory money limit is reached.</returns>
+    public static bool IsInventoryMoneyLimitReached(Player player, uint amount)
+    {
+        var maximumMoney = player.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
+        var scaled = GetScaledAmount(player, amount);
+        if (scaled <= 0)
+        {
+            return false;
+        }
+
+        if (player.GameContext?.Configuration?.ClampMoneyOnPickup ?? false)
+        {
+            // With clamping, only a completely full inventory refuses the money.
+            return player.Money >= maximumMoney;
+        }
+
+        return (long)player.Money + scaled > maximumMoney;
+    }
+
+    private static long GetScaledAmount(Player player, uint amount)
+    {
+        // The rate is applied in double precision: a float multiplication would round money amounts
+        // above the ~16.7M the float mantissa can represent exactly, before the cast to long.
+        return (long)(amount * (double)(player.Attributes?[Stats.MoneyAmountRate] ?? 1.0f));
     }
 
     /// <summary>
