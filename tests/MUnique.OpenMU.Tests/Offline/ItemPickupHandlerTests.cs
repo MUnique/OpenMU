@@ -173,6 +173,36 @@ public class ItemPickupHandlerTests
         return player.IsWalking;
     }
 
+    /// <summary>
+    /// Tests that picking up a stackable drop which doesn't fit completely on the incomplete stack of the
+    /// inventory fills that stack and keeps the rest as an own item.
+    /// </summary>
+    [Test]
+    public async ValueTask PickupFillsIncompleteStackAndKeepsRestAsync()
+    {
+        // Arrange
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var stack = this.CreateItem(12, 137);
+        stack.Definition!.Durability = 20;
+        stack.Durability = 16;
+        Assert.That(await player.Inventory!.AddItemAsync(stack).ConfigureAwait(false), Is.True);
+
+        var droppedItem = this.CreateItem(12, 137);
+        Mock.Get(droppedItem).Setup(i => i.Definition).Returns(stack.Definition);
+        droppedItem.Durability = 7;
+        var drop = new DroppedItem(droppedItem, player.Position, player.CurrentMap!, player);
+        await player.CurrentMap!.AddAsync(drop).ConfigureAwait(false);
+
+        // Act
+        var result = await drop.TryPickUpByAsync(player).ConfigureAwait(false);
+
+        // Assert
+        Assert.That(result.Success, Is.True);
+        Assert.That(stack.Durability, Is.EqualTo(20), "The existing stack should be completed");
+        Assert.That(droppedItem.Durability, Is.EqualTo(3), "The rest stays in its own item");
+        Assert.That(player.Inventory.Items.Contains(droppedItem), Is.True, "The rest goes to the inventory");
+    }
+
     private async ValueTask<OfflinePlayer> CreateOfflinePlayerAsync()
     {
         return await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(this._gameContext).ConfigureAwait(false);

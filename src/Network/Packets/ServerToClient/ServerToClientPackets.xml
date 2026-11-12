@@ -5128,8 +5128,8 @@
               <Value>16</Value>
             </EnumValue>
             <EnumValue>
-              <Name>ShieldLost</Name>
-              <Description>The players shield depleted.</Description>
+              <Name>ShieldBurst</Name>
+              <Description>The player's shield depleted with significant damage to health.</Description>
               <Value>17</Value>
             </EnumValue>
           </Values>

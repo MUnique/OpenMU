@@ -324,6 +324,8 @@
   <data name="FixDuelArenaSafezoneMapUpdate_Description" xml:space="preserve"><value>Sets the safezone of duel arena to lorencia.</value></data>
   <data name="AddMovementSpeedAttributesPlugInBase_Name" xml:space="preserve"><value>Add Movement Speed Attributes</value></data>
   <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve"><value>Adds attribute-based movement speed configuration for players, monsters, items, effects, and underwater maps.</value></data>
+  <data name="AddShieldRatioAttributesPlugIn_Name" xml:space="preserve"><value>Add Shield Ratio Attributes</value></data>
+  <data name="AddShieldRatioAttributesPlugIn_Description" xml:space="preserve"><value>Adds the configurable shield damage ratio and over-shield burst threshold.</value></data>
   <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve"><value>Add System Configuration</value></data>
   <data name="SystemConfigurationAddedPlugInBase_Description" xml:space="preserve"><value>This update adds the new system configuration.</value></data>
   <data name="AddKanturuDataUpdatePlugIn_Name" xml:space="preserve"><value>Add Kanturu data</value></data>
@@ -432,6 +434,8 @@
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Luck, which increases the success rate of a crafting by its durability in percent, and the Talisman of Chaos Assembly, which keeps the item of a failed +10 to +15 item upgrade. They are added to the craftings which accept them, and the packages of the in-game shop which contain them are put on sale.</value></data>
   <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>Fix Muren Ring of Fire Bonus</value></data>
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>Gives the Ring of Fire of the Muren ancient set its energy bonus, which was initialized as vitality.</value></data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Name" xml:space="preserve"><value>Fix Destroy and Phantom Armor Names</value></data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve"><value>Swaps the names of the Phantom (47) and Destroy (48) armor sets and of their set bonuses, which were initialized with each other's name, and corrects the spelling "Destory".</value></data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve"><value>Add invitation to santa village</value></data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the invitation to the santa village, which warps the player to the santa village, and a spawn gate to the santa village.</value></data>
   <data name="AddHitShockSettingsPlugIn_Name" xml:space="preserve"><value>Add hit-shock settings</value></data>
@@ -440,4 +444,10 @@
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept.</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve"><value>Adjust Ice Arrow freeze duration</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects.</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>Season 6 monster spawns of Devias, Noria and Elvenland</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>Replaces the monster spawns of Devias, Noria and Elvenland, which are spread over quarters of the map, with the Season 6 layout of smaller areas and single spots. It adds the spiders to Noria and Elvenland. Customized spawns of the field monsters of these maps are overwritten. Also removes the duplicate monster spawns of Dungeon (254) and Lost Tower (2).</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInBase_Name" xml:space="preserve"><value>Remove duplicate monster spawns of Dungeon and Lost Tower</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve"><value>Removes the monster spawns which are defined twice: 254 in Dungeon, which therefore had twice the intended monsters, and 2 in Lost Tower. Other spawns are kept.</value></data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve"><value>Add the protection talismans</value></data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Guardian, which protects from the death penalty, and the Talisman of Item Protection, which keeps the durability of the equipped items.</value></data>
 </root>

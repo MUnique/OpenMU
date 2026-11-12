@@ -6118,6 +6118,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Not assigned to any map.
+        /// </summary>
+        public static string NotAssignedToAnyMap {
+            get {
+                return ResourceManager.GetString("NotAssignedToAnyMap", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Map Editor.
         /// </summary>
         public static string MapEditor {

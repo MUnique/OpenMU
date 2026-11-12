@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Vault;
@@ -67,6 +69,27 @@ public class PlayerLosesMoneyAfterDeathPlugInTest
 
         Assert.That(player.Vault.ItemStorage.Money, Is.EqualTo(VaultMoney - (VaultMoney * VaultLossPercentage / 100)));
         Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdateVaultMoneyPlugIn>()!).Verify(p => p.UpdateVaultMoneyAsync(true), Times.Once);
+    }
+
+    /// <summary>
+    /// A death with the protection of the Talisman of Guardian keeps the money of the inventory and the vault.
+    /// </summary>
+    [Test]
+    public async Task DeathPenaltyProtectionKeepsMoneyAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Account = new BasicModel.Account { Vault = new BasicModel.ItemStorage { Money = VaultMoney } };
+        player.Money = VaultMoney;
+        player.Attributes!.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.DeathPenaltyProtection);
+        var plugIn = new PlayerLosesMoneyAfterDeathPlugIn
+        {
+            Configuration = new() { LossesPerLevel = [new(0, false, VaultLossPercentage, VaultLossPercentage)] },
+        };
+
+        await plugIn.AttackableGotKilledAsync(player, await CreateMonsterAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        Assert.That(player.Money, Is.EqualTo(VaultMoney));
+        Assert.That(player.Account.Vault!.Money, Is.EqualTo(VaultMoney));
     }
 
     private static async ValueTask<Monster> CreateMonsterAsync()

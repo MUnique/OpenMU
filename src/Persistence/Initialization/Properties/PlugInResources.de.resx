@@ -626,6 +626,12 @@
   <data name="AddMovementSpeedAttributesPlugInBase_Description" xml:space="preserve">
     <value>Fügt eine attributbasierte Konfiguration der Bewegungsgeschwindigkeit für Spieler, Monster, Gegenstände, Effekte und Unterwasserkarten hinzu.</value>
   </data>
+  <data name="AddShieldRatioAttributesPlugIn_Name" xml:space="preserve">
+    <value>Attribute für das Schildverhältnis hinzufügen</value>
+  </data>
+  <data name="AddShieldRatioAttributesPlugIn_Description" xml:space="preserve">
+    <value>Fügt das konfigurierbare Verhältnis des Schildschadens und den Schwellenwert für den Über-Schild-Burst hinzu.</value>
+  </data>
   <data name="SystemConfigurationAddedPlugInBase_Name" xml:space="preserve">
     <value>Systemkonfiguration hinzufügen</value>
   </data>
@@ -910,6 +916,12 @@
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">
     <value>Gibt dem Feuerring des antiken Sets Muren seinen Energie-Bonus, der als Vitalität initialisiert wurde.</value>
   </data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Name" xml:space="preserve">
+    <value>Namen der Rüstungssets Zerstörer und Phantom korrigieren</value>
+  </data>
+  <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve">
+    <value>Tauscht die Namen der Rüstungssets Phantom (47) und Zerstörer (48) und ihrer Set-Boni, die mit dem Namen des jeweils anderen Sets initialisiert wurden, und korrigiert die Schreibweise „Destory“.</value>
+  </data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
   </data>
@@ -927,5 +939,23 @@
   </data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Verlängert die standardmäßige Einfrierdauer des Eis-Pfeils und ergänzt ihre Verkürzung bei erfolgreichen Treffern. Angepasste Dauern bleiben unverändert. Außerdem werden die Magieeffekte von Ice Arrow Str, Chain Drive Str, Strike of Destruction Str und Poison Str an die Magieeffekte ihrer Basisfähigkeiten angeglichen.</value>
+  </data>
+  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Name" xml:space="preserve">
+    <value>Season-6-Monster-Spawns von Devias, Noria und Elfenland</value>
+  </data>
+  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Description" xml:space="preserve">
+    <value>Ersetzt die Monster-Spawns von Devias, Noria und Elfenland, die über Viertel der Karte verteilt sind, durch die Season-6-Aufteilung mit kleineren Bereichen und einzelnen Punkten. Fügt die Spinnen in Noria und Elfenland hinzu. Angepasste Spawns der Feldmonster dieser Karten werden überschrieben. Entfernt außerdem die doppelten Monster-Spawns von Dungeon (254) und Lost Tower (2).</value>
+  </data>
+  <data name="FieldMonsterSpawnsUpdatePlugInBase_Name" xml:space="preserve">
+    <value>Doppelte Monster-Spawns von Dungeon und Lost Tower entfernen</value>
+  </data>
+  <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve">
+    <value>Entfernt die doppelt definierten Monster-Spawns: 254 im Dungeon, der deshalb doppelt so viele Monster wie vorgesehen hatte, und 2 im Lost Tower. Andere Spawns bleiben erhalten.</value>
+  </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
+    <value>Schutztalismane hinzufügen</value>
+  </data>
+  <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt den Talisman des Wächters, der vor der Todesstrafe schützt, und den Talisman des Gegenstandsschutzes hinzu, der die Haltbarkeit der ausgerüsteten Gegenstände erhält.</value>
   </data>
 </root>

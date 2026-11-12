@@ -163,6 +163,18 @@ public class Stats
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
 
     /// <summary>
+    /// Gets the death penalty protection attribute definition. If it's greater than 0, the player keeps its
+    /// experience and money when it's killed by a monster, e.g. by the Talisman of Guardian.
+    /// </summary>
+    public static AttributeDefinition DeathPenaltyProtection { get; } = new(new Guid("3CA30A73-E8C8-4201-9703-FB46E31E7FBD"), "Death Penalty Protection", "If it's greater than 0, the player doesn't lose experience or money when it's killed by a monster. It's set by the Talisman of Guardian.");
+
+    /// <summary>
+    /// Gets the item durability protection attribute definition. If it's greater than 0, the equipped items
+    /// of the player, except pets, don't lose durability, e.g. by the Talisman of Item Protection.
+    /// </summary>
+    public static AttributeDefinition ItemDurabilityProtection { get; } = new(new Guid("7232B55F-9680-41F7-98AC-3172E66FCABE"), "Item Durability Protection", "If it's greater than 0, the equipped items of the player, except pets, don't lose durability. It's set by the Talisman of Item Protection.");
+
+    /// <summary>
     /// Gets the current health attribute definition.
     /// </summary>
     public static AttributeDefinition CurrentHealth { get; } = new(new Guid("20686FFD-7A96-4BE2-9889-2A4DD9FF5A25"), "Current Health", string.Empty);
@@ -1481,6 +1493,20 @@ public class Stats
     /// Gets the hit shock damage threshold attribute definition.
     /// </summary>
     public static AttributeDefinition HitShockDamageThreshold { get; } = new(new Guid("22F07E43-9A6A-4007-9EB4-D1B549F7FDC3"), "Hit Shock Damage Threshold", "The minimum damage required for a hit to cause hit shock.");
+
+    /// <summary>
+    /// Gets the shield ratio attribute definition.
+    /// </summary>
+    public static AttributeDefinition ShieldRatio { get; } = new(new Guid("7D2F9A1E-4C6B-48D3-A7F1-9E2C5B8D4A6F"), "Shield Ratio", "The ratio that defines how much of the hit damage goes to shield.")
+    {
+        MaximumValue = 1,
+    };
+
+    /// <summary>
+    /// Gets the over-shield burst damage ratio attribute definition.
+    /// </summary>
+    /// <remarks>The health damage ratio that when overcome triggers the shield burst effect.</remarks>
+    public static AttributeDefinition OverShieldBurstDamageRatio { get; } = new(new Guid("9A2D4F7C-B6E1-4A83-9D2F-1C7E5B3A8D4F"), "Over-shield Burst Damage Ratio", "The over-shield health damage ratio that triggers a shield burst effect to be displayed.");
 
     /// <summary>
     /// Gets the is uniria equipped attribute definition.

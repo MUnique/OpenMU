@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 
@@ -135,6 +136,12 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             return (false, stackTarget);
         }
 
+        if (this.Item.IsStackable())
+        {
+            // The whole drop doesn't fit on any stack: fill the incomplete stack first, the rest is picked up as usual.
+            await this.TryFillPartialStackAsync(player).ConfigureAwait(false);
+        }
+
         return (await this.TryPickUpAsync(player).ConfigureAwait(false), stackTarget);
     }
 
@@ -257,6 +264,35 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
 
         return true;
+    }
+
+    private async ValueTask TryFillPartialStackAsync(Player player)
+    {
+        var partialTarget = player.Inventory?.Items.FirstOrDefault(i => this.Item.CanPartiallyStackOn(i));
+        if (partialTarget is null)
+        {
+            return;
+        }
+
+        using (await this._pickupLock.LockAsync().ConfigureAwait(false))
+        {
+            if (!this._availableToPick)
+            {
+                return;
+            }
+
+            var partialAmount = (byte)Math.Min(partialTarget.Definition!.Durability - partialTarget.Durability, this.Item.Durability);
+            if (partialAmount <= 0)
+            {
+                return;
+            }
+
+            partialTarget.Durability += partialAmount;
+            this.Item.Durability -= partialAmount;
+        }
+
+        player.Logger.LogInformation("Item '{0}' partially stacked on '{1}' of player '{2}', durability of the stack is now {3}.", this, partialTarget, player, partialTarget.Durability);
+        await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(partialTarget, false)).ConfigureAwait(false);
     }
 
     private async ValueTask<bool> TryStackOnItemAsync(Player player, Item stackTarget)

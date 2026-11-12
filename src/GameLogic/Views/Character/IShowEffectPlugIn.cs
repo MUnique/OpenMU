@@ -32,9 +32,9 @@ public interface IShowEffectPlugIn : IViewPlugIn
         LevelUp,
 
         /// <summary>
-        /// The players <see cref="Stats.CurrentShield"/> reached 0.
+        /// The player's <see cref="Stats.CurrentShield"/> got depleted and the health damage was over <see cref="Stats.OverShieldBurstDamageRatio"/>.
         /// </summary>
-        ShieldLost,
+        ShieldBurst,
 
         /// <summary>
         /// A swirl is shown around the player, e.g. after dropping event items.

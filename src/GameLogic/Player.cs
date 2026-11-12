@@ -1338,6 +1338,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="decrement">The decrement.</param>
     public async ValueTask DecreaseItemDurabilityAsync(Item item, double decrement)
     {
+        if (this.Attributes?[Stats.ItemDurabilityProtection] > 0
+            && item.ItemSlot != InventoryConstants.PetSlot
+            && !item.IsTrainablePet())
+        {
+            // E.g. the Talisman of Item Protection keeps the durability of all equipped items, except pets.
+            return;
+        }
+
         var previousFactor = item.GetCurrentDurabilityFactor();
         if (item.DecreaseDurability(decrement))
         {
@@ -1728,8 +1736,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
         if (oversd < 0)
         {
-            this.Attributes[Stats.CurrentShield] = 0;
             healthDamage += (uint)(oversd * (-1));
+
+            if (this.Attributes[Stats.CurrentShield] > 0
+                && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
+                && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio])
+            {
+                await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.ShieldBurst), true).ConfigureAwait(false);
+            }
+
+            this.Attributes[Stats.CurrentShield] = 0;
         }
         else
         {
