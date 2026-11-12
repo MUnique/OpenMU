@@ -112,6 +112,56 @@ public class StorageTest
         Assert.That(storage.FreeSlots.Contains((byte)(12 + (7 * 8))), Is.True);
     }
 
+    /// <summary>
+    /// Tests that loading a storage moves an item which doesn't fit at its slot anymore, e.g. because its item
+    /// definition became bigger (the Scroll of Blood, 1x2 to 2x2), or the item next to it, to a free place, so both
+    /// are in the storage without overlapping.
+    /// </summary>
+    /// <param name="slotInGrid">The slot of the grown item, relative to the first slot of the grid.</param>
+    [TestCase(7)] // The rightmost column: the item would hang over the right border.
+    [TestCase(1)] // Next to an item to its right.
+    public void LoadingMovesGrownItemToAFreePlace(byte slotInGrid)
+    {
+        var grownItem = CreateLoadedItem(2, 2, (byte)(12 + slotInGrid));
+        var blockingItem = CreateLoadedItem(1, 1, 12 + 2);
+        var itemStorage = this.CreateItemStorage(grownItem, blockingItem);
+
+        var storage = new Storage(12 + 64, 12, 0, itemStorage);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(storage.Items, Does.Contain(grownItem));
+            Assert.That(storage.Items, Does.Contain(blockingItem));
+            Assert.That(storage.FreeSlots.Count(), Is.EqualTo(64 - 4 - 1), "The two items overlap.");
+        });
+    }
+
+    /// <summary>
+    /// Tests that loading a storage fails when an item which doesn't fit at its slot finds no free place at all.
+    /// A character with such an inventory can't enter the game until an admin moves the item.
+    /// </summary>
+    [Test]
+    public void LoadingFailsWhenGrownItemFindsNoFreePlace()
+    {
+        var items = Enumerable.Range(0, 63).Select(index => CreateLoadedItem(1, 1, (byte)(12 + index))).ToList();
+        items.Add(CreateLoadedItem(2, 2, 12 + 63));
+        var itemStorage = this.CreateItemStorage(items.ToArray());
+
+        Assert.That(() => new Storage(12 + 64, 12, 0, itemStorage), Throws.TypeOf<ArgumentException>().With.Message.Contains("do not fit"));
+    }
+
+    /// <summary>
+    /// Creates an item as it is loaded from the database, with its collections, at the specified slot.
+    /// </summary>
+    private static Item CreateLoadedItem(byte width, byte height, byte slot)
+    {
+        return new MUnique.OpenMU.Persistence.BasicModel.Item
+        {
+            Definition = new ItemDefinition { Name = $"Item {width}x{height}", Durability = 1, Width = width, Height = height },
+            ItemSlot = slot,
+        };
+    }
+
     private ItemDefinition GetItemDefintion(byte width, byte heigth)
     {
         var itemDefinition = new ItemDefinition
@@ -130,10 +180,10 @@ public class StorageTest
         return item;
     }
 
-    private ItemStorage CreateItemStorage()
+    private ItemStorage CreateItemStorage(params Item[] items)
     {
         var storage = new Mock<ItemStorage>();
-        storage.Setup(s => s.Items).Returns(new List<Item>());
+        storage.Setup(s => s.Items).Returns(items.ToList());
         return storage.Object;
     }
 }
