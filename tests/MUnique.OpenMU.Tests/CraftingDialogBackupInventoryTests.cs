@@ -93,6 +93,29 @@ public class CraftingDialogBackupInventoryTests
         });
     }
 
+    /// <summary>
+    /// Verifies that an item left in the machine is back in the inventory right after the dialog is
+    /// closed, instead of staying hidden in the temporary storage until the next login.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemLeftInTheMachineIsReturnedWhenTheDialogIsClosedAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var inventory = InventoryOf(player).ItemStorage;
+        var ingredient = CreateItem();
+        Assert.That(await InventoryOf(player).AddItemAsync(ingredient).ConfigureAwait(false), Is.True);
+        await new TalkNpcAction().TalkToNpcAsync(player, CreateCraftingNpc()).ConfigureAwait(false);
+        await PutIntoTheMachineAsync(player, ingredient).ConfigureAwait(false);
+
+        await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.Items.Count(item => ReferenceEquals(item, ingredient)), Is.EqualTo(1));
+            Assert.That(TemporaryStorageOf(player).Items, Is.Empty);
+        });
+    }
+
     private static async ValueTask PutIntoTheMachineAsync(Player player, Item item)
     {
         await InventoryOf(player).RemoveItemAsync(item).ConfigureAwait(false);

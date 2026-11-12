@@ -72,6 +72,12 @@ public class TalkNpcAction
     private async ValueTask ShowDialogOfOpenedNpcAsync(Player player)
     {
         var npcStats = player.OpenedNpc!.Definition;
+        if (npcStats.ItemCraftings.Any())
+        {
+            // Leftovers of a crafting dialog which was left without closing it properly.
+            await player.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);
+        }
+
         switch (npcStats.NpcWindow)
         {
             case NpcWindow.Undefined:
