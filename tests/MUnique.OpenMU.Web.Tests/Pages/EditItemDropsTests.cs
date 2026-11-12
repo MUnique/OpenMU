@@ -17,6 +17,7 @@ using MUnique.OpenMU.Web.AdminPanel.Pages;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
+using MUnique.OpenMU.Web.Tests.AdminAuth;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -62,6 +63,7 @@ public class EditItemDropsTests
         this._context.Services.AddSingleton(Mock.Of<ILogger<EditItemDrops>>());
         this._context.Services.AddSingleton(new LoadingOverlayService());
         this._context.Services.AddSingleton(Mock.Of<ILookupController>());
+        this._context.AddAdministratorAuthorization();
         this._context.ComponentFactories.AddStub<MUnique.OpenMU.Web.Shared.Components.Breadcrumb>();
     }
 
@@ -83,8 +85,8 @@ public class EditItemDropsTests
     {
         var cut = this._context.Render<EditItemDrops>();
 
-        cut.WaitForAssertion(
-            () => Assert.That(cut.FindAll("button").Any(button => button.TextContent.Contains("Add drop item group")), Is.True),
+        cut.WaitForState(
+            () => cut.FindAll("button").Any(button => button.TextContent.Contains("Add drop item group")),
             TimeSpan.FromSeconds(10));
 
         var addButton = cut.FindAll("button").First(button => button.TextContent.Contains("Add drop item group"));
