@@ -12794,6 +12794,69 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>09</SubCode>
+      <Name>WarpListExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the character entered the game world, when the client is the open source client.</SentWhen>
+      <CausedReaction>The client shows these warps in its warp window (and accepts them for the warp chat command) instead of the warp list of its data files. Warps which the client knows keep the name of its data files; others get the name of this message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>WarpListEntry</TypeName>
+          <Name>Warps</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>WarpListEntry</Name>
+          <Description>A warp which the player can select in the warp window.</Description>
+          <Length>44</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Index</Name>
+              <Description>The index of the warp, which the client sends in the WarpCommandRequest.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>MapNumber</Name>
+              <Description>The number of the map to which the warp leads.</Description>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>LevelRequirement</Name>
+              <Description>The required character level, as configured. Character classes with a reduced warp level requirement get the reduction on top of it, like in the warp list of the data files.</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>Costs</Name>
+              <Description>The zen which the warp costs.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>32</Length>
+              <Description>The name of the warp, in the language of the player.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>
