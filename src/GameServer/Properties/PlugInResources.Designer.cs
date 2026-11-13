@@ -6820,6 +6820,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files..
+        /// </summary>
+        public static string ShowWarpListExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show warp list (extended).
+        /// </summary>
+        public static string ShowWarpListExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extended implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ShowShopItemListExtendedPlugIn_Description {

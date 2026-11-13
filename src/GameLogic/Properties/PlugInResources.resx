@@ -2055,4 +2055,10 @@
   <data name="BotChatConfiguration_PlayerWingsLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player put on wings - once per player and pair until the server restarts. Placeholders: {player}, {wings} (the player's), {map}.</value></data>
   <data name="BotChatConfiguration_WithoutWingsLines_Name" xml:space="preserve"><value>Answers without wings</value></data>
   <data name="BotChatConfiguration_WithoutWingsLines_Description" xml:space="preserve"><value>Said instead of a whisper reply with {wings} when the bot has no wings yet ("no wings yet, saving up"). Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="ShowWarpListAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Show the warp list after entering the game</value>
+  </data>
+  <data name="ShowWarpListAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Tells the client which warps the player can select in the warp window, when the player enters the game.</value>
+  </data>
 </root>
