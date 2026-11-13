@@ -8,9 +8,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages.MerchantShop;
 /// The outcome of importing a merchant shop file.
 /// </summary>
 /// <param name="ImportedItemCount">The number of items which were added to the shop.</param>
-/// <param name="SkippedItemCount">The number of items which were skipped because their item definition is unknown.</param>
-/// <param name="SkippedOptionCount">
-/// The number of item options and ancient set assignments which were skipped because the item definition
-/// doesn't know them.
+/// <param name="Problems">
+/// The entries of the file which can't be imported, e.g. because the item definition, an item option or an
+/// ancient set is unknown. The import is all-or-nothing: if there is any problem, nothing was imported
+/// and the shop is unchanged.
 /// </param>
-public sealed record MerchantShopImportResult(int ImportedItemCount, int SkippedItemCount, int SkippedOptionCount);
+public sealed record MerchantShopImportResult(int ImportedItemCount, IReadOnlyList<string> Problems);

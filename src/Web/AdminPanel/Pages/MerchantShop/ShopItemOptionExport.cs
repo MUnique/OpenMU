@@ -10,7 +10,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages.MerchantShop;
 /// <remarks>
 /// The referenced option is identified by its <see cref="OptionTypeId"/>, <see cref="Number"/> and
 /// <see cref="SubOptionType"/>, because these are stable within a configuration, while its object
-/// identity isn't.
+/// identity isn't. The ids of option types are not portable between configurations, though.
+/// Therefore, the <see cref="OptionTypeName"/> is exported as well, and is used as fallback
+/// when the id is unknown to the configuration the file is imported into.
 /// </remarks>
 public sealed record ShopItemOptionExport
 {
@@ -18,6 +20,13 @@ public sealed record ShopItemOptionExport
     /// Gets or sets the id of the <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOption.OptionType"/>.
     /// </summary>
     public Guid OptionTypeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name (in neutral language) of the
+    /// <see cref="MUnique.OpenMU.DataModel.Configuration.Items.ItemOption.OptionType"/>.
+    /// It's used to find the option type in another configuration, where its id differs.
+    /// </summary>
+    public string? OptionTypeName { get; set; }
 
     /// <summary>
     /// Gets or sets the number of the option within its option type.

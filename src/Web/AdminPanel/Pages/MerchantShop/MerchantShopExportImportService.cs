@@ -19,6 +19,19 @@ using MUnique.OpenMU.Persistence;
 /// (item group and number, option type and number), so that it can be applied to another configuration.
 /// The file only contains the items, so it can be imported into any merchant shop.
 /// The import replaces all items of the shop; it doesn't touch the money of the storage.
+/// <para>
+/// The import is all-or-nothing regarding the content of the file: it is validated completely, and all
+/// references are resolved, before the shop is touched. If any entry can't be imported, e.g. because its item
+/// definition, option or ancient set is unknown, nothing is imported and the problems are reported,
+/// so that the file can be adjusted.
+/// A file which lacks its format version or its item list is rejected, so that an incomplete file can't
+/// be mistaken for an intentionally empty shop. An explicitly empty item list does clear the shop.
+/// </para>
+/// <para>
+/// The persistence context can't undo deletions which were already staged. If the replacement fails
+/// after the removal of the old items has started, the exception is propagated after the newly created
+/// items have been discarded again, and the caller is expected to discard the unsaved changes of the context.
+/// </para>
 /// </remarks>
 public sealed class MerchantShopExportImportService
 {
@@ -56,7 +69,8 @@ public sealed class MerchantShopExportImportService
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>
     /// The outcome of the import, or <see langword="null"/> if the file isn't a valid shop export.
-    /// In that case, the shop is left untouched.
+    /// If the file contains entries which can't be imported, the result lists them in
+    /// <see cref="MerchantShopImportResult.Problems"/>. In both cases, the shop is left untouched.
     /// </returns>
     public async ValueTask<MerchantShopImportResult?> TryApplyImportAsync(
         MonsterDefinition merchant,
@@ -76,44 +90,106 @@ public sealed class MerchantShopExportImportService
                 group => group.Key,
                 group => group.OrderBy(definition => definition.GetId()).First());
 
-        var newItems = new List<Item>();
-        var skippedItems = 0;
-        var skippedOptions = 0;
-        foreach (var itemExport in dto.Items ?? [])
+        var plannedItems = new List<PlannedItem>();
+        var problems = new List<string>();
+        foreach (var itemExport in dto.Items)
         {
             if (!definitionsByKey.TryGetValue((itemExport.ItemGroup, itemExport.ItemNumber), out var definition))
             {
-                skippedItems++;
+                problems.Add($"Slot {itemExport.Slot}: unknown item (group {itemExport.ItemGroup}, number {itemExport.ItemNumber}).");
                 continue;
             }
 
-            var item = CreateItem(itemExport, definition, context, out var skippedOptionsOfItem);
-            newItems.Add(item);
-            skippedOptions += skippedOptionsOfItem;
+            plannedItems.Add(PlanItem(itemExport, definition, problems));
+        }
+
+        if (problems.Count > 0)
+        {
+            return new MerchantShopImportResult(0, problems);
         }
 
         await RemoveItemsAsync(store, context).ConfigureAwait(false);
-        foreach (var item in newItems)
+
+        var createdItems = new List<Item>();
+        try
         {
-            store.Items.Add(item);
+            foreach (var plannedItem in plannedItems)
+            {
+                CreateItem(plannedItem, context, createdItems);
+            }
+
+            foreach (var item in createdItems)
+            {
+                store.Items.Add(item);
+            }
+        }
+        catch
+        {
+            DiscardCreatedItems(createdItems, store, context);
+            throw;
         }
 
-        return new MerchantShopImportResult(newItems.Count, skippedItems, skippedOptions);
+        return new MerchantShopImportResult(createdItems.Count, []);
     }
 
     private static MerchantShopExport? ReadExport(string json)
     {
-        MerchantShopExport? dto;
         try
         {
-            dto = JsonSerializer.Deserialize<MerchantShopExport>(json);
+            // The DTO has defaults for both properties, which is convenient for exporting.
+            // For importing, the properties must be explicitly present in the file.
+            using var document = JsonDocument.Parse(json);
+            var root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object
+                || !root.TryGetProperty(nameof(MerchantShopExport.FormatVersion), out var version)
+                || version.ValueKind != JsonValueKind.String
+                || version.GetString() != MerchantShopExport.CurrentFormatVersion
+                || !root.TryGetProperty(nameof(MerchantShopExport.Items), out var items)
+                || items.ValueKind != JsonValueKind.Array)
+            {
+                return null;
+            }
+
+            var dto = JsonSerializer.Deserialize<MerchantShopExport>(json);
+            return dto is not null && IsValid(dto) ? dto : null;
         }
         catch (JsonException)
         {
             return null;
         }
+    }
 
-        return dto?.FormatVersion == MerchantShopExport.CurrentFormatVersion ? dto : null;
+    private static bool IsValid(MerchantShopExport dto)
+    {
+        if (dto.Items is not { } items)
+        {
+            return false;
+        }
+
+        var usedSlots = new HashSet<byte>();
+        foreach (var item in items)
+        {
+            if (item is null
+                || item.Durability < 0
+                || item.SocketCount < 0
+                || item.PetExperience < 0
+                || !usedSlots.Add(item.Slot))
+            {
+                return false;
+            }
+
+            if (item.Options?.Any(option => option is null || option.Level < 0 || option.Index < 0) is true)
+            {
+                return false;
+            }
+
+            if (item.AncientSets?.Any(string.IsNullOrWhiteSpace) is true)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static ShopItemExport? CreateItemExport(Item item)
@@ -142,6 +218,7 @@ public sealed class MerchantShopExportImportService
                 itemExport.Options.Add(new ShopItemOptionExport
                 {
                     OptionTypeId = option.OptionType?.Id ?? Guid.Empty,
+                    OptionTypeName = option.OptionType?.Name.ValueInNeutralLanguage,
                     Number = option.Number,
                     SubOptionType = option.SubOptionType,
                     Level = optionLink.Level,
@@ -189,56 +266,42 @@ public sealed class MerchantShopExportImportService
         return candidates;
     }
 
-    private static Item CreateItem(
-        ShopItemExport itemExport,
-        ItemDefinition definition,
-        IContext context,
-        out int skippedOptionCount)
+    private static IncreasableItemOption? FindOption(List<IncreasableItemOption> candidates, ShopItemOptionExport optionExport)
     {
-        var item = context.CreateNew<Item>();
-        item.Definition = definition;
-        item.ItemSlot = itemExport.Slot;
-        item.Level = itemExport.Level;
-        item.Durability = itemExport.Durability;
-        item.HasSkill = itemExport.HasSkill;
-        item.SocketCount = itemExport.SocketCount;
-        item.PetExperience = itemExport.PetExperience;
+        bool IsSameOption(IncreasableItemOption candidate) =>
+            candidate.Number == optionExport.Number
+            && candidate.SubOptionType == optionExport.SubOptionType;
 
-        skippedOptionCount = AddOptions(item, definition, itemExport, context);
-        skippedOptionCount += AddAncientSets(item, definition, itemExport);
-
-        return item;
-    }
-
-    private static int AddOptions(Item item, ItemDefinition definition, ShopItemExport itemExport, IContext context)
-    {
-        var candidates = GetOptionCandidates(definition);
-        var skipped = 0;
-        foreach (var optionExport in itemExport.Options ?? [])
+        var option = candidates.FirstOrDefault(candidate =>
+            IsSameOption(candidate) && candidate.OptionType?.Id == optionExport.OptionTypeId);
+        if (option is not null || string.IsNullOrEmpty(optionExport.OptionTypeName))
         {
-            var option = candidates.FirstOrDefault(candidate =>
-                candidate.OptionType?.Id == optionExport.OptionTypeId
-                && candidate.Number == optionExport.Number
-                && candidate.SubOptionType == optionExport.SubOptionType);
-            if (option is null)
-            {
-                skipped++;
-                continue;
-            }
-
-            var optionLink = context.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = option;
-            optionLink.Level = optionExport.Level;
-            optionLink.Index = optionExport.Index;
-            item.ItemOptions.Add(optionLink);
+            return option;
         }
 
-        return skipped;
+        // The ids of option types differ between configurations, so we fall back to their names.
+        return candidates.FirstOrDefault(candidate =>
+            IsSameOption(candidate) && candidate.OptionType?.Name.ValueInNeutralLanguage == optionExport.OptionTypeName);
     }
 
-    private static int AddAncientSets(Item item, ItemDefinition definition, ShopItemExport itemExport)
+    private static PlannedItem PlanItem(ShopItemExport itemExport, ItemDefinition definition, ICollection<string> problems)
     {
-        var skipped = 0;
+        var candidates = GetOptionCandidates(definition);
+        var options = new List<PlannedOption>();
+        foreach (var optionExport in itemExport.Options ?? [])
+        {
+            if (FindOption(candidates, optionExport) is { } option)
+            {
+                options.Add(new PlannedOption(option, optionExport));
+            }
+            else
+            {
+                var optionTypeName = optionExport.OptionTypeName ?? optionExport.OptionTypeId.ToString();
+                problems.Add($"Slot {itemExport.Slot}: option '{optionTypeName}' (number {optionExport.Number}) isn't available for this item.");
+            }
+        }
+
+        var ancientSets = new List<ItemOfItemSet>();
         foreach (var setName in itemExport.AncientSets ?? [])
         {
             var itemOfSet = definition.PossibleItemSetGroups
@@ -248,13 +311,64 @@ public sealed class MerchantShopExportImportService
                     && candidate.ItemSetGroup?.Name.ValueInNeutralLanguage == setName);
             if (itemOfSet is null)
             {
-                skipped++;
-                continue;
+                problems.Add($"Slot {itemExport.Slot}: ancient set '{setName}' isn't available for this item.");
             }
-
-            item.ItemSetGroups.Add(itemOfSet);
+            else
+            {
+                ancientSets.Add(itemOfSet);
+            }
         }
 
-        return skipped;
+        return new PlannedItem(itemExport, definition, options, ancientSets);
     }
+
+    private static void CreateItem(PlannedItem plannedItem, IContext context, ICollection<Item> createdItems)
+    {
+        var itemExport = plannedItem.Export;
+        var item = context.CreateNew<Item>();
+        createdItems.Add(item);
+        item.Definition = plannedItem.Definition;
+        item.ItemSlot = itemExport.Slot;
+        item.Level = itemExport.Level;
+        item.Durability = itemExport.Durability;
+        item.HasSkill = itemExport.HasSkill;
+        item.SocketCount = itemExport.SocketCount;
+        item.PetExperience = itemExport.PetExperience;
+
+        foreach (var plannedOption in plannedItem.Options)
+        {
+            var optionLink = context.CreateNew<ItemOptionLink>();
+            optionLink.ItemOption = plannedOption.Option;
+            optionLink.Level = plannedOption.Export.Level;
+            optionLink.Index = plannedOption.Export.Index;
+            item.ItemOptions.Add(optionLink);
+        }
+
+        foreach (var itemOfSet in plannedItem.AncientSets)
+        {
+            item.ItemSetGroups.Add(itemOfSet);
+        }
+    }
+
+    private static void DiscardCreatedItems(IEnumerable<Item> createdItems, ItemStorage store, IContext context)
+    {
+        foreach (var item in createdItems)
+        {
+            store.Items.Remove(item);
+            foreach (var optionLink in item.ItemOptions.ToList())
+            {
+                context.Detach(optionLink);
+            }
+
+            context.Detach(item);
+        }
+    }
+
+    private sealed record PlannedOption(IncreasableItemOption Option, ShopItemOptionExport Export);
+
+    private sealed record PlannedItem(
+        ShopItemExport Export,
+        ItemDefinition Definition,
+        IReadOnlyList<PlannedOption> Options,
+        IReadOnlyList<ItemOfItemSet> AncientSets);
 }

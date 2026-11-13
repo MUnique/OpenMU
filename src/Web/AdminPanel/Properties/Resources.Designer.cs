@@ -7720,6 +7720,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to The import was cancelled, because the selected merchant or the editing session changed in the meantime..
+        /// </summary>
+        public static string ShopImportSelectionChanged {
+            get {
+                return ResourceManager.GetString("ShopImportSelectionChanged", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The import failed. The shop may be partially changed; use Cancel to discard the unsaved changes..
+        /// </summary>
+        public static string ShopImportFailed {
+            get {
+                return ResourceManager.GetString("ShopImportFailed", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Importing replaces all items of the shop of "{0}". Continue?.
         /// </summary>
         public static string ShopImportQuestion {
@@ -7729,20 +7747,11 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to {0} item(s) were skipped because their item definitions are not part of this configuration..
+        ///   Looks up a localized string similar to The shop was not changed, because the file contains entries which can't be imported: {0}.
         /// </summary>
-        public static string ShopImportSkippedItems {
+        public static string ShopImportRejected {
             get {
-                return ResourceManager.GetString("ShopImportSkippedItems", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to {0} item option(s) or set assignment(s) were skipped because the item definitions don't know them..
-        /// </summary>
-        public static string ShopImportSkippedOptions {
-            get {
-                return ResourceManager.GetString("ShopImportSkippedOptions", resourceCulture);
+                return ResourceManager.GetString("ShopImportRejected", resourceCulture);
             }
         }
 

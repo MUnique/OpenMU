@@ -81,6 +81,7 @@ public class MerchantShopExportImportServiceTests
         Assert.That(itemExport.PetExperience, Is.EqualTo(42));
         Assert.That(itemExport.Options, Has.Count.EqualTo(1));
         Assert.That(itemExport.Options.Single().OptionTypeId, Is.EqualTo(option.OptionType!.Id));
+        Assert.That(itemExport.Options.Single().OptionTypeName, Is.EqualTo("Excellent"));
         Assert.That(itemExport.Options.Single().Level, Is.EqualTo(3));
         Assert.That(itemExport.Options.Single().Index, Is.EqualTo(1));
     }
@@ -116,8 +117,7 @@ public class MerchantShopExportImportServiceTests
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.ImportedItemCount, Is.EqualTo(1));
-        Assert.That(result.SkippedItemCount, Is.Zero);
-        Assert.That(result.SkippedOptionCount, Is.Zero);
+        Assert.That(result.Problems, Is.Empty);
         Assert.That(targetMerchant.Designation.ValueInNeutralLanguage, Is.EqualTo("Target Merchant"));
 
         var importedItem = targetMerchant.MerchantStore!.Items.Single();
@@ -156,30 +156,43 @@ public class MerchantShopExportImportServiceTests
     }
 
     /// <summary>
-    /// Items with an unknown definition are skipped and reported.
+    /// An item with an unknown definition rejects the whole file; nothing is imported, not even the valid items.
     /// </summary>
+    /// <returns>The task.</returns>
     [Test]
-    public async Task Import_SkipsUnknownItemDefinitionAsync()
-    {
-        var (merchant, store) = CreateMerchant();
-
-        var result = await this._service
-            .TryApplyImportAsync(merchant, this.CreateExport(new ShopItemExport { ItemGroup = 9, ItemNumber = 9 }), this._persistenceContext.Object)
-            .ConfigureAwait(false);
-
-        Assert.That(result!.ImportedItemCount, Is.Zero);
-        Assert.That(result.SkippedItemCount, Is.EqualTo(1));
-        Assert.That(store.Items, Is.Empty);
-    }
-
-    /// <summary>
-    /// Options which the item definition doesn't know are skipped and reported.
-    /// </summary>
-    [Test]
-    public async Task Import_SkipsUnknownOptionAsync()
+    public async Task Import_UnknownItemDefinition_RejectsWholeFileAsync()
     {
         var definition = this.AddItemDefinition(0, 1);
         var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = definition };
+        store.Items.Add(existingItem);
+
+        var result = await this._service
+            .TryApplyImportAsync(
+                merchant,
+                this.CreateExport(
+                    new ShopItemExport { Slot = 0, ItemGroup = 0, ItemNumber = 1 },
+                    new ShopItemExport { Slot = 1, ItemGroup = 9, ItemNumber = 9 }),
+                this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.ImportedItemCount, Is.Zero);
+        Assert.That(result.Problems, Has.Count.EqualTo(1));
+        Assert.That(result.Problems.Single(), Does.Contain("Slot 1"));
+        this.AssertShopUntouched(store, existingItem);
+    }
+
+    /// <summary>
+    /// An option which the item definition doesn't know rejects the whole file.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_UnknownOption_RejectsWholeFileAsync()
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = definition };
+        store.Items.Add(existingItem);
         var itemExport = new ShopItemExport { ItemGroup = 0, ItemNumber = 1 };
         itemExport.Options.Add(new ShopItemOptionExport { OptionTypeId = Guid.NewGuid(), Number = 1 });
 
@@ -187,10 +200,54 @@ public class MerchantShopExportImportServiceTests
             .TryApplyImportAsync(merchant, this.CreateExport(itemExport), this._persistenceContext.Object)
             .ConfigureAwait(false);
 
-        Assert.That(result!.ImportedItemCount, Is.EqualTo(1));
-        Assert.That(result.SkippedOptionCount, Is.EqualTo(1));
-        Assert.That(store.Items.Single().ItemOptions, Is.Empty);
-        Assert.That(store.Items.Single().Definition, Is.SameAs(definition));
+        Assert.That(result!.ImportedItemCount, Is.Zero);
+        Assert.That(result.Problems, Has.Count.EqualTo(1));
+        this.AssertShopUntouched(store, existingItem);
+    }
+
+    /// <summary>
+    /// An ancient set which the item definition doesn't know rejects the whole file.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_UnknownAncientSet_RejectsWholeFileAsync()
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = definition };
+        store.Items.Add(existingItem);
+        var itemExport = new ShopItemExport { ItemGroup = 0, ItemNumber = 1 };
+        itemExport.AncientSets.Add("Unknown Set");
+
+        var result = await this._service
+            .TryApplyImportAsync(merchant, this.CreateExport(itemExport), this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.ImportedItemCount, Is.Zero);
+        Assert.That(result.Problems, Has.Count.EqualTo(1));
+        this.AssertShopUntouched(store, existingItem);
+    }
+
+    /// <summary>
+    /// All problems of the file are reported at once, so that it can be adjusted in one go.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_MultipleProblems_AreAllReportedAsync()
+    {
+        this.AddItemDefinition(0, 1);
+        var (merchant, _) = CreateMerchant();
+
+        var result = await this._service
+            .TryApplyImportAsync(
+                merchant,
+                this.CreateExport(
+                    new ShopItemExport { Slot = 0, ItemGroup = 8, ItemNumber = 8 },
+                    new ShopItemExport { Slot = 1, ItemGroup = 9, ItemNumber = 9 }),
+                this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.Problems, Has.Count.EqualTo(2));
     }
 
     /// <summary>
@@ -209,7 +266,7 @@ public class MerchantShopExportImportServiceTests
             .TryApplyImportAsync(merchant, this.CreateExport(itemExport), this._persistenceContext.Object)
             .ConfigureAwait(false);
 
-        Assert.That(result!.SkippedOptionCount, Is.Zero);
+        Assert.That(result!.Problems, Is.Empty);
         Assert.That(store.Items.Single().ItemSetGroups, Is.EquivalentTo(new[] { itemOfSet }));
     }
 
@@ -233,6 +290,148 @@ public class MerchantShopExportImportServiceTests
         this._persistenceContext.Verify(c => c.DeleteAsync(It.IsAny<Item>()), Times.Never);
     }
 
+    /// <summary>
+    /// Incomplete or malformed files are rejected without touching the shop.
+    /// In particular, a missing version or a missing item list must not be mistaken for an empty shop.
+    /// </summary>
+    /// <param name="json">The content of the file.</param>
+    /// <returns>The task.</returns>
+    [TestCase("{}")]
+    [TestCase("{\"FormatVersion\":\"1.0\"}")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":null}")]
+    [TestCase("{\"Items\":[]}")]
+    [TestCase("{\"FormatVersion\":null,\"Items\":[]}")]
+    [TestCase("{\"FormatVersion\":\"2.0\",\"Items\":[]}")]
+    [TestCase("[]")]
+    [TestCase("null")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":[null]}")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":[{\"Slot\":1},{\"Slot\":1}]}")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":[{\"Slot\":1,\"Durability\":-1}]}")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":[{\"Slot\":1,\"Options\":[null]}]}")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":[{\"Slot\":1,\"Options\":[{\"Level\":-1}]}]}")]
+    [TestCase("{\"FormatVersion\":\"1.0\",\"Items\":[{\"Slot\":1,\"AncientSets\":[null]}]}")]
+    public async Task Import_IncompleteOrMalformedFile_LeavesShopUntouchedAsync(string json)
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = definition };
+        store.Items.Add(existingItem);
+
+        var result = await this._service
+            .TryApplyImportAsync(merchant, json, this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result, Is.Null);
+        Assert.That(store.Items, Is.EquivalentTo(new[] { existingItem }));
+        this._persistenceContext.Verify(c => c.DeleteAsync(It.IsAny<Item>()), Times.Never);
+        this._persistenceContext.Verify(c => c.CreateNew<Item>(It.IsAny<object?[]>()), Times.Never);
+    }
+
+    /// <summary>
+    /// An explicitly empty item list is a valid file, which clears the shop.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_ExplicitlyEmptyItemList_ClearsShopAsync()
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = definition };
+        store.Items.Add(existingItem);
+
+        var result = await this._service
+            .TryApplyImportAsync(merchant, "{\"FormatVersion\":\"1.0\",\"Items\":[]}", this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result!.ImportedItemCount, Is.Zero);
+        Assert.That(store.Items, Is.Empty);
+        this._persistenceContext.Verify(c => c.DeleteAsync((Item)existingItem), Times.Once);
+    }
+
+    /// <summary>
+    /// If the id of the option type is unknown, as in another configuration, the option type is found by its name.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_MatchesOptionTypeByNameWhenIdIsUnknownAsync()
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var option = this.AddOption(definition, "Excellent");
+        var (merchant, store) = CreateMerchant();
+        var itemExport = new ShopItemExport { ItemGroup = 0, ItemNumber = 1 };
+        itemExport.Options.Add(new ShopItemOptionExport { OptionTypeId = Guid.NewGuid(), OptionTypeName = "Excellent", Number = 1 });
+
+        var result = await this._service
+            .TryApplyImportAsync(merchant, this.CreateExport(itemExport), this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.Problems, Is.Empty);
+        Assert.That(store.Items.Single().ItemOptions.Single().ItemOption, Is.SameAs(option));
+    }
+
+    /// <summary>
+    /// An option is a problem when neither the id nor the name of its option type is known.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_OptionWithUnknownIdAndName_RejectsWholeFileAsync()
+    {
+        this.AddOption(this.AddItemDefinition(0, 1), "Excellent");
+        var (merchant, store) = CreateMerchant();
+        var itemExport = new ShopItemExport { ItemGroup = 0, ItemNumber = 1 };
+        itemExport.Options.Add(new ShopItemOptionExport { OptionTypeId = Guid.NewGuid(), OptionTypeName = "Harmony", Number = 1 });
+
+        var result = await this._service
+            .TryApplyImportAsync(merchant, this.CreateExport(itemExport), this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.Problems, Has.Count.EqualTo(1));
+        Assert.That(result.Problems.Single(), Does.Contain("Harmony"));
+        Assert.That(store.Items, Is.Empty);
+    }
+
+    /// <summary>
+    /// If the removal of the old items fails, no new items are created and the exception is propagated.
+    /// </summary>
+    [Test]
+    public void Import_FailingRemoval_DoesNotCreateItems()
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var (merchant, store) = CreateMerchant();
+        store.Items.Add(new BasicModel.Item { Definition = definition });
+        this._persistenceContext.Setup(c => c.DeleteAsync(It.IsAny<Item>())).Throws<InvalidOperationException>();
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await this._service
+            .TryApplyImportAsync(merchant, this.CreateExport(new ShopItemExport { ItemGroup = 0, ItemNumber = 1 }), this._persistenceContext.Object)
+            .ConfigureAwait(false));
+
+        this._persistenceContext.Verify(c => c.CreateNew<Item>(It.IsAny<object?[]>()), Times.Never);
+    }
+
+    /// <summary>
+    /// If the creation of the new items fails, the already created items are discarded again.
+    /// </summary>
+    [Test]
+    public void Import_FailingCreation_DiscardsCreatedItems()
+    {
+        var definition = this.AddItemDefinition(0, 1);
+        var option = this.AddOption(definition, "Excellent");
+        var (merchant, store) = CreateMerchant();
+        var createdItem = new BasicModel.Item();
+        this._persistenceContext.Setup(c => c.CreateNew<Item>(It.IsAny<object?[]>())).Returns(createdItem);
+        this._persistenceContext.Setup(c => c.CreateNew<ItemOptionLink>(It.IsAny<object?[]>())).Throws<InvalidOperationException>();
+        var itemExport = new ShopItemExport { ItemGroup = 0, ItemNumber = 1 };
+        itemExport.Options.Add(new ShopItemOptionExport { OptionTypeId = option.OptionType!.Id, Number = 1 });
+
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await this._service
+            .TryApplyImportAsync(merchant, this.CreateExport(itemExport), this._persistenceContext.Object)
+            .ConfigureAwait(false));
+
+        Assert.That(store.Items, Is.Empty);
+        this._persistenceContext.Verify(c => c.Detach(createdItem), Times.Once);
+    }
+
     private static MerchantShopExport Deserialize(string json)
     {
         return JsonSerializer.Deserialize<MerchantShopExport>(json)!;
@@ -248,6 +447,13 @@ public class MerchantShopExportImportServiceTests
         };
 
         return (merchant, store);
+    }
+
+    private void AssertShopUntouched(ItemStorage store, Item existingItem)
+    {
+        Assert.That(store.Items, Is.EquivalentTo(new[] { existingItem }));
+        this._persistenceContext.Verify(c => c.DeleteAsync(It.IsAny<Item>()), Times.Never);
+        this._persistenceContext.Verify(c => c.CreateNew<Item>(It.IsAny<object?[]>()), Times.Never);
     }
 
     private BasicModel.ItemDefinition AddItemDefinition(byte group, short number)

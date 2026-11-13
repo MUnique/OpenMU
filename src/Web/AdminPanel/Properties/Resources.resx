@@ -2744,13 +2744,16 @@
   <data name="ShopImported" xml:space="preserve">
     <value>{0} item(s) were imported into the shop.</value>
   </data>
-  <data name="ShopImportSkippedItems" xml:space="preserve">
-    <value>{0} item(s) were skipped because their item definitions are not part of this configuration.</value>
-  </data>
-  <data name="ShopImportSkippedOptions" xml:space="preserve">
-    <value>{0} item option(s) or set assignment(s) were skipped because the item definitions don't know them.</value>
-  </data>
   <data name="ShopImportInvalidFile" xml:space="preserve">
     <value>The file is not a valid merchant shop export.</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>The import was cancelled, because the selected merchant or the editing session changed in the meantime.</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>The import failed. The shop may be partially changed; use Cancel to discard the unsaved changes.</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>The shop was not changed, because the file contains entries which can't be imported: {0}</value>
   </data>
 </root>

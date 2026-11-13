@@ -2620,13 +2620,16 @@
   <data name="ShopImported" xml:space="preserve">
     <value>{0} Item(s) wurden in den Shop importiert.</value>
   </data>
-  <data name="ShopImportSkippedItems" xml:space="preserve">
-    <value>{0} Item(s) wurden übersprungen, weil ihre Item-Definitionen nicht Teil dieser Konfiguration sind.</value>
-  </data>
-  <data name="ShopImportSkippedOptions" xml:space="preserve">
-    <value>{0} Item-Option(en) oder Set-Zuordnung(en) wurden übersprungen, weil die Item-Definitionen sie nicht kennen.</value>
-  </data>
   <data name="ShopImportInvalidFile" xml:space="preserve">
     <value>Die Datei ist kein gültiger Shop-Export.</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>Der Import wurde abgebrochen, da sich der ausgewählte Händler oder die Bearbeitungssitzung in der Zwischenzeit geändert hat.</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>Der Import ist fehlgeschlagen. Der Shop ist möglicherweise teilweise geändert; verwerfe die ungespeicherten Änderungen mit Abbrechen.</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>Der Shop wurde nicht geändert, da die Datei Einträge enthält, die nicht importiert werden können: {0}</value>
   </data>
 </root>

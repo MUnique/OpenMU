@@ -2738,12 +2738,6 @@
   <data name="ShopImported" xml:space="preserve">
     <value>{0} item(ns) foram importados para a loja.</value>
   </data>
-  <data name="ShopImportSkippedItems" xml:space="preserve">
-    <value>{0} item(ns) foram ignorados porque suas definições de item não fazem parte desta configuração.</value>
-  </data>
-  <data name="ShopImportSkippedOptions" xml:space="preserve">
-    <value>{0} opção(ões) de item ou atribuição(ões) de conjunto foram ignoradas porque as definições de item não as conhecem.</value>
-  </data>
   <data name="ShopImportInvalidFile" xml:space="preserve">
     <value>O arquivo não é uma exportação de loja válida.</value>
   </data>

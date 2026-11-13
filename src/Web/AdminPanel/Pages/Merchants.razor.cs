@@ -107,6 +107,15 @@ public partial class Merchants : ComponentBase, IDisposable
         await this.LoadDataAsync(this._disposeCts.Token).ConfigureAwait(true);
     }
 
+    private static string FormatProblems(IReadOnlyList<string> problems)
+    {
+        const int maxShownProblems = 5;
+        var text = string.Join(" ", problems.Take(maxShownProblems));
+        return problems.Count > maxShownProblems
+            ? $"{text} (+{problems.Count - maxShownProblems} more)"
+            : text;
+    }
+
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
     {
         if (this._persistenceContext?.HasChanges is not true)
@@ -260,33 +269,45 @@ public partial class Merchants : ComponentBase, IDisposable
             return;
         }
 
-        var result = await this._shopExportImportService
-            .TryApplyImportAsync(merchant.Merchant, json, context, this._disposeCts.Token)
-            .ConfigureAwait(true);
+        // The awaits above give the user the chance to select another merchant, or to discard the changes,
+        // which replaces the context and the view models. The replacement must only be applied to what was confirmed.
+        if (!ReferenceEquals(this._selectedMerchant, merchant) || !ReferenceEquals(this._persistenceContext, context))
+        {
+            this.ToastService.ShowWarning(Resources.ShopImportSelectionChanged);
+            return;
+        }
+
+        MerchantShopImportResult? result;
+        try
+        {
+            result = await this._shopExportImportService
+                .TryApplyImportAsync(merchant.Merchant, json, context, this._disposeCts.Token)
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            // The shop might be partially replaced, because staged deletions can't be undone.
+            this.Logger.LogError(ex, "Error importing the shop of merchant {merchant}", merchant.Name);
+            this._shopEditorRevision++;
+            this.ToastService.ShowError(Resources.ShopImportFailed);
+            return;
+        }
+
         if (result is null)
         {
             this.ToastService.ShowError(Resources.ShopImportInvalidFile);
             return;
         }
 
+        if (result.Problems.Count > 0)
+        {
+            this.ToastService.ShowError(string.Format(Resources.ShopImportRejected, FormatProblems(result.Problems)));
+            return;
+        }
+
         // The previous items are replaced, so the item editor must not keep a selection and edit view of them.
         this._shopEditorRevision++;
-        this.ShowImportResult(result);
-    }
-
-    private void ShowImportResult(MerchantShopImportResult result)
-    {
         this.ToastService.ShowSuccess(string.Format(Resources.ShopImported, result.ImportedItemCount));
-
-        if (result.SkippedItemCount > 0)
-        {
-            this.ToastService.ShowWarning(string.Format(Resources.ShopImportSkippedItems, result.SkippedItemCount));
-        }
-
-        if (result.SkippedOptionCount > 0)
-        {
-            this.ToastService.ShowWarning(string.Format(Resources.ShopImportSkippedOptions, result.SkippedOptionCount));
-        }
     }
 
     /// <summary>
