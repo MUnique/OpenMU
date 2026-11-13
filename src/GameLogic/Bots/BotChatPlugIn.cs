@@ -1038,7 +1038,8 @@ public class BotChatPlugIn
 
     /// <summary>
     /// Runs the action after the delay, without holding up the caller - the plugin points are called
-    /// from the game logic, which must not wait for a bot's "typing time".
+    /// from the game logic, which must not wait for a bot's "typing time". A plugin deactivated
+    /// meanwhile drops the action: the bots fall silent at once, not a few lines later.
     /// </summary>
     private static void RunLater(IGameContext gameContext, TimeSpan delay, Func<ValueTask> action)
     {
@@ -1047,6 +1048,11 @@ public class BotChatPlugIn
             try
             {
                 await Task.Delay(delay).ConfigureAwait(false);
+                if (!gameContext.PlugInManager.IsPlugInActive(typeof(BotChatPlugIn)))
+                {
+                    return;
+                }
+
                 await action().ConfigureAwait(false);
             }
             catch (Exception ex)
