@@ -18,6 +18,11 @@ using MUnique.OpenMU.PlugIns;
 [ChatCommandHelp(CommandKey, CharacterStatus.Normal)]
 public class PostChatCommandPlugIn : IChatCommandPlugIn
 {
+    /// <summary>
+    /// The sender name under which a post appears in the chat.
+    /// </summary>
+    internal const string PostSender = "[POST]";
+
     private const string CommandKey = "/post";
 
     /// <inheritdoc />
@@ -37,7 +42,18 @@ public class PostChatCommandPlugIn : IChatCommandPlugIn
             return;
         }
 
-        message = $"{player.SelectedCharacter?.Name}: {message}";
-        await player.GameContext.SendGlobalChatMessageAsync("[POST]", message, ChatMessageType.Gens).ConfigureAwait(false);
+        await player.GameContext.SendGlobalChatMessageAsync(PostSender, FormatPost(player.SelectedCharacter?.Name, message), ChatMessageType.Gens).ConfigureAwait(false);
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IPostMessageSentPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.PostMessageSentAsync(player, message).ConfigureAwait(false);
+        }
     }
+
+    /// <summary>
+    /// Formats the text of a post as it appears in the chat: the author's name, then the message.
+    /// </summary>
+    /// <param name="characterName">The name of the posting character.</param>
+    /// <param name="message">The posted message.</param>
+    /// <returns>The text shown in the chat.</returns>
+    internal static string FormatPost(string? characterName, string message) => $"{characterName}: {message}";
 }

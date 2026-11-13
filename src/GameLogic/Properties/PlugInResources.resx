@@ -1897,4 +1897,256 @@
   <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
     <value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value>
   </data>
+  <data name="BotChatPlugIn_Name" xml:space="preserve"><value>Bot chat</value></data>
+  <data name="BotChatPlugIn_Description" xml:space="preserve"><value>Lets server-side bots talk: they announce events and invasions with /post, comment on level milestones and answer whispers, using configurable lines.</value></data>
+  <data name="BotChatLine_Text_Name" xml:space="preserve"><value>Text</value></data>
+  <data name="BotChatLine_Text_Description" xml:space="preserve"><value>What the bot says. The placeholders in curly braces which the list offers are filled in - see the description of the list.</value></data>
+  <data name="BotChatConfiguration_EventPostChancePercent_Name" xml:space="preserve"><value>Event post chance (%)</value></data>
+  <data name="BotChatConfiguration_EventPostChancePercent_Description" xml:space="preserve"><value>Chance that a bot which meets the entry requirements announces an opened Blood Castle, Devil Square or Chaos Castle with /post. Rolled once per event type and opening. 0 = never.</value></data>
+  <data name="BotChatConfiguration_InvasionPostChancePercent_Name" xml:space="preserve"><value>Invasion post chance (%)</value></data>
+  <data name="BotChatConfiguration_InvasionPostChancePercent_Description" xml:space="preserve"><value>Chance that a bot which may warp to the invaded map announces a started invasion with /post. 0 = never.</value></data>
+  <data name="BotChatConfiguration_MinTimeBetweenPosts_Name" xml:space="preserve"><value>Minimum time between posts</value></data>
+  <data name="BotChatConfiguration_MinTimeBetweenPosts_Description" xml:space="preserve"><value>Minimum time between two /post messages of bots on one game server.</value></data>
+  <data name="BotChatConfiguration_MaxPostDelay_Name" xml:space="preserve"><value>Maximum post delay</value></data>
+  <data name="BotChatConfiguration_MaxPostDelay_Description" xml:space="preserve"><value>A bot waits a random time up to this value before it posts about an event.</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneStep_Name" xml:space="preserve"><value>Level milestone step</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneStep_Description" xml:space="preserve"><value>Every how many levels a bot may comment on its level-up. 0 = never.</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneChancePercent_Name" xml:space="preserve"><value>Level milestone chance (%)</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneChancePercent_Description" xml:space="preserve"><value>Chance that a bot comments on reaching a level milestone, in the normal chat.</value></data>
+  <data name="BotChatConfiguration_BotChatCooldown_Name" xml:space="preserve"><value>Chat cooldown per bot</value></data>
+  <data name="BotChatConfiguration_BotChatCooldown_Description" xml:space="preserve"><value>Minimum time between two normal chat lines of the same bot.</value></data>
+  <data name="BotChatConfiguration_WhisperReplyChancePercent_Name" xml:space="preserve"><value>Whisper reply chance (%)</value></data>
+  <data name="BotChatConfiguration_WhisperReplyChancePercent_Description" xml:space="preserve"><value>Chance that a bot answers a whisper of a player. 0 = never.</value></data>
+  <data name="BotChatConfiguration_WhisperReplyCooldown_Name" xml:space="preserve"><value>Whisper reply cooldown</value></data>
+  <data name="BotChatConfiguration_WhisperReplyCooldown_Description" xml:space="preserve"><value>Minimum time between two whisper replies of the same bot.</value></data>
+  <data name="BotChatConfiguration_GreetingChancePercent_Name" xml:space="preserve"><value>Greeting chance (%)</value></data>
+  <data name="BotChatConfiguration_GreetingChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot greets a player who enters the game, in the normal chat. 0 = never.</value></data>
+  <data name="BotChatConfiguration_GreetingCooldown_Name" xml:space="preserve"><value>Greeting cooldown per player</value></data>
+  <data name="BotChatConfiguration_GreetingCooldown_Description" xml:space="preserve"><value>Minimum time between two greetings of the same player, so logging out and in again doesn't start a round of greetings.</value></data>
+  <data name="BotChatConfiguration_PartyChatChancePercent_Name" xml:space="preserve"><value>Party chat chance (%)</value></data>
+  <data name="BotChatConfiguration_PartyChatChancePercent_Description" xml:space="preserve"><value>Chance that a bot says something in the party chat of a player: thanks for the invitation, "gg" after an event. 0 = never.</value></data>
+  <data name="BotChatConfiguration_KilledByPlayerChancePercent_Name" xml:space="preserve"><value>Killed by a player chance (%)</value></data>
+  <data name="BotChatConfiguration_KilledByPlayerChancePercent_Description" xml:space="preserve"><value>Chance that a bot killed by a player (outside of an event) says something about it in the normal chat, before it respawns. 0 = never.</value></data>
+  <data name="BotChatReply_Keywords_Name" xml:space="preserve"><value>Keywords</value></data>
+  <data name="BotChatReply_Keywords_Description" xml:space="preserve"><value>Comma-separated words or phrases of a player's message which this reply answers, e.g. "how are you, how r u". Whole words, case and punctuation are ignored. Replies without keywords are used when nothing matches.</value></data>
+  <data name="BotChatConfiguration_EventLines_Name" xml:space="preserve"><value>Event lines</value></data>
+  <data name="BotChatConfiguration_EventLines_Description" xml:space="preserve"><value>Posted with /post when the entrance of a Blood Castle, Devil Square or Chaos Castle opened; the bot then waits for players at the meeting point. Placeholders: {event}, {map} (the meeting point), {location} (the meeting point with coordinates), {level}.</value></data>
+  <data name="BotChatConfiguration_InvasionLines_Name" xml:space="preserve"><value>Invasion lines</value></data>
+  <data name="BotChatConfiguration_InvasionLines_Description" xml:space="preserve"><value>Posted with /post when an invasion started. Placeholders: {event}, {map}, {location} (the map alone), {level}.</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneLines_Name" xml:space="preserve"><value>Level milestones</value></data>
+  <data name="BotChatConfiguration_LevelMilestoneLines_Description" xml:space="preserve"><value>Said in the normal chat when the bot reached a level milestone. Placeholders: {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
+  <data name="BotChatConfiguration_WhisperReplies_Name" xml:space="preserve"><value>Whisper replies</value></data>
+  <data name="BotChatConfiguration_WhisperReplies_Description" xml:space="preserve"><value>Answers to a player who whispered to the bot or mentioned its name in the normal chat next to it. The best keyword match wins; replies without keywords are the fallback. Placeholders: {player}, {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40"), {wings} (the bot's wings; a bot without wings answers with one of the answers without wings).</value></data>
+  <data name="BotChatConfiguration_GreetingLines_Name" xml:space="preserve"><value>Greetings</value></data>
+  <data name="BotChatConfiguration_GreetingLines_Description" xml:space="preserve"><value>Said by the nearest bot in the normal chat when a player entered the game. Placeholders: {player}, {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
+  <data name="BotChatConfiguration_PartyJoinedLines_Name" xml:space="preserve"><value>Party: joined</value></data>
+  <data name="BotChatConfiguration_PartyJoinedLines_Description" xml:space="preserve"><value>Said in the party chat after the bot accepted a player's invitation. Placeholders: {player} (the inviter), {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
+  <data name="BotChatConfiguration_EventFinishedLines_Name" xml:space="preserve"><value>Party: event finished</value></data>
+  <data name="BotChatConfiguration_EventFinishedLines_Description" xml:space="preserve"><value>Said in the party chat by one bot per party when an event it went through with a player's party ended. Placeholders: {event}, {level}.</value></data>
+  <data name="BotChatConfiguration_KilledLines_Name" xml:space="preserve"><value>Killed by a player</value></data>
+  <data name="BotChatConfiguration_KilledLines_Description" xml:space="preserve"><value>Said in the normal chat when a player killed the bot outside of an event. Placeholders: {player} (the killer), {level}, {map}, {location} (the bot's map and coordinates, e.g. "Devias 215, 40").</value></data>
+  <data name="BotChatConfiguration_KilledAgainLines_Name" xml:space="preserve"><value>Killed again</value></data>
+  <data name="BotChatConfiguration_KilledAgainLines_Description" xml:space="preserve"><value>Said instead of the "Killed by a player" lines when the same player killed the bot again within a short time. Placeholders: {player}, {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerCount_Name" xml:space="preserve"><value>Party search: answering bots</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerCount_Description" xml:space="preserve"><value>How many bots whisper to a player who searches party members with /post, e.g. "/post party 300-350 bk dw". The same search posted again is answered by other bots. 0 = off.</value></data>
+  <data name="BotChatConfiguration_PartyRequestKeywords_Name" xml:space="preserve"><value>Party search: keywords</value></data>
+  <data name="BotChatConfiguration_PartyRequestKeywords_Description" xml:space="preserve"><value>Comma-separated words which mark a /post as a party search. The post also needs a level: "300-350", "300+", "min 300" or "300" - or an event with its level, like "bc7".</value></data>
+  <data name="BotChatConfiguration_PartyBloodCastleKeywords_Name" xml:space="preserve"><value>Party search: Blood Castle words</value></data>
+  <data name="BotChatConfiguration_PartyBloodCastleKeywords_Description" xml:space="preserve"><value>Comma-separated words for the Blood Castle in a party search. Followed by the event level, like "party bc7", they call the bots which may enter that Blood Castle.</value></data>
+  <data name="BotChatConfiguration_PartyDevilSquareKeywords_Name" xml:space="preserve"><value>Party search: Devil Square words</value></data>
+  <data name="BotChatConfiguration_PartyDevilSquareKeywords_Description" xml:space="preserve"><value>Comma-separated words for the Devil Square in a party search. Followed by the event level, like "party ds5", they call the bots which may enter that Devil Square.</value></data>
+  <data name="BotChatConfiguration_PartyChaosCastleKeywords_Name" xml:space="preserve"><value>Party search: Chaos Castle words</value></data>
+  <data name="BotChatConfiguration_PartyChaosCastleKeywords_Description" xml:space="preserve"><value>Comma-separated words for the Chaos Castle in a party search. Followed by the event level, like "party cc3", they call the bots which may enter that Chaos Castle.</value></data>
+  <data name="BotChatConfiguration_PartyHereKeywords_Name" xml:space="preserve"><value>Party search: "here" words</value></data>
+  <data name="BotChatConfiguration_PartyHereKeywords_Description" xml:space="preserve"><value>Comma-separated words with which the player tells an answering bot to come to where the player stands, instead of naming a map and coordinates.</value></data>
+  <data name="BotChatConfiguration_PartyOfferTimeout_Name" xml:space="preserve"><value>Party search: answer timeout</value></data>
+  <data name="BotChatConfiguration_PartyOfferTimeout_Description" xml:space="preserve"><value>How long a bot which answered a party search waits for the player to whisper back where to meet, e.g. "devias 215 40".</value></data>
+  <data name="BotChatConfiguration_PartyMeetingWaitTime_Name" xml:space="preserve"><value>Party search: waiting time</value></data>
+  <data name="BotChatConfiguration_PartyMeetingWaitTime_Description" xml:space="preserve"><value>How long a bot waits at the meeting place for the party invitation before it goes back to hunting.</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerLines_Name" xml:space="preserve"><value>Party search: answers</value></data>
+  <data name="BotChatConfiguration_PartyVolunteerLines_Description" xml:space="preserve"><value>Whispered to a player whose party search the bot answers. Placeholders: {player}, {level}, {class}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_PartyAskWhereLines_Name" xml:space="preserve"><value>Party search: where?</value></data>
+  <data name="BotChatConfiguration_PartyAskWhereLines_Description" xml:space="preserve"><value>Whispered when the bot didn't understand where to meet. Placeholders: {player}, {level}, {class}.</value></data>
+  <data name="BotChatConfiguration_PartyOnTheWayLines_Name" xml:space="preserve"><value>Party search: on the way</value></data>
+  <data name="BotChatConfiguration_PartyOnTheWayLines_Description" xml:space="preserve"><value>Whispered when the bot sets off to the meeting place. Placeholders: {player}, {map} and {location} (the meeting place).</value></data>
+  <data name="BotChatConfiguration_PartyCantGoLines_Name" xml:space="preserve"><value>Party search: can't go</value></data>
+  <data name="BotChatConfiguration_PartyCantGoLines_Description" xml:space="preserve"><value>Whispered when the bot may not go to the named map: its level is too low, or the map can't be reached by warp. Placeholders: {player}, {map} (the named map), {level}.</value></data>
+  <data name="BotChatConfiguration_PartyClassAliases_Name" xml:space="preserve"><value>Party search: class words</value></data>
+  <data name="BotChatConfiguration_PartyClassAliases_Description" xml:space="preserve"><value>The words players use for the character classes in a party search, e.g. "dk, bk, bm". The class number stands for its whole line of classes.</value></data>
+  <data name="BotClassAlias_Keywords_Name" xml:space="preserve"><value>Words</value></data>
+  <data name="BotClassAlias_Keywords_Description" xml:space="preserve"><value>Comma-separated words for the class line, e.g. "dk, bk, bm, knight". Whole words, case and punctuation are ignored.</value></data>
+  <data name="BotClassAlias_ClassNumber_Name" xml:space="preserve"><value>Class number</value></data>
+  <data name="BotClassAlias_ClassNumber_Description" xml:space="preserve"><value>The number of a character class of the line, e.g. 4 for the Dark Knight - the whole line (Dark Knight, Blade Knight, Blade Master) is meant.</value></data>
+  <data name="BotChatConfiguration_ConversationInterval_Name" xml:space="preserve"><value>Conversation interval per player</value></data>
+  <data name="BotChatConfiguration_ConversationInterval_Description" xml:space="preserve"><value>How often a player may overhear two bots near them talking. Counts per player: everyone who stands next to two bots hears them talk about once per interval.</value></data>
+  <data name="BotChatConfiguration_ConversationChancePercent_Name" xml:space="preserve"><value>Conversation chance (%)</value></data>
+  <data name="BotChatConfiguration_ConversationChancePercent_Description" xml:space="preserve"><value>Chance that two bots near a player talk when the interval is over. 0 = never.</value></data>
+  <data name="BotChatConfiguration_Conversations_Name" xml:space="preserve"><value>Conversations</value></data>
+  <data name="BotChatConfiguration_Conversations_Description" xml:space="preserve"><value>Exchanges of two bots near a player, like the townsfolk of a role-playing game: one says the opener, the other answers. Drawn without repetition. Placeholders: {map}, {location}, {level}, {class} of the speaking bot, {partner} (the other bot).</value></data>
+  <data name="BotConversation_Opener_Name" xml:space="preserve"><value>Opener</value></data>
+  <data name="BotConversation_Opener_Description" xml:space="preserve"><value>What the first bot says.</value></data>
+  <data name="BotConversation_Reply_Name" xml:space="preserve"><value>Reply</value></data>
+  <data name="BotConversation_Reply_Description" xml:space="preserve"><value>What the second bot answers, a few seconds later.</value></data>
+  <data name="BotConversation_Where_Name" xml:space="preserve"><value>Where</value></data>
+  <data name="BotConversation_Where_Description" xml:space="preserve"><value>Where the bots may have this conversation: Town (both in a safezone), Hunting (both outside of it) or Anywhere.</value></data>
+  <data name="BotChatConfiguration_MerchantTalkInterval_Name" xml:space="preserve"><value>Merchant adverts: interval</value></data>
+  <data name="BotChatConfiguration_MerchantTalkInterval_Description" xml:space="preserve"><value>How often a bot selling its goods on the market (Bot merchants plugin) may advertise them, per game server. Only when a player sees it.</value></data>
+  <data name="BotChatConfiguration_MerchantTalkChancePercent_Name" xml:space="preserve"><value>Merchant adverts: chance (%)</value></data>
+  <data name="BotChatConfiguration_MerchantTalkChancePercent_Description" xml:space="preserve"><value>Chance that a bot advertises when the interval is over. Only bots behind their open store on the market advertise, so nothing happens while the Bot merchants plugin is off.</value></data>
+  <data name="BotChatConfiguration_MerchantLines_Name" xml:space="preserve"><value>Merchant adverts</value></data>
+  <data name="BotChatConfiguration_MerchantLines_Description" xml:space="preserve"><value>Said now and then in the normal chat by a bot behind its open store on the market. Placeholders: {level}, {map}, {location}, {store} (the name of its store).</value></data>
+  <data name="BotChatConfiguration_MerchantWhisperReplies_Name" xml:space="preserve"><value>Merchant whisper replies</value></data>
+  <data name="BotChatConfiguration_MerchantWhisperReplies_Description" xml:space="preserve"><value>Answers of a bot behind its open store on the market to a whisper, or a mention of its name in the normal chat next to it, which asks what it sells ("what are you selling?"): they point to the store. Only a reply whose keyword matches is used, before the whisper replies; any other message gets a usual answer. Placeholders as in the whisper replies, and {store} (the name of its store).</value></data>
+  <data name="BotChatConfiguration_CongratulationChancePercent_Name" xml:space="preserve"><value>Congratulation chance (%)</value></data>
+  <data name="BotChatConfiguration_CongratulationChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot congratulates a player on a level-up or a reset in the normal chat ("gz"). 0 = never.</value></data>
+  <data name="BotChatConfiguration_CongratulationCooldown_Name" xml:space="preserve"><value>Congratulation cooldown per player</value></data>
+  <data name="BotChatConfiguration_CongratulationCooldown_Description" xml:space="preserve"><value>Minimum time between two congratulations of the same player on a level-up (and, separately, on a reset).</value></data>
+  <data name="BotChatConfiguration_CongratulationLines_Name" xml:space="preserve"><value>Congratulations: level-up</value></data>
+  <data name="BotChatConfiguration_CongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player leveled up. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
+  <data name="BotChatConfiguration_ResetCongratulationLines_Name" xml:space="preserve"><value>Congratulations: reset</value></data>
+  <data name="BotChatConfiguration_ResetCongratulationLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player made a reset. Placeholders: {player}, {level} and {resets} of the player, {map}.</value></data>
+  <data name="BotChatLine_When_Name" xml:space="preserve"><value>When</value></data>
+  <data name="BotChatLine_When_Description" xml:space="preserve"><value>When it may be said, by the local time of the server: Anytime, Morning (5-11), Day (11-18), Evening (18-23) or Night (23-5).</value></data>
+  <data name="BotChatConfiguration_DeclineReplyChancePercent_Name" xml:space="preserve"><value>Trade/duel refusal: whisper chance (%)</value></data>
+  <data name="BotChatConfiguration_DeclineReplyChancePercent_Description" xml:space="preserve"><value>Chance that a bot says why it turns down a trade or duel request, by whisper. It turns them down in any case: a bot has no trade window and doesn't duel.</value></data>
+  <data name="BotChatConfiguration_TradeDeclineLines_Name" xml:space="preserve"><value>Trade refused</value></data>
+  <data name="BotChatConfiguration_TradeDeclineLines_Description" xml:space="preserve"><value>Whispered when a player asks the bot for a trade. Placeholders: {player}, {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_DuelDeclineLines_Name" xml:space="preserve"><value>Duel refused</value></data>
+  <data name="BotChatConfiguration_DuelDeclineLines_Description" xml:space="preserve"><value>Whispered when a player challenges the bot to a duel. Placeholders: {player}, {level}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_BusyChatMessageCount_Name" xml:space="preserve"><value>Quiet when players talk: messages</value></data>
+  <data name="BotChatConfiguration_BusyChatMessageCount_Description" xml:space="preserve"><value>From how many normal chat messages of players near a bot (within the time below) the bot says nothing unasked - no conversations, greetings, congratulations or comments. Answers to a player stay. 0 = off.</value></data>
+  <data name="BotChatConfiguration_BusyChatWindow_Name" xml:space="preserve"><value>Quiet when players talk: time</value></data>
+  <data name="BotChatConfiguration_BusyChatWindow_Description" xml:space="preserve"><value>How long a message of a player counts for the setting above.</value></data>
+  <data name="BotChatConfiguration_MessageLanguages_Name" xml:space="preserve"><value>Message languages</value></data>
+  <data name="BotChatConfiguration_MessageLanguages_Description" xml:space="preserve"><value>Typical words and letters by which a bot recognizes the language of a player's message: it answers in that language, even when the player's account language is another one. A message which doesn't tell is answered in the player's own language.</value></data>
+  <data name="BotChatLanguageHint_Language_Name" xml:space="preserve"><value>Language</value></data>
+  <data name="BotChatLanguageHint_Language_Description" xml:space="preserve"><value>The language code, e.g. pl.</value></data>
+  <data name="BotChatLanguageHint_Words_Name" xml:space="preserve"><value>Typical words</value></data>
+  <data name="BotChatLanguageHint_Words_Description" xml:space="preserve"><value>Comma-separated typical words of the language. The language with the most hits in a message wins; a tie leaves it open.</value></data>
+  <data name="BotChatLanguageHint_Letters_Name" xml:space="preserve"><value>Letters</value></data>
+  <data name="BotChatLanguageHint_Letters_Description" xml:space="preserve"><value>Letters only this language uses, e.g. ąćęłńóśźż. One of them in a message counts like a typical word.</value></data>
+  <data name="BotChatLine_Gesture_Name" xml:space="preserve"><value>Gesture</value></data>
+  <data name="BotChatLine_Gesture_Description" xml:space="preserve"><value>A gesture the bot makes with it, like a player typing /hello: Greeting, Goodbye, Clap, Cheer, Win, Smile, Respect, Salute, Cry, Awkward or Provocation. The bot turns to the player it talks to.</value></data>
+  <data name="BotConversation_Riposte_Name" xml:space="preserve"><value>Riposte</value></data>
+  <data name="BotConversation_Riposte_Description" xml:space="preserve"><value>What the first bot says back to the reply, a few seconds later. Empty for a conversation of two lines.</value></data>
+  <data name="BotChatConfiguration_ConversationJoinLines_Name" xml:space="preserve"><value>Conversations: player chimes in</value></data>
+  <data name="BotChatConfiguration_ConversationJoinLines_Description" xml:space="preserve"><value>Said by one of two bots when a player near them writes in the normal chat right after their conversation - unless the message matches a whisper reply keyword. Placeholders: {player}, {map}, {level}, {class}.</value></data>
+  <data name="BotChatConfiguration_EventReminderChancePercent_Name" xml:space="preserve"><value>Event reminder in town chance (%)</value></data>
+  <data name="BotChatConfiguration_EventReminderChancePercent_Description" xml:space="preserve"><value>Chance that a bot in a town where a player stands reminds of an opened Blood Castle, Devil Square or Chaos Castle in the normal chat - once per town and opening, only a bot which meets the entry requirements. Independent of the /post chances. 0 = never.</value></data>
+  <data name="BotChatConfiguration_EventReminderLines_Name" xml:space="preserve"><value>Event reminders in town</value></data>
+  <data name="BotChatConfiguration_EventReminderLines_Description" xml:space="preserve"><value>Said in the normal chat by a bot in a town when an event entrance opened. Placeholders: {event}, {map}, {location}, {level}.</value></data>
+  <data name="BotChatConfiguration_RareDropChancePercent_Name" xml:space="preserve"><value>Rare drop comment chance (%)</value></data>
+  <data name="BotChatConfiguration_RareDropChancePercent_Description" xml:space="preserve"><value>Chance that the nearest bot comments on an excellent or ancient item a player's kill dropped ("nice drop!"). 0 = never.</value></data>
+  <data name="BotChatConfiguration_NotableMonsterChancePercent_Name" xml:space="preserve"><value>Notable monster call-out chance (%)</value></data>
+  <data name="BotChatConfiguration_NotableMonsterChancePercent_Description" xml:space="preserve"><value>Chance that a bot calls out a notable monster which appeared near it while a player sees it. 0 = never.</value></data>
+  <data name="BotChatConfiguration_NotableMonsterNumbers_Name" xml:space="preserve"><value>Notable monsters</value></data>
+  <data name="BotChatConfiguration_NotableMonsterNumbers_Description" xml:space="preserve"><value>Comma-separated numbers of the monsters a bot calls out when they appear near it. By default the golden monsters, the Red Dragon and the White Wizard.</value></data>
+  <data name="BotChatConfiguration_RareDropLines_Name" xml:space="preserve"><value>Rare drop comments</value></data>
+  <data name="BotChatConfiguration_RareDropLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player's kill dropped an excellent or ancient item. Placeholders: {player}, {item}, {map}.</value></data>
+  <data name="BotChatConfiguration_NotableMonsterLines_Name" xml:space="preserve"><value>Notable monster call-outs</value></data>
+  <data name="BotChatConfiguration_NotableMonsterLines_Description" xml:space="preserve"><value>Said by a bot when a notable monster appeared near it. Placeholders: {monster}, {map}, {location}.</value></data>
+  <data name="BotChatConfiguration_FriendLines_Name" xml:space="preserve"><value>Old party companions</value></data>
+  <data name="BotChatConfiguration_FriendLines_Description" xml:space="preserve"><value>Said to a player the bot was in a party with before - instead of a greeting when the player enters the game, and instead of the party lines when the player invites it again. Remembered until the server restarts. Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="BotSayChatCommandPlugIn_Name" xml:space="preserve"><value>Chat command: /botsay</value></data>
+  <data name="BotSayChatCommandPlugIn_Description" xml:space="preserve"><value>Handles the chat command '/botsay &lt;bot&gt; &lt;text&gt;'. A game master makes a server-side bot say the text in the normal chat, to the players who see it - e.g. for staged scenes of an event. Only bots, never a player's character.</value></data>
+  <data name="BotChatConfiguration_WingsChancePercent_Name" xml:space="preserve"><value>Wings comment chance (%)</value></data>
+  <data name="BotChatConfiguration_WingsChancePercent_Description" xml:space="preserve"><value>Chance that a bot comments on wings: its own new pair earned at a level milestone ("finally, my wings!"), or the wings a player next to it put on ("nice wings!"). 0 = never.</value></data>
+  <data name="BotChatConfiguration_OwnWingsLines_Name" xml:space="preserve"><value>Own new wings</value></data>
+  <data name="BotChatConfiguration_OwnWingsLines_Description" xml:space="preserve"><value>Said by a bot which put on the new wings it earned at a level milestone, while a player sees it. Placeholders: {wings}, {level}, {map}.</value></data>
+  <data name="BotChatConfiguration_PlayerWingsLines_Name" xml:space="preserve"><value>Player's wings comments</value></data>
+  <data name="BotChatConfiguration_PlayerWingsLines_Description" xml:space="preserve"><value>Said by the nearest bot when a player put on wings - once per player and pair until the server restarts. Placeholders: {player}, {wings} (the player's), {map}.</value></data>
+  <data name="BotChatConfiguration_WithoutWingsLines_Name" xml:space="preserve"><value>Answers without wings</value></data>
+  <data name="BotChatConfiguration_WithoutWingsLines_Description" xml:space="preserve"><value>Said instead of a whisper reply with {wings} when the bot has no wings yet ("no wings yet, saving up"). Placeholders: {player}, {level}, {map}.</value></data>
+  <data name="BotMerchantPlugIn_Name" xml:space="preserve"><value>Bot merchants</value></data>
+  <data name="BotMerchantPlugIn_Description" xml:space="preserve"><value>Lets server-side bots sell the goods of their personal store on the market map (Loren Market) for a while, then go back hunting.</value></data>
+  <data name="BotMerchantConfiguration_MarketMapNumber_Name" xml:space="preserve"><value>Market map number</value></data>
+  <data name="BotMerchantConfiguration_MarketMapNumber_Description" xml:space="preserve"><value>The number of the map on which the bots open their stores (79 = Loren Market). The bots get there through its spawn gate, regardless of the warp list.</value></data>
+  <data name="BotMerchantConfiguration_MaximumMerchants_Name" xml:space="preserve"><value>Maximum merchants</value></data>
+  <data name="BotMerchantConfiguration_MaximumMerchants_Description" xml:space="preserve"><value>The maximum number of bots with an open store at the same time, on the market and in the cities together, per game server. Only bots with enough goods go, so it's a ceiling - and they go back hunting after their shift.</value></data>
+  <data name="BotMerchantConfiguration_MinimumLevel_Name" xml:space="preserve"><value>Minimum level</value></data>
+  <data name="BotMerchantConfiguration_MinimumLevel_Description" xml:space="preserve"><value>The minimum level of a bot to go to the market. The game allows a personal store from level 6.</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStart_Name" xml:space="preserve"><value>Minimum goods to start</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStart_Description" xml:space="preserve"><value>The minimum number of priced goods in the personal store of a bot to go to the market.</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStay_Name" xml:space="preserve"><value>Minimum goods to stay</value></data>
+  <data name="BotMerchantConfiguration_MinimumGoodsToStay_Description" xml:space="preserve"><value>When fewer goods are left, the bot closes its store and leaves the market early. 1 (default) = it stays as long as it has anything to sell.</value></data>
+  <data name="BotMerchantConfiguration_MinimumShiftDuration_Name" xml:space="preserve"><value>Minimum shift duration</value></data>
+  <data name="BotMerchantConfiguration_MinimumShiftDuration_Description" xml:space="preserve"><value>The shortest stay on the market. The actual length is random between the minimum and the maximum.</value></data>
+  <data name="BotMerchantConfiguration_MaximumShiftDuration_Name" xml:space="preserve"><value>Maximum shift duration</value></data>
+  <data name="BotMerchantConfiguration_MaximumShiftDuration_Description" xml:space="preserve"><value>The longest stay on the market.</value></data>
+  <data name="BotMerchantConfiguration_LeaveWithoutSalesAfter_Name" xml:space="preserve"><value>Leave without sales after</value></data>
+  <data name="BotMerchantConfiguration_LeaveWithoutSalesAfter_Description" xml:space="preserve"><value>After this time without a sale, the bot leaves the market before its shift is over and makes room for another one. Zero switches it off.</value></data>
+  <data name="BotMerchantConfiguration_TimeBetweenShifts_Name" xml:space="preserve"><value>Time between shifts</value></data>
+  <data name="BotMerchantConfiguration_TimeBetweenShifts_Description" xml:space="preserve"><value>The time after a shift before the same bot goes to the market again.</value></data>
+  <data name="BotMerchantConfiguration_StoreNames_Name" xml:space="preserve"><value>Store names</value></data>
+  <data name="BotMerchantConfiguration_StoreNames_Description" xml:space="preserve"><value>The names of the stores, separated by commas. Every shift draws one which no other open store has; when all are taken, the store gets the name of the bot.</value></data>
+  <data name="BotMerchantConfiguration_HighSetMinimumDropLevel_Name" xml:space="preserve"><value>High set minimum drop level</value></data>
+  <data name="BotMerchantConfiguration_HighSetMinimumDropLevel_Description" xml:space="preserve"><value>The drop level from which an item counts as one of the higher sets. Normal items need it to be stocked; above it, ancient and the best excellent items cost more.</value></data>
+  <data name="BotMerchantConfiguration_MinimumNormalItemLevel_Name" xml:space="preserve"><value>Minimum normal item level</value></data>
+  <data name="BotMerchantConfiguration_MinimumNormalItemLevel_Description" xml:space="preserve"><value>The minimum level (+) of a normal item of a higher set with luck to be stocked.</value></data>
+  <data name="BotMerchantConfiguration_PriceSpreadPercent_Name" xml:space="preserve"><value>Zen price spread (%)</value></data>
+  <data name="BotMerchantConfiguration_PriceSpreadPercent_Description" xml:space="preserve"><value>How far, up or down, a zen price may differ from the calculated one. It's drawn once, when the good goes into the store, and rounded to an amount a player would ask for, e.g. 800,000 or 5.5 million. Prices in jewels stay exact; 0 keeps all prices exact.</value></data>
+  <data name="BotMerchantConfiguration_CheapCurrency_Name" xml:space="preserve"><value>Cheap: currency</value></data>
+  <data name="BotMerchantConfiguration_CheapCurrency_Description" xml:space="preserve"><value>The currency of the cheap goods (normal items, excellent items with only a cheap option): zen, bless, soul, chaos, life or creation.</value></data>
+  <data name="BotMerchantConfiguration_CheapPrice_Name" xml:space="preserve"><value>Cheap: price</value></data>
+  <data name="BotMerchantConfiguration_CheapPrice_Description" xml:space="preserve"><value>The base price of the cheap goods.</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerLevel_Name" xml:space="preserve"><value>Cheap: per level above +7</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerLevel_Description" xml:space="preserve"><value>The surcharge of the cheap goods per item level above +7.</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerOption_Name" xml:space="preserve"><value>Cheap: per +4 option</value></data>
+  <data name="BotMerchantConfiguration_CheapPricePerOption_Description" xml:space="preserve"><value>The surcharge of the cheap goods per +4 of the additional option. Fractions are summed up and rounded down.</value></data>
+  <data name="BotMerchantConfiguration_MediumCurrency_Name" xml:space="preserve"><value>Medium: currency</value></data>
+  <data name="BotMerchantConfiguration_MediumCurrency_Description" xml:space="preserve"><value>The currency of the medium goods (excellent items with one wanted option, without luck): zen, bless, soul, chaos, life or creation.</value></data>
+  <data name="BotMerchantConfiguration_MediumPrice_Name" xml:space="preserve"><value>Medium: price</value></data>
+  <data name="BotMerchantConfiguration_MediumPrice_Description" xml:space="preserve"><value>The base price of the medium goods.</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerLevel_Name" xml:space="preserve"><value>Medium: per level above +7</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerLevel_Description" xml:space="preserve"><value>The surcharge of the medium goods per item level above +7.</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerOption_Name" xml:space="preserve"><value>Medium: per +4 option</value></data>
+  <data name="BotMerchantConfiguration_MediumPricePerOption_Description" xml:space="preserve"><value>The surcharge of the medium goods per +4 of the additional option. Fractions are summed up and rounded down, so 0.5 means one more per +8.</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveCurrency_Name" xml:space="preserve"><value>Expensive: currency</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveCurrency_Description" xml:space="preserve"><value>The currency of the expensive goods (ancient items, excellent items with two or more options or one wanted option and luck): zen, bless, soul, chaos, life or creation.</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveOneOptionPrice_Name" xml:space="preserve"><value>Expensive: one wanted option and luck</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveOneOptionPrice_Description" xml:space="preserve"><value>The base price of an excellent item with one wanted option and luck.</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePrice_Name" xml:space="preserve"><value>Expensive: two options or ancient</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePrice_Description" xml:space="preserve"><value>The base price of an excellent item with two options and of an ancient item.</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Name" xml:space="preserve"><value>Expensive: three or more options</value></data>
+  <data name="BotMerchantConfiguration_ExpensiveThreeOptionsPrice_Description" xml:space="preserve"><value>The base price of an excellent item with three or more options.</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerLevel_Name" xml:space="preserve"><value>Expensive: per level above +7</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerLevel_Description" xml:space="preserve"><value>The surcharge of the expensive goods per item level above +7.</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerOption_Name" xml:space="preserve"><value>Expensive: per +4 option</value></data>
+  <data name="BotMerchantConfiguration_ExpensivePricePerOption_Description" xml:space="preserve"><value>The surcharge of the expensive goods per +4 of the additional option. Fractions are summed up and rounded down, so 0.5 means one more per +8.</value></data>
+  <data name="BotMerchantConfiguration_AncientLuckSurcharge_Name" xml:space="preserve"><value>Expensive: ancient with luck</value></data>
+  <data name="BotMerchantConfiguration_AncientLuckSurcharge_Description" xml:space="preserve"><value>The surcharge of an ancient item with luck.</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurcharge_Name" xml:space="preserve"><value>Expensive: higher set surcharge</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurcharge_Description" xml:space="preserve"><value>The surcharge of an ancient item, and of an excellent item with a wanted option, luck and an additional option, for every step of drop levels above the high set minimum drop level.</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurchargeDropLevels_Name" xml:space="preserve"><value>Expensive: drop levels per surcharge</value></data>
+  <data name="BotMerchantConfiguration_HighSetSurchargeDropLevels_Description" xml:space="preserve"><value>How many drop levels make one step of the higher set surcharge.</value></data>
+  <data name="BotMerchantConfiguration_MaximumJewelsPerKind_Name" xml:space="preserve"><value>Jewels: maximum per kind</value></data>
+  <data name="BotMerchantConfiguration_MaximumJewelsPerKind_Description" xml:space="preserve"><value>How many jewels of one kind a bot puts into its store at most. 0 keeps the jewels out of the stores.</value></data>
+  <data name="BotMerchantConfiguration_BlessCurrency_Name" xml:space="preserve"><value>Jewel of Bless: currency</value></data>
+  <data name="BotMerchantConfiguration_BlessCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Bless: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_BlessPrice_Name" xml:space="preserve"><value>Jewel of Bless: price</value></data>
+  <data name="BotMerchantConfiguration_BlessPrice_Description" xml:space="preserve"><value>The price of one Jewel of Bless, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_SoulCurrency_Name" xml:space="preserve"><value>Jewel of Soul: currency</value></data>
+  <data name="BotMerchantConfiguration_SoulCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Soul: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_SoulPrice_Name" xml:space="preserve"><value>Jewel of Soul: price</value></data>
+  <data name="BotMerchantConfiguration_SoulPrice_Description" xml:space="preserve"><value>The price of one Jewel of Soul, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_ChaosCurrency_Name" xml:space="preserve"><value>Jewel of Chaos: currency</value></data>
+  <data name="BotMerchantConfiguration_ChaosCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Chaos: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_ChaosPrice_Name" xml:space="preserve"><value>Jewel of Chaos: price</value></data>
+  <data name="BotMerchantConfiguration_ChaosPrice_Description" xml:space="preserve"><value>The price of one Jewel of Chaos, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_LifeCurrency_Name" xml:space="preserve"><value>Jewel of Life: currency</value></data>
+  <data name="BotMerchantConfiguration_LifeCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Life: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_LifePrice_Name" xml:space="preserve"><value>Jewel of Life: price</value></data>
+  <data name="BotMerchantConfiguration_LifePrice_Description" xml:space="preserve"><value>The price of one Jewel of Life, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_CreationCurrency_Name" xml:space="preserve"><value>Jewel of Creation: currency</value></data>
+  <data name="BotMerchantConfiguration_CreationCurrency_Description" xml:space="preserve"><value>The currency for which a bot sells its surplus of the Jewel of Creation: zen or another jewel (bless, soul, chaos, life, creation).</value></data>
+  <data name="BotMerchantConfiguration_CreationPrice_Name" xml:space="preserve"><value>Jewel of Creation: price</value></data>
+  <data name="BotMerchantConfiguration_CreationPrice_Description" xml:space="preserve"><value>The price of one Jewel of Creation, in its currency.</value></data>
+  <data name="BotMerchantConfiguration_UnsoldShiftsUntilNpc_Name" xml:space="preserve"><value>Unsold shifts until NPC</value></data>
+  <data name="BotMerchantConfiguration_UnsoldShiftsUntilNpc_Description" xml:space="preserve"><value>After this many market shifts without a buyer, a good leaves the store and is sold to an NPC. There are no discounts.</value></data>
+  <data name="BotMerchantConfiguration_CityMerchantsPercent_Name" xml:space="preserve"><value>City merchants (%)</value></data>
+  <data name="BotMerchantConfiguration_CityMerchantsPercent_Description" xml:space="preserve"><value>The share of the shifts which a bot spends in one of the city maps instead of on the market. 0 keeps all merchants on the market.</value></data>
+  <data name="BotMerchantConfiguration_CityMapNumbers_Name" xml:space="preserve"><value>City map numbers</value></data>
+  <data name="BotMerchantConfiguration_CityMapNumbers_Description" xml:space="preserve"><value>The numbers of the city maps, separated by commas (0 = Lorencia, 2 = Devias, 3 = Noria, 51 = Elvenland). The bots open their store in the safezone near the spawn gate.</value></data>
+  <data name="BotMerchantConfiguration_NewMerchantsPerCheck_Name" xml:space="preserve"><value>New merchants per 30 seconds</value></data>
+  <data name="BotMerchantConfiguration_NewMerchantsPerCheck_Description" xml:space="preserve"><value>How many bots at most start a shift every 30 seconds. After a server start, the market fills up within minutes instead of all at once, and the parties of the bots don't fall apart together.</value></data>
 </root>

@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 
@@ -174,6 +175,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>The game's own warp action, so a bot travels on exactly a player's terms - fare included.</summary>
     private static readonly WarpAction WarpAction = new();
 
+    /// <summary>The game's own action to open a personal store, with all its checks of the prices.</summary>
+    private static readonly OpenStoreAction MarketStoreOpenAction = new();
+
     /// <summary>
     /// Cache of which maps' safezone spawn gates have a walkable tile, so a bot may safely be sent
     /// there. Keyed by the resolved safezone map's id, not its number: map numbers are not unique -
@@ -298,6 +302,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private int _isEvaluating;
     private Point _destination;
     private bool _hasDestination;
+
+    /// <summary>
+    /// Whether the bot just ended a market shift and still stands on the market, which has no hunting
+    /// ground: it warps home first, like after a shopping trip on a map without a merchant.
+    /// </summary>
+    private bool _leavesMarket;
     private DateTimeOffset _lastWarpUtc = DateTimeOffset.MinValue;
     private DateTimeOffset _nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
     private Point _lastPosition;
@@ -344,6 +354,14 @@ internal sealed class BotNavigator : AsyncDisposable
     private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
     private DateTimeOffset _nextEvaluationUtc = DateTimeOffset.MinValue;
     private bool _isHopInProgress;
+
+    /// <summary>
+    /// The meeting for which the bot warped through the meeting's gate (see <see cref="BotEventMeeting.Gate"/>),
+    /// and how often - so a bot which can't get any closer gives up instead of warping on and on.
+    /// </summary>
+    private BotEventMeeting? _gateWarpMeeting;
+
+    private int _gateWarpCount;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotNavigator"/> class.
@@ -452,6 +470,92 @@ internal sealed class BotNavigator : AsyncDisposable
         // this check would be far more expensive than parsing the terrain once.
         var terrain = new GameMapTerrain(safezoneMap);
         return terrain.GetWalkableCoordinate(safezoneMap.GetSafezoneGate(terrain)) is not null;
+    }
+
+    /// <summary>
+    /// Gets the warp entry whose landing area has the shortest walkable route to a target, see
+    /// <see cref="FindBestReachableLegalWarp"/>.
+    /// </summary>
+    /// <param name="warps">The warp entries to choose from; the caller checks they are legal.</param>
+    /// <param name="walkMap">The walk map of the target map.</param>
+    /// <param name="target">The target position.</param>
+    /// <param name="currentPosition">
+    /// The position of the bot if it already is on the map: a gate which may land the bot there takes
+    /// it nowhere; <c>null</c> otherwise.
+    /// </param>
+    /// <param name="ignoreBlockedLandingPoints">
+    /// <c>false</c> to reject a gate as soon as any of its landing points is blocked; <c>true</c> to
+    /// leave the blocked ones out - a player landing there is moved to the map's spawn gate, which is
+    /// acceptable when the caller can cope with that (and the town gates of Lorencia and Devias have
+    /// some blocked tiles, so they'd never be picked otherwise).
+    /// </param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The best reachable warp, or <c>null</c> if no gate can reach the target.</returns>
+    internal static WarpInfo? FindBestReachableWarp(
+        IEnumerable<WarpInfo> warps,
+        bool[,] walkMap,
+        Point target,
+        Point? currentPosition,
+        bool ignoreBlockedLandingPoints,
+        CancellationToken cancellationToken)
+    {
+        var candidates = warps
+            .Where(candidate => candidate.Gate is not null)
+            .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints()
+                .Where(point => !ignoreBlockedLandingPoints || walkMap[point.X, point.Y])
+                .ToArray()))
+            .Where(candidate => candidate.LandingPoints.Length > 0
+                                && (currentPosition is not { } position || !candidate.LandingPoints.Contains(position)))
+            .ToArray();
+        if (candidates.Length == 0)
+        {
+            return null;
+        }
+
+        // Movement on the walk map is bidirectional. One reverse flood fill from the target therefore
+        // gives both reachability and shortest distance for every possible gate landing point, without
+        // acquiring a full-map pathfinder once per point.
+        // Cancellation from this flood fill is expected during shutdown and handled by SafeEvaluateAsync.
+        cancellationToken.ThrowIfCancellationRequested();
+        var width = walkMap.GetLength(0);
+        var coordinateCount = width * walkMap.GetLength(1);
+        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
+        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
+        try
+        {
+            Array.Clear(distancesFromTarget, 0, coordinateCount);
+            PopulateWalkableDistancesFrom(
+                walkMap,
+                target,
+                distancesFromTarget,
+                pendingCoordinates,
+                cancellationToken);
+            WarpInfo? bestWarp = null;
+            var bestWorstCaseDistance = int.MaxValue;
+            foreach (var candidate in candidates)
+            {
+                var worstCaseDistance = GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
+                if (worstCaseDistance is null
+                    || worstCaseDistance > TravelSearchLimit
+                    || worstCaseDistance > bestWorstCaseDistance
+                    || (worstCaseDistance == bestWorstCaseDistance
+                        && bestWarp?.Gate is { } bestGate
+                        && GateDistance(candidate.Gate, target) >= GateDistance(bestGate, target)))
+                {
+                    continue;
+                }
+
+                bestWarp = candidate.Warp;
+                bestWorstCaseDistance = worstCaseDistance.Value;
+            }
+
+            return bestWarp;
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(distancesFromTarget);
+            ArrayPool<int>.Shared.Return(pendingCoordinates);
+        }
     }
 
     /// <summary>
@@ -709,6 +813,82 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// Drives an event meeting (see <see cref="OfflinePlayer.EventMeeting"/>): a bot which announced an
+    /// opened event warps to the meeting map, walks up to the event's entry NPC (or just into the
+    /// safezone, for Chaos Castle) and waits there until the entrance closes. The meeting ends early
+    /// when a player takes the bot into a party - the follow logic then takes it into the event behind
+    /// its new leader. A meeting place which a player named comes with the gate to enter it through
+    /// (see <see cref="BotEventMeeting.Gate"/>), so the bot gets there like a player would - by the
+    /// warp closest to the place, not by a walk from the town.
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="inSafezone">Indicates whether the bot currently is in the safezone of the map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the meeting consumed this tick.</returns>
+    internal async ValueTask<bool> TryEventMeetingAsync(GameMap map, bool inSafezone, CancellationToken cancellationToken)
+    {
+        if (this._player.EventMeeting is not { } meeting)
+        {
+            return false;
+        }
+
+        if (DateTime.UtcNow >= meeting.UntilUtc
+            || this._player.CurrentMiniGame is not null
+            || BotPartyHandler.HasHumanCompanion(this._player))
+        {
+            this.EndEventMeeting(meeting);
+            return false;
+        }
+
+        // Leaving the hunting ground for a while: don't keep other bots off it meanwhile.
+        this._player.HuntingSpot = null;
+
+        if (map.Definition.Number != meeting.Map.Number || (meeting.NpcPosition is null && !inSafezone))
+        {
+            if ((meeting.Gate ?? meeting.Map.ExitGates.Where(g => g.IsSpawnGate).SelectRandom()) is not { } gate)
+            {
+                this.EndEventMeeting(meeting);
+                return false;
+            }
+
+            await this.WarpToMeetingAsync(meeting, gate).ConfigureAwait(false);
+            return true;
+        }
+
+        if (meeting.NpcPosition is { } npcPosition && this._player.GetDistanceTo(npcPosition) > MerchantTalkRange)
+        {
+            var standingPoint = BotEventMeetingPlanner.FindStandingPoint(map.Terrain, npcPosition, MerchantTalkRange);
+
+            // Already on the map, but the meeting's gate lands closer - another floor of the Lost Tower,
+            // or Devias3 while the bot stands in the town of Devias: warp instead of a long walk, or none
+            // at all. The second try is for a landing on a blocked tile, which ends at the spawn gate.
+            if (standingPoint is { } point
+                && meeting.Gate is { } meetingGate
+                && this.GetGateWarpCount(meeting) < 2
+                && !IsInside(meetingGate, this._player.Position)
+                && GateDistance(meetingGate, point) < this._player.GetDistanceTo(point))
+            {
+                await this.WarpToMeetingAsync(meeting, meetingGate).ConfigureAwait(false);
+                return true;
+            }
+
+            if (standingPoint is null
+                || !await this.TravelTowardAsync(map, standingPoint.Value, cancellationToken).ConfigureAwait(false))
+            {
+                this._player.Logger.LogDebug("Bot '{Name}' gives up waiting for the event: no route to the entry NPC at {Target}.", this._player.Name, npcPosition);
+                this.EndEventMeeting(meeting);
+                return false;
+            }
+
+            return true;
+        }
+
+        // Waiting at the meeting point is not "stuck".
+        this._lastMoveUtc = DateTime.UtcNow;
+        return true;
+    }
+
+    /// <summary>
     /// Determines whether the navigator evaluates on this timer shot, and if so, starts the next interval:
     /// once per <see cref="EvaluationInterval"/>, and additionally as soon as a travel hop has ended.
     /// </summary>
@@ -795,6 +975,38 @@ internal sealed class BotNavigator : AsyncDisposable
 
         this._hasDestination = false;
         this._emptyGroundSince = null;
+    }
+
+    /// <summary>
+    /// Opens the personal store at the stall, as it runs inside the MU Helper tick.
+    /// </summary>
+    /// <param name="shift">The market shift.</param>
+    /// <returns>The task.</returns>
+    internal async ValueTask OpenMarketStoreAsync(BotMarketShift shift)
+    {
+        if (!ReferenceEquals(this._player.MarketShift, shift) || shift.IsEnding)
+        {
+            return;
+        }
+
+        await MarketStoreOpenAction.OpenStoreAsync(this._player, shift.StoreName).ConfigureAwait(false);
+        if (this._player.ShopStorage?.StoreOpen ?? false)
+        {
+            // What the bot has now is its own - every zen and item which comes in later is income (see
+            // BotMerchandise.RemoveIncomeAsync).
+            shift.MoneyAtOpen = this._player.Money;
+            shift.ItemsAtOpen = this._player.Inventory?.Items.ToHashSet() ?? [];
+            shift.LastSaleUtc = DateTime.UtcNow;
+            shift.IsStoreOpened = true;
+            this._player.Logger.LogDebug("Bot '{Name}' opened its store '{Store}' at {Stall}.", this._player.Name, shift.StoreName, shift.Stall);
+        }
+        else
+        {
+            // E.g. a price in a currency which isn't allowed (anymore). It ends like any other shift, so the
+            // bot waits for its next one instead of coming back right away to fail again.
+            var configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()?.Configuration;
+            this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreNotOpened);
+        }
     }
 
     /// <inheritdoc />
@@ -884,6 +1096,87 @@ internal sealed class BotNavigator : AsyncDisposable
         var centerX = (gate.X1 + gate.X2) / 2;
         var centerY = (gate.Y1 + gate.Y2) / 2;
         return Math.Abs(target.X - centerX) + Math.Abs(target.Y - centerY);
+    }
+
+    private static bool IsInside(Gate gate, Point position)
+        => position.X >= gate.X1 && position.X <= gate.X2 && position.Y >= gate.Y1 && position.Y <= gate.Y2;
+
+    private static int? GetWorstLandingDistance(
+        IReadOnlyCollection<Point> landingPoints,
+        int[] distancesFromTarget,
+        int mapWidth)
+    {
+        var worstCaseDistance = 0;
+        foreach (var landingPoint in landingPoints)
+        {
+            var encodedDistance = distancesFromTarget[(landingPoint.Y * mapWidth) + landingPoint.X];
+            if (encodedDistance == 0)
+            {
+                return null;
+            }
+
+            // Zero means unreachable, so stored distances are offset by one.
+            worstCaseDistance = Math.Max(worstCaseDistance, encodedDistance - 1);
+        }
+
+        return worstCaseDistance;
+    }
+
+    private static void PopulateWalkableDistancesFrom(
+        bool[,] walkMap,
+        Point start,
+        int[] distances,
+        int[] pendingCoordinates,
+        CancellationToken cancellationToken)
+    {
+        if (!walkMap[start.X, start.Y])
+        {
+            return;
+        }
+
+        var width = walkMap.GetLength(0);
+        var height = walkMap.GetLength(1);
+        var readIndex = 0;
+        var writeIndex = 0;
+        var startIndex = (start.Y * width) + start.X;
+        distances[startIndex] = 1;
+        pendingCoordinates[writeIndex++] = startIndex;
+        while (readIndex < writeIndex)
+        {
+            if ((readIndex & 0xFF) == 0)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            var currentIndex = pendingCoordinates[readIndex++];
+            var currentX = currentIndex % width;
+            var currentY = currentIndex / width;
+            var nextEncodedDistance = distances[currentIndex] + 1;
+            for (var offsetX = -1; offsetX <= 1; offsetX++)
+            {
+                for (var offsetY = -1; offsetY <= 1; offsetY++)
+                {
+                    if (offsetX == 0 && offsetY == 0)
+                    {
+                        continue;
+                    }
+
+                    var nextX = currentX + offsetX;
+                    var nextY = currentY + offsetY;
+                    if ((uint)nextX >= width
+                        || (uint)nextY >= height
+                        || !walkMap[nextX, nextY]
+                        || distances[(nextY * width) + nextX] != 0)
+                    {
+                        continue;
+                    }
+
+                    var nextIndex = (nextY * width) + nextX;
+                    distances[nextIndex] = nextEncodedDistance;
+                    pendingCoordinates[writeIndex++] = nextIndex;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -1062,6 +1355,21 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // A walk (travel hop or local combat move) is already in progress.
         if (this._player.IsWalking)
+        {
+            return;
+        }
+
+        // A bot which announced an opened event waits at the meeting point until the entrance closes
+        // (see BotChatPlugIn): it said where it would be, so it must be found there. This outranks the
+        // errands and the party follow below - and a due reset, which would change its level.
+        if (await this.TryEventMeetingAsync(map, inSafezone, cancellationToken).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        // A bot on a market shift sells the goods of its personal store at its stall (see
+        // BotMerchantPlugIn) - its customers have to find it there, like the players of an event meeting.
+        if (await this.TryMarketShiftAsync(map, cancellationToken).ConfigureAwait(false))
         {
             return;
         }
@@ -1420,6 +1728,162 @@ internal sealed class BotNavigator : AsyncDisposable
     private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition)
     {
         await BotBuffHandler.TryRequestBuffAsync(this._player, map, buffNpcPosition).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Warps the bot through a gate to its meeting, counting the warps through the meeting's own gate.
+    /// </summary>
+    private async ValueTask WarpToMeetingAsync(BotEventMeeting meeting, ExitGate gate)
+    {
+        if (ReferenceEquals(gate, meeting.Gate))
+        {
+            this._gateWarpCount = this.GetGateWarpCount(meeting) + 1;
+            this._gateWarpMeeting = meeting;
+        }
+
+        this._travelPath = null;
+        this._hasDestination = false;
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
+        this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} to wait for players at the meeting point.", this._player.Name, meeting.Map.Name);
+        await this._player.WarpToAsync(gate).ConfigureAwait(false);
+    }
+
+    private int GetGateWarpCount(BotEventMeeting meeting)
+        => ReferenceEquals(this._gateWarpMeeting, meeting) ? this._gateWarpCount : 0;
+
+    /// <summary>
+    /// Drives a market shift (see <see cref="OfflinePlayer.MarketShift"/>): the bot warps to the market
+    /// through its spawn gate - not through the warp list, whose level requirement and costs are for
+    /// the players -, walks to its stall, opens its personal store and stays until the shift ends
+    /// (see <see cref="BotMarketPlanner.GetEndReason"/>). Opening and closing the store run in the
+    /// MU Helper tick, like the trades (see <see cref="OfflinePlayer.PendingBotActions"/>).
+    /// </summary>
+    /// <param name="map">The current map.</param>
+    /// <param name="cancellationToken">The token which aborts the travel wait on shutdown.</param>
+    /// <returns>True, if the shift consumed this tick.</returns>
+    private async ValueTask<bool> TryMarketShiftAsync(GameMap map, CancellationToken cancellationToken)
+    {
+        if (this._player.MarketShift is not { } shift)
+        {
+            return await this.TryLeaveMarketAsync().ConfigureAwait(false);
+        }
+
+        // Standing behind the own store is not "stuck", and the hunting ground is free for others meanwhile.
+        this._lastMoveUtc = DateTime.UtcNow;
+        this._player.HuntingSpot = null;
+        if (shift.IsEnding)
+        {
+            return true;
+        }
+
+        var configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()?.Configuration;
+        var endReason = configuration is null
+            ? BotMarketPlanner.EndReason.TimeIsUp
+            : BotMarketPlanner.GetEndReason(this._player, shift, configuration, DateTime.UtcNow);
+        if (endReason != BotMarketPlanner.EndReason.None)
+        {
+            this.EndMarketShift(shift, configuration, endReason);
+            return true;
+        }
+
+        if (map.Definition.Number != shift.Map.Number)
+        {
+            if (shift.Map.ExitGates.Where(g => g.IsSpawnGate).SelectRandom() is not { } gate)
+            {
+                this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreClosed);
+                return true;
+            }
+
+            this._travelPath = null;
+            this._hasDestination = false;
+            this._lastWarpUtc = this._timeProvider.GetUtcNow();
+            this._player.Logger.LogDebug("Bot '{Name}' warps to {Map} for its market shift.", this._player.Name, shift.Map.Name);
+            await this._player.WarpToAsync(gate).ConfigureAwait(false);
+            return true;
+        }
+
+        if (this._player.GetDistanceTo(shift.Stall) > 1)
+        {
+            if (!await this.TravelTowardAsync(map, shift.Stall, cancellationToken).ConfigureAwait(false))
+            {
+                this._player.Logger.LogDebug("Bot '{Name}' gives up its market shift: no route to its stall at {Stall}.", this._player.Name, shift.Stall);
+                this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreClosed);
+            }
+
+            return true;
+        }
+
+        if (!shift.IsStoreOpened && !shift.IsOpenRequested)
+        {
+            shift.IsOpenRequested = true;
+            this._player.PendingBotActions.Enqueue(() => this.OpenMarketStoreAsync(shift));
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Ends the market shift: the store gets closed in the next MU Helper tick, the shift is removed
+    /// afterward, and the bot may start its next one after the configured time.
+    /// </summary>
+    private void EndMarketShift(BotMarketShift shift, BotMerchantConfiguration? configuration, BotMarketPlanner.EndReason reason)
+    {
+        shift.IsEnding = true;
+        this._player.NextMarketShiftUtc = DateTime.UtcNow + (configuration?.TimeBetweenShifts ?? TimeSpan.Zero);
+        this._player.Logger.LogDebug("Bot '{Name}' ends its market shift: {Reason}.", this._player.Name, reason);
+        this._player.PendingBotActions.Enqueue(() => this.CloseMarketStoreAsync(shift));
+    }
+
+    /// <summary>
+    /// Closes the personal store, removes the last income, retires the goods which found no buyer for
+    /// too long and removes the shift, as it runs inside the MU Helper tick.
+    /// </summary>
+    private async ValueTask CloseMarketStoreAsync(BotMarketShift shift)
+    {
+        await BotMerchandise.CloseShiftStoreAsync(this._player, shift).ConfigureAwait(false);
+        if (ReferenceEquals(this._player.MarketShift, shift))
+        {
+            this._player.MarketShift = null;
+            this._leavesMarket = this._player.CurrentMap?.Definition.Number == shift.Map.Number;
+        }
+    }
+
+    /// <summary>
+    /// Takes the bot home after its market shift: the market has no hunting ground, so the routine
+    /// wouldn't find a way back to the monsters from there.
+    /// </summary>
+    /// <returns>True, if the warp consumed this tick.</returns>
+    private async ValueTask<bool> TryLeaveMarketAsync()
+    {
+        if (!this._leavesMarket)
+        {
+            return false;
+        }
+
+        this._leavesMarket = false;
+        if (!this.TryGetHomeEscapeGate(out var homeGate, out var homeMap, out _))
+        {
+            return false;
+        }
+
+        this._travelPath = null;
+        this._hasDestination = false;
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
+        this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} after its market shift.", this._player.Name, homeMap.Name);
+        await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
+    /// Ends the event meeting, unless a newer one replaced it in the meantime.
+    /// </summary>
+    /// <param name="meeting">The meeting which is over.</param>
+    private void EndEventMeeting(BotEventMeeting meeting)
+    {
+        if (ReferenceEquals(this._player.EventMeeting, meeting))
+        {
+            this._player.EventMeeting = null;
+        }
     }
 
     /// <summary>
@@ -2151,141 +2615,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// that budget is therefore rejected before warping.
     /// </remarks>
     private WarpInfo? FindBestReachableLegalWarp(GameMap map, Point target, CancellationToken cancellationToken)
-    {
-        var candidates = this.GetLegalWarps(map.Definition)
-            .Where(candidate => candidate.Gate is not null)
-            .Select(candidate => (Warp: candidate, Gate: candidate.Gate!, LandingPoints: candidate.Gate!.GetPossibleLandingPoints().ToArray()))
-            .Where(candidate => !candidate.LandingPoints.Contains(this._player.Position))
-            .ToArray();
-        if (candidates.Length == 0)
-        {
-            return null;
-        }
-
-        // Movement on the walk map is bidirectional. One reverse flood fill from the leader therefore
-        // gives both reachability and shortest distance for every possible gate landing point, without
-        // acquiring a full-map pathfinder once per point.
-        // Cancellation from this flood fill is expected during shutdown and handled by SafeEvaluateAsync.
-        cancellationToken.ThrowIfCancellationRequested();
-        var walkMap = map.Terrain.WalkMap;
-        var width = walkMap.GetLength(0);
-        var coordinateCount = width * walkMap.GetLength(1);
-        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
-        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
-        try
-        {
-            Array.Clear(distancesFromTarget, 0, coordinateCount);
-            this.PopulateWalkableDistancesFrom(
-                walkMap,
-                target,
-                distancesFromTarget,
-                pendingCoordinates,
-                cancellationToken);
-            WarpInfo? bestWarp = null;
-            var bestWorstCaseDistance = int.MaxValue;
-            foreach (var candidate in candidates)
-            {
-                var worstCaseDistance = this.GetWorstLandingDistance(candidate.LandingPoints, distancesFromTarget, width);
-                if (worstCaseDistance is null
-                    || worstCaseDistance > TravelSearchLimit
-                    || worstCaseDistance > bestWorstCaseDistance
-                    || (worstCaseDistance == bestWorstCaseDistance
-                        && bestWarp?.Gate is { } bestGate
-                        && GateDistance(candidate.Gate, target) >= GateDistance(bestGate, target)))
-                {
-                    continue;
-                }
-
-                bestWarp = candidate.Warp;
-                bestWorstCaseDistance = worstCaseDistance.Value;
-            }
-
-            return bestWarp;
-        }
-        finally
-        {
-            ArrayPool<int>.Shared.Return(distancesFromTarget);
-            ArrayPool<int>.Shared.Return(pendingCoordinates);
-        }
-    }
-
-    private int? GetWorstLandingDistance(
-        IReadOnlyCollection<Point> landingPoints,
-        int[] distancesFromTarget,
-        int mapWidth)
-    {
-        var worstCaseDistance = 0;
-        foreach (var landingPoint in landingPoints)
-        {
-            var encodedDistance = distancesFromTarget[(landingPoint.Y * mapWidth) + landingPoint.X];
-            if (encodedDistance == 0)
-            {
-                return null;
-            }
-
-            // Zero means unreachable, so stored distances are offset by one.
-            worstCaseDistance = Math.Max(worstCaseDistance, encodedDistance - 1);
-        }
-
-        return worstCaseDistance;
-    }
-
-    private void PopulateWalkableDistancesFrom(
-        bool[,] walkMap,
-        Point start,
-        int[] distances,
-        int[] pendingCoordinates,
-        CancellationToken cancellationToken)
-    {
-        if (!walkMap[start.X, start.Y])
-        {
-            return;
-        }
-
-        var width = walkMap.GetLength(0);
-        var height = walkMap.GetLength(1);
-        var readIndex = 0;
-        var writeIndex = 0;
-        var startIndex = (start.Y * width) + start.X;
-        distances[startIndex] = 1;
-        pendingCoordinates[writeIndex++] = startIndex;
-        while (readIndex < writeIndex)
-        {
-            if ((readIndex & 0xFF) == 0)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
-            var currentIndex = pendingCoordinates[readIndex++];
-            var currentX = currentIndex % width;
-            var currentY = currentIndex / width;
-            var nextEncodedDistance = distances[currentIndex] + 1;
-            for (var offsetX = -1; offsetX <= 1; offsetX++)
-            {
-                for (var offsetY = -1; offsetY <= 1; offsetY++)
-                {
-                    if (offsetX == 0 && offsetY == 0)
-                    {
-                        continue;
-                    }
-
-                    var nextX = currentX + offsetX;
-                    var nextY = currentY + offsetY;
-                    if ((uint)nextX >= width
-                        || (uint)nextY >= height
-                        || !walkMap[nextX, nextY]
-                        || distances[(nextY * width) + nextX] != 0)
-                    {
-                        continue;
-                    }
-
-                    var nextIndex = (nextY * width) + nextX;
-                    distances[nextIndex] = nextEncodedDistance;
-                    pendingCoordinates[writeIndex++] = nextIndex;
-                }
-            }
-        }
-    }
+        => FindBestReachableWarp(this.GetLegalWarps(map.Definition), map.Terrain.WalkMap, target, this._player.Position, false, cancellationToken);
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {

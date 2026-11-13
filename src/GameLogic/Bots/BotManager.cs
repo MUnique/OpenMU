@@ -242,13 +242,14 @@ public sealed class BotManager
     /// <summary>
     /// Groups a share of the active bots into small hunting parties of level-wise similar characters.
     /// Members follow their leader, the elf heals the group, buffs are shared
-    /// and the party experience bonus applies. The rest keeps hunting solo.
+    /// and the party experience bonus applies. The rest keeps hunting solo - and a bot on a market
+    /// shift keeps selling (see <see cref="BotMarketShift"/>).
     /// </summary>
     /// <param name="gameContext">The game context (provides the party manager).</param>
     public async ValueTask FormPartiesAsync(IGameContext gameContext)
     {
         var candidates = this._bots.Values
-            .Where(b => b.Party is null && b.Attributes is not null)
+            .Where(b => b.Party is null && b.Attributes is not null && b.MarketShift is null)
             .OrderBy(BotResetHandler.GetEffectiveLevel)
             .ToList();
 
