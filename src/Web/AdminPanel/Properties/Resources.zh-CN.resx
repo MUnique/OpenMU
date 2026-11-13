@@ -2783,4 +2783,25 @@
   <data name="Inspect" xml:space="preserve">
     <value>检查</value>
   </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>导出商店</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>导入商店</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>导入将替换“{0}”商店中的所有物品。是否继续？</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>已将 {0} 件物品导入商店。</value>
+  </data>
+  <data name="ShopImportSkippedItems" xml:space="preserve">
+    <value>已跳过 {0} 件物品，因为此配置中不存在它们的物品定义。</value>
+  </data>
+  <data name="ShopImportSkippedOptions" xml:space="preserve">
+    <value>已跳过 {0} 个物品选项或套装分配，因为物品定义中不存在它们。</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>该文件不是有效的商店导出文件。</value>
+  </data>
 </root>

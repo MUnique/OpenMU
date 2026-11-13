@@ -6,6 +6,7 @@
     width: calc(var(--boxSize) * (var(--storageColumns)));
     position: relative;
     display: flex;
+    overflow: hidden;
 }
 
 .storage-rows4 {

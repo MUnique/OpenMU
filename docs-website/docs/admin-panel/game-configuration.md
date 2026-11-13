@@ -84,6 +84,18 @@ Route `merchants`
 A more comfortable editor for NPC merchants: pick a merchant and edit the items
 it offers with the graphical item storage editor instead of the generic form.
 
+**Export shop** downloads the items of the selected merchant as a JSON file,
+**Import shop** reads such a file back in. The file contains the full state of
+each item: slot, definition, level, durability, skill, sockets, pet experience,
+all options and the ancient sets. Items are referenced by their definition
+group and number, so a file can be applied to another configuration; items the
+configuration doesn't know are skipped and reported.
+
+The file contains only the items and no merchant name, so it can be imported
+into any merchant to duplicate a shop. Import replaces all items of the shop;
+the money of the storage is not touched. Export first if you want to be able to
+go back.
+
 ## Character classes
 
 Route `edit-config-grid/…CharacterClass/`

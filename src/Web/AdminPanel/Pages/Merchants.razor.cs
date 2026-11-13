@@ -15,6 +15,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Pages.MerchantShop;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -27,11 +28,13 @@ public partial class Merchants : ComponentBase, IDisposable
     private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
     private readonly PaginationState _itemPagination = new() { ItemsPerPage = 20 };
     private readonly CancellationTokenSource _disposeCts = new();
+    private readonly MerchantShopExportImportService _shopExportImportService = new();
 
     private List<MerchantStorageViewModel>? _viewModels;
     private MerchantStorageViewModel? _selectedMerchant;
     private IContext? _persistenceContext;
     private IDisposable? _navigationLockDisposable;
+    private int _shopEditorRevision;
 
     /// <summary>
     /// Gets or sets the guard which checks the permission of the current user before saving.
@@ -223,6 +226,67 @@ public partial class Merchants : ComponentBase, IDisposable
         }
 
         this._selectedMerchant = null;
+    }
+
+    private string BuildShopExport()
+    {
+        if (this._selectedMerchant is not { } merchant)
+        {
+            throw new InvalidOperationException("No merchant is selected.");
+        }
+
+        return this._shopExportImportService.BuildExport(merchant.Merchant);
+    }
+
+    private async Task ImportShopAsync(string json)
+    {
+        if (this._selectedMerchant is not { } merchant || this._persistenceContext is not { } context)
+        {
+            return;
+        }
+
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
+        var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
+                "window.confirm",
+                string.Format(Resources.ShopImportQuestion, merchant.Name))
+            .ConfigureAwait(true);
+        if (!isConfirmed)
+        {
+            return;
+        }
+
+        var result = await this._shopExportImportService
+            .TryApplyImportAsync(merchant.Merchant, json, context, this._disposeCts.Token)
+            .ConfigureAwait(true);
+        if (result is null)
+        {
+            this.ToastService.ShowError(Resources.ShopImportInvalidFile);
+            return;
+        }
+
+        // The previous items are replaced, so the item editor must not keep a selection and edit view of them.
+        this._shopEditorRevision++;
+        this.ShowImportResult(result);
+    }
+
+    private void ShowImportResult(MerchantShopImportResult result)
+    {
+        this.ToastService.ShowSuccess(string.Format(Resources.ShopImported, result.ImportedItemCount));
+
+        if (result.SkippedItemCount > 0)
+        {
+            this.ToastService.ShowWarning(string.Format(Resources.ShopImportSkippedItems, result.SkippedItemCount));
+        }
+
+        if (result.SkippedOptionCount > 0)
+        {
+            this.ToastService.ShowWarning(string.Format(Resources.ShopImportSkippedOptions, result.SkippedOptionCount));
+        }
     }
 
     /// <summary>

@@ -5146,6 +5146,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Export shop.
+        /// </summary>
+        public static string ExportShop {
+            get {
+                return ResourceManager.GetString("ExportShop", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Extension Point.
         /// </summary>
         public static string ExtensionPoint {
@@ -5574,6 +5583,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ImportJsonBackup {
             get {
                 return ResourceManager.GetString("ImportJsonBackup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Import shop.
+        /// </summary>
+        public static string ImportShop {
+            get {
+                return ResourceManager.GetString("ImportShop", resourceCulture);
             }
         }
 
@@ -7680,6 +7698,51 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string SetUpAuthenticator {
             get {
                 return ResourceManager.GetString("SetUpAuthenticator", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} item(s) were imported into the shop..
+        /// </summary>
+        public static string ShopImported {
+            get {
+                return ResourceManager.GetString("ShopImported", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The file is not a valid merchant shop export..
+        /// </summary>
+        public static string ShopImportInvalidFile {
+            get {
+                return ResourceManager.GetString("ShopImportInvalidFile", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Importing replaces all items of the shop of "{0}". Continue?.
+        /// </summary>
+        public static string ShopImportQuestion {
+            get {
+                return ResourceManager.GetString("ShopImportQuestion", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} item(s) were skipped because their item definitions are not part of this configuration..
+        /// </summary>
+        public static string ShopImportSkippedItems {
+            get {
+                return ResourceManager.GetString("ShopImportSkippedItems", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} item option(s) or set assignment(s) were skipped because the item definitions don't know them..
+        /// </summary>
+        public static string ShopImportSkippedOptions {
+            get {
+                return ResourceManager.GetString("ShopImportSkippedOptions", resourceCulture);
             }
         }
 

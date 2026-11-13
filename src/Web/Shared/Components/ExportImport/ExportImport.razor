@@ -1,0 +1,11 @@
+@implements IAsyncDisposable
+
+<div class="d-flex align-items-center gap-2">
+    <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isExporting" @onclick="@this.ExportAsync" title="@this.ExportText">
+        <span class="oi oi-data-transfer-download"></span> @this.ExportText
+    </button>
+    <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isImporting" @onclick="@this.TriggerFileImportAsync" title="@this.ImportText">
+        <span class="oi oi-data-transfer-upload"></span> @this.ImportText
+    </button>
+    <BlazorInputFile.InputFile OnChange="@this.ImportFileSelectedAsync" accept=".json" style="display:none" id="@this._fileInputId" />
+</div>

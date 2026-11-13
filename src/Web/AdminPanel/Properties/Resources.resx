@@ -2732,4 +2732,25 @@
   <data name="ExcellentOptionsHint" xml:space="preserve">
     <value>Empty means that the value of the excellent option definition of the item applies. The first option is always added without a chance.</value>
   </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>Export shop</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>Import shop</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>Importing replaces all items of the shop of "{0}". Continue?</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>{0} item(s) were imported into the shop.</value>
+  </data>
+  <data name="ShopImportSkippedItems" xml:space="preserve">
+    <value>{0} item(s) were skipped because their item definitions are not part of this configuration.</value>
+  </data>
+  <data name="ShopImportSkippedOptions" xml:space="preserve">
+    <value>{0} item option(s) or set assignment(s) were skipped because the item definitions don't know them.</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>The file is not a valid merchant shop export.</value>
+  </data>
 </root>

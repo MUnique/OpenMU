@@ -22,13 +22,11 @@
                 <option value="@map.GetId()" selected=@(object.Equals(this.SelectedMap, map))>@Resources.Map: @map.ToString()</option>
             }
         </select>
-        <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isExporting" @onclick="@this.ExportMapAsync" title="@Resources.ExportMap">
-            <span class="oi oi-data-transfer-download"></span> @Resources.ExportMap
-        </button>
-        <button type="button" class="btn btn-secondary text-nowrap" disabled="@this._isImporting" @onclick="@this.TriggerFileImportAsync" title="@Resources.ImportMap">
-            <span class="oi oi-data-transfer-upload"></span> @Resources.ImportMap
-        </button>
-        <BlazorInputFile.InputFile OnChange="@ImportFileSelectedAsync" accept=".json" style="display:none" id="import-file-input" />
+        <ExportImport ExportText="@Resources.ExportMap"
+                      ImportText="@Resources.ImportMap"
+                      ExportFileName="@($"map-{this.SelectedMap.Number}-spawns.json")"
+                      ExportContentProvider="@this.BuildExportContent"
+                      OnImport="@this.ImportContentAsync" />
     </div>
 </div>
 

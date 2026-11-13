@@ -2608,4 +2608,25 @@
   <data name="Inspect" xml:space="preserve">
     <value>Untersuchen</value>
   </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>Shop exportieren</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>Shop importieren</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>Der Import ersetzt alle Items des Shops von "{0}". Fortfahren?</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>{0} Item(s) wurden in den Shop importiert.</value>
+  </data>
+  <data name="ShopImportSkippedItems" xml:space="preserve">
+    <value>{0} Item(s) wurden übersprungen, weil ihre Item-Definitionen nicht Teil dieser Konfiguration sind.</value>
+  </data>
+  <data name="ShopImportSkippedOptions" xml:space="preserve">
+    <value>{0} Item-Option(en) oder Set-Zuordnung(en) wurden übersprungen, weil die Item-Definitionen sie nicht kennen.</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>Die Datei ist kein gültiger Shop-Export.</value>
+  </data>
 </root>
