@@ -104,6 +104,8 @@ public class ConcurrentHitApplicationTests
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var calls = 0;
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
         View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>()))
             .Returns(() =>
             {
@@ -119,6 +121,7 @@ public class ConcurrentHitApplicationTests
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
         try
         {
+            var ownedDeath = target.LastDeath;
             Assert.That(target.Attributes![Stats.CurrentHealth], Is.Zero);
             target.Attributes[Stats.CurrentHealth] = 5; // Recovery cannot reopen a reserved death.
             await target.ApplyPoisonDamageAsync(lateAttacker, 7).ConfigureAwait(false);
@@ -127,25 +130,45 @@ public class ConcurrentHitApplicationTests
                 Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(5));
                 Assert.That(target.LastDeath?.KillerId, Is.EqualTo(killer.Id));
             });
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(target.LastDeath, Is.SameAs(ownedDeath));
+                Assert.That(target.LastDeath?.KillerId, Is.EqualTo(killer.Id));
+            });
+            View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, killer), Times.Once);
         }
         finally
         {
             release.TrySetResult();
             await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
+            await killer.DisposeAsync().ConfigureAwait(false);
+            await lateAttacker.DisposeAsync().ConfigureAwait(false);
         }
     }
 
     /// <summary>A reserved lethal hit survives either ordering of a real map-change handshake.</summary>
     /// <param name="arrivalFirst">Whether arrival precedes the original death continuation.</param>
     /// <param name="source">The damage source, including a hit on the victim's own packet path.</param>
-    [TestCase(false, "poison")]
-    [TestCase(true, "poison")]
-    [TestCase(false, "reflection")]
-    [TestCase(true, "reflection")]
-    [TestCase(false, "self-reflection")]
-    [TestCase(true, "self-reflection")]
-    public async Task LethalHitDuringMapChangeCannotStrandLifeAsync(bool arrivalFirst, string source)
+    /// <param name="heal">Whether health is restored while the lethal view is paused.</param>
+    [TestCase(false, "poison", false)]
+    [TestCase(true, "poison", false)]
+    [TestCase(false, "reflection", false)]
+    [TestCase(true, "reflection", false)]
+    [TestCase(false, "self-reflection", false)]
+    [TestCase(true, "self-reflection", false)]
+    [TestCase(false, "poison", true)]
+    [TestCase(true, "poison", true)]
+    [TestCase(false, "reflection", true)]
+    [TestCase(true, "reflection", true)]
+    [TestCase(false, "self-reflection", true)]
+    [TestCase(true, "self-reflection", true)]
+    public async Task LethalHitDuringMapChangeCannotStrandLifeAsync(bool arrivalFirst, string source, bool heal)
     {
         var target = await CreatePlayerAsync(10).ConfigureAwait(false);
         var other = await CreatePlayerAsync(100, sameWorldAs: target).ConfigureAwait(false);
@@ -162,12 +185,17 @@ public class ConcurrentHitApplicationTests
         {
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             var ownedDeath = target.LastDeath;
+            if (heal)
+            {
+                target.Attributes![Stats.CurrentHealth] = 5;
+            }
+
             await WarpAsync(target).ConfigureAwait(false);
             Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
             if (arrivalFirst)
             {
                 await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
-                Assert.That(target.IsAlive, Is.False, "Arrival must not revive the reserved zero-health life.");
+                Assert.That(target.IsAlive, Is.False, "Arrival must not revive the reserved life.");
             }
 
             release.TrySetResult();
@@ -183,6 +211,7 @@ public class ConcurrentHitApplicationTests
             await target.ApplyPoisonDamageAsync(other, 1).ConfigureAwait(false);
             Assert.Multiple(() =>
             {
+                Assert.That(target.Attributes![Stats.CurrentHealth], Is.EqualTo(heal ? 5 : 0));
                 Assert.That(deaths, Is.EqualTo(1));
                 Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
                 Assert.That(target.IsAlive, Is.False);
@@ -202,6 +231,86 @@ public class ConcurrentHitApplicationTests
             await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
             await other.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Only an actual respawn restores the next life, on either map and packet path.</summary>
+    /// <param name="crossMap">Whether the respawn changes maps.</param>
+    /// <param name="useRespawnPlugIn">Whether the client has the legacy explicit respawn view.</param>
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task ActualRespawnClearsLethalReservationAsync(bool crossMap, bool useRespawnPlugIn)
+    {
+        var target = await CreatePlayerAsync(10, useRespawnPlugIn: useRespawnPlugIn).ConfigureAwait(false);
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        try
+        {
+            await target.ApplyPoisonDamageAsync(target, 10).ConfigureAwait(false);
+            Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            var gate = GateOf(target);
+            if (crossMap)
+            {
+                var original = gate.Map!;
+                var destination = new Mock<GameMapDefinition>();
+                destination.SetupAllProperties();
+                destination.Setup(m => m.DropItemGroups).Returns(original.DropItemGroups);
+                destination.Setup(m => m.MonsterSpawns).Returns(original.MonsterSpawns);
+                destination.Setup(m => m.ExitGates).Returns(original.ExitGates);
+                destination.Object.Number = 1;
+                destination.Object.TerrainData = original.TerrainData;
+                target.GameContext.Configuration.Maps.Add(destination.Object);
+                gate.Map = destination.Object;
+            }
+
+            target.SetReclaimableAttributesToMaximum();
+            var restoredHealth = target.Attributes![Stats.CurrentHealth];
+            await target.RespawnAtAsync(gate).ConfigureAwait(false);
+            if (!useRespawnPlugIn)
+            {
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+                Assert.That(target.IsAlive, Is.False);
+                await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            }
+
+            await target.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(target.CurrentMap!.Definition, Is.SameAs(gate.Map));
+                Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(restoredHealth));
+                Assert.That(deaths, Is.EqualTo(1));
+            });
+            await target.ApplyPoisonDamageAsync(target, 1).ConfigureAwait(false);
+            Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(restoredHealth - 1));
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Initial zero health is not a reserved lethal hit.</summary>
+    [Test]
+    public async Task InitialZeroHealthCharacterEntersAliveAsync()
+    {
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        try
+        {
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.Attributes![Stats.CurrentHealth], Is.Zero);
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(target.LastDeath, Is.Null);
+            });
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -1359,14 +1468,14 @@ public class ConcurrentHitApplicationTests
     private static ValueTask WarpAsync(Player player)
         => new WarpAction().WarpToAsync(player, new WarpInfo { Gate = GateOf(player) });
 
-    private static async Task<Player> CreatePlayerAsync(float health, float shield = 0, bool slowHealth = false, Player? sameWorldAs = null)
+    private static async Task<Player> CreatePlayerAsync(float health, float shield = 0, bool slowHealth = false, Player? sameWorldAs = null, bool useRespawnPlugIn = true)
     {
         var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var context = sameWorldAs?.GameContext ?? seed.GameContext;
         var character = PlayerTestHelper.CreateCharacter(context);
         character.Attributes.Add(slowHealth ? new SlowHealthAttribute(health) : new StatAttribute(Stats.CurrentHealth, health));
         character.Attributes.Add(new StatAttribute(Stats.CurrentShield, shield));
-        var player = new TestPlayer(context);
+        var player = new TestPlayer(context, useRespawnPlugIn);
         await PlayerTestHelper.EnterWorldAsync(player, character).ConfigureAwait(false);
         player.Attributes![Stats.CurrentHealth] = health;
         player.Attributes[Stats.CurrentShield] = shield;
@@ -1390,9 +1499,19 @@ public class ConcurrentHitApplicationTests
         await Task.WhenAll(tasks).WaitAsync(TimeSpan.FromSeconds(15)).ConfigureAwait(false);
     }
 
-    private sealed class TestPlayer(IGameContext context) : Player(context)
+    private sealed class TestPlayer(IGameContext context, bool useRespawnPlugIn = true) : Player(context)
     {
-        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer() => new MockViewPlugInContainer();
+        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer()
+            => useRespawnPlugIn ? new MockViewPlugInContainer() : new MapChangeRespawnViewPlugInContainer();
+    }
+
+    private sealed class MapChangeRespawnViewPlugInContainer : ICustomPlugInContainer<IViewPlugIn>
+    {
+        private readonly MockViewPlugInContainer _mocks = new();
+
+        public T? GetPlugIn<T>()
+            where T : class, IViewPlugIn
+            => typeof(T) == typeof(IRespawnAfterDeathPlugIn) ? null : this._mocks.GetPlugIn<T>();
     }
 
     // Finite delay widens the read/write race without requiring another thread inside a production lock.

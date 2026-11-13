@@ -1598,9 +1598,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         lock (this._hitLock)
         {
-            if (!this._hasReservedLethalHit || this.Attributes![Stats.CurrentHealth] >= 1)
+            if (!this._hasReservedLethalHit)
             {
-                this._hasReservedLethalHit = false;
                 this.IsAlive = true;
             }
         }
@@ -1609,14 +1608,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Starts the restored life after an actual respawn, clearing the previous hit reservation.
+    /// Clears the previous death reservation for an actual respawn, before either arrival packet path.
     /// </summary>
-    internal void SetAliveAfterRespawn()
+    internal async ValueTask PrepareForRespawnAsync()
     {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        this._pendingMapChangeDeath = null;
         lock (this._hitLock)
         {
             this._hasReservedLethalHit = false;
-            this.IsAlive = true;
         }
     }
 
@@ -2026,12 +2027,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
             {
                 state = this.PlayerState.CurrentState;
-                if (ownedDeath is not null
-                    && (this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null || !ReferenceEquals(this.LastDeath, ownedDeath)
-                        || this.IsAlive || this.Attributes![Stats.CurrentHealth] >= 1))
+                if (ownedDeath is not null)
                 {
-                    context.Allowed = false;
-                    return false;
+                    lock (this._hitLock)
+                    {
+                        if (this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                            || !this._hasReservedLethalHit || !ReferenceEquals(this.LastDeath, ownedDeath))
+                        {
+                            context.Allowed = false;
+                            return false;
+                        }
+                    }
                 }
 
                 if (state == GameLogic.PlayerState.ChangingMap && ownedDeath is not null)

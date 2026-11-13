@@ -205,6 +205,7 @@ internal sealed class PlayerMapTransitions
         player.SelectedCharacter.ThrowNotInitializedProperty(player.SelectedCharacter.CurrentMap is null, nameof(player.SelectedCharacter.CurrentMap));
         await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
         player.ClearRespawnAfterDeathToken();
+        await player.PrepareForRespawnAsync().ConfigureAwait(false);
 
         if (player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
         {
@@ -213,7 +214,7 @@ internal sealed class PlayerMapTransitions
             player.CurrentMap = await this.GetMapToEnterAsync(player.SelectedCharacter!.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
             await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
             await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-            player.SetAliveAfterRespawn();
+            player.IsAlive = true;
             await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
         }
         else
