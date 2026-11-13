@@ -147,8 +147,10 @@ public class GuildWarAnswerAction
             {
                 if (player.GuildWarContext is { } context)
                 {
-                    var isWinner = context.Team == score.Winners;
-                    await player.InvokeViewPlugInAsync<IShowGuildWarResultPlugIn>(p => p.ShowResultAsync(context.EnemyTeamName, isWinner ? GuildWarResult.Won : GuildWarResult.Lost)).ConfigureAwait(false);
+                    var result = score.Winners is null
+                        ? GuildWarResult.CancelledWar
+                        : context.Team == score.Winners ? GuildWarResult.Won : GuildWarResult.Lost;
+                    await player.InvokeViewPlugInAsync<IShowGuildWarResultPlugIn>(p => p.ShowResultAsync(context.EnemyTeamName, result)).ConfigureAwait(false);
                     if (soccerMap is not null)
                     {
                         var spawnGates = soccerMap.Definition.ExitGates.Where(g => g.IsSpawnGate);
