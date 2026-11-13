@@ -1655,6 +1655,68 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return true;
     }
 
+    /// <summary>Reads lethal ownership together with its identity for a bounded placement.</summary>
+    /// <returns>The last death and whether it is reserved for this life, read under hit exclusion.</returns>
+    internal (DeathInformation? Death, bool Reserved) GetPlacementDeathSnapshot()
+    {
+        lock (this._hitLock)
+        {
+            return (this.LastDeath, this._hasReservedLethalHit);
+        }
+    }
+
+    /// <summary>Closes recognized interactions and claims map change before removing the player.</summary>
+    /// <param name="isCurrentLife">Validates the captured character, attributes and death before claiming placement.</param>
+    /// <returns>Whether this operation owns the existing changing-map state.</returns>
+    internal async ValueTask<bool> PrepareForForcedPlacementAsync(Func<bool> isCurrentLife)
+    {
+        while (true)
+        {
+            State state;
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
+            {
+                state = this.PlayerState.CurrentState;
+                context.Allowed &= isCurrentLife() && state != GameLogic.PlayerState.NpcDialogOpened;
+                if (context.Allowed)
+                {
+                    return true;
+                }
+
+                if (!isCurrentLife() || (state != GameLogic.PlayerState.PartyRequest
+                    && state != GameLogic.PlayerState.TradeRequested && state != GameLogic.PlayerState.TradeOpened
+                    && state != GameLogic.PlayerState.TradeButtonPressed && state != GameLogic.PlayerState.NpcDialogOpened))
+                {
+                    return false;
+                }
+            }
+
+            if (state == GameLogic.PlayerState.PartyRequest)
+            {
+                await new GameLogic.PlayerActions.Party.PartyResponseAction().HandleResponseAsync(this, false).ConfigureAwait(false);
+            }
+            else if (state == GameLogic.PlayerState.NpcDialogOpened)
+            {
+                if (this.OpenedNpc is not null)
+                {
+                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
+                }
+                else
+                {
+                    await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+            }
+
+            if (this.PlayerState.CurrentState == state)
+            {
+                return false;
+            }
+        }
+    }
+
     /// <summary>Restores liveness after placement only when no lethal hit owns this life.</summary>
     internal void RestoreLivenessAfterPlacement()
     {
@@ -1982,47 +2044,63 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         bool killed;
         bool shieldBurst;
+        DeathInformation? ownedDeath = null;
+        var skillNumber = skill?.Number ?? 0;
+        var attackerId = attacker.Id;
+        var attackerName = attacker.GetName();
         List<(AttributeDefinition Definition, float Value)> attributeChanges = [];
         lock (this._hitLock)
         {
-            if (!this.IsAlive || this.Attributes![Stats.CurrentHealth] < 1)
+            if (!this.IsAlive || this._hasReservedLethalHit)
             {
                 return false;
             }
 
+            var attributes = this.Attributes!;
             this._hitAttributeChanges = attributeChanges;
             try
             {
                 if (recoverHealthBeforeHit)
                 {
-                    this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
+                    attributes[Stats.CurrentHealth] = attributes[Stats.MaximumHealth];
                 }
 
                 if (applyOrdinaryHitEffects && (hitInfo.ManaToll > 0 || recoverManaBeforeHit))
                 {
-                    this.Attributes[Stats.CurrentMana] = (recoverManaBeforeHit ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
+                    attributes[Stats.CurrentMana] = (recoverManaBeforeHit ? attributes[Stats.MaximumMana] : attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
                 }
 
                 var healthDamage = hitInfo.HealthDamage;
-                int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
+                int oversd = (int)(attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
                 shieldBurst = false;
                 if (oversd < 0)
                 {
                     healthDamage += (uint)(oversd * (-1));
-                    shieldBurst = this.Attributes[Stats.CurrentShield] > 0
+                    shieldBurst = attributes[Stats.CurrentShield] > 0
                         && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
-                        && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio];
-                    this.Attributes[Stats.CurrentShield] = 0;
+                        && healthDamage > attributes[Stats.MaximumHealth] * attributes[Stats.OverShieldBurstDamageRatio];
+                    attributes[Stats.CurrentShield] = 0;
                 }
                 else
                 {
-                    this.Attributes[Stats.CurrentShield] = oversd;
+                    attributes[Stats.CurrentShield] = oversd;
                 }
 
-                this.Attributes[Stats.CurrentHealth] -= healthDamage;
-                killed = this.Attributes[Stats.CurrentHealth] < 1;
+                attributes[Stats.CurrentHealth] -= healthDamage;
+                killed = attributes[Stats.CurrentHealth] < 1;
+                if (isFinalStreakHit.HasValue)
+                {
+                    hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+                    if (isFinalStreakHit.Value || killed)
+                    {
+                        hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+                    }
+                }
+
                 if (killed)
                 {
+                    ownedDeath = new DeathInformation(attackerId, attackerName, hitInfo, skillNumber);
+                    this.LastDeath = ownedDeath;
                     this._hasReservedLethalHit = true;
                     this.IsAlive = false;
                 }
@@ -2031,23 +2109,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 this._hitAttributeChanges = null;
             }
-        }
-
-        if (isFinalStreakHit.HasValue)
-        {
-            hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
-
-            if (isFinalStreakHit.Value || killed)
-            {
-                hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
-            }
-        }
-
-        // The lethal commit reserves this life before any asynchronous notification.
-        var ownedDeath = killed ? new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0) : null;
-        if (ownedDeath is not null)
-        {
-            this.LastDeath = ownedDeath;
         }
 
         try
@@ -2059,7 +2120,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
                 }
 
-                if (this.Attributes[Stats.IsAsleep] > 0)
+                if (this.Attributes![Stats.IsAsleep] > 0)
                 {
                     await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
                 }
@@ -2102,7 +2163,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             var attackableAttacker = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (IAttackable)attacker;
 
-            var reflectPercentage = this.Attributes[Stats.DamageReflection];
+            var reflectPercentage = this.Attributes![Stats.DamageReflection];
             if (reflectPercentage > 0)
             {
                 var reflectedDamage = hitInfo.TotalDamage * reflectPercentage;
@@ -2112,7 +2173,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             if (attacker is not AttackerSurrogate)
             {
                 // Raven does not cause full reflect.
-                var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
+                var fullReflectPercentage = this.Attributes![Stats.FullyReflectDamageAfterHitChance];
                 if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
                 {
                     var reflectedDamage = attackableAttacker is Player

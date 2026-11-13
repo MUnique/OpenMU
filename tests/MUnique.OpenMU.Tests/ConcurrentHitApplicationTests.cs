@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -15,6 +16,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
@@ -23,6 +25,7 @@ using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.NPC;
+using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.Party;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.Trade;
@@ -287,6 +290,271 @@ public class ConcurrentHitApplicationTests
         }
         finally
         {
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Unowned zero HP remains an eligible life after real death cancellation and normal entry, without healing it.</summary>
+    /// <param name="entry">Initial character entry, same-session reselection, or a new connection after disconnect.</param>
+    [TestCase("initial")]
+    [TestCase("logout")]
+    [TestCase("disconnect")]
+    public async Task ZeroHealthNewLifeAcceptsOneLethalHitAsync(string entry)
+    {
+        var original = await CreatePlayerAsync(entry == "initial" ? 0 : 10).ConfigureAwait(false);
+        Player target = original;
+        var killer = await CreatePlayerAsync(100, sameWorldAs: target).ConfigureAwait(false);
+        DeathInformation? previousDeath = null;
+        try
+        {
+            if (entry != "initial")
+            {
+                var oldMap = target.CurrentMap!;
+                var safe = new Mock<GameMapDefinition>();
+                safe.SetupAllProperties();
+                safe.Setup(m => m.DropItemGroups).Returns(oldMap.Definition.DropItemGroups);
+                safe.Setup(m => m.MonsterSpawns).Returns(oldMap.Definition.MonsterSpawns);
+                var gates = new List<ExitGate>();
+                safe.Setup(m => m.ExitGates).Returns(gates);
+                safe.Object.Number = 1;
+                safe.Object.TerrainData = oldMap.Definition.TerrainData;
+                gates.Add(new ExitGate { Map = safe.Object, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+                target.GameContext.Configuration.Maps.Add(safe.Object);
+                oldMap.Definition.SafezoneMap = safe.Object;
+                var character = target.SelectedCharacter!;
+                character.Name = "ZeroLife";
+                var account = target.Account!;
+                Mock.Get(account).Setup(a => a.Characters).Returns(new List<Character> { character });
+                await killer.RunPersistenceExclusiveAsync(() => target.ApplyPoisonDamageAsync(killer, 10)).ConfigureAwait(false);
+                previousDeath = target.LastDeath;
+                if (entry == "logout")
+                {
+                    await target.RunPersistenceExclusiveAsync(() => new LogoutAction().LogoutAsync(target, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
+                }
+                else
+                {
+                    await target.DisconnectAsync().ConfigureAwait(false);
+                    target = new TestPlayer(original.GameContext) { Account = account };
+                    await target.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
+                    await target.PlayerState.TryAdvanceToAsync(PlayerState.Authenticated).ConfigureAwait(false);
+                }
+
+                Assert.That(character.Attributes.Single(a => a.Definition == Stats.CurrentHealth).Value, Is.Zero, "Departure cancels the respawn timer before maximum-health restoration.");
+                await target.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(target)).ConfigureAwait(false);
+                await target.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(target, character.Name)).ConfigureAwait(false);
+                await killer.WarpToAsync(GateOf(target)).ConfigureAwait(false);
+                await killer.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            }
+
+            Assert.That(target.IsAlive, Is.True);
+            Assert.That(target.Attributes![Stats.CurrentHealth], Is.Zero, "Test must not heal the new life to make the hit work.");
+            var deaths = 0;
+            target.Died += (_, _) => Interlocked.Increment(ref deaths);
+            View<IShowHitPlugIn>(target).Invocations.Clear();
+            View<IObjectGotKilledPlugIn>(target).Invocations.Clear();
+            await killer.RunPersistenceExclusiveAsync(() => target.ApplyPoisonDamageAsync(killer, 1)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(target.LastDeath, Is.Not.Null.And.Not.SameAs(previousDeath));
+                Assert.That(target.LastDeath?.KillerId, Is.EqualTo(killer.Id));
+            });
+            View<IShowHitPlugIn>(target).Verify(v => v.ShowHitAsync(target, It.IsAny<HitInfo>()), Times.Once);
+            View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, killer), Times.Once);
+            var ownedDeath = target.LastDeath;
+            await target.ApplyPoisonDamageAsync(target, 1).ConfigureAwait(false);
+            Assert.That(target.LastDeath, Is.SameAs(ownedDeath));
+            Assert.That(deaths, Is.EqualTo(1));
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+            if (!ReferenceEquals(target, original))
+            {
+                await original.DisposeAsync().ConfigureAwait(false);
+            }
+
+            await killer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Initialize honors null versus explicit zero override; each fresh zero life still needs one death owner.</summary>
+    /// <param name="definitionHealth">Configured monster health.</param>
+    /// <param name="healthOverride">Spawn-area override, where null means no override.</param>
+    [TestCase(0, null)]
+    [TestCase(10, 0)]
+    [TestCase(10, null)]
+    [TestCase(10, 3)]
+    public async Task InitializedNpcHealthSelectsOneDeathAsync(int definitionHealth, int? healthOverride)
+    {
+        var seed = await CreatePlayerAsync(100).ConfigureAwait(false);
+        using var npc = new InitializedNpc(seed, definitionHealth, healthOverride);
+        try
+        {
+            var initialHealth = healthOverride ?? definitionHealth;
+            Assert.Multiple(() =>
+            {
+                Assert.That(npc.Health, Is.EqualTo(initialHealth));
+                Assert.That(npc.Attributes[Stats.MaximumHealth], Is.EqualTo(initialHealth));
+                Assert.That(npc.IsAlive, Is.True);
+            });
+            await ConcurrentAsync(32, _ => npc.ApplyPoisonDamageAsync(seed, 20)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(npc.Health, Is.Zero);
+                Assert.That(npc.IsAlive, Is.False);
+                Assert.That(npc.Deaths, Is.EqualTo(1));
+                Assert.That(npc.Restore(10, 100), Is.Zero, "Atomic restoration must not reopen an owned death.");
+            });
+            npc.Initialize();
+            await ConcurrentAsync(32, _ => npc.ApplyBleedingDamageAsync(seed, 20)).ConfigureAwait(false);
+            Assert.That(npc.Deaths, Is.EqualTo(2), "Actual initialization establishes a fresh life, including configured zero.");
+        }
+        finally
+        {
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Public assignments cannot remove the claim bit; full-range HP/damage and fresh-zero restoration remain atomic.</summary>
+    /// <param name="assignedHealth">The public value written before and after competing lethal hits.</param>
+    [TestCase(-7)]
+    [TestCase(0)]
+    [TestCase(100)]
+    [TestCase(int.MaxValue)]
+    public async Task NpcDeathReservationSurvivesPublicHealthWritesAsync(int assignedHealth)
+    {
+        var seed = await CreatePlayerAsync(100).ConfigureAwait(false);
+        using var npc = new InitializedNpc(seed, 0, null);
+        try
+        {
+            await ConcurrentAsync(64, async i =>
+            {
+                var operation = (uint)i % 3;
+                if (operation == 0)
+                {
+                    npc.Health = assignedHealth;
+                }
+                else if (operation == 1)
+                {
+                    npc.Restore(10, int.MaxValue);
+                }
+                else
+                {
+                    await npc.ApplyPoisonDamageAsync(seed, uint.MaxValue).ConfigureAwait(false);
+                }
+            }).ConfigureAwait(false);
+            npc.Health = assignedHealth;
+            Assert.Multiple(() =>
+            {
+                Assert.That(npc.Health, Is.EqualTo(Math.Max(assignedHealth, 0)));
+                Assert.That(npc.Health, Is.GreaterThanOrEqualTo(0));
+                Assert.That(npc.Deaths, Is.EqualTo(1));
+                Assert.That(npc.Killer, Is.SameAs(seed));
+                Assert.That(npc.IsAlive, Is.False);
+                Assert.That(npc.Restore(10, int.MaxValue), Is.Zero);
+            });
+            await npc.ApplyPoisonDamageAsync(seed, uint.MaxValue).ConfigureAwait(false);
+            Assert.That(npc.Deaths, Is.EqualTo(1));
+            npc.Initialize();
+            Assert.That(npc.Restore(5, 10), Is.EqualTo(5));
+            Assert.That(npc.Health, Is.EqualTo(5));
+            npc.Health = 0;
+            await ConcurrentAsync(32, _ => npc.ApplyPoisonDamageAsync(seed, 0)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(npc.Health, Is.Zero);
+                Assert.That(npc.Deaths, Is.EqualTo(2), "Baseline damage>=Health kills fresh zero even with zero damage.");
+            });
+            npc.Initialize();
+            npc.Health = int.MaxValue;
+            await ConcurrentAsync(32, _ => npc.ApplyPoisonDamageAsync(seed, uint.MaxValue)).ConfigureAwait(false);
+            Assert.That(npc.Health, Is.Zero);
+            Assert.That(npc.Deaths, Is.EqualTo(3));
+        }
+        finally
+        {
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>The actual delayed NPC respawn reinitializes a configured-zero life without reopening the old claim.</summary>
+    [Test]
+    public async Task ZeroHealthNpcActualRespawnCreatesOneNewLifeAsync()
+    {
+        var seed = await CreatePlayerAsync(100).ConfigureAwait(false);
+        using var npc = new TestNpc(seed, 0, runDeathLifecycle: true);
+        try
+        {
+            await seed.CurrentMap!.AddAsync(npc).ConfigureAwait(false);
+            await ConcurrentAsync(32, _ => npc.ApplyPoisonDamageAsync(seed, 0)).ConfigureAwait(false);
+            await npc.Respawned.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(npc.IsAlive, Is.True);
+            Assert.That(npc.Health, Is.Zero);
+            Assert.That(npc.Deaths, Is.EqualTo(1));
+            await ConcurrentAsync(32, _ => npc.ApplyPoisonDamageAsync(seed, 1)).ConfigureAwait(false);
+            Assert.That(npc.Deaths, Is.EqualTo(2));
+        }
+        finally
+        {
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>An externally implemented name getter cannot expose reservation without its immutable death identity.</summary>
+    [Test]
+    public async Task PlacementSeesCoherentLethalPublicationAsync()
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var attacker = new Mock<IAttacker>();
+        attacker.Setup(a => a.Id).Returns((ushort)7);
+        var named = attacker.As<IPartyMember>();
+        named.Setup(a => a.ViewPlugIns).Returns(new MockViewPlugInContainer());
+        named.Setup(a => a.Logger).Returns(NullLogger.Instance);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var nameReadUnderHit = false;
+        named.Setup(a => a.Name).Returns(() =>
+        {
+            nameReadUnderHit |= target.IsApplyingHitOnCurrentThread;
+            entered.TrySetResult();
+            if (!release.Wait(TimeSpan.FromSeconds(5)))
+            {
+                throw new TimeoutException("Name read was not released.");
+            }
+
+            return "Original";
+        });
+        var hit = Task.Run(async () => await target.ApplyPoisonDamageAsync(attacker.Object, 10).ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var snapshot = target.GetPlacementDeathSnapshot();
+            Assert.Multiple(() =>
+            {
+                Assert.That(snapshot.Reserved, Is.False, "No lethal commit may precede the external name getter.");
+                Assert.That(snapshot.Death, Is.Null);
+                Assert.That(nameReadUnderHit, Is.False);
+            });
+            await target.RespawnAtAsync(GateOf(target)).AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.IsAlive, Is.True, "Metadata capture is outside exclusion and precedes the lethal placement snapshot.");
+            release.Set();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            snapshot = target.GetPlacementDeathSnapshot();
+            Assert.Multiple(() =>
+            {
+                Assert.That(snapshot.Reserved, Is.True);
+                Assert.That(snapshot.Death, Is.SameAs(target.LastDeath));
+                Assert.That(snapshot.Death?.KillerId, Is.EqualTo(7));
+                Assert.That(snapshot.Death?.KillerName, Is.EqualTo("Original"));
+            });
+        }
+        finally
+        {
+            release.Set();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
         }
     }
@@ -1909,6 +2177,45 @@ public class ConcurrentHitApplicationTests
                 eventArgs.Cancel = true;
             }
 
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class InitializedNpc : AttackableNpcBase
+    {
+        private int _deaths;
+
+        public InitializedNpc(Player seed, int health, int? healthOverride)
+            : this(seed, Mock.Of<MonsterDefinition>(d => d.Attributes == new List<MonsterAttribute>
+            {
+                new() { AttributeDefinition = Stats.MaximumHealth, Value = health },
+                new() { AttributeDefinition = Stats.DamageReceiveDecrement, Value = 1 },
+            }), healthOverride)
+        {
+        }
+
+        private InitializedNpc(Player seed, MonsterDefinition definition, int? healthOverride)
+            : base(new MonsterSpawnArea { MonsterDefinition = definition, MaximumHealthOverride = healthOverride }, definition, seed.CurrentMap!, null, Mock.Of<IDropGenerator>(), seed.GameContext.PlugInManager)
+        {
+            this.Initialize();
+        }
+
+        public int Deaths => this._deaths;
+
+        public IAttacker? Killer { get; private set; }
+
+        public int Restore(int amount, int maximum) => this.RestoreHealth(amount, maximum);
+
+        public override ValueTask ReflectDamageAsync(IAttacker attacker, uint damage) => this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Reflected), attacker, null);
+
+        public override ValueTask ApplyPoisonDamageAsync(IAttacker attacker, uint damage) => this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), attacker, null);
+
+        public override ValueTask ApplyBleedingDamageAsync(IAttacker attacker, uint damage) => this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Undefined), attacker, null);
+
+        protected override ValueTask OnDeathAsync(IAttacker attacker)
+        {
+            this.Killer = attacker;
+            Interlocked.Increment(ref this._deaths);
             return ValueTask.CompletedTask;
         }
     }

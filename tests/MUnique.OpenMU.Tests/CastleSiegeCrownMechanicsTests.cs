@@ -16,7 +16,10 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions.Party;
+using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
+using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -714,6 +717,75 @@ public class CastleSiegeCrownMechanicsTests
         });
     }
 
+    /// <summary>A real Crown capture can relocate a newer client out of an ordinary pending interaction.</summary>
+    /// <param name="interaction">The interaction established through normal request-owner funnels.</param>
+    [TestCase("party")]
+    [TestCase("requested")]
+    [TestCase("opened")]
+    [TestCase("pressed")]
+    public async Task CrownRelocationClosesBlockingInteractionAsync(string interaction)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: false).ConfigureAwait(false);
+        var peer = await fixture.CreatePlayerAsync(AttackGuildId, "Peer", CastleSiegeJoinSide.Attack1, 62, 60).ConfigureAwait(false);
+        victim.Attributes![Stats.CurrentHealth] = 100;
+        peer.Attributes![Stats.CurrentHealth] = 100;
+        victim.Money = 200;
+        fixture.GameServerContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        try
+        {
+            if (interaction == "party")
+            {
+                await peer.RunPersistenceExclusiveAsync(() => new PartyRequestAction().HandlePartyRequestAsync(peer, victim)).ConfigureAwait(false);
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.PartyRequest));
+            }
+            else
+            {
+                Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, victim)).ConfigureAwait(false), Is.True);
+                if (interaction != "requested")
+                {
+                    await victim.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(victim, true)).ConfigureAwait(false);
+                    await victim.RunPersistenceExclusiveAsync(() => new TradeMoneyAction().TradeMoneyAsync(victim, 60)).ConfigureAwait(false);
+                    if (interaction == "pressed")
+                    {
+                        await victim.RunPersistenceExclusiveAsync(() => new TradeButtonAction().TradeButtonChangedAsync(victim, TradeButtonState.Checked)).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Invocations.Clear();
+            await Task.Run(async () => await winner.RunPersistenceExclusiveAsync(
+                () => CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1)).ConfigureAwait(false)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+                Assert.That(victim.LastPartyRequester, Is.Null);
+                Assert.That(victim.TradingPartner, Is.Null);
+                Assert.That(peer.TradingPartner, Is.Null);
+                Assert.That(victim.BackupInventory, Is.Null);
+                Assert.That(victim.TradingMoney, Is.Zero);
+                Assert.That(victim.Money, Is.EqualTo(200));
+            });
+            Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Verify(v => v.MapChangeAsync(), Times.Once);
+            await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.IsAlive, Is.True);
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(victim.CurrentMap, Is.SameAs(fixture.SiegeMap));
+                Assert.That(fixture.SiegeMap.GetPlayers().Count(p => ReferenceEquals(p, victim)), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
     /// <summary>Crown relocation is placement, not permission to discard another hit's lethal reservation.</summary>
     /// <param name="lethal">Whether the former defender is waiting on a lethal hit view.</param>
     [TestCase(false)]
@@ -1006,9 +1078,19 @@ public class CastleSiegeCrownMechanicsTests
             string characterName,
             CastleSiegeJoinSide side,
             byte x,
-            byte y)
+            byte y,
+            bool useRespawnPlugIn = true)
         {
-            var player = await PlayerTestHelper.CreatePlayerAsync(this.GameServerContext).ConfigureAwait(false);
+            Player player;
+            if (useRespawnPlugIn)
+            {
+                player = await PlayerTestHelper.CreatePlayerAsync(this.GameServerContext).ConfigureAwait(false);
+            }
+            else
+            {
+                player = new MapChangePlayer(this.GameServerContext);
+                await PlayerTestHelper.EnterWorldAsync(player, PlayerTestHelper.CreateCharacter(this.GameServerContext)).ConfigureAwait(false);
+            }
             player.SelectedCharacter!.Id = Guid.NewGuid();
             player.SelectedCharacter.Name = characterName;
             player.GuildStatus = new GuildMemberStatus(guildId, GuildPosition.NormalMember);
@@ -1046,4 +1128,18 @@ public class CastleSiegeCrownMechanicsTests
             return CastleSiegeCrownMechanics.CheckMiddleWinnerAsync(this.Context, this._crownTimeUtc.Value);
         }
     }
+    private sealed class MapChangePlayer(IGameContext context) : Player(context)
+    {
+        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer() => new MapChangeViews();
+    }
+
+    private sealed class MapChangeViews : ICustomPlugInContainer<IViewPlugIn>
+    {
+        private readonly MockViewPlugInContainer _mocks = new();
+
+        public T? GetPlugIn<T>()
+            where T : class, IViewPlugIn
+            => typeof(T) == typeof(IRespawnAfterDeathPlugIn) ? null : this._mocks.GetPlugIn<T>();
+    }
+
 }

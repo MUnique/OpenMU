@@ -20,6 +20,9 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 {
+    // The sign bit reserves death independently of public HP, including fresh alive-zero configurations.
+    private const int ReservedDeath = int.MinValue;
+
     private const byte MaximumDropDistance = 2;
     private const short IceSkillNumber = 7;
 
@@ -92,10 +95,23 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <summary>
     /// Gets or sets the current health.
     /// </summary>
+    /// <remarks>Assignments preserve lethal ownership; only initialization establishes a fresh life.</remarks>
     public int Health
     {
-        get => Math.Max(Volatile.Read(ref this._health), 0);
-        set => Interlocked.Exchange(ref this._health, value);
+        get => Volatile.Read(ref this._health) & int.MaxValue;
+        set
+        {
+            var health = Math.Max(value, 0);
+            while (true)
+            {
+                var current = Volatile.Read(ref this._health);
+                var replacement = (current & ReservedDeath) | health;
+                if (Interlocked.CompareExchange(ref this._health, replacement, current) == current)
+                {
+                    return;
+                }
+            }
+        }
     }
 
     private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
@@ -181,7 +197,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     public override void Initialize()
     {
         base.Initialize();
-        this.Health = this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth];
+
+        // Only initialization establishes a fresh life and clears the reserved-death bit.
+        Interlocked.Exchange(ref this._health, Math.Max(this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth], 0));
         this.IsAlive = true;
     }
 
@@ -272,7 +290,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         while (true)
         {
             var currentHealth = Volatile.Read(ref this._health);
-            if (currentHealth <= 0 || currentHealth >= maximumHealth)
+            if (currentHealth < 0 || currentHealth >= maximumHealth)
             {
                 return 0;
             }
@@ -442,15 +460,16 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         while (true)
         {
             var currentHealth = Volatile.Read(ref this._health);
-            if (currentHealth <= 0)
+            if (currentHealth < 0)
             {
                 return false;
             }
 
-            // Share the atomic health representation with RestoreHealth. Only the winner of
-            // the positive-to-zero transition owns death; no callbacks run inside this loop.
+            // Share one representation with setters and restoration. Fresh zero CASes to
+            // reserved zero, never zero-to-zero; only that winner owns death.
             var remainingHealth = (int)Math.Max(0L, (long)currentHealth - damage);
-            if (Interlocked.CompareExchange(ref this._health, remainingHealth, currentHealth) != currentHealth)
+            var replacement = remainingHealth == 0 ? ReservedDeath : remainingHealth;
+            if (Interlocked.CompareExchange(ref this._health, replacement, currentHealth) != currentHealth)
             {
                 continue;
             }

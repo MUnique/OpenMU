@@ -23,6 +23,7 @@ using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network;
+using MUnique.OpenMU.GameServer.MessageHandler.Trade;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -213,6 +214,41 @@ public class TradeTest
             await peer.DisposeAsync().ConfigureAwait(false);
             await attacker.DisposeAsync().ConfigureAwait(false);
             await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>The actual handler resolves self observation but must reject self trade without publishing state or views.</summary>
+    /// <param name="self">Whether the malformed request targets its own connection's player.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task HandlerRejectsSelfTradeWithoutMutationAsync(bool self)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(player.GameContext).ConfigureAwait(false);
+        var target = self ? player : peer;
+        Assert.That(await player.GetObservingPlayerWithIdAsync(target.Id).ConfigureAwait(false), Is.SameAs(target));
+        var packet = CreateTradeRequestPacket(target.Id);
+        try
+        {
+            await player.RunPersistenceExclusiveAsync(() => new TradeRequestHandlerPlugIn().HandlePacketAsync(player, packet)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(self ? PlayerState.EnteredWorld : PlayerState.TradeRequested));
+                Assert.That(player.TradingPartner, Is.SameAs(self ? null : peer));
+                Assert.That(player.BackupInventory, Is.Null);
+                Assert.That(player.TradingMoney, Is.Zero);
+            });
+            Mock.Get(target.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>()!).Verify(v => v.ShowTradeRequestAsync(player), self ? Times.Never() : Times.Once());
+            if (!self)
+            {
+                await peer.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(peer, true)).ConfigureAwait(false);
+                await peer.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(peer)).ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            await player.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -1072,6 +1108,14 @@ public class TradeTest
         Assert.That(trader2.Money, Is.EqualTo(1000));
         Assert.That(trader1.TradingPartner, Is.Null);
         Assert.That(trader2.TradingPartner, Is.Null);
+    }
+
+    private static byte[] CreateTradeRequestPacket(ushort targetId)
+    {
+        var packet = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TradeRequestRef.Length];
+        var request = new MUnique.OpenMU.Network.Packets.ClientToServer.TradeRequestRef(packet);
+        request.PlayerId = targetId;
+        return packet;
     }
 
     private Item GetItem()
