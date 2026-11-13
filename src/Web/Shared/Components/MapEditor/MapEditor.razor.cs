@@ -6,10 +6,7 @@ namespace MUnique.OpenMU.Web.Shared.Components.MapEditor;
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Text;
-using BlazorInputFile;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -55,8 +52,6 @@ public partial class MapEditor : IAsyncDisposable
     private bool _createMode;
     private bool _isRendering;
     private bool _showGrid;
-    private bool _isExporting;
-    private bool _isImporting;
 
     private int _mouseMapX;
     private int _mouseMapY;
@@ -795,79 +790,17 @@ public partial class MapEditor : IAsyncDisposable
         this.StateHasChanged();
     }
 
-    private async Task ExportMapAsync()
+    private string BuildExportContent()
     {
-        if (this._selectedMap is null)
-        {
-            return;
-        }
-
-        this._isExporting = true;
-        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
-        try
-        {
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-
-            var json = this._exportImportService.BuildExport(this._selectedMap);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var base64 = Convert.ToBase64String(bytes);
-            var fileName = $"map-{this._selectedMap.Number}-spawns.json";
-
-            if (this._jsModule is not null)
-            {
-                await this._jsModule.InvokeVoidAsync("downloadFile", fileName, base64).ConfigureAwait(true);
-            }
-        }
-        finally
-        {
-            this._isExporting = false;
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-        }
+        return this._exportImportService.BuildExport(this.SelectedMap);
     }
 
-    private async Task TriggerFileImportAsync()
+    private async Task ImportContentAsync(string json)
     {
-        if (this._jsModule is not null)
-        {
-            await this._jsModule.InvokeVoidAsync("triggerFileInput").ConfigureAwait(true);
-        }
-    }
+        await this._exportImportService.ApplyImportAsync(this.SelectedMap, json, this.PersistenceContext).ConfigureAwait(true);
 
-    private async Task ImportFileSelectedAsync(IFileListEntry[] files)
-    {
-        if (this._selectedMap is null || this.PersistenceContext is null)
-        {
-            return;
-        }
-
-        var file = files.FirstOrDefault();
-        if (file is null)
-        {
-            return;
-        }
-
-        this._isImporting = true;
-        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
-        try
-        {
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-
-            await using var memoryStream = new MemoryStream();
-            await file.Data.CopyToAsync(memoryStream).ConfigureAwait(true);
-            memoryStream.Position = 0;
-            using var reader = new StreamReader(memoryStream);
-            var json = await reader.ReadToEndAsync().ConfigureAwait(true);
-
-            await this._exportImportService.ApplyImportAsync(this._selectedMap, json, this.PersistenceContext).ConfigureAwait(true);
-
-            this._history.Clear();
-            this._pendingDeletions.Clear();
-            this._focusedObject = null;
-        }
-        finally
-        {
-            this._isImporting = false;
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
-        }
+        this._history.Clear();
+        this._pendingDeletions.Clear();
+        this._focusedObject = null;
     }
 }
