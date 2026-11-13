@@ -48,6 +48,12 @@ public partial class MultiLookupField<TObject> : IDisposable
     public string? Label { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether all available options should be displayed when the field receives focus.
+    /// </summary>
+    [Parameter]
+    public bool ShowAllOnFocus { get; set; }
+
+    /// <summary>
     /// Gets or sets the lookup controller.
     /// </summary>
     [Inject]
@@ -104,26 +110,24 @@ public partial class MultiLookupField<TObject> : IDisposable
         return false;
     }
 
-    /// <summary>
-    /// Focuses the search input when clicking on the container.
-    /// </summary>
     private async Task FocusSearchInputAsync()
     {
         await this._searchInput.FocusAsync().ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Handles input focus.
-    /// </summary>
-    private void OnFocus(FocusEventArgs e)
+    private async Task OnFocusAsync(FocusEventArgs e)
     {
         this.Logger.LogDebug("Focus event fired: Type={Type}", e.Type);
         this._isOpen = true;
+
+        if (this.ShowAllOnFocus)
+        {
+            this._searchText = string.Empty;
+            this._hasSearched = true;
+            await this.SearchAsync().ConfigureAwait(true);
+        }
     }
 
-    /// <summary>
-    /// Handles input blur (focus loss).
-    /// </summary>
     private async Task OnBlurAsync(FocusEventArgs e)
     {
         this.Logger.LogDebug("Blur event fired: Type={Type}", e.Type);
@@ -150,16 +154,12 @@ public partial class MultiLookupField<TObject> : IDisposable
             }
             catch
             {
-                // Focus might occasionally fail if the component is being rapidly manipulated, ignore.
             }
         }
 
         this._mouseDownOnDropdown = false;
     }
 
-    /// <summary>
-    /// Closes the dropdown and resets state.
-    /// </summary>
     private void CloseDropdown()
     {
         this._isOpen = false;
@@ -167,18 +167,26 @@ public partial class MultiLookupField<TObject> : IDisposable
         this._searchText = string.Empty;
     }
 
-    /// <summary>
-    /// Handles the search input event with debouncing.
-    /// </summary>
     private async Task OnSearchInputAsync(ChangeEventArgs e)
     {
         this._searchText = e.Value?.ToString() ?? string.Empty;
 
         if (string.IsNullOrWhiteSpace(this._searchText))
         {
-            this._hasSearched = false;
-            this._filteredItems = Enumerable.Empty<TObject>();
             this._debouncer.Cancel();
+
+            if (this.ShowAllOnFocus)
+            {
+                this._hasSearched = true;
+                this._isOpen = true;
+                await this.SearchAsync().ConfigureAwait(true);
+            }
+            else
+            {
+                this._hasSearched = false;
+                this._filteredItems = Enumerable.Empty<TObject>();
+            }
+
             return;
         }
 
@@ -188,9 +196,6 @@ public partial class MultiLookupField<TObject> : IDisposable
         await this._debouncer.DebounceAsync(this.SearchAsync).ConfigureAwait(true);
     }
 
-    /// <summary>
-    /// Performs the search.
-    /// </summary>
     private async Task SearchAsync()
     {
         this._isLoading = true;
@@ -211,9 +216,6 @@ public partial class MultiLookupField<TObject> : IDisposable
         }
     }
 
-    /// <summary>
-    /// Toggles the selection of an item. Keeps the dropdown open.
-    /// </summary>
     private void ToggleItem(TObject item)
     {
         this.Value ??= new List<TObject>();
@@ -231,9 +233,6 @@ public partial class MultiLookupField<TObject> : IDisposable
         this.StateHasChanged();
     }
 
-    /// <summary>
-    /// Removes an item from the selected list.
-    /// </summary>
     private void RemoveItem(TObject item)
     {
         if (this.Value is null)
@@ -245,9 +244,6 @@ public partial class MultiLookupField<TObject> : IDisposable
         this.CurrentValue = this.Value;
     }
 
-    /// <summary>
-    /// Handles keyboard events.
-    /// </summary>
     private void OnKeyDown(KeyboardEventArgs e)
     {
         if (string.Equals(e.Key, "Escape", StringComparison.Ordinal))

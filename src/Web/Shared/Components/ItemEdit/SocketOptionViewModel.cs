@@ -42,6 +42,9 @@ public class SocketOptionViewModel
             elementPrefix = match.Groups[1].Value;
         }
 
-        return $"{elementPrefix}: {this.Option.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition?.TargetAttribute?.Designation?.ToString()}";
+        var powerUp = this.Option.PowerUpDefinition
+                      ?? this.Option.LevelDependentOptions?.FirstOrDefault()?.PowerUpDefinition;
+
+        return $"{elementPrefix}: {powerUp?.ToString() ?? this.Option.Number.ToString()}";
     }
 }
