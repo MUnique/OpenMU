@@ -391,8 +391,11 @@ player stands — and the bot warps there, walks up and waits five minutes for
 the invitation. It enters through the warp from which the place is the
 shortest walk, like a player would: the floors of the Lost Tower or the
 Dungeon can't be walked between at all, and the walk from the town of Devias
-to Devias3 takes long. A place it may not go to (its level is too low for any
-warp leading there) it declines; a whisper without a place gets asked again.
+to Devias3 takes long. A bot already standing on the map walks to the named
+coordinates, even on a map without an entry in the warp list. A place it may
+not go to (its level is too low for any warp leading there) it declines, and
+the player may name another one while the offer lasts; a whisper without a
+place gets asked again.
 Map and warp names are recognized in every translation. The words, the number
 of bots and the times are part of the configuration.
 
