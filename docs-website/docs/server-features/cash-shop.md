@@ -277,12 +277,13 @@ buff icons are the ones which the game client shows for these items:
 | Item | Effect | Duration |
 |---|---|---|
 | Seal of Ascension | experience ×1.5 | 30 minutes |
-| Seal of Wealth | experience ×2 | 30 minutes |
+| Seal of Wealth | experience ×2, item drop rate ×1.5 | 30 minutes |
 | Seal of Sustenance | no experience (also no master or bonus experience) | 30 minutes |
 | Seal of Healing | experience ×1.5, automatic life recovery +5% | 30 minutes |
-| Seal of Divinity | automatic mana recovery +5% | 30 minutes |
+| Seal of Divinity | item drop rate ×1.5, automatic mana recovery +5% | 30 minutes |
 | Master Seal of Ascension | master experience ×1.5 | 30 minutes |
-| Master Seal of Wealth | master experience ×2 | 30 minutes |
+| Master Seal of Wealth | master experience ×2, item drop rate ×1.5 | 30 minutes |
+| Seal of Wealth (13/116) | item drop rate ×1.5 | 30 minutes |
 | Max AG Boost Aura | maximum AG + character level | 30 minutes |
 | Max SD Boost Aura | maximum SD + character level × 10 | 30 minutes |
 | Scroll of Quickness | attack speed +15 | 30 minutes |
@@ -303,10 +304,14 @@ Sustenance also blocks the bonus experience of pets and rings. The buffs of
 seals, elixirs and auras stay when the character dies, the buffs of scrolls end.
 All of these buffs end when the character leaves the game.
 
+The item drop rate raises the chances of the drop item groups of a killed
+monster which drop items, for the player who killed it. The chance of money
+drops stays the same. Existing databases get the item drop rate with the
+configuration update *Add the item drop rate of seals*, which also adds the
+second Seal of Wealth (13/116). It isn't sold in the in-game shop.
+
 :::note
-Not implemented yet: the higher item drop rate of the Seals of Wealth and
-Divinity, the Seal of Mobility, the Party EXP Scroll and the second Seal of
-Wealth (13/116), which only raises the item drop rate.
+Not implemented yet: the Seal of Mobility and the Party EXP Scroll.
 :::
 
 Two talismans give a protection instead of a stat. Like the seals, their buffs

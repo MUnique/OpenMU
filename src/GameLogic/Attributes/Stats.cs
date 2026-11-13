@@ -163,6 +163,12 @@ public class Stats
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
 
     /// <summary>
+    /// Gets the bonus item drop rate attribute definition. It raises the chances of the drop item groups
+    /// of a killed monster which drop items, e.g. by 0.5 for 50 % more item drops.
+    /// </summary>
+    public static AttributeDefinition BonusItemDropRate { get; } = new(new Guid("EEDAFF4A-E9AA-4D28-B07C-A9120434DF97"), "Bonus Item Drop Rate", "The bonus which is added to the item drop rate multiplier of 1.0, e.g. 0.5 for 50 % more item drops. It's increased by seals.");
+  
+    /// <summary>
     /// Gets the death penalty protection attribute definition. If it's greater than 0, the player keeps its
     /// experience and money when it's killed by a monster, e.g. by the Talisman of Guardian.
     /// </summary>

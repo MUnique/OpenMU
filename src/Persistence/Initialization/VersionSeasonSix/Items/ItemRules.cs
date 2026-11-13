@@ -217,6 +217,7 @@ public class ItemRules : InitializerBase
         Rule(13, 113, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Ruby Necklace
         Rule(13, 114, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Emerald Necklace
         Rule(13, 115, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Sapphire Necklace
+        Rule(13, 116, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Wealth (item drop)
         Rule(13, 121, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Open Access Ticket to Chaos Castle
         Rule(13, 122, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Skeleton Transformation Ring
         Rule(13, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Skeleton

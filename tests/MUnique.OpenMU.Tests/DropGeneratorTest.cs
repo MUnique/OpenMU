@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -140,6 +141,48 @@ public class DropGeneratorTest
         var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
 
         Assert.That(items.FirstOrDefault()?.Definition, Is.EqualTo(fittingItem));
+    }
+
+    /// <summary>
+    /// Tests that the bonus item drop rate of a player, e.g. of a Seal of Wealth, raises the chance
+    /// of a drop item group which drops items.
+    /// </summary>
+    /// <param name="bonusItemDropRate">The bonus item drop rate of the player.</param>
+    /// <param name="expectDrop">If set to <c>true</c>, an item is expected to drop.</param>
+    [TestCase(0f, false)]
+    [TestCase(0.5f, true)]
+    public async ValueTask TestBonusItemDropRateRaisesItemChanceAsync(float bonusItemDropRate, bool expectDrop)
+    {
+        var item = this.CreateItemDefinition(14, 13, 0);
+        var dropGroup = this.CreateDropItemGroup(item);
+        dropGroup.Chance = 0.4;
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes!.AddElement(new SimpleElement(bonusItemDropRate, AggregateType.AddRaw), Stats.BonusItemDropRate);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup);
+
+        // The roll of 0.5 misses the chance of 40 %, but hits the raised chance of 60 %.
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.5));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 10), 1, player).ConfigureAwait(false);
+
+        Assert.That(items.Any(), Is.EqualTo(expectDrop));
+    }
+
+    /// <summary>
+    /// Tests that the bonus item drop rate doesn't raise the chance of money drops.
+    /// </summary>
+    [Test]
+    public async ValueTask TestBonusItemDropRateKeepsMoneyChanceAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes!.AddElement(new SimpleElement(0.5f, AggregateType.AddRaw), Stats.BonusItemDropRate);
+        var monster = this.GetMonster(1, 10);
+        monster.DropItemGroups.Add(4000, SpecialItemType.Money, false);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.5));
+        var (items, money) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+
+        Assert.That(items, Is.Empty);
+        Assert.That(money, Is.Null);
     }
 
     /// <summary>
