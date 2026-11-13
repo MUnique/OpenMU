@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.Shared.Components.Form;
@@ -211,6 +212,44 @@ public class LookupFieldTests
             Assert.That(component.FindAll(".typeahead-result"), Has.Count.EqualTo(3));
         });
     }
+    
+    /// <summary>
+    /// An older focus lookup response must not replace results from a newer filtered search.
+    /// </summary>
+    [Test]
+    public async Task MultiLookupField_IgnoresStaleSearchResponse_WhenRequestsCompleteOutOfOrder()
+    {
+        using var context = CreateContext();
+        var controller = new ControlledLookupController();
+        var component = RenderMultiLookupField(
+            context,
+            new TestModel(),
+            true,
+            controller);
+
+        var focusTask = component.Find("input")
+            .TriggerEventAsync("onfocus", new FocusEventArgs());
+
+        await controller.WaitForSearchAsync(string.Empty);
+
+        var filteredTask = component.Find("input").InputAsync("Option B");
+
+        await controller.WaitForSearchAsync("Option B");
+
+        controller.CompleteSearch("Option B", [AvailableOptions[1]]);
+        await filteredTask;
+
+        Assert.That(
+            GetDisplayedOptionNames(component),
+            Is.EqualTo(new[] { "Option B" }));
+
+        controller.CompleteSearch(string.Empty, AvailableOptions);
+        await focusTask;
+
+        Assert.That(
+            GetDisplayedOptionNames(component),
+            Is.EqualTo(new[] { "Option B" }));
+    }
 
     private static BunitContext CreateContext()
     {
@@ -227,7 +266,7 @@ public class LookupFieldTests
         BunitContext context,
         TestModel model,
         bool showAllOnFocus,
-        TestLookupController? controller = null)
+        ILookupController? controller = null)
     {
         controller ??= new TestLookupController(AvailableOptions);
 
@@ -269,15 +308,15 @@ public class LookupFieldTests
 
     
     /// <inheritdoc />
-    [System.Diagnostics.CodeAnalysis.SuppressMessage(
-        "Major Code Smell",
-        "S1172:Unused method parameters should be removed",
-        Justification = "Required by ILookupController; this test implementation does not use a persistence context.")]
     private sealed class TestLookupController(IEnumerable<TestOption> options) : ILookupController
     {
         public int SearchCount { get; private set; }
-
+        
         /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Major Code Smell",
+            "S1172:Unused method parameters should be removed",
+            Justification = "Required by ILookupController; this test implementation does not use a persistence context.")]
         public Task<IEnumerable<T>> GetSuggestionsAsync<T>(string text, IContext? persistenceContext)
             where T : class
         {
@@ -288,6 +327,46 @@ public class LookupFieldTests
                 || option.Name.Contains(text, StringComparison.OrdinalIgnoreCase));
 
             return Task.FromResult(results.OfType<T>().AsEnumerable());
+        }
+    }
+    
+    private sealed class ControlledLookupController : ILookupController
+    {
+        private readonly Dictionary<string, TaskCompletionSource<IEnumerable<TestOption>>> _responses =
+            new(StringComparer.Ordinal)
+            {
+                [string.Empty] = new(TaskCreationOptions.RunContinuationsAsynchronously),
+                ["Option B"] = new(TaskCreationOptions.RunContinuationsAsynchronously),
+            };
+
+        private readonly Dictionary<string, TaskCompletionSource<bool>> _started =
+            new(StringComparer.Ordinal)
+            {
+                [string.Empty] = new(TaskCreationOptions.RunContinuationsAsynchronously),
+                ["Option B"] = new(TaskCreationOptions.RunContinuationsAsynchronously),
+            };
+
+        public Task WaitForSearchAsync(string text) => this._started[text].Task;
+
+        public void CompleteSearch(string text, IEnumerable<TestOption> results)
+        {
+            this._responses[text].SetResult(results);
+        }
+
+        /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage(
+            "Major Code Smell",
+            "S1172:Unused method parameters should be removed",
+            Justification = "Required by ILookupController; this test implementation does not use a persistence context.")]
+        public async Task<IEnumerable<T>> GetSuggestionsAsync<T>(
+            string text,
+            IContext? persistenceContext)
+            where T : class
+        {
+            this._started[text].TrySetResult(true);
+
+            var results = await this._responses[text].Task.ConfigureAwait(false);
+            return results.OfType<T>().ToArray();
         }
     }
 }

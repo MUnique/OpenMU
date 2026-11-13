@@ -37,6 +37,7 @@ public partial class MultiLookupField<TObject> : IDisposable
     private bool _isLoading;
     private bool _mouseDownOnDropdown;
     private bool _disposed;
+    private long _searchGeneration;
     private string _searchText = string.Empty;
     private ElementReference _searchInput;
     private IEnumerable<TObject> _filteredItems = Enumerable.Empty<TObject>();
@@ -95,6 +96,7 @@ public partial class MultiLookupField<TObject> : IDisposable
         }
 
         this._disposed = true;
+        this._searchGeneration++;
         this._debouncer.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -122,6 +124,8 @@ public partial class MultiLookupField<TObject> : IDisposable
 
         if (this.ShowAllOnFocus)
         {
+            this._debouncer.Cancel();
+            this._searchGeneration++;
             this._searchText = string.Empty;
             this._hasSearched = true;
             await this.SearchAsync().ConfigureAwait(true);
@@ -141,6 +145,9 @@ public partial class MultiLookupField<TObject> : IDisposable
 
         if (!this._mouseDownOnDropdown)
         {
+            this._debouncer.Cancel();
+            this._searchGeneration++;
+            this._isLoading = false;
             this._isOpen = false;
             this._hasSearched = false;
             this._searchText = string.Empty;
@@ -162,6 +169,9 @@ public partial class MultiLookupField<TObject> : IDisposable
 
     private void CloseDropdown()
     {
+        this._debouncer.Cancel();
+        this._searchGeneration++;
+        this._isLoading = false;
         this._isOpen = false;
         this._hasSearched = false;
         this._searchText = string.Empty;
@@ -170,6 +180,7 @@ public partial class MultiLookupField<TObject> : IDisposable
     private async Task OnSearchInputAsync(ChangeEventArgs e)
     {
         this._searchText = e.Value?.ToString() ?? string.Empty;
+        this._searchGeneration++;
 
         if (string.IsNullOrWhiteSpace(this._searchText))
         {
@@ -184,6 +195,7 @@ public partial class MultiLookupField<TObject> : IDisposable
             else
             {
                 this._hasSearched = false;
+                this._isLoading = false;
                 this._filteredItems = Enumerable.Empty<TObject>();
             }
 
@@ -192,27 +204,37 @@ public partial class MultiLookupField<TObject> : IDisposable
 
         this._hasSearched = true;
         this._isOpen = true;
+        this._isLoading = true;
 
         await this._debouncer.DebounceAsync(this.SearchAsync).ConfigureAwait(true);
     }
 
     private async Task SearchAsync()
     {
+        var searchGeneration = ++this._searchGeneration;
+        var searchText = this._searchText;
+
         this._isLoading = true;
         await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
 
         try
         {
             var results = await this.EffectiveLookupController
-                .GetSuggestionsAsync<TObject>(this._searchText, null)
+                .GetSuggestionsAsync<TObject>(searchText, null)
                 .ConfigureAwait(true);
 
-            this._filteredItems = results;
+            if (searchGeneration == this._searchGeneration && !this._disposed)
+            {
+                this._filteredItems = results;
+            }
         }
         finally
         {
-            this._isLoading = false;
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+            if (searchGeneration == this._searchGeneration && !this._disposed)
+            {
+                this._isLoading = false;
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+            }
         }
     }
 
