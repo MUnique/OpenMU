@@ -10,9 +10,9 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages.MerchantShop;
 public sealed record MerchantShopExport
 {
     /// <summary>
-    /// The current format version of the file.
+    /// Gets the current version of the export file format.
     /// </summary>
-    public const string CurrentFormatVersion = "1.0";
+    public static string CurrentFormatVersion { get; } = "1.0";
 
     /// <summary>
     /// Gets or sets the format version for forward compatibility.
