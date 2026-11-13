@@ -165,14 +165,36 @@ public class BotChatTest
         var first = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
         var second = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
         var throttle = new BotChatThrottle();
-        throttle.RememberConversation(first, second, Start.AddSeconds(30));
+        throttle.RememberConversation(first, second, Start.AddSeconds(30), Start);
 
         Assert.That(throttle.TakeRecentConversation(_ => false, Start.AddSeconds(10)), Is.Null);
         Assert.That(throttle.TakeRecentConversation(bot => bot == second, Start.AddSeconds(10)), Is.Not.Null);
         Assert.That(throttle.TakeRecentConversation(_ => true, Start.AddSeconds(11)), Is.Null);
 
-        throttle.RememberConversation(first, second, Start.AddSeconds(30));
+        throttle.RememberConversation(first, second, Start.AddSeconds(30), Start);
         Assert.That(throttle.TakeRecentConversation(_ => true, Start.AddSeconds(31)), Is.Null);
+    }
+
+    /// <summary>
+    /// Conversations nobody chimed in to are forgotten when the bots have the next one - on a quiet
+    /// server no player's message prunes them.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask ForgetsConversationsNobodyChimedInToAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var first = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var second = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var throttle = new BotChatThrottle();
+
+        for (var minute = 0; minute < 100; minute++)
+        {
+            var now = Start.AddMinutes(minute);
+            throttle.RememberConversation(first, second, now.AddSeconds(30), now);
+        }
+
+        Assert.That(throttle.RecentConversationCount, Is.EqualTo(1));
     }
 
     /// <summary>

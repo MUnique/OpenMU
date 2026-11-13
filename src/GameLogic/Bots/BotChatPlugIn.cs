@@ -1353,7 +1353,7 @@ public class BotChatPlugIn
                     () => IsAvailable(first) ? BotChatSpeaker.SayAsync(first, conversation.Riposte, firstValues) : ValueTask.CompletedTask);
             }
 
-            throttle.RememberConversation(first, second, now + riposteDelay + ConversationChimeInWindow);
+            throttle.RememberConversation(first, second, now + riposteDelay + ConversationChimeInWindow, now);
         }
     }
 

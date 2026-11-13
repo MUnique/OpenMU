@@ -76,6 +76,20 @@ internal sealed class BotChatThrottle
     private int _handledForceStartCount;
 
     /// <summary>
+    /// Gets the number of remembered conversations, expired ones included until they're pruned.
+    /// </summary>
+    internal int RecentConversationCount
+    {
+        get
+        {
+            lock (this._recentConversations)
+            {
+                return this._recentConversations.Count;
+            }
+        }
+    }
+
+    /// <summary>
     /// Reserves the right to announce an occasion (e.g. "Blood Castle opened") for the given time
     /// window. Only the first caller within the window gets it.
     /// </summary>
@@ -398,10 +412,14 @@ internal sealed class BotChatThrottle
     /// <param name="first">The bot which opened the conversation.</param>
     /// <param name="second">The bot which replied.</param>
     /// <param name="until">Until when a player's message counts as chiming in.</param>
-    public void RememberConversation(Player first, Player second, DateTime until)
+    /// <param name="now">The current time; conversations which ended before it are forgotten.</param>
+    public void RememberConversation(Player first, Player second, DateTime until, DateTime now)
     {
         lock (this._recentConversations)
         {
+            // Pruned here as well: on a quiet server no player chimes in to prune them, while the bots
+            // keep talking.
+            this._recentConversations.RemoveAll(c => c.Until < now);
             this._recentConversations.Add((first, second, until));
         }
     }
