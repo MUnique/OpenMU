@@ -4,14 +4,17 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Threading;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
 /// Tests for the backup of the inventory which is taken when a crafting NPC (Chaos Goblin, Pet
@@ -92,6 +95,103 @@ public class CraftingDialogBackupInventoryTests
             Assert.That(player.BackupInventory, Is.Null);
         });
     }
+
+    /// <summary>
+    /// An old crafting response cannot publish a backup after close or death, including reopening the same NPC.
+    /// </summary>
+    /// <param name="lethal">Whether a lethal hit closes the first interaction.</param>
+    /// <param name="reopen">Whether the same NPC is reopened before the old response resumes.</param>
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task CancelledCraftingResponseCannotRestoreStaleInventoryAsync(bool lethal, bool reopen)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes![Stats.CurrentHealth] = 10;
+        var inventory = InventoryOf(player).ItemStorage;
+        inventory.Money = 1234;
+        var npc = CreateCraftingNpc();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var responses = 0;
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IOpenNpcWindowPlugIn>()!)
+            .Setup(v => v.OpenNpcWindowAsync(NpcWindow.ChaosMachine)).Returns(async () =>
+            {
+                if (Interlocked.Increment(ref responses) == 1)
+                {
+                    entered.TrySetResult();
+                    await release.Task.ConfigureAwait(false);
+                }
+            });
+        var response = new TalkNpcAction().TalkToNpcAsync(player, npc).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (lethal)
+            {
+                await player.ApplyPoisonDamageAsync(player, 10).ConfigureAwait(false);
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            }
+            else
+            {
+                await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false);
+            }
+
+            Assert.That(player.OpenedNpcContext, Is.Null);
+            Assert.That(player.BackupInventory, Is.Null);
+            BackupItemStorage? newBackup = null;
+            if (reopen)
+            {
+                if (lethal)
+                {
+                    await RespawnAsync(player).ConfigureAwait(false);
+                }
+
+                await new TalkNpcAction().TalkToNpcAsync(player, npc).ConfigureAwait(false);
+                newBackup = player.BackupInventory;
+                Assert.That(newBackup, Is.Not.Null);
+            }
+
+            release.TrySetResult();
+            await response.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var backupAfterResponse = player.BackupInventory;
+            if (reopen)
+            {
+                Assert.That(player.OpenedNpc, Is.SameAs(npc));
+                await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false);
+            }
+            else if (lethal)
+            {
+                await RespawnAsync(player).ConfigureAwait(false);
+            }
+            else
+            {
+                // Normal close already left this player alive in EnteredWorld.
+            }
+
+            var loot = CreateItem();
+            Assert.That(await InventoryOf(player).AddItemAsync(loot).ConfigureAwait(false), Is.True);
+            inventory.Money = GainedMoney;
+            await player.RemoveFromGameAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(inventory.Items, Does.Contain(loot));
+                Assert.That(inventory.Money, Is.EqualTo(GainedMoney));
+                Assert.That(backupAfterResponse, Is.SameAs(newBackup));
+                Assert.That(player.BackupInventory, Is.Null);
+            });
+        }
+        finally
+        {
+            release.TrySetResult();
+            await response.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await player.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private static ValueTask RespawnAsync(Player player)
+        => player.RespawnAtAsync(new ExitGate { Map = player.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 });
 
     private static async ValueTask PutIntoTheMachineAsync(Player player, Item item)
     {

@@ -8,12 +8,15 @@ using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.Trade;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -58,6 +61,143 @@ public class TradeTest
         Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
         Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
         Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
+    }
+
+    /// <summary>
+    /// A cancelled acceptance cannot recreate inventory backups across any awaited preparation step.
+    /// </summary>
+    /// <param name="pause">The awaited step which is paused.</param>
+    [TestCase("save")]
+    [TestCase("temporary-return")]
+    [TestCase("accepted-view")]
+    public async Task CancelledAcceptanceCannotRestoreStaleInventoryAsync(string pause)
+    {
+        var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = seed.GameContext.Configuration;
+        var provider = new PausingContextProvider(configuration);
+        var mapInitializer = new MapInitializer(configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(configuration, provider, mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = game.PlugInManager;
+        mapInitializer.PathFinderPool = game.PathFinderPool;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async ValueTask PauseAsync()
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        }
+
+        var pendingStorage = pause == "temporary-return" ? new PausingStorage(PauseAsync) : null;
+        var target = new TradeAcceptancePlayer(game, pendingStorage);
+        await PlayerTestHelper.EnterWorldAsync(target, PlayerTestHelper.CreateCharacter(game)).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        var inventory = target.Inventory!.ItemStorage;
+        inventory.Money = 1234;
+
+        Item? returnedItem = null;
+        if (pause == "save")
+        {
+            ((PausingPlayerContext)target.PersistenceContext).BeforeSave = PauseAsync;
+        }
+        else if (pause == "temporary-return")
+        {
+            returnedItem = this.GetItem();
+            Assert.That(await pendingStorage!.AddItemAsync(0, returnedItem).ConfigureAwait(false), Is.True);
+        }
+        else
+        {
+            Mock.Get(target.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!)
+                .Setup(v => v.ShowTradeRequestAnswerAsync(true)).Returns(PauseAsync);
+        }
+
+        Assert.That(await new TradeRequestAction().RequestTradeAsync(peer, target).ConfigureAwait(false), Is.True);
+        var dead = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        target.PlayerState.StateChanged += args =>
+        {
+            if (args.CurrentStateState == PlayerState.Dead)
+            {
+                dead.TrySetResult();
+            }
+
+            return ValueTask.CompletedTask;
+        };
+        var acceptance = new TradeAcceptAction().HandleTradeAcceptAsync(target, true).AsTask();
+        Task? death = null;
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            death = target.ApplyPoisonDamageAsync(peer, 10).AsTask();
+            await dead.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.TradingPartner, Is.Null);
+            Assert.That(peer.TradingPartner, Is.Null);
+            release.TrySetResult();
+            await Task.WhenAll(acceptance, death).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var staleBackup = target.BackupInventory;
+            var stalePeerBackup = peer.BackupInventory;
+            await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+            var gainedItem = this.GetItem();
+            Assert.That(await target.Inventory.AddItemAsync(gainedItem).ConfigureAwait(false), Is.True);
+            inventory.Money = 9876;
+            await target.RemoveFromGameAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(inventory.Money, Is.EqualTo(9876));
+                Assert.That(inventory.Items, Does.Contain(gainedItem));
+                Assert.That(staleBackup, Is.Null);
+                Assert.That(stalePeerBackup, Is.Null);
+                Assert.That(target.BackupInventory, Is.Null);
+                if (returnedItem is not null)
+                {
+                    Assert.That(inventory.Items.Count(i => ReferenceEquals(i, returnedItem)), Is.EqualTo(1));
+                }
+            });
+            Mock.Get(peer.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!)
+                .Verify(v => v.ShowTradeRequestAnswerAsync(true), Times.Never);
+            Mock.Get(target.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!)
+                .Verify(v => v.ShowTradeRequestAnswerAsync(true), pause == "accepted-view" ? Times.Once : Times.Never);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await acceptance.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (death is not null)
+            {
+                await death.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Items left by a previous window return before the trade snapshot, and survive cancellation.
+    /// </summary>
+    [Test]
+    public async Task TemporaryItemsReturnBeforeTradeBackupAsync()
+    {
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(target.GameContext).ConfigureAwait(false);
+        var item = this.GetItem();
+        Assert.That(await target.TemporaryStorage!.AddItemAsync(0, item).ConfigureAwait(false), Is.True);
+        Assert.That(await new TradeRequestAction().RequestTradeAsync(peer, target).ConfigureAwait(false), Is.True);
+        await new TradeAcceptAction().HandleTradeAcceptAsync(target, true).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+            Assert.That(target.TemporaryStorage.Items, Is.Empty);
+            Assert.That(target.BackupInventory!.Items, Does.Contain(item));
+        });
+        await new TradeCancelAction().CancelTradeAsync(target).ConfigureAwait(false);
+        var inventory = target.Inventory!.ItemStorage;
+        inventory.Money = 4321;
+        await target.RemoveFromGameAsync().ConfigureAwait(false);
+        Assert.That(inventory.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
+        Assert.That(inventory.Money, Is.EqualTo(4321));
+        await target.DisposeAsync().ConfigureAwait(false);
+        await peer.DisposeAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -354,6 +494,47 @@ public class TradeTest
         var contextMock = new Mock<IPlayerContext>();
         trader.Setup(t => t.PersistenceContext).Returns(contextMock.Object);
         return trader.Object;
+    }
+
+    private sealed class TradeAcceptancePlayer(IGameContext context, IStorage? pendingStorage) : Player(context), ITrader
+    {
+        IStorage? ITrader.TemporaryStorage => pendingStorage ?? this.TemporaryStorage;
+
+        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer() => new MockViewPlugInContainer();
+    }
+
+    private sealed class PausingContextProvider(GameConfiguration expectedConfiguration) : InMemoryPersistenceContextProvider, IPersistenceContextProvider
+    {
+        IPlayerContext IPersistenceContextProvider.CreateNewPlayerContext(GameConfiguration configuration)
+        {
+            Assert.That(configuration, Is.SameAs(expectedConfiguration));
+            return new PausingPlayerContext((InMemoryRepositoryProvider)this.RepositoryProvider);
+        }
+    }
+
+    private sealed class PausingPlayerContext(InMemoryRepositoryProvider provider) : PlayerInMemoryContext(provider), IPlayerContext
+    {
+        public Func<ValueTask>? BeforeSave { get; set; }
+
+        async ValueTask<bool> IContext.SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            if (this.BeforeSave is { } beforeSave)
+            {
+                this.BeforeSave = null;
+                await beforeSave().ConfigureAwait(false);
+            }
+
+            return await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private sealed class PausingStorage(Func<ValueTask> pause) : Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage())
+    {
+        public override async ValueTask RemoveItemAsync(Item item)
+        {
+            await base.RemoveItemAsync(item).ConfigureAwait(false);
+            await pause().ConfigureAwait(false);
+        }
     }
 
     //// TODO: Test fail scenarios

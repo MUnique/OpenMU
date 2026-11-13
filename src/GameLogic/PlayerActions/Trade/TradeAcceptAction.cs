@@ -33,8 +33,12 @@ public class TradeAcceptAction : BaseTradeAction
             {
                 try
                 {
-                    await this.OpenTradeAsync(tradeAccepter).ConfigureAwait(false);
-                    await this.OpenTradeAsync(tradePartner).ConfigureAwait(false);
+                    if (!await this.OpenTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false))
+                    {
+                        return;
+                    }
+
+                    await this.OpenTradeAsync(tradePartner, tradeAccepter).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -61,10 +65,21 @@ public class TradeAcceptAction : BaseTradeAction
     /// Opens the trade.
     /// </summary>
     /// <param name="trader">Trader for which the trade should be opened.</param>
-    internal async ValueTask OpenTradeAsync(ITrader trader)
+    /// <param name="expectedPartner">The partner of the accepted request.</param>
+    /// <returns>Whether the same trade is still open after its response.</returns>
+    internal async ValueTask<bool> OpenTradeAsync(ITrader trader, ITrader expectedPartner)
     {
+        if (!IsCurrentTrade(trader, expectedPartner))
+        {
+            return false;
+        }
+
         // first make sure that all items which could be transferred are already present in the database
         await trader.SaveProgressAsync().ConfigureAwait(false);
+        if (!IsCurrentTrade(trader, expectedPartner))
+        {
+            return false;
+        }
 
         // Items which another window (e.g. the chaos machine) left in the temporary storage go back to
         // the inventory first. The trade uses the same storage, so they would be offered in the trade,
@@ -76,8 +91,29 @@ public class TradeAcceptAction : BaseTradeAction
             trader.Logger.LogWarning("Could not return the items of the temporary storage of {trader} to the inventory before opening a trade.", trader);
         }
 
-        trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
-        trader.TradingMoney = 0;
+        // Cancellation uses this same state exclusion to clear the backup. Never publish it
+        // from a continuation of a cancelled save or temporary-item return.
+        await using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            if (!IsCurrentTrade(trader, expectedPartner))
+            {
+                return false;
+            }
+
+            trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
+            trader.TradingMoney = 0;
+        }
+
         await trader.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);
+        return IsCurrentTrade(trader, expectedPartner);
     }
+
+    private static bool IsCurrentTrade(ITrader trader, ITrader expectedPartner)
+        => trader.PlayerState.CurrentState == PlayerState.TradeOpened
+            && expectedPartner.PlayerState.CurrentState == PlayerState.TradeOpened
+            && ReferenceEquals(trader.TradingPartner, expectedPartner)
+            && ReferenceEquals(expectedPartner.TradingPartner, trader)
+            && (trader is not Player player || player.IsAlive)
+            && (expectedPartner is not Player partner || partner.IsAlive);
 }

@@ -176,6 +176,14 @@ public class TalkNpcAction
 
         if (npcStats.ItemCraftings.Any())
         {
+            await using var context = await player.PlayerState.TryBeginAdvanceToAsync(expectedState).ConfigureAwait(false);
+            context.Allowed = false;
+            if (!player.IsAlive || player.PlayerState.CurrentState != expectedState
+                || !ReferenceEquals(player.OpenedNpcContext, dialog))
+            {
+                return;
+            }
+
             player.BackupInventory = new BackupItemStorage(player.Inventory!.ItemStorage);
         }
     }
