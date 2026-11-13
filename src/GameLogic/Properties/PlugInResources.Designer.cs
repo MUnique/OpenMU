@@ -4419,6 +4419,96 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/waiting&apos;. Lists the items which wait for space in the inventory..
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items chat command.
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check interval.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How often the waiting items are put into the inventories, as far as they fit there..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message..
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it&apos;s deactivated, the items keep waiting..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items delivery.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {

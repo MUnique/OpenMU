@@ -17,8 +17,9 @@ public class ShopStorage : Storage, IShopStorage
     /// Initializes a new instance of the <see cref="ShopStorage"/> class.
     /// </summary>
     /// <param name="character">The character.</param>
-    public ShopStorage(Character character)
-        : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(character.Inventory ?? throw Error.NotInitializedProperty(character, nameof(Character.Inventory)), InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize))
+    /// <param name="putAsideItemWithoutPlace">Is called for each item which finds no free place, see <see cref="Storage(int, int, int, ItemStorage, Func{Item, bool}?)"/>.</param>
+    public ShopStorage(Character character, Func<Item, bool>? putAsideItemWithoutPlace = null)
+        : base(InventoryConstants.StoreSize, 0, InventoryConstants.FirstStoreItemSlotIndex, new ItemStorageAdapter(character.Inventory ?? throw Error.NotInitializedProperty(character, nameof(Character.Inventory)), InventoryConstants.FirstStoreItemSlotIndex, InventoryConstants.StoreSize), putAsideItemWithoutPlace)
     {
         this.StoreLock = new AsyncLock();
         this._character = character;

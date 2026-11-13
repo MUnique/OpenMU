@@ -15,4 +15,25 @@
   <data name="MiniGamePlayerKillersCantEnter" xml:space="preserve"><value>红名玩家无法进入！</value></data>
   <data name="MiniGameTicketRequired" xml:space="preserve"><value>参加此活动需要入场券。</value></data>
   <data name="NoKalimaGateInKalima" xml:space="preserve"><value>无法在卡利玛创建卡利玛之门。</value></data>
+  <data name="ItemsWaitForSpace" xml:space="preserve">
+    <value>有 {0} 件物品正在等待背包空间，有足够空间时会自动放入背包：</value>
+  </data>
+  <data name="NoWaitingItems" xml:space="preserve">
+    <value>没有等待背包空间的物品。</value>
+  </data>
+  <data name="WaitingItemDelivered" xml:space="preserve">
+    <value>{0} 已放入你的背包。</value>
+  </data>
+  <data name="MoreWaitingItems" xml:space="preserve">
+    <value>……还有 {0} 件。输入 /waiting 查看更多。</value>
+  </data>
+  <data name="CantDeleteCharacterWithWaitingItems" xml:space="preserve">
+    <value>该角色有物品正在等待背包空间，无法删除。请先用该角色进入游戏并腾出空间。</value>
+  </data>
+  <data name="MoreWaitingItemsNotNamed" xml:space="preserve">
+    <value>……还有 {0} 件。</value>
+  </data>
+  <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
+    <value>该角色有等待中的物品，但其物品类型已不存在，无法删除。请联系管理员。</value>
+  </data>
 </root>

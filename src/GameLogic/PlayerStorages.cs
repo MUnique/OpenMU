@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.WaitingItems;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
@@ -54,7 +55,7 @@ internal sealed class PlayerStorages
     public void CreateForCharacter(Character character)
     {
         this.Inventory = new InventoryStorage(this._player, this._player.GameContext);
-        this.ShopStorage = new ShopStorage(character);
+        this.ShopStorage = new ShopStorage(character, this._player.PutAsideWhenLoaded(character));
         this.TemporaryStorage = new Storage(InventoryConstants.TemporaryStorageSize, new TemporaryItemStorage());
         this.Vault = null; // vault storage is getting set when vault npc is opened.
     }
