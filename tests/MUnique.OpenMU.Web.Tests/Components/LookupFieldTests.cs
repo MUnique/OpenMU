@@ -272,6 +272,7 @@ public class LookupFieldTests
     {
         public int SearchCount { get; private set; }
 
+        /// <inheritdoc />
         public Task<IEnumerable<T>> GetSuggestionsAsync<T>(string text, IContext? persistenceContext)
             where T : class
         {
