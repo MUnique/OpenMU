@@ -39,6 +39,12 @@ internal sealed class BotChatThrottle
     /// </summary>
     private static readonly TimeSpan PlayerScanInterval = TimeSpan.FromSeconds(5);
 
+    /// <summary>
+    /// How often the expired occasions are forgotten. Their keys include player names (greetings,
+    /// congratulations), so without it they'd pile up until the server restarts.
+    /// </summary>
+    private static readonly TimeSpan OccasionCleanupInterval = TimeSpan.FromMinutes(10);
+
     private readonly ConcurrentDictionary<string, DateTime> _occasions = new();
 
     private readonly ConditionalWeakTable<Player, BotCooldowns> _bots = new();
@@ -69,6 +75,8 @@ internal sealed class BotChatThrottle
 
     private long _nextPlayerScanTicks;
 
+    private long _nextOccasionCleanupTicks;
+
     private long _nextPostTicks;
 
     private DateTime _nextMerchantTalkUtc;
@@ -90,6 +98,11 @@ internal sealed class BotChatThrottle
     }
 
     /// <summary>
+    /// Gets the number of remembered occasions, expired ones included until they're cleaned up.
+    /// </summary>
+    internal int OccasionCount => this._occasions.Count;
+
+    /// <summary>
     /// Reserves the right to announce an occasion (e.g. "Blood Castle opened") for the given time
     /// window. Only the first caller within the window gets it.
     /// </summary>
@@ -99,6 +112,18 @@ internal sealed class BotChatThrottle
     /// <returns><c>true</c>, if the caller may announce the occasion.</returns>
     public bool TryReserveOccasion(string occasionKey, DateTime now, TimeSpan window)
     {
+        if (TryReserve(ref this._nextOccasionCleanupTicks, now, OccasionCleanupInterval))
+        {
+            foreach (var occasion in this._occasions)
+            {
+                if (occasion.Value <= now)
+                {
+                    // Removes the entry only if it wasn't reserved again meanwhile.
+                    this._occasions.TryRemove(occasion);
+                }
+            }
+        }
+
         while (true)
         {
             if (this._occasions.TryAdd(occasionKey, now + window))

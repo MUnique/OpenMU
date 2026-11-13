@@ -53,6 +53,26 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// Occasions are keyed by player names too (greetings, congratulations); the expired ones are
+    /// forgotten from time to time instead of piling up until the server restarts.
+    /// </summary>
+    [Test]
+    public void ForgetsExpiredOccasions()
+    {
+        var throttle = new BotChatThrottle();
+        var window = TimeSpan.FromMinutes(1);
+
+        for (var i = 0; i < 100; i++)
+        {
+            throttle.TryReserveOccasion($"greeting Player{i}", Start.AddSeconds(i), window);
+        }
+
+        Assert.That(throttle.OccasionCount, Is.EqualTo(100));
+        Assert.That(throttle.TryReserveOccasion("greeting Latecomer", Start.AddMinutes(20), window), Is.True);
+        Assert.That(throttle.OccasionCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// Small talk happens once per interval - a freshly started server waits one interval first,
     /// while the bots log in - and a forced start from the admin panel makes it due at once.
     /// </summary>
