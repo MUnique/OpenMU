@@ -49,6 +49,7 @@ public static class PlayerTestHelper
         gameConfig.Setup(c => c.Skills).Returns(new List<Skill>());
         gameConfig.Setup(c => c.PlugInConfigurations).Returns(new List<PlugInConfiguration>());
         gameConfig.Setup(c => c.CharacterClasses).Returns(new List<CharacterClass>());
+        gameConfig.Setup(c => c.WarpList).Returns(new List<WarpInfo>());
         gameConfig.Setup(c => c.GlobalAttributeCombinations).Returns(new List<AttributeRelationship>());
         gameConfig.Setup(c => c.GlobalBaseAttributeValues).Returns(new List<ConstValueAttribute>
         {

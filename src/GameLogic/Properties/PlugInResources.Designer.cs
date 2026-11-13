@@ -3501,6 +3501,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tells the client which warps the player can select in the warp window, when the player enters the game..
+        /// </summary>
+        public static string ShowWarpListAfterEnterWorldPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowWarpListAfterEnterWorldPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show the warp list after entering the game.
+        /// </summary>
+        public static string ShowWarpListAfterEnterWorldPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowWarpListAfterEnterWorldPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/xmasfireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an christmas fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowXmasFireworksEffectChatCommandPlugIn_Description {

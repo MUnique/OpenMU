@@ -1897,4 +1897,10 @@
   <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
     <value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value>
   </data>
+  <data name="ShowWarpListAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Show the warp list after entering the game</value>
+  </data>
+  <data name="ShowWarpListAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Tells the client which warps the player can select in the warp window, when the player enters the game.</value>
+  </data>
 </root>
