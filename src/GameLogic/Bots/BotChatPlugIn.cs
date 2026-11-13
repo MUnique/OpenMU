@@ -714,6 +714,7 @@ public class BotChatPlugIn
     /// Finds out how the bot gets to a meeting place a player named, like a player would: through the
     /// warp the player named ("devias3"), or the warp from which the named coordinates are closest to
     /// walk to - the floors of the Lost Tower, for one, aren't connected by walkable ground at all.
+    /// A bot which already stands on the map and can walk to the named coordinates needs no warp.
     /// </summary>
     /// <param name="bot">The bot.</param>
     /// <param name="map">The map of the meeting place.</param>
@@ -721,7 +722,8 @@ public class BotChatPlugIn
     /// <param name="position">The coordinates the player named; <c>null</c> for none.</param>
     /// <returns>
     /// <c>null</c>, if the bot may not or can't get there; otherwise the gate to enter the map through
-    /// (<c>null</c> for a spawn gate) and the point to wait at (<c>null</c> for the safezone).
+    /// (<c>null</c> for a spawn gate, or none for a bot walking there on the map) and the point to wait
+    /// at (<c>null</c> for the safezone).
     /// </returns>
     /// <remarks>
     /// The terrain is read from the map definition, as the map may not be loaded. A warp which the bot's
@@ -729,12 +731,12 @@ public class BotChatPlugIn
     /// </remarks>
     internal static (ExitGate? Gate, Point? Position)? FindMeetingEntry(Player bot, GameMapDefinition map, WarpInfo? warp, Point? position)
     {
-        var legalWarps = GetLegalWarps(bot, map).ToList();
-        if (legalWarps.Count == 0)
+        if (BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(map) == true)
         {
             return null;
         }
 
+        var legalWarps = GetLegalWarps(bot, map).ToList();
         if (position is { } target)
         {
             // Coordinates typed by hand may well point at a wall or a tree: the navigator waits next to
@@ -744,10 +746,27 @@ public class BotChatPlugIn
             var waitingPoint = terrain.WalkMap[target.X, target.Y]
                 ? target
                 : BotEventMeetingPlanner.FindStandingPoint(terrain, target, waitingRange);
-            return waitingPoint is { } point
-                   && BotNavigator.FindBestReachableWarp(legalWarps, terrain.WalkMap, point, null, true, CancellationToken.None) is { Gate: { } gate }
-                ? (gate, target)
+            if (waitingPoint is not { } point)
+            {
+                return null;
+            }
+
+            if (BotNavigator.FindBestReachableWarp(legalWarps, terrain.WalkMap, point, null, true, CancellationToken.None) is { Gate: { } gate })
+            {
+                return (gate, target);
+            }
+
+            // A bot already on the map walks there without a warp - also on a map which has no entry in
+            // the warp list at all.
+            return bot.CurrentMap?.Definition.Number == map.Number
+                   && BotNavigator.CanWalk(terrain.WalkMap, bot.Position, point, CancellationToken.None)
+                ? (null, target)
                 : null;
+        }
+
+        if (legalWarps.Count == 0)
+        {
+            return null;
         }
 
         if (warp is not null)

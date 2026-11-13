@@ -463,6 +463,42 @@ internal sealed class BotNavigator : AsyncDisposable
     }
 
     /// <summary>
+    /// Determines whether there is a walkable route between two points of a map, not longer than the
+    /// bots' travel search limit.
+    /// </summary>
+    /// <param name="walkMap">The walk map of the map.</param>
+    /// <param name="from">The start point.</param>
+    /// <param name="to">The target point.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the target can be walked to.</returns>
+    internal static bool CanWalk(bool[,] walkMap, Point from, Point to, CancellationToken cancellationToken)
+    {
+        if (!walkMap[from.X, from.Y])
+        {
+            return false;
+        }
+
+        var width = walkMap.GetLength(0);
+        var coordinateCount = width * walkMap.GetLength(1);
+        var distancesFromTarget = ArrayPool<int>.Shared.Rent(coordinateCount);
+        var pendingCoordinates = ArrayPool<int>.Shared.Rent(coordinateCount);
+        try
+        {
+            Array.Clear(distancesFromTarget, 0, coordinateCount);
+            PopulateWalkableDistancesFrom(walkMap, to, distancesFromTarget, pendingCoordinates, cancellationToken);
+
+            // Zero means unreachable, so stored distances are offset by one.
+            var encodedDistance = distancesFromTarget[(from.Y * width) + from.X];
+            return encodedDistance != 0 && encodedDistance - 1 <= TravelSearchLimit;
+        }
+        finally
+        {
+            ArrayPool<int>.Shared.Return(distancesFromTarget);
+            ArrayPool<int>.Shared.Return(pendingCoordinates);
+        }
+    }
+
+    /// <summary>
     /// Gets the warp entry whose landing area has the shortest walkable route to a target, see
     /// <see cref="FindBestReachableLegalWarp"/>.
     /// </summary>

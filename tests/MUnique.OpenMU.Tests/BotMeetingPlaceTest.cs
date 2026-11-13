@@ -177,6 +177,36 @@ public class BotMeetingPlaceTest
     }
 
     /// <summary>
+    /// A map without an entry in the warp list: a bot standing on it walks to the named coordinates;
+    /// a bot elsewhere can't get there.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask WalksThereOnAMapWithoutWarpAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var terrain = CreateBlockedTerrain();
+        for (var x = 10; x <= 30; x++)
+        {
+            MarkWalkable(terrain, (byte)x, 10);
+        }
+
+        var mapDefinition = CreateMap(LostTowerNumber, terrain);
+        var target = new Point(30, 10);
+
+        Assert.That(BotChatPlugIn.FindMeetingEntry(bot, mapDefinition, null, target), Is.Null);
+
+        bot.SetCurrentMapSilently(new GameMap(mapDefinition, TimeSpan.FromMinutes(1), 8));
+        bot.Position = new Point(10, 10);
+        var entry = BotChatPlugIn.FindMeetingEntry(bot, mapDefinition, null, target);
+
+        Assert.That(entry, Is.Not.Null);
+        Assert.That(entry!.Value.Gate, Is.Null);
+        Assert.That(entry.Value.Position, Is.EqualTo(target));
+    }
+
+    /// <summary>
     /// A place the bot can't get to is declined, but the bot keeps waiting for the player's whisper:
     /// the player may name another place. A place it can get to ends the offer - the bot sets off.
     /// </summary>
