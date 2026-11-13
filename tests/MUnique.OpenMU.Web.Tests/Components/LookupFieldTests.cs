@@ -7,7 +7,6 @@ namespace MUnique.OpenMU.Web.Tests.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Bunit;
 using Microsoft.AspNetCore.Components;
@@ -268,6 +267,7 @@ public class LookupFieldTests
         public override string ToString() => this.Name;
     }
 
+    /// <inheritdoc />
     private sealed class TestLookupController(IEnumerable<TestOption> options) : ILookupController
     {
         public int SearchCount { get; private set; }
