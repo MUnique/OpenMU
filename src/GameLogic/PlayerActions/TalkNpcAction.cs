@@ -34,22 +34,31 @@ public class TalkNpcAction
             return;
         }
 
-        if (this.AdvancePlayerState(npc))
+        var advancePlayerState = this.AdvancePlayerState(npc);
+        var expectedState = advancePlayerState ? PlayerState.NpcDialogOpened : PlayerState.EnteredWorld;
+        var dialog = new Player.NpcDialogContext(npc);
+        await using (var context = await player.PlayerState.TryBeginAdvanceToAsync(expectedState).ConfigureAwait(false))
         {
-            if (!await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false))
+            if (advancePlayerState)
             {
-                return;
+                if (!context.Allowed)
+                {
+                    return;
+                }
             }
-        }
-        else
-        {
-            if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+            else
             {
-                return;
+                // Older clients keep ordinary NPC responses in EnteredWorld.
+                context.Allowed = false;
+                if (player.PlayerState.CurrentState != expectedState)
+                {
+                    return;
+                }
             }
+
+            player.OpenedNpcContext = dialog;
         }
 
-        player.OpenedNpc = npc;
         if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
         {
             await Task.Delay(500).ConfigureAwait(false);
@@ -58,7 +67,7 @@ public class TalkNpcAction
         }
         else
         {
-            await this.ShowDialogOfOpenedNpcAsync(player).ConfigureAwait(false);
+            await this.ShowDialogOfOpenedNpcAsync(player, dialog, expectedState).ConfigureAwait(false);
         }
     }
 
@@ -69,28 +78,47 @@ public class TalkNpcAction
     /// <returns>A value indicating whether this action advances the player state to <see cref="PlayerState.NpcDialogOpened" />.</returns>
     protected virtual bool AdvancePlayerState(NonPlayerCharacter npc) => true;
 
-    private async ValueTask ShowDialogOfOpenedNpcAsync(Player player)
+    private static async ValueTask<bool> CompleteDialogAsync(Player player, Player.NpcDialogContext dialog, State expectedState, bool clearNpc = true)
     {
-        var npcStats = player.OpenedNpc!.Definition;
+        await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        var ownsDialog = player.PlayerState.CurrentState == expectedState
+            && ReferenceEquals(player.OpenedNpcContext, dialog);
+        context.Allowed &= ownsDialog;
+        if (ownsDialog && clearNpc)
+        {
+            player.OpenedNpc = null;
+        }
+
+        return ownsDialog;
+    }
+
+    private async ValueTask ShowDialogOfOpenedNpcAsync(Player player, Player.NpcDialogContext dialog, State expectedState)
+    {
+        var npcStats = dialog.Npc.Definition;
         switch (npcStats.NpcWindow)
         {
             case NpcWindow.Undefined:
                 var eventArgs = new NpcTalkEventArgs();
                 if (player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTalkToNpcPlugIn>() is { } talkToNpcPlugIn)
                 {
-                    await talkToNpcPlugIn.PlayerTalksToNpcAsync(player, player.OpenedNpc, eventArgs).ConfigureAwait(false);
+                    await talkToNpcPlugIn.PlayerTalksToNpcAsync(player, dialog.Npc, eventArgs).ConfigureAwait(false);
                 }
 
                 if (!eventArgs.HasBeenHandled)
                 {
                     await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TalkingNotImplementedFormat), npcStats.Number, npcStats.Designation).ConfigureAwait(false);
 
-                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+                    if (!await CompleteDialogAsync(player, dialog, expectedState, clearNpc: false).ConfigureAwait(false))
+                    {
+                        return;
+                    }
                 }
                 else if (!eventArgs.LeavesDialogOpen)
                 {
-                    player.OpenedNpc = null;
-                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+                    if (!await CompleteDialogAsync(player, dialog, expectedState).ConfigureAwait(false))
+                    {
+                        return;
+                    }
                 }
                 else
                 {
@@ -105,19 +133,25 @@ public class TalkNpcAction
                 await player.InvokeViewPlugInAsync<IShowVaultPlugIn>(p => p.ShowVaultAsync()).ConfigureAwait(false);
                 break;
             case NpcWindow.GuildMaster:
-                if (await this.IsPlayedAllowedToCreateGuildAsync(player).ConfigureAwait(false))
+                if (await this.IsPlayedAllowedToCreateGuildAsync(player, dialog.Npc).ConfigureAwait(false))
                 {
                     await player.InvokeViewPlugInAsync<IShowGuildMasterDialogPlugIn>(p => p.ShowGuildMasterDialogAsync()).ConfigureAwait(false);
                 }
                 else
                 {
-                    player.OpenedNpc = null;
-                    await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+                    if (!await CompleteDialogAsync(player, dialog, expectedState).ConfigureAwait(false))
+                    {
+                        return;
+                    }
                 }
 
                 break;
             case NpcWindow.LegacyQuest:
-                await this.ShowLegacyQuestDialogAsync(player).ConfigureAwait(false);
+                if (!await this.ShowLegacyQuestDialogAsync(player, dialog, expectedState).ConfigureAwait(false))
+                {
+                    return;
+                }
+
                 break;
             case NpcWindow.DoorkeeperTitusDuelWatch:
                 await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow)).ConfigureAwait(false);
@@ -146,27 +180,23 @@ public class TalkNpcAction
         }
     }
 
-    private async ValueTask ShowLegacyQuestDialogAsync(Player player)
+    private async ValueTask<bool> ShowLegacyQuestDialogAsync(Player player, Player.NpcDialogContext dialog, State expectedState)
     {
-        var quests = player.OpenedNpc!.Definition.Quests
+        var quests = dialog.Npc.Definition.Quests
             .Where(q => q.QualifiedCharacter is null || Equals(q.QualifiedCharacter, player.SelectedCharacter!.CharacterClass));
 
         if (!quests.Any())
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("I have no quests for you.", player.OpenedNpc)).ConfigureAwait(false);
-            player.OpenedNpc = null;
-            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-            return;
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("I have no quests for you.", dialog.Npc)).ConfigureAwait(false);
+            return await CompleteDialogAsync(player, dialog, expectedState).ConfigureAwait(false);
         }
 
         if (quests.All(quest => quest.MinimumCharacterLevel > player.Level))
         {
             await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
                 "I have nothing to do for you. Come back with more power.",
-                player.OpenedNpc)).ConfigureAwait(false);
-            player.OpenedNpc = null;
-            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-            return;
+                dialog.Npc)).ConfigureAwait(false);
+            return await CompleteDialogAsync(player, dialog, expectedState).ConfigureAwait(false);
         }
 
         var maxQuestNumber = quests.Max(q => q.Number);
@@ -176,26 +206,25 @@ public class TalkNpcAction
         {
             await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(
                 "I have nothing to do for you. You solved all my quests already.",
-                player.OpenedNpc)).ConfigureAwait(false);
-            player.OpenedNpc = null;
-            await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-            return;
+                dialog.Npc)).ConfigureAwait(false);
+            return await CompleteDialogAsync(player, dialog, expectedState).ConfigureAwait(false);
         }
 
         await player.InvokeViewPlugInAsync<ILegacyQuestStateDialogPlugIn>(p => p.ShowAsync()).ConfigureAwait(false);
+        return true;
     }
 
-    private async ValueTask<bool> IsPlayedAllowedToCreateGuildAsync(Player player)
+    private async ValueTask<bool> IsPlayedAllowedToCreateGuildAsync(Player player, NonPlayerCharacter npc)
     {
         if (player.Level < 100)
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("Your level should be at least level 100", player.OpenedNpc!)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("Your level should be at least level 100", npc)).ConfigureAwait(false);
             return false;
         }
 
         if (player.GuildStatus != null)
         {
-            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("You already belong to a guild", player.OpenedNpc!)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync("You already belong to a guild", npc)).ConfigureAwait(false);
             return false;
         }
 

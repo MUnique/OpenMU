@@ -35,13 +35,19 @@ public class BaseTradeAction
     /// </summary>
     /// <param name="trader">The trader.</param>
     /// <param name="checkState">If set to <c>true</c>, the player state is checked. Otherwise, it's ignored.</param>
-    protected async ValueTask CancelTradeAsync(ITrader trader, bool checkState = true)
+    /// <param name="expectedPartner">The partner whose trade may be cancelled, or <c>null</c> to omit the identity check.</param>
+    protected async ValueTask CancelTradeAsync(ITrader trader, bool checkState = true, ITrader? expectedPartner = null)
     {
         CancelledTrades.Add(1);
         await using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
-            if (checkState && !context.Allowed)
+            context.Allowed &= trader.PlayerState.CurrentState == PlayerState.TradeRequested
+                || trader.PlayerState.CurrentState == PlayerState.TradeOpened
+                || trader.PlayerState.CurrentState == PlayerState.TradeButtonPressed;
+            if ((checkState && !context.Allowed)
+                || (expectedPartner is not null && !ReferenceEquals(trader.TradingPartner, expectedPartner)))
             {
+                context.Allowed = false;
                 return;
             }
 
@@ -76,9 +82,9 @@ public class BaseTradeAction
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
                 trader.BackupInventory = null;
             }
-        }
 
-        this.ResetTradeState(trader);
+            this.ResetTradeState(trader);
+        }
     }
 
     /// <summary>
