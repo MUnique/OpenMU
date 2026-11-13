@@ -2771,4 +2771,10 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="ShowWarpListExtendedPlugIn_Name" xml:space="preserve">
+    <value>Show warp list (extended)</value>
+  </data>
+  <data name="ShowWarpListExtendedPlugIn_Description" xml:space="preserve">
+    <value>Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files.</value>
+  </data>
 </root>

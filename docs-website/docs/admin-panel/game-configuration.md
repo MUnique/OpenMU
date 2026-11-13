@@ -235,6 +235,20 @@ Route `edit-config-grid/…WarpInfo/`
 The entries of the in-game warp list: index, name, target gate, level requirement
 and cost.
 
+The [open source client](https://github.com/sven-n/MuMain) gets this list when a
+character enters the game and shows it in its warp window, so changes show up
+there after the next character selection. The original client shows the warp
+list of its data files; a warp which isn't in there can't be selected with it.
+
+*Warpable* only restricts players, and only when it's off: then the warp isn't
+in the list of the open source client, and the server refuses it when a player
+asks for it, e.g. with the move chat command. Game masters can still use it.
+A new season 6 configuration has it off for the warps which the original client
+doesn't offer in its warp window: Crywolf (reached by walking), Loren Market
+(reached through an NPC) and the second LaCleon warp. For an existing
+configuration, the optional update *Restrict warps outside of the original warp
+window* does the same.
+
 ## Jewel mixes
 
 Route `edit-config-grid/…JewelMix/`

@@ -3615,4 +3615,10 @@
   <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
     <value>Das Attribut der Gegenstandsanforderungen, für das diese Formel gilt.</value>
   </data>
+  <data name="WarpInfo_IsWarpable_Caption" xml:space="preserve">
+    <value>Für Spieler verfügbar</value>
+  </data>
+  <data name="WarpInfo_IsWarpable_Description" xml:space="preserve">
+    <value>Ob Spieler diesen Warp verwenden können. Er schränkt Spieler nur ein, wenn er ausgeschaltet ist: Dann ist der Warp nicht in der Warp-Liste des Clients, und die Warp-Anfrage eines Spielers wird abgelehnt; Game Master können ihn weiterhin verwenden.</value>
+  </data>
 </root>

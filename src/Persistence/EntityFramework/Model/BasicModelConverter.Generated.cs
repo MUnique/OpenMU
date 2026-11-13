@@ -3292,6 +3292,7 @@ internal sealed class BasicModelConverter
         target.Name = source.Name;
         target.Costs = source.Costs;
         target.LevelRequirement = source.LevelRequirement;
+        target.IsWarpable = source.IsWarpable;
         target.Gate = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Gate)!;
         return target;
     }

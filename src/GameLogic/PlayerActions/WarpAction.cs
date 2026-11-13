@@ -23,6 +23,12 @@ public class WarpAction
     /// <param name="warpInfo">The warp information.</param>
     public async ValueTask WarpToAsync(Player player, WarpInfo warpInfo)
     {
+        if (!warpInfo.IsWarpable && player.SelectedCharacter?.CharacterStatus != CharacterStatus.GameMaster)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.WarpOnlyForGameMasters)).ConfigureAwait(false);
+            return;
+        }
+
         if (warpInfo.Gate is { } gate
             && player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
         {

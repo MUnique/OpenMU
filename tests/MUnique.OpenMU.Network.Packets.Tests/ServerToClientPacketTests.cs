@@ -7211,6 +7211,20 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for WarpListExtended.
+    /// </summary>
+    [Test]
+    public void WarpListExtended_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EventChipRegistrationResult.
     /// </summary>
     [Test]

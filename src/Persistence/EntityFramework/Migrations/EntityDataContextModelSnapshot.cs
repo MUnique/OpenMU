@@ -4622,6 +4622,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Index")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsWarpable")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("LevelRequirement")
                         .HasColumnType("integer");
 

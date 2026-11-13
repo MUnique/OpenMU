@@ -34900,6 +34900,167 @@ public readonly struct ExternalChatMessage
 
 
 /// <summary>
+/// Is sent by the server when: After the character entered the game world, when the client is the open source client.
+/// Causes reaction on client side: The client shows these warps in its warp window (and accepts them for the warp chat command) instead of the warp list of its data files. Warps which the client knows keep the name of its data files; others get the name of this message.
+/// </summary>
+public readonly struct WarpListExtended
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpListExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WarpListExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpListExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private WarpListExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x09;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="WarpListEntry"/> of the specified index.
+    /// </summary>
+        public WarpListEntry this[int index] => new (this._data.Slice(6 + index * WarpListEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="WarpListExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator WarpListExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="WarpListExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(WarpListExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="WarpListEntry"/>.
+    /// </summary>
+    /// <param name="warpsCount">The count of <see cref="WarpListEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int warpsCount) => warpsCount * WarpListEntry.Length + 6;
+
+
+/// <summary>
+/// A warp which the player can select in the warp window..
+/// </summary>
+public readonly struct WarpListEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpListEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WarpListEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 44;
+
+    /// <summary>
+    /// Gets or sets the index of the warp, which the client sends in the WarpCommandRequest.
+    /// </summary>
+    public ushort Index
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of the map to which the warp leads.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the required character level, as configured. Character classes with a reduced warp level requirement get the reduction on top of it, like in the warp list of the data files.
+    /// </summary>
+    public ushort LevelRequirement
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the zen which the warp costs.
+    /// </summary>
+    public uint Costs
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the warp, in the language of the player.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(12, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(12, 32).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

@@ -2010,4 +2010,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch des mittleren Elite-Heiltranks verarbeitet. Er stellt einen Teil der Lebenspunkte sofort wieder her.</value>
   </data>
+  <data name="ShowWarpListAfterEnterWorldPlugIn_Name" xml:space="preserve">
+    <value>Warp-Liste nach dem Betreten des Spiels anzeigen</value>
+  </data>
+  <data name="ShowWarpListAfterEnterWorldPlugIn_Description" xml:space="preserve">
+    <value>Teilt dem Client beim Betreten des Spiels mit, welche Warps der Spieler im Warp-Fenster auswählen kann.</value>
+  </data>
 </root>

@@ -6523,4 +6523,10 @@
   <data name="ItemPriceRounding_Tens_Description" xml:space="preserve">
     <value>Rounded down to a multiple of 10, and the durability doesn't reduce the price, e.g. for potions.</value>
   </data>
+  <data name="WarpInfo_IsWarpable_Caption" xml:space="preserve">
+    <value>Warpable</value>
+  </data>
+  <data name="WarpInfo_IsWarpable_Description" xml:space="preserve">
+    <value>Whether players can use this warp. It only restricts players when it's off: then the warp isn't in the warp list of the client and the warp request of a player is refused, while game masters can still use it.</value>
+  </data>
 </root>
