@@ -120,6 +120,12 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     public bool ShowDropDownOnFocus { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the search text should be cleared when the field receives focus.
+    /// </summary>
+    [Parameter]
+    public bool ClearSearchOnFocus { get; set; }
+
+    /// <summary>
     /// Gets or sets the maximum number of suggestions.
     /// </summary>
     [Parameter]
@@ -226,6 +232,12 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         if (this.ShowDropDownOnFocus)
         {
             this._searchDebouncer.Cancel();
+
+            if (this.ClearSearchOnFocus)
+            {
+                this._searchText = string.Empty;
+            }
+
             await this.PerformSearchAsync().ConfigureAwait(false);
         }
     }
@@ -274,7 +286,8 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
                 IEnumerable<TItem> filteredResults = results ?? Enumerable.Empty<TItem>();
                 if (this.IsMultiple && this.Values != null)
                 {
-                    filteredResults = filteredResults.Where(s => !this.Values.Contains(this.ValueSelector != null ? this.ValueSelector(s!) : (TValue)(object)s!));
+                    filteredResults = filteredResults.Where(s => !this.Values.Contains(
+                        this.ValueSelector != null ? this.ValueSelector(s!) : (TValue)(object)s!));
                 }
 
                 this._suggestions = filteredResults.Take(this.MaximumSuggestions).ToList();
@@ -282,7 +295,6 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
         }
         catch (TaskCanceledException)
         {
-            // Ignore
         }
         finally
         {
