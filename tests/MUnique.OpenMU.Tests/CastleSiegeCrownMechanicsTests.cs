@@ -4,7 +4,11 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.Views.World;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -708,6 +712,132 @@ public class CastleSiegeCrownMechanicsTests
             Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(hasCrownUser && hasFirstSwitchUser && hasSecondSwitchUser ? TimeSpan.FromSeconds(1) : TimeSpan.Zero));
             Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.DefensePersistentGuildId));
         });
+    }
+
+    /// <summary>Crown relocation is placement, not permission to discard another hit's lethal reservation.</summary>
+    /// <param name="lethal">Whether the former defender is waiting on a lethal hit view.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CrownRelocationPreservesReservedDeathAsync(bool lethal)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60).ConfigureAwait(false);
+        winner.Id = 11;
+        victim.Attributes![Stats.CurrentHealth] = 10;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var deaths = 0;
+        victim.Died += (_, _) => Interlocked.Increment(ref deaths);
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()!).Setup(v => v.ShowHitAsync(victim, It.IsAny<HitInfo>())).Returns(async () =>
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        });
+        var hit = lethal ? victim.ApplyPoisonDamageAsync(winner, 10).AsTask() : Task.CompletedTask;
+        try
+        {
+            if (lethal)
+            {
+                await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            var owned = victim.LastDeath;
+            await CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1).ConfigureAwait(false);
+            release.TrySetResult();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(lethal ? 0 : 10));
+                Assert.That(victim.IsAlive, Is.EqualTo(!lethal));
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(lethal ? PlayerState.Dead : PlayerState.EnteredWorld));
+                Assert.That(victim.LastDeath, Is.SameAs(owned));
+                Assert.That(deaths, Is.EqualTo(lethal ? 1 : 0));
+            });
+            if (lethal)
+            {
+                Mock.Get(victim.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()!).Verify(v => v.ObjectGotKilledAsync(victim, winner), Times.Once);
+            }
+        }
+        finally
+        {
+            release.TrySetResult();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    /// <summary>Crown placement keeps the processed death's original timer, including a paused killed view.</summary>
+    /// <param name="pauseKilledView">Whether relocation precedes completion of the killed notification.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CrownRelocationKeepsOriginalRespawnTimerAsync(bool pauseKilledView)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60).ConfigureAwait(false);
+        victim.Attributes![Stats.CurrentHealth] = 10;
+        fixture.SiegeMap.Definition.ExitGates.Add(new BasicModel.ExitGate { Map = fixture.SiegeMap.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var restored = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var placements = 0;
+        var deaths = 0;
+        victim.Died += (_, _) => Interlocked.Increment(ref deaths);
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IObjectGotKilledPlugIn>()!).Setup(v => v.ObjectGotKilledAsync(victim, winner)).Returns(async () =>
+        {
+            entered.TrySetResult();
+            if (pauseKilledView)
+            {
+                await release.Task.ConfigureAwait(false);
+            }
+        });
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>()!).Setup(v => v.RespawnAsync()).Returns(() =>
+        {
+            if (Interlocked.Increment(ref placements) == 2)
+            {
+                restored.TrySetResult();
+            }
+
+            return ValueTask.CompletedTask;
+        });
+        var lethal = victim.ApplyPoisonDamageAsync(winner, 10).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (!pauseKilledView)
+            {
+                await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            var owned = victim.LastDeath;
+            var relocation = CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1).AsTask();
+            release.TrySetResult();
+            await relocation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(victim.IsAlive, Is.False);
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await restored.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await Task.Delay(50).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.IsAlive, Is.True);
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(victim.Attributes[Stats.MaximumHealth]));
+                Assert.That(victim.LastDeath, Is.SameAs(owned));
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(placements, Is.EqualTo(2));
+            });
+        }
+        finally
+        {
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()

@@ -99,6 +99,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private CancellationTokenSource? _respawnAfterDeathCts;
 
+    // One elapsed respawn, bound to the original death timer; state exclusion owns claim/defer.
+    private (CancellationTokenSource Source, DeathInformation Death, bool Claimed)? _pendingDeathRespawn;
+
     // An already-owned lethal hit can finish after a warp, without waiting for another packet here.
     // Publication and consumption use PlayerState's exclusion; the death identity excludes later lives.
     private (IAttacker? Killer, DeathInformation Death)? _pendingMapChangeDeath;
@@ -164,6 +167,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 || args.CurrentStateState == GameLogic.PlayerState.CharacterSelection)
             {
                 this._pendingMapChangeDeath = null;
+                this._pendingDeathRespawn = null;
                 lock (this._hitLock)
                 {
                     this._hasReservedLethalHit = false;
@@ -817,11 +821,44 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
-        this.Attributes[Stats.CurrentHealth] = 0;
+        DeathInformation ownedDeath;
+        List<(AttributeDefinition Definition, float Value)> changes = [];
+        lock (this._hitLock)
+        {
+            if (this._hasReservedLethalHit || this.IsDisposed || this.IsDisposing
+                || this.SelectedCharacter is null || this.PlayerState.CurrentState.IsDisconnectedOrFinished()
+                || this.PlayerState.CurrentState == GameLogic.PlayerState.Dead)
+            {
+                return;
+            }
 
-        this.LastDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
-        await this.OnDeathAsync(null).ConfigureAwait(false);
+            var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
+            this._hitAttributeChanges = changes;
+            try
+            {
+                this.Attributes[Stats.CurrentHealth] = 0;
+                this._hasReservedLethalHit = true;
+                this.IsAlive = false;
+                ownedDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
+                this.LastDeath = ownedDeath;
+            }
+            finally
+            {
+                this._hitAttributeChanges = null;
+            }
+        }
+
+        try
+        {
+            foreach (var (definition, value) in changes)
+            {
+                _ = this.NotifyAttributeValueChangedAsync(definition, value);
+            }
+        }
+        finally
+        {
+            await this.OnDeathAsync(null, ownedDeath).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -1558,16 +1595,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Disposes the cancellation token source of a pending respawn after a death, because the
-    /// player is respawning now.
-    /// </summary>
-    internal void ClearRespawnAfterDeathToken()
-    {
-        this._respawnAfterDeathCts?.Dispose();
-        this._respawnAfterDeathCts = null;
-    }
-
-    /// <summary>
     /// Clears the list of the objects which are observed by this player.
     /// </summary>
     internal ValueTask ClearObservingObjectsListAsync()
@@ -1596,6 +1623,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return false;
         }
 
+        this.RestoreLivenessAfterPlacement();
+        return true;
+    }
+
+    /// <summary>Restores liveness after placement only when no lethal hit owns this life.</summary>
+    internal void RestoreLivenessAfterPlacement()
+    {
         lock (this._hitLock)
         {
             if (!this._hasReservedLethalHit)
@@ -1603,21 +1637,72 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 this.IsAlive = true;
             }
         }
-
-        return true;
     }
 
-    /// <summary>
-    /// Clears the previous death reservation for an actual respawn, before either arrival packet path.
-    /// </summary>
-    internal async ValueTask PrepareForRespawnAsync()
+    /// <summary>Runs actual death restoration, distinct from generic siege or duel placement.</summary>
+    /// <param name="gate">The selected respawn gate, or the ordinary spawn selection.</param>
+    /// <param name="expectedSource">The original death timer, when invoked by its continuation.</param>
+    /// <param name="expectedDeath">The original death identity, when invoked by its continuation.</param>
+    internal async ValueTask RespawnAfterDeathAsync(ExitGate? gate = null, CancellationTokenSource? expectedSource = null, DeathInformation? expectedDeath = null)
     {
-        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
-        context.Allowed = false;
-        this._pendingMapChangeDeath = null;
-        lock (this._hitLock)
+        CancellationTokenSource source;
+        CancellationToken token;
+        DeathInformation death;
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
         {
-            this._hasReservedLethalHit = false;
+            context.Allowed = false;
+            if (this.IsDisposed || this.IsDisposing || this._respawnAfterDeathCts is not { } current || this.LastDeath is not { } currentDeath
+                || (expectedSource is not null && !ReferenceEquals(current, expectedSource))
+                || (expectedDeath is not null && !ReferenceEquals(currentDeath, expectedDeath)))
+            {
+                return;
+            }
+
+            source = current;
+            token = source.Token;
+            death = currentDeath;
+        }
+
+        if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: true).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var prepared = false;
+        try
+        {
+            await this._summon.RemoveAsync().ConfigureAwait(false);
+            if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: false).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
+            if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: false).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            gate ??= await this._mapTransitions.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false);
+            if (!await this.PrepareForRespawnAsync(source, death, token).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            prepared = true;
+            await this.RespawnAtAsync(gate).ConfigureAwait(false);
+            if (!this.IsDisposed && !this.IsDisposing && this.SelectedCharacter is not null
+                && ReferenceEquals(this.LastDeath, death) && this._respawnAfterDeathCts is null)
+            {
+                await this.RespawnOfDuelPartnerIfInDuelAsync().ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            if (prepared)
+            {
+                source.Dispose();
+            }
         }
     }
 
@@ -1627,26 +1712,34 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     internal async ValueTask CompleteMapChangeDeathAsync()
     {
         (IAttacker? Killer, DeathInformation Death)? pending;
+        (CancellationTokenSource Source, DeathInformation Death, bool Claimed)? respawn;
         await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
         {
             context.Allowed = false;
             pending = this._pendingMapChangeDeath;
             this._pendingMapChangeDeath = null;
+            respawn = this._pendingDeathRespawn;
         }
 
         if (pending is { } death)
         {
             await this.OnDeathAsync(death.Killer, death.Death).ConfigureAwait(false);
         }
+
+        if (respawn is { Claimed: false } due)
+        {
+            await this.RespawnAfterDeathAsync(expectedSource: due.Source, expectedDeath: due.Death).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        var respawnCancellation = await this.TakeRespawnCancellationAsync().ConfigureAwait(false);
+        if (respawnCancellation is not null)
         {
-            context.Allowed = false;
-            this._pendingMapChangeDeath = null;
+            await respawnCancellation.CancelAsync().ConfigureAwait(false);
+            respawnCancellation.Dispose();
         }
 
         // A disposed player must never stay reachable from the game context: it would keep counting
@@ -1680,7 +1773,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
         this.ReleaseSkillList();
         this.ReleaseAttributeSystem();
-        this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
 
         this.PlayerDisconnected = null;
@@ -1715,10 +1807,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         bool moveToNextSafezone = false;
 
-        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
+        var respawnCancellation = await this.TakeRespawnCancellationAsync().ConfigureAwait(false);
+        if (respawnCancellation is not null)
         {
-            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
-            moveToNextSafezone = true;
+            if (!respawnCancellation.IsCancellationRequested)
+            {
+                await respawnCancellation.CancelAsync().ConfigureAwait(false);
+                moveToNextSafezone = true;
+            }
+
+            respawnCancellation.Dispose();
         }
 
         if (this.CurrentMiniGame is { } miniGame)
@@ -2097,8 +2195,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this._movement.StopWalkingAsync().ConfigureAwait(false);
-        this.IsAlive = false;
-        this._respawnAfterDeathCts = new CancellationTokenSource();
+        CancellationTokenSource respawnCancellation;
+        CancellationToken respawnToken;
+        DeathInformation deathInformation;
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            lock (this._hitLock)
+            {
+                if (this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                    || !this._hasReservedLethalHit || this.LastDeath is not { } currentDeath
+                    || (ownedDeath is not null && !ReferenceEquals(currentDeath, ownedDeath))
+                    || this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+                {
+                    return;
+                }
+
+                this.IsAlive = false;
+                deathInformation = currentDeath;
+                respawnCancellation = new CancellationTokenSource();
+                respawnToken = respawnCancellation.Token;
+                this._respawnAfterDeathCts = respawnCancellation;
+                this._pendingDeathRespawn = null;
+            }
+        }
+
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
 
         if (killer is Player killerAfterKilled
@@ -2109,23 +2230,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         // TODO: Drop items
-        async Task RespawnAsync(CancellationToken cancellationToken)
+        async Task RespawnAsync()
         {
             try
             {
-                await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
-
-                if (cancellationToken.IsCancellationRequested || this.CurrentMap is null)
-                {
-                    return;
-                }
-
-                await this._summon.RemoveAsync().ConfigureAwait(false);
-
-                await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
-                this.SetReclaimableAttributesToMaximum();
-                await this.RespawnAtAsync(await this._mapTransitions.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
-                await this.RespawnOfDuelPartnerIfInDuelAsync().ConfigureAwait(false);
+                await Task.Delay(3000, respawnToken).ConfigureAwait(false);
+                await this.RespawnAfterDeathAsync(expectedSource: respawnCancellation, expectedDeath: deathInformation).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -2137,17 +2247,104 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
-        _ = RespawnAsync(this._respawnAfterDeathCts.Token);
+        _ = RespawnAsync();
 
         if (this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
         {
             await plugInPoint.AttackableGotKilledAsync(this, killer).ConfigureAwait(false);
         }
 
-        if (this.LastDeath is { } deathInformation)
+        this.Died?.Invoke(this, deathInformation);
+    }
+
+    private async ValueTask<CancellationTokenSource?> TakeRespawnCancellationAsync()
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        var source = this._respawnAfterDeathCts;
+        this._respawnAfterDeathCts = null;
+        this._pendingDeathRespawn = null;
+        this._pendingMapChangeDeath = null;
+        return source;
+    }
+
+    private async ValueTask<bool> ContinueDeathRespawnAsync(CancellationTokenSource source, DeathInformation death, CancellationToken token, bool claim)
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        lock (this._hitLock)
         {
-            this.Died?.Invoke(this, deathInformation);
+            if (token.IsCancellationRequested || this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                || !ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death)
+                || !this._hasReservedLethalHit || this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                return false;
+            }
+
+            if (claim && this._pendingDeathRespawn is { Claimed: true })
+            {
+                return false;
+            }
+
+            if (!claim && this._pendingDeathRespawn is not { Claimed: true })
+            {
+                return false;
+            }
+
+            if (this.CurrentMap is null || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+            {
+                this._pendingDeathRespawn = (source, death, false);
+                return false;
+            }
+
+            this._pendingDeathRespawn = (source, death, true);
+            return true;
         }
+    }
+
+    private async ValueTask<bool> PrepareForRespawnAsync(CancellationTokenSource source, DeathInformation death, CancellationToken token)
+    {
+        List<(AttributeDefinition Definition, float Value)> changes = [];
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            lock (this._hitLock)
+            {
+                if (token.IsCancellationRequested || this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                    || !ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death)
+                    || !this._hasReservedLethalHit || this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+                {
+                    return false;
+                }
+
+                if (this.CurrentMap is null || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+                {
+                    this._pendingDeathRespawn = (source, death, false);
+                    return false;
+                }
+
+                this._hitAttributeChanges = changes;
+                try
+                {
+                    this.SetReclaimableAttributesToMaximum();
+                    this._hasReservedLethalHit = false;
+                    this._pendingMapChangeDeath = null;
+                    this._pendingDeathRespawn = null;
+                    this._respawnAfterDeathCts = null;
+                }
+                finally
+                {
+                    this._hitAttributeChanges = null;
+                }
+            }
+        }
+
+        foreach (var (definition, value) in changes)
+        {
+            _ = this.NotifyAttributeValueChangedAsync(definition, value);
+        }
+
+        return true;
     }
 
     /// <summary>

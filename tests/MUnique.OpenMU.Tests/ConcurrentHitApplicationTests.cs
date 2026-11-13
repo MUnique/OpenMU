@@ -219,8 +219,7 @@ public class ConcurrentHitApplicationTests
                 Assert.That(target.LastDeath?.KillerId, Is.EqualTo(killer.Id));
             });
             View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, killer), Times.Once);
-            target.SetReclaimableAttributesToMaximum();
-            await target.RespawnAtAsync(GateOf(target)).ConfigureAwait(false);
+            await target.RespawnAfterDeathAsync(GateOf(target)).ConfigureAwait(false);
             await target.CompleteMapChangeDeathAsync().ConfigureAwait(false);
             Assert.That(target.IsAlive, Is.True);
             Assert.That(deaths, Is.EqualTo(1), "An old owner must not kill the respawned life.");
@@ -265,9 +264,8 @@ public class ConcurrentHitApplicationTests
                 gate.Map = destination.Object;
             }
 
-            target.SetReclaimableAttributesToMaximum();
-            var restoredHealth = target.Attributes![Stats.CurrentHealth];
-            await target.RespawnAtAsync(gate).ConfigureAwait(false);
+            var restoredHealth = target.Attributes![Stats.MaximumHealth];
+            await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
             if (!useRespawnPlugIn)
             {
                 Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
@@ -310,6 +308,337 @@ public class ConcurrentHitApplicationTests
         }
         finally
         {
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Instant hazards preserve the first lethal owner and can finish through ordinary arrival.</summary>
+    /// <param name="reserved">Whether an ordinary lethal hit already owns this life.</param>
+    /// <param name="warp">Whether a map change overlaps the instant kill.</param>
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task InstantKillPreservesFirstDeathAsync(bool reserved, bool warp)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var killer = await CreatePlayerAsync(100, sameWorldAs: target).ConfigureAwait(false);
+        killer.Id = 11;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>())).Returns(() => DelayViewAsync(entered, release, false));
+        var original = reserved ? target.ApplyPoisonDamageAsync(killer, 10).AsTask() : Task.CompletedTask;
+        try
+        {
+            if (reserved)
+            {
+                await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            var owned = target.LastDeath;
+            if (warp)
+            {
+                await WarpAsync(target).ConfigureAwait(false);
+            }
+
+            await target.KillInstantlyAsync().ConfigureAwait(false);
+            var instantDeath = target.LastDeath;
+            release.TrySetResult();
+            await original.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (warp)
+            {
+                await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            }
+
+            Assert.That(deaths, Is.EqualTo(1));
+            Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            await target.KillInstantlyAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(target.LastDeath?.KillerId, Is.EqualTo(reserved ? 11 : 0));
+                Assert.That(target.LastDeath, Is.SameAs(reserved ? owned : instantDeath));
+                if (reserved)
+                {
+                    Assert.That(target.LastDeath, Is.SameAs(owned));
+                }
+            });
+            View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, reserved ? killer : null), Times.Once);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await original.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await killer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>The real three-second respawn survives a dead-player warp, before or after arrival.</summary>
+    /// <param name="arrivalDelay">Time spent off map before the real client-ready packet.</param>
+    [TestCase(100)]
+    [TestCase(3300)]
+    public async Task DeadWarpRetainsElapsedRespawnAsync(int arrivalDelay)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var spawnGate = GateOf(target);
+        spawnGate.IsSpawnGate = true;
+        target.CurrentMap!.Definition.ExitGates.Add(spawnGate);
+        var respawned = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var respawns = 0;
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        View<IRespawnAfterDeathPlugIn>(target).Setup(v => v.RespawnAsync()).Returns(() =>
+        {
+            Interlocked.Increment(ref respawns);
+            respawned.TrySetResult();
+            return ValueTask.CompletedTask;
+        });
+        try
+        {
+            await target.ApplyPoisonDamageAsync(target, 10).ConfigureAwait(false);
+            var started = Stopwatch.StartNew();
+            await WarpAsync(target).ConfigureAwait(false);
+            await Task.Delay(arrivalDelay).ConfigureAwait(false);
+            Assert.That(respawns, Is.Zero, "Generic relocation must not respawn/heal the victim.");
+            await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            await respawned.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            // The view callback precedes map insertion; complete the actual timer operation.
+            await Task.Delay(50).ConfigureAwait(false);
+            await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(started.Elapsed, Is.GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(2900)));
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(target.Attributes![Stats.CurrentHealth], Is.EqualTo(target.Attributes[Stats.MaximumHealth]));
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(respawns, Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Teardown invalidates pending timers and every awaited restoration continuation.</summary>
+    /// <param name="phase">The real lifecycle boundary held across teardown.</param>
+    /// <param name="dispose">Whether teardown is direct disposal rather than disconnect.</param>
+    [TestCase("due", false)]
+    [TestCase("due", true)]
+    [TestCase("death-view", false)]
+    [TestCase("death-view", true)]
+    [TestCase("selection", false)]
+    [TestCase("selection", true)]
+    [TestCase("placement", false)]
+    [TestCase("placement", true)]
+    public async Task DeathRestorationCannotOutliveTeardownAsync(string phase, bool dispose)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var map = target.CurrentMap!;
+        var gate = GateOf(target);
+        gate.IsSpawnGate = true;
+        map.Definition.ExitGates.Add(gate);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        async ValueTask PauseAsync()
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        }
+
+        var respawns = 0;
+        View<IRespawnAfterDeathPlugIn>(target).Setup(v => v.RespawnAsync()).Returns(() =>
+        {
+            Interlocked.Increment(ref respawns);
+            return phase == "placement" ? PauseAsync() : ValueTask.CompletedTask;
+        });
+        if (phase == "death-view")
+        {
+            View<IObjectGotKilledPlugIn>(target).Setup(v => v.ObjectGotKilledAsync(target, It.IsAny<IAttacker>())).Returns(PauseAsync);
+        }
+        else if (phase == "selection")
+        {
+            target.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerSpawnGateSelectionPlugIn>(new PausingSpawnGatePlugIn(target, gate, PauseAsync));
+        }
+        else
+        {
+            // The due and placement phases use the respawn view configured above.
+        }
+
+        Task work = Task.CompletedTask;
+        try
+        {
+            work = target.KillInstantlyAsync().AsTask();
+            if (phase == "due")
+            {
+                await work.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                var destination = new Mock<GameMapDefinition>();
+                destination.SetupAllProperties();
+                destination.Setup(m => m.DropItemGroups).Returns(map.Definition.DropItemGroups);
+                destination.Setup(m => m.MonsterSpawns).Returns(map.Definition.MonsterSpawns);
+                var gates = new List<ExitGate>();
+                destination.Setup(m => m.ExitGates).Returns(gates);
+                destination.Object.Number = 1;
+                destination.Object.TerrainData = map.Definition.TerrainData;
+                gates.Add(new ExitGate { Map = destination.Object, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+                target.GameContext.Configuration.Maps.Add(destination.Object);
+                await new WarpAction().WarpToAsync(target, new WarpInfo
+                {
+                    Gate = new ExitGate { Map = destination.Object, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 },
+                }).ConfigureAwait(false);
+                await Task.Delay(3300).ConfigureAwait(false);
+            }
+            else
+            {
+                if (phase != "death-view")
+                {
+                    await work.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                    work = target.RespawnAfterDeathAsync(phase == "selection" ? null : gate).AsTask();
+                }
+
+                await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            if (dispose)
+            {
+                await target.DisposeAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await target.DisconnectAsync().ConfigureAwait(false);
+            }
+
+            release.TrySetResult();
+            await work.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+            await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(respawns, Is.EqualTo(phase == "placement" ? 1 : 0));
+                Assert.That(map.GetPlayers(), Does.Not.Contain(target));
+            });
+        }
+        finally
+        {
+            release.TrySetResult();
+            await work.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>An actual duel respawn restores the living partner despite its temporary non-alive flag.</summary>
+    [Test]
+    public async Task ActualDeathRespawnRestoresLivingDuelPartnerAsync()
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var peer = await CreatePlayerAsync(50, sameWorldAs: target).ConfigureAwait(false);
+        var gate = GateOf(target);
+        var room = new DuelRoom(new DuelArea { FirstPlayerGate = gate, SecondPlayerGate = gate }, target, peer) { State = DuelState.DuelStarted };
+        target.DuelRoom = room;
+        peer.DuelRoom = room;
+        try
+        {
+            await target.ApplyPoisonDamageAsync(peer, 10).ConfigureAwait(false);
+            await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(peer.IsAlive, Is.True);
+                Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(peer.Attributes![Stats.CurrentHealth], Is.EqualTo(peer.Attributes[Stats.MaximumHealth]));
+                Assert.That(room.State, Is.EqualTo(DuelState.DuelStarted));
+            });
+            View<IRespawnAfterDeathPlugIn>(peer).Verify(v => v.RespawnAsync(), Times.Once);
+        }
+        finally
+        {
+            room.State = DuelState.Undefined;
+            await room.DisposeAsync().ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A timer already due off-map completes on arrival without restarting its three-second delay.</summary>
+    [Test]
+    public async Task DueRespawnCompletesOnArrivalWithoutAnotherDelayAsync()
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var gate = GateOf(target);
+        gate.IsSpawnGate = true;
+        target.CurrentMap!.Definition.ExitGates.Add(gate);
+        try
+        {
+            await target.KillInstantlyAsync().ConfigureAwait(false);
+            await WarpAsync(target).ConfigureAwait(false);
+            await Task.Delay(3300).ConfigureAwait(false);
+            Assert.That(target.IsAlive, Is.False);
+            var arrival = Stopwatch.StartNew();
+            await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(arrival.Elapsed, Is.LessThan(TimeSpan.FromSeconds(1)));
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(target.Attributes![Stats.CurrentHealth], Is.EqualTo(target.Attributes[Stats.MaximumHealth]));
+            });
+            View<IRespawnAfterDeathPlugIn>(target).Verify(v => v.RespawnAsync(), Times.Once);
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A paused old placement and its timer cannot revive or heal a replacement death/life.</summary>
+    [Test]
+    public async Task OldRespawnCannotTouchReplacementLifeAsync()
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var gate = GateOf(target);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var views = 0;
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        View<IRespawnAfterDeathPlugIn>(target).Setup(v => v.RespawnAsync()).Returns(() =>
+            Interlocked.Increment(ref views) == 1 ? DelayViewAsync(entered, release, false) : ValueTask.CompletedTask);
+        await target.KillInstantlyAsync().ConfigureAwait(false);
+        var oldRespawn = target.RespawnAfterDeathAsync(gate).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await WarpAsync(target).ConfigureAwait(false);
+            await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            Assert.That(target.IsAlive, Is.True);
+            await target.ApplyPoisonDamageAsync(target, (uint)target.Attributes![Stats.CurrentHealth]).ConfigureAwait(false);
+            var replacement = target.LastDeath;
+            release.TrySetResult();
+            await oldRespawn.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.LastDeath, Is.SameAs(replacement));
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(deaths, Is.EqualTo(2));
+            });
+            await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
+            target.Attributes[Stats.CurrentHealth] = 50;
+            await Task.Delay(3300).ConfigureAwait(false);
+            Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(50));
+            Assert.That(views, Is.EqualTo(2));
+            Assert.That(deaths, Is.EqualTo(2));
+        }
+        finally
+        {
+            release.TrySetResult();
+            await oldRespawn.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
         }
     }
@@ -459,8 +788,7 @@ public class ConcurrentHitApplicationTests
             if (lethal)
             {
                 Assert.That(manaAtDeath, Is.EqualTo(expectedMana));
-                target.SetReclaimableAttributesToMaximum();
-                await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+                await target.RespawnAfterDeathAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
                 target.Attributes[Stats.CurrentMana] = 17;
                 await target.ApplyPoisonDamageAsync(attacker, 1).ConfigureAwait(false);
                 Assert.That(target.Attributes[Stats.CurrentMana], Is.EqualTo(17), "No ordinary-hit mana work may leak into the next life.");
@@ -682,8 +1010,8 @@ public class ConcurrentHitApplicationTests
             Assert.That(killer.SelectedCharacter!.PlayerKillCount, Is.EqualTo(1));
             Assert.That(target.IsAlive, Is.False);
         });
-        target.Attributes![Stats.CurrentHealth] = 100;
-        await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+        Add(target, Stats.MaximumHealth, 100 - target.Attributes![Stats.MaximumHealth]);
+        await target.RespawnAfterDeathAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
         await target.ApplyPoisonDamageAsync(killer, 1).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
@@ -983,8 +1311,8 @@ public class ConcurrentHitApplicationTests
             Assert.That(target.OpenedNpc, Is.Null);
             Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
         });
-        target.Attributes![Stats.CurrentHealth] = 100;
-        await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+        Add(target, Stats.MaximumHealth, 100 - target.Attributes![Stats.MaximumHealth]);
+        await target.RespawnAfterDeathAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
         await target.ApplyPoisonDamageAsync(peer, 1).ConfigureAwait(false);
         Assert.That(target.IsAlive, Is.True);
         Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(99));
@@ -1168,8 +1496,8 @@ public class ConcurrentHitApplicationTests
             Assert.That(peer.TradingPartner, Is.Null);
             Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
         });
-        target.Attributes![Stats.CurrentHealth] = 100;
-        await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+        Add(target, Stats.MaximumHealth, 100 - target.Attributes![Stats.MaximumHealth]);
+        await target.RespawnAfterDeathAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
         await target.ApplyPoisonDamageAsync(peer, 1).ConfigureAwait(false);
         Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(99));
         if (trade)
@@ -1299,8 +1627,8 @@ public class ConcurrentHitApplicationTests
             await target.ApplyPoisonDamageAsync(killer, 10).ConfigureAwait(false);
             if (reopen != 0)
             {
-                target.Attributes![Stats.CurrentHealth] = 100;
-                await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+                Add(target, Stats.MaximumHealth, 100 - target.Attributes![Stats.MaximumHealth]);
+                await target.RespawnAfterDeathAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
                 if (reopen == 2)
                 {
                     newerResponse = new TalkNpcAction().TalkToNpcAsync(target, npc).AsTask();
@@ -1497,6 +1825,22 @@ public class ConcurrentHitApplicationTests
         }).ToArray();
         start.SetResult();
         await Task.WhenAll(tasks).WaitAsync(TimeSpan.FromSeconds(15)).ConfigureAwait(false);
+    }
+
+    [System.Runtime.InteropServices.Guid("59682862-62E4-4A70-A16B-E389087CB50A")]
+    private sealed class PausingSpawnGatePlugIn(Player expectedPlayer, ExitGate gate, Func<ValueTask> pause) : IPlayerSpawnGateSelectionPlugIn
+    {
+        private int _calls;
+
+        public async ValueTask SelectSpawnGateAsync(Player player, SpawnGateSelectionArgs args)
+        {
+            Assert.That(player, Is.SameAs(expectedPlayer));
+            args.Gate = gate;
+            if (Interlocked.Increment(ref this._calls) == 1)
+            {
+                await pause().ConfigureAwait(false);
+            }
+        }
     }
 
     private sealed class TestPlayer(IGameContext context, bool useRespawnPlugIn = true) : Player(context)

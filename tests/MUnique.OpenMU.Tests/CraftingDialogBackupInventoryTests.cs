@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Threading;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
@@ -15,6 +16,9 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views.NPC;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests for the backup of the inventory which is taken when a crafting NPC (Chaos Goblin, Pet
@@ -190,8 +194,58 @@ public class CraftingDialogBackupInventoryTests
         }
     }
 
+    /// <summary>A dying player cannot reopen the Chaos Goblin while ordinary closing persistence waits.</summary>
+    [Test]
+    public async Task ReservedDeathCannotReopenNpcDuringCloseSaveAsync()
+    {
+        var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = seed.GameContext.Configuration;
+        var provider = new PausingContextProvider(configuration);
+        var initializer = new MapInitializer(configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(configuration, provider, initializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        initializer.PlugInManager = game.PlugInManager;
+        initializer.PathFinderPool = game.PathFinderPool;
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        var npc = CreateCraftingNpc();
+        npc.Definition.Number = 238;
+        await new TalkNpcAction().TalkToNpcAsync(target, npc).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        ((PausingPlayerContext)target.PersistenceContext).BeforeSave = async () =>
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        };
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        var lethal = target.ApplyPoisonDamageAsync(target, 10).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+            await new TalkNpcAction().TalkToNpcAsync(target, npc).ConfigureAwait(false);
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.OpenedNpcContext, Is.Null);
+                Assert.That(target.BackupInventory, Is.Null);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(deaths, Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
     private static ValueTask RespawnAsync(Player player)
-        => player.RespawnAtAsync(new ExitGate { Map = player.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 });
+        => player.RespawnAfterDeathAsync(new ExitGate { Map = player.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 });
 
     private static async ValueTask PutIntoTheMachineAsync(Player player, Item item)
     {
@@ -228,4 +282,29 @@ public class CraftingDialogBackupInventoryTests
         item.Object.Durability = 1;
         return item.Object;
     }
+    private sealed class PausingContextProvider(GameConfiguration expectedConfiguration) : InMemoryPersistenceContextProvider, IPersistenceContextProvider
+    {
+        IPlayerContext IPersistenceContextProvider.CreateNewPlayerContext(GameConfiguration configuration)
+        {
+            Assert.That(configuration, Is.SameAs(expectedConfiguration));
+            return new PausingPlayerContext((InMemoryRepositoryProvider)this.RepositoryProvider);
+        }
+    }
+
+    private sealed class PausingPlayerContext(InMemoryRepositoryProvider provider) : PlayerInMemoryContext(provider), IPlayerContext
+    {
+        public Func<ValueTask>? BeforeSave { get; set; }
+
+        async ValueTask<bool> IContext.SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            if (this.BeforeSave is { } beforeSave)
+            {
+                this.BeforeSave = null;
+                await beforeSave().ConfigureAwait(false);
+            }
+
+            return await base.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
 }

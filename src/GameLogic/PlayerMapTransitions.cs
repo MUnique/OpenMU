@@ -194,39 +194,72 @@ internal sealed class PlayerMapTransitions
     public async ValueTask RespawnAtAsync(ExitGate gate)
     {
         var player = this._player;
+        player.ThrowNotInitializedProperty(player.SelectedCharacter is null, nameof(player.SelectedCharacter));
+        var character = player.SelectedCharacter!;
+        var placementDeath = player.LastDeath;
         var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
 
-        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false))
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap).ConfigureAwait(false) || !IsCurrentPlacement())
         {
             return;
         }
 
-        player.ThrowNotInitializedProperty(player.SelectedCharacter is null, nameof(player.SelectedCharacter));
-        player.SelectedCharacter.ThrowNotInitializedProperty(player.SelectedCharacter.CurrentMap is null, nameof(player.SelectedCharacter.CurrentMap));
+        character.ThrowNotInitializedProperty(character.CurrentMap is null, nameof(character.CurrentMap));
         await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
-        player.ClearRespawnAfterDeathToken();
-        await player.PrepareForRespawnAsync().ConfigureAwait(false);
+        if (!IsCurrentPlacement())
+        {
+            return;
+        }
 
         if (player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
         {
             // Older clients use a separate packet for the respawn, while newer don't.
             // It requires a slightly different logic.
-            player.CurrentMap = await this.GetMapToEnterAsync(player.SelectedCharacter!.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
+            var map = await this.GetMapToEnterAsync(character.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
+            if (!IsCurrentPlacement())
+            {
+                return;
+            }
+
+            player.CurrentMap = map;
             await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
+            if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
+            {
+                return;
+            }
+
             await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-            player.IsAlive = true;
-            await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
+            if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map) || player.PlayerState.CurrentState != GameLogic.PlayerState.EnteredWorld)
+            {
+                return;
+            }
+
+            player.RestoreLivenessAfterPlacement();
+            await map.AddAsync(player).ConfigureAwait(false);
+            if (IsCurrentPlacement() && ReferenceEquals(player.CurrentMap, map))
+            {
+                await player.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+            }
         }
         else
         {
             player.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
             await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false);
+            if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
+            {
+                return;
+            }
+
             await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
 
             // after this, the Client will send us a F3 12 packet, to tell us it loaded
             // the map and is ready to receive the new meet player/monster etc.
             // Then ClientReadyAfterMapChange is called.
         }
+
+        bool IsCurrentPlacement() => !player.IsDisposed && !player.IsDisposing
+            && ReferenceEquals(player.SelectedCharacter, character) && ReferenceEquals(player.LastDeath, placementDeath)
+            && !player.PlayerState.CurrentState.IsDisconnectedOrFinished();
     }
 
     /// <summary>

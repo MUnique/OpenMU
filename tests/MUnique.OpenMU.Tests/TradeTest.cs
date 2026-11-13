@@ -63,6 +63,62 @@ public class TradeTest
         Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
     }
 
+    /// <summary>A legitimate first OK must not cancel the peer's still-saving window opening.</summary>
+    /// <param name="earlyOk">Whether the first opener presses OK during the peer's save.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task EarlyTradeOkPreservesPeerOpeningAsync(bool earlyOk)
+    {
+        var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = seed.GameContext.Configuration;
+        var provider = new PausingContextProvider(configuration);
+        var initializer = new MapInitializer(configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(configuration, provider, initializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        initializer.PlugInManager = game.PlugInManager;
+        initializer.PathFinderPool = game.PathFinderPool;
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        ((PausingPlayerContext)peer.PersistenceContext).BeforeSave = async () =>
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        };
+        Assert.That(await new TradeRequestAction().RequestTradeAsync(peer, target).ConfigureAwait(false), Is.True);
+        var opening = new TradeAcceptAction().HandleTradeAcceptAsync(target, true).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.BackupInventory, Is.Not.Null);
+            if (earlyOk)
+            {
+                await new TradeButtonAction().TradeButtonChangedAsync(target, TradeButtonState.Checked).ConfigureAwait(false);
+            }
+
+            release.TrySetResult();
+            await opening.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(earlyOk ? PlayerState.TradeButtonPressed : PlayerState.TradeOpened));
+                Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(peer.BackupInventory, Is.Not.Null);
+            });
+            Mock.Get(peer.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(v => v.ShowTradeRequestAnswerAsync(true), Times.Once);
+            await new TradeCancelAction().CancelTradeAsync(peer).ConfigureAwait(false);
+            Assert.That(target.BackupInventory, Is.Null);
+            Assert.That(peer.BackupInventory, Is.Null);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await opening.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
     /// <summary>
     /// A cancelled acceptance cannot recreate inventory backups across any awaited preparation step.
     /// </summary>
@@ -135,7 +191,7 @@ public class TradeTest
             await Task.WhenAll(acceptance, death).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             var staleBackup = target.BackupInventory;
             var stalePeerBackup = peer.BackupInventory;
-            await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+            await target.RespawnAfterDeathAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
             var gainedItem = this.GetItem();
             Assert.That(await target.Inventory.AddItemAsync(gainedItem).ConfigureAwait(false), Is.True);
             inventory.Money = 9876;
