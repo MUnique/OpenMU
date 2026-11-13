@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -80,10 +81,17 @@ public class CastleSiegeFriendlyFireTests
         var fixture = await SiegeFixture.CreateAsync().ConfigureAwait(false);
         var attacker = await fixture.CreatePlayerAsync(1, CastleSiegeJoinSide.Attack1).ConfigureAwait(false);
         var defender = await fixture.CreatePlayerAsync(2, CastleSiegeJoinSide.Defense).ConfigureAwait(false);
+        var healthBefore = defender.Attributes![Stats.CurrentHealth];
 
         var hitInfo = await defender.AttackByAsync(attacker, null, false).ConfigureAwait(false);
 
         Assert.That(hitInfo, Is.Not.Null);
+        var damage = hitInfo.GetValueOrDefault().HealthDamage;
+        Assert.Multiple(() =>
+        {
+            Assert.That(damage, Is.GreaterThan(0));
+            Assert.That(defender.Attributes[Stats.CurrentHealth], Is.EqualTo(healthBefore - damage));
+        });
     }
 
     private sealed class SiegeFixture
@@ -134,6 +142,10 @@ public class CastleSiegeFriendlyFireTests
         public async ValueTask<Player> CreatePlayerAsync(uint guildId, CastleSiegeJoinSide side)
         {
             var player = await PlayerTestHelper.CreatePlayerAsync(this.GameContext).ConfigureAwait(false);
+            player.Attributes![Stats.CurrentHealth] = player.Attributes[Stats.MaximumHealth];
+            player.Attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.AttackRatePvp);
+            player.Attributes.AddElement(new SimpleElement(10, AggregateType.AddRaw), Stats.MinimumPhysBaseDmg);
+            player.Attributes.AddElement(new SimpleElement(10, AggregateType.AddRaw), Stats.MaximumPhysBaseDmg);
             player.SelectedCharacter!.Id = Guid.NewGuid();
             player.GuildStatus = new GuildMemberStatus(guildId, GuildPosition.NormalMember);
             player.Position = new Point((byte)guildId, 20);
