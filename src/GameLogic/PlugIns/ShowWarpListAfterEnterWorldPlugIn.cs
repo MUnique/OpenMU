@@ -35,7 +35,7 @@ public class ShowWarpListAfterEnterWorldPlugIn : IPlayerStateChangedPlugIn
     /// </summary>
     /// <param name="warpList">The configured warp list.</param>
     /// <returns>
-    /// The warps which lead to a map and are shown in the warp list (<see cref="WarpInfo.IsShownInWarpList"/>).
+    /// The warps which lead to a map and which players can use (<see cref="WarpInfo.IsWarpable"/>).
     /// Of warps with the same index, only the first one is included, because it's the one which a warp
     /// request with that index uses.
     /// </returns>
@@ -43,7 +43,7 @@ public class ShowWarpListAfterEnterWorldPlugIn : IPlayerStateChangedPlugIn
     {
         return warpList
             .DistinctBy(warp => warp.Index)
-            .Where(warp => warp.IsShownInWarpList && warp.Gate?.Map is not null)
+            .Where(warp => warp.IsWarpable && warp.Gate?.Map is not null)
             .OrderBy(warp => warp.Index)
             .ToList();
     }

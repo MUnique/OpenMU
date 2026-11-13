@@ -1043,6 +1043,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixMurenRingOfFireBonusPlugIn_Description text.</summary>
         public static string FixMurenRingOfFireBonusPlugIn_Description => ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name text.</summary>
+        public static string RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name => ResourceManager.GetString("RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description text.</summary>
+        public static string RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description => ResourceManager.GetString("RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FixDestroyPhantomArmorNamesPlugIn_Name text.</summary>
         public static string FixDestroyPhantomArmorNamesPlugIn_Name => ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Name", resourceCulture)!;
 

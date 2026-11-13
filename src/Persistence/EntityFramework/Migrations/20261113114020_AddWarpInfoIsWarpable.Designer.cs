@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     [DbContext(typeof(MUnique.OpenMU.Persistence.EntityFramework.EntityDataContext))]
-    [Migration("20261113102918_AddWarpInfoIsShownInWarpList")]
-    partial class AddWarpInfoIsShownInWarpList
+    [Migration("20261113114020_AddWarpInfoIsWarpable")]
+    partial class AddWarpInfoIsWarpable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -4625,7 +4625,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Index")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsShownInWarpList")
+                    b.Property<bool>("IsWarpable")
                         .HasColumnType("boolean");
 
                     b.Property<int>("LevelRequirement")

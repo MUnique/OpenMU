@@ -170,6 +170,9 @@ internal class CrywolfInitializer : InitializerBase
         warpInfo.Costs = 10000;
         warpInfo.LevelRequirement = 190;
         warpInfo.Gate = gate;
+
+        // The original client doesn't offer it in its warp window: Crywolf is reached by walking.
+        warpInfo.IsWarpable = false;
         this.GameConfiguration.WarpList.Add(warpInfo);
     }
 

@@ -5,15 +5,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
     /// <summary>
-    /// Adds the flag whether a warp is shown in the warp list of the game client. Existing warps are shown.
+    /// Adds the flag whether players can use a warp. Existing warps stay usable; the update
+    /// "Restrict warps outside of the original warp window" restricts the ones of the original client.
     /// </summary>
-    public partial class AddWarpInfoIsShownInWarpList : Migration
+    public partial class AddWarpInfoIsWarpable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "IsShownInWarpList",
+                name: "IsWarpable",
                 schema: "config",
                 table: "WarpInfo",
                 type: "boolean",
@@ -25,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsShownInWarpList",
+                name: "IsWarpable",
                 schema: "config",
                 table: "WarpInfo");
         }

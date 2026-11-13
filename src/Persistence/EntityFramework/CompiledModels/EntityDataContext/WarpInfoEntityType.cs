@@ -72,13 +72,13 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 sentinel: 0);
             index.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
-            var isShownInWarpList = runtimeEntityType.AddProperty(
-                "IsShownInWarpList",
+            var isWarpable = runtimeEntityType.AddProperty(
+                "IsWarpable",
                 typeof(bool),
-                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetProperty("IsShownInWarpList", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
-                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetField("<IsShownInWarpList>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetProperty("IsWarpable", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetField("<IsWarpable>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: false);
-            isShownInWarpList.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+            isWarpable.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var levelRequirement = runtimeEntityType.AddProperty(
                 "LevelRequirement",

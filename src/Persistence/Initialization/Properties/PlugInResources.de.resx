@@ -911,6 +911,8 @@
     <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
   <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve">
+  <data name="RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name" xml:space="preserve"><value>Warps außerhalb des ursprünglichen Warp-Fensters einschränken</value></data>
+  <data name="RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description" xml:space="preserve"><value>Macht die Warps, die der ursprüngliche Client nicht in seinem Warp-Fenster anbietet (Crywolf, Loren Market und der zweite LaCleon-Warp), nur für Game Master verfügbar.</value></data>
     <value>Bonus des Muren-Feuerrings korrigieren</value>
   </data>
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">

@@ -2301,8 +2301,9 @@ internal sealed class BotNavigator : AsyncDisposable
         // global warp list, so map-number matching remains the compatibility fallback. When the exact
         // definition is present, however, use only its entries to avoid mixing distinct definitions
         // which happen to share a number.
+        // Warps which aren't warpable are refused for players (see WarpAction), so bots don't pick them.
         var sameNumberWarps = this._player.GameContext.Configuration.WarpList
-            .Where(w => w.Gate?.Map?.Number == mapDefinition.Number)
+            .Where(w => w.IsWarpable && w.Gate?.Map?.Number == mapDefinition.Number)
             .ToArray();
         var mapDefinitionId = mapDefinition.GetId();
         var exactMapWarps = mapDefinitionId == Guid.Empty

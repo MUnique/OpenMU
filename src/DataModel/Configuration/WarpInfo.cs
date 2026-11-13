@@ -33,12 +33,15 @@ public partial class WarpInfo
     public int LevelRequirement { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether this warp is shown in the warp list of the game client.
+    /// Gets or sets a value indicating whether players can use this warp.
     /// </summary>
     /// <remarks>
-    /// It only affects the list which is sent to the client; a warp which isn't shown can still be used by its <see cref="Index"/>.
+    /// When it's <c>false</c>, the warp is only available to game masters: it isn't sent to the warp list of
+    /// the game client, and the warp request of a player is refused. It doesn't affect other ways to get to
+    /// the map, e.g. walking or the move command of a game master. That's the case of the warps which the
+    /// original client doesn't offer in its warp window, like Crywolf, which is reached by walking.
     /// </remarks>
-    public bool IsShownInWarpList { get; set; } = true;
+    public bool IsWarpable { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the gate.
