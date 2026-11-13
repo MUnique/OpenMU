@@ -160,13 +160,17 @@ public sealed class CharacterWriteOperations(IPersistenceContextProvider persist
                 }
 
                 // Use detached storage/items for placement checks: Storage repairs malformed layouts in its constructor.
+                // An item which finds no place, e.g. because its definition grew, waits for space in the inventory
+                // when the storage is loaded in the game, so it takes no place here.
                 var detached = new PreviewStorage(storage);
-                var grid = vault ? new Storage(InventoryConstants.WarehouseSize, detached)
+                Func<Item, bool> ignoreItemWithoutPlace = _ => false;
+                var grid = vault ? new Storage(InventoryConstants.WarehouseSize, 0, 0, detached, ignoreItemWithoutPlace)
                     : new Storage(
                         InventoryConstants.GetInventorySize(0),
                         InventoryConstants.EquippableSlotsCount,
                         0,
-                        new ItemStorageAdapter(detached, 0, InventoryConstants.GetInventorySize(0)));
+                        new ItemStorageAdapter(detached, 0, InventoryConstants.GetInventorySize(0)),
+                        ignoreItemWithoutPlace);
                 slot = grid.CheckInvSpace(new Item { Definition = definition, Level = level });
                 if (slot is null)
                 {

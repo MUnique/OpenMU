@@ -1804,4 +1804,34 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="WaitingItemsDeliveryPlugIn_Name" xml:space="preserve">
+    <value>等待物品发放</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugIn_Description" xml:space="preserve">
+    <value>角色进入游戏或打开仓库时以及之后定期，将等待背包空间的物品放入背包（有足够空间时）。停用后物品会继续等待。</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>等待物品命令</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /waiting，列出等待背包空间的物品。</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name" xml:space="preserve">
+    <value>检查间隔</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description" xml:space="preserve">
+    <value>多久将等待的物品放入背包一次（有足够空间时）。</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>列出的物品数</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>进入游戏或打开仓库时告知玩家的等待物品数量，每条消息一件。</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>列出的物品数</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>列出的等待物品数量，每条消息一件。</value>
+  </data>
 </root>

@@ -35,7 +35,15 @@ public class Storage : IStorage
     /// <param name="boxOffset">The box offset, which is the first index where the 2-dimensional box starts.</param>
     /// <param name="slotOffset">The slot offset, which means at which <see cref="Item.ItemSlot" /> this instance starts.</param>
     /// <param name="itemStorage">The item storage.</param>
-    public Storage(int numberOfSlots, int boxOffset, int slotOffset, ItemStorage itemStorage)
+    /// <param name="putAsideItemWithoutPlace">
+    /// Is called for each item which finds no free place, e.g. because the size of its definition grew.
+    /// When it returns <c>true</c>, it took the item, and the item is removed from the <paramref name="itemStorage"/>
+    /// afterwards, so it isn't lost when the function throws. When it returns <c>false</c>, the item stays in the
+    /// <paramref name="itemStorage"/>, but not in this storage; then the caller must place or remove it,
+    /// otherwise another item may be placed over it and both are saved at the same place.
+    /// When it's <c>null</c>, such an item throws an <see cref="ArgumentException"/>.
+    /// </param>
+    public Storage(int numberOfSlots, int boxOffset, int slotOffset, ItemStorage itemStorage, Func<Item, bool>? putAsideItemWithoutPlace = null)
     {
         this.ItemArray = new Item?[numberOfSlots];
         this._rows = (numberOfSlots - boxOffset) / InventoryConstants.RowSize;
@@ -78,9 +86,22 @@ public class Storage : IStorage
             }
         }
 
-        if (unfittingItems.Count > 0)
+        if (unfittingItems.Count == 0)
+        {
+            return;
+        }
+
+        if (putAsideItemWithoutPlace is null)
         {
             throw new ArgumentException($"Some items do not fit into the storage: {string.Join(';', unfittingItems)}");
+        }
+
+        foreach (var item in unfittingItems)
+        {
+            if (putAsideItemWithoutPlace(item))
+            {
+                this.ItemStorage.Items.Remove(item);
+            }
         }
     }
 
@@ -339,6 +360,31 @@ public class Storage : IStorage
             return false;
         }
 
+        return true;
+    }
+
+    /// <summary>
+    /// Puts an item, which found no free place when this storage or one of its extensions was loaded,
+    /// into the first free place of this storage or its extensions.
+    /// </summary>
+    /// <param name="item">The item, which still belongs to the item storage.</param>
+    /// <returns><c>True</c>, if the item found a place; Otherwise, <c>false</c>.</returns>
+    protected bool TryAddItemWithoutPlace(Item item)
+    {
+        if (this.CheckInvSpace(item) is not { } freeSlot)
+        {
+            return false;
+        }
+
+        var storage = this.ContainsSlot(freeSlot)
+            ? this
+            : this.Extensions.OfType<Storage>().FirstOrDefault(extension => extension.ContainsSlot(freeSlot));
+        if (storage?.AddItemInternal((byte)(freeSlot - storage._slotOffset), item) is not true)
+        {
+            return false;
+        }
+
+        item.ItemSlot = freeSlot;
         return true;
     }
 

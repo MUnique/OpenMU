@@ -1897,4 +1897,34 @@
   <data name="BotConfiguration_MapsForbiddenForBots_Description" xml:space="preserve">
     <value>Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected.</value>
   </data>
+  <data name="WaitingItemsDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Waiting items delivery</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it's deactivated, the items keep waiting.</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Waiting items chat command</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/waiting'. Lists the items which wait for space in the inventory.</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name" xml:space="preserve">
+    <value>Check interval</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description" xml:space="preserve">
+    <value>How often the waiting items are put into the inventories, as far as they fit there.</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>Named items</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault.</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>Named items</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>The number of waiting items which are named, one per message.</value>
+  </data>
 </root>

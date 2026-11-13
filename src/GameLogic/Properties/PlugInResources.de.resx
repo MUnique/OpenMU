@@ -2010,4 +2010,34 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch des mittleren Elite-Heiltranks verarbeitet. Er stellt einen Teil der Lebenspunkte sofort wieder her.</value>
   </data>
+  <data name="WaitingItemsDeliveryPlugIn_Name" xml:space="preserve">
+    <value>Zustellung wartender Gegenstände</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugIn_Description" xml:space="preserve">
+    <value>Legt die Gegenstände, die auf Platz im Inventar eines Charakters warten, hinein, sobald sie passen: wenn der Charakter das Spiel betritt oder das Lager öffnet und danach regelmäßig. Ist es deaktiviert, warten die Gegenstände weiter.</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chatbefehl wartende Gegenstände</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Verarbeitet den Chatbefehl '/waiting'. Listet die Gegenstände auf, die auf Platz im Inventar warten.</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name" xml:space="preserve">
+    <value>Prüfintervall</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description" xml:space="preserve">
+    <value>Wie oft die wartenden Gegenstände in die Inventare gelegt werden, soweit sie hineinpassen.</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>Genannte Gegenstände</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>Die Anzahl der wartenden Gegenstände, die genannt werden, einer pro Nachricht, wenn der Spieler beim Betreten des Spiels oder beim Öffnen des Lagers darüber informiert wird.</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>Genannte Gegenstände</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>Die Anzahl der wartenden Gegenstände, die genannt werden, einer pro Nachricht.</value>
+  </data>
 </root>

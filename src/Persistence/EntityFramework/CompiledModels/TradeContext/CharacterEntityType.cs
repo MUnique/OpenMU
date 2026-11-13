@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
                 propertyCount: 26,
-                navigationCount: 5,
+                navigationCount: 6,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 2,
                 keyCount: 1);
