@@ -432,6 +432,88 @@ public class MerchantShopExportImportServiceTests
         this._persistenceContext.Verify(c => c.Detach(createdItem), Times.Once);
     }
 
+    /// <summary>
+    /// Items which don't fit into the 8x15 grid of the shop reject the whole file.
+    /// </summary>
+    /// <param name="slot">The slot of the item.</param>
+    /// <param name="width">The width of the item.</param>
+    /// <param name="height">The height of the item.</param>
+    /// <returns>The task.</returns>
+    [TestCase(120, 1, 1)]
+    [TestCase(200, 1, 1)]
+    [TestCase(7, 2, 1)]
+    [TestCase(112, 1, 2)]
+    public async Task Import_ItemNotFittingIntoShop_RejectsWholeFileAsync(int slot, int width, int height)
+    {
+        var definition = this.AddItemDefinition(0, 1, (byte)width, (byte)height);
+        var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = definition };
+        store.Items.Add(existingItem);
+
+        var result = await this._service
+            .TryApplyImportAsync(
+                merchant,
+                this.CreateExport(new ShopItemExport { Slot = (byte)slot, ItemGroup = 0, ItemNumber = 1 }),
+                this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.ImportedItemCount, Is.Zero);
+        Assert.That(result.Problems, Has.Count.EqualTo(1));
+        this.AssertShopUntouched(store, existingItem);
+    }
+
+    /// <summary>
+    /// Items which share a cell of the shop's grid reject the whole file, even if their slots differ.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_OverlappingItems_RejectsWholeFileAsync()
+    {
+        var large = this.AddItemDefinition(0, 1, 2, 2);
+        this.AddItemDefinition(0, 2);
+        var (merchant, store) = CreateMerchant();
+        var existingItem = new BasicModel.Item { Definition = large };
+        store.Items.Add(existingItem);
+
+        var result = await this._service
+            .TryApplyImportAsync(
+                merchant,
+                this.CreateExport(
+                    new ShopItemExport { Slot = 0, ItemGroup = 0, ItemNumber = 1 },
+                    new ShopItemExport { Slot = 9, ItemGroup = 0, ItemNumber = 2 }),
+                this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.ImportedItemCount, Is.Zero);
+        Assert.That(result.Problems.Single(), Does.Contain("Slot 9"));
+        this.AssertShopUntouched(store, existingItem);
+    }
+
+    /// <summary>
+    /// Multi-cell items next to each other, including the last cell of the grid, are imported.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task Import_AdjacentMultiCellItems_AreImportedAsync()
+    {
+        this.AddItemDefinition(0, 1, 2, 2);
+        this.AddItemDefinition(0, 2);
+        var (merchant, store) = CreateMerchant();
+
+        var result = await this._service
+            .TryApplyImportAsync(
+                merchant,
+                this.CreateExport(
+                    new ShopItemExport { Slot = 0, ItemGroup = 0, ItemNumber = 1 },
+                    new ShopItemExport { Slot = 2, ItemGroup = 0, ItemNumber = 2 },
+                    new ShopItemExport { Slot = 119, ItemGroup = 0, ItemNumber = 2 }),
+                this._persistenceContext.Object)
+            .ConfigureAwait(false);
+
+        Assert.That(result!.Problems, Is.Empty);
+        Assert.That(store.Items, Has.Count.EqualTo(3));
+    }
+
     private static MerchantShopExport Deserialize(string json)
     {
         return JsonSerializer.Deserialize<MerchantShopExport>(json)!;
@@ -456,9 +538,9 @@ public class MerchantShopExportImportServiceTests
         this._persistenceContext.Verify(c => c.CreateNew<Item>(It.IsAny<object?[]>()), Times.Never);
     }
 
-    private BasicModel.ItemDefinition AddItemDefinition(byte group, short number)
+    private BasicModel.ItemDefinition AddItemDefinition(byte group, short number, byte width = 1, byte height = 1)
     {
-        var definition = new BasicModel.ItemDefinition { Group = group, Number = number };
+        var definition = new BasicModel.ItemDefinition { Group = group, Number = number, Width = width, Height = height };
         this._itemDefinitions.Add(definition);
         return definition;
     }

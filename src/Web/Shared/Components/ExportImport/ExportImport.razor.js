@@ -27,3 +27,15 @@ export function downloadFile(fileName, base64) {
     document.body.removeChild(anchor);
     URL.revokeObjectURL(url);
 }
+
+/**
+ * Clears the selected file of the file input, so that selecting the same file again raises a change event,
+ * e.g. after the file has been corrected.
+ * @param {string} id - The id of the file input.
+ */
+export function resetFileInput(id) {
+    const input = document.getElementById(id);
+    if (input) {
+        input.value = "";
+    }
+}

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Pages.MerchantShop;
 
 using System.Text.Json;
 using System.Threading;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -24,6 +25,7 @@ using MUnique.OpenMU.Persistence;
 /// references are resolved, before the shop is touched. If any entry can't be imported, e.g. because its item
 /// definition, option or ancient set is unknown, nothing is imported and the problems are reported,
 /// so that the file can be adjusted.
+/// The items must also fit into the shop (8 columns, 15 rows) without overlapping each other.
 /// A file which lacks its format version or its item list is rejected, so that an incomplete file can't
 /// be mistaken for an intentionally empty shop. An explicitly empty item list does clear the shop.
 /// </para>
@@ -92,6 +94,7 @@ public sealed class MerchantShopExportImportService
 
         var plannedItems = new List<PlannedItem>();
         var problems = new List<string>();
+        var occupiedSlots = new HashSet<int>();
         foreach (var itemExport in dto.Items)
         {
             if (!definitionsByKey.TryGetValue((itemExport.ItemGroup, itemExport.ItemNumber), out var definition))
@@ -100,6 +103,7 @@ public sealed class MerchantShopExportImportService
                 continue;
             }
 
+            CheckPlacement(itemExport, definition, occupiedSlots, problems);
             plannedItems.Add(PlanItem(itemExport, definition, problems));
         }
 
@@ -282,6 +286,33 @@ public sealed class MerchantShopExportImportService
         // The ids of option types differ between configurations, so we fall back to their names.
         return candidates.FirstOrDefault(candidate =>
             IsSameOption(candidate) && candidate.OptionType?.Name.ValueInNeutralLanguage == optionExport.OptionTypeName);
+    }
+
+    private static void CheckPlacement(ShopItemExport itemExport, ItemDefinition definition, ISet<int> occupiedSlots, ICollection<string> problems)
+    {
+        var column = itemExport.Slot % InventoryConstants.RowSize;
+        var row = itemExport.Slot / InventoryConstants.RowSize;
+        var width = Math.Max((int)definition.Width, 1);
+        var height = Math.Max((int)definition.Height, 1);
+        if (column + width > InventoryConstants.RowSize || row + height > InventoryConstants.WarehouseRows)
+        {
+            problems.Add($"Slot {itemExport.Slot}: the item doesn't fit into the shop at this slot.");
+            return;
+        }
+
+        var overlaps = false;
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                overlaps |= !occupiedSlots.Add(((row + y) * InventoryConstants.RowSize) + column + x);
+            }
+        }
+
+        if (overlaps)
+        {
+            problems.Add($"Slot {itemExport.Slot}: the item overlaps with another item.");
+        }
     }
 
     private static PlannedItem PlanItem(ShopItemExport itemExport, ItemDefinition definition, ICollection<string> problems)

@@ -7702,7 +7702,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to {0} item(s) were imported into the shop..
+        ///   Looks up a localized string similar to {0} item(s) were imported into the shop. Use "Save changes" to apply them..
         /// </summary>
         public static string ShopImported {
             get {
@@ -7729,7 +7729,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to The import failed. The shop may be partially changed; use Cancel to discard the unsaved changes..
+        ///   Looks up a localized string similar to The import failed. The shop may be partially changed; use "Discard changes" to undo the unsaved changes..
         /// </summary>
         public static string ShopImportFailed {
             get {

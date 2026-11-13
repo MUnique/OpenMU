@@ -2736,9 +2736,18 @@
     <value>A importação substitui todos os itens da loja de "{0}". Continuar?</value>
   </data>
   <data name="ShopImported" xml:space="preserve">
-    <value>{0} item(ns) foram importados para a loja.</value>
+    <value>{0} item(ns) foram importados para a loja. Use "Salvar alterações" para aplicá-los.</value>
   </data>
   <data name="ShopImportInvalidFile" xml:space="preserve">
     <value>O arquivo não é uma exportação de loja válida.</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>A loja não foi alterada, pois o arquivo contém entradas que não podem ser importadas: {0}</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>A importação foi cancelada, pois o comerciante selecionado ou a sessão de edição mudou nesse meio tempo.</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>A importação falhou. A loja pode ter sido alterada parcialmente; use "Descartar alterações" para desfazer as alterações não salvas.</value>
   </data>
 </root>

@@ -155,8 +155,26 @@ public partial class ExportImport : IAsyncDisposable
         }
         finally
         {
+            await this.ResetFileInputAsync().ConfigureAwait(true);
             this._isImporting = false;
             await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+        }
+    }
+
+    private async Task ResetFileInputAsync()
+    {
+        if (this._jsModule is not { } jsModule)
+        {
+            return;
+        }
+
+        try
+        {
+            await jsModule.InvokeVoidAsync("resetFileInput", this._fileInputId).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The circuit is already gone, so there is no file input anymore.
         }
     }
 }

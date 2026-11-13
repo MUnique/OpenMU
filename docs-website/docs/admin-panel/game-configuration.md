@@ -88,13 +88,16 @@ it offers with the graphical item storage editor instead of the generic form.
 **Import shop** reads such a file back in. The file contains the full state of
 each item: slot, definition, level, durability, skill, sockets, pet experience,
 all options and the ancient sets. Items are referenced by their definition
-group and number, so a file can be applied to another configuration; items the
-configuration doesn't know are skipped and reported.
+group and number, so a file can be applied to another configuration. The import
+is all-or-nothing: if the configuration doesn't know an item, an option or an
+ancient set of the file, or if the items don't fit into the shop, nothing is
+imported and the problems are listed, so the file can be adjusted.
 
 The file contains only the items and no merchant name, so it can be imported
 into any merchant to duplicate a shop. Import replaces all items of the shop;
-the money of the storage is not touched. Export first if you want to be able to
-go back.
+the money of the storage is not touched. Like other changes on this page, the
+import is only applied after you save; use "Discard changes" to undo it.
+Export first if you want to keep the previous shop.
 
 ## Character classes
 

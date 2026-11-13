@@ -2793,9 +2793,18 @@
     <value>导入将替换“{0}”商店中的所有物品。是否继续？</value>
   </data>
   <data name="ShopImported" xml:space="preserve">
-    <value>已将 {0} 件物品导入商店。</value>
+    <value>已将 {0} 件物品导入商店。请使用“保存更改”应用这些更改。</value>
   </data>
   <data name="ShopImportInvalidFile" xml:space="preserve">
     <value>该文件不是有效的商店导出文件。</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>商店未更改，因为文件包含无法导入的条目：{0}</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>导入已取消，因为所选商人或编辑会话在此期间发生了变化。</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>导入失败。商店可能已被部分修改；请使用“放弃更改”撤销未保存的更改。</value>
   </data>
 </root>
