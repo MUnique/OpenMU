@@ -62,6 +62,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     // Only synchronous hit accounting takes this target-local lock. Attribute observers snapshot
     // notifications here; views, plug-ins, death and cross-target effects run after release.
+    // Map/life transitions may take PlayerState's exclusion before this lock; hit commits never
+    // acquire the state exclusion while holding this lock, and never await external callbacks here.
     private readonly object _hitLock = new();
 
     private readonly MoveItemAction _moveAction = new();
@@ -96,6 +98,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private List<(AttributeDefinition Definition, float Value)>? _hitAttributeChanges;
 
     private CancellationTokenSource? _respawnAfterDeathCts;
+
+    // An already-owned lethal hit can finish after a warp, without waiting for another packet here.
+    // Publication and consumption use PlayerState's exclusion; the death identity excludes later lives.
+    private (IAttacker? Killer, DeathInformation Death)? _pendingMapChangeDeath;
+
+    private bool _hasReservedLethalHit;
 
     private Character? _selectedCharacter;
 
@@ -151,6 +159,17 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._appearanceData = new PlayerAppearanceData(this);
         this.PlayerState.StateChanged += async args =>
         {
+            if (args.CurrentStateState.IsDisconnectedOrFinished()
+                || args.CurrentStateState == GameLogic.PlayerState.Authenticated
+                || args.CurrentStateState == GameLogic.PlayerState.CharacterSelection)
+            {
+                this._pendingMapChangeDeath = null;
+                lock (this._hitLock)
+                {
+                    this._hasReservedLethalHit = false;
+                }
+            }
+
             // The game context counts its players first, so that the plugins already see the new numbers.
             this.GameContext.OnPlayerStateChanged(this, args.PreviousState, args.CurrentStateState);
             await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
@@ -851,24 +870,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         var recoverHealthBeforeHit = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]);
         var manaFullyRecovered = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]);
-        if (!await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit, recoverHealthBeforeHit).ConfigureAwait(false))
+        if (!await this.HitAsync(
+                hitInfo,
+                attacker,
+                skill?.Skill,
+                isFinalStreakHit,
+                recoverHealthBeforeHit,
+                applyOrdinaryHitEffects: true,
+                recoverManaBeforeHit: manaFullyRecovered).ConfigureAwait(false))
         {
             return null;
-        }
-
-        if (this.Attributes[Stats.IsFrozen] > 0)
-        {
-            await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
-        }
-
-        if (this.Attributes[Stats.IsAsleep] > 0)
-        {
-            await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
-        }
-
-        if (hitInfo.ManaToll > 0 || manaFullyRecovered)
-        {
-            this.Attributes[Stats.CurrentMana] = (manaFullyRecovered ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
         }
 
         bool isPvpDamage = attacker is Player or IPlayerSurrogate;
@@ -1573,9 +1584,70 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return this._mapTransitions.GetSpawnGateOfCurrentMapAsync();
     }
 
+    /// <summary>
+    /// Completes the map-arrival state without reviving an already-reserved lethal hit.
+    /// </summary>
+    /// <returns>Whether the arrival state transition was allowed.</returns>
+    internal async ValueTask<bool> EnterWorldAfterMapChangeAsync()
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+        if (!context.Allowed)
+        {
+            return false;
+        }
+
+        lock (this._hitLock)
+        {
+            if (!this._hasReservedLethalHit || this.Attributes![Stats.CurrentHealth] >= 1)
+            {
+                this._hasReservedLethalHit = false;
+                this.IsAlive = true;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Starts the restored life after an actual respawn, clearing the previous hit reservation.
+    /// </summary>
+    internal void SetAliveAfterRespawn()
+    {
+        lock (this._hitLock)
+        {
+            this._hasReservedLethalHit = false;
+            this.IsAlive = true;
+        }
+    }
+
+    /// <summary>
+    /// Finishes a lethal hit handed off during a map change, after the player was added to the map.
+    /// </summary>
+    internal async ValueTask CompleteMapChangeDeathAsync()
+    {
+        (IAttacker? Killer, DeathInformation Death)? pending;
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            pending = this._pendingMapChangeDeath;
+            this._pendingMapChangeDeath = null;
+        }
+
+        if (pending is { } death)
+        {
+            await this.OnDeathAsync(death.Killer, death.Death).ConfigureAwait(false);
+        }
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            this._pendingMapChangeDeath = null;
+        }
+
         // A disposed player must never stay reachable from the game context: it would keep counting
         // towards the server's maximum player count (which turns real clients away) and keep its whole
         // object graph alive. The regular teardown removes it through the PlayerDisconnected event, but
@@ -1779,7 +1851,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask<bool> HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null, bool recoverHealthBeforeHit = false)
+    private async ValueTask<bool> HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null, bool recoverHealthBeforeHit = false, bool applyOrdinaryHitEffects = false, bool recoverManaBeforeHit = false)
     {
         bool killed;
         bool shieldBurst;
@@ -1797,6 +1869,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 if (recoverHealthBeforeHit)
                 {
                     this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
+                }
+
+                if (applyOrdinaryHitEffects && (hitInfo.ManaToll > 0 || recoverManaBeforeHit))
+                {
+                    this.Attributes[Stats.CurrentMana] = (recoverManaBeforeHit ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
                 }
 
                 var healthDamage = hitInfo.HealthDamage;
@@ -1819,6 +1896,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 killed = this.Attributes[Stats.CurrentHealth] < 1;
                 if (killed)
                 {
+                    this._hasReservedLethalHit = true;
                     this.IsAlive = false;
                 }
             }
@@ -1839,13 +1917,27 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         // The lethal commit reserves this life before any asynchronous notification.
-        if (killed)
+        var ownedDeath = killed ? new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0) : null;
+        if (ownedDeath is not null)
         {
-            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
+            this.LastDeath = ownedDeath;
         }
 
         try
         {
+            if (applyOrdinaryHitEffects)
+            {
+                if (this.Attributes![Stats.IsFrozen] > 0)
+                {
+                    await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
+                }
+
+                if (this.Attributes[Stats.IsAsleep] > 0)
+                {
+                    await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+                }
+            }
+
             foreach (var (definition, value) in attributeChanges)
             {
                 _ = this.NotifyAttributeValueChangedAsync(definition, value);
@@ -1869,7 +1961,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             if (killed)
             {
-                await this.OnDeathAsync(attacker).ConfigureAwait(false);
+                await this.OnDeathAsync(attacker, ownedDeath).ConfigureAwait(false);
             }
         }
 
@@ -1924,13 +2016,43 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask<bool> TryEnterDeadStateAsync()
+    private async ValueTask<bool> TryEnterDeadStateAsync(IAttacker? killer, DeathInformation? ownedDeath)
     {
-        // Death cancels combat-reachable interactions using their normal cleanup. Do not add
-        // transitions from disconnected, changing-map or other non-combat states.
+        // Death cancels combat-reachable interactions using their normal cleanup. A changing-map
+        // life keeps its original lethal owner until arrival; disconnected states still refuse death.
         while (true)
         {
-            var state = this.PlayerState.CurrentState;
+            State state;
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
+            {
+                state = this.PlayerState.CurrentState;
+                if (ownedDeath is not null
+                    && (this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null || !ReferenceEquals(this.LastDeath, ownedDeath)
+                        || this.IsAlive || this.Attributes![Stats.CurrentHealth] >= 1))
+                {
+                    context.Allowed = false;
+                    return false;
+                }
+
+                if (state == GameLogic.PlayerState.ChangingMap && ownedDeath is not null)
+                {
+                    this._pendingMapChangeDeath = (killer, ownedDeath);
+                    context.Allowed = false;
+                    return false;
+                }
+
+                if (state != GameLogic.PlayerState.PartyRequest
+                    && state != GameLogic.PlayerState.TradeRequested
+                    && state != GameLogic.PlayerState.TradeOpened
+                    && state != GameLogic.PlayerState.TradeButtonPressed
+                    && state != GameLogic.PlayerState.NpcDialogOpened)
+                {
+                    return context.Allowed;
+                }
+
+                context.Allowed = false;
+            }
+
             if (state == GameLogic.PlayerState.PartyRequest)
             {
                 this.LastPartyRequester = null;
@@ -1942,7 +2064,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
             }
-            else if (state == GameLogic.PlayerState.NpcDialogOpened)
+            else
             {
                 if (this.OpenedNpc is not null)
                 {
@@ -1953,13 +2075,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
                 }
             }
-            else
-            {
-                if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
-                {
-                    return true;
-                }
-            }
 
             if (this.PlayerState.CurrentState == state)
             {
@@ -1968,9 +2083,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask OnDeathAsync(IAttacker? killer)
+    private async ValueTask OnDeathAsync(IAttacker? killer, DeathInformation? ownedDeath = null)
     {
-        if (!await this.TryEnterDeadStateAsync().ConfigureAwait(false))
+        if (!await this.TryEnterDeadStateAsync(killer, ownedDeath).ConfigureAwait(false))
         {
             return;
         }

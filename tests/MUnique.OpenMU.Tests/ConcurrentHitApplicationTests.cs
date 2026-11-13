@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Diagnostics;
 using System.Threading;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
@@ -17,6 +18,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Guild;
@@ -132,6 +134,238 @@ public class ConcurrentHitApplicationTests
             await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    /// <summary>A reserved lethal hit survives either ordering of a real map-change handshake.</summary>
+    /// <param name="arrivalFirst">Whether arrival precedes the original death continuation.</param>
+    /// <param name="source">The damage source, including a hit on the victim's own packet path.</param>
+    [TestCase(false, "poison")]
+    [TestCase(true, "poison")]
+    [TestCase(false, "reflection")]
+    [TestCase(true, "reflection")]
+    [TestCase(false, "self-reflection")]
+    [TestCase(true, "self-reflection")]
+    public async Task LethalHitDuringMapChangeCannotStrandLifeAsync(bool arrivalFirst, string source)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var other = await CreatePlayerAsync(100, sameWorldAs: target).ConfigureAwait(false);
+        other.Id = 11;
+        var killer = source == "self-reflection" ? target : other;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>()))
+            .Returns(() => DelayViewAsync(entered, release, false));
+        var lethal = source == "poison" ? target.ApplyPoisonDamageAsync(killer, 10).AsTask() : target.ReflectDamageAsync(killer, 10).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var ownedDeath = target.LastDeath;
+            await WarpAsync(target).ConfigureAwait(false);
+            Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+            if (arrivalFirst)
+            {
+                await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+                Assert.That(target.IsAlive, Is.False, "Arrival must not revive the reserved zero-health life.");
+            }
+
+            release.TrySetResult();
+            // Must finish without a future ready packet, even for self/reflected serialized handlers.
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (!arrivalFirst)
+            {
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(deaths, Is.Zero);
+                await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            }
+
+            await target.ApplyPoisonDamageAsync(other, 1).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(target.IsAlive, Is.False);
+                Assert.That(target.LastDeath, Is.SameAs(ownedDeath));
+                Assert.That(target.LastDeath?.KillerId, Is.EqualTo(killer.Id));
+            });
+            View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, killer), Times.Once);
+            target.SetReclaimableAttributesToMaximum();
+            await target.RespawnAtAsync(GateOf(target)).ConfigureAwait(false);
+            await target.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+            Assert.That(target.IsAlive, Is.True);
+            Assert.That(deaths, Is.EqualTo(1), "An old owner must not kill the respawned life.");
+        }
+        finally
+        {
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await other.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A pending owned death is abandoned by disconnect or disposal, not applied to later work.</summary>
+    /// <param name="dispose">Whether teardown is disposal instead of the ordinary disconnect.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task PendingMapChangeDeathIsAbandonedOnTeardownAsync(bool dispose)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var killer = await CreatePlayerAsync(100, sameWorldAs: target).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>()))
+            .Returns(() => DelayViewAsync(entered, release, false));
+        var lethal = target.ApplyPoisonDamageAsync(killer, 10).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await WarpAsync(target).ConfigureAwait(false);
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (dispose)
+            {
+                await target.DisposeAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await target.DisconnectAsync().ConfigureAwait(false);
+            }
+
+            await target.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+            Assert.That(deaths, Is.Zero);
+            View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, It.IsAny<IAttacker>()), Times.Never);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await killer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A normal warp retains its health and a custom death veto remains intentional.</summary>
+    /// <param name="lethal">Whether to reserve a lethal hit before the warp and veto its death.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task MapArrivalPreservesNormalWarpAndDeathVetoAsync(bool lethal)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        target.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerStateChangingPlugIn>(new DeathVetoPlugIn(target));
+        View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>()))
+            .Returns(() => DelayViewAsync(entered, release, false));
+        var hit = target.ApplyPoisonDamageAsync(target, lethal ? 10u : 1u).AsTask();
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await WarpAsync(target).ConfigureAwait(false);
+            release.TrySetResult();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(target.IsAlive, Is.EqualTo(!lethal));
+                Assert.That(target.Attributes![Stats.CurrentHealth], Is.EqualTo(lethal ? 0 : 9));
+            });
+            View<IObjectGotKilledPlugIn>(target).Verify(v => v.ObjectGotKilledAsync(target, It.IsAny<IAttacker>()), Times.Never);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Accepted ordinary-hit costs and wake effects precede hit/death views, unlike DoT and reflection.</summary>
+    /// <param name="source">The damage source.</param>
+    /// <param name="lethal">Whether the hit is lethal.</param>
+    /// <param name="recoverMana">Whether ordinary-hit full-mana recovery is guaranteed.</param>
+    [TestCase("ordinary", false, false)]
+    [TestCase("ordinary", false, true)]
+    [TestCase("ordinary", true, false)]
+    [TestCase("ordinary", true, true)]
+    [TestCase("poison", true, true)]
+    [TestCase("bleeding", true, true)]
+    [TestCase("reflection", true, true)]
+    public async Task AcceptedHitConsequencesPrecedeViewsAsync(string source, bool lethal, bool recoverMana)
+    {
+        var target = await CreatePlayerAsync(lethal ? 10 : 1000).ConfigureAwait(false);
+        var attacker = await CreatePlayerAsync(1000, sameWorldAs: target).ConfigureAwait(false);
+        Add(attacker, Stats.AttackRatePvp, 100000);
+        Add(attacker, Stats.MinimumPhysBaseDmg, 100);
+        Add(attacker, Stats.MaximumPhysBaseDmg, 100);
+        Add(target, Stats.SoulBarrierManaTollPerHit, 7);
+        Add(target, Stats.FullyRecoverManaAfterHitChance, recoverMana ? 1 : 0);
+        target.Attributes![Stats.CurrentMana] = 80;
+        var sleep = new MagicEffect(TimeSpan.FromMinutes(1), new MagicEffectDefinition { Number = 200 },
+            new MagicEffect.ElementWithTarget(new SimpleElement(1, AggregateType.AddRaw), Stats.IsAsleep));
+        var frozen = new MagicEffect(TimeSpan.FromMinutes(1), new MagicEffectDefinition { Number = 201 },
+            new MagicEffect.ElementWithTarget(new SimpleElement(1, AggregateType.AddRaw), Stats.IsFrozen));
+        await target.MagicEffectList.AddEffectAsync(sleep).ConfigureAwait(false);
+        await target.MagicEffectList.AddEffectAsync(frozen).ConfigureAwait(false);
+        var frozenFinish = Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency + frozen.TimeLeft.TotalSeconds;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        HitInfo observedHit = default;
+        var manaAtDeath = float.NaN;
+        target.Died += (_, _) => manaAtDeath = target.Attributes[Stats.CurrentMana];
+        View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>()))
+            .Returns((IAttackable _, HitInfo hit) =>
+            {
+                Assert.That(target.IsApplyingHitOnCurrentThread, Is.False);
+                observedHit = hit;
+                return DelayViewAsync(entered, release, false);
+            });
+        var attack = source switch
+        {
+            "ordinary" => AttackAsync(),
+            "poison" => target.ApplyPoisonDamageAsync(attacker, 10).AsTask(),
+            "bleeding" => target.ApplyBleedingDamageAsync(attacker, 10).AsTask(),
+            _ => target.ReflectDamageAsync(attacker, 10).AsTask(),
+        };
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var ordinary = source == "ordinary";
+            var expectedMana = ordinary ? (recoverMana ? target.Attributes[Stats.MaximumMana] : 80) - observedHit.ManaToll : 80;
+            Assert.Multiple(() =>
+            {
+                Assert.That(observedHit.HealthDamage, Is.GreaterThan(0));
+                Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo((lethal ? 10 : 1000) - observedHit.HealthDamage));
+                Assert.That(target.Attributes[Stats.CurrentMana], Is.EqualTo(expectedMana));
+                Assert.That(target.MagicEffectList.ContainsEffect(sleep.Id), Is.EqualTo(!ordinary));
+                var shortenedBy = frozenFinish - (Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency + frozen.TimeLeft.TotalSeconds);
+                Assert.That(shortenedBy, Is.EqualTo(ordinary ? 1 : 0).Within(0.1));
+            });
+            release.TrySetResult();
+            await attack.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (lethal)
+            {
+                Assert.That(manaAtDeath, Is.EqualTo(expectedMana));
+                target.SetReclaimableAttributesToMaximum();
+                await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+                target.Attributes[Stats.CurrentMana] = 17;
+                await target.ApplyPoisonDamageAsync(attacker, 1).ConfigureAwait(false);
+                Assert.That(target.Attributes[Stats.CurrentMana], Is.EqualTo(17), "No ordinary-hit mana work may leak into the next life.");
+            }
+        }
+        finally
+        {
+            release.TrySetResult();
+            await attack.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await attacker.DisposeAsync().ConfigureAwait(false);
+        }
+
+        async Task AttackAsync() => await target.AttackByAsync(attacker, null, false).ConfigureAwait(false);
     }
 
     /// <summary>Ordinary, reflected and damage-over-time hits share one resource commit.</summary>
@@ -1119,6 +1353,12 @@ public class ConcurrentHitApplicationTests
     private static Mock<T> View<T>(Player player)
         where T : class, IViewPlugIn => Mock.Get(player.ViewPlugIns.GetPlugIn<T>()!);
 
+    private static ExitGate GateOf(Player player)
+        => new() { Map = player.SelectedCharacter!.CurrentMap, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 };
+
+    private static ValueTask WarpAsync(Player player)
+        => new WarpAction().WarpToAsync(player, new WarpInfo { Gate = GateOf(player) });
+
     private static async Task<Player> CreatePlayerAsync(float health, float shield = 0, bool slowHealth = false, Player? sameWorldAs = null)
     {
         var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
@@ -1193,6 +1433,21 @@ public class ConcurrentHitApplicationTests
         }
 
         public void SetAfterRead(Action? afterRead) => this._afterRead = afterRead;
+    }
+
+    [System.Runtime.InteropServices.Guid("B045D4DC-FA8B-4E21-AE53-AFE6EB8A8D96")]
+    private sealed class DeathVetoPlugIn(Player expectedPlayer) : IPlayerStateChangingPlugIn
+    {
+        public ValueTask PlayerStateChangingAsync(Player player, StateMachine.StateChangeEventArgs eventArgs)
+        {
+            Assert.That(player, Is.SameAs(expectedPlayer));
+            if (eventArgs.NextState == PlayerState.Dead)
+            {
+                eventArgs.Cancel = true;
+            }
+
+            return ValueTask.CompletedTask;
+        }
     }
 
     private sealed class TestNpc : AttackableNpcBase

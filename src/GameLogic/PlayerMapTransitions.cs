@@ -213,7 +213,7 @@ internal sealed class PlayerMapTransitions
             player.CurrentMap = await this.GetMapToEnterAsync(player.SelectedCharacter!.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
             await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
             await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-            player.IsAlive = true;
+            player.SetAliveAfterRespawn();
             await player.CurrentMap!.AddAsync(player).ConfigureAwait(false);
         }
         else
@@ -266,8 +266,10 @@ internal sealed class PlayerMapTransitions
             return;
         }
 
-        await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-        player.IsAlive = true;
+        if (!await player.EnterWorldAfterMapChangeAsync().ConfigureAwait(false))
+        {
+            return;
+        }
 
         if (player.CurrentMiniGame?.GetEntrySpawnPosition(player) is { } spawnPosition)
         {
@@ -284,6 +286,7 @@ internal sealed class PlayerMapTransitions
         }
 
         await this._summon.AddToMapAsync(player.CurrentMap).ConfigureAwait(false);
+        await player.CompleteMapChangeDeathAsync().ConfigureAwait(false);
     }
 
     /// <summary>
