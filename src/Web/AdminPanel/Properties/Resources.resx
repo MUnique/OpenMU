@@ -2732,4 +2732,40 @@
   <data name="ExcellentOptionsHint" xml:space="preserve">
     <value>Empty means that the value of the excellent option definition of the item applies. The first option is always added without a chance.</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>Effect times</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>Choose which magic effects send their remaining time to the client, so that players see how long they last. Whether players know this is game design: in Season 6 only the effects of consumed items and a few skills showed their time. The open source client shows the time of the effects which send it; the original clients only of consumed items.</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>Send time</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>All on</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>All off</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>Applies to all shown effects. The changes are stored after saving.</value>
+  </data>
+  <data name="SeasonSixDefaults" xml:space="preserve">
+    <value>Season 6 defaults</value>
+  </data>
+  <data name="SeasonSixDefaultsHint" xml:space="preserve">
+    <value>Sets each shown effect as in the Season 6 data; effects which Season 6 doesn't know stay unchanged. The changes are stored after saving.</value>
+  </data>
+  <data name="SeasonSixDefaultsNotLoaded" xml:space="preserve">
+    <value>The Season 6 defaults are still being loaded. Try again in a moment.</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{0} of {1} effects send their time.</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>These {0} effects will send their time: {1}. These {2} effects won't: {3}. Continue?</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>Which magic effects show players their remaining time:</value>
+  </data>
 </root>

@@ -2726,4 +2726,40 @@
   <data name="ExcellentOptionsHint" xml:space="preserve">
     <value>Vazio significa que se aplica o valor da definição de opção excelente do item. A primeira opção é sempre adicionada sem chance.</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>Tempos de efeito</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>Escolha quais efeitos mágicos enviam o tempo restante ao cliente, para que os jogadores vejam quanto tempo duram. Se os jogadores sabem disso é design de jogo: na Season 6, apenas os efeitos de itens consumidos e algumas habilidades mostravam o tempo. O cliente de código aberto mostra o tempo dos efeitos que o enviam; os clientes originais, apenas o de itens consumidos.</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>Enviar tempo</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>Todos ligados</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>Todos desligados</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>Aplica-se a todos os efeitos exibidos. As alterações são armazenadas após salvar.</value>
+  </data>
+  <data name="SeasonSixDefaults" xml:space="preserve">
+    <value>Padrões da Season 6</value>
+  </data>
+  <data name="SeasonSixDefaultsHint" xml:space="preserve">
+    <value>Define cada efeito exibido como nos dados da Season 6; efeitos que a Season 6 não conhece permanecem inalterados. As alterações são armazenadas após salvar.</value>
+  </data>
+  <data name="SeasonSixDefaultsNotLoaded" xml:space="preserve">
+    <value>Os padrões da Season 6 ainda estão sendo carregados. Tente novamente em instantes.</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{0} de {1} efeitos enviam o tempo.</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>Estes {0} efeitos enviarão o tempo: {1}. Estes {2} efeitos não: {3}. Continuar?</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>Quais efeitos mágicos mostram aos jogadores o tempo restante:</value>
+  </data>
 </root>

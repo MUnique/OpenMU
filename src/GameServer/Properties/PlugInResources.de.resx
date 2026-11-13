@@ -1665,6 +1665,12 @@
   <data name="DeActivateMagicEffectPlugIn_Description" xml:space="preserve">
     <value>Die Standardimplementierung von IActivateMagicEffectPlugIn und IDeactivateMagicEffectPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
   </data>
+  <data name="DeActivateMagicEffectExtendedPlugIn_Name" xml:space="preserve">
+    <value>Magischen Effekt de- und aktivieren (erweitert)</value>
+  </data>
+  <data name="DeActivateMagicEffectExtendedPlugIn_Description" xml:space="preserve">
+    <value>Die erweiterte Implementierung von IActivateMagicEffectPlugIn, IDeactivateMagicEffectPlugIn und IUpdateMagicEffectPlugIn, die dem Spielclient auch die Restzeit und die Werte der Effekte des eigenen Spielers sendet.</value>
+  </data>
   <data name="DeActivateMagicEffectPlugIn075_Name" xml:space="preserve">
     <value>Magischen Effekt de- und aktivieren (075)</value>
   </data>

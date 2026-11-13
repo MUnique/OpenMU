@@ -9,7 +9,6 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
-using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -169,17 +168,8 @@ public class ConfigurationCaptionService
         }
     }
 
-    private async ValueTask<GameConfiguration> CreateReferenceConfigurationAsync(string initializationKey)
+    private ValueTask<GameConfiguration> CreateReferenceConfigurationAsync(string initializationKey)
     {
-        var plugIn = this._plugInManager.GetStrategyProvider<string, IDataInitializationPlugIn>()?[initializationKey]
-                     ?? throw new InvalidOperationException($"The data initialization '{initializationKey}' is not available.");
-
-        var inMemoryProvider = new InMemoryPersistenceContextProvider();
-        var referenceInitialization = Activator.CreateInstance(plugIn.GetType(), inMemoryProvider, this._loggerFactory) as IDataInitializationPlugIn
-                                      ?? throw new InvalidOperationException($"The data initialization '{initializationKey}' can't be executed in memory.");
-        await referenceInitialization.CreateInitialDataAsync(1, false).ConfigureAwait(false);
-
-        using var referenceContext = inMemoryProvider.CreateNewContext();
-        return await GetGameConfigurationAsync(referenceContext).ConfigureAwait(false);
+        return ReferenceConfiguration.CreateAsync(this._plugInManager, this._loggerFactory, initializationKey);
     }
 }

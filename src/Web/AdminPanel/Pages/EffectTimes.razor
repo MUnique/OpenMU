@@ -1,0 +1,62 @@
+﻿@page "/effect-times"
+
+@using System.Globalization
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.EffectTimes</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.EffectTimes" />
+
+<h1>@Resources.EffectTimes</h1>
+<p class="text-muted">@Resources.EffectTimesDescription</p>
+
+@if (this._entries is null)
+{
+    return;
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <div class="flex-grow-1">
+        <input type="search" class="form-control" placeholder="@($"{Resources.Search}...")"
+               @bind="this.Filter" @bind:event="oninput" />
+    </div>
+    <button type="button" class="btn btn-success" title="@Resources.AllShownEffectsHint" @onclick="() => this.SetSendsTimeOfShownEntries(true)">@Resources.AllOn</button>
+    <button type="button" class="btn btn-warning" title="@Resources.AllShownEffectsHint" @onclick="() => this.SetSendsTimeOfShownEntries(false)">@Resources.AllOff</button>
+    <button type="button" class="btn btn-outline-primary" title="@Resources.SeasonSixDefaultsHint" @onclick="this.SetSeasonSixDefaultsOfShownEntries">@Resources.SeasonSixDefaults</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClick">@Resources.DiscardChanges</button>
+</div>
+
+<p>@string.Format(CultureInfo.CurrentCulture, Resources.SendingCountFormat, this.SendingCount, this._entries.Count)</p>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover align-middle">
+        <thead>
+        <tr>
+            <th class="col-1">@Resources.SendsTime</th>
+            <th class="col-1">@Resources.Number</th>
+            <th>@Resources.Name</th>
+            <th class="col-1">@string.Format(CultureInfo.CurrentCulture, Resources.SeasonFormat, 6)</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in this.ShownEntries)
+        {
+            <tr @key="entry.Id">
+                <td>
+                    <input type="checkbox" class="form-check-input" aria-label="@Resources.SendsTime"
+                           @bind:get="this.SendsTime(entry)" @bind:set="value => this.SetSendsTime(entry, value)" />
+                </td>
+                <td>@entry.Number</td>
+                <td><MarkedText Marked="@this.Filter" Text="@entry.Name" /></td>
+                <td>
+                    @if (this._seasonSixDefaults?.TryGetValue(entry.Number, out var seasonSix) ?? false)
+                    {
+                        <input type="checkbox" class="form-check-input" disabled checked="@seasonSix"
+                               aria-label="@string.Format(CultureInfo.CurrentCulture, Resources.SeasonFormat, 6)" />
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

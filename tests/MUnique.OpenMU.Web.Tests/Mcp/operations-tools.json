@@ -1234,6 +1234,96 @@
     }
   },
   {
+    "Name": "effect_times_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "sendsTime": {
+          "description": "Optional state to filter by.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "text": {
+          "description": "Case-insensitive text which the number or name must contain.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching effects to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum effects, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
+    "Name": "effect_times_set",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "sendIds": {
+          "description": "Identifiers from effect_times_list which send their time.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": null
+        },
+        "hideIds": {
+          "description": "Identifiers from effect_times_list which don't send their time.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": null
+        },
+        "apply": {
+          "description": "False returns a preview; true applies exactly that preview.",
+          "type": "boolean",
+          "default": false
+        },
+        "confirmationToken": {
+          "description": "Single-use token from the preview; expires after five minutes.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": null
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": true,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    }
+  },
+  {
     "Name": "events_schedule",
     "InputSchema": {
       "type": "object",

@@ -2783,4 +2783,40 @@
   <data name="Inspect" xml:space="preserve">
     <value>检查</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>效果时间</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>选择哪些魔法效果向客户端发送剩余时间，以便玩家看到其持续多久。玩家是否知道这一点属于游戏设计：在第6季中，只有消耗品的效果和少数技能会显示时间。开源客户端显示发送时间的效果的时间；原版客户端只显示消耗品的时间。</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>发送时间</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>全部开启</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>全部关闭</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>适用于所有显示的效果。保存后更改才会生效。</value>
+  </data>
+  <data name="SeasonSixDefaults" xml:space="preserve">
+    <value>第6季默认值</value>
+  </data>
+  <data name="SeasonSixDefaultsHint" xml:space="preserve">
+    <value>将每个显示的效果设置为第6季数据中的值；第6季中没有的效果保持不变。保存后更改才会生效。</value>
+  </data>
+  <data name="SeasonSixDefaultsNotLoaded" xml:space="preserve">
+    <value>第6季默认值仍在加载中。请稍后再试。</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{1} 个效果中有 {0} 个发送其时间。</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>以下 {0} 个效果将发送其时间：{1}。以下 {2} 个效果将不发送：{3}。继续吗？</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>哪些魔法效果向玩家显示剩余时间：</value>
+  </data>
 </root>

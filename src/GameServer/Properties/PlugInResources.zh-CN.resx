@@ -1606,6 +1606,12 @@
   <data name="DeActivateMagicEffectPlugIn_Description" xml:space="preserve">
     <value>IActivateMagicEffectPlugIn、IDeactivateMagicEffectPlugIn 的默认实现，通过专用数据包将相关信息发送至游戏客户端。</value>
   </data>
+  <data name="DeActivateMagicEffectExtendedPlugIn_Name" xml:space="preserve">
+    <value>魔法效果启用与取消（扩展版）</value>
+  </data>
+  <data name="DeActivateMagicEffectExtendedPlugIn_Description" xml:space="preserve">
+    <value>IActivateMagicEffectPlugIn、IDeactivateMagicEffectPlugIn 和 IUpdateMagicEffectPlugIn 的扩展实现，还会将自身效果的剩余时间和数值发送至游戏客户端。</value>
+  </data>
   <data name="DeActivateMagicEffectPlugIn075_Name" xml:space="preserve">
     <value>魔法效果启用与取消（0.75）</value>
   </data>

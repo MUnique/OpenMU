@@ -157,6 +157,7 @@ public class MagicEffectsList : AsyncDisposable
     public async ValueTask AddEffectAsync(MagicEffect effect)
     {
         bool added = false;
+        MagicEffect? updatedEffect = null;
         lock (this._sync)
         {
             if (effect.IsDisposed || effect.IsDisposing)
@@ -172,7 +173,7 @@ public class MagicEffectsList : AsyncDisposable
 
             if (this._contains[effect.Id])
             {
-                added = this.UpdateEffect(effect);
+                added = this.UpdateEffect(effect, out updatedEffect);
             }
             else
             {
@@ -196,6 +197,10 @@ public class MagicEffectsList : AsyncDisposable
         else
         {
             effect.Dispose();
+            if (updatedEffect is not null)
+            {
+                await this.InformOwnerAboutUpdateAsync(updatedEffect).ConfigureAwait(false);
+            }
         }
     }
 
@@ -264,20 +269,35 @@ public class MagicEffectsList : AsyncDisposable
     /// </summary>
     /// <param name="stat">The stat produced by effect.</param>
     /// <param name="seconds">The seconds to shorten the effect duration for.</param>
-    public ValueTask ShortenEffectsProducingSpecificStatAsync(AttributeDefinition stat, int seconds)
+    public async ValueTask ShortenEffectsProducingSpecificStatAsync(AttributeDefinition stat, int seconds)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(seconds);
 
-        var effects = this.GetActiveEffectsSnapshot();
-        foreach (var effect in effects)
+        // All are shortened before the owner hears about any, so no network send
+        // widens the window in which another effect of the snapshot ends.
+        var shortened = new List<MagicEffect>();
+        foreach (var effect in this.GetActiveEffectsSnapshot())
         {
-            if (effect.PowerUpElements.Any(p => p.Target == stat))
+            if (effect.IsDisposed || effect.IsDisposing || !effect.PowerUpElements.Any(p => p.Target == stat))
+            {
+                continue;
+            }
+
+            try
             {
                 effect.DecreaseTimer(seconds);
+                shortened.Add(effect);
+            }
+            catch (ObjectDisposedException)
+            {
+                // It ended between the check and the call: nothing to shorten.
             }
         }
 
-        return ValueTask.CompletedTask;
+        foreach (var effect in shortened)
+        {
+            await this.InformOwnerAboutUpdateAsync(effect).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -379,13 +399,57 @@ public class MagicEffectsList : AsyncDisposable
     }
 
     /// <summary>
+    /// Tells the owner the new time left and values of its effect, e.g. after a recast or a shortened duration.
+    /// </summary>
+    /// <param name="effect">The active effect.</param>
+    private async ValueTask InformOwnerAboutUpdateAsync(MagicEffect effect)
+    {
+        if (!this.IsActiveEntry(effect) || effect.TimeLeft <= TimeSpan.Zero)
+        {
+            // It ended, was replaced after the change, or was shortened to its end:
+            // its deactivation is (or will soon be) sent. An effect which is removed
+            // after this check is caught by the view, which writes nothing for an
+            // ending effect; whether an update shortly before the end is worth sending
+            // is up to the view, too. An entry is only replaced after its effect started
+            // to dispose, so the entry check is defense in depth, e.g. against a removal
+            // without disposal.
+            return;
+        }
+
+        if (effect.Id < InvisibleEffectStartIndex && this._owner is IWorldObserver observer)
+        {
+            await observer.InvokeViewPlugInAsync<IUpdateMagicEffectPlugIn>(p => p.UpdateMagicEffectAsync(effect, this._owner)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Determines whether the effect is alive and still the list's entry for its number.
+    /// </summary>
+    /// <param name="effect">The effect.</param>
+    /// <returns><c>true</c>, if the effect is alive and tracked.</returns>
+    private bool IsActiveEntry(MagicEffect effect)
+    {
+        if (effect.IsDisposed || effect.IsDisposing)
+        {
+            return false;
+        }
+
+        lock (this._sync)
+        {
+            return this._activeEffects.TryGetValue(effect.Id, out var entry) && ReferenceEquals(entry, effect);
+        }
+    }
+
+    /// <summary>
     /// Updates the effect.
     /// </summary>
     /// <param name="effect">The effect.</param>
+    /// <param name="updatedEffect">The existing entry, if <paramref name="effect"/> was merged into it: it has a new time and maybe new values.</param>
     /// <returns>True, if <paramref name="effect"/> is now tracked and needs activation; false, if it was merged into (or rejected by) the existing entry.</returns>
     /// <remarks>Caller must hold <see cref="_sync"/>.</remarks>
-    private bool UpdateEffect(MagicEffect effect)
+    private bool UpdateEffect(MagicEffect effect, out MagicEffect? updatedEffect)
     {
+        updatedEffect = null;
         MagicEffect magicEffect = this._activeEffects[effect.Id];
         if (magicEffect.IsDisposed || magicEffect.IsDisposing)
         {
@@ -414,6 +478,7 @@ public class MagicEffectsList : AsyncDisposable
         //// This doesn't only save traffic, it also looks better in game.
         magicEffect.Duration = effect.Duration;
         magicEffect.ResetTimer();
+        updatedEffect = magicEffect;
 
         if (magicEffect.PowerUpElements.Select(e => e.Element)
             .SequenceEqual(effect.PowerUpElements.Select(e => e.Element)))

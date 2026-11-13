@@ -376,6 +376,44 @@
     }
   },
   {
+    "Name": "effect_times_list",
+    "InputSchema": {
+      "type": "object",
+      "properties": {
+        "sendsTime": {
+          "description": "Optional state to filter by.",
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": null
+        },
+        "text": {
+          "description": "Case-insensitive text which the number or name must contain.",
+          "type": "string",
+          "default": ""
+        },
+        "offset": {
+          "description": "Number of matching effects to skip.",
+          "type": "integer",
+          "default": 0
+        },
+        "limit": {
+          "description": "Maximum effects, 1-100.",
+          "type": "integer",
+          "default": 50
+        }
+      }
+    },
+    "Annotations": {
+      "title": null,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": true
+    }
+  },
+  {
     "Name": "events_schedule",
     "InputSchema": {
       "type": "object",
