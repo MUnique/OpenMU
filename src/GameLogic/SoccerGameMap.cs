@@ -25,7 +25,7 @@ public class SoccerGameMap : GameMap
     /// <summary>
     /// The points a guild gets for a goal.
     /// </summary>
-    public const byte PointsPerGoal = 20;
+    public static byte PointsPerGoal => 20;
 
     private GuildWarScore? _score;
     private SoccerBall? _ball;
@@ -139,6 +139,10 @@ public class SoccerGameMap : GameMap
                     score.Cancel();
                     return;
                 }
+                else
+                {
+                    // Nobody of the match is on the map, but the timeout is not reached yet: keep waiting.
+                }
 
                 if (remaining == 0)
                 {
@@ -248,6 +252,10 @@ public class SoccerGameMap : GameMap
             var blueGoals = (byte)(score.SecondGuildScore / PointsPerGoal);
             await player.InvokeViewPlugInAsync<IGuildSoccerScoreUpdatePlugIn>(
                 v => v.UpdateSoccerScoreAsync(score.FirstGuildName, redGoals, score.SecondGuildName, blueGoals)).ConfigureAwait(false);
+        }
+        else
+        {
+            // Other objects, and players entering without a running match, need no handling.
         }
     }
 }
