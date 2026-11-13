@@ -60,6 +60,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     private static readonly TimeSpan HeroStateDuration = TimeSpan.FromHours(1);
 
+    // Only synchronous hit accounting takes this target-local lock. Attribute observers snapshot
+    // notifications here; views, plug-ins, death and cross-target effects run after release.
+    private readonly object _hitLock = new();
+
     private readonly MoveItemAction _moveAction = new();
 
     private readonly PlayerExperience _experience;
@@ -88,6 +92,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private readonly MapPowerUps _mapPowerUps = new();
 
     private readonly AccountAttributeGrantPowerUps _accountAttributeGrantPowerUps = new();
+
+    private List<(AttributeDefinition Definition, float Value)>? _hitAttributeChanges;
 
     private CancellationTokenSource? _respawnAfterDeathCts;
 
@@ -343,7 +349,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the Monster of the current opened Monster dialog.
     /// </summary>
-    public NonPlayerCharacter? OpenedNpc { get; set; }
+    public NonPlayerCharacter? OpenedNpc
+    {
+        get => this.OpenedNpcContext?.Npc;
+        set => this.OpenedNpcContext = value is null ? null : new NpcDialogContext(value);
+    }
 
     /// <inheritdoc/>
     public StateMachine PlayerState { get; } = new(GameLogic.PlayerState.Initial);
@@ -649,6 +659,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public DateTime LastShieldRecoveryHiatusAccrual { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Gets a value indicating whether this thread is committing this player's hit resources.
+    /// </summary>
+    internal bool IsApplyingHitOnCurrentThread => Monitor.IsEntered(this._hitLock);
+
+    /// <summary>
+    /// Gets or sets the identity of one opened NPC dialog, including reopening the same NPC.
+    /// </summary>
+    internal NpcDialogContext? OpenedNpcContext { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
     protected virtual bool IsPlayerStoreOpeningAfterEnterSupported => true;
@@ -793,7 +813,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        if (this.IsAttackBlockedBySafezone(attacker)
+        if (!this.IsAlive || this.IsAttackBlockedBySafezone(attacker)
             || this.IsAttackPreventedByPlugIns(attacker))
         {
             return null;
@@ -829,6 +849,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return hitInfo;
         }
 
+        var recoverHealthBeforeHit = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]);
+        var manaFullyRecovered = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]);
+        if (!await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit, recoverHealthBeforeHit).ConfigureAwait(false))
+        {
+            return null;
+        }
+
         if (this.Attributes[Stats.IsFrozen] > 0)
         {
             await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
@@ -839,18 +866,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
         }
 
-        if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
-        {
-            this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-        }
-
-        var manaFullyRecovered = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]);
         if (hitInfo.ManaToll > 0 || manaFullyRecovered)
         {
             this.Attributes[Stats.CurrentMana] = (manaFullyRecovered ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
         }
-
-        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
 
         bool isPvpDamage = attacker is Player or IPlayerSurrogate;
         float damage = isPvpDamage ? hitInfo.TotalDamage : attacker.Attributes[Stats.MinimumPhysBaseDmg];
@@ -881,27 +900,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="damageType">The damage type.</param>
     public async ValueTask AfterHitTargetAsync(float targetDefense, DamageType? damageType)
     {
-        this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+        var healthLoss = this.Attributes![Stats.HealthLossAfterHit];
+        if (healthLoss > 0)
+        {
+            this.ApplyHealthLossAfterHit(healthLoss);
+        }
 
         await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, damageType ?? DamageType.Physical).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+    public async ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
     {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null);
+        await this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
+    public async ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
     {
-        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
+        await this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    public async ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
     {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null);
+        await this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1729,59 +1752,131 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
+    private void ApplyHealthLossAfterHit(float healthLoss)
     {
-        this._summon.RegisterHit(attacker);
-        var healthDamage = hitInfo.HealthDamage;
-        int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
-        if (oversd < 0)
+        List<(AttributeDefinition Definition, float Value)> attributeChanges = [];
+        lock (this._hitLock)
         {
-            healthDamage += (uint)(oversd * (-1));
-
-            if (this.Attributes[Stats.CurrentShield] > 0
-                && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
-                && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio])
+            if (!this.IsAlive)
             {
-                await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.ShieldBurst), true).ConfigureAwait(false);
+                return;
             }
 
-            this.Attributes[Stats.CurrentShield] = 0;
-        }
-        else
-        {
-            this.Attributes[Stats.CurrentShield] = oversd;
+            this._hitAttributeChanges = attributeChanges;
+            try
+            {
+                this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - healthLoss, 1);
+            }
+            finally
+            {
+                this._hitAttributeChanges = null;
+            }
         }
 
-        this.Attributes[Stats.CurrentHealth] -= healthDamage;
+        foreach (var (definition, value) in attributeChanges)
+        {
+            _ = this.NotifyAttributeValueChangedAsync(definition, value);
+        }
+    }
+
+    private async ValueTask<bool> HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null, bool recoverHealthBeforeHit = false)
+    {
+        bool killed;
+        bool shieldBurst;
+        List<(AttributeDefinition Definition, float Value)> attributeChanges = [];
+        lock (this._hitLock)
+        {
+            if (!this.IsAlive || this.Attributes![Stats.CurrentHealth] < 1)
+            {
+                return false;
+            }
+
+            this._hitAttributeChanges = attributeChanges;
+            try
+            {
+                if (recoverHealthBeforeHit)
+                {
+                    this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
+                }
+
+                var healthDamage = hitInfo.HealthDamage;
+                int oversd = (int)(this.Attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
+                shieldBurst = false;
+                if (oversd < 0)
+                {
+                    healthDamage += (uint)(oversd * (-1));
+                    shieldBurst = this.Attributes[Stats.CurrentShield] > 0
+                        && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
+                        && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio];
+                    this.Attributes[Stats.CurrentShield] = 0;
+                }
+                else
+                {
+                    this.Attributes[Stats.CurrentShield] = oversd;
+                }
+
+                this.Attributes[Stats.CurrentHealth] -= healthDamage;
+                killed = this.Attributes[Stats.CurrentHealth] < 1;
+                if (killed)
+                {
+                    this.IsAlive = false;
+                }
+            }
+            finally
+            {
+                this._hitAttributeChanges = null;
+            }
+        }
 
         if (isFinalStreakHit.HasValue)
         {
             hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
 
-            if (isFinalStreakHit.Value || this.Attributes[Stats.CurrentHealth] < 1)
+            if (isFinalStreakHit.Value || killed)
             {
                 hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
             }
         }
 
-        await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
-        if (attacker is IWorldObserver observer)
-        {
-            await observer.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
-        }
-
-        this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
-
-        if (this.Attributes[Stats.CurrentHealth] < 1)
+        // The lethal commit reserves this life before any asynchronous notification.
+        if (killed)
         {
             this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
-            await this.OnDeathAsync(attacker).ConfigureAwait(false);
+        }
+
+        try
+        {
+            foreach (var (definition, value) in attributeChanges)
+            {
+                _ = this.NotifyAttributeValueChangedAsync(definition, value);
+            }
+
+            this._summon.RegisterHit(attacker);
+            if (shieldBurst)
+            {
+                await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.ShieldBurst), true).ConfigureAwait(false);
+            }
+
+            await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
+            if (attacker is IWorldObserver observer)
+            {
+                await observer.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
+            }
+
+            this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
+        }
+        finally
+        {
+            if (killed)
+            {
+                await this.OnDeathAsync(attacker).ConfigureAwait(false);
+            }
         }
 
         if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
         {
             // Poison Damage does not reflect to the attacker.
-            return;
+            return true;
         }
 
         if (attacker is IAttackable or AttackerSurrogate)
@@ -1809,6 +1904,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
+        return true;
+
         void ReflectDamage(int reflectedDamage, IAttackable attackable)
         {
             if (reflectedDamage <= 0)
@@ -1827,9 +1924,53 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
+    private async ValueTask<bool> TryEnterDeadStateAsync()
+    {
+        // Death cancels combat-reachable interactions using their normal cleanup. Do not add
+        // transitions from disconnected, changing-map or other non-combat states.
+        while (true)
+        {
+            var state = this.PlayerState.CurrentState;
+            if (state == GameLogic.PlayerState.PartyRequest)
+            {
+                this.LastPartyRequester = null;
+                await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+            }
+            else if (state == GameLogic.PlayerState.TradeRequested
+                     || state == GameLogic.PlayerState.TradeOpened
+                     || state == GameLogic.PlayerState.TradeButtonPressed)
+            {
+                await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+            }
+            else if (state == GameLogic.PlayerState.NpcDialogOpened)
+            {
+                if (this.OpenedNpc is not null)
+                {
+                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
+                }
+                else
+                {
+                    await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
+                {
+                    return true;
+                }
+            }
+
+            if (this.PlayerState.CurrentState == state)
+            {
+                return false;
+            }
+        }
+    }
+
     private async ValueTask OnDeathAsync(IAttacker? killer)
     {
-        if (!await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
+        if (!await this.TryEnterDeadStateAsync().ConfigureAwait(false))
         {
             return;
         }
@@ -2197,6 +2338,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await openStoreAction.RestoreAfterEnterWorldAsync(this, this.IsPlayerStoreOpeningAfterEnterSupported).ConfigureAwait(false);
     }
 
+    private async ValueTask NotifyAttributeValueChangedAsync(AttributeDefinition definition, float value)
+    {
+        try
+        {
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateStatsAsync(definition, value)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, $"{nameof(this.OnAttributeValueChanged)} failed for attribute {definition}.");
+        }
+    }
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnTransformationSkinChanged(object? sender, EventArgs args)
     {
@@ -2253,7 +2406,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 || LimitCurrentAttribute(Stats.MaximumShield, Stats.CurrentShield)
                 || LimitCurrentAttribute(Stats.MaximumAbility, Stats.CurrentAbility);
 
-            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateStatsAsync(attribute.Definition, attribute.Value)).ConfigureAwait(false);
+            if (this.IsApplyingHitOnCurrentThread && this._hitAttributeChanges is { } changes)
+            {
+                changes.Add((attribute.Definition, attribute.Value));
+                return;
+            }
+
+            await this.NotifyAttributeValueChangedAsync(attribute.Definition, attribute.Value).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -2567,11 +2726,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask CloseTradeIfNeededAsync()
     {
-        if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
+        if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeRequested
+            || this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
             || this.PlayerState.CurrentState == GameLogic.PlayerState.TradeOpened)
         {
             var cancelAction = new TradeCancelAction();
             await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
         }
     }
+
+    /// <summary>
+    /// Identifies one dialog opening independently of the NPC's reusable world object.
+    /// </summary>
+    /// <param name="Npc">The NPC whose dialog was opened.</param>
+    internal sealed record NpcDialogContext(NonPlayerCharacter Npc);
 }
