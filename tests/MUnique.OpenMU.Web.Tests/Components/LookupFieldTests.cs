@@ -267,7 +267,12 @@ public class LookupFieldTests
         public override string ToString() => this.Name;
     }
 
+    
     /// <inheritdoc />
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Major Code Smell",
+        "S1172:Unused method parameters should be removed",
+        Justification = "Required by ILookupController; this test implementation does not use a persistence context.")]
     private sealed class TestLookupController(IEnumerable<TestOption> options) : ILookupController
     {
         public int SearchCount { get; private set; }
