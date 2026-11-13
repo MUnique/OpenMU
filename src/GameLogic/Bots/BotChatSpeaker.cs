@@ -66,17 +66,20 @@ internal static class BotChatSpeaker
     }
 
     /// <summary>
-    /// Says the line in the party chat, to the players of the bot's party.
+    /// Says the line in the party chat, to the players of the bot's party - only if the bot is still in
+    /// the party it meant to talk to: the line is said after a "typing time", meanwhile the bot may have
+    /// left it and joined another.
     /// </summary>
     /// <param name="bot">The speaking bot.</param>
+    /// <param name="party">The party the bot meant to talk to.</param>
     /// <param name="text">The text.</param>
     /// <param name="values">The placeholder values.</param>
     /// <param name="language">The language to say it in, for every receiver; <c>null</c> for each receiver's own.</param>
     /// <param name="gesture">The gesture the bot makes with it.</param>
     /// <param name="toward">The player the bot talks to, to turn to for the gesture.</param>
-    internal static async ValueTask PartySayAsync(Player bot, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null, BotChatGesture gesture = BotChatGesture.None, Player? toward = null)
+    internal static async ValueTask PartySayAsync(Player bot, Party party, LocalizedString text, IReadOnlyDictionary<string, Func<CultureInfo, string>> values, CultureInfo? language = null, BotChatGesture gesture = BotChatGesture.None, Player? toward = null)
     {
-        if (bot.SelectedCharacter?.Name is not { } name || bot.Party is not { } party)
+        if (bot.SelectedCharacter?.Name is not { } name || !ReferenceEquals(bot.Party, party))
         {
             return;
         }

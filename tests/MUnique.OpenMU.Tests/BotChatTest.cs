@@ -6,8 +6,11 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Globalization;
 using System.Threading;
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Bots;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 
@@ -267,6 +270,30 @@ public class BotChatTest
         Assert.That(winners, Has.Count.EqualTo(1));
         Assert.That(throttle.GetOpenPartyOffer(bot, Start)?.Requester, Is.SameAs(winners[0]));
         Assert.That(throttle.TryReservePartyOffer(bot, new BotPartyOffer(requesters[0], expires.AddMinutes(2)), expires), Is.True);
+    }
+
+    /// <summary>
+    /// A party line said after the typing time goes only to the party the bot meant to talk to - not to
+    /// another party it joined meanwhile.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask SaysAPartyLineOnlyToThePartyItMeantAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var companion = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(bot).ConfigureAwait(false);
+        await party.AddAsync(companion).ConfigureAwait(false);
+        var formerParty = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        var view = Mock.Get(companion.ViewPlugIns.GetPlugIn<IChatViewPlugIn>()!);
+
+        await BotChatSpeaker.PartySayAsync(bot, formerParty, new LocalizedString("gg"), NoValues).ConfigureAwait(false);
+        view.Verify(v => v.ChatMessageAsync("gg", It.IsAny<string>(), ChatMessageType.Party), Times.Never);
+
+        await BotChatSpeaker.PartySayAsync(bot, party, new LocalizedString("gg"), NoValues).ConfigureAwait(false);
+        view.Verify(v => v.ChatMessageAsync("gg", It.IsAny<string>(), ChatMessageType.Party), Times.Once);
     }
 
     /// <summary>

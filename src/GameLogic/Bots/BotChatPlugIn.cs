@@ -330,6 +330,7 @@ public class BotChatPlugIn
 
         if (partyConfiguration is not { PartyChatChancePercent: > 0 } configuration
             || !Rand.NextRandomBool(configuration.PartyChatChancePercent)
+            || bot.Party is not { } party
             || PickLine(inviterIsFriend && configuration.FriendLines.Count > 0 ? configuration.FriendLines : configuration.PartyJoinedLines) is not { } line
             || !throttle.TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
         {
@@ -339,7 +340,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(bot);
         var inviterName = inviter.SelectedCharacter?.Name ?? string.Empty;
         values["player"] = _ => inviterName;
-        RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values, gesture: line.Gesture, toward: inviter));
+        RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, party, line.Text, values, gesture: line.Gesture, toward: inviter));
     }
 
     /// <inheritdoc />
@@ -359,7 +360,8 @@ public class BotChatPlugIn
         var definition = miniGame.Definition;
         foreach (var bot in speakers)
         {
-            if (!Rand.NextRandomBool(configuration.PartyChatChancePercent)
+            if (bot.Party is not { } party
+                || !Rand.NextRandomBool(configuration.PartyChatChancePercent)
                 || PickLine(configuration.EventFinishedLines) is not { } line
                 || !this.GetThrottle(bot.GameContext).TryReserveChat(bot, DateTime.UtcNow, configuration.BotChatCooldown))
             {
@@ -368,7 +370,7 @@ public class BotChatPlugIn
 
             var values = CreateBotValues(bot);
             values["event"] = culture => definition.Name.GetTranslation(culture) ?? string.Empty;
-            RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, line.Text, values, gesture: line.Gesture));
+            RunLater(bot.GameContext, TypingDelay(line.Text), () => BotChatSpeaker.PartySayAsync(bot, party, line.Text, values, gesture: line.Gesture));
         }
 
         return ValueTask.CompletedTask;
@@ -1209,7 +1211,7 @@ public class BotChatPlugIn
         var values = CreateBotValues(speaker);
         values["player"] = _ => senderName;
         var language = GetMessageLanguage(message, configuration);
-        RunLater(speaker.GameContext, TypingDelay(text), () => BotChatSpeaker.PartySayAsync(speaker, text, values, language, line.Gesture, sender));
+        RunLater(speaker.GameContext, TypingDelay(text), () => BotChatSpeaker.PartySayAsync(speaker, party, text, values, language, line.Gesture, sender));
     }
 
     /// <summary>
