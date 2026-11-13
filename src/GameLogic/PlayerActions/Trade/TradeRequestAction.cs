@@ -33,7 +33,7 @@ public class TradeRequestAction
         // Publish each side under its own state scope; never hold both state locks together.
         await using (var context = await partner.PlayerState.TryBeginAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
-            context.Allowed &= IsAlive(player) && IsAlive(partner)
+            context.Allowed &= IsAvailableForTrade(player) && IsAvailableForTrade(partner)
                 && player.TradingPartner is null && partner.TradingPartner is null;
             if (!context.Allowed)
             {
@@ -46,7 +46,7 @@ public class TradeRequestAction
         bool published;
         await using (var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
-            context.Allowed &= IsAlive(player) && IsAlive(partner)
+            context.Allowed &= IsAvailableForTrade(player) && IsAvailableForTrade(partner)
                 && partner.PlayerState.CurrentState == PlayerState.TradeRequested
                 && ReferenceEquals(partner.TradingPartner, player)
                 && player.TradingPartner is null;
@@ -55,7 +55,7 @@ public class TradeRequestAction
                 player.TradingPartner = partner;
 
                 // Death may reserve either participant between validation and publication.
-                context.Allowed = IsAlive(player) && IsAlive(partner)
+                context.Allowed = IsAvailableForTrade(player) && IsAvailableForTrade(partner)
                     && partner.PlayerState.CurrentState == PlayerState.TradeRequested
                     && ReferenceEquals(partner.TradingPartner, player);
                 if (!context.Allowed && ReferenceEquals(player.TradingPartner, partner))
@@ -88,9 +88,9 @@ public class TradeRequestAction
         return IsCurrentRequest(player, partner);
     }
 
-    private static bool IsAlive(ITrader trader) => trader is not Player player || player.IsAlive;
+    private static bool IsAvailableForTrade(ITrader trader) => trader is not Player player || player.IsAvailableForTrade;
 
-    private static bool IsCurrentRequest(ITrader player, ITrader partner) => IsAlive(player) && IsAlive(partner)
+    private static bool IsCurrentRequest(ITrader player, ITrader partner) => IsAvailableForTrade(player) && IsAvailableForTrade(partner)
         && player.PlayerState.CurrentState == PlayerState.TradeRequested
         && partner.PlayerState.CurrentState == PlayerState.TradeRequested
         && ReferenceEquals(player.TradingPartner, partner) && ReferenceEquals(partner.TradingPartner, player);

@@ -15,9 +15,12 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.Trade;
+using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
@@ -66,6 +69,151 @@ public class TradeTest
         Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
         Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
         Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
+    }
+
+    /// <summary>Logout cancels the current trade before character teardown and permits the same connection to trade again.</summary>
+    /// <param name="phase">The ordinary trade state in which logout is requested.</param>
+    [TestCase("requested")]
+    [TestCase("opened")]
+    [TestCase("pressed")]
+    public async Task LogoutTradeCanReselectAndTradeAgainAsync(string phase)
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        owner.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        var character = owner.SelectedCharacter!;
+        character.Name = "LogoutA";
+        Mock.Get(owner.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        owner.Money = 200;
+        peer.Money = 300;
+        var inventory = owner.Inventory!;
+        var item = this.GetItem();
+        item.Definition = new ItemDefinition { Width = 1, Height = 1, IsTradable = true };
+        Assert.That(await inventory.AddItemAsync(20, item).ConfigureAwait(false), Is.True);
+        try
+        {
+            Assert.That(await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+                () => new TradeRequestAction().RequestTradeAsync(owner, peer)).ConfigureAwait(false)).ConfigureAwait(false), Is.True);
+            if (phase != "requested")
+            {
+                await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                    () => new TradeAcceptAction().HandleTradeAcceptAsync(peer, true)).ConfigureAwait(false)).ConfigureAwait(false);
+                await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(async () =>
+                {
+                    await new MoveItemAction().MoveItemAsync(owner, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+                    await new TradeMoneyAction().TradeMoneyAsync(owner, 60).ConfigureAwait(false);
+                    if (phase == "pressed")
+                    {
+                        await new TradeButtonAction().TradeButtonChangedAsync(owner, TradeButtonState.Checked).ConfigureAwait(false);
+                    }
+                }).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+
+            await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+                () => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection)).ConfigureAwait(false)).ConfigureAwait(false);
+            // The peer's later cancel is a separate packet; it must not be needed to clean the logged-out player.
+            await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                () => new TradeCancelAction().CancelTradeAsync(peer)).ConfigureAwait(false)).ConfigureAwait(false);
+            var stateAfterLogout = owner.PlayerState.CurrentState;
+            var characterAfterLogout = owner.SelectedCharacter;
+            var partnerAfterLogout = owner.TradingPartner;
+            var moneyAfterLogout = owner.TradingMoney;
+            var peerAfterLogout = peer.TradingPartner;
+            await owner.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(owner)).ConfigureAwait(false);
+            await owner.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(owner, character.Name)).ConfigureAwait(false);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+            var requested = await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                () => new TradeRequestAction().RequestTradeAsync(peer, owner)).ConfigureAwait(false)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(stateAfterLogout, Is.EqualTo(PlayerState.Authenticated));
+                Assert.That(characterAfterLogout, Is.Null);
+                Assert.That(partnerAfterLogout, Is.Null);
+                Assert.That(moneyAfterLogout, Is.Zero);
+                Assert.That(owner.BackupInventory, Is.Null);
+                Assert.That(peerAfterLogout, Is.Null);
+                Assert.That(peer.BackupInventory, Is.Null);
+                Assert.That(inventory.ItemStorage.Money, Is.EqualTo(200));
+                Assert.That(inventory.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
+                Assert.That(peer.Money, Is.EqualTo(300));
+                Assert.That(requested, Is.True, "Same-session trade must work after actual logout and character reselection.");
+            });
+            await owner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(owner, true)).ConfigureAwait(false);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+            await owner.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(owner)).ConfigureAwait(false);
+            Assert.That(owner.Money, Is.EqualTo(200));
+            Assert.That(owner.Inventory!.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
+        }
+        finally
+        {
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>The real accepter funnel may resume a failed opening after peer logout or death; that lifecycle owns cleanup.</summary>
+    /// <param name="logout">Whether the peer leaves to character selection rather than dying.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task InterruptedAcceptanceIsCleanedByPeerLifecycleAsync(bool logout)
+    {
+        var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = seed.GameContext.Configuration;
+        var provider = new PausingContextProvider(configuration);
+        var initializer = new MapInitializer(configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(configuration, provider, initializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        initializer.PlugInManager = game.PlugInManager;
+        initializer.PathFinderPool = game.PathFinderPool;
+        var accepter = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var attacker = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        peer.Attributes![Stats.CurrentHealth] = 10;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        ((PausingPlayerContext)accepter.PersistenceContext).BeforeSave = async () =>
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        };
+        Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, accepter)).ConfigureAwait(false), Is.True);
+        var acceptance = Task.Run(async () => await accepter.RunPersistenceExclusiveAsync(
+            () => new TradeAcceptAction().HandleTradeAcceptAsync(accepter, true)).ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (logout)
+            {
+                await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                    () => new LogoutAction().LogoutAsync(peer, LogoutType.BackToCharacterSelection)).ConfigureAwait(false)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+            else
+            {
+                await Task.Run(async () => await attacker.RunPersistenceExclusiveAsync(
+                    () => peer.ApplyPoisonDamageAsync(attacker, 10)).ConfigureAwait(false)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            release.TrySetResult();
+            await acceptance.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(accepter.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(accepter.TradingPartner, Is.Null);
+                Assert.That(accepter.BackupInventory, Is.Null);
+                Assert.That(peer.TradingPartner, Is.Null);
+                Assert.That(peer.BackupInventory, Is.Null);
+            });
+            Assert.That(await attacker.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(attacker, accepter)).ConfigureAwait(false), Is.True);
+            await attacker.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(attacker)).ConfigureAwait(false);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await acceptance.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await accepter.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+            await attacker.DisposeAsync().ConfigureAwait(false);
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>The production packet funnel queues an early OK until acceptance finished both openings.</summary>

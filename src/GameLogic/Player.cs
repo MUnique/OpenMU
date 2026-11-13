@@ -108,6 +108,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private bool _hasReservedLethalHit;
 
+    // An independent disconnect may overlap packet-driven logout; neither may republish trade availability early.
+    private int _removalsInProgress;
+
     private Character? _selectedCharacter;
 
     private ICustomPlugInContainer<IViewPlugIn>? _viewPlugIns;
@@ -680,6 +683,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Gets or sets the timestamp of when the shield hiatus was last accrued.
     /// </summary>
     public DateTime LastShieldRecoveryHiatusAccrual { get; set; } = DateTime.UtcNow;
+
+    /// <summary>Gets a value indicating whether a live character can publish trade state, excluding scoped world removal.</summary>
+    /// <remarks>Read the removal guard first so its final decrement publishes the cleared character to this reader.</remarks>
+    internal bool IsAvailableForTrade => Volatile.Read(ref this._removalsInProgress) == 0 && this.SelectedCharacter is not null && this.IsAlive;
 
     /// <summary>
     /// Gets a value indicating whether this thread is committing this player's hit resources.
@@ -1434,38 +1441,59 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
     {
-        if (this.Party is { } party)
-        {
-            await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
-        }
-
-        await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
-
-        await this._mapTransitions.RemoveFromCurrentMapAsync().ConfigureAwait(false);
-
-        // The player always observes itself, so leaving the map doesn't remove it from its own
-        // observed objects. Without clearing them, entering the world again (e.g. after going back
-        // to the character selection) wouldn't show the player to itself as a new player in scope.
-        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
-
-        await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
-
-        this.OpenedNpc = null;
-
-        await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
-
-        // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
-        Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
-
-        await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
-
+        var registeredRemoval = false;
         try
         {
-            await this.SaveProgressAsync().ConfigureAwait(false);
+            // Trade publication uses this same state exclusion. Publish departure before capturing its trade.
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+            {
+                context.Allowed = false;
+                Interlocked.Increment(ref this._removalsInProgress);
+                registeredRemoval = true;
+            }
+
+            await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+
+            if (this.Party is { } party)
+            {
+                await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
+            }
+
+            await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
+
+            await this._mapTransitions.RemoveFromCurrentMapAsync().ConfigureAwait(false);
+
+            // The player always observes itself, so leaving the map doesn't remove it from its own
+            // observed objects. Without clearing them, entering the world again (e.g. after going back
+            // to the character selection) wouldn't show the player to itself as a new player in scope.
+            await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
+
+            await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+
+            this.OpenedNpc = null;
+
+            await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+            // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
+            Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
+
+            await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+
+            try
+            {
+                await this.SaveProgressAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
+            }
         }
-        catch (Exception ex)
+        finally
         {
-            this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
+            if (registeredRemoval)
+            {
+                Interlocked.Decrement(ref this._removalsInProgress);
+            }
         }
     }
 

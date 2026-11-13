@@ -114,6 +114,6 @@ public class TradeAcceptAction : BaseTradeAction
             && expectedPartner.PlayerState.CurrentState == PlayerState.TradeOpened
             && ReferenceEquals(trader.TradingPartner, expectedPartner)
             && ReferenceEquals(expectedPartner.TradingPartner, trader)
-            && (trader is not Player player || player.IsAlive)
-            && (expectedPartner is not Player partner || partner.IsAlive);
+            && (trader is not Player player || player.IsAvailableForTrade)
+            && (expectedPartner is not Player partner || partner.IsAvailableForTrade);
 }

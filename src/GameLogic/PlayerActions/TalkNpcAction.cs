@@ -68,8 +68,10 @@ public class TalkNpcAction
         if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
         {
             await Task.Delay(500).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant)).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(npcStats.MerchantStore.GetOfferedItems(), StoreKind.Normal)).ConfigureAwait(false);
+            await ShowCurrentDialogResponseAsync(player, dialog, expectedState, () =>
+                player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant))).ConfigureAwait(false);
+            await ShowCurrentDialogResponseAsync(player, dialog, expectedState, () =>
+                player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(npcStats.MerchantStore.GetOfferedItems(), StoreKind.Normal))).ConfigureAwait(false);
         }
         else
         {
@@ -83,6 +85,28 @@ public class TalkNpcAction
     /// <param name="npc">The NPC whose dialog is about to be opened.</param>
     /// <returns>A value indicating whether this action advances the player state to <see cref="PlayerState.NpcDialogOpened" />.</returns>
     protected virtual bool AdvancePlayerState(NonPlayerCharacter npc) => true;
+
+    private static async ValueTask ShowCurrentDialogResponseAsync(Player player, Player.NpcDialogContext dialog, State expectedState, Func<ValueTask> show)
+    {
+        var response = ValueTask.CompletedTask;
+        try
+        {
+            await using var context = await player.PlayerState.TryBeginAdvanceToAsync(expectedState).ConfigureAwait(false);
+            context.Allowed = false;
+            if (!player.IsAlive || player.PlayerState.CurrentState != expectedState
+                || !ReferenceEquals(player.OpenedNpcContext, dialog))
+            {
+                return;
+            }
+
+            // Queue the concrete result before a close can acquire state; never await a reentrant view here.
+            response = show();
+        }
+        finally
+        {
+            await response.ConfigureAwait(false);
+        }
+    }
 
     private static async ValueTask<bool> CompleteDialogAsync(Player player, Player.NpcDialogContext dialog, State expectedState, bool clearNpc = true)
     {
@@ -133,10 +157,15 @@ public class TalkNpcAction
 
                 break;
             case NpcWindow.VaultStorage:
-                player.Account!.Vault ??= player.PersistenceContext.CreateNew<ItemStorage>();
-                var warehouseSize = player.Account.IsVaultExtended ? InventoryConstants.WarehouseSize * 2 : InventoryConstants.WarehouseSize;
-                player.Vault = new Storage(warehouseSize, player.Account.Vault);
-                await player.InvokeViewPlugInAsync<IShowVaultPlugIn>(p => p.ShowVaultAsync()).ConfigureAwait(false);
+                var account = player.Account!;
+                var vault = account.Vault;
+                var warehouseSize = account.IsVaultExtended ? InventoryConstants.WarehouseSize * 2 : InventoryConstants.WarehouseSize;
+                await ShowCurrentDialogResponseAsync(player, dialog, expectedState, () =>
+                {
+                    account.Vault ??= vault ?? player.PersistenceContext.CreateNew<ItemStorage>();
+                    player.Vault = new Storage(warehouseSize, account.Vault);
+                    return player.InvokeViewPlugInAsync<IShowVaultPlugIn>(p => p.ShowVaultAsync());
+                }).ConfigureAwait(false);
                 break;
             case NpcWindow.GuildMaster:
                 if (await this.IsPlayedAllowedToCreateGuildAsync(player, dialog.Npc).ConfigureAwait(false))
