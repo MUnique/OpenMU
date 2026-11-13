@@ -101,22 +101,72 @@ internal sealed class PlayerStorages
                 items.Count,
                 string.Join(", ", items.Select(i => $"{i.Definition?.Name.ValueInNeutralLanguage ?? "Unknown"}(Slot:{i.ItemSlot})")));
 
-            // Try one more time to force-add items individually using the captured list
-            foreach (var item in items)
+            // The free cells of the inventory can get taken while the dialog is open (e.g. by items moved
+            // out of the vault), or they are scattered, so that a big item like wings doesn't fit anymore.
+            // Place the items one by one: first the big ones, then the inventory, then the vault. An item is
+            // only removed from the temporary storage when it has a new place.
+            var vault = this.GetVaultForOverflow();
+            var notPlaced = new List<Item>();
+            foreach (var item in items.OrderByDescending(i => i.Definition?.Width * i.Definition?.Height ?? 0))
             {
+                var slot = item.ItemSlot;
                 await temporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
-                if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
+                if (await inventory.AddItemAsync(item).ConfigureAwait(false))
                 {
-                    this._player.Logger.LogError("Failed to return item {item} to inventory. Item is lost. id: {itemid}", item, item.GetId());
+                    continue;
                 }
+
+                if (vault is not null && await vault.AddItemAsync(item).ConfigureAwait(false))
+                {
+                    this._player.Logger.LogWarning(
+                        "Inventory of player {player} was full, the item {item} was moved to the vault. id: {itemid}",
+                        this._player.Name,
+                        item,
+                        item.GetId());
+                    continue;
+                }
+
+                // Neither inventory nor vault have space: don't lose it, keep it in the temporary storage.
+                await temporaryStorage.AddItemAsync(slot, item).ConfigureAwait(false);
+                notPlaced.Add(item);
+                this._player.Logger.LogError(
+                    "No space in inventory and vault of player {player} for item {item}. It stays in the temporary storage and can be recovered with its id: {itemid}",
+                    this._player.Name,
+                    item,
+                    item.GetId());
             }
 
-            this.TemporaryStorage = null;
+            if (notPlaced.Count == 0)
+            {
+                this.TemporaryStorage = null;
+            }
         }
         catch (Exception ex)
         {
             this._player.Logger.LogError(ex, "Error returning items from temporary storage to inventory");
         }
+    }
+
+    /// <summary>
+    /// Gets the storage of the account vault, which is used when the inventory has no more space for items
+    /// which are returned from the temporary storage.
+    /// </summary>
+    /// <returns>The vault storage, or <c>null</c> if the player has no account.</returns>
+    private IStorage? GetVaultForOverflow()
+    {
+        if (this.Vault is { } openedVault)
+        {
+            return openedVault;
+        }
+
+        if (this._player.Account is not { } account)
+        {
+            return null;
+        }
+
+        account.Vault ??= this._player.PersistenceContext.CreateNew<ItemStorage>();
+        var size = account.IsVaultExtended ? InventoryConstants.WarehouseSize * 2 : InventoryConstants.WarehouseSize;
+        return new Storage(size, account.Vault);
     }
 
     private async ValueTask RestoreBackupInventoryAsync(IInventoryStorage inventory, BackupItemStorage backupInventory)
