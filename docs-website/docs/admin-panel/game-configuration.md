@@ -235,6 +235,11 @@ Route `edit-config-grid/…WarpInfo/`
 The entries of the in-game warp list: index, name, target gate, level requirement
 and cost.
 
+The [open source client](https://github.com/sven-n/MuMain) gets this list when a
+character enters the game and shows it in its warp window, so changes show up there
+after the next character selection. The original client shows the warp list of its
+data files; a warp which isn't in there can't be selected with it.
+
 ## Jewel mixes
 
 Route `edit-config-grid/…JewelMix/`
