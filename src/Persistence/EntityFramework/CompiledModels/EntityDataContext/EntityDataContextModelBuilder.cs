@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("424a4b8c-7130-4089-a8ea-0f4f6ddc06a2"), entityTypeCount: 129)
+            : base(skipDetectChanges: false, modelId: new Guid("9b566831-4f45-415d-a8fc-887cdcad1fc9"), entityTypeCount: 130)
         {
         }
 
@@ -146,6 +146,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var statAttribute = StatAttributeEntityType.Create(this);
             var statAttributeDefinition = StatAttributeDefinitionEntityType.Create(this);
             var systemConfiguration = SystemConfigurationEntityType.Create(this);
+            var waitingItem = WaitingItemEntityType.Create(this);
             var warpInfo = WarpInfoEntityType.Create(this);
 
             AccountEntityType.CreateForeignKey1(account, itemStorage);
@@ -401,6 +402,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             StatAttributeEntityType.CreateForeignKey3(statAttribute, attributeDefinition);
             StatAttributeDefinitionEntityType.CreateForeignKey1(statAttributeDefinition, attributeDefinition);
             StatAttributeDefinitionEntityType.CreateForeignKey2(statAttributeDefinition, characterClass);
+            WaitingItemEntityType.CreateForeignKey1(waitingItem, character);
+            WaitingItemEntityType.CreateForeignKey2(waitingItem, item);
             WarpInfoEntityType.CreateForeignKey1(warpInfo, gameConfiguration);
             WarpInfoEntityType.CreateForeignKey2(warpInfo, exitGate);
 
@@ -532,6 +535,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             StatAttributeEntityType.CreateAnnotations(statAttribute);
             StatAttributeDefinitionEntityType.CreateAnnotations(statAttributeDefinition);
             SystemConfigurationEntityType.CreateAnnotations(systemConfiguration);
+            WaitingItemEntityType.CreateAnnotations(waitingItem);
             WarpInfoEntityType.CreateAnnotations(warpInfo);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);

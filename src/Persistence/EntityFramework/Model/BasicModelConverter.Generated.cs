@@ -155,6 +155,7 @@ internal sealed class BasicModelConverter
             SkillEntry value => this.Convert(value),
             StatAttributeDefinition value => this.Convert(value),
             SystemConfiguration value => this.Convert(value),
+            WaitingItem value => this.Convert(value),
             WarpInfo value => this.Convert(value),
             _ => source,
         };
@@ -864,6 +865,14 @@ internal sealed class BasicModelConverter
             foreach (var item in questStatesItems)
             {
                 target.QuestStates.Add((MUnique.OpenMU.DataModel.Entities.CharacterQuestState)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.WaitingItems is { } waitingItemsItems)
+        {
+            foreach (var item in waitingItemsItems)
+            {
+                target.WaitingItems.Add((MUnique.OpenMU.DataModel.Entities.WaitingItem)this.ConvertObject(item)!);
             }
         }
 
@@ -3275,6 +3284,22 @@ internal sealed class BasicModelConverter
         target.NetworkObservationMaxSessionSizeMb = source.NetworkObservationMaxSessionSizeMb;
         target.NetworkObservationMaxTotalSizeMb = source.NetworkObservationMaxTotalSizeMb;
         target.NetworkObservationRetentionDays = source.NetworkObservationRetentionDays;
+        return target;
+    }
+
+    private BasicModel.WaitingItem Convert(WaitingItem source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.WaitingItem)converted;
+        }
+
+        var target = new BasicModel.WaitingItem();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Item = (MUnique.OpenMU.DataModel.Entities.Item)this.ConvertObject(source.Item)!;
+        target.Reason = source.Reason;
+        target.AddedAt = source.AddedAt;
         return target;
     }
 

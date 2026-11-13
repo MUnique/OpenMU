@@ -263,6 +263,12 @@ public class Character
     [MemberOfAggregate]
     public virtual ICollection<CharacterQuestState> QuestStates { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets or sets the items which wait for space in the <see cref="Inventory"/>.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<WaitingItem> WaitingItems { get; protected set; } = null!;
+
     /// <inheritdoc />
     public override string ToString()
     {

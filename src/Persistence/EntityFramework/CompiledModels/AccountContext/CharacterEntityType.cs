@@ -24,7 +24,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
                 propertyCount: 26,
-                navigationCount: 6,
+                navigationCount: 7,
                 foreignKeyCount: 2,
                 unnamedIndexCount: 3,
                 keyCount: 1);
