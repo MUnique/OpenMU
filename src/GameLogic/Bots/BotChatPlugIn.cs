@@ -829,6 +829,13 @@ public class BotChatPlugIn
         return time < MaximumTypingTime ? time : MaximumTypingTime;
     }
 
+    /// <summary>
+    /// Gets the chat limits and memory of the bots of a game server.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The throttle.</returns>
+    internal BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
+
     private static bool IsBot(Player player) => player is OfflinePlayer && player.Account?.IsBot == true;
 
     private static IEnumerable<(MiniGameType Type, string Keywords)> GetPartyEventKeywords(BotChatConfiguration configuration) =>
@@ -1048,8 +1055,6 @@ public class BotChatPlugIn
             ? new DuelActions().HandleDuelResponseAsync(bot, requester, false)
             : ValueTask.CompletedTask;
 
-    private BotChatThrottle GetThrottle(IGameContext gameContext) => this._throttles.GetOrCreateValue(gameContext);
-
     /// <summary>
     /// Determines whether the bot may say something nobody asked for in the normal chat: not while
     /// the human players around it are busy talking - the bots shouldn't drown them out.
@@ -1123,7 +1128,6 @@ public class BotChatPlugIn
         }
 
         var (map, warp, position) = found;
-        throttle.RemovePartyOffer(bot);
 
         // "devias3" is told back as the player wrote it, not as the map ("Devias").
         var placeName = warp?.Name ?? map.Name;
@@ -1132,11 +1136,13 @@ public class BotChatPlugIn
         if (!IsAvailable(bot) || !IsFreeToMeet(bot))
         {
             // Taken into another party, or busy otherwise, since it answered: it lets the player be.
+            throttle.RemovePartyOffer(bot);
             return;
         }
 
         if (FindMeetingEntry(bot, map, warp, position) is not { } entry)
         {
+            // The offer stays open: the player may name another place until it expires.
             if (PickLine(configuration.PartyCantGoLines) is { } cantGoLine)
             {
                 this.WhisperLater(bot, requester, cantGoLine, values, language);
@@ -1145,6 +1151,7 @@ public class BotChatPlugIn
             return;
         }
 
+        throttle.RemovePartyOffer(bot);
         bot.EventMeeting = new BotEventMeeting(map, entry.Position, DateTime.UtcNow + configuration.PartyMeetingWaitTime, entry.Gate);
         if (PickLine(configuration.PartyOnTheWayLines) is { } onTheWayLine)
         {

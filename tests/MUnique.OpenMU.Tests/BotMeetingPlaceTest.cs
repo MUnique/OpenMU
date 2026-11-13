@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -176,6 +177,36 @@ public class BotMeetingPlaceTest
     }
 
     /// <summary>
+    /// A place the bot can't get to is declined, but the bot keeps waiting for the player's whisper:
+    /// the player may name another place. A place it can get to ends the offer - the bot sets off.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask KeepsTheOfferUntilAPlaceItCanGetToAsync()
+    {
+        var (bot, _, upperWarp, _) = await CreateLostTowerAsync().ConfigureAwait(false);
+        upperWarp.LevelRequirement = 400;
+        await bot.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        bot.IsAlive = true;
+        bot.Account!.IsBot = true;
+        var requester = await PlayerTestHelper.CreatePlayerAsync(bot.GameContext).ConfigureAwait(false);
+        var plugIn = new BotChatPlugIn { Configuration = BotChatConfiguration.CreateDefault() };
+        var throttle = plugIn.GetThrottle(bot.GameContext);
+        var offer = new BotPartyOffer(requester, DateTime.UtcNow.AddMinutes(3));
+        Assert.That(throttle.TryReservePartyOffer(bot, offer, DateTime.UtcNow), Is.True);
+
+        plugIn.WhisperMessageReceived(requester, bot, "lost tower 200 200", new CancelEventArgs());
+
+        Assert.That(throttle.GetOpenPartyOffer(bot, DateTime.UtcNow), Is.SameAs(offer));
+        Assert.That(bot.EventMeeting, Is.Null);
+
+        plugIn.WhisperMessageReceived(requester, bot, "lost tower 11 11", new CancelEventArgs());
+
+        Assert.That(throttle.GetOpenPartyOffer(bot, DateTime.UtcNow), Is.Null);
+        Assert.That(bot.EventMeeting?.NpcPosition, Is.EqualTo(new Point(11, 11)));
+    }
+
+    /// <summary>
     /// Creates a Lost Tower of two floors which aren't connected by walkable ground, with a warp to each
     /// (the upper one at level 70), and a bot of level 100.
     /// </summary>
@@ -196,6 +227,7 @@ public class BotMeetingPlaceTest
         }
 
         var map = CreateMap(LostTowerNumber, terrain);
+        map.Name = "Lost Tower";
         gameContext.Configuration.Maps.Add(map);
         var lowerGate = CreateGate(map, 10, 10, 11, 11);
         lowerGate.IsSpawnGate = true;
