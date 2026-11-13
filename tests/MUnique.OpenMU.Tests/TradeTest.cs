@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
+using System.IO.Pipelines;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -17,9 +19,12 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
+using ServerPackets = MUnique.OpenMU.Network.Packets.ServerToClient;
 
 /// <summary>
 /// Tests for the trade actions.
@@ -151,6 +156,370 @@ public class TradeTest
             await target.DisposeAsync().ConfigureAwait(false);
             await peer.DisposeAsync().ConfigureAwait(false);
             await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A delayed old cancel must not close a replacement trade opened through another participant's funnel.</summary>
+    /// <param name="replace">Whether the already-cleared partner opens another trade before notification resumes.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task DelayedCancelDoesNotCloseReplacementTradeAsync(bool replace)
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var partner = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var replacement = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        owner.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        owner.SelectedCharacter!.Name = "TraderA";
+        partner.SelectedCharacter!.Name = "TraderB";
+        replacement.SelectedCharacter!.Name = "TraderC";
+        foreach (var player in new[] { owner, partner, replacement })
+        {
+            player.Attributes![Stats.CurrentHealth] = 100;
+        }
+
+        owner.Inventory!.ItemStorage.Money = 100;
+        partner.Inventory!.ItemStorage.Money = 200;
+        replacement.Inventory!.ItemStorage.Money = 300;
+        var item = this.GetItem();
+        item.Definition = new ItemDefinition { Width = 1, Height = 1, IsTradable = true };
+        Assert.That(await partner.Inventory.AddItemAsync(20, item).ConfigureAwait(false), Is.True);
+        var events = new ConcurrentQueue<string>();
+        var partnerWindow = false;
+        var partnerCancelled = 0;
+        Mock.Get(partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Setup(v => v.ShowTradeRequestAnswerAsync(true)).Returns(() =>
+        {
+            partnerWindow = true;
+            events.Enqueue(ReferenceEquals(partner.TradingPartner, replacement) ? "B:open:C" : "B:open:A");
+            return ValueTask.CompletedTask;
+        });
+        Mock.Get(partner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(() =>
+        {
+            Assert.That(partner.IsApplyingHitOnCurrentThread, Is.False);
+            Interlocked.Increment(ref partnerCancelled);
+            partnerWindow = false;
+            events.Enqueue("B:cancel");
+            return ValueTask.CompletedTask;
+        });
+        Assert.That(await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+            () => new TradeRequestAction().RequestTradeAsync(owner, partner)).ConfigureAwait(false)).ConfigureAwait(false), Is.True);
+        await Task.Run(async () => await partner.RunPersistenceExclusiveAsync(
+            () => new TradeAcceptAction().HandleTradeAcceptAsync(partner, true)).ConfigureAwait(false)).ConfigureAwait(false);
+        var notifyingOwner = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseOwnerView = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Mock.Get(owner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(async () =>
+        {
+            // Real TradeFinished sends its result first, then awaits inventory/money views.
+            Assert.That(owner.IsApplyingHitOnCurrentThread, Is.False);
+            events.Enqueue("A:cancel");
+            notifyingOwner.TrySetResult();
+            await releaseOwnerView.Task.ConfigureAwait(false);
+        });
+        var cancellation = Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+            () => new TradeCancelAction().CancelTradeAsync(owner)).ConfigureAwait(false));
+        try
+        {
+            await notifyingOwner.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var cancelsBeforeReplacement = partnerCancelled;
+            BackupItemStorage? newBackup = null;
+            if (replace)
+            {
+                // These requests start in independent coordinator contexts, not in A's held funnel.
+                Assert.That(await Task.Run(async () => await replacement.RunPersistenceExclusiveAsync(
+                    () => new TradeRequestAction().RequestTradeAsync(replacement, partner)).ConfigureAwait(false)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.True);
+                await Task.Run(async () => await partner.RunPersistenceExclusiveAsync(
+                    () => new TradeAcceptAction().HandleTradeAcceptAsync(partner, true)).ConfigureAwait(false)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                newBackup = partner.BackupInventory;
+                await Task.Run(async () => await partner.RunPersistenceExclusiveAsync(async () =>
+                {
+                    await new MoveItemAction().MoveItemAsync(partner, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+                    await new TradeMoneyAction().TradeMoneyAsync(partner, 60).ConfigureAwait(false);
+                }).ConfigureAwait(false)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.That(cancellation.IsCompleted, Is.False);
+            }
+
+            releaseOwnerView.TrySetResult();
+            await cancellation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(owner.TradingPartner, Is.Null);
+                Assert.That(owner.BackupInventory, Is.Null);
+                Assert.That(owner.Inventory.ItemStorage.Money, Is.EqualTo(100));
+                Assert.That(partnerWindow, Is.EqualTo(replace));
+                if (replace)
+                {
+                    Assert.That(partnerCancelled, Is.EqualTo(cancelsBeforeReplacement));
+                    Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                    Assert.That(replacement.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                    Assert.That(partner.TradingPartner, Is.SameAs(replacement));
+                    Assert.That(replacement.TradingPartner, Is.SameAs(partner));
+                    Assert.That(partner.BackupInventory, Is.SameAs(newBackup));
+                    Assert.That(newBackup, Is.Not.Null);
+                    Assert.That(partner.Inventory.ItemStorage.Money, Is.EqualTo(140));
+                    Assert.That(partner.TradingMoney, Is.EqualTo(60));
+                    Assert.That(partner.TemporaryStorage!.Items.Single(), Is.SameAs(item));
+                    Assert.That(events.Last(), Is.EqualTo("B:open:C"));
+                }
+                else
+                {
+                    Assert.That(partnerCancelled, Is.EqualTo(1));
+                    Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                    Assert.That(partner.TradingPartner, Is.Null);
+                    Assert.That(partner.BackupInventory, Is.Null);
+                }
+            });
+            if (replace)
+            {
+                await Task.Run(async () => await replacement.RunPersistenceExclusiveAsync(
+                    () => new TradeCancelAction().CancelTradeAsync(replacement)).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+
+            Assert.That(partner.Inventory.ItemStorage.Money, Is.EqualTo(200));
+            Assert.That(replacement.Inventory.ItemStorage.Money, Is.EqualTo(300));
+            Assert.That(partner.Inventory.ItemStorage.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
+            Assert.That(partner.TemporaryStorage!.Items, Is.Empty);
+        }
+        finally
+        {
+            releaseOwnerView.TrySetResult();
+            await cancellation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (replacement.TradingPartner is not null)
+            {
+                await replacement.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(replacement)).ConfigureAwait(false);
+            }
+
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await partner.DisposeAsync().ConfigureAwait(false);
+            await replacement.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A skipped cancellation must not initiate a notification against the current window.</summary>
+    /// <param name="invalidState">Whether cancellation fails its state check instead of its expected-partner check.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task SkippedCancellationDoesNotNotifyAsync(bool invalidState)
+    {
+        var state = invalidState ? PlayerState.EnteredWorld : PlayerState.TradeOpened;
+        var trader = this.CreateTrader(state);
+        var currentPartner = this.CreateTrader(PlayerState.TradeOpened);
+        var oldPartner = this.CreateTrader(PlayerState.EnteredWorld);
+        trader.TradingPartner = currentPartner;
+        currentPartner.TradingPartner = trader;
+        var backup = trader.BackupInventory;
+        var windowOpen = true;
+        Mock.Get(trader.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(() =>
+        {
+            windowOpen = false;
+            return ValueTask.CompletedTask;
+        });
+        var started = false;
+        var notification = ValueTask.CompletedTask;
+        await new BaseTradeAction().CancelTradeAndStartNotificationAsync(trader, invalidState ? currentPartner : oldPartner, n =>
+        {
+            started = true;
+            notification = n;
+        }).ConfigureAwait(false);
+        await notification.ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(started, Is.False);
+            Assert.That(windowOpen, Is.True);
+            Assert.That(trader.TradingPartner, Is.SameAs(currentPartner));
+            Assert.That(trader.BackupInventory, Is.SameAs(backup));
+            Assert.That(trader.PlayerState.CurrentState, Is.SameAs(state));
+        });
+    }
+
+    /// <summary>Async notification reentry can acquire the just-cancelled participant's state after its scope ends.</summary>
+    [Test]
+    public async Task CancelNotificationCanReenterTradeAsync()
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var partner = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var replacement = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        foreach (var player in new[] { owner, partner, replacement })
+        {
+            player.Attributes![Stats.CurrentHealth] = 100;
+        }
+
+        Assert.That(await owner.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(owner, partner)).ConfigureAwait(false), Is.True);
+        await partner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(partner, true)).ConfigureAwait(false);
+        var notifications = 0;
+        var notificationUnderHit = false;
+        var windowOpen = true;
+        Mock.Get(partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Setup(v => v.ShowTradeRequestAnswerAsync(true)).Returns(() =>
+        {
+            windowOpen = true;
+            return ValueTask.CompletedTask;
+        });
+        Mock.Get(partner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(async () =>
+        {
+            notificationUnderHit |= partner.IsApplyingHitOnCurrentThread;
+            windowOpen = false;
+            if (Interlocked.Increment(ref notifications) == 1)
+            {
+                // Intentional view reentry, not the independent packet-interleaving reproduction above.
+                Assert.That(await replacement.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(replacement, partner)).ConfigureAwait(false), Is.True);
+                await partner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(partner, true)).ConfigureAwait(false);
+            }
+        });
+        try
+        {
+            await owner.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(owner)).AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(notifications, Is.EqualTo(1));
+                Assert.That(notificationUnderHit, Is.False);
+                Assert.That(windowOpen, Is.True);
+                Assert.That(owner.TradingPartner, Is.Null);
+                Assert.That(partner.TradingPartner, Is.SameAs(replacement));
+                Assert.That(replacement.TradingPartner, Is.SameAs(partner));
+                Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(partner.BackupInventory, Is.Not.Null);
+            });
+        }
+        finally
+        {
+            if (replacement.TradingPartner is not null)
+            {
+                await replacement.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(replacement)).ConfigureAwait(false);
+            }
+
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await partner.DisposeAsync().ConfigureAwait(false);
+            await replacement.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Either participant's rollback or notification failure must not skip other cleanup or leak a started notification.</summary>
+    /// <param name="failPartner">Whether the partner fails rather than the initiating trader.</param>
+    /// <param name="notificationFails">Whether notification resolution fails rather than inventory rollback.</param>
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    public async Task CancelFailureStillFinishesOtherSideAsync(bool failPartner, bool notificationFails)
+    {
+        var trader = this.CreateTrader(PlayerState.TradeOpened);
+        var partner = this.CreateTrader(PlayerState.TradeOpened);
+        trader.TradingPartner = partner;
+        partner.TradingPartner = trader;
+        Mock.Get(trader).Setup(t => t.Logger).Returns(NullLogger.Instance);
+        Mock.Get(partner).Setup(t => t.Logger).Returns(NullLogger.Instance);
+        var failing = failPartner ? partner : trader;
+        var successful = failPartner ? trader : partner;
+        var failure = new InvalidOperationException("Expected cancellation failure.");
+        var failureStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        if (notificationFails)
+        {
+            var views = new Mock<ICustomPlugInContainer<IViewPlugIn>>();
+            views.Setup(v => v.GetPlugIn<ITradeFinishedPlugIn>()).Callback(() => failureStarted.TrySetResult()).Throws(failure);
+            Mock.Get(failing).Setup(t => t.ViewPlugIns).Returns(views.Object);
+        }
+        else
+        {
+            Mock.Get(failing.Inventory!).Setup(i => i.Clear()).Callback(() => failureStarted.TrySetResult()).Throws(failure);
+        }
+
+        var notificationStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseNotification = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Mock.Get(successful.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(async () =>
+        {
+            notificationStarted.TrySetResult();
+            await releaseNotification.Task.ConfigureAwait(false);
+        });
+        var cancellation = new TradeCancelAction().CancelTradeAsync(trader).AsTask();
+        try
+        {
+            await Task.WhenAll(notificationStarted.Task, failureStarted.Task).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(cancellation.IsCompleted, Is.False);
+                Assert.That(successful.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(successful.TradingPartner, Is.Null);
+                Assert.That(successful.BackupInventory, Is.Null);
+                if (notificationFails)
+                {
+                    Assert.That(failing.TradingPartner, Is.Null);
+                    Assert.That(failing.BackupInventory, Is.Null);
+                }
+            });
+        }
+        finally
+        {
+            releaseNotification.TrySetResult();
+            var observed = Assert.ThrowsAsync<InvalidOperationException>(async () => await cancellation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false));
+            Assert.That(observed, Is.SameAs(failure));
+        }
+    }
+
+    /// <summary>A later notification error is observed without replacing the rollback error.</summary>
+    [Test]
+    public async Task CancelRollbackErrorSurvivesOtherNotificationErrorAsync()
+    {
+        var trader = this.CreateTrader(PlayerState.TradeOpened);
+        var partner = this.CreateTrader(PlayerState.TradeOpened);
+        trader.TradingPartner = partner;
+        partner.TradingPartner = trader;
+        var logger = new Mock<Microsoft.Extensions.Logging.ILogger>();
+        Mock.Get(trader).Setup(t => t.Logger).Returns(logger.Object);
+        var rollbackError = new InvalidOperationException("Rollback failure.");
+        var notificationError = new InvalidOperationException("Notification failure.");
+        Mock.Get(trader.Inventory!).Setup(i => i.Clear()).Throws(rollbackError);
+        var views = new Mock<ICustomPlugInContainer<IViewPlugIn>>();
+        views.Setup(v => v.GetPlugIn<ITradeFinishedPlugIn>()).Throws(notificationError);
+        Mock.Get(partner).Setup(t => t.ViewPlugIns).Returns(views.Object);
+
+        var observed = Assert.ThrowsAsync<InvalidOperationException>(async () => await new TradeCancelAction().CancelTradeAsync(trader).ConfigureAwait(false));
+        Assert.Multiple(() =>
+        {
+            Assert.That(observed, Is.SameAs(rollbackError));
+            Assert.That(partner.TradingPartner, Is.Null);
+            Assert.That(partner.BackupInventory, Is.Null);
+            Assert.That(logger.Invocations.Any(i => i.Arguments.Any(a => ReferenceEquals(a, notificationError))), Is.True);
+        });
+    }
+
+    /// <summary>The concrete remote view's first generated send enters OutputLock FIFO even while another write holds it.</summary>
+    [Test]
+    public async Task ContendedTradeFinishedSendPrecedesReplacementAnswerAsync()
+    {
+        var pipe = new Pipe();
+        var outputLock = new AsyncLock();
+        var connection = new Mock<IConnection>();
+        connection.SetupGet(c => c.Connected).Returns(true);
+        connection.SetupGet(c => c.Output).Returns(pipe.Writer);
+        connection.SetupGet(c => c.OutputLock).Returns(outputLock);
+        IDisposable? held = await outputLock.LockAsync().ConfigureAwait(false);
+        var cancellation = Task.CompletedTask;
+        var opening = Task.CompletedTask;
+        try
+        {
+            cancellation = ServerPackets.ConnectionExtensions.SendTradeFinishedAsync(connection.Object, ServerPackets.TradeFinished.TradeResult.Cancelled).AsTask();
+            opening = ServerPackets.ConnectionExtensions.SendTradeRequestAnswerAsync(connection.Object, true, "TraderC", 1, 0).AsTask();
+            Assert.That(cancellation.IsCompleted, Is.False);
+            Assert.That(opening.IsCompleted, Is.False);
+            held.Dispose();
+            held = null;
+            await Task.WhenAll(cancellation, opening).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var read = await pipe.Reader.ReadAsync().ConfigureAwait(false);
+            var bytes = System.Buffers.BuffersExtensions.ToArray(read.Buffer);
+            pipe.Reader.AdvanceTo(read.Buffer.End);
+            Assert.Multiple(() =>
+            {
+                Assert.That(bytes, Has.Length.EqualTo(ServerPackets.TradeFinishedRef.Length + ServerPackets.TradeRequestAnswerRef.Length));
+                Assert.That(bytes[2], Is.EqualTo(ServerPackets.TradeFinishedRef.Code));
+                Assert.That(bytes[3], Is.EqualTo((byte)ServerPackets.TradeFinished.TradeResult.Cancelled));
+                Assert.That(bytes[ServerPackets.TradeFinishedRef.Length + 2], Is.EqualTo(ServerPackets.TradeRequestAnswerRef.Code));
+            });
+        }
+        finally
+        {
+            held?.Dispose();
+            await Task.WhenAll(cancellation, opening).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await pipe.Writer.CompleteAsync().ConfigureAwait(false);
+            await pipe.Reader.CompleteAsync().ConfigureAwait(false);
         }
     }
 

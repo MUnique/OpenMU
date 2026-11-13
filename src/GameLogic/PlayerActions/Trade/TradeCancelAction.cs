@@ -4,7 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 
-using MUnique.OpenMU.GameLogic.Views.Trade;
+using System.Runtime.ExceptionServices;
 
 /// <summary>
 /// Action to cancel the trade.
@@ -19,23 +19,50 @@ public class TradeCancelAction : BaseTradeAction
     {
         using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
         var tradingPartner = trader.TradingPartner;
+        var traderNotification = ValueTask.CompletedTask;
+        var partnerNotification = ValueTask.CompletedTask;
+        Exception? error = null;
         if (tradingPartner != null)
         {
-            await this.CancelTradeAsync(tradingPartner, expectedPartner: trader).ConfigureAwait(false);
-            await this.CancelTradeAsync(trader, expectedPartner: tradingPartner).ConfigureAwait(false);
-            await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
-            await tradingPartner.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+            await RunAndCaptureErrorAsync(() => this.CancelTradeAndStartNotificationAsync(tradingPartner, trader, n => partnerNotification = n)).ConfigureAwait(false);
+            await RunAndCaptureErrorAsync(() => this.CancelTradeAndStartNotificationAsync(trader, tradingPartner, n => traderNotification = n)).ConfigureAwait(false);
         }
         else if (trader.PlayerState.CurrentState == PlayerState.TradeRequested
                  || trader.PlayerState.CurrentState == PlayerState.TradeOpened
                  || trader.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
         {
-            await base.CancelTradeAsync(trader).ConfigureAwait(false);
-            await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+            await RunAndCaptureErrorAsync(() => this.CancelTradeAndStartNotificationAsync(trader, null, n => traderNotification = n)).ConfigureAwait(false);
         }
         else
         {
-            trader.Logger.LogWarning($"Trader {trader?.Name} invoked CancelTrade, but it probably wasn't in a trade (TradingPartner = null).");
+            trader.Logger.LogWarning($"Trader {trader.Name} invoked CancelTrade, but it probably wasn't in a trade (TradingPartner = null).");
+        }
+
+        // Always finish both cleanups and observe each started notification, including after another operation failed.
+        await RunAndCaptureErrorAsync(() => traderNotification).ConfigureAwait(false);
+        await RunAndCaptureErrorAsync(() => partnerNotification).ConfigureAwait(false);
+        if (error is not null)
+        {
+            ExceptionDispatchInfo.Capture(error).Throw();
+        }
+
+        async ValueTask RunAndCaptureErrorAsync(Func<ValueTask> operation)
+        {
+            try
+            {
+                await operation().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (error is null)
+                {
+                    error = ex;
+                }
+                else
+                {
+                    trader.Logger.LogError(ex, "Additional error completing trade cancellation for {trader}.", trader.Name);
+                }
+            }
         }
     }
 }
