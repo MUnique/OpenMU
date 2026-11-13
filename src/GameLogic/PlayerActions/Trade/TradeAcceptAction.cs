@@ -110,8 +110,8 @@ public class TradeAcceptAction : BaseTradeAction
     }
 
     private static bool IsCurrentTrade(ITrader trader, ITrader expectedPartner)
-        => (trader.PlayerState.CurrentState == PlayerState.TradeOpened || trader.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
-            && (expectedPartner.PlayerState.CurrentState == PlayerState.TradeOpened || expectedPartner.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
+        => trader.PlayerState.CurrentState == PlayerState.TradeOpened
+            && expectedPartner.PlayerState.CurrentState == PlayerState.TradeOpened
             && ReferenceEquals(trader.TradingPartner, expectedPartner)
             && ReferenceEquals(expectedPartner.TradingPartner, trader)
             && (trader is not Player player || player.IsAlive)

@@ -244,6 +244,69 @@ public class CraftingDialogBackupInventoryTests
         }
     }
 
+    /// <summary>A real victim packet can enter during the ordinary close delay, but cannot reopen a reserved death.</summary>
+    [Test]
+    public async Task ReservedDeathRejectsNpcReopenThroughPersistenceFunnelAsync()
+    {
+        var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = seed.GameContext.Configuration;
+        var provider = new PausingContextProvider(configuration);
+        var initializer = new MapInitializer(configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(configuration, provider, initializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        initializer.PlugInManager = game.PlugInManager;
+        initializer.PathFinderPool = game.PathFinderPool;
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var attacker = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        attacker.Id = 11;
+        var npc = CreateCraftingNpc();
+        npc.Definition.Number = 238;
+        await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+        var closing = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Mock.Get(target.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>()!).Setup(v => v.DialogClosedAsync(npc.Definition)).Returns(() =>
+        {
+            closing.TrySetResult();
+            return ValueTask.CompletedTask;
+        });
+        var requestCompleted = 0;
+        var requestPrecededSave = false;
+        ((PausingPlayerContext)target.PersistenceContext).BeforeSave = () =>
+        {
+            requestPrecededSave = Volatile.Read(ref requestCompleted) == 1;
+            return ValueTask.CompletedTask;
+        };
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        // The attacker holds only its own packet funnel, not the victim's.
+        var lethal = Task.Run(async () => await attacker.RunPersistenceExclusiveAsync(
+            () => target.ApplyPoisonDamageAsync(attacker, 10)).ConfigureAwait(false));
+        try
+        {
+            await closing.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            // Spawn from the independent test coordinator, never from the lock-owning callback.
+            await Task.Run(async () => await target.RunPersistenceExclusiveAsync(
+                () => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Volatile.Write(ref requestCompleted, 1);
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(requestPrecededSave, Is.True, "The victim request ran in the close-delay window, before saving held its funnel.");
+                Assert.That(target.OpenedNpcContext, Is.Null);
+                Assert.That(target.BackupInventory, Is.Null);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(target.LastDeath?.KillerId, Is.EqualTo(attacker.Id));
+                Assert.That(deaths, Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await attacker.DisposeAsync().ConfigureAwait(false);
+            await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
     private static ValueTask RespawnAsync(Player player)
         => player.RespawnAfterDeathAsync(new ExitGate { Map = player.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 });
 

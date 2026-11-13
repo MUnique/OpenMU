@@ -63,11 +63,11 @@ public class TradeTest
         Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
     }
 
-    /// <summary>A legitimate first OK must not cancel the peer's still-saving window opening.</summary>
-    /// <param name="earlyOk">Whether the first opener presses OK during the peer's save.</param>
+    /// <summary>The production packet funnel queues an early OK until acceptance finished both openings.</summary>
+    /// <param name="earlyOk">Whether the OK packet arrives during the peer's persistence save.</param>
     [TestCase(false)]
     [TestCase(true)]
-    public async Task EarlyTradeOkPreservesPeerOpeningAsync(bool earlyOk)
+    public async Task TradeOkFunnelWaitsForAcceptanceAsync(bool earlyOk)
     {
         var seed = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var configuration = seed.GameContext.Configuration;
@@ -78,6 +78,10 @@ public class TradeTest
         initializer.PathFinderPool = game.PathFinderPool;
         var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
         var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var item = this.GetItem();
+        Assert.That(await target.Inventory!.AddItemAsync(item).ConfigureAwait(false), Is.True);
+        target.Inventory.ItemStorage.Money = 100;
+        peer.Inventory!.ItemStorage.Money = 200;
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         ((PausingPlayerContext)peer.PersistenceContext).BeforeSave = async () =>
@@ -86,33 +90,64 @@ public class TradeTest
             await release.Task.ConfigureAwait(false);
         };
         Assert.That(await new TradeRequestAction().RequestTradeAsync(peer, target).ConfigureAwait(false), Is.True);
-        var opening = new TradeAcceptAction().HandleTradeAcceptAsync(target, true).AsTask();
+        // Independent request contexts, not descendants of the lock-owning save callback.
+        var opening = Task.Run(async () => await target.RunPersistenceExclusiveAsync(
+            () => new TradeAcceptAction().HandleTradeAcceptAsync(target, true)).ConfigureAwait(false));
+        Task confirmation = Task.CompletedTask;
         try
         {
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             Assert.That(target.BackupInventory, Is.Not.Null);
             if (earlyOk)
             {
-                await new TradeButtonAction().TradeButtonChangedAsync(target, TradeButtonState.Checked).ConfigureAwait(false);
+                var attempted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                confirmation = Task.Run(async () =>
+                {
+                    var queued = target.RunPersistenceExclusiveAsync(
+                        () => new TradeButtonAction().TradeButtonChangedAsync(target, TradeButtonState.Checked));
+                    attempted.TrySetResult();
+                    await queued.ConfigureAwait(false);
+                });
+                await attempted.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.That(confirmation.IsCompleted, Is.False);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
             }
 
             release.TrySetResult();
-            await opening.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await Task.WhenAll(opening, confirmation).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (!earlyOk)
+            {
+                await target.RunPersistenceExclusiveAsync(
+                    () => new TradeButtonAction().TradeButtonChangedAsync(target, TradeButtonState.Checked)).ConfigureAwait(false);
+            }
+
             Assert.Multiple(() =>
             {
-                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(earlyOk ? PlayerState.TradeButtonPressed : PlayerState.TradeOpened));
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
                 Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(target.BackupInventory!.Money, Is.EqualTo(100));
+                Assert.That(target.BackupInventory.Items, Does.Contain(item));
                 Assert.That(peer.BackupInventory, Is.Not.Null);
+                Assert.That(peer.BackupInventory!.Money, Is.EqualTo(200));
             });
             Mock.Get(peer.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(v => v.ShowTradeRequestAnswerAsync(true), Times.Once);
-            await new TradeCancelAction().CancelTradeAsync(peer).ConfigureAwait(false);
+            await peer.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(peer)).ConfigureAwait(false);
             Assert.That(target.BackupInventory, Is.Null);
             Assert.That(peer.BackupInventory, Is.Null);
+            var targetStorage = target.Inventory.ItemStorage;
+            var peerStorage = peer.Inventory.ItemStorage;
+            targetStorage.Money = 333;
+            peerStorage.Money = 444;
+            await target.RemoveFromGameAsync().ConfigureAwait(false);
+            await peer.RemoveFromGameAsync().ConfigureAwait(false);
+            Assert.That(targetStorage.Money, Is.EqualTo(333));
+            Assert.That(peerStorage.Money, Is.EqualTo(444));
+            Assert.That(targetStorage.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
         }
         finally
         {
             release.TrySetResult();
-            await opening.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await Task.WhenAll(opening, confirmation).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
             await peer.DisposeAsync().ConfigureAwait(false);
             await seed.DisposeAsync().ConfigureAwait(false);
