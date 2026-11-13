@@ -240,6 +240,10 @@ character enters the game and shows it in its warp window, so changes show up th
 after the next character selection. The original client shows the warp list of its
 data files; a warp which isn't in there can't be selected with it.
 
+*Shown in Warp List* leaves a warp out of the list which the open source client gets,
+e.g. a second warp to the same place. It doesn't restrict the warp itself: it can still
+be used by its index.
+
 ## Jewel mixes
 
 Route `edit-config-grid/…JewelMix/`
