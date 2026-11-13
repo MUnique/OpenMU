@@ -53,6 +53,8 @@ internal sealed class BotChatThrottle
 
     private readonly ConditionalWeakTable<Player, BotPartyOffer> _partyOffers = new();
 
+    private readonly Lock _partyOfferLock = new();
+
     private readonly ConditionalWeakTable<Player, PartySearchVolunteers> _partySearches = new();
 
     private readonly ConditionalWeakTable<Player, StrongBox<DateTime>> _nextConversations = new();
@@ -238,11 +240,27 @@ internal sealed class BotChatThrottle
     }
 
     /// <summary>
-    /// Remembers that the bot answered a player's party search and waits for the meeting place.
+    /// Reserves the bot for a player's party search: it answers it and waits for the meeting place.
+    /// A bot with an open offer to another player isn't taken - two players searching at the same
+    /// time don't both get it.
     /// </summary>
     /// <param name="bot">The bot.</param>
     /// <param name="offer">The offer.</param>
-    public void SetPartyOffer(Player bot, BotPartyOffer offer) => this._partyOffers.AddOrUpdate(bot, offer);
+    /// <param name="now">The current time.</param>
+    /// <returns><c>true</c>, if the bot was free and is now reserved for the offer.</returns>
+    public bool TryReservePartyOffer(Player bot, BotPartyOffer offer, DateTime now)
+    {
+        lock (this._partyOfferLock)
+        {
+            if (this.GetOpenPartyOffer(bot, now) is not null)
+            {
+                return false;
+            }
+
+            this._partyOffers.AddOrUpdate(bot, offer);
+            return true;
+        }
+    }
 
     /// <summary>
     /// Gets the bot's open offer to a player's party search, if it has one which didn't expire yet.

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Globalization;
+using System.Threading;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.Interfaces;
@@ -232,6 +233,40 @@ public class BotChatTest
 
         Assert.That(throttle.IsFriend(bot, "Hero"), Is.True);
         Assert.That(throttle.IsFriend(bot, "Stranger"), Is.False);
+    }
+
+    /// <summary>
+    /// Two players searching a party at the same time can't both reserve the same bot: one wins, and
+    /// the bot's open offer is the winner's. After the offer expired, the bot is free again.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask APartySearchReservesTheBotOnceAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var requesters = new List<Player>();
+        for (var i = 0; i < 8; i++)
+        {
+            requesters.Add(await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false));
+        }
+
+        var throttle = new BotChatThrottle();
+        var expires = Start.AddMinutes(2);
+        using var startSignal = new ManualResetEventSlim();
+        var attempts = requesters
+            .Select(requester => Task.Run(() =>
+            {
+                startSignal.Wait();
+                return throttle.TryReservePartyOffer(bot, new BotPartyOffer(requester, expires), Start) ? requester : null;
+            }))
+            .ToList();
+        startSignal.Set();
+        var winners = (await Task.WhenAll(attempts).ConfigureAwait(false)).OfType<Player>().ToList();
+
+        Assert.That(winners, Has.Count.EqualTo(1));
+        Assert.That(throttle.GetOpenPartyOffer(bot, Start)?.Requester, Is.SameAs(winners[0]));
+        Assert.That(throttle.TryReservePartyOffer(bot, new BotPartyOffer(requesters[0], expires.AddMinutes(2)), expires), Is.True);
     }
 
     /// <summary>

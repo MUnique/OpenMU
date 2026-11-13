@@ -660,7 +660,12 @@ public class BotChatPlugIn
                 return;
             }
 
-            throttle.SetPartyOffer(bot, new BotPartyOffer(sender, now + configuration.PartyOfferTimeout));
+            if (!throttle.TryReservePartyOffer(bot, new BotPartyOffer(sender, now + configuration.PartyOfferTimeout), now))
+            {
+                // Taken by another player's search since the candidates were picked.
+                continue;
+            }
+
             delay += RandomDelay(PartyVolunteerSpacingSeconds);
             var whisperDelay = delay + TypingDelay(line.Text);
             var values = CreateBotValues(bot);
