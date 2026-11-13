@@ -33,6 +33,14 @@ public partial class WarpInfo
     public int LevelRequirement { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this warp is shown in the warp list of the game client.
+    /// </summary>
+    /// <remarks>
+    /// It only affects the list which is sent to the client; a warp which isn't shown can still be used by its <see cref="Index"/>.
+    /// </remarks>
+    public bool IsShownInWarpList { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the gate.
     /// </summary>
     [Required]

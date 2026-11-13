@@ -120,6 +120,24 @@ public class WarpListTests
     }
 
     /// <summary>
+    /// Tests that warps which aren't shown in the warp list are left out, also when they're the first one of their index.
+    /// </summary>
+    [Test]
+    public void HiddenWarpsAreLeftOut()
+    {
+        var shown = CreateWarp(34, "Raklion", 57, 280, 15000);
+        var hidden = CreateWarp(48, "LaCleon", 57, 280, 15000);
+        hidden.IsShownInWarpList = false;
+        var hiddenFirst = CreateWarp(5, "Hidden first", 4, 10, 2000);
+        hiddenFirst.IsShownInWarpList = false;
+        var shownSecond = CreateWarp(5, "Shown second", 4, 10, 2000);
+
+        var warps = ShowWarpListAfterEnterWorldPlugIn.GetSelectableWarps([shown, hidden, hiddenFirst, shownSecond]);
+
+        Assert.That(warps, Is.EqualTo(new[] { shown }), "the warp request of index 5 would use the hidden one");
+    }
+
+    /// <summary>
     /// Tests that the warp list is shown when the character entered the game, and not when the player
     /// gets back into the world after a map change.
     /// </summary>

@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo),
                 baseEntityType,
-                propertyCount: 7,
+                propertyCount: 8,
                 navigationCount: 1,
                 foreignKeyCount: 2,
                 unnamedIndexCount: 2,
@@ -71,6 +71,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetField("<Index>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             index.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var isShownInWarpList = runtimeEntityType.AddProperty(
+                "IsShownInWarpList",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetProperty("IsShownInWarpList", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.WarpInfo).GetField("<IsShownInWarpList>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            isShownInWarpList.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var levelRequirement = runtimeEntityType.AddProperty(
                 "LevelRequirement",

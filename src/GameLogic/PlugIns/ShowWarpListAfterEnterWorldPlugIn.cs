@@ -35,14 +35,15 @@ public class ShowWarpListAfterEnterWorldPlugIn : IPlayerStateChangedPlugIn
     /// </summary>
     /// <param name="warpList">The configured warp list.</param>
     /// <returns>
-    /// The warps which lead to a map. Of warps with the same index, only the first one is included,
-    /// because it's the one which a warp request with that index uses.
+    /// The warps which lead to a map and are shown in the warp list (<see cref="WarpInfo.IsShownInWarpList"/>).
+    /// Of warps with the same index, only the first one is included, because it's the one which a warp
+    /// request with that index uses.
     /// </returns>
     internal static IReadOnlyCollection<WarpInfo> GetSelectableWarps(IEnumerable<WarpInfo> warpList)
     {
         return warpList
             .DistinctBy(warp => warp.Index)
-            .Where(warp => warp.Gate?.Map is not null)
+            .Where(warp => warp.IsShownInWarpList && warp.Gate?.Map is not null)
             .OrderBy(warp => warp.Index)
             .ToList();
     }
