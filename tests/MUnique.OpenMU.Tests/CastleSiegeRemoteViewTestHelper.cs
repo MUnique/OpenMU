@@ -33,7 +33,7 @@ internal static class CastleSiegeRemoteViewTestHelper
         var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         var gameContext = new Mock<IGameServerContext>();
         gameContext.Setup(c => c.PersistenceContextProvider)
-            .Returns(new Mock<IPersistenceContextProvider>().Object);
+            .Returns(new Mock<IPersistenceContextProvider> { DefaultValue = DefaultValue.Mock }.Object);
         gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
         gameContext.Setup(c => c.PlugInManager).Returns(manager);
         gameContext.Setup(c => c.FeaturePlugIns).Returns(new FeaturePlugInContainer(manager));

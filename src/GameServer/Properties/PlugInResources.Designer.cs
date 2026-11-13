@@ -2500,6 +2500,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IActivateMagicEffectPlugIn, IDeactivateMagicEffectPlugIn and IUpdateMagicEffectPlugIn which also sends the time left and the values of the own player&apos;s effects to the game client..
+        /// </summary>
+        public static string DeActivateMagicEffectExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DeActivateMagicEffectExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to De &amp; ActivateMagicEffectPlugIn (extended).
+        /// </summary>
+        public static string DeActivateMagicEffectExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DeActivateMagicEffectExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IActivateMagicEffectPlugIn and IDeactivateMagicEffectPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string DeActivateMagicEffectPlugIn_Description {

@@ -307,6 +307,38 @@ the custom gameplay plugins. Deactivate them on the [Plugins](plugins.md) page
 if they don't fit the season of your server.
 :::
 
+Which magic effects show players their remaining time is set on the
+[Effect times](#effect-times) page; the page links to it.
+
+## Effect times
+
+Route `effect-times`
+
+Whether players see how long a buff or debuff lasts is game design: knowing it
+changes their decisions. In Season 6, only the effects of consumed items (and a
+few skills like Infinite Arrow) showed their remaining time. So each magic
+effect has a switch, *Send Duration*, which decides whether the server sends its
+remaining time to the client. The original clients get it only for the effects
+of consumed items; the open source client (MuMain) shows a time bar for every
+effect which sends it.
+
+The page lists all magic effects with this switch and, in the last column, the
+value of the Season 6 data for comparison. The list can be narrowed down by a
+search text. **All on** and **All off** switch all shown effects, and
+**Season 6 defaults** sets each shown effect as in the Season 6 data (effects
+which Season 6 doesn't know stay unchanged). The changes are only stored after
+**Save changes** and the confirmation, which names the changed effects;
+**Discard changes** drops them.
+
+The first time the page is opened, the Season 6 data is created in memory to
+read its defaults, which takes a few seconds; the column fills in afterwards.
+The change is recorded in the
+[audit history](mcp.md#operational-safety-and-audit-history), and agents use the
+same operation through the [MCP tools](mcp.md#configuration-and-offline-character-changes)
+`effect_times_list` and `effect_times_set`. It requires the *Administrator*
+role. The switch is also available as *Send Duration* on the edit page of each
+magic effect.
+
 ## Plugins, chat commands, map editor
 
 The lower part of the drop-down leads to [Content activation](#content-activation),

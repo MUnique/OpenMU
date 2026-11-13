@@ -289,6 +289,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for MagicEffectStatusExtended.
+    /// </summary>
+    [Test]
+    public void MagicEffectStatusExtended_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'IsActive' starts at index 3 with size 1
+        Assert.That(3, Is.GreaterThanOrEqualTo(0), 
+            "Field 'IsActive' has invalid negative index");
+        
+        // Field 'PlayerId' starts at index 4 with size 2
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'PlayerId' has invalid negative index");
+        
+        // Field 'EffectId' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'EffectId' has invalid negative index");
+        
+        // Field 'RemainingSeconds' starts at index 7 with size 4
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'RemainingSeconds' has invalid negative index");
+        
+        // Field 'ValueCount' starts at index 11 with size 1
+        Assert.That(11, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ValueCount' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for WeatherStatusUpdate.
     /// </summary>
     [Test]

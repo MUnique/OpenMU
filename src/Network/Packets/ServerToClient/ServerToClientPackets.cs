@@ -677,6 +677,203 @@ public readonly struct MagicEffectStatus
 
 
 /// <summary>
+/// Is sent by the server when: A magic effect was added to the own player, or its time or values changed (a recast or a shortened duration).
+/// Causes reaction on client side: The user interface shows the effect as icon at the top of the interface, with the time left and the values of the effect. The first fields are the same as of MagicEffectStatus, so a client which only knows that one reads it as such.
+/// </summary>
+public readonly struct MagicEffectStatusExtended
+{
+    /// <summary>
+    /// Defines how a value changes its attribute (the aggregate type of the attribute system). When the effect has several kinds for one attribute, they are combined into one value: AddRaw if the effect adds a value before the factors or has a maximum, else AddFinal. Its factors are then part of the value and only count for its own values, e.g. a factor with only a finally added value gives that value.
+    /// </summary>
+    public enum ValueKind
+    {
+        /// <summary>
+        /// The value is added to the attribute, before the factors apply.
+        /// </summary>
+            AddRaw = 0,
+
+        /// <summary>
+        /// The value is a factor of the attribute, e.g. 1.1 for +10 %. Only when the effect has nothing but factors for this attribute.
+        /// </summary>
+            Multiplicate = 1,
+
+        /// <summary>
+        /// The value is added to the attribute, after the factors apply.
+        /// </summary>
+            AddFinal = 2,
+
+        /// <summary>
+        /// Only the highest value of this kind counts for the attribute (e.g. jewelry element resistance).
+        /// </summary>
+            Maximum = 3,
+    }
+
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MagicEffectStatusExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MagicEffectStatusExtended(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MagicEffectStatusExtended"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MagicEffectStatusExtended(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0x07;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1Header Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the is active.
+    /// </summary>
+    public bool IsActive
+    {
+        get => this._data.Span[3..].GetBoolean();
+        set => this._data.Span[3..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the effect id.
+    /// </summary>
+    public byte EffectId
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds until the effect ends, rounded up; 0 if the effect's definition doesn't send its duration (SendDuration), so the client shows no time.
+    /// </summary>
+    public uint RemainingSeconds
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[7..]);
+        set => WriteUInt32LittleEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the value count.
+    /// </summary>
+    public byte ValueCount
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="EffectValue"/> of the specified index.
+    /// </summary>
+        public EffectValue this[int index] => new (this._data.Slice(12 + index * EffectValue.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MagicEffectStatusExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MagicEffectStatusExtended(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MagicEffectStatusExtended"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MagicEffectStatusExtended packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="EffectValue"/>.
+    /// </summary>
+    /// <param name="valuesCount">The count of <see cref="EffectValue"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int valuesCount) => valuesCount * EffectValue.Length + 12;
+
+
+/// <summary>
+/// The finished value of a magic effect for one attribute..
+/// </summary>
+public readonly struct EffectValue
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EffectValue"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EffectValue(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 21;
+
+    /// <summary>
+    /// Gets or sets the id of the attribute which the value applies to (the Id of its AttributeDefinition), as the 16 bytes of the Guid in the order of its text form (big endian).
+    /// </summary>
+    public Span<byte> AttributeId
+    {
+        get => this._data.Slice(0, 16).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the kind.
+    /// </summary>
+    public MagicEffectStatusExtended.ValueKind Kind
+    {
+        get => (MagicEffectStatusExtended.ValueKind)this._data.Span[16];
+        set => this._data.Span[16] = (byte)value;
+    }
+
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    public float Value
+    {
+        get => ReadSingleLittleEndian(this._data.Span[17..]);
+        set => WriteSingleLittleEndian(this._data.Span[17..], value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The weather on the current map has been changed or the player entered the map.
 /// Causes reaction on client side: The game client updates the weather effects.
 /// </summary>

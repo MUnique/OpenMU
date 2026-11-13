@@ -2608,4 +2608,40 @@
   <data name="Inspect" xml:space="preserve">
     <value>Untersuchen</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>Effektzeiten</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>Lege fest, welche magischen Effekte ihre Restzeit an den Client senden, damit Spieler sehen, wie lange sie dauern. Ob Spieler das wissen, ist Spieldesign: In Season 6 zeigten nur die Effekte verbrauchter Gegenstände und einige Fertigkeiten ihre Zeit. Der Open-Source-Client zeigt die Zeit der Effekte, die sie senden; die Original-Clients nur die verbrauchter Gegenstände.</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>Zeit senden</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>Alle an</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>Alle aus</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>Gilt für alle angezeigten Effekte. Die Änderungen werden nach dem Speichern übernommen.</value>
+  </data>
+  <data name="SeasonSixDefaults" xml:space="preserve">
+    <value>Season-6-Standard</value>
+  </data>
+  <data name="SeasonSixDefaultsHint" xml:space="preserve">
+    <value>Setzt jeden angezeigten Effekt wie in den Season-6-Daten; Effekte, die Season 6 nicht kennt, bleiben unverändert. Die Änderungen werden nach dem Speichern übernommen.</value>
+  </data>
+  <data name="SeasonSixDefaultsNotLoaded" xml:space="preserve">
+    <value>Die Season-6-Standardwerte werden noch geladen. Versuche es gleich noch einmal.</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{0} von {1} Effekten senden ihre Zeit.</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>Diese {0} Effekte senden dann ihre Zeit: {1}. Diese {2} Effekte nicht: {3}. Fortfahren?</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>Welche magischen Effekte Spielern ihre Restzeit zeigen:</value>
+  </data>
 </root>

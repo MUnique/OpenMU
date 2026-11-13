@@ -328,6 +328,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to All off.
+        /// </summary>
+        public static string AllOff {
+            get {
+                return ResourceManager.GetString("AllOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All on.
+        /// </summary>
+        public static string AllOn {
+            get {
+                return ResourceManager.GetString("AllOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allowed MCP tools (comma separated; empty allows all tools for the role).
         /// </summary>
         public static string AllowedMcpTools {
@@ -336,6 +354,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Applies to all shown effects. The changes are stored after saving..
+        /// </summary>
+        public static string AllShownEffectsHint {
+            get {
+                return ResourceManager.GetString("AllShownEffectsHint", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Analyze the network traffic.
         /// </summary>
@@ -5065,6 +5092,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Effect times.
+        /// </summary>
+        public static string EffectTimes {
+            get {
+                return ResourceManager.GetString("EffectTimes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These {0} effects will send their time: {1}. These {2} effects won't: {3}. Continue?.
+        /// </summary>
+        public static string EffectTimesConfirmFormat {
+            get {
+                return ResourceManager.GetString("EffectTimesConfirmFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose which magic effects send their remaining time to the client, so that players see how long they last. Whether players know this is game design: in Season 6 only the effects of consumed items and a few skills showed their time. The open source client shows the time of the effects which send it; the original clients only of consumed items..
+        /// </summary>
+        public static string EffectTimesDescription {
+            get {
+                return ResourceManager.GetString("EffectTimesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which magic effects show players their remaining time:.
+        /// </summary>
+        public static string EffectTimesHint {
+            get {
+                return ResourceManager.GetString("EffectTimesHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to —.
         /// </summary>
         public static string EmptyValue {
@@ -7495,6 +7558,33 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Season 6 defaults.
+        /// </summary>
+        public static string SeasonSixDefaults {
+            get {
+                return ResourceManager.GetString("SeasonSixDefaults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets each shown effect as in the Season 6 data; effects which Season 6 doesn't know stay unchanged. The changes are stored after saving..
+        /// </summary>
+        public static string SeasonSixDefaultsHint {
+            get {
+                return ResourceManager.GetString("SeasonSixDefaultsHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Season 6 defaults are still being loaded. Try again in a moment..
+        /// </summary>
+        public static string SeasonSixDefaultsNotLoaded {
+            get {
+                return ResourceManager.GetString("SeasonSixDefaultsNotLoaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to seconds.
         /// </summary>
         public static string Seconds {
@@ -7593,6 +7683,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to {0} of {1} effects send their time..
+        /// </summary>
+        public static string SendingCountFormat {
+            get {
+                return ResourceManager.GetString("SendingCountFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send time.
+        /// </summary>
+        public static string SendsTime {
+            get {
+                return ResourceManager.GetString("SendsTime", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Server control.
         /// </summary>
