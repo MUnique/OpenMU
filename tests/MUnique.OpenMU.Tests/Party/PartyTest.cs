@@ -139,6 +139,108 @@ public class PartyTest
     }
 
     /// <summary>
+    /// Tests if the master role can be handed over to another member: the new master is the first entry,
+    /// the former master follows, the others keep their order, and the party list is sent again to everyone.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyChangeMasterAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(4).ConfigureAwait(false);
+        var oldMaster = party.PartyList[0];
+        var second = party.PartyList[1];
+        var third = party.PartyList[2];
+        var fourth = party.PartyList[3];
+        ClearPartyListInvocations(party);
+
+        var result = await party.ChangeMasterAsync(third).ConfigureAwait(false);
+
+        Assert.That(result, Is.True);
+        Assert.That(party.PartyMaster, Is.SameAs(third));
+        Assert.That(party.PartyList, Is.EqualTo(new[] { third, oldMaster, second, fourth }));
+        foreach (var member in party.PartyList)
+        {
+            Mock.Get(member.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()!).Verify(v => v!.UpdatePartyListAsync(), Times.Once);
+        }
+    }
+
+    /// <summary>
+    /// Tests if handing over the master role to someone who is not in the party fails and changes nothing.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyChangeMasterFailForNonMemberAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(3).ConfigureAwait(false);
+        var before = party.PartyList.ToList();
+        var stranger = await this.CreatePartyMemberAsync().ConfigureAwait(false);
+        ClearPartyListInvocations(party);
+
+        var result = await party.ChangeMasterAsync(stranger).ConfigureAwait(false);
+
+        Assert.That(result, Is.False);
+        Assert.That(party.PartyList, Is.EqualTo(before));
+        Assert.That(party.PartyMaster, Is.SameAs(before[0]));
+        Assert.That(stranger.Party, Is.Null);
+        Mock.Get(before[1].ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()!).Verify(v => v!.UpdatePartyListAsync(), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests if handing over the master role to the current master fails.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyChangeMasterFailForCurrentMasterAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(3).ConfigureAwait(false);
+        var before = party.PartyList.ToList();
+        ClearPartyListInvocations(party);
+
+        var result = await party.ChangeMasterAsync(before[0]).ConfigureAwait(false);
+
+        Assert.That(result, Is.False);
+        Assert.That(party.PartyList, Is.EqualTo(before));
+        Mock.Get(before[1].ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()!).Verify(v => v!.UpdatePartyListAsync(), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests if handing over the master role to a member who is currently offline fails.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyChangeMasterFailForOfflineMemberAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(3).ConfigureAwait(false);
+        await party.LeaveTemporarilyAsync(party.PartyList[2]).ConfigureAwait(false);
+        var before = party.PartyList.ToList();
+        var offline = before[2];
+        Assert.That(offline.IsConnected, Is.False);
+
+        var result = await party.ChangeMasterAsync(offline).ConfigureAwait(false);
+
+        Assert.That(result, Is.False);
+        Assert.That(party.PartyList, Is.EqualTo(before));
+        Assert.That(party.PartyMaster, Is.SameAs(before[0]));
+    }
+
+    /// <summary>
+    /// Tests if after a master change the former master can't kick other members anymore,
+    /// but the new master can.
+    /// </summary>
+    [Test]
+    public async ValueTask PartyChangeMasterKickRightsMoveAsync()
+    {
+        var party = await this.CreatePartyWithMembersAsync(4).ConfigureAwait(false);
+        var oldMaster = (Player)party.PartyList[0];
+        var newMaster = (Player)party.PartyList[1];
+        var victim = party.PartyList[3];
+        await party.ChangeMasterAsync(newMaster).ConfigureAwait(false);
+
+        await this._kickAction.KickPlayerAsync(oldMaster, GetPartyMemberIndex(party, victim)).ConfigureAwait(false);
+        Assert.That(party.PartyList, Contains.Item(victim));
+
+        await this._kickAction.KickPlayerAsync(newMaster, GetPartyMemberIndex(party, victim)).ConfigureAwait(false);
+        Assert.That(party.PartyList, Does.Not.Contain(victim));
+        Assert.That(party.PartyMaster, Is.SameAs(newMaster));
+    }
+
+    /// <summary>
     /// Tests if the party automatically closes when one player is left.
     /// </summary>
     [Test]
@@ -417,6 +519,14 @@ public class PartyTest
         var result = await PlayerTestHelper.CreatePlayerAsync(GameContextTestHelper.CreateGameContext()).ConfigureAwait(false);
         await result.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         return result;
+    }
+
+    private static void ClearPartyListInvocations(Party party)
+    {
+        foreach (var member in party.PartyList)
+        {
+            Mock.Get(member.ViewPlugIns.GetPlugIn<IUpdatePartyListPlugIn>()!).Invocations.Clear();
+        }
     }
 
     private static byte GetPartyMemberIndex(Party party, IPartyMember member)
