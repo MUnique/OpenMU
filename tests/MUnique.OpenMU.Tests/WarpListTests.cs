@@ -8,10 +8,13 @@ using System.Globalization;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer.RemoteView.World;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
 
@@ -120,21 +123,58 @@ public class WarpListTests
     }
 
     /// <summary>
-    /// Tests that warps which aren't shown in the warp list are left out, also when they're the first one of their index.
+    /// Tests that warps which players can't use are left out, also when they're the first one of their index.
     /// </summary>
     [Test]
-    public void HiddenWarpsAreLeftOut()
+    public void WarpsWhichArentWarpableAreLeftOut()
     {
-        var shown = CreateWarp(34, "Raklion", 57, 280, 15000);
-        var hidden = CreateWarp(48, "LaCleon", 57, 280, 15000);
-        hidden.IsShownInWarpList = false;
-        var hiddenFirst = CreateWarp(5, "Hidden first", 4, 10, 2000);
-        hiddenFirst.IsShownInWarpList = false;
-        var shownSecond = CreateWarp(5, "Shown second", 4, 10, 2000);
+        var warpable = CreateWarp(34, "Raklion", 57, 280, 15000);
+        var notWarpable = CreateWarp(48, "LaCleon", 57, 280, 15000);
+        notWarpable.IsWarpable = false;
+        var notWarpableFirst = CreateWarp(5, "Not warpable first", 4, 10, 2000);
+        notWarpableFirst.IsWarpable = false;
+        var warpableSecond = CreateWarp(5, "Warpable second", 4, 10, 2000);
 
-        var warps = ShowWarpListAfterEnterWorldPlugIn.GetSelectableWarps([shown, hidden, hiddenFirst, shownSecond]);
+        var warps = ShowWarpListAfterEnterWorldPlugIn.GetSelectableWarps([warpable, notWarpable, notWarpableFirst, warpableSecond]);
 
-        Assert.That(warps, Is.EqualTo(new[] { shown }), "the warp request of index 5 would use the hidden one");
+        Assert.That(warps, Is.EqualTo(new[] { warpable }), "the warp request of index 5 would use the first one");
+    }
+
+    /// <summary>
+    /// Tests that a player can't use a warp which isn't warpable: it's refused with a message, and the costs aren't paid.
+    /// </summary>
+    [Test]
+    public async Task PlayerCantUseWarpWhichIsntWarpableAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        var warp = CreateWarp(26, "Crywolf", 0, 1, 10000);
+        warp.IsWarpable = false;
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var message = player.GetLocalizedMessage(nameof(PlayerMessage.WarpOnlyForGameMasters));
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
+        Assert.That(player.Money, Is.EqualTo(100000));
+    }
+
+    /// <summary>
+    /// Tests that a game master isn't refused a warp which isn't warpable.
+    /// </summary>
+    [Test]
+    public async Task GameMasterCanUseWarpWhichIsntWarpableAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.SelectedCharacter!.CharacterStatus = DataModel.Entities.CharacterStatus.GameMaster;
+        var warp = CreateWarp(26, "Crywolf", 0, 1, 10000);
+        warp.IsWarpable = false;
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var message = player.GetLocalizedMessage(nameof(PlayerMessage.WarpOnlyForGameMasters));
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(message, It.IsAny<MessageType>()), Times.Never);
     }
 
     /// <summary>

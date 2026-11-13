@@ -2948,6 +2948,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This warp is only available to game masters..
+        /// </summary>
+        public static string WarpOnlyForGameMasters {
+            get {
+                return ResourceManager.GetString("WarpOnlyForGameMasters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [World] {0}: {1}.
         /// </summary>
         public static string WorldChatMessage {

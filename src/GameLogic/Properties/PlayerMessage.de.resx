@@ -1018,4 +1018,7 @@ Inventarerweiterungen: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Diese Karte ist nicht verfügbar.</value>
   </data>
+  <data name="WarpOnlyForGameMasters" xml:space="preserve">
+    <value>Dieser Warp ist nur für Game Master verfügbar.</value>
+  </data>
 </root>

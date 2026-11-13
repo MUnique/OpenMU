@@ -434,6 +434,8 @@
   <data name="AddCraftingTalismansUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Luck, which increases the success rate of a crafting by its durability in percent, and the Talisman of Chaos Assembly, which keeps the item of a failed +10 to +15 item upgrade. They are added to the craftings which accept them, and the packages of the in-game shop which contain them are put on sale.</value></data>
   <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve"><value>Fix Muren Ring of Fire Bonus</value></data>
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>Gives the Ring of Fire of the Muren ancient set its energy bonus, which was initialized as vitality.</value></data>
+  <data name="RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name" xml:space="preserve"><value>Restrict warps outside of the original warp window</value></data>
+  <data name="RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description" xml:space="preserve"><value>Makes the warps which the original client doesn't offer in its warp window (Crywolf, Loren Market and the second LaCleon warp) available to game masters only.</value></data>
   <data name="FixDestroyPhantomArmorNamesPlugIn_Name" xml:space="preserve"><value>Fix Destroy and Phantom Armor Names</value></data>
   <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve"><value>Swaps the names of the Phantom (47) and Destroy (48) armor sets and of their set bonuses, which were initialized with each other's name, and corrects the spelling "Destory".</value></data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve"><value>Add invitation to santa village</value></data>

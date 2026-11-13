@@ -96,6 +96,9 @@ public class FixWarpLevelUpdatePlugIn : UpdatePlugInBase
             laCleon.Name = "LaCleon";
             laCleon.Costs = 15000;
             laCleon.LevelRequirement = 280;
+
+            // The original client offers LaCleon with the index 34 (Raklion), which leads to the same gate.
+            laCleon.IsWarpable = false;
             laCleon.Gate = gameConfiguration.Maps
                 .FirstOrDefault(m => m.Name.ValueInNeutralLanguage == "LaCleon")
                 ?.ExitGates.FirstOrDefault(g => g.X1 == 222);

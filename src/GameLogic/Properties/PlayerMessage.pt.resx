@@ -1171,4 +1171,7 @@ Extensões de inventário: {18}</value>
   <data name="MiniGameTicketRequired" xml:space="preserve">
     <value>Você precisa de um ingresso para entrar neste evento.</value>
   </data>
+  <data name="WarpOnlyForGameMasters" xml:space="preserve">
+    <value>Este warp está disponível apenas para game masters.</value>
+  </data>
 </root>

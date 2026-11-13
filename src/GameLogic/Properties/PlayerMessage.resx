@@ -1171,4 +1171,7 @@ Inventory Extensions: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>This map is not available.</value>
   </data>
+  <data name="WarpOnlyForGameMasters" xml:space="preserve">
+    <value>This warp is only available to game masters.</value>
+  </data>
 </root>
