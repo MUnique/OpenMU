@@ -378,8 +378,9 @@ internal static class BotMerchandise
             return;
         }
 
+        var now = DateTime.UtcNow;
         var retired = shopStorage.Items
-            .Where(item => plugIn.CountUnsoldShift(item) >= configuration.UnsoldShiftsUntilNpc)
+            .Where(item => plugIn.CountUnsoldShift(item, now) >= configuration.UnsoldShiftsUntilNpc)
             .ToList();
         await TakeOutOfStoreAsync(bot, retired).ConfigureAwait(false);
     }

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Bots;
 
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using System.Threading;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Pathfinding;
@@ -41,16 +42,36 @@ public class BotMerchantPlugIn
     /// </summary>
     private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(30);
 
+    /// <summary>
+    /// How often the counts of the goods which weren't counted for a long time are forgotten.
+    /// </summary>
+    private static readonly TimeSpan UnsoldShiftsCleanupInterval = TimeSpan.FromMinutes(10);
+
+    /// <summary>
+    /// The least time for which the count of a good is kept after its last shift. A good leaves the
+    /// stores without a sale too - a retired good goes to an NPC, the bot may be removed -, so without
+    /// it the counts would pile up until the server restarts.
+    /// </summary>
+    private static readonly TimeSpan MinimumUnsoldShiftsMemory = TimeSpan.FromDays(1);
+
     private readonly ConcurrentDictionary<IGameContext, DateTime> _nextCheckUtc = new();
 
     /// <summary>
-    /// The number of market shifts each good spent in a store without a buyer, by the id of the item.
-    /// In memory only: a restart of the server gives every good a new chance.
+    /// The number of market shifts each good spent in a store without a buyer, and when it was counted
+    /// the last time, by the id of the item. In memory only: a restart of the server gives every good a
+    /// new chance, like a count which is forgotten after a long time (see <see cref="ForgetOldUnsoldShifts"/>).
     /// </summary>
-    private readonly ConcurrentDictionary<Guid, int> _unsoldShifts = new();
+    private readonly ConcurrentDictionary<Guid, UnsoldGood> _unsoldShifts = new();
+
+    private long _nextUnsoldShiftsCleanupTicks;
 
     /// <inheritdoc />
     public BotMerchantConfiguration? Configuration { get; set; }
+
+    /// <summary>
+    /// Gets the number of goods whose shifts without a buyer are counted, old ones included until they're forgotten.
+    /// </summary>
+    internal int UnsoldGoodCount => this._unsoldShifts.Count;
 
     /// <inheritdoc />
     public object CreateDefaultConfig() => new BotMerchantConfiguration();
@@ -66,6 +87,7 @@ public class BotMerchantPlugIn
         }
 
         this._nextCheckUtc[gameContext] = now + CheckInterval;
+        this.ForgetOldUnsoldShifts(configuration, now);
         await this.StartShiftsAsync(gameContext, configuration, now).ConfigureAwait(false);
     }
 
@@ -90,8 +112,10 @@ public class BotMerchantPlugIn
     /// Counts one more market shift without a buyer for the good.
     /// </summary>
     /// <param name="item">The good.</param>
+    /// <param name="now">The current time.</param>
     /// <returns>The number of shifts the good spent in the store without a buyer.</returns>
-    internal int CountUnsoldShift(Item item) => this._unsoldShifts.AddOrUpdate(item.GetId(), 1, (_, count) => count + 1);
+    internal int CountUnsoldShift(Item item, DateTime now)
+        => this._unsoldShifts.AddOrUpdate(item.GetId(), new UnsoldGood(1, now), (_, good) => new UnsoldGood(good.Shifts + 1, now)).Shifts;
 
     /// <summary>
     /// Determines whether the good spent too many shifts in a store without a buyer: it's sold to an NPC
@@ -101,7 +125,39 @@ public class BotMerchantPlugIn
     /// <param name="configuration">The configuration.</param>
     /// <returns><c>true</c>, if the good is retired from the market.</returns>
     internal bool IsRetired(Item item, BotMerchantConfiguration configuration)
-        => this._unsoldShifts.TryGetValue(item.GetId(), out var count) && count >= configuration.UnsoldShiftsUntilNpc;
+        => this._unsoldShifts.TryGetValue(item.GetId(), out var good) && good.Shifts >= configuration.UnsoldShiftsUntilNpc;
+
+    /// <summary>
+    /// Forgets the counts of the goods which weren't counted for a long time: they left the stores without
+    /// a sale, or their bot didn't go to the market for so long that the good gets a new chance.
+    /// </summary>
+    /// <remarks>
+    /// A good in a store is counted after each of its shifts, and a retired good is sold at the next visit
+    /// of a merchant NPC, so the memory lasts several times as long as a shift and the break after it.
+    /// Runs at most every <see cref="UnsoldShiftsCleanupInterval"/>.
+    /// </remarks>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="now">The current time.</param>
+    internal void ForgetOldUnsoldShifts(BotMerchantConfiguration configuration, DateTime now)
+    {
+        var next = Interlocked.Read(ref this._nextUnsoldShiftsCleanupTicks);
+        if (now.Ticks < next
+            || Interlocked.CompareExchange(ref this._nextUnsoldShiftsCleanupTicks, (now + UnsoldShiftsCleanupInterval).Ticks, next) != next)
+        {
+            return;
+        }
+
+        var memory = (configuration.MaximumShiftDuration + configuration.TimeBetweenShifts) * Math.Max(1, configuration.UnsoldShiftsUntilNpc + 1);
+        var forgetBefore = now - (memory > MinimumUnsoldShiftsMemory ? memory : MinimumUnsoldShiftsMemory);
+        foreach (var good in this._unsoldShifts)
+        {
+            if (good.Value.LastCountUtc < forgetBefore)
+            {
+                // Removes the entry only if it wasn't counted again meanwhile.
+                this._unsoldShifts.TryRemove(good);
+            }
+        }
+    }
 
     /// <summary>
     /// Takes the bot out of its party of bots for the shift (see <see cref="BotMarketPlanner.MayStartShift"/>).
@@ -219,6 +275,13 @@ public class BotMerchantPlugIn
             bot.Logger.LogDebug("Bot '{Name}' goes to {Map} for {Duration} with {Count} goods.", bot.Name, place.Definition.Name, duration, BotMarketPlanner.CountPricedGoods(bot));
         }
     }
+
+    /// <summary>
+    /// The shifts which a good spent in a store without a buyer.
+    /// </summary>
+    /// <param name="Shifts">The number of shifts.</param>
+    /// <param name="LastCountUtc">When the last shift was counted.</param>
+    private readonly record struct UnsoldGood(int Shifts, DateTime LastCountUtc);
 
     /// <summary>
     /// A map on which the bots open their stores, with the stalls which are taken there.

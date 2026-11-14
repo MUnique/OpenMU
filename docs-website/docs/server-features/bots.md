@@ -359,7 +359,9 @@ at once. On a shift, a bot declines party invitations.
 A bot buys nothing, so the zen and the jewels paid for its goods are removed
 right after each sale. There are no discounts - players would learn to wait for
 them. A good which found no buyer for three shifts leaves the store and is sold
-to the NPC, making room for fresh goods.
+to the NPC, making room for fresh goods. The server counts these shifts in
+memory only: a restart, or a day in which the good wasn't on the market, starts
+the count over.
 
 ### Mini game events
 

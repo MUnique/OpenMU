@@ -457,6 +457,34 @@ public class BotMarketPlannerTest
         Assert.That(bot.MarketShift, Is.Null);
     }
 
+    /// <summary>
+    /// The shifts of a good without a buyer are forgotten when it wasn't counted for a long time - it left
+    /// the stores without a sale, e.g. a retired good which went to an NPC -, so the counts don't pile up.
+    /// </summary>
+    [Test]
+    public void OldUnsoldShiftsAreForgotten()
+    {
+        var plugIn = new BotMerchantPlugIn();
+        var configuration = new BotMerchantConfiguration();
+        var retired = new MUnique.OpenMU.Persistence.BasicModel.Item { Id = Guid.NewGuid() };
+        var inStore = new MUnique.OpenMU.Persistence.BasicModel.Item { Id = Guid.NewGuid() };
+        for (var i = 0; i < configuration.UnsoldShiftsUntilNpc; i++)
+        {
+            plugIn.CountUnsoldShift(retired, Now);
+        }
+
+        plugIn.CountUnsoldShift(inStore, Now.AddHours(20));
+
+        plugIn.ForgetOldUnsoldShifts(configuration, Now.AddHours(23));
+        Assert.That(plugIn.UnsoldGoodCount, Is.EqualTo(2));
+        Assert.That(plugIn.IsRetired(retired, configuration), Is.True);
+
+        plugIn.ForgetOldUnsoldShifts(configuration, Now.AddHours(25));
+        Assert.That(plugIn.UnsoldGoodCount, Is.EqualTo(1));
+        Assert.That(plugIn.IsRetired(retired, configuration), Is.False);
+        Assert.That(plugIn.CountUnsoldShift(inStore, Now.AddHours(25)), Is.EqualTo(2));
+    }
+
     private static BotMarketShift CreateShift()
         => new(new GameMapDefinition { Number = BotMerchantConfiguration.DefaultMarketMapNumber }, Arrival, "Good stuff", Now, Now.AddMinutes(60));
 
