@@ -312,8 +312,8 @@ internal sealed class PlayerMapTransitions
     /// <summary>Claims placement before committing owned death restoration or a live duel-partner reset.</summary>
     /// <param name="gate">The destination.</param>
     /// <param name="tryPreparePlacement">Synchronous owned resource/liveness commit under state admission.</param>
-    /// <param name="publishPreparedAttributes">Starts captured attribute notifications outside exclusion, before map/view continuation.</param>
-    internal async ValueTask RespawnWithPreparationAsync(ExitGate gate, Func<bool>? tryPreparePlacement, Action? publishPreparedAttributes)
+    /// <param name="publishPreparedAttributes">Sends the captured attribute notifications outside exclusion, before map/view continuation.</param>
+    internal async ValueTask RespawnWithPreparationAsync(ExitGate gate, Func<bool>? tryPreparePlacement, Func<ValueTask>? publishPreparedAttributes)
     {
         var player = this._player;
         if (player.SelectedCharacter is not { } character)
@@ -338,7 +338,11 @@ internal sealed class PlayerMapTransitions
             return;
         }
 
-        publishPreparedAttributes?.Invoke();
+        if (publishPreparedAttributes is not null)
+        {
+            await publishPreparedAttributes().ConfigureAwait(false);
+        }
+
         if (!IsCurrentPlacement())
         {
             return;

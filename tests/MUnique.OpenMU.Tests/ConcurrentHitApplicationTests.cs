@@ -1664,10 +1664,19 @@ public class ConcurrentHitApplicationTests
                     await DelayViewAsync(entered, release, fail).ConfigureAwait(false);
                 }
             });
-        await target.ApplyPoisonDamageAsync(target, 1).ConfigureAwait(false);
-        await reentered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-        await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-        release.SetResult();
+        // The hit awaits its own stats update, so it completes only after the delayed view is released.
+        var hit = Task.Run(async () => await target.ApplyPoisonDamageAsync(target, 1).ConfigureAwait(false));
+        try
+        {
+            await reentered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        }
+        finally
+        {
+            release.TrySetResult();
+        }
+
+        await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
         target.Attributes![Stats.CurrentMana] = 17;
         Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(98));
         Assert.That(notificationsDuringMutation, Is.Zero);

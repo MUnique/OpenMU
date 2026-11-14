@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.ExceptionServices;
 using System.Threading;
@@ -96,6 +97,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly AccountAttributeGrantPowerUps _accountAttributeGrantPowerUps = new();
 
+    /// <summary>
+    /// The attribute changes which the thread holding <see cref="_hitLock"/> makes, see <see cref="CollectAttributeChangesUnderHitLock"/>.
+    /// </summary>
     private List<(AttributeDefinition Definition, float Value)>? _hitAttributeChanges;
 
     private CancellationTokenSource? _respawnAfterDeathCts;
@@ -864,8 +868,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
-            this._hitAttributeChanges = changes;
-            try
+            using (this.CollectAttributeChangesUnderHitLock(changes))
             {
                 this.Attributes[Stats.CurrentHealth] = 0;
                 this._hasReservedLethalHit = true;
@@ -873,18 +876,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 ownedDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
                 this.LastDeath = ownedDeath;
             }
-            finally
-            {
-                this._hitAttributeChanges = null;
-            }
         }
 
         try
         {
-            foreach (var (definition, value) in changes)
-            {
-                _ = this.NotifyAttributeValueChangedAsync(definition, value);
-            }
+            await this.PublishAttributeChangesAsync(changes).ConfigureAwait(false);
         }
         finally
         {
@@ -982,7 +978,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var healthLoss = this.Attributes![Stats.HealthLossAfterHit];
         if (healthLoss > 0)
         {
-            this.ApplyHealthLossAfterHit(healthLoss);
+            await this.ApplyHealthLossAfterHitAsync(healthLoss).ConfigureAwait(false);
         }
 
         await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, damageType ?? DamageType.Physical).ConfigureAwait(false);
@@ -1888,13 +1884,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this._mapTransitions.RespawnWithPreparationAsync(
                 gate,
                 () => prepared = this.TryPrepareForRespawn(source, death, token, changes),
-                () =>
-                {
-                    foreach (var (definition, value) in changes)
-                    {
-                        _ = this.NotifyAttributeValueChangedAsync(definition, value);
-                    }
-                }).ConfigureAwait(false);
+                () => this.PublishAttributeChangesAsync(changes)).ConfigureAwait(false);
             if (!prepared)
             {
                 await this.DeferDeathRespawnClaimAsync(source, death).ConfigureAwait(false);
@@ -2142,7 +2132,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private void ApplyHealthLossAfterHit(float healthLoss)
+    private async ValueTask ApplyHealthLossAfterHitAsync(float healthLoss)
     {
         List<(AttributeDefinition Definition, float Value)> attributeChanges = [];
         lock (this._hitLock)
@@ -2152,21 +2142,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return;
             }
 
-            this._hitAttributeChanges = attributeChanges;
-            try
+            using (this.CollectAttributeChangesUnderHitLock(attributeChanges))
             {
                 this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - healthLoss, 1);
             }
-            finally
-            {
-                this._hitAttributeChanges = null;
-            }
         }
 
-        foreach (var (definition, value) in attributeChanges)
-        {
-            _ = this.NotifyAttributeValueChangedAsync(definition, value);
-        }
+        await this.PublishAttributeChangesAsync(attributeChanges).ConfigureAwait(false);
     }
 
     private async ValueTask<bool> HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null, bool recoverHealthBeforeHit = false, bool applyOrdinaryHitEffects = false, bool recoverManaBeforeHit = false)
@@ -2186,8 +2168,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             var attributes = this.Attributes!;
-            this._hitAttributeChanges = attributeChanges;
-            try
+            using (this.CollectAttributeChangesUnderHitLock(attributeChanges))
             {
                 if (recoverHealthBeforeHit)
                 {
@@ -2234,10 +2215,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     this.IsAlive = false;
                 }
             }
-            finally
-            {
-                this._hitAttributeChanges = null;
-            }
         }
 
         ExceptionDispatchInfo? effectFailure = null;
@@ -2277,11 +2254,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 }
             }
 
-            foreach (var (definition, value) in attributeChanges)
-            {
-                _ = this.NotifyAttributeValueChangedAsync(definition, value);
-            }
-
+            await this.PublishAttributeChangesAsync(attributeChanges).ConfigureAwait(false);
             this._summon.RegisterHit(attacker);
             if (shieldBurst)
             {
@@ -2573,7 +2546,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    // Placement owns state admission before consuming this death; notification starts outside state/hit exclusion.
+    // Placement owns state admission before consuming this death; notifications are sent outside state/hit exclusion.
     private bool TryPrepareForRespawn(CancellationTokenSource source, DeathInformation death, CancellationToken token, List<(AttributeDefinition Definition, float Value)> changes)
     {
         lock (this._hitLock)
@@ -2592,18 +2565,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 return false;
             }
 
-            this._hitAttributeChanges = changes;
-            try
+            using (this.CollectAttributeChangesUnderHitLock(changes))
             {
                 this.SetReclaimableAttributesToMaximum();
                 this._hasReservedLethalHit = false;
                 this._pendingMapChangeDeath = null;
                 this._pendingDeathRespawn = null;
                 this._respawnAfterDeathCts = null;
-            }
-            finally
-            {
-                this._hitAttributeChanges = null;
             }
         }
 
@@ -2638,13 +2606,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await duelPartner._mapTransitions.RespawnWithPreparationAsync(
             partnerSpawnGate,
             TryPreparePartner,
-            () =>
-            {
-                foreach (var (definition, value) in changes)
-                {
-                    _ = duelPartner.NotifyAttributeValueChangedAsync(definition, value);
-                }
-            }).ConfigureAwait(false);
+            () => duelPartner.PublishAttributeChangesAsync(changes)).ConfigureAwait(false);
 
         bool TryPreparePartner()
         {
@@ -2660,16 +2622,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     return false;
                 }
 
-                duelPartner._hitAttributeChanges = changes;
-                try
+                using (duelPartner.CollectAttributeChangesUnderHitLock(changes))
                 {
                     // Keep the normal false-before-removal hook semantics, but only for this admitted reset.
                     duelPartner.IsAlive = false;
                     duelPartner.SetReclaimableAttributesToMaximum();
-                }
-                finally
-                {
-                    duelPartner._hitAttributeChanges = null;
                 }
 
                 return true;
@@ -3015,6 +2972,62 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await openStoreAction.RestoreAfterEnterWorldAsync(this, this.IsPlayerStoreOpeningAfterEnterSupported).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Starts to collect the attribute changes which the current thread makes while it holds <see cref="_hitLock"/>,
+    /// until the returned scope is disposed. The caller sends them afterwards with <see cref="PublishAttributeChangesAsync"/>.
+    /// </summary>
+    /// <remarks>
+    /// The attribute system raises its value changed event synchronously, on the thread of the setter, and
+    /// <see cref="OnAttributeValueChanged"/> runs synchronously until its first await. Without collecting, that
+    /// handler would start the client update (a view plug-in, i.e. a network write which may wait or call back into
+    /// game logic) while the setter still holds the hit lock. The changes can't simply be determined after the lock
+    /// is released instead: the event is the only place which also reports the attributes derived from the changed
+    /// ones, and a later read would already see the values of a concurrent hit.
+    /// The lock is a monitor whose scopes never contain an await, so the thread which entered it stays the same
+    /// until it leaves; <see cref="Monitor.IsEntered"/> therefore identifies exactly the changes of the committing
+    /// thread. Changes made by other threads at the same time are not collected and are sent as usual.
+    /// </remarks>
+    /// <param name="changes">The list which receives the changes.</param>
+    /// <returns>The scope which ends the collection.</returns>
+    private HitAttributeChangeCollection CollectAttributeChangesUnderHitLock(List<(AttributeDefinition Definition, float Value)> changes)
+    {
+        Debug.Assert(this.IsApplyingHitOnCurrentThread, "Attribute changes are only collected under the hit lock.");
+        this._hitAttributeChanges = changes;
+        return new HitAttributeChangeCollection(this);
+    }
+
+    /// <summary>
+    /// Adds the change to the collection of <see cref="CollectAttributeChangesUnderHitLock"/>, if the current thread
+    /// holds the hit lock and collects.
+    /// </summary>
+    /// <param name="attribute">The changed attribute.</param>
+    /// <returns><c>true</c>, if the change was collected and is sent by the collecting caller.</returns>
+    private bool TryCollectAttributeChangeUnderHitLock(IAttribute attribute)
+    {
+        if (this.IsApplyingHitOnCurrentThread && this._hitAttributeChanges is { } changes)
+        {
+            changes.Add((attribute.Definition, attribute.Value));
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Sends the collected attribute changes to the client after the hit lock was released, one after another and
+    /// in the order in which they were made, so that they arrive before the views which follow.
+    /// A failing update is logged by <see cref="NotifyAttributeValueChangedAsync"/> and doesn't stop the next ones.
+    /// </summary>
+    /// <param name="changes">The collected changes.</param>
+    private async ValueTask PublishAttributeChangesAsync(List<(AttributeDefinition Definition, float Value)> changes)
+    {
+        Debug.Assert(!this.IsApplyingHitOnCurrentThread, "Attribute changes are sent after the hit lock was released.");
+        foreach (var (definition, value) in changes)
+        {
+            await this.NotifyAttributeValueChangedAsync(definition, value).ConfigureAwait(false);
+        }
+    }
+
     private async ValueTask NotifyAttributeValueChangedAsync(AttributeDefinition definition, float value)
     {
         try
@@ -3083,9 +3096,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 || LimitCurrentAttribute(Stats.MaximumShield, Stats.CurrentShield)
                 || LimitCurrentAttribute(Stats.MaximumAbility, Stats.CurrentAbility);
 
-            if (this.IsApplyingHitOnCurrentThread && this._hitAttributeChanges is { } changes)
+            if (this.TryCollectAttributeChangeUnderHitLock(attribute))
             {
-                changes.Add((attribute.Definition, attribute.Value));
                 return;
             }
 
@@ -3417,4 +3429,21 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     /// <param name="Npc">The NPC whose dialog was opened.</param>
     internal sealed record NpcDialogContext(NonPlayerCharacter Npc);
+
+    /// <summary>
+    /// Ends the collection which <see cref="CollectAttributeChangesUnderHitLock"/> started, before the hit lock is released.
+    /// </summary>
+    private sealed class HitAttributeChangeCollection : IDisposable
+    {
+        private readonly Player _player;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HitAttributeChangeCollection"/> class.
+        /// </summary>
+        /// <param name="player">The collecting player.</param>
+        public HitAttributeChangeCollection(Player player) => this._player = player;
+
+        /// <inheritdoc />
+        public void Dispose() => this._player._hitAttributeChanges = null;
+    }
 }
