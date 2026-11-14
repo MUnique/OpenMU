@@ -444,6 +444,34 @@ public class BotMarketPlannerTest
     }
 
     /// <summary>
+    /// A store whose opening was queued before the plugin was switched off stays closed; the next tick
+    /// of the bot ends the shift.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask StoreDoesntOpenAfterThePlugInWasSwitchedOffAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext([new PlugInConfiguration { TypeId = typeof(BotMerchantPlugIn).GUID, IsActive = true }]);
+        gameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()!.Configuration = new BotMerchantConfiguration();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        await AddPricedGoodsAsync(bot, 2).ConfigureAwait(false);
+        var shift = CreateShift();
+        bot.MarketShift = shift;
+        var navigator = new BotNavigator(bot);
+
+        gameContext.PlugInManager.DeactivatePlugIn<BotMerchantPlugIn>();
+        await navigator.OpenMarketStoreAsync(shift).ConfigureAwait(false);
+        Assert.That(bot.ShopStorage!.StoreOpen, Is.False);
+        Assert.That(shift.IsStoreOpened, Is.False);
+
+        gameContext.PlugInManager.ActivatePlugIn<BotMerchantPlugIn>();
+        gameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()!.Configuration = new BotMerchantConfiguration();
+        await navigator.OpenMarketStoreAsync(shift).ConfigureAwait(false);
+        Assert.That(bot.ShopStorage.StoreOpen, Is.True);
+        Assert.That(shift.IsStoreOpened, Is.True);
+    }
+
+    /// <summary>
     /// The income of a sale is removed in the next tick of the bot. A bot which logs out before that
     /// tick removes it on the way out - otherwise the logout would save the income with the bot.
     /// </summary>

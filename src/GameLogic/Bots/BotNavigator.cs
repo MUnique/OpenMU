@@ -1175,7 +1175,10 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <returns>The task.</returns>
     internal async ValueTask OpenMarketStoreAsync(BotMarketShift shift)
     {
-        if (!ReferenceEquals(this._player.MarketShift, shift) || shift.IsEnding)
+        // The plugin may have been switched off since the opening was queued; the next tick ends the shift.
+        if (!ReferenceEquals(this._player.MarketShift, shift)
+            || shift.IsEnding
+            || this._player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>() is null)
         {
             return;
         }
