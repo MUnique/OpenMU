@@ -61,6 +61,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Records hits dealt and received by scripted test actors in their event stream..
+        /// </summary>
+        public static string ActorHitRecorderPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ActorHitRecorderPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Test actor hit recorder.
+        /// </summary>
+        public static string ActorHitRecorderPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ActorHitRecorderPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adds the specified amount of agility points to the character..
         /// </summary>
         public static string AddAgilityStatChatCommandPlugIn_Description {
@@ -169,6 +187,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of agility, which takes back invested agility points and returns them as level up points..
+        /// </summary>
+        public static string AgilityResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AgilityResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Agility Consume Handler.
+        /// </summary>
+        public static string AgilityResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AgilityResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the alcohol consumption..
         /// </summary>
         public static string AlcoholConsumeHandlerPlugIn_Description {
@@ -219,6 +255,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string AppleConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("AppleConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Base Delay Ms.
+        /// </summary>
+        public static string AttackSpeedProfile_BaseDelayMs_Caption {
+            get {
+                return ResourceManager.GetString("AttackSpeedProfile_BaseDelayMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum Interval Ms.
+        /// </summary>
+        public static string AttackSpeedProfile_MinimumIntervalMs_Caption {
+            get {
+                return ResourceManager.GetString("AttackSpeedProfile_MinimumIntervalMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scaling Factor.
+        /// </summary>
+        public static string AttackSpeedProfile_ScalingFactor_Caption {
+            get {
+                return ResourceManager.GetString("AttackSpeedProfile_ScalingFactor_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill Id.
+        /// </summary>
+        public static string AttackSpeedProfile_SkillId_Caption {
+            get {
+                return ResourceManager.GetString("AttackSpeedProfile_SkillId_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speed Source.
+        /// </summary>
+        public static string AttackSpeedProfile_SpeedSource_Caption {
+            get {
+                return ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which speed attribute scales the delay: Attack Speed for physical skills, Magic Speed for wizardry and curse skills..
+        /// </summary>
+        public static string AttackSpeedProfile_SpeedSource_Description {
+            get {
+                return ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attack Speed.
+        /// </summary>
+        public static string AttackSpeedSource_AttackSpeed {
+            get {
+                return ResourceManager.GetString("AttackSpeedSource_AttackSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magic Speed.
+        /// </summary>
+        public static string AttackSpeedSource_MagicSpeed {
+            get {
+                return ResourceManager.GetString("AttackSpeedSource_MagicSpeed", resourceCulture);
             }
         }
         
@@ -286,7 +394,1798 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The in-game cash shop. When it's deactivated, the cash shop can't be opened. Its configuration holds the settings, e.g. about gifts and the storage size..
+        ///   Looks up a localized string similar to Repair Target Items.
+        /// </summary>
+        public static string BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption {
+            get {
+                return ResourceManager.GetString("BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles talking to the Archangel in the blood castle event, where players hand in the quest item to win the event..
+        /// </summary>
+        public static string BloodCastleArchangelTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blood Castle Archangel.
+        /// </summary>
+        public static string BloodCastleArchangelTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blood Castle event.
+        /// </summary>
+        public static string BloodCastleStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BloodCastleStartPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BloodCastleStartPlugIn.
+        /// </summary>
+        public static string BloodCastleStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BloodCastleStartPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between two normal chat lines of the same bot..
+        /// </summary>
+        public static string BotChatConfiguration_BotChatCooldown_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_BotChatCooldown_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat cooldown per bot.
+        /// </summary>
+        public static string BotChatConfiguration_BotChatCooldown_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_BotChatCooldown_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From how many normal chat messages of players near a bot (within the time below) the bot says nothing unasked - no conversations, greetings, congratulations or comments. Answers to a player stay. 0 = off..
+        /// </summary>
+        public static string BotChatConfiguration_BusyChatMessageCount_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_BusyChatMessageCount_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quiet when players talk: messages.
+        /// </summary>
+        public static string BotChatConfiguration_BusyChatMessageCount_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_BusyChatMessageCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How long a message of a player counts for the setting above..
+        /// </summary>
+        public static string BotChatConfiguration_BusyChatWindow_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_BusyChatWindow_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quiet when players talk: time.
+        /// </summary>
+        public static string BotChatConfiguration_BusyChatWindow_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_BusyChatWindow_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that the nearest bot congratulates a player on a level-up or a reset in the normal chat (&quot;gz&quot;). 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_CongratulationChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_CongratulationChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congratulation chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_CongratulationChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_CongratulationChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between two congratulations of the same player on a level-up (and, separately, on a reset)..
+        /// </summary>
+        public static string BotChatConfiguration_CongratulationCooldown_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_CongratulationCooldown_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congratulation cooldown per player.
+        /// </summary>
+        public static string BotChatConfiguration_CongratulationCooldown_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_CongratulationCooldown_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by the nearest bot when a player leveled up. Placeholders: {player}, {level} and {resets} of the player, {map}..
+        /// </summary>
+        public static string BotChatConfiguration_CongratulationLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_CongratulationLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congratulations: level-up.
+        /// </summary>
+        public static string BotChatConfiguration_CongratulationLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_CongratulationLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that two bots near a player talk when the interval is over. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_ConversationChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ConversationChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conversation chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_ConversationChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ConversationChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How often a player may overhear two bots near them talking. Counts per player: everyone who stands next to two bots hears them talk about once per interval..
+        /// </summary>
+        public static string BotChatConfiguration_ConversationInterval_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ConversationInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conversation interval per player.
+        /// </summary>
+        public static string BotChatConfiguration_ConversationInterval_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ConversationInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by one of two bots when a player near them writes in the normal chat right after their conversation - unless the message matches a whisper reply keyword. Placeholders: {player}, {map}, {level}, {class}..
+        /// </summary>
+        public static string BotChatConfiguration_ConversationJoinLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ConversationJoinLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conversations: player chimes in.
+        /// </summary>
+        public static string BotChatConfiguration_ConversationJoinLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ConversationJoinLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exchanges of two bots near a player, like the townsfolk of a role-playing game: one says the opener, the other answers. Drawn without repetition. Placeholders: {map}, {location}, {level}, {class} of the speaking bot, {partner} (the other bot)..
+        /// </summary>
+        public static string BotChatConfiguration_Conversations_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_Conversations_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conversations.
+        /// </summary>
+        public static string BotChatConfiguration_Conversations_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_Conversations_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot says why it turns down a trade or duel request, by whisper. It turns them down in any case: a bot has no trade window and doesn&apos;t duel..
+        /// </summary>
+        public static string BotChatConfiguration_DeclineReplyChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_DeclineReplyChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trade/duel refusal: whisper chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_DeclineReplyChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_DeclineReplyChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whispered when a player challenges the bot to a duel. Placeholders: {player}, {level}, {map}, {location}..
+        /// </summary>
+        public static string BotChatConfiguration_DuelDeclineLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_DuelDeclineLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duel refused.
+        /// </summary>
+        public static string BotChatConfiguration_DuelDeclineLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_DuelDeclineLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said in the party chat by one bot per party when an event it went through with a player&apos;s party ended. Placeholders: {event}, {level}..
+        /// </summary>
+        public static string BotChatConfiguration_EventFinishedLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventFinishedLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party: event finished.
+        /// </summary>
+        public static string BotChatConfiguration_EventFinishedLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventFinishedLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted with /post when the entrance of a Blood Castle, Devil Square or Chaos Castle opened; the bot then waits for players at the meeting point. Placeholders: {event}, {map} (the meeting point), {location} (the meeting point with coordinates), {level}..
+        /// </summary>
+        public static string BotChatConfiguration_EventLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event lines.
+        /// </summary>
+        public static string BotChatConfiguration_EventLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot which meets the entry requirements announces an opened Blood Castle, Devil Square or Chaos Castle with /post. Rolled once per event type and opening. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_EventPostChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventPostChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event post chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_EventPostChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventPostChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot in a town where a player stands reminds of an opened Blood Castle, Devil Square or Chaos Castle in the normal chat - once per town and opening, only a bot which meets the entry requirements. Independent of the /post chances. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_EventReminderChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventReminderChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event reminder in town chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_EventReminderChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventReminderChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said in the normal chat by a bot in a town when an event entrance opened. Placeholders: {event}, {map}, {location}, {level}..
+        /// </summary>
+        public static string BotChatConfiguration_EventReminderLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventReminderLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event reminders in town.
+        /// </summary>
+        public static string BotChatConfiguration_EventReminderLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_EventReminderLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said to a player the bot was in a party with before - instead of a greeting when the player enters the game, and instead of the party lines when the player invites it again. Remembered until the server restarts. Placeholders: {player}, {level}, {map}..
+        /// </summary>
+        public static string BotChatConfiguration_FriendLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_FriendLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Old party companions.
+        /// </summary>
+        public static string BotChatConfiguration_FriendLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_FriendLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that the nearest bot greets a player who enters the game, in the normal chat. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_GreetingChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_GreetingChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Greeting chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_GreetingChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_GreetingChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between two greetings of the same player, so logging out and in again doesn&apos;t start a round of greetings..
+        /// </summary>
+        public static string BotChatConfiguration_GreetingCooldown_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_GreetingCooldown_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Greeting cooldown per player.
+        /// </summary>
+        public static string BotChatConfiguration_GreetingCooldown_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_GreetingCooldown_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by the nearest bot in the normal chat when a player entered the game. Placeholders: {player}, {level}, {map}, {location} (the bot&apos;s map and coordinates, e.g. &quot;Devias 215, 40&quot;)..
+        /// </summary>
+        public static string BotChatConfiguration_GreetingLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_GreetingLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Greetings.
+        /// </summary>
+        public static string BotChatConfiguration_GreetingLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_GreetingLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Posted with /post when an invasion started. Placeholders: {event}, {map}, {location} (the map alone), {level}..
+        /// </summary>
+        public static string BotChatConfiguration_InvasionLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_InvasionLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invasion lines.
+        /// </summary>
+        public static string BotChatConfiguration_InvasionLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_InvasionLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot which may warp to the invaded map announces a started invasion with /post. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_InvasionPostChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_InvasionPostChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invasion post chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_InvasionPostChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_InvasionPostChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said instead of the &quot;Killed by a player&quot; lines when the same player killed the bot again within a short time. Placeholders: {player}, {level}, {map}, {location}..
+        /// </summary>
+        public static string BotChatConfiguration_KilledAgainLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_KilledAgainLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Killed again.
+        /// </summary>
+        public static string BotChatConfiguration_KilledAgainLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_KilledAgainLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot killed by a player (outside of an event) says something about it in the normal chat, before it respawns. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_KilledByPlayerChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_KilledByPlayerChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Killed by a player chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_KilledByPlayerChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_KilledByPlayerChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said in the normal chat when a player killed the bot outside of an event. Placeholders: {player} (the killer), {level}, {map}, {location} (the bot&apos;s map and coordinates, e.g. &quot;Devias 215, 40&quot;)..
+        /// </summary>
+        public static string BotChatConfiguration_KilledLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_KilledLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Killed by a player.
+        /// </summary>
+        public static string BotChatConfiguration_KilledLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_KilledLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot comments on reaching a level milestone, in the normal chat..
+        /// </summary>
+        public static string BotChatConfiguration_LevelMilestoneChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_LevelMilestoneChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestone chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_LevelMilestoneChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_LevelMilestoneChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said in the normal chat when the bot reached a level milestone. Placeholders: {level}, {map}, {location} (the bot&apos;s map and coordinates, e.g. &quot;Devias 215, 40&quot;)..
+        /// </summary>
+        public static string BotChatConfiguration_LevelMilestoneLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_LevelMilestoneLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestones.
+        /// </summary>
+        public static string BotChatConfiguration_LevelMilestoneLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_LevelMilestoneLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every how many levels a bot may comment on its level-up. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_LevelMilestoneStep_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_LevelMilestoneStep_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level milestone step.
+        /// </summary>
+        public static string BotChatConfiguration_LevelMilestoneStep_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_LevelMilestoneStep_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A bot waits a random time up to this value before it posts about an event..
+        /// </summary>
+        public static string BotChatConfiguration_MaxPostDelay_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MaxPostDelay_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum post delay.
+        /// </summary>
+        public static string BotChatConfiguration_MaxPostDelay_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MaxPostDelay_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said now and then in the normal chat by a bot standing in a safezone, like a merchant advertising. Off by default. Placeholders: {level}, {map}, {location}..
+        /// </summary>
+        public static string BotChatConfiguration_MerchantLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merchant adverts.
+        /// </summary>
+        public static string BotChatConfiguration_MerchantLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot advertises when the interval is over. 0 (default) = never: the lines are meant for a future merchant bot..
+        /// </summary>
+        public static string BotChatConfiguration_MerchantTalkChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantTalkChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merchant adverts: chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_MerchantTalkChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantTalkChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How often a bot standing in a safezone may advertise like a merchant, per game server. Only when a player sees it..
+        /// </summary>
+        public static string BotChatConfiguration_MerchantTalkInterval_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantTalkInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Merchant adverts: interval.
+        /// </summary>
+        public static string BotChatConfiguration_MerchantTalkInterval_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MerchantTalkInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Typical words and letters by which a bot recognizes the language of a player&apos;s message: it answers in that language, even when the player&apos;s account language is another one. A message which doesn&apos;t tell is answered in the player&apos;s own language..
+        /// </summary>
+        public static string BotChatConfiguration_MessageLanguages_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MessageLanguages_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message languages.
+        /// </summary>
+        public static string BotChatConfiguration_MessageLanguages_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MessageLanguages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between two /post messages of bots on one game server..
+        /// </summary>
+        public static string BotChatConfiguration_MinTimeBetweenPosts_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MinTimeBetweenPosts_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between posts.
+        /// </summary>
+        public static string BotChatConfiguration_MinTimeBetweenPosts_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_MinTimeBetweenPosts_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot calls out a notable monster which appeared near it while a player sees it. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_NotableMonsterChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_NotableMonsterChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notable monster call-out chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_NotableMonsterChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_NotableMonsterChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by a bot when a notable monster appeared near it. Placeholders: {monster}, {map}, {location}..
+        /// </summary>
+        public static string BotChatConfiguration_NotableMonsterLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_NotableMonsterLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notable monster call-outs.
+        /// </summary>
+        public static string BotChatConfiguration_NotableMonsterLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_NotableMonsterLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated numbers of the monsters a bot calls out when they appear near it. By default the golden monsters, the Red Dragon and the White Wizard..
+        /// </summary>
+        public static string BotChatConfiguration_NotableMonsterNumbers_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_NotableMonsterNumbers_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notable monsters.
+        /// </summary>
+        public static string BotChatConfiguration_NotableMonsterNumbers_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_NotableMonsterNumbers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by a bot which put on the new wings it earned at a level milestone, while a player sees it. Placeholders: {wings}, {level}, {map}..
+        /// </summary>
+        public static string BotChatConfiguration_OwnWingsLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_OwnWingsLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Own new wings.
+        /// </summary>
+        public static string BotChatConfiguration_OwnWingsLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_OwnWingsLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whispered when the bot didn&apos;t understand where to meet. Placeholders: {player}, {level}, {class}..
+        /// </summary>
+        public static string BotChatConfiguration_PartyAskWhereLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyAskWhereLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: where?.
+        /// </summary>
+        public static string BotChatConfiguration_PartyAskWhereLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyAskWhereLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words for the Blood Castle in a party search. Followed by the event level, like &quot;party bc7&quot;, they call the bots which may enter that Blood Castle..
+        /// </summary>
+        public static string BotChatConfiguration_PartyBloodCastleKeywords_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyBloodCastleKeywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: Blood Castle words.
+        /// </summary>
+        public static string BotChatConfiguration_PartyBloodCastleKeywords_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyBloodCastleKeywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whispered when the bot may not go to the named map: its level is too low, or the map can&apos;t be reached by warp. Placeholders: {player}, {map} (the named map), {level}..
+        /// </summary>
+        public static string BotChatConfiguration_PartyCantGoLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyCantGoLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: can&apos;t go.
+        /// </summary>
+        public static string BotChatConfiguration_PartyCantGoLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyCantGoLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words for the Chaos Castle in a party search. Followed by the event level, like &quot;party cc3&quot;, they call the bots which may enter that Chaos Castle..
+        /// </summary>
+        public static string BotChatConfiguration_PartyChaosCastleKeywords_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyChaosCastleKeywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: Chaos Castle words.
+        /// </summary>
+        public static string BotChatConfiguration_PartyChaosCastleKeywords_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyChaosCastleKeywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot says something in the party chat of a player: thanks for the invitation, &quot;gg&quot; after an event. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_PartyChatChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyChatChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party chat chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_PartyChatChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyChatChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The words players use for the character classes in a party search, e.g. &quot;dk, bk, bm&quot;. The class number stands for its whole line of classes..
+        /// </summary>
+        public static string BotChatConfiguration_PartyClassAliases_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyClassAliases_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: class words.
+        /// </summary>
+        public static string BotChatConfiguration_PartyClassAliases_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyClassAliases_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words for the Devil Square in a party search. Followed by the event level, like &quot;party ds5&quot;, they call the bots which may enter that Devil Square..
+        /// </summary>
+        public static string BotChatConfiguration_PartyDevilSquareKeywords_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyDevilSquareKeywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: Devil Square words.
+        /// </summary>
+        public static string BotChatConfiguration_PartyDevilSquareKeywords_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyDevilSquareKeywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words with which the player tells an answering bot to come to where the player stands, instead of naming a map and coordinates..
+        /// </summary>
+        public static string BotChatConfiguration_PartyHereKeywords_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyHereKeywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: &quot;here&quot; words.
+        /// </summary>
+        public static string BotChatConfiguration_PartyHereKeywords_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyHereKeywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said in the party chat after the bot accepted a player&apos;s invitation. Placeholders: {player} (the inviter), {level}, {map}, {location} (the bot&apos;s map and coordinates, e.g. &quot;Devias 215, 40&quot;)..
+        /// </summary>
+        public static string BotChatConfiguration_PartyJoinedLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyJoinedLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party: joined.
+        /// </summary>
+        public static string BotChatConfiguration_PartyJoinedLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyJoinedLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How long a bot waits at the meeting place for the party invitation before it goes back to hunting..
+        /// </summary>
+        public static string BotChatConfiguration_PartyMeetingWaitTime_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyMeetingWaitTime_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: waiting time.
+        /// </summary>
+        public static string BotChatConfiguration_PartyMeetingWaitTime_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyMeetingWaitTime_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How long a bot which answered a party search waits for the player to whisper back where to meet, e.g. &quot;devias 215 40&quot;..
+        /// </summary>
+        public static string BotChatConfiguration_PartyOfferTimeout_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyOfferTimeout_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: answer timeout.
+        /// </summary>
+        public static string BotChatConfiguration_PartyOfferTimeout_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyOfferTimeout_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whispered when the bot sets off to the meeting place. Placeholders: {player}, {map} and {location} (the meeting place)..
+        /// </summary>
+        public static string BotChatConfiguration_PartyOnTheWayLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyOnTheWayLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: on the way.
+        /// </summary>
+        public static string BotChatConfiguration_PartyOnTheWayLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyOnTheWayLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words which mark a /post as a party search. The post also needs a level: &quot;300-350&quot;, &quot;300+&quot;, &quot;min 300&quot; or &quot;300&quot; - or an event with its level, like &quot;bc7&quot;..
+        /// </summary>
+        public static string BotChatConfiguration_PartyRequestKeywords_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyRequestKeywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: keywords.
+        /// </summary>
+        public static string BotChatConfiguration_PartyRequestKeywords_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyRequestKeywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many bots whisper to a player who searches party members with /post, e.g. &quot;/post party 300-350 bk dw&quot;. The same search posted again is answered by other bots. 0 = off..
+        /// </summary>
+        public static string BotChatConfiguration_PartyVolunteerCount_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyVolunteerCount_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: answering bots.
+        /// </summary>
+        public static string BotChatConfiguration_PartyVolunteerCount_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyVolunteerCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whispered to a player whose party search the bot answers. Placeholders: {player}, {level}, {class}, {map}, {location}..
+        /// </summary>
+        public static string BotChatConfiguration_PartyVolunteerLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyVolunteerLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party search: answers.
+        /// </summary>
+        public static string BotChatConfiguration_PartyVolunteerLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PartyVolunteerLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by the nearest bot when a player put on wings - once per player and pair until the server restarts. Placeholders: {player}, {wings} (the player&apos;s), {map}..
+        /// </summary>
+        public static string BotChatConfiguration_PlayerWingsLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PlayerWingsLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Player&apos;s wings comments.
+        /// </summary>
+        public static string BotChatConfiguration_PlayerWingsLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_PlayerWingsLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that the nearest bot comments on an excellent or ancient item a player&apos;s kill dropped (&quot;nice drop!&quot;). 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_RareDropChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_RareDropChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rare drop comment chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_RareDropChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_RareDropChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by the nearest bot when a player&apos;s kill dropped an excellent or ancient item. Placeholders: {player}, {item}, {map}..
+        /// </summary>
+        public static string BotChatConfiguration_RareDropLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_RareDropLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rare drop comments.
+        /// </summary>
+        public static string BotChatConfiguration_RareDropLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_RareDropLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said by the nearest bot when a player made a reset. Placeholders: {player}, {level} and {resets} of the player, {map}..
+        /// </summary>
+        public static string BotChatConfiguration_ResetCongratulationLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ResetCongratulationLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congratulations: reset.
+        /// </summary>
+        public static string BotChatConfiguration_ResetCongratulationLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_ResetCongratulationLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whispered when a player asks the bot for a trade. Placeholders: {player}, {level}, {map}, {location}..
+        /// </summary>
+        public static string BotChatConfiguration_TradeDeclineLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_TradeDeclineLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trade refused.
+        /// </summary>
+        public static string BotChatConfiguration_TradeDeclineLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_TradeDeclineLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers to a player who whispered to the bot or mentioned its name in the normal chat next to it. The best keyword match wins; replies without keywords are the fallback. Placeholders: {player}, {level}, {map}, {location} (the bot&apos;s map and coordinates, e.g. &quot;Devias 215, 40&quot;), {wings} (the bot&apos;s wings; a bot without wings answers with one of the answers without wings)..
+        /// </summary>
+        public static string BotChatConfiguration_WhisperReplies_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WhisperReplies_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whisper replies.
+        /// </summary>
+        public static string BotChatConfiguration_WhisperReplies_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WhisperReplies_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot answers a whisper of a player. 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_WhisperReplyChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WhisperReplyChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whisper reply chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_WhisperReplyChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WhisperReplyChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between two whisper replies of the same bot..
+        /// </summary>
+        public static string BotChatConfiguration_WhisperReplyCooldown_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WhisperReplyCooldown_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whisper reply cooldown.
+        /// </summary>
+        public static string BotChatConfiguration_WhisperReplyCooldown_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WhisperReplyCooldown_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance that a bot comments on wings: its own new pair earned at a level milestone (&quot;finally, my wings!&quot;), or the wings a player next to it put on (&quot;nice wings!&quot;). 0 = never..
+        /// </summary>
+        public static string BotChatConfiguration_WingsChancePercent_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WingsChancePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wings comment chance (%).
+        /// </summary>
+        public static string BotChatConfiguration_WingsChancePercent_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WingsChancePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Said instead of a whisper reply with {wings} when the bot has no wings yet (&quot;no wings yet, saving up&quot;). Placeholders: {player}, {level}, {map}..
+        /// </summary>
+        public static string BotChatConfiguration_WithoutWingsLines_Description {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WithoutWingsLines_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers without wings.
+        /// </summary>
+        public static string BotChatConfiguration_WithoutWingsLines_Name {
+            get {
+                return ResourceManager.GetString("BotChatConfiguration_WithoutWingsLines_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The language code, e.g. pl..
+        /// </summary>
+        public static string BotChatLanguageHint_Language_Description {
+            get {
+                return ResourceManager.GetString("BotChatLanguageHint_Language_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string BotChatLanguageHint_Language_Name {
+            get {
+                return ResourceManager.GetString("BotChatLanguageHint_Language_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Letters only this language uses, e.g. ąćęłńóśźż. One of them in a message counts like a typical word..
+        /// </summary>
+        public static string BotChatLanguageHint_Letters_Description {
+            get {
+                return ResourceManager.GetString("BotChatLanguageHint_Letters_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Letters.
+        /// </summary>
+        public static string BotChatLanguageHint_Letters_Name {
+            get {
+                return ResourceManager.GetString("BotChatLanguageHint_Letters_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated typical words of the language. The language with the most hits in a message wins; a tie leaves it open..
+        /// </summary>
+        public static string BotChatLanguageHint_Words_Description {
+            get {
+                return ResourceManager.GetString("BotChatLanguageHint_Words_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Typical words.
+        /// </summary>
+        public static string BotChatLanguageHint_Words_Name {
+            get {
+                return ResourceManager.GetString("BotChatLanguageHint_Words_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A gesture the bot makes with it, like a player typing /hello: Greeting, Goodbye, Clap, Cheer, Win, Smile, Respect, Salute, Cry, Awkward or Provocation. The bot turns to the player it talks to..
+        /// </summary>
+        public static string BotChatLine_Gesture_Description {
+            get {
+                return ResourceManager.GetString("BotChatLine_Gesture_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gesture.
+        /// </summary>
+        public static string BotChatLine_Gesture_Name {
+            get {
+                return ResourceManager.GetString("BotChatLine_Gesture_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What the bot says. The placeholders in curly braces which the list offers are filled in - see the description of the list..
+        /// </summary>
+        public static string BotChatLine_Text_Description {
+            get {
+                return ResourceManager.GetString("BotChatLine_Text_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        public static string BotChatLine_Text_Name {
+            get {
+                return ResourceManager.GetString("BotChatLine_Text_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When it may be said, by the local time of the server: Anytime, Morning (5-11), Day (11-18), Evening (18-23) or Night (23-5)..
+        /// </summary>
+        public static string BotChatLine_When_Description {
+            get {
+                return ResourceManager.GetString("BotChatLine_When_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When.
+        /// </summary>
+        public static string BotChatLine_When_Name {
+            get {
+                return ResourceManager.GetString("BotChatLine_When_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lets server-side bots talk: they announce events and invasions with /post, comment on level milestones and answer whispers, using configurable lines..
+        /// </summary>
+        public static string BotChatPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotChatPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bot chat.
+        /// </summary>
+        public static string BotChatPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotChatPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words or phrases of a player&apos;s message which this reply answers, e.g. &quot;how are you, how r u&quot;. Whole words, case and punctuation are ignored. Replies without keywords are used when nothing matches..
+        /// </summary>
+        public static string BotChatReply_Keywords_Description {
+            get {
+                return ResourceManager.GetString("BotChatReply_Keywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keywords.
+        /// </summary>
+        public static string BotChatReply_Keywords_Name {
+            get {
+                return ResourceManager.GetString("BotChatReply_Keywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of a character class of the line, e.g. 4 for the Dark Knight - the whole line (Dark Knight, Blade Knight, Blade Master) is meant..
+        /// </summary>
+        public static string BotClassAlias_ClassNumber_Description {
+            get {
+                return ResourceManager.GetString("BotClassAlias_ClassNumber_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Class number.
+        /// </summary>
+        public static string BotClassAlias_ClassNumber_Name {
+            get {
+                return ResourceManager.GetString("BotClassAlias_ClassNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma-separated words for the class line, e.g. &quot;dk, bk, bm, knight&quot;. Whole words, case and punctuation are ignored..
+        /// </summary>
+        public static string BotClassAlias_Keywords_Description {
+            get {
+                return ResourceManager.GetString("BotClassAlias_Keywords_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Words.
+        /// </summary>
+        public static string BotClassAlias_Keywords_Name {
+            get {
+                return ResourceManager.GetString("BotClassAlias_Keywords_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Share of a game server&apos;s maximum player count which its bots may occupy; the rest stays reserved for real players..
+        /// </summary>
+        public static string BotConfiguration_BotCapacityPercent_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_BotCapacityPercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bot capacity %.
+        /// </summary>
+        public static string BotConfiguration_BotCapacityPercent_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_BotCapacityPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, bots consume the configured zen/item costs for their resets like human players (default: free bot resets)..
+        /// </summary>
+        public static string BotConfiguration_BotsPayResetCosts_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bots pay reset costs.
+        /// </summary>
+        public static string BotConfiguration_BotsPayResetCosts_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, bots are spawned after the server has started..
+        /// </summary>
+        public static string BotConfiguration_Enabled_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_Enabled_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enabled.
+        /// </summary>
+        public static string BotConfiguration_Enabled_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_Enabled_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many Jewels of Bless/Soul/Life a bot keeps of each kind; above this it stops picking them up and sells the surplus..
+        /// </summary>
+        public static string BotConfiguration_JewelStockPerKind_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel stock per kind.
+        /// </summary>
+        public static string BotConfiguration_JewelStockPerKind_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maps bots never warp to: no hunting, following or events there, and a bot which logs in on one leaves it. Players are not affected..
+        /// </summary>
+        public static string BotConfiguration_MapsForbiddenForBots_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maps forbidden for bots.
+        /// </summary>
+        public static string BotConfiguration_MapsForbiddenForBots_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many characters each bot account holds (max 5)..
+        /// </summary>
+        public static string BotConfiguration_MaxCharactersPerAccount_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_MaxCharactersPerAccount_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Characters per account.
+        /// </summary>
+        public static string BotConfiguration_MaxCharactersPerAccount_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_MaxCharactersPerAccount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Percentage of the bot population which stays online at the quietest hour (100 = no rotation effect)..
+        /// </summary>
+        public static string BotConfiguration_MinOnlineSharePercent_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_MinOnlineSharePercent_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min. online share %.
+        /// </summary>
+        public static string BotConfiguration_MinOnlineSharePercent_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_MinOnlineSharePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many bot accounts to maintain..
+        /// </summary>
+        public static string BotConfiguration_NumberOfAccounts_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_NumberOfAccounts_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of accounts.
+        /// </summary>
+        public static string BotConfiguration_NumberOfAccounts_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_NumberOfAccounts_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many healing and mana potion charges a bot buys up to at a merchant..
+        /// </summary>
+        public static string BotConfiguration_PotionStockCharges_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_PotionStockCharges_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potion stock (charges).
+        /// </summary>
+        public static string BotConfiguration_PotionStockCharges_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_PotionStockCharges_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bots log in and out over the day (fewest at night, most in the evening) instead of all being online 24/7..
+        /// </summary>
+        public static string BotConfiguration_PresenceRotation_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_PresenceRotation_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Presence rotation.
+        /// </summary>
+        public static string BotConfiguration_PresenceRotation_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_PresenceRotation_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma separated login names of existing accounts to animate as bots, in addition to the generated population..
+        /// </summary>
+        public static string BotConfiguration_ProofOfConceptAccounts_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_ProofOfConceptAccounts_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extra accounts to animate.
+        /// </summary>
+        public static string BotConfiguration_ProofOfConceptAccounts_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_ProofOfConceptAccounts_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deletes all bot accounts and characters and turns the bot feature off, without generating new ones. Clears itself afterwards..
+        /// </summary>
+        public static string BotConfiguration_PurgeBots_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_PurgeBots_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purge bots.
+        /// </summary>
+        public static string BotConfiguration_PurgeBots_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_PurgeBots_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Deletes all bot accounts and characters on the next start, then regenerates them. Clears itself afterwards..
+        /// </summary>
+        public static string BotConfiguration_ResetBots_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_ResetBots_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset bots.
+        /// </summary>
+        public static string BotConfiguration_ResetBots_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_ResetBots_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Newly generated bots start at level 1 with level-0 starter equipment, like a freshly created player character, instead of with a random level, reset history and upgraded gear..
+        /// </summary>
+        public static string BotConfiguration_StartAsFreshCharacters_Description {
+            get {
+                return ResourceManager.GetString("BotConfiguration_StartAsFreshCharacters_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start as fresh characters.
+        /// </summary>
+        public static string BotConfiguration_StartAsFreshCharacters_Name {
+            get {
+                return ResourceManager.GetString("BotConfiguration_StartAsFreshCharacters_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What the first bot says..
+        /// </summary>
+        public static string BotConversation_Opener_Description {
+            get {
+                return ResourceManager.GetString("BotConversation_Opener_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opener.
+        /// </summary>
+        public static string BotConversation_Opener_Name {
+            get {
+                return ResourceManager.GetString("BotConversation_Opener_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What the second bot answers, a few seconds later..
+        /// </summary>
+        public static string BotConversation_Reply_Description {
+            get {
+                return ResourceManager.GetString("BotConversation_Reply_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reply.
+        /// </summary>
+        public static string BotConversation_Reply_Name {
+            get {
+                return ResourceManager.GetString("BotConversation_Reply_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What the first bot says back to the reply, a few seconds later. Empty for a conversation of two lines..
+        /// </summary>
+        public static string BotConversation_Riposte_Description {
+            get {
+                return ResourceManager.GetString("BotConversation_Riposte_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Riposte.
+        /// </summary>
+        public static string BotConversation_Riposte_Name {
+            get {
+                return ResourceManager.GetString("BotConversation_Riposte_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Where the bots may have this conversation: Town (both in a safezone), Hunting (both outside of it) or Anywhere..
+        /// </summary>
+        public static string BotConversation_Where_Description {
+            get {
+                return ResourceManager.GetString("BotConversation_Where_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Where.
+        /// </summary>
+        public static string BotConversation_Where_Name {
+            get {
+                return ResourceManager.GetString("BotConversation_Where_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spawns server-side bots which hunt monsters on the maps. Configure the accounts to animate and enable the feature..
+        /// </summary>
+        public static string BotFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bots.
+        /// </summary>
+        public static string BotFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Makes server-side bots return to their death site and take revenge on the player who killed them..
+        /// </summary>
+        public static string BotRevengePlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotRevengePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bot revenge.
+        /// </summary>
+        public static string BotRevengePlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotRevengePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/botsay &lt;bot&gt; &lt;text&gt;&apos;. A game master makes a server-side bot say the text in the normal chat, to the players who see it - e.g. for staged scenes of an event. Only bots, never a player&apos;s character..
+        /// </summary>
+        public static string BotSayChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotSayChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /botsay.
+        /// </summary>
+        public static string BotSayChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotSayChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Makes server-side bots fight back when a player attacks them..
+        /// </summary>
+        public static string BotSelfDefensePlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotSelfDefensePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bot self defense.
+        /// </summary>
+        public static string BotSelfDefensePlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotSelfDefensePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invests level-up stat points and teaches server-side bots new class- and level-appropriate skills as they level up..
+        /// </summary>
+        public static string BotSkillProgressionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BotSkillProgressionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bot skill progression.
+        /// </summary>
+        public static string BotSkillProgressionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The in-game cash shop. When it&apos;s deactivated, the cash shop can&apos;t be opened. Its configuration holds the settings, e.g. about gifts and the storage size..
         /// </summary>
         public static string CashShopFeaturePlugIn_Description {
             get {
@@ -324,6 +2223,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
         /// </summary>
+        public static string CastleSiegeGuardsmanTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Guardsman.
+        /// </summary>
+        public static string CastleSiegeGuardsmanTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeGuardsmanTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows Land of Trials availability and its applicable entry fee..
+        /// </summary>
         public static string CastleSiegeLandOfTrialsGuardTalkPlugIn_Description {
             get {
                 return ResourceManager.GetString("CastleSiegeLandOfTrialsGuardTalkPlugIn_Description", resourceCulture);
@@ -354,6 +2271,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CastleSiegeLeverTalkPlugIn_Name {
             get {
                 return ResourceManager.GetString("CastleSiegeLeverTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consumes Life Stones after they are successfully placed during Castle Siege..
+        /// </summary>
+        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Life Stone consume handler.
+        /// </summary>
+        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -462,6 +2397,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ChangeLanguageChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("ChangeLanguageChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle event.
+        /// </summary>
+        public static string ChaosCastleStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ChaosCastleStartPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ChaosCastleStartPlugIn.
+        /// </summary>
+        public static string ChaosCastleStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ChaosCastleStartPlugIn_Name", resourceCulture);
             }
         }
         
@@ -628,6 +2581,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of command, which takes back invested command points and returns them as level up points..
+        /// </summary>
+        public static string CommandResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CommandResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Command Consume Handler.
+        /// </summary>
+        public static string CommandResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CommandResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/createmonster &lt;number&gt; &lt;intelligent&gt;&apos;. Creates a monster which can be remote controlled by the GM..
         /// </summary>
         public static string CreateMonsterChatCommand_Description {
@@ -682,6 +2653,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Devil Square event.
+        /// </summary>
+        public static string DevilSquareStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DevilSquareStartPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DevilSquareStartPlugIn.
+        /// </summary>
+        public static string DevilSquareStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DevilSquareStartPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/disconnect &lt;char&gt;&apos;. Disconnects a player from the game server..
         /// </summary>
         public static string DisconnectChatCommandPlugIn_Description {
@@ -714,6 +2703,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DiscordChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("DiscordChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such..
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Discord integration of the client.
+        /// </summary>
+        public static string DiscordIntegrationFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Name", resourceCulture);
             }
         }
         
@@ -786,6 +2793,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DrainLifeSkillPlugIn_Name {
             get {
                 return ResourceManager.GetString("DrainLifeSkillPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spawns a player which is in a duel at its side of the duel area..
+        /// </summary>
+        public static string DuelSpawnGatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DuelSpawnGatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DuelSpawnGatePlugIn.
+        /// </summary>
+        public static string DuelSpawnGatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DuelSpawnGatePlugIn_Name", resourceCulture);
             }
         }
         
@@ -898,6 +2923,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of energy, which takes back invested energy points and returns them as level up points..
+        /// </summary>
+        public static string EnergyResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EnergyResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Energy Consume Handler.
+        /// </summary>
+        public static string EnergyResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EnergyResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Describes how the game client counts the animations of Evil Spirit: every animation is counted..
+        /// </summary>
+        public static string EvilSpiritAnimationCounterStrategy_Description {
+            get {
+                return ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evil Spirit animation counter.
+        /// </summary>
+        public static string EvilSpiritAnimationCounterStrategy_Name {
+            get {
+                return ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the fire scream skill of the dark lord class. Based on a chance, it does an additional damage (explosion) to any targets in a radius which origin is the target itself..
         /// </summary>
         public static string FireScreamSkillPlugIn_Description {
@@ -948,114 +3009,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ForceWaveStrengSkillAction_Name {
             get {
                 return ResourceManager.GetString("ForceWaveStrengSkillAction_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin which handles the reset fruit of strength, which takes back invested strength points and returns them as level up points..
-        /// </summary>
-        public static string StrengthResetFruitConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("StrengthResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Fruit of Strength Consume Handler.
-        /// </summary>
-        public static string StrengthResetFruitConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("StrengthResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin which handles the reset fruit of agility, which takes back invested agility points and returns them as level up points..
-        /// </summary>
-        public static string AgilityResetFruitConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("AgilityResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Fruit of Agility Consume Handler.
-        /// </summary>
-        public static string AgilityResetFruitConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("AgilityResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin which handles the reset fruit of vitality, which takes back invested vitality points and returns them as level up points..
-        /// </summary>
-        public static string VitalityResetFruitConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("VitalityResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Fruit of Vitality Consume Handler.
-        /// </summary>
-        public static string VitalityResetFruitConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("VitalityResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin which handles the reset fruit of energy, which takes back invested energy points and returns them as level up points..
-        /// </summary>
-        public static string EnergyResetFruitConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("EnergyResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Fruit of Energy Consume Handler.
-        /// </summary>
-        public static string EnergyResetFruitConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("EnergyResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plugin which handles the reset fruit of command, which takes back invested command points and returns them as level up points..
-        /// </summary>
-        public static string CommandResetFruitConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CommandResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Points per durability.
-        /// </summary>
-        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name {
-            get {
-                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The number of stat points which one durability of a reset fruit takes back..
-        /// </summary>
-        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description {
-            get {
-                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset Fruit of Command Consume Handler.
-        /// </summary>
-        public static string CommandResetFruitConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CommandResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1681,6 +3634,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles talking to the Alliance Item Storage in the illusion temple event, to which the allied forces carry the sacred relic to score a point..
+        /// </summary>
+        public static string IllusionTempleAllianceStorageTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple Alliance Item Storage.
+        /// </summary>
+        public static string IllusionTempleAllianceStorageTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles talking to the Illusion Item Storage in the illusion temple event, to which the illusion forces carry the sacred relic to score a point..
+        /// </summary>
+        public static string IllusionTempleIllusionStorageTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple Illusion Item Storage.
+        /// </summary>
+        public static string IllusionTempleIllusionStorageTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles talking to the Stone Statue in the illusion temple event, where players pick up the sacred relic..
+        /// </summary>
+        public static string IllusionTempleStoneStatueTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple Stone Statue.
+        /// </summary>
+        public static string IllusionTempleStoneStatueTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configures the run of the imperial guardian event, e.g. its times, the experience reward and the scaling of the monsters..
         /// </summary>
         public static string ImperialGuardianFeaturePlugIn_Description {
@@ -1695,6 +3702,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ImperialGuardianFeaturePlugIn_Name {
             get {
                 return ResourceManager.GetString("ImperialGuardianFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Announce Death.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_AnnounceDeath_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_AnnounceDeath_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Count.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_Count_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_Count_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Spawn On All Maps.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Ids.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_MapIds_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_MapIds_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map Strategy.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_MapStrategy_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_MapStrategy_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster Id.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_MonsterId_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_MonsterId_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_X_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_X_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y.
+        /// </summary>
+        public static string InvasionSpawnConfiguration_Y_Caption {
+            get {
+                return ResourceManager.GetString("InvasionSpawnConfiguration_Y_Caption", resourceCulture);
             }
         }
         
@@ -1717,6 +3796,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This plugin handles the drop of an item box, e.g. box of kundun..
+        /// </summary>
+        public static string ItemBoxDroppedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemBoxDroppedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ItemBoxDroppedPlugIn.
+        /// </summary>
+        public static string ItemBoxDroppedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemBoxDroppedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/item &lt;group&gt; &lt;number&gt; &lt;lvl?&gt; &lt;exc?&gt; &lt;sk?&gt; &lt;lu?&gt; &lt;opt?&gt; &lt;anc?&gt; &lt;ancBonuslvl?&gt;&apos;. Drops a specific item next to the character..
         /// </summary>
         public static string ItemChatCommandPlugIn_Description {
@@ -1731,6 +3828,267 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ItemChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("ItemChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure item registration rules for different NPCs..
+        /// </summary>
+        public static string ItemRegistrationConfiguration_Rules_Description {
+            get {
+                return ResourceManager.GetString("ItemRegistrationConfiguration_Rules_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NPC Registration Rules.
+        /// </summary>
+        public static string ItemRegistrationConfiguration_Rules_Name {
+            get {
+                return ResourceManager.GetString("ItemRegistrationConfiguration_Rules_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whether an item which doesn&apos;t have the option yet can get it by consuming the source item..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_AddsOption_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_AddsOption_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the option.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_AddsOption_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_AddsOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An item option of the target item which increases the success chance, e.g. the luck option..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_BoostOptionType_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_BoostOptionType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boost option type.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_BoostOptionType_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_BoostOptionType_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What happens to the option when the random check fails: nothing, the option is set back to its base level, or the option is removed..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_FailResult_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_FailResult_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Behaviour on failure.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_FailResult_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_FailResult_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Whether the level of an existing option of the item can be increased..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_IncreasesOption_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_IncreasesOption_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Increases the option.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_IncreasesOption_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_IncreasesOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of the item option which is upgraded: the normal option for the Jewel of Life, the harmony option for the Jewel of Harmony and the refine stones..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_OptionType_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_OptionType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option type.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_OptionType_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_OptionType_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chance between 0 and 1 that an attempt succeeds. The Jewel of Life uses 0.5..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_SuccessChance_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChance_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success chance.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_SuccessChance_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The additional success chance when the target item has the boost option type..
+        /// </summary>
+        public static string ItemUpgradeConfiguration_SuccessChanceBoost_Description {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChanceBoost_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success chance boost.
+        /// </summary>
+        public static string ItemUpgradeConfiguration_SuccessChanceBoost_Name {
+            get {
+                return ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChanceBoost_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum levels of the Kalima levels.
+        /// </summary>
+        public static string KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name {
+            get {
+                return ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum levels of the Kalima levels for special characters.
+        /// </summary>
+        public static string KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name {
+            get {
+                return ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens a gate to the level of Kalima which fits the level of the character. Each use takes one of the ticket&apos;s usages..
+        /// </summary>
+        public static string KalimaTicketConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kalima Ticket Consume Handler.
+        /// </summary>
+        public static string KalimaTicketConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the Kanturu Gateway Machine NPC for event entry..
+        /// </summary>
+        public static string KanturuGatewayPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KanturuGatewayPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KanturuGatewayPlugIn.
+        /// </summary>
+        public static string KanturuGatewayPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KanturuGatewayPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event Definition.
+        /// </summary>
+        public static string KanturuStartConfiguration_EventDefinition_Caption {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_EventDefinition_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How long the Tower of Refinement stays open after the Nightmare boss has been defeated. While the window is open, scheduled event starts are skipped; a game master start still proceeds and ends the window..
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenDuration_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tower open duration.
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenDuration_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End of the current open window in UTC. Set automatically when Nightmare is defeated..
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tower open until (UTC).
+        /// </summary>
+        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kanturu Refinery Tower event.
+        /// </summary>
+        public static string KanturuStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("KanturuStartPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KanturuStartPlugIn.
+        /// </summary>
+        public static string KanturuStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("KanturuStartPlugIn_Name", resourceCulture);
             }
         }
         
@@ -1879,6 +4237,87 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disconnects clients which don&apos;t log in within the configured time after they connected..
+        /// </summary>
+        public static string LoginTimeoutPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LoginTimeoutPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login Timeout.
+        /// </summary>
+        public static string LoginTimeoutPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LoginTimeoutPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timeout.
+        /// </summary>
+        public static string LoginTimeoutPlugInConfiguration_Timeout_Caption {
+            get {
+                return ResourceManager.GetString("LoginTimeoutPlugInConfiguration_Timeout_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The time after which a connection is considered lost, when its client didn&apos;t report that it&apos;s alive. The game client reports it every 20 seconds. Zero disables the detection..
+        /// </summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Description {
+            get {
+                return ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timeout.
+        /// </summary>
+        public static string LostConnectionDetectionConfiguration_Timeout_Name {
+            get {
+                return ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnects players whose client stopped to report that it&apos;s alive, because their connection got lost without being closed. Otherwise, they would stay connected, and further logins of their account would be rejected..
+        /// </summary>
+        public static string LostConnectionDetectionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LostConnectionDetectionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lost connection detection.
+        /// </summary>
+        public static string LostConnectionDetectionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LostConnectionDetectionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This plugin handles the drop of the lost map item. It creates the gate to the kalima map..
+        /// </summary>
+        public static string LostMapDroppedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LostMapDroppedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LostMapDroppedPlugIn.
+        /// </summary>
+        public static string LostMapDroppedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LostMapDroppedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Plugin which handles the lower refine stone consumption..
         /// </summary>
         public static string LowerRefineStoneConsumeHandlerPlugIn_Description {
@@ -1893,6 +4332,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string LowerRefineStoneConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("LowerRefineStoneConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Limits the maximum number of parallel connections from the same IP address..
+        /// </summary>
+        public static string MaximumConnectionsPerIpPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum Connections Per IP.
+        /// </summary>
+        public static string MaximumConnectionsPerIpPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum Connections Per Ip.
+        /// </summary>
+        public static string MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption {
+            get {
+                return ResourceManager.GetString("MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption", resourceCulture);
             }
         }
         
@@ -2005,42 +4471,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Tower open duration.
-        /// </summary>
-        public static string KanturuStartConfiguration_TowerOpenDuration_Name {
-            get {
-                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to How long the Tower of Refinement stays open after the Nightmare boss has been defeated. While the window is open, scheduled event starts are skipped; a game master start still proceeds and ends the window..
-        /// </summary>
-        public static string KanturuStartConfiguration_TowerOpenDuration_Description {
-            get {
-                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenDuration_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tower open until (UTC).
-        /// </summary>
-        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Name {
-            get {
-                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to End of the current open window in UTC. Set automatically when Nightmare is defeated..
-        /// </summary>
-        public static string KanturuStartConfiguration_TowerOpenUntilUtc_Description {
-            get {
-                return ResourceManager.GetString("KanturuStartConfiguration_TowerOpenUntilUtc_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Increases all monster base stats by a configurable percentage..
         /// </summary>
         public static string MonsterAttributeScaler_Description {
@@ -2055,6 +4485,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MonsterAttributeScaler_Name {
             get {
                 return ResourceManager.GetString("MonsterAttributeScaler_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attack Rate Percentage.
+        /// </summary>
+        public static string MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage Percentage.
+        /// </summary>
+        public static string MonsterAttributeScalerConfiguration_DamagePercentage_Caption {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScalerConfiguration_DamagePercentage_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defense Percentage.
+        /// </summary>
+        public static string MonsterAttributeScalerConfiguration_DefensePercentage_Caption {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScalerConfiguration_DefensePercentage_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defense Rate Percentage.
+        /// </summary>
+        public static string MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Health Percentage.
+        /// </summary>
+        public static string MonsterAttributeScalerConfiguration_HealthPercentage_Caption {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScalerConfiguration_HealthPercentage_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scale All Percentage.
+        /// </summary>
+        public static string MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption {
+            get {
+                return ResourceManager.GetString("MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption", resourceCulture);
             }
         }
         
@@ -2172,6 +4656,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MuHelperFeaturePlugIn_Name {
             get {
                 return ResourceManager.GetString("MuHelperFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Describes how the game client counts the animations of Multi-Shot: the hits don&apos;t contain the animation counter..
+        /// </summary>
+        public static string MultiShotAnimationCounterStrategy_Description {
+            get {
+                return ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multi-Shot animation counter.
+        /// </summary>
+        public static string MultiShotAnimationCounterStrategy_Name {
+            get {
+                return ResourceManager.GetString("MultiShotAnimationCounterStrategy_Name", resourceCulture);
             }
         }
         
@@ -2302,6 +4804,132 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Group of the accepted item (e.g. 14 for event items)..
+        /// </summary>
+        public static string NpcItemRegistrationRule_AcceptedItemGroup_Description {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemGroup_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepted Item Group.
+        /// </summary>
+        public static string NpcItemRegistrationRule_AcceptedItemGroup_Name {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of the accepted item (e.g. 21 for Rena)..
+        /// </summary>
+        public static string NpcItemRegistrationRule_AcceptedItemNumber_Description {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemNumber_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accepted Item Number.
+        /// </summary>
+        public static string NpcItemRegistrationRule_AcceptedItemNumber_Name {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The NPC definition number (e.g. 236 for Golden Archer)..
+        /// </summary>
+        public static string NpcItemRegistrationRule_NpcNumber_Description {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_NpcNumber_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NPC Number.
+        /// </summary>
+        public static string NpcItemRegistrationRule_NpcNumber_Name {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_NpcNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of items required to receive a reward..
+        /// </summary>
+        public static string NpcItemRegistrationRule_RequiredItemsCount_Description {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_RequiredItemsCount_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required Items Count.
+        /// </summary>
+        public static string NpcItemRegistrationRule_RequiredItemsCount_Name {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_RequiredItemsCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The DropItemGroup used to generate the item reward drop. If empty, no item drops (Zen reward only)..
+        /// </summary>
+        public static string NpcItemRegistrationRule_RewardDropItemGroup_Description {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_RewardDropItemGroup_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reward Drop Item Group.
+        /// </summary>
+        public static string NpcItemRegistrationRule_RewardDropItemGroup_Name {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_RewardDropItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen awarded upon reaching the required item count..
+        /// </summary>
+        public static string NpcItemRegistrationRule_RewardZen_Description {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_RewardZen_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reward Zen.
+        /// </summary>
+        public static string NpcItemRegistrationRule_RewardZen_Name {
+            get {
+                return ResourceManager.GetString("NpcItemRegistrationRule_RewardZen_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The NPC which is handled by this plugin. If no NPC is set, the plugin doesn&apos;t handle any NPC..
+        /// </summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Description {
+            get {
+                return ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NPC.
+        /// </summary>
+        public static string NpcTalkPlugInConfiguration_Npc_Name {
+            get {
+                return ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allows players to start offline leveling with /offlevel. The character stays in the world after the client disconnects and stops when the player logs back in..
         /// </summary>
         public static string OfflineLevelingChatCommandPlugIn_Description {
@@ -2410,6 +5038,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Force Single Map.
+        /// </summary>
+        public static string PeriodicInvasionConfiguration_ForceSingleMap_Name {
+            get {
+                return ResourceManager.GetString("PeriodicInvasionConfiguration_ForceSingleMap_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster Spawns.
+        /// </summary>
+        public static string PeriodicInvasionConfiguration_Mobs_Name {
+            get {
+                return ResourceManager.GetString("PeriodicInvasionConfiguration_Mobs_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Saves the progress of players periodically when their status is &apos;EnteredWorld&apos;..
         /// </summary>
         public static string PeriodicSaveProgressPlugIn_Description {
@@ -2433,6 +5079,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PeriodicSaveProgressPlugInConfiguration_Interval_Name {
             get {
                 return ResourceManager.GetString("PeriodicSaveProgressPlugInConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restricts the event to the selected game servers. An empty selection means the event runs on all servers..
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Description {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active on servers.
+        /// </summary>
+        public static string PeriodicTaskConfiguration_AllowedServerIds_Name {
+            get {
+                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Name", resourceCulture);
             }
         }
         
@@ -2500,23 +5164,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Active on servers.
+        ///   Looks up a localized string similar to Gives the trainable pets of a player a share of the experience which the player gained for a kill..
         /// </summary>
-        public static string PeriodicTaskConfiguration_AllowedServerIds_Name {
+        public static string PetExperiencePlugIn_Description {
             get {
-                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Name", resourceCulture);
+                return ResourceManager.GetString("PetExperiencePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Restricts the event to the selected game servers. An empty selection means the event runs on all servers..
+        ///   Looks up a localized string similar to PetExperiencePlugIn.
         /// </summary>
-        public static string PeriodicTaskConfiguration_AllowedServerIds_Description {
+        public static string PetExperiencePlugIn_Name {
             get {
-                return ResourceManager.GetString("PeriodicTaskConfiguration_AllowedServerIds_Description", resourceCulture);
+                return ResourceManager.GetString("PetExperiencePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles the phoenix shot weapon skill of the rage fighter class. Additionally to the attacked target, it will hit up to seven additional targets..
         /// </summary>
@@ -2568,6 +5232,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string PkClearChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("PkClearChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows regular players to use this command to clear their own PK status for Zen..
+        /// </summary>
+        public static string PKClearConfiguration_AllowRegularPlayers_Description {
+            get {
+                return ResourceManager.GetString("PKClearConfiguration_AllowRegularPlayers_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allow Regular Players.
+        /// </summary>
+        public static string PKClearConfiguration_AllowRegularPlayers_Name {
+            get {
+                return ResourceManager.GetString("PKClearConfiguration_AllowRegularPlayers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The amount of Zen required to clear one PK count..
+        /// </summary>
+        public static string PKClearConfiguration_ZenCostPerKill_Description {
+            get {
+                return ResourceManager.GetString("PKClearConfiguration_ZenCostPerKill_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen Cost Per Kill.
+        /// </summary>
+        public static string PKClearConfiguration_ZenCostPerKill_Name {
+            get {
+                return ResourceManager.GetString("PKClearConfiguration_ZenCostPerKill_Name", resourceCulture);
             }
         }
         
@@ -2828,8 +5528,8 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// </summary>
         public static string RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Description {
             get {
-                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Descripti" +
-                        "on", resourceCulture);
+                return ResourceManager.GetString(("RecoverConsumeHandlerConfiguration_AdditionalRecoverMinusCharacterLevel_Descripti" +
+                        "on"), resourceCulture);
             }
         }
         
@@ -2865,8 +5565,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         /// </summary>
         public static string RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description {
             get {
-                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description" +
-                        "", resourceCulture);
+                return ResourceManager.GetString("RecoverConsumeHandlerConfiguration_RecoverDelayReductionByPotionLevel_Description", resourceCulture);
             }
         }
         
@@ -3006,6 +5705,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Item cost tiers.
+        /// </summary>
+        public static string ResetConfiguration_ItemCostTiers_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_ItemCostTiers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Level after reset.
         /// </summary>
         public static string ResetConfiguration_LevelAfterReset_Name {
@@ -3060,6 +5768,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Point tiers.
+        /// </summary>
+        public static string ResetConfiguration_PointsTiers_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_PointsTiers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Replace level-up points with reset total.
         /// </summary>
         public static string ResetConfiguration_ReplacePointsPerReset_Name {
@@ -3083,6 +5800,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ResetConfiguration_RequiredMoney_Name {
             get {
                 return ResourceManager.GetString("ResetConfiguration_RequiredMoney_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required reset item.
+        /// </summary>
+        public static string ResetConfiguration_RequiredResetItem_Name {
+            get {
+                return ResourceManager.GetString("ResetConfiguration_RequiredResetItem_Name", resourceCulture);
             }
         }
         
@@ -3123,6 +5849,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The number of stat points which one durability of a reset fruit takes back..
+        /// </summary>
+        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description {
+            get {
+                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points per durability.
+        /// </summary>
+        public static string ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name {
+            get {
+                return ResourceManager.GetString("ResetFruitConsumeHandlerConfiguration_PointsPerDurability_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/resetinfo&apos;. Shows the required costs and the granted points for the next reset..
         /// </summary>
         public static string ResetInfoChatCommandPlugIn_Description {
@@ -3141,6 +5885,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Minimum reset count.
+        /// </summary>
+        public static string ResetItemCostTier_MinimumResetCount_Name {
+            get {
+                return ResourceManager.GetString("ResetItemCostTier_MinimumResetCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required item amount.
+        /// </summary>
+        public static string ResetItemCostTier_RequiredItemAmount_Name {
+            get {
+                return ResourceManager.GetString("ResetItemCostTier_RequiredItemAmount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum reset count.
+        /// </summary>
+        public static string ResetPointTier_MinimumResetCount_Name {
+            get {
+                return ResourceManager.GetString("ResetPointTier_MinimumResetCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points granted.
+        /// </summary>
+        public static string ResetPointTier_PointsGranted_Name {
+            get {
+                return ResourceManager.GetString("ResetPointTier_PointsGranted_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/resetstats&apos;..
         /// </summary>
         public static string ResetStatsChatCommandPlugIn_Description {
@@ -3155,6 +5935,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ResetStatsChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("ResetStatsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the invitation to the santa village, which warps the player to the santa village..
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invitation to Santa Village Consume Handler.
+        /// </summary>
+        public static string SantaVillageInvitationConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3501,6 +6308,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tells the client which warps the player can select in the warp window, when the player enters the game..
+        /// </summary>
+        public static string ShowWarpListAfterEnterWorldPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowWarpListAfterEnterWorldPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show the warp list after entering the game.
+        /// </summary>
+        public static string ShowWarpListAfterEnterWorldPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowWarpListAfterEnterWorldPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/xmasfireworks &lt;x&gt; &lt;y&gt;&apos;. Shows an christmas fireworks effect at the specified coordinates..
         /// </summary>
         public static string ShowXmasFireworksEffectChatCommandPlugIn_Description {
@@ -3515,6 +6340,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ShowXmasFireworksEffectChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("ShowXmasFireworksEffectChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potion of Bless effect number.
+        /// </summary>
+        public static string SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name {
+            get {
+                return ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potion of Soul effect number.
+        /// </summary>
+        public static string SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name {
+            get {
+                return ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name", resourceCulture);
             }
         }
         
@@ -3681,6 +6524,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Spawns a player of a running soccer match on the soccer ground..
+        /// </summary>
+        public static string SoccerSpawnGatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("SoccerSpawnGatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SoccerSpawnGatePlugIn.
+        /// </summary>
+        public static string SoccerSpawnGatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoccerSpawnGatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the soul barrier proficiency skill of the grand master..
         /// </summary>
         public static string SoulBarrierProficieSkillAction_Description {
@@ -3735,6 +6596,258 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alert Debounce Seconds.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attack Speed Base Delay Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attack Speed Min Interval Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Per-Skill Attack Speed Profiles.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Optional overrides for individual skills. A profile replaces the common attack or magic speed settings for its skill..
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Description {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attack Speed Scaling Factor.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto Ban.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_AutoBan_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disconnect On Violation.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_DisconnectOnViolation_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_DisconnectOnViolation_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enforce Walk Speed.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magic Speed Base Delay Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magic Speed Min Interval Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magic Speed Scaling Factor.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max Allowed Walk Start Offset.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max Attack Tokens.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_MaxAttackTokens_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_MaxAttackTokens_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Max Warnings.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_MaxWarnings_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_MaxWarnings_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Observe Only.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_ObserveOnly_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_ObserveOnly_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ping Attack Speed Tolerance.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ping Clock Tolerance Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_PingClockToleranceMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_PingClockToleranceMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill Hit Area Range Slack.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill Hit Counter Replay Window Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill Hit Max Area To Hit Delay Seconds.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Violation Score Half Life Minutes.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Violation Score Reject Threshold.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Walk Speed Tolerance Ms.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Walk Speed Window Seconds.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning History Hours.
+        /// </summary>
+        public static string SpeedHackDetectConfiguration_WarningHistoryHours_Caption {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectConfiguration_WarningHistoryHours_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detects and prevents player walk and attack speedhacking..
+        /// </summary>
+        public static string SpeedHackDetectPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Speedhack Anti-Cheat.
+        /// </summary>
+        public static string SpeedHackDetectPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SpeedHackDetectPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/startbc&apos;. Starts the blood castle event at the next possible time..
         /// </summary>
         public static string StartBloodCastleEventChatCommandPlugIn_Description {
@@ -3769,25 +6882,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("StartChaosCastleEventChatCommandPlugIn_Name", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Handles the chat command &apos;/startit&apos;. Starts the illusion temple event at the next possible time..
-        /// </summary>
-        public static string StartIllusionTempleEventChatCommandPlugIn_Description {
-            get {
-                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Start Illusion Temple Event Chat Command.
-        /// </summary>
-        public static string StartIllusionTempleEventChatCommandPlugIn_Name {
-            get {
-                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/startds&apos;. Starts the devil square event at the next possible time..
         /// </summary>
@@ -3803,6 +6898,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StartDevilSquareEventChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("StartDevilSquareEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startit&apos;. Starts the illusion temple event at the next possible time..
+        /// </summary>
+        public static string StartIllusionTempleEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Illusion Temple Event Chat Command.
+        /// </summary>
+        public static string StartIllusionTempleEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartIllusionTempleEventChatCommandPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3897,6 +7010,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of strength, which takes back invested strength points and returns them as level up points..
+        /// </summary>
+        public static string StrengthResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StrengthResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Strength Consume Handler.
+        /// </summary>
+        public static string StrengthResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StrengthResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unlocks the Summoner class for the account when a player uses the Summoner Character Card from the cash shop storage..
         /// </summary>
         public static string SummonerCharacterCardDeliveryPlugIn_Description {
@@ -3951,7 +7082,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transforms a full stack of suspicious scraps of paper into a Gaion's Order..
+        ///   Looks up a localized string similar to Transforms a full stack of suspicious scraps of paper into a Gaion&apos;s Order..
         /// </summary>
         public static string SuspiciousScrapOfPaperStackedPlugIn_Description {
             get {
@@ -3965,6 +7096,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string SuspiciousScrapOfPaperStackedPlugIn_Name {
             get {
                 return ResourceManager.GetString("SuspiciousScrapOfPaperStackedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This plugin transforms a stack of symbol of kundun into a lost map..
+        /// </summary>
+        public static string SymbolOfKundunStackedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SymbolOfKundunStackedPlugIn.
+        /// </summary>
+        public static string SymbolOfKundunStackedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4055,6 +7204,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string TrackChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("TrackChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Describes how the game client counts the animations of Twister: every animation is counted, and the hits don&apos;t contain the animation counter..
+        /// </summary>
+        public static string TwisterAnimationCounterStrategy_Description {
+            get {
+                return ResourceManager.GetString("TwisterAnimationCounterStrategy_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Twister animation counter.
+        /// </summary>
+        public static string TwisterAnimationCounterStrategy_Name {
+            get {
+                return ResourceManager.GetString("TwisterAnimationCounterStrategy_Name", resourceCulture);
             }
         }
         
@@ -4419,6 +7586,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plugin which handles the reset fruit of vitality, which takes back invested vitality points and returns them as level up points..
+        /// </summary>
+        public static string VitalityResetFruitConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("VitalityResetFruitConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Fruit of Vitality Consume Handler.
+        /// </summary>
+        public static string VitalityResetFruitConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("VitalityResetFruitConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {
@@ -4491,11 +7676,119 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables the White Wizard Invasion feature..
+        /// </summary>
+        public static string WhiteWizardInvasionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WhiteWizardInvasionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to White Wizard Invasion.
+        /// </summary>
+        public static string WhiteWizardInvasionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WhiteWizardInvasionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends a message to the world chat, which all players of all game servers can read, e.g. &apos;/world Hello!&apos;. It can be bridged to Discord..
         /// </summary>
         public static string WorldChatChatCommandPlugIn_Description {
             get {
                 return ResourceManager.GetString("WorldChatChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/waiting&apos;. Lists the items which wait for space in the inventory..
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items chat command.
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check interval.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How often the waiting items are put into the inventories, as far as they fit there..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message..
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it&apos;s deactivated, the items keep waiting..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items delivery.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Name", resourceCulture);
             }
         }
         
@@ -4508,608 +7801,76 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Consumes Life Stones after they are successfully placed during Castle Siege.
-        /// </summary>
-        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Name text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Name => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Name", resourceCulture)!;
 
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Life Stone consume handler.
-        /// </summary>
-        public static string CastleSiegeLifeStoneConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeLifeStoneConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        /// <summary>Gets the localized BotConfiguration_Enabled_Name text.</summary>
-        public static string BotConfiguration_Enabled_Name => ResourceManager.GetString("BotConfiguration_Enabled_Name", resourceCulture)!;
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Description text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Description => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Description", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_Enabled_Description text.</summary>
-        public static string BotConfiguration_Enabled_Description => ResourceManager.GetString("BotConfiguration_Enabled_Description", resourceCulture)!;
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture)!;
 
-        /// <summary>Gets the localized BotConfiguration_ResetBots_Name text.</summary>
-        public static string BotConfiguration_ResetBots_Name => ResourceManager.GetString("BotConfiguration_ResetBots_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_ResetBots_Description text.</summary>
-        public static string BotConfiguration_ResetBots_Description => ResourceManager.GetString("BotConfiguration_ResetBots_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_PurgeBots_Name text.</summary>
-        public static string BotConfiguration_PurgeBots_Name => ResourceManager.GetString("BotConfiguration_PurgeBots_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_PurgeBots_Description text.</summary>
-        public static string BotConfiguration_PurgeBots_Description => ResourceManager.GetString("BotConfiguration_PurgeBots_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_StartAsFreshCharacters_Name text.</summary>
-        public static string BotConfiguration_StartAsFreshCharacters_Name => ResourceManager.GetString("BotConfiguration_StartAsFreshCharacters_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_StartAsFreshCharacters_Description text.</summary>
-        public static string BotConfiguration_StartAsFreshCharacters_Description => ResourceManager.GetString("BotConfiguration_StartAsFreshCharacters_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_PresenceRotation_Name text.</summary>
-        public static string BotConfiguration_PresenceRotation_Name => ResourceManager.GetString("BotConfiguration_PresenceRotation_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_PresenceRotation_Description text.</summary>
-        public static string BotConfiguration_PresenceRotation_Description => ResourceManager.GetString("BotConfiguration_PresenceRotation_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_MinOnlineSharePercent_Name text.</summary>
-        public static string BotConfiguration_MinOnlineSharePercent_Name => ResourceManager.GetString("BotConfiguration_MinOnlineSharePercent_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_MinOnlineSharePercent_Description text.</summary>
-        public static string BotConfiguration_MinOnlineSharePercent_Description => ResourceManager.GetString("BotConfiguration_MinOnlineSharePercent_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_NumberOfAccounts_Name text.</summary>
-        public static string BotConfiguration_NumberOfAccounts_Name => ResourceManager.GetString("BotConfiguration_NumberOfAccounts_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_NumberOfAccounts_Description text.</summary>
-        public static string BotConfiguration_NumberOfAccounts_Description => ResourceManager.GetString("BotConfiguration_NumberOfAccounts_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_MaxCharactersPerAccount_Name text.</summary>
-        public static string BotConfiguration_MaxCharactersPerAccount_Name => ResourceManager.GetString("BotConfiguration_MaxCharactersPerAccount_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_MaxCharactersPerAccount_Description text.</summary>
-        public static string BotConfiguration_MaxCharactersPerAccount_Description => ResourceManager.GetString("BotConfiguration_MaxCharactersPerAccount_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_BotCapacityPercent_Name text.</summary>
-        public static string BotConfiguration_BotCapacityPercent_Name => ResourceManager.GetString("BotConfiguration_BotCapacityPercent_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_BotCapacityPercent_Description text.</summary>
-        public static string BotConfiguration_BotCapacityPercent_Description => ResourceManager.GetString("BotConfiguration_BotCapacityPercent_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_BotsPayResetCosts_Name text.</summary>
-        public static string BotConfiguration_BotsPayResetCosts_Name => ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_BotsPayResetCosts_Description text.</summary>
-        public static string BotConfiguration_BotsPayResetCosts_Description => ResourceManager.GetString("BotConfiguration_BotsPayResetCosts_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_JewelStockPerKind_Name text.</summary>
-        public static string BotConfiguration_JewelStockPerKind_Name => ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_JewelStockPerKind_Description text.</summary>
-        public static string BotConfiguration_JewelStockPerKind_Description => ResourceManager.GetString("BotConfiguration_JewelStockPerKind_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_PotionStockCharges_Name text.</summary>
-        public static string BotConfiguration_PotionStockCharges_Name => ResourceManager.GetString("BotConfiguration_PotionStockCharges_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_PotionStockCharges_Description text.</summary>
-        public static string BotConfiguration_PotionStockCharges_Description => ResourceManager.GetString("BotConfiguration_PotionStockCharges_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_ProofOfConceptAccounts_Name text.</summary>
-        public static string BotConfiguration_ProofOfConceptAccounts_Name => ResourceManager.GetString("BotConfiguration_ProofOfConceptAccounts_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_ProofOfConceptAccounts_Description text.</summary>
-        public static string BotConfiguration_ProofOfConceptAccounts_Description => ResourceManager.GetString("BotConfiguration_ProofOfConceptAccounts_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotSelfDefensePlugIn_Name text.</summary>
-        public static string BotSelfDefensePlugIn_Name => ResourceManager.GetString("BotSelfDefensePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotSelfDefensePlugIn_Description text.</summary>
-        public static string BotSelfDefensePlugIn_Description => ResourceManager.GetString("BotSelfDefensePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotRevengePlugIn_Name text.</summary>
-        public static string BotRevengePlugIn_Name => ResourceManager.GetString("BotRevengePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotRevengePlugIn_Description text.</summary>
-        public static string BotRevengePlugIn_Description => ResourceManager.GetString("BotRevengePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotSkillProgressionPlugIn_Name text.</summary>
-        public static string BotSkillProgressionPlugIn_Name => ResourceManager.GetString("BotSkillProgressionPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotSkillProgressionPlugIn_Description text.</summary>
-        public static string BotSkillProgressionPlugIn_Description => ResourceManager.GetString("BotSkillProgressionPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BotFeaturePlugIn_Name text.</summary>
-        public static string BotFeaturePlugIn_Name => ResourceManager.GetString("BotFeaturePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotFeaturePlugIn_Description text.</summary>
-        public static string BotFeaturePlugIn_Description => ResourceManager.GetString("BotFeaturePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Name text.</summary>
-        public static string MaximumConnectionsPerIpPlugIn_Name => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized MaximumConnectionsPerIpPlugIn_Description text.</summary>
-        public static string MaximumConnectionsPerIpPlugIn_Description => ResourceManager.GetString("MaximumConnectionsPerIpPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LoginTimeoutPlugIn_Name text.</summary>
-        public static string LoginTimeoutPlugIn_Name => ResourceManager.GetString("LoginTimeoutPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LoginTimeoutPlugIn_Description text.</summary>
-        public static string LoginTimeoutPlugIn_Description => ResourceManager.GetString("LoginTimeoutPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectPlugIn_Name text.</summary>
-        public static string SpeedHackDetectPlugIn_Name => ResourceManager.GetString("SpeedHackDetectPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectPlugIn_Description text.</summary>
-        public static string SpeedHackDetectPlugIn_Description => ResourceManager.GetString("SpeedHackDetectPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized KanturuGatewayPlugIn_Name text.</summary>
-        public static string KanturuGatewayPlugIn_Name => ResourceManager.GetString("KanturuGatewayPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized KanturuGatewayPlugIn_Description text.</summary>
-        public static string KanturuGatewayPlugIn_Description => ResourceManager.GetString("KanturuGatewayPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized SymbolOfKundunStackedPlugIn_Name text.</summary>
-        public static string SymbolOfKundunStackedPlugIn_Name => ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized SymbolOfKundunStackedPlugIn_Description text.</summary>
-        public static string SymbolOfKundunStackedPlugIn_Description => ResourceManager.GetString("SymbolOfKundunStackedPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized DuelSpawnGatePlugIn_Name text.</summary>
-        public static string DuelSpawnGatePlugIn_Name => ResourceManager.GetString("DuelSpawnGatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized DuelSpawnGatePlugIn_Description text.</summary>
-        public static string DuelSpawnGatePlugIn_Description => ResourceManager.GetString("DuelSpawnGatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized SoccerSpawnGatePlugIn_Name text.</summary>
-        public static string SoccerSpawnGatePlugIn_Name => ResourceManager.GetString("SoccerSpawnGatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized SoccerSpawnGatePlugIn_Description text.</summary>
-        public static string SoccerSpawnGatePlugIn_Description => ResourceManager.GetString("SoccerSpawnGatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized PetExperiencePlugIn_Name text.</summary>
-        public static string PetExperiencePlugIn_Name => ResourceManager.GetString("PetExperiencePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized PetExperiencePlugIn_Description text.</summary>
-        public static string PetExperiencePlugIn_Description => ResourceManager.GetString("PetExperiencePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized PeriodicInvasionConfiguration_ForceSingleMap_Name text.</summary>
-        public static string PeriodicInvasionConfiguration_ForceSingleMap_Name => ResourceManager.GetString("PeriodicInvasionConfiguration_ForceSingleMap_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized PeriodicInvasionConfiguration_Mobs_Name text.</summary>
-        public static string PeriodicInvasionConfiguration_Mobs_Name => ResourceManager.GetString("PeriodicInvasionConfiguration_Mobs_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized WhiteWizardInvasionPlugIn_Name text.</summary>
-        public static string WhiteWizardInvasionPlugIn_Name => ResourceManager.GetString("WhiteWizardInvasionPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized WhiteWizardInvasionPlugIn_Description text.</summary>
-        public static string WhiteWizardInvasionPlugIn_Description => ResourceManager.GetString("WhiteWizardInvasionPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemRegistrationConfiguration_Rules_Name text.</summary>
-        public static string ItemRegistrationConfiguration_Rules_Name => ResourceManager.GetString("ItemRegistrationConfiguration_Rules_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemRegistrationConfiguration_Rules_Description text.</summary>
-        public static string ItemRegistrationConfiguration_Rules_Description => ResourceManager.GetString("ItemRegistrationConfiguration_Rules_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_NpcNumber_Name text.</summary>
-        public static string NpcItemRegistrationRule_NpcNumber_Name => ResourceManager.GetString("NpcItemRegistrationRule_NpcNumber_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_NpcNumber_Description text.</summary>
-        public static string NpcItemRegistrationRule_NpcNumber_Description => ResourceManager.GetString("NpcItemRegistrationRule_NpcNumber_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemGroup_Name text.</summary>
-        public static string NpcItemRegistrationRule_AcceptedItemGroup_Name => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemGroup_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemGroup_Description text.</summary>
-        public static string NpcItemRegistrationRule_AcceptedItemGroup_Description => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemGroup_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemNumber_Name text.</summary>
-        public static string NpcItemRegistrationRule_AcceptedItemNumber_Name => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemNumber_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_AcceptedItemNumber_Description text.</summary>
-        public static string NpcItemRegistrationRule_AcceptedItemNumber_Description => ResourceManager.GetString("NpcItemRegistrationRule_AcceptedItemNumber_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_RequiredItemsCount_Name text.</summary>
-        public static string NpcItemRegistrationRule_RequiredItemsCount_Name => ResourceManager.GetString("NpcItemRegistrationRule_RequiredItemsCount_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_RequiredItemsCount_Description text.</summary>
-        public static string NpcItemRegistrationRule_RequiredItemsCount_Description => ResourceManager.GetString("NpcItemRegistrationRule_RequiredItemsCount_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_RewardZen_Name text.</summary>
-        public static string NpcItemRegistrationRule_RewardZen_Name => ResourceManager.GetString("NpcItemRegistrationRule_RewardZen_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_RewardZen_Description text.</summary>
-        public static string NpcItemRegistrationRule_RewardZen_Description => ResourceManager.GetString("NpcItemRegistrationRule_RewardZen_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_RewardDropItemGroup_Name text.</summary>
-        public static string NpcItemRegistrationRule_RewardDropItemGroup_Name => ResourceManager.GetString("NpcItemRegistrationRule_RewardDropItemGroup_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcItemRegistrationRule_RewardDropItemGroup_Description text.</summary>
-        public static string NpcItemRegistrationRule_RewardDropItemGroup_Description => ResourceManager.GetString("NpcItemRegistrationRule_RewardDropItemGroup_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ChaosCastleStartPlugIn_Name text.</summary>
-        public static string ChaosCastleStartPlugIn_Name => ResourceManager.GetString("ChaosCastleStartPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ChaosCastleStartPlugIn_Description text.</summary>
-        public static string ChaosCastleStartPlugIn_Description => ResourceManager.GetString("ChaosCastleStartPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized KanturuStartPlugIn_Name text.</summary>
-        public static string KanturuStartPlugIn_Name => ResourceManager.GetString("KanturuStartPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized KanturuStartPlugIn_Description text.</summary>
-        public static string KanturuStartPlugIn_Description => ResourceManager.GetString("KanturuStartPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized BloodCastleStartPlugIn_Name text.</summary>
-        public static string BloodCastleStartPlugIn_Name => ResourceManager.GetString("BloodCastleStartPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BloodCastleStartPlugIn_Description text.</summary>
-        public static string BloodCastleStartPlugIn_Description => ResourceManager.GetString("BloodCastleStartPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized DevilSquareStartPlugIn_Name text.</summary>
-        public static string DevilSquareStartPlugIn_Name => ResourceManager.GetString("DevilSquareStartPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized DevilSquareStartPlugIn_Description text.</summary>
-        public static string DevilSquareStartPlugIn_Description => ResourceManager.GetString("DevilSquareStartPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized PKClearConfiguration_ZenCostPerKill_Name text.</summary>
-        public static string PKClearConfiguration_ZenCostPerKill_Name => ResourceManager.GetString("PKClearConfiguration_ZenCostPerKill_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized PKClearConfiguration_ZenCostPerKill_Description text.</summary>
-        public static string PKClearConfiguration_ZenCostPerKill_Description => ResourceManager.GetString("PKClearConfiguration_ZenCostPerKill_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized PKClearConfiguration_AllowRegularPlayers_Name text.</summary>
-        public static string PKClearConfiguration_AllowRegularPlayers_Name => ResourceManager.GetString("PKClearConfiguration_AllowRegularPlayers_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized PKClearConfiguration_AllowRegularPlayers_Description text.</summary>
-        public static string PKClearConfiguration_AllowRegularPlayers_Description => ResourceManager.GetString("PKClearConfiguration_AllowRegularPlayers_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LostMapDroppedPlugIn_Name text.</summary>
-        public static string LostMapDroppedPlugIn_Name => ResourceManager.GetString("LostMapDroppedPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LostMapDroppedPlugIn_Description text.</summary>
-        public static string LostMapDroppedPlugIn_Description => ResourceManager.GetString("LostMapDroppedPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemBoxDroppedPlugIn_Name text.</summary>
-        public static string ItemBoxDroppedPlugIn_Name => ResourceManager.GetString("ItemBoxDroppedPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemBoxDroppedPlugIn_Description text.</summary>
-        public static string ItemBoxDroppedPlugIn_Description => ResourceManager.GetString("ItemBoxDroppedPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetConfiguration_RequiredResetItem_Name text.</summary>
-        public static string ResetConfiguration_RequiredResetItem_Name => ResourceManager.GetString("ResetConfiguration_RequiredResetItem_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetConfiguration_ItemCostTiers_Name text.</summary>
-        public static string ResetConfiguration_ItemCostTiers_Name => ResourceManager.GetString("ResetConfiguration_ItemCostTiers_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetConfiguration_PointsTiers_Name text.</summary>
-        public static string ResetConfiguration_PointsTiers_Name => ResourceManager.GetString("ResetConfiguration_PointsTiers_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetPointTier_MinimumResetCount_Name text.</summary>
-        public static string ResetPointTier_MinimumResetCount_Name => ResourceManager.GetString("ResetPointTier_MinimumResetCount_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetPointTier_PointsGranted_Name text.</summary>
-        public static string ResetPointTier_PointsGranted_Name => ResourceManager.GetString("ResetPointTier_PointsGranted_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetItemCostTier_MinimumResetCount_Name text.</summary>
-        public static string ResetItemCostTier_MinimumResetCount_Name => ResourceManager.GetString("ResetItemCostTier_MinimumResetCount_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ResetItemCostTier_RequiredItemAmount_Name text.</summary>
-        public static string ResetItemCostTier_RequiredItemAmount_Name => ResourceManager.GetString("ResetItemCostTier_RequiredItemAmount_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ActorHitRecorderPlugIn_Name text.</summary>
-        public static string ActorHitRecorderPlugIn_Name => ResourceManager.GetString("ActorHitRecorderPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ActorHitRecorderPlugIn_Description text.</summary>
-        public static string ActorHitRecorderPlugIn_Description => ResourceManager.GetString("ActorHitRecorderPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterAttributeScalerConfiguration_HealthPercentage_Caption text.</summary>
-        public static string MonsterAttributeScalerConfiguration_HealthPercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_HealthPercentage_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterAttributeScalerConfiguration_DefensePercentage_Caption text.</summary>
-        public static string MonsterAttributeScalerConfiguration_DefensePercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_DefensePercentage_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption text.</summary>
-        public static string MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_DefenseRatePercentage_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption text.</summary>
-        public static string MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_AttackRatePercentage_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterAttributeScalerConfiguration_DamagePercentage_Caption text.</summary>
-        public static string MonsterAttributeScalerConfiguration_DamagePercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_DamagePercentage_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption text.</summary>
-        public static string MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption => ResourceManager.GetString("MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption text.</summary>
-        public static string MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption => ResourceManager.GetString("MaximumConnectionsPerIpPlugInConfiguration_MaximumConnectionsPerIp_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized LoginTimeoutPlugInConfiguration_Timeout_Caption text.</summary>
-        public static string LoginTimeoutPlugInConfiguration_Timeout_Caption => ResourceManager.GetString("LoginTimeoutPlugInConfiguration_Timeout_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedMinIntervalMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedScalingFactor_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedBaseDelayMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_MaxAttackTokens_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_MaxAttackTokens_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MaxAttackTokens_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MaxAllowedWalkStartOffset_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitAreaRangeSlack_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitCounterReplayWindowMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_SkillHitMaxAreaToHitDelaySeconds_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_EnforceWalkSpeed_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedWindowSeconds_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WalkSpeedToleranceMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_WarningHistoryHours_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_WarningHistoryHours_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_WarningHistoryHours_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AlertDebounceSeconds_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_MaxWarnings_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_MaxWarnings_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MaxWarnings_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_DisconnectOnViolation_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_DisconnectOnViolation_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_DisconnectOnViolation_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_ObserveOnly_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_ObserveOnly_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ObserveOnly_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreRejectThreshold_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_ViolationScoreHalfLifeMinutes_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AutoBan_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_AutoBan_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AutoBan_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedBaseDelayMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedScalingFactor_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_MagicSpeedMinIntervalMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_PingClockToleranceMs_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_PingClockToleranceMs_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_PingClockToleranceMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_PingAttackSpeedTolerance_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption text.</summary>
-        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized SpeedHackDetectConfiguration_AttackSpeedProfiles_Description text.</summary>
-        public static string SpeedHackDetectConfiguration_AttackSpeedProfiles_Description => ResourceManager.GetString("SpeedHackDetectConfiguration_AttackSpeedProfiles_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedProfile_SkillId_Caption text.</summary>
-        public static string AttackSpeedProfile_SkillId_Caption => ResourceManager.GetString("AttackSpeedProfile_SkillId_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedProfile_SpeedSource_Caption text.</summary>
-        public static string AttackSpeedProfile_SpeedSource_Caption => ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedProfile_SpeedSource_Description text.</summary>
-        public static string AttackSpeedProfile_SpeedSource_Description => ResourceManager.GetString("AttackSpeedProfile_SpeedSource_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedProfile_BaseDelayMs_Caption text.</summary>
-        public static string AttackSpeedProfile_BaseDelayMs_Caption => ResourceManager.GetString("AttackSpeedProfile_BaseDelayMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedProfile_ScalingFactor_Caption text.</summary>
-        public static string AttackSpeedProfile_ScalingFactor_Caption => ResourceManager.GetString("AttackSpeedProfile_ScalingFactor_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedProfile_MinimumIntervalMs_Caption text.</summary>
-        public static string AttackSpeedProfile_MinimumIntervalMs_Caption => ResourceManager.GetString("AttackSpeedProfile_MinimumIntervalMs_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedSource_AttackSpeed text.</summary>
-        public static string AttackSpeedSource_AttackSpeed => ResourceManager.GetString("AttackSpeedSource_AttackSpeed", resourceCulture)!;
-
-        /// <summary>Gets the localized AttackSpeedSource_MagicSpeed text.</summary>
-        public static string AttackSpeedSource_MagicSpeed => ResourceManager.GetString("AttackSpeedSource_MagicSpeed", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_Y_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_Y_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_Y_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_X_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_X_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_X_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_IsSpawnOnAllMaps_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_AnnounceDeath_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_AnnounceDeath_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_AnnounceDeath_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_MapStrategy_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_MapStrategy_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_MapStrategy_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_MapIds_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_MapIds_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_MapIds_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_Count_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_Count_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_Count_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized InvasionSpawnConfiguration_MonsterId_Caption text.</summary>
-        public static string InvasionSpawnConfiguration_MonsterId_Caption => ResourceManager.GetString("InvasionSpawnConfiguration_MonsterId_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized KanturuStartConfiguration_EventDefinition_Caption text.</summary>
-        public static string KanturuStartConfiguration_EventDefinition_Caption => ResourceManager.GetString("KanturuStartConfiguration_EventDefinition_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption text.</summary>
-        public static string BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption => ResourceManager.GetString("BlessJewelConsumeHandlerPlugInConfiguration_RepairTargetItems_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized KalimaTicketConsumeHandlerPlugIn_Name text.</summary>
-        public static string KalimaTicketConsumeHandlerPlugIn_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized KalimaTicketConsumeHandlerPlugIn_Description text.</summary>
-        public static string KalimaTicketConsumeHandlerPlugIn_Description => ResourceManager.GetString("KalimaTicketConsumeHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name text.</summary>
-        public static string KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_MinimumLevels_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name text.</summary>
-        public static string KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name => ResourceManager.GetString("KalimaTicketConsumeHandlerConfiguration_SpecialCharacterMinimumLevels_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name text.</summary>
-        public static string SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_BlessEffectNumber_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name text.</summary>
-        public static string SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name => ResourceManager.GetString("SiegePotionConsumeHandlerConfiguration_SoulEffectNumber_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Name text.</summary>
-        public static string BloodCastleArchangelTalkPlugIn_Name => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BloodCastleArchangelTalkPlugIn_Description text.</summary>
-        public static string BloodCastleArchangelTalkPlugIn_Description => ResourceManager.GetString("BloodCastleArchangelTalkPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleStoneStatueTalkPlugIn_Name text.</summary>
-        public static string IllusionTempleStoneStatueTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleStoneStatueTalkPlugIn_Description text.</summary>
-        public static string IllusionTempleStoneStatueTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleStoneStatueTalkPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleAllianceStorageTalkPlugIn_Name text.</summary>
-        public static string IllusionTempleAllianceStorageTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleAllianceStorageTalkPlugIn_Description text.</summary>
-        public static string IllusionTempleAllianceStorageTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleAllianceStorageTalkPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleIllusionStorageTalkPlugIn_Name text.</summary>
-        public static string IllusionTempleIllusionStorageTalkPlugIn_Name => ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleIllusionStorageTalkPlugIn_Description text.</summary>
-        public static string IllusionTempleIllusionStorageTalkPlugIn_Description => ResourceManager.GetString("IllusionTempleIllusionStorageTalkPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Name text.</summary>
-        public static string NpcTalkPlugInConfiguration_Npc_Name => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcTalkPlugInConfiguration_Npc_Description text.</summary>
-        public static string NpcTalkPlugInConfiguration_Npc_Description => ResourceManager.GetString("NpcTalkPlugInConfiguration_Npc_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Name text.</summary>
-        public static string TwisterAnimationCounterStrategy_Name => ResourceManager.GetString("TwisterAnimationCounterStrategy_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized TwisterAnimationCounterStrategy_Description text.</summary>
-        public static string TwisterAnimationCounterStrategy_Description => ResourceManager.GetString("TwisterAnimationCounterStrategy_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Name text.</summary>
-        public static string EvilSpiritAnimationCounterStrategy_Name => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized EvilSpiritAnimationCounterStrategy_Description text.</summary>
-        public static string EvilSpiritAnimationCounterStrategy_Description => ResourceManager.GetString("EvilSpiritAnimationCounterStrategy_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Name text.</summary>
-        public static string MultiShotAnimationCounterStrategy_Name => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized MultiShotAnimationCounterStrategy_Description text.</summary>
-        public static string MultiShotAnimationCounterStrategy_Description => ResourceManager.GetString("MultiShotAnimationCounterStrategy_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Name text.</summary>
-        public static string LostConnectionDetectionPlugIn_Name => ResourceManager.GetString("LostConnectionDetectionPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LostConnectionDetectionPlugIn_Description text.</summary>
-        public static string LostConnectionDetectionPlugIn_Description => ResourceManager.GetString("LostConnectionDetectionPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Name text.</summary>
-        public static string LostConnectionDetectionConfiguration_Timeout_Name => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LostConnectionDetectionConfiguration_Timeout_Description text.</summary>
-        public static string LostConnectionDetectionConfiguration_Timeout_Description => ResourceManager.GetString("LostConnectionDetectionConfiguration_Timeout_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_OptionType_Name text.</summary>
-        public static string ItemUpgradeConfiguration_OptionType_Name => ResourceManager.GetString("ItemUpgradeConfiguration_OptionType_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_OptionType_Description text.</summary>
-        public static string ItemUpgradeConfiguration_OptionType_Description => ResourceManager.GetString("ItemUpgradeConfiguration_OptionType_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_AddsOption_Name text.</summary>
-        public static string ItemUpgradeConfiguration_AddsOption_Name => ResourceManager.GetString("ItemUpgradeConfiguration_AddsOption_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_AddsOption_Description text.</summary>
-        public static string ItemUpgradeConfiguration_AddsOption_Description => ResourceManager.GetString("ItemUpgradeConfiguration_AddsOption_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_IncreasesOption_Name text.</summary>
-        public static string ItemUpgradeConfiguration_IncreasesOption_Name => ResourceManager.GetString("ItemUpgradeConfiguration_IncreasesOption_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_IncreasesOption_Description text.</summary>
-        public static string ItemUpgradeConfiguration_IncreasesOption_Description => ResourceManager.GetString("ItemUpgradeConfiguration_IncreasesOption_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_SuccessChance_Name text.</summary>
-        public static string ItemUpgradeConfiguration_SuccessChance_Name => ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChance_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_SuccessChance_Description text.</summary>
-        public static string ItemUpgradeConfiguration_SuccessChance_Description => ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChance_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_FailResult_Name text.</summary>
-        public static string ItemUpgradeConfiguration_FailResult_Name => ResourceManager.GetString("ItemUpgradeConfiguration_FailResult_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_FailResult_Description text.</summary>
-        public static string ItemUpgradeConfiguration_FailResult_Description => ResourceManager.GetString("ItemUpgradeConfiguration_FailResult_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_BoostOptionType_Name text.</summary>
-        public static string ItemUpgradeConfiguration_BoostOptionType_Name => ResourceManager.GetString("ItemUpgradeConfiguration_BoostOptionType_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_BoostOptionType_Description text.</summary>
-        public static string ItemUpgradeConfiguration_BoostOptionType_Description => ResourceManager.GetString("ItemUpgradeConfiguration_BoostOptionType_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_SuccessChanceBoost_Name text.</summary>
-        public static string ItemUpgradeConfiguration_SuccessChanceBoost_Name => ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChanceBoost_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized ItemUpgradeConfiguration_SuccessChanceBoost_Description text.</summary>
-        public static string ItemUpgradeConfiguration_SuccessChanceBoost_Description => ResourceManager.GetString("ItemUpgradeConfiguration_SuccessChanceBoost_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized SantaVillageInvitationConsumeHandlerPlugIn_Name text.</summary>
-        public static string SantaVillageInvitationConsumeHandlerPlugIn_Name => ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized SantaVillageInvitationConsumeHandlerPlugIn_Description text.</summary>
-        public static string SantaVillageInvitationConsumeHandlerPlugIn_Description => ResourceManager.GetString("SantaVillageInvitationConsumeHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name text.</summary>
-        public static string SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name => ResourceManager.GetString("SantaVillageInvitationConsumeHandlerConfiguration_MapNumber_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_MapsForbiddenForBots_Name text.</summary>
-        public static string BotConfiguration_MapsForbiddenForBots_Name => ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized BotConfiguration_MapsForbiddenForBots_Description text.</summary>
-        public static string BotConfiguration_MapsForbiddenForBots_Description => ResourceManager.GetString("BotConfiguration_MapsForbiddenForBots_Description", resourceCulture)!;
+        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption text.</summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture)!;
         
         /// <summary>
-        ///   Looks up a localized string similar to Discord integration of the client.
+        ///   Looks up a localized string similar to Lucky coin event.
         /// </summary>
-        public static string DiscordIntegrationFeaturePlugIn_Name {
+        public static string LuckyCoinFeaturePlugIn_Name {
             get {
-                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Name", resourceCulture);
+                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+
+        ///   Looks up a localized string similar to Gladiator's Honor consume handler.
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Players can register lucky coins at the NPC Delgado, or exchange 10, 20 or 30 of them for an item. The rewards of the exchange are configured here..
+        /// </summary>
+        public static string LuckyCoinFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Description", resourceCulture);
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to Tells game clients which ask for it how the server is connected to Discord (invite link, Rich Presence application, account link, mirrored chats), lets players link their account from the client, and sends them messages written in Discord as such..
+        ///   Looks up a localized string similar to Applies the effect of the Gladiator's Honor, which can only be used in Vulcanus..
         /// </summary>
-        public static string DiscordIntegrationFeaturePlugIn_Description {
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Description {
             get {
-                return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Vulcanus experience bonus.
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Name {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator's Honor..
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Description {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string VulcanusMapConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("VulcanusMapConfiguration_MapNumber_Name", resourceCulture);
             }
         }
     }

@@ -911,6 +911,8 @@
     <value>Diese Aktualisierung fügt den Talisman des Glücks hinzu, der die Erfolgsrate einer Kombination um seine Haltbarkeit in Prozent erhöht, und den Talisman der Chaos-Kombination, der den Gegenstand einer fehlgeschlagenen Verbesserung auf +10 bis +15 erhält. Sie werden den Kombinationen hinzugefügt, die sie annehmen, und die Pakete des Item-Shops, die sie enthalten, werden zum Verkauf angeboten.</value>
   </data>
   <data name="FixMurenRingOfFireBonusPlugIn_Name" xml:space="preserve">
+  <data name="RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name" xml:space="preserve"><value>Warps außerhalb des ursprünglichen Warp-Fensters einschränken</value></data>
+  <data name="RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description" xml:space="preserve"><value>Macht die Warps, die der ursprüngliche Client nicht in seinem Warp-Fenster anbietet (Crywolf, Loren Market und der zweite LaCleon-Warp), nur für Game Master verfügbar.</value></data>
     <value>Bonus des Muren-Feuerrings korrigieren</value>
   </data>
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve">
@@ -933,6 +935,12 @@
   </data>
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
+  </data>
+  <data name="AddSealItemDropRateUpdatePlugIn_Name" xml:space="preserve">
+    <value>Item-Droprate der Siegel hinzufügen</value>
+  </data>
+  <data name="AddSealItemDropRateUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt dem Siegel des Wohlstands, dem Siegel der Göttlichkeit und dem Meistersiegel des Wohlstands die Item-Droprate von 150 % hinzu, und fügt das zweite Siegel des Wohlstands (13/116) hinzu, das nur die Item-Droprate erhöht.</value>
   </data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einfrierdauer des Eis-Pfeils anpassen</value>
@@ -957,5 +965,29 @@
   </data>
   <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt den Talisman des Wächters, der vor der Todesstrafe schützt, und den Talisman des Gegenstandsschutzes hinzu, der die Haltbarkeit der ausgerüsteten Gegenstände erhält.</value>
+  </data>
+  <data name="FixCrywolfGateTerrainUpdatePlugIn_Name" xml:space="preserve">
+    <value>Eingang nach Crywolf im Tal von Loren korrigieren</value>
+  </data>
+  <data name="FixCrywolfGateTerrainUpdatePlugIn_Description" xml:space="preserve">
+    <value>Macht den südlichen Zugang zum Tor der Festung Crywolf im Tal von Loren begehbar, den Spieler außerhalb der Burgbelagerung benutzen. Der nördliche Zugang und alle anderen Felder bleiben unverändert.</value>
+  </data>
+  <data name="AddTalismanOfResurrectionUpdatePlugIn_Name" xml:space="preserve">
+    <value>Talisman der Wiederbelebung hinzufügen</value>
+  </data>
+  <data name="AddTalismanOfResurrectionUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt den Talisman der Wiederbelebung hinzu, der einen toten Spieler am Ort seines Todes wieder erscheinen lässt. Die Pakete des In-Game-Shops, die ihn enthalten, werden zum Verkauf angeboten.</value>
+  </data>
+  <data name="AddLuckyCoinUpdatePlugIn_Name" xml:space="preserve">
+    <value>Glücksmünze hinzufügen</value>
+  </data>
+  <data name="AddLuckyCoinUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Glücksmünze hinzu, die beim NPC Delgado in Devias registriert oder gegen Gegenstände getauscht wird, und öffnet seinen Glücksmünzen-Dialog.</value>
+  </data>
+  <data name="AddGladiatorsHonorUpdatePlugIn_Name" xml:space="preserve">
+    <value>Ehre des Gladiators hinzufügen</value>
+  </data>
+  <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Ehre des Gladiators hinzu, welche die Erfahrung in Vulcanus 30 Minuten lang um 20 % erhöht.</value>
   </data>
 </root>

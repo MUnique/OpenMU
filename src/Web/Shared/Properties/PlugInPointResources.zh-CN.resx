@@ -120,6 +120,12 @@
   <data name="Plugins which will be executed when an attackable object got hit by an attacker." xml:space="preserve">
     <value>可攻击对象受到攻击时执行。</value>
   </data>
+  <data name="Attackable got hit with skill" xml:space="preserve">
+    <value>可攻击对象被技能击中</value>
+  </data>
+  <data name="Plugins which will be executed when an attackable object got hit by an attacker, with the used skill (null for a basic attack)." xml:space="preserve">
+    <value>可攻击对象受到攻击时执行，并提供所用技能（普通攻击为 null）。</value>
+  </data>
   <data name="Player gained master level" xml:space="preserve">
     <value>玩家大师等级提升</value>
   </data>

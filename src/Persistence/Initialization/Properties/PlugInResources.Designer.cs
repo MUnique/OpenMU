@@ -1043,6 +1043,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixMurenRingOfFireBonusPlugIn_Description text.</summary>
         public static string FixMurenRingOfFireBonusPlugIn_Description => ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name text.</summary>
+        public static string RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name => ResourceManager.GetString("RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description text.</summary>
+        public static string RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description => ResourceManager.GetString("RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FixDestroyPhantomArmorNamesPlugIn_Name text.</summary>
         public static string FixDestroyPhantomArmorNamesPlugIn_Name => ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Name", resourceCulture)!;
 
@@ -1067,6 +1073,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixKanturuRuins3LandingUpdatePlugIn_Description text.</summary>
         public static string FixKanturuRuins3LandingUpdatePlugIn_Description => ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddSealItemDropRateUpdatePlugIn_Name text.</summary>
+        public static string AddSealItemDropRateUpdatePlugIn_Name => ResourceManager.GetString("AddSealItemDropRateUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSealItemDropRateUpdatePlugIn_Description text.</summary>
+        public static string AddSealItemDropRateUpdatePlugIn_Description => ResourceManager.GetString("AddSealItemDropRateUpdatePlugIn_Description", resourceCulture)!;
+        
         /// <summary>Gets the localized AdjustIceArrowFreezeDurationUpdatePlugIn_Name text.</summary>
         public static string AdjustIceArrowFreezeDurationUpdatePlugIn_Name => ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Name", resourceCulture)!;
 
@@ -1090,6 +1102,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddProtectionTalismansUpdatePlugIn_Description text.</summary>
         public static string AddProtectionTalismansUpdatePlugIn_Description => ResourceManager.GetString("AddProtectionTalismansUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCrywolfGateTerrainUpdatePlugIn_Name text.</summary>
+        public static string FixCrywolfGateTerrainUpdatePlugIn_Name => ResourceManager.GetString("FixCrywolfGateTerrainUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCrywolfGateTerrainUpdatePlugIn_Description text.</summary>
+        public static string FixCrywolfGateTerrainUpdatePlugIn_Description => ResourceManager.GetString("FixCrywolfGateTerrainUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddTalismanOfResurrectionUpdatePlugIn_Name text.</summary>
+        public static string AddTalismanOfResurrectionUpdatePlugIn_Name => ResourceManager.GetString("AddTalismanOfResurrectionUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddTalismanOfResurrectionUpdatePlugIn_Description text.</summary>
+        public static string AddTalismanOfResurrectionUpdatePlugIn_Description => ResourceManager.GetString("AddTalismanOfResurrectionUpdatePlugIn_Description", resourceCulture)!;
+        
+        /// <summary>Gets the localized AddLuckyCoinUpdatePlugIn_Name text.</summary>
+        public static string AddLuckyCoinUpdatePlugIn_Name => ResourceManager.GetString("AddLuckyCoinUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddLuckyCoinUpdatePlugIn_Description text.</summary>
+        public static string AddLuckyCoinUpdatePlugIn_Description => ResourceManager.GetString("AddLuckyCoinUpdatePlugIn_Description", resourceCulture)!;
+        
+        /// <summary>Gets the localized AddGladiatorsHonorUpdatePlugIn_Name text.</summary>
+        public static string AddGladiatorsHonorUpdatePlugIn_Name => ResourceManager.GetString("AddGladiatorsHonorUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddGladiatorsHonorUpdatePlugIn_Description text.</summary>
+        public static string AddGladiatorsHonorUpdatePlugIn_Description => ResourceManager.GetString("AddGladiatorsHonorUpdatePlugIn_Description", resourceCulture)!;
 
     }
 }

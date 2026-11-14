@@ -1961,6 +1961,39 @@ public class ConcurrentHitApplicationTests
         Assert.That(target.Health, Is.EqualTo(10000 - 48 - ordinaryDamage));
     }
 
+    /// <summary>Both NPC hit plug-in points see every accepted hit once, the skill one with the hit's skill.</summary>
+    [Test]
+    public async Task NpcHitPlugInsSeeEachAcceptedHitOnceAsync()
+    {
+        var seed = await CreatePlayerAsync(1000).ConfigureAwait(false);
+        var skill = new Skill { Number = 42 };
+        var target = new TestNpc(seed, 10, notifyPlayer: true);
+        var plain = new Mock<IAttackableGotHitPlugIn>();
+        var withSkill = new Mock<IAttackableGotHitWithSkillPlugIn>();
+        seed.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IAttackableGotHitPlugIn>(plain.Object);
+        seed.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IAttackableGotHitWithSkillPlugIn>(withSkill.Object);
+        var skillsSeen = new System.Collections.Concurrent.ConcurrentBag<Skill?>();
+        withSkill.Setup(p => p.AttackableGotHit(target, seed, It.IsAny<HitInfo>(), It.IsAny<Skill?>()))
+            .Callback((IAttackable _, IAttacker _, HitInfo _, Skill? used) => skillsSeen.Add(used));
+        var hits = 0;
+        View<IShowHitPlugIn>(seed).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>())).Returns(() =>
+        {
+            Interlocked.Increment(ref hits);
+            return ValueTask.CompletedTask;
+        });
+
+        // Four hits of 3 damage are accepted (the fourth is lethal); later ones hit a dead NPC.
+        await ConcurrentAsync(16, _ => target.ApplySkillHitAsync(seed, 3, skill)).ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(target.Deaths, Is.EqualTo(1));
+            Assert.That(hits, Is.EqualTo(4));
+            plain.Verify(p => p.AttackableGotHit(target, seed, It.IsAny<HitInfo>()), Times.Exactly(4));
+            Assert.That(skillsSeen, Has.Count.EqualTo(4));
+            Assert.That(skillsSeen, Is.All.SameAs(skill));
+        });
+    }
+
     /// <summary>Combat interactions cancel normally before death, without stranding the reservation.</summary>
     [TestCase("party")]
     [TestCase("trade-request")]
@@ -2712,6 +2745,8 @@ public class ConcurrentHitApplicationTests
         public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage) => this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
 
         public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage) => this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Undefined), initialAttacker, null);
+
+        public ValueTask ApplySkillHitAsync(IAttacker attacker, uint damage, Skill skill) => this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Undefined), attacker, skill);
 
         protected override async ValueTask OnDeathAsync(IAttacker attacker)
         {

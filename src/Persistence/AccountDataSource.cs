@@ -21,12 +21,13 @@ public sealed class AccountDataSource : DataSourceBase<Account>
         { typeof(Account), a => Enumerable.Repeat(a, 1) },
         { typeof(Character), a => a.Characters },
         { typeof(ItemStorage), a => a.Characters.Select(c => c.Inventory).Concat(Enumerable.Repeat(a.Vault, 1)).Where(i => i is not null) },
-        { typeof(Item), a => a.Characters.SelectMany(c => c.Inventory?.Items ?? Enumerable.Empty<Item>()).Concat(a.Vault?.Items ?? Enumerable.Empty<Item>()) },
+        { typeof(Item), a => a.Characters.SelectMany(c => c.Inventory?.Items ?? Enumerable.Empty<Item>()).Concat(a.Vault?.Items ?? Enumerable.Empty<Item>()).Concat(a.Characters.SelectMany(c => c.WaitingItems).Select(w => w.Item).OfType<Item>()) },
         { typeof(StatAttribute), a => a.Characters.SelectMany(c => c.Attributes) },
         { typeof(LetterHeader), a => a.Characters.SelectMany(c => c.Letters) },
         { typeof(SkillEntry), a => a.Characters.SelectMany(c => c.LearnedSkills) },
         { typeof(CharacterQuestState), a => a.Characters.SelectMany(c => c.QuestStates) },
         { typeof(QuestMonsterKillRequirementState), a => a.Characters.SelectMany(c => c.QuestStates).SelectMany(q => q.RequirementStates) },
+        { typeof(WaitingItem), a => a.Characters.SelectMany(c => c.WaitingItems) },
     }.AsReadOnly();
 
     private readonly IDataSource<GameConfiguration> _gameConfigurationSource;

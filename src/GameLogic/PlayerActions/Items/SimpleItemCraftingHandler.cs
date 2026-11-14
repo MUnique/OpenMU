@@ -69,7 +69,8 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 rate += (byte)(requiredItem.AddPercentage * (itemCount - requiredItem.MinimumAmount));
                 if (requiredItem.NpcPriceDivisor > 0)
                 {
-                    rate += (byte)(foundItems.Sum(this._priceCalculator.CalculateFinalBuyingPrice)
+                    // Clamp before casting: high-value items would otherwise overflow the byte and wrap around to a low rate.
+                    rate += (byte)Math.Min(byte.MaxValue, foundItems.Sum(this._priceCalculator.CalculateFinalBuyingPrice)
                         / requiredItem.NpcPriceDivisor);
                 }
 

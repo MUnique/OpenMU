@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Duel;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.GuildWar;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views.Duel;
 
@@ -53,6 +54,10 @@ public class DuelActions
         target.DuelRoom = duelRoom;
 
         await target.InvokeViewPlugInAsync<IShowDuelRequestPlugIn>(p => p.ShowDuelRequestAsync(player)).ConfigureAwait(false);
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IDuelRequestedPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.DuelRequestedAsync(player, target).ConfigureAwait(false);
+        }
     }
 
     /// <summary>

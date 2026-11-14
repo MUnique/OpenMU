@@ -200,12 +200,14 @@ public class ItemRules : InitializerBase
         Rule(13, 65, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Spirit of Guardian
         Rule(13, 67, Blocked.Repair), // Pet Rudolf
         Rule(13, 68, Blocked.Repair), // Snowman Transformation Ring
+        Rule(13, 69, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Resurrection
         Rule(13, 76, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Panda Ring
         Rule(13, 80, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Panda
         Rule(13, 81, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Guardian
         Rule(13, 82, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Talisman of Item Protection
         Rule(13, 93, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Ascension
         Rule(13, 94, Blocked.Trade, Blocked.Drop, Blocked.Store, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Master Seal of Wealth
+        Rule(13, 95, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Gladiator's Honor
         Rule(13, 104, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max AG Boost Aura
         Rule(13, 105, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Max SD Boost Aura
         Rule(13, 106, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Pet Unicorn
@@ -217,6 +219,7 @@ public class ItemRules : InitializerBase
         Rule(13, 113, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Ruby Necklace
         Rule(13, 114, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Emerald Necklace
         Rule(13, 115, Blocked.Trade, Blocked.Drop, Blocked.PersonalStore, Blocked.Repair), // Sapphire Necklace
+        Rule(13, 116, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Seal of Wealth (item drop)
         Rule(13, 121, Blocked.Trade, Blocked.Drop, Blocked.SellToNpc, Blocked.PersonalStore, Blocked.Repair), // Open Access Ticket to Chaos Castle
         Rule(13, 122, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Skeleton Transformation Ring
         Rule(13, 123, Blocked.Trade, Blocked.SellToNpc, Blocked.Repair), // Pet Skeleton

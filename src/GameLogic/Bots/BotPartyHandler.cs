@@ -187,6 +187,7 @@ internal static class BotPartyHandler
         if (success)
         {
             bot.Logger.LogDebug("Bot '{Name}' joined the party of '{Requester}'.", bot.Name, requester.Name);
+            bot.GameContext.PlugInManager.GetPlugInPoint<IBotPartyJoinedPlugIn>()?.BotJoinedParty(bot, requester);
         }
     }
 

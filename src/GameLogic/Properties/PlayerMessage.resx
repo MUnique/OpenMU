@@ -1171,4 +1171,31 @@ Inventory Extensions: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>This map is not available.</value>
   </data>
+  <data name="WarpOnlyForGameMasters" xml:space="preserve">
+    <value>This warp is only available to game masters.</value>
+  </data>
+  <data name="ItemCantBeUsedOnThisMap" xml:space="preserve">
+    <value>This item can't be used on this map.</value>
+  </data>
+  <data name="ItemsWaitForSpace" xml:space="preserve">
+    <value>{0} item(s) wait for space in your inventory. They are put into it as soon as they fit:</value>
+  </data>
+  <data name="NoWaitingItems" xml:space="preserve">
+    <value>No items wait for space in your inventory.</value>
+  </data>
+  <data name="WaitingItemDelivered" xml:space="preserve">
+    <value>{0} was put into your inventory.</value>
+  </data>
+  <data name="MoreWaitingItems" xml:space="preserve">
+    <value>... and {0} more. /waiting lists more of them.</value>
+  </data>
+  <data name="CantDeleteCharacterWithWaitingItems" xml:space="preserve">
+    <value>Can't delete a character while items wait for space in its inventory. Enter the game with it and make room first.</value>
+  </data>
+  <data name="MoreWaitingItemsNotNamed" xml:space="preserve">
+    <value>... and {0} more.</value>
+  </data>
+  <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
+    <value>Can't delete a character while items wait for it whose item type doesn't exist anymore. Please ask an admin.</value>
+  </data>
 </root>

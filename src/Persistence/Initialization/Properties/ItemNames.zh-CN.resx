@@ -2343,4 +2343,13 @@
   <data name="TalismanOfItemProtection" xml:space="preserve">
     <value>物品保护护身符</value>
   </data>
+  <data name="TalismanOfResurrection" xml:space="preserve">
+    <value>复活护身符</value>
+  </data>
+  <data name="LuckyCoin" xml:space="preserve">
+    <value>幸运币</value>
+  </data>
+  <data name="GladiatorsHonor" xml:space="preserve">
+    <value>角斗士的荣耀</value>
+  </data>
 </root>

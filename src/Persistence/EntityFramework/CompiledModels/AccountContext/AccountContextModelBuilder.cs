@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("58d27c62-721e-444e-a4f1-8bdbbd4d4ad7"), entityTypeCount: 49)
+            : base(skipDetectChanges: false, modelId: new Guid("bd8cf6b1-c27c-4863-a680-567e553dc2f8"), entityTypeCount: 50)
         {
         }
 
@@ -67,6 +67,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             var skillCharacterClass = SkillCharacterClassEntityType.Create(this);
             var skillEntry = SkillEntryEntityType.Create(this);
             var statAttribute = StatAttributeEntityType.Create(this);
+            var waitingItem = WaitingItemEntityType.Create(this);
 
             AccountEntityType.CreateForeignKey1(account, itemStorage);
             AccountAttributeGrantEntityType.CreateForeignKey1(accountAttributeGrant, account);
@@ -99,6 +100,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             SkillEntryEntityType.CreateForeignKey1(skillEntry, character);
             StatAttributeEntityType.CreateForeignKey1(statAttribute, account);
             StatAttributeEntityType.CreateForeignKey2(statAttribute, character);
+            WaitingItemEntityType.CreateForeignKey1(waitingItem, character);
+            WaitingItemEntityType.CreateForeignKey2(waitingItem, item);
 
             AccountEntityType.CreateAnnotations(account);
             AccountAttributeGrantEntityType.CreateAnnotations(accountAttributeGrant);
@@ -149,6 +152,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             SkillCharacterClassEntityType.CreateAnnotations(skillCharacterClass);
             SkillEntryEntityType.CreateAnnotations(skillEntry);
             StatAttributeEntityType.CreateAnnotations(statAttribute);
+            WaitingItemEntityType.CreateAnnotations(waitingItem);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             AddAnnotation("ProductVersion", "10.0.2");

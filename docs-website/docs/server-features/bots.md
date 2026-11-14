@@ -128,6 +128,17 @@ itself on a map it may not be on (after a reset, for instance) leaves for the
 best map it may use. The map it reached is persisted, so a restarted bot wakes up
 where it stopped.
 
+A map is judged per warp entry, by the monsters closest to that entry on foot.
+Some maps hold parts which can't be walked between at all - the seven floors of
+the Lost Tower, the three parts of the Dungeon - and even a map which can be walked
+through in one piece has very different monsters near its entries: in Elvenland
+the first entry leads to level 4 to 13, the third to level 30 to 48, about 180
+steps away. So a bot enters through the entry next to the monsters it came for,
+may warp to a better floor or zone of the map it is already on, and only picks
+hunting grounds it can walk to. The split of each map is computed from its terrain
+once and kept for the lifetime of the server, so terrain edited in the admin panel
+needs a restart to be taken into account.
+
 Which map it goes to is drawn rather than maximized. The maps of a level band
 differ by a few monster levels, so always taking the strongest one made it every
 bot's answer and left the rest of the band deserted. The best map still wins
@@ -143,6 +154,13 @@ minutes, and steps down to easier ground one notch at a time until it finds
 something it can farm; the regular map choice carries it back up as its level and
 gear recover. A bot which cannot afford any trip at all walks home to its class
 town for free, so it is never stranded on ground it cannot earn on.
+
+The survival check judges one monster at a time, so ground with dense packs can
+pass it and still be too much. A bot which dies to monsters three times within ten
+minutes in the zone of one warp entry keeps away from that zone for half an hour:
+it neither warps there nor picks its hunting grounds or targets there, and settles
+for the next best zone - another floor of the same map or another map. In a party
+only the leader's own deaths count, as the leader decides where the party hunts.
 
 ### Fighting and progressing
 
@@ -313,8 +331,11 @@ any level, since it is the player who invites, and once it joins it stays for th
 whole session. A living player takes precedence over the bot's own company
 — a bot hunting with other bots leaves them for the inviter, and breaks that bot
 party up if it was leading it, so a player never has to guess which bot happens
-to be free. In a party the bot follows its leader — in town too, and back from a
-fight once it falls more than twelve tiles behind — and defers a due reset, leaving
+to be free. In a party the bot follows its leader — in town too, back from a
+fight once it falls more than twelve tiles behind, and to another map through the
+warp entry closest to the leader, so it lands on the leader's floor. It pays that
+warp like a player; one which can't afford it hunts where it stands, without trips
+of its own, until it can — and defers a due reset, leaving
 only on the engine's own terms: when the party disbands, when it is kicked,
 when the leader enters a map it may not access, ten minutes after every human
 companion has disconnected without reconnecting, or before the bot's own logout
@@ -330,6 +351,166 @@ one.
 Over the day, the presence rotation logs bots in and out: fewest in the early
 morning, most in the evening, and never more than one at a time, so the
 population ebbs and flows instead of appearing and vanishing in blocks.
+
+### Talking
+
+With the separate *Bot chat* plugin (off by default), bots say a line now and
+then. The lines come from the plugin's configuration, one list per situation
+(event lines, greetings, whisper replies, …); there is no language model. A bot
+only talks about what it could actually do:
+
+| Situation | Where | Who says it |
+|---|---|---|
+| A Blood Castle, Devil Square or Chaos Castle entrance opened | `/post`, then it waits for players | a bot which meets that event's entry requirements — the same check that lets it follow a leader in |
+| A Blood Castle, Devil Square or Chaos Castle entrance opened | normal chat in town, no `/post` ("bc open, anyone going?") | the nearest bot which meets the entry requirements, once per town where a player stands - 50 % chance |
+| An invasion (White Wizard, Golden, Red Dragon) started | `/post` | a bot which may warp to the invaded map |
+| A level milestone (every 50 levels by default) | normal chat, players nearby | the bot which reached it |
+| A player entered the game (not after a warp) | normal chat, `{player}` | the nearest bot which sees the player — once per player in 30 minutes |
+| A player leveled up or made a reset | normal chat, "gz", `{player}`, `{level}`, `{resets}` | the nearest bot which sees the player — 30 % chance, once per player in 10 minutes |
+| A player's kill dropped an excellent or ancient item | normal chat ("nice drop!"), `{item}` | the nearest bot - 50 % chance |
+| The bot put on the new wings it earned at a level milestone | normal chat ("finally, my wings!"), `{wings}` | the bot, while a player sees it - 50 % chance; at a level milestone, instead of the level comment |
+| A player put on wings | normal chat ("nice wings!"), `{player}`, `{wings}` | the nearest bot which sees the player - 50 % chance, once per player and pair until the server restarts |
+| A golden monster, the Red Dragon or the White Wizard appeared near a bot | normal chat ("Golden Goblin here!"), `{monster}` | the nearest bot, while a player sees it - once per map and monster in two minutes |
+| A player the bot was in a party with before enters the game or invites it again | normal / party chat ("good to see you again"), `{player}` | the bot - it remembers its party companions until the server restarts, and a companion nearby greets first |
+| The bot accepted a player's party invitation | party chat, `{player}` | the bot |
+| An event the bot went through with a player's party ended | party chat, `{event}` | one bot per party |
+| A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
+| A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
+| A player wrote in the party chat (`~`) | party chat, the same lines as whisper replies | the bot whose name is in the message; without a name, one bot of the party - only when a keyword matches |
+| Now and then, like a merchant advertising (off by default — meant for a future merchant bot) | normal chat, `{location}` | a bot standing in a safezone which a player sees |
+| A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
+| A player asked the bot for a trade or challenged it to a duel | whisper, 70 % chance, `{player}` — the bot turns it down in any case (no trade window, no duels) | the bot |
+| A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
+
+A bot which posts about an event does not stay out hunting where nobody
+could find it. It goes to the meeting point and waits there until the entrance
+closes: next to the Messenger of Archangel for Blood Castle, next to Charon for
+Devil Square, and — since Chaos Castle is entered with the ticket alone — in the
+safezone of its home town, which the post names (`{map}`). Waiting does not
+make it decline party invitations; being invited is the point. A player who
+invites it and enters the event takes it along like any party bot. If nobody
+invites it, it goes back to hunting when the entrance closes. A bot does not
+announce an event whose entrance closes in less than two minutes, and a bot
+already in a party with a player does not look for company.
+
+A player can also search party members among the bots with a post:
+`/post party 300-350 bk dw`. A post with one of the party words (`party`, `pt`,
+`grupa`, …) and a level — `300-350`, `300+`, `min 300` or just `300` — calls up
+to five free bots of the game server whose level fits; class words (`dk`, `bk`,
+`bm`, `dw`, `elf`, `mg`, `dl`, `sum`, `rf`, … — each meaning its whole class
+line) narrow it down. Instead of a level the post may name an event with its
+level — `/post party bc7`, `pt ds 5`, `party chaos castle 3` — and then only
+bots which may enter that event answer: the event's own level bracket (the
+lower one of the Magic Gladiator, Dark Lord, Rage Fighter and Summoner
+included) and the master class requirement of the Blood Castle 8, as
+configured for the event. Each of them whispers to the player, a few seconds
+apart.
+The same search posted again calls five others. The player whispers back to a
+bot where to meet — `devias 215 40`, a warp of the warp list like
+`devias3 227 227` or `losttower7`, a map name alone, or `here` for where the
+player stands — and the bot warps there, walks up and waits five minutes for
+the invitation. It enters through the warp from which the place is the
+shortest walk, like a player would: the floors of the Lost Tower or the
+Dungeon can't be walked between at all, and the walk from the town of Devias
+to Devias3 takes long. A bot already standing on the map walks to the named
+coordinates, even on a map without an entry in the warp list. A place it may
+not go to (its level is too low for any warp leading there) it declines, and
+the player may name another one while the offer lasts; a whisper without a
+place gets asked again.
+Map and warp names are recognized in every translation. The words, the number
+of bots and the times are part of the configuration.
+
+The conversations make a town feel lived in, like the townsfolk of a
+role-playing game: "my potions are running low" — "the shop here sells them
+cheap". Only when a human player stands near two bots which stand close
+together do they talk — nobody else would hear it. Each conversation has a
+place: `Town` (both bots in a safezone), `Hunting` (both outside of it, usually
+fighting) or `Anywhere`. They are drawn without repetition until all of a place
+were used, and each player hears about one every five minutes. The default
+configuration comes with some 190 of them. A conversation may have a third
+line - the first bot's riposte. A player who writes in the normal chat within
+30 seconds after a conversation next to them gets an answer from one of the two
+bots: a whisper reply when the message matches a keyword, otherwise "right?",
+"haha, exactly" and the like.
+
+A whisper reply can carry `Keywords`, a comma-separated list of words or
+phrases it answers (`how are you, how r u`). The bot picks among the replies
+whose keyword matches the whisper — whole words, ignoring case and punctuation,
+the longest match winning, so "hi, how are you?" gets an answer to the question
+rather than a greeting. When nothing matches, it uses a reply without keywords.
+The default lines cover greetings, "how are you", the level and class, where the
+bot is, where to hunt, its wings, party, help, trade, thanks and goodbye.
+
+Placeholders in a line are filled in when it is said: `{event}`, `{map}`,
+`{level}`, `{class}`, `{player}` (whisper replies), `{partner}` (the other bot of
+a conversation), `{wings}` (see below), and `{location}` — the map with the
+bot's coordinates the way players write them, e.g. "Devias 215, 40", so a player
+can find it with the mini map. The default "where are you?" replies use it. In
+an event post, `{location}` is the meeting point; in an invasion post, just the
+invaded map. Each line is a localized text, so
+every player sees the translation of their own language, or the English text
+when it has none. The default lines come with a Polish translation, and the default
+keywords understand Polish whispers too.
+
+`{wings}` names the bot's wings with their level, e.g. "Wings of Soul +9"; in a
+comment on a player's wings, the player's. A bot without wings doesn't answer
+"what wings do you have?" with an empty name: a whisper reply with `{wings}` is
+swapped for one of the *answers without wings* ("no wings yet, saving up").
+
+A bot answers a message in the language it is written in: a Polish whisper
+gets a Polish answer, an English one an English answer, whatever the player's
+account language. The *Message languages* list holds the typical words and
+letters by which it tells them apart; a message which doesn't tell ("lol") is
+answered in the player's own language. Everything else a bot says - greetings,
+posts, conversations - follows the account language:
+
+For the Polish lines to reach a Polish player, three things are needed:
+
+1. **The player's language is set to `pl`** — the *Language Iso Code* of the
+   player's account in the admin panel. The game client doesn't tell the server
+   its language, and the `/language` command only offers the languages of the
+   server messages.
+2. **The server has the full culture data.** The Docker images install
+   `icu-data-full`; with the English culture data alone (`icu-libs` on Alpine),
+   the server doesn't know the `pl` culture and every player gets the English
+   lines. A self-built image needs the package too.
+3. **The admin panel shows a field for Polish**, to read and edit the
+   translations. It shows the languages of its own user interface, every
+   language a text already has a translation in, and the additional content
+   languages of the `AdminPanel:ContentLanguages` setting — e.g. the environment
+   variable `AdminPanel__ContentLanguages__0=pl`. Without the setting, the
+   Polish default lines are still shown, but a new line gets no Polish field.
+
+Every line and conversation has a `When`: `Anytime` (the default), `Morning`
+(5–11 o'clock), `Day` (11–18), `Evening` (18–23) or `Night` (23–5), by the local
+time of the server. A greeting may be "good morning" in the morning and "late
+night grind?" at night.
+
+A line can come with a `Gesture` - the emotes of the game client, like a player
+typing `/hello`: the bot turns to the player and waves with a greeting or a
+goodbye, claps with a "gz", cheers after an event, raises its fist when a
+player killed it. The default lines have fitting gestures.
+
+A bot answers like a typing player: it takes a moment to read, then a little
+time per character, so a quick "np" comes at once and a whole sentence takes a
+few seconds (at most twelve).
+
+The bots don't drown out the players: while the players around a bot are busy
+talking (three normal chat messages within 30 seconds, by default), it says
+nothing unasked — no conversation, greeting, congratulation or comment. It
+still answers a player who talks to it.
+
+A game master can make a bot talk with `/botsay <bot> <text>` - for staged
+scenes of an event, or to spark a conversation. The text is said as typed in
+the normal chat, to the players who see the bot; only bots can be made to talk.
+
+The limits keep a large population from flooding the chat. All bots of a game
+server share one gap between two posts (`Minimum time between posts`, 3 minutes),
+each opened event type or started invasion is announced at most once, and each
+bot has its own cooldown for the normal chat and for whisper replies. The two
+post chances are 30 % by default, so not every opened event or invasion gets a
+post. Bots post only while the `/post` command is enabled on the server, and
+their messages look exactly like a player's post.
 
 ### Keeping itself alive
 

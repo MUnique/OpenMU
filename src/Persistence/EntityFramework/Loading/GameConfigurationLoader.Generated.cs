@@ -87,7 +87,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"AreaSkillSettingsId\", \"AttackDamage\", \"DamageType\", \"ElementalModifierTargetId\", \"GameConfigurationId\", \"ImplicitTargetRange\", \"MagicEffectDefId\", \"MasterDefinitionId\", \"MovesTarget\", \"MovesToTarget\", \"Name\", \"Number\", \"NumberOfHitsPerAttack\", \"Range\", \"SkillType\", \"SkipElementalModifier\", \"Target\", \"TargetRestriction\" from config.\"Skill\"",
         "select \"Id\", \"DelayBetweenHits\", \"DelayPerOneDistance\", \"EffectRange\", \"FrustumDistance\", \"FrustumEndWidth\", \"FrustumStartWidth\", \"HitChancePerDistanceMultiplier\", \"MaximumNumberOfHitsPerAttack\", \"MaximumNumberOfHitsPerTarget\", \"MinimumNumberOfHitsPerAttack\", \"MinimumNumberOfHitsPerTarget\", \"ProjectileCount\", \"TargetAreaDiameter\", \"UseDeferredHits\", \"UseFrustumFilter\", \"UseTargetAreaFilter\" from config.\"AreaSkillSettings\"",
         "select \"Id\", \"Aggregation\", \"DisplayValueFormula\", \"ExtendsDuration\", \"MaximumLevel\", \"MinimumLevel\", \"Rank\", \"ReplacedSkillId\", \"RootId\", \"TargetAttributeId\", \"ValueFormula\" from config.\"MasterSkillDefinition\"",
-        "select \"Id\", \"Costs\", \"GameConfigurationId\", \"GateId\", \"Index\", \"LevelRequirement\", \"Name\" from config.\"WarpInfo\"",
+        "select \"Id\", \"Costs\", \"GameConfigurationId\", \"GateId\", \"Index\", \"IsWarpable\", \"LevelRequirement\", \"Name\" from config.\"WarpInfo\"",
         "select \"DropItemGroupId\", \"ItemDefinitionId\" from config.\"DropItemGroupItemDefinition\"",
         "select \"ItemDefinitionId\", \"ItemOptionDefinitionId\" from config.\"ItemDefinitionItemOptionDefinition\"",
         "select \"ItemDefinitionId\", \"ItemSetGroupId\" from config.\"ItemDefinitionItemSetGroup\"",
@@ -1716,8 +1716,9 @@ internal sealed partial class GameConfigurationLoader
             entity.Costs = reader.GetInt32(1);
             if (!reader.IsDBNull(3)) { entity.GateId = reader.GetGuid(3); }
             entity.Index = reader.GetInt32(4);
-            entity.LevelRequirement = reader.GetInt32(5);
-            entity.Name = reader.IsDBNull(6) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(6));
+            entity.IsWarpable = reader.GetBoolean(5);
+            entity.LevelRequirement = reader.GetInt32(6);
+            entity.Name = reader.IsDBNull(7) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(7));
             this._WarpInfo[entity.Id] = entity;
             this._WarpInfoRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(2) ? null : reader.GetGuid(2)));
         }

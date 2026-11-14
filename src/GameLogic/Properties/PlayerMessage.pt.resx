@@ -1171,4 +1171,31 @@ Extensões de inventário: {18}</value>
   <data name="MiniGameTicketRequired" xml:space="preserve">
     <value>Você precisa de um ingresso para entrar neste evento.</value>
   </data>
+  <data name="WarpOnlyForGameMasters" xml:space="preserve">
+    <value>Este warp está disponível apenas para game masters.</value>
+  </data>
+  <data name="ItemCantBeUsedOnThisMap" xml:space="preserve">
+    <value>Este item não pode ser usado neste mapa.</value>
+  </data>
+  <data name="ItemsWaitForSpace" xml:space="preserve">
+    <value>{0} item(ns) aguardam espaço no seu inventário. Eles serão colocados nele assim que couberem:</value>
+  </data>
+  <data name="NoWaitingItems" xml:space="preserve">
+    <value>Nenhum item aguarda espaço no seu inventário.</value>
+  </data>
+  <data name="WaitingItemDelivered" xml:space="preserve">
+    <value>{0} foi colocado no seu inventário.</value>
+  </data>
+  <data name="MoreWaitingItems" xml:space="preserve">
+    <value>... e mais {0}. /waiting lista mais deles.</value>
+  </data>
+  <data name="CantDeleteCharacterWithWaitingItems" xml:space="preserve">
+    <value>Não é possível excluir um personagem enquanto itens aguardam espaço no inventário dele. Entre no jogo com ele e libere espaço primeiro.</value>
+  </data>
+  <data name="MoreWaitingItemsNotNamed" xml:space="preserve">
+    <value>... e mais {0}.</value>
+  </data>
+  <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
+    <value>Não é possível excluir um personagem enquanto aguardam itens cujo tipo de item não existe mais. Peça ajuda a um administrador.</value>
+  </data>
 </root>

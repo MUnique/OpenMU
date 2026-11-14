@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
@@ -33,6 +34,7 @@ public class CloseNpcDialogAction
 
         var view = player.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>();
         var response = ValueTask.CompletedTask;
+        var inventoryUpdate = ValueTask.CompletedTask;
         var closed = false;
         try
         {
@@ -48,6 +50,14 @@ public class CloseNpcDialogAction
                     {
                         // Only this opening owns the disconnect snapshot; never clear a successor's backup.
                         player.BackupInventory = null;
+
+                        // Items the player left in the machine would stay hidden in the server's tray, out of the
+                        // client's inventory and out of its (reset) tray, until the next login. They are moved
+                        // before World is published, so that a following trade never shares this tray.
+                        if (await player.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
+                        {
+                            inventoryUpdate = player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync());
+                        }
                     }
 
                     try
@@ -75,6 +85,7 @@ public class CloseNpcDialogAction
         finally
         {
             // Capture once before World is published; completion and persistence never hold state exclusion.
+            await inventoryUpdate.ConfigureAwait(false);
             try
             {
                 await response.ConfigureAwait(false);

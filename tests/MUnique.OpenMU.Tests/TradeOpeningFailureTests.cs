@@ -89,14 +89,32 @@ public class TradeOpeningFailureTests
                 await owner.RunPersistenceExclusiveAsync(() => new MoveItemAction().MoveItemAsync(owner, 20, Storages.Inventory, index, Storages.ChaosMachine)).ConfigureAwait(false);
             }
 
-            await owner.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(owner)).ConfigureAwait(false);
-            Assert.That(owner.BackupInventory, Is.Null);
-            for (byte slot = InventoryConstants.EquippableSlotsCount; slot < InventoryConstants.FirstExtensionItemSlotIndex - freeSlots; slot++)
+            // Closing returns the tray to the inventory or the vault; only when both are full do the items stay.
+            for (byte slot = InventoryConstants.EquippableSlotsCount; slot < InventoryConstants.FirstExtensionItemSlotIndex; slot++)
             {
                 var filler = owner.PersistenceContext.CreateNew<Item>();
                 filler.Definition = definition;
                 fillers.Add(filler);
                 Assert.That(await inventory.AddItemAsync(slot, filler).ConfigureAwait(false), Is.True);
+            }
+
+            var vault = new Mock<ItemStorage>();
+            vault.SetupAllProperties();
+            vault.Setup(v => v.Items).Returns(new List<Item>());
+            Mock.Get(owner.Account!).SetupProperty(account => account.Vault, vault.Object);
+            var vaultStorage = new Storage(InventoryConstants.WarehouseSize, vault.Object);
+            while (await vaultStorage.AddItemAsync(CreateVaultFiller(owner, definition)).ConfigureAwait(false))
+            {
+                // Fills the vault.
+            }
+
+            await owner.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(owner)).ConfigureAwait(false);
+            Assert.That(owner.BackupInventory, Is.Null);
+            Assert.That(temporary.Items, Is.EquivalentTo(ingredients));
+            foreach (var filler in fillers.TakeLast(freeSlots).ToList())
+            {
+                await inventory.RemoveItemAsync(filler).ConfigureAwait(false);
+                fillers.Remove(filler);
             }
 
             owner.Money = 1234;
@@ -178,6 +196,13 @@ public class TradeOpeningFailureTests
             ownerOutput.Dispose();
             peerOutput.Dispose();
         }
+    }
+
+    private static Item CreateVaultFiller(Player owner, ItemDefinition definition)
+    {
+        var item = owner.PersistenceContext.CreateNew<Item>();
+        item.Definition = definition;
+        return item;
     }
 
     /// <summary>A generated reply awaiting real output cannot own a subsequently published pair.</summary>

@@ -240,6 +240,18 @@ sell the card.
 While the plugin of a special item is deactivated, its packages can't be bought,
 and bought items stay in the storage until the plugin is active again.
 
+### Talisman of Resurrection
+
+When a character dies while it carries a Talisman of Resurrection in its
+inventory, it's respawned at the place of its death instead of the safezone, and
+one talisman is used up. It doesn't apply in mini games, duels and guild wars,
+which have their own spawn places. The plugin *Talisman of Resurrection* can be
+deactivated on the **Plugins** page.
+
+The item exists in a new Season 6 database. Existing databases get it with the
+optional configuration update *Add the Talisman of Resurrection*, which also
+puts its packages on sale.
+
 ### Invitation to Santa Village
 
 The Invitation to Santa Village can be used ten times. Each use warps the
@@ -277,12 +289,14 @@ buff icons are the ones which the game client shows for these items:
 | Item | Effect | Duration |
 |---|---|---|
 | Seal of Ascension | experience ×1.5 | 30 minutes |
-| Seal of Wealth | experience ×2 | 30 minutes |
+| Seal of Wealth | experience ×2, item drop rate ×1.5 | 30 minutes |
 | Seal of Sustenance | no experience (also no master or bonus experience) | 30 minutes |
 | Seal of Healing | experience ×1.5, automatic life recovery +5% | 30 minutes |
-| Seal of Divinity | automatic mana recovery +5% | 30 minutes |
+| Seal of Divinity | item drop rate ×1.5, automatic mana recovery +5% | 30 minutes |
 | Master Seal of Ascension | master experience ×1.5 | 30 minutes |
-| Master Seal of Wealth | master experience ×2 | 30 minutes |
+| Master Seal of Wealth | master experience ×2, item drop rate ×1.5 | 30 minutes |
+| Seal of Wealth (13/116) | item drop rate ×1.5 | 30 minutes |
+| Gladiator's Honor | experience +20% in Vulcanus | 30 minutes |
 | Max AG Boost Aura | maximum AG + character level | 30 minutes |
 | Max SD Boost Aura | maximum SD + character level × 10 | 30 minutes |
 | Scroll of Quickness | attack speed +15 | 30 minutes |
@@ -303,10 +317,20 @@ Sustenance also blocks the bonus experience of pets and rings. The buffs of
 seals, elixirs and auras stay when the character dies, the buffs of scrolls end.
 All of these buffs end when the character leaves the game.
 
+The item drop rate raises the chances of the drop item groups of a killed
+monster which drop items, for the player who killed it. The chance of money
+drops stays the same. Existing databases get the item drop rate with the
+configuration update *Add the item drop rate of seals*, which also adds the
+second Seal of Wealth (13/116). It isn't sold in the in-game shop.
+
+The Gladiator's Honor can only be used in Vulcanus, and its experience bonus
+only counts there. The game client doesn't tell its duration, so it lasts as
+long as a seal. The map is set in the configuration of the plugins "Gladiator's
+Honor consume handler" and "Vulcanus experience bonus". Its higher drop rate
+of rare items isn't implemented yet.
+
 :::note
-Not implemented yet: the higher item drop rate of the Seals of Wealth and
-Divinity, the Seal of Mobility, the Party EXP Scroll and the second Seal of
-Wealth (13/116), which only raises the item drop rate.
+Not implemented yet: the Seal of Mobility and the Party EXP Scroll.
 :::
 
 Two talismans give a protection instead of a stat. Like the seals, their buffs

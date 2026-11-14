@@ -10,9 +10,11 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Guild;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.Vault;
+using MUnique.OpenMU.GameLogic.WaitingItems;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -122,9 +124,40 @@ public class TalkNpcAction
         return ownsDialog;
     }
 
+    private static async ValueTask ReturnCraftingLeftoversAsync(Player player, Player.NpcDialogContext dialog, State expectedState)
+    {
+        var inventoryUpdate = ValueTask.CompletedTask;
+        try
+        {
+            await using var context = await player.PlayerState.TryBeginAdvanceToAsync(expectedState).ConfigureAwait(false);
+            context.Allowed = false;
+            if (!player.IsAlive || player.PlayerState.CurrentState != expectedState
+                || !ReferenceEquals(player.OpenedNpcContext, dialog))
+            {
+                return;
+            }
+
+            // Only the current opening moves the tray; a trade which shares it can't be open in this state.
+            if (await player.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
+            {
+                inventoryUpdate = player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync());
+            }
+        }
+        finally
+        {
+            await inventoryUpdate.ConfigureAwait(false);
+        }
+    }
+
     private async ValueTask ShowDialogOfOpenedNpcAsync(Player player, Player.NpcDialogContext dialog, State expectedState)
     {
         var npcStats = dialog.Npc.Definition;
+        if (npcStats.ItemCraftings.Any())
+        {
+            // Leftovers of a crafting dialog which was left without closing it properly.
+            await ReturnCraftingLeftoversAsync(player, dialog, expectedState).ConfigureAwait(false);
+        }
+
         switch (npcStats.NpcWindow)
         {
             case NpcWindow.Undefined:
@@ -160,12 +193,25 @@ public class TalkNpcAction
                 var account = player.Account!;
                 var vault = account.Vault;
                 var warehouseSize = account.IsVaultExtended ? InventoryConstants.WarehouseSize * 2 : InventoryConstants.WarehouseSize;
+                DataModel.Entities.Character? vaultCharacter = null;
+                var waitingItemCount = 0;
                 await ShowCurrentDialogResponseAsync(player, dialog, expectedState, () =>
                 {
+                    vaultCharacter = player.SelectedCharacter!;
+                    waitingItemCount = vaultCharacter.WaitingItems?.Count ?? 0;
                     account.Vault ??= vault ?? player.PersistenceContext.CreateNew<ItemStorage>();
-                    player.Vault = new Storage(warehouseSize, account.Vault);
+                    player.Vault = new Storage(warehouseSize, 0, 0, account.Vault, player.PutAsideWhenLoaded(vaultCharacter));
                     return player.InvokeViewPlugInAsync<IShowVaultPlugIn>(p => p.ShowVaultAsync());
                 }).ConfigureAwait(false);
+                if (vaultCharacter is not null
+                    && ReferenceEquals(player.SelectedCharacter, vaultCharacter)
+                    && (vaultCharacter.WaitingItems?.Count ?? 0) > waitingItemCount
+                    && WaitingItemsDeliveryPlugIn.GetActive(player.GameContext) is { } delivery)
+                {
+                    // Items of the vault which found no place when it was loaded wait for space in the inventory.
+                    await delivery.DeliverAndShowAsync(player).ConfigureAwait(false);
+                }
+
                 break;
             case NpcWindow.GuildMaster:
                 if (await this.IsPlayedAllowedToCreateGuildAsync(player, dialog.Npc).ConfigureAwait(false))

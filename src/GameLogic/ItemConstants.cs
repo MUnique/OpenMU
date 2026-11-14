@@ -75,6 +75,11 @@ public class ItemConstants
     public static ItemIdentifier CommandResetFruit => new(58, 13);
 
     /// <summary>
+    /// Gets the identifier for the Talisman of Resurrection, which respawns a dead player at the place of its death.
+    /// </summary>
+    public static ItemIdentifier TalismanOfResurrection => new(69, 13);
+
+    /// <summary>
     /// Gets the identifier for the fenrir.
     /// </summary>
     public static ItemIdentifier Fenrir => new(37, 13);
@@ -83,6 +88,11 @@ public class ItemConstants
     /// Gets the identifier for the invitation to the santa village.
     /// </summary>
     public static ItemIdentifier InvitationToSantaVillage => new(66, 13);
+
+    /// <summary>
+    /// Gets the identifier for the Gladiator's Honor, which increases the experience in Vulcanus.
+    /// </summary>
+    public static ItemIdentifier GladiatorsHonor => new(95, 13);
 
     /// <summary>
     /// Gets the identifier for the demon.
@@ -263,6 +273,11 @@ public class ItemConstants
     /// Gets the identifier for the moonstone pendant (group 13, number 38).
     /// </summary>
     public static ItemIdentifier MoonstonePendant => new(38, 13);
+
+    /// <summary>
+    /// Gets the identifier for the lucky coin (group 14, number 100), which is registered and exchanged at the NPC Delgado.
+    /// </summary>
+    public static ItemIdentifier LuckyCoin => new(100, 14);
 
     /// <summary>
     /// Gets all scrolls.

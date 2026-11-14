@@ -366,6 +366,11 @@ internal enum MagicEffectNumber : short
     MasterSealOfWealth = 0x66,
 
     /// <summary>
+    /// The Gladiator's Honor effect, which increases the experience in Vulcanus.
+    /// </summary>
+    GladiatorsHonor = 0x67,
+
+    /// <summary>
     /// The max AG boost aura effect.
     /// </summary>
     MaxAbilityBoostAura = 0x71,
@@ -374,6 +379,11 @@ internal enum MagicEffectNumber : short
     /// The max SD boost aura effect.
     /// </summary>
     MaxShieldBoostAura = 0x72,
+
+    /// <summary>
+    /// The effect of the second seal of wealth (13/116), which only raises the item drop rate.
+    /// </summary>
+    SealOfWealthItemDrop = 0x77,
 
     /// <summary>
     /// The scroll of healing effect.

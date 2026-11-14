@@ -37,6 +37,19 @@ internal class CashShopItems : InitializerBase
         this.CreateItem(14, 163, LocalizedString.FromResource(() => ItemNames.VaultExpansionCertificate));
         this.CreateItem(14, 169, LocalizedString.FromResource(() => ItemNames.RageFighterCharacterCard));
         this.CreateResetFruits();
+        this.CreateTalismanOfResurrection();
+    }
+
+    /// <summary>
+    /// Creates the Talisman of Resurrection, if it doesn't exist yet. When a player dies while it carries one
+    /// in its inventory, it's respawned at the place of its death and the talisman is used up,
+    /// see <see cref="GameLogic.PlugIns.TalismanOfResurrectionSpawnGatePlugIn"/>.
+    /// The rules which block trading and selling it are applied by the <see cref="ItemRules"/>.
+    /// </summary>
+    /// <returns>The created item, or <c>null</c>, if it already existed.</returns>
+    internal ItemDefinition? CreateTalismanOfResurrection()
+    {
+        return this.CreateItem(13, 69, LocalizedString.FromResource(() => ItemNames.TalismanOfResurrection));
     }
 
     /// <summary>

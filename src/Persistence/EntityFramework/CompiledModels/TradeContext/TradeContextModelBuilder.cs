@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
     public partial class TradeContextModel
     {
         private TradeContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("3354f79e-6c11-4196-b706-28c658530ea2"), entityTypeCount: 48)
+            : base(skipDetectChanges: false, modelId: new Guid("cf84136b-2f3c-45cd-bdba-12d159157a17"), entityTypeCount: 49)
         {
         }
 
@@ -66,6 +66,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             var skillCharacterClass = SkillCharacterClassEntityType.Create(this);
             var skillEntry = SkillEntryEntityType.Create(this);
             var statAttribute = StatAttributeEntityType.Create(this);
+            var waitingItem = WaitingItemEntityType.Create(this);
 
             AccountAttributeGrantEntityType.CreateForeignKey1(accountAttributeGrant, account);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
@@ -95,6 +96,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             SkillEntryEntityType.CreateForeignKey1(skillEntry, character);
             StatAttributeEntityType.CreateForeignKey1(statAttribute, account);
             StatAttributeEntityType.CreateForeignKey2(statAttribute, character);
+            WaitingItemEntityType.CreateForeignKey1(waitingItem, character);
+            WaitingItemEntityType.CreateForeignKey2(waitingItem, item);
 
             AccountEntityType.CreateAnnotations(account);
             AccountAttributeGrantEntityType.CreateAnnotations(accountAttributeGrant);
@@ -144,6 +147,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             SkillCharacterClassEntityType.CreateAnnotations(skillCharacterClass);
             SkillEntryEntityType.CreateAnnotations(skillEntry);
             StatAttributeEntityType.CreateAnnotations(statAttribute);
+            WaitingItemEntityType.CreateAnnotations(waitingItem);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
             AddAnnotation("ProductVersion", "10.0.2");

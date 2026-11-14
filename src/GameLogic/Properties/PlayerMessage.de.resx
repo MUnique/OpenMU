@@ -1018,4 +1018,31 @@ Inventarerweiterungen: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Diese Karte ist nicht verfügbar.</value>
   </data>
+  <data name="WarpOnlyForGameMasters" xml:space="preserve">
+    <value>Dieser Warp ist nur für Game Master verfügbar.</value>
+  </data>
+  <data name="ItemCantBeUsedOnThisMap" xml:space="preserve">
+    <value>Dieser Gegenstand kann auf dieser Karte nicht benutzt werden.</value>
+  </data>
+  <data name="ItemsWaitForSpace" xml:space="preserve">
+    <value>{0} Gegenstand/Gegenstände warten auf Platz in Ihrem Inventar. Sie werden hineingelegt, sobald sie passen:</value>
+  </data>
+  <data name="NoWaitingItems" xml:space="preserve">
+    <value>Keine Gegenstände warten auf Platz in Ihrem Inventar.</value>
+  </data>
+  <data name="WaitingItemDelivered" xml:space="preserve">
+    <value>{0} wurde in Ihr Inventar gelegt.</value>
+  </data>
+  <data name="MoreWaitingItems" xml:space="preserve">
+    <value>... und {0} weitere. /waiting listet weitere auf.</value>
+  </data>
+  <data name="CantDeleteCharacterWithWaitingItems" xml:space="preserve">
+    <value>Ein Charakter, für den Gegenstände auf Platz im Inventar warten, kann nicht gelöscht werden. Betreten Sie zuerst mit ihm das Spiel und schaffen Sie Platz.</value>
+  </data>
+  <data name="MoreWaitingItemsNotNamed" xml:space="preserve">
+    <value>... und {0} weitere.</value>
+  </data>
+  <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
+    <value>Ein Charakter, für den Gegenstände warten, deren Gegenstandsart es nicht mehr gibt, kann nicht gelöscht werden. Bitte wenden Sie sich an einen Admin.</value>
+  </data>
 </root>

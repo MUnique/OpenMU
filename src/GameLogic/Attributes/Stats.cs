@@ -128,6 +128,12 @@ public class Stats
     public static AttributeDefinition BonusExperienceRate { get; } = new(new Guid("D48A9D05-533A-4556-9FC3-F71C8BEC4B8E"), "Bonus Experience Rate", "The bonus experience rate which is added to the base experience rate multiplier.");
 
     /// <summary>
+    /// Gets the experience rate which is added while the player is in Vulcanus, e.g. by the Gladiator's Honor.
+    /// </summary>
+    /// <remarks>The experience is multiplied by one plus this rate by the <c>VulcanusExperiencePlugIn</c>.</remarks>
+    public static AttributeDefinition VulcanusExperienceRate { get; } = new(new Guid("199015AC-3139-4E6B-A7C0-5439DD4F7052"), "Vulcanus Experience Rate", "The experience rate which is added while the player is in Vulcanus.");
+
+    /// <summary>
     /// Gets the master level definition.
     /// </summary>
     public static AttributeDefinition MasterLevel { get; } = new(new Guid("70CD8C10-391A-4C51-9AA4-A854600E3A9F"), "Master Level", "The level of the character.");
@@ -158,10 +164,21 @@ public class Stats
     public static AttributeDefinition TotalRegisteredRenas { get; } = new(new Guid("56C2D3B4-4F5A-6B7C-8D9E-0F1A2B3C4D5E"), "Total Registered Renas", "Total registered items (all-time counter)");
 
     /// <summary>
+    /// Gets the attribute definition of the count of the lucky coins which a character registered at the NPC Delgado.
+    /// </summary>
+    public static AttributeDefinition RegisteredLuckyCoins { get; } = new(new Guid("7D4A0CDF-124F-4CFF-89FF-357A2001B041"), "Registered Lucky Coins", "The count of the lucky coins which were registered at the NPC Delgado.");
+
+    /// <summary>
     /// Gets the zen amount rate attribute definition.
     /// </summary>
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");
 
+    /// <summary>
+    /// Gets the bonus item drop rate attribute definition. It raises the chances of the drop item groups
+    /// of a killed monster which drop items, e.g. by 0.5 for 50 % more item drops.
+    /// </summary>
+    public static AttributeDefinition BonusItemDropRate { get; } = new(new Guid("EEDAFF4A-E9AA-4D28-B07C-A9120434DF97"), "Bonus Item Drop Rate", "The bonus which is added to the item drop rate multiplier of 1.0, e.g. 0.5 for 50 % more item drops. It's increased by seals.");
+  
     /// <summary>
     /// Gets the death penalty protection attribute definition. If it's greater than 0, the player keeps its
     /// experience and money when it's killed by a monster, e.g. by the Talisman of Guardian.

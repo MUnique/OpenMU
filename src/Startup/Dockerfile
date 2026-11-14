@@ -2,7 +2,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 WORKDIR /app
 
 # tzdata provides the IANA time zones (e.g. America/Argentina/Buenos_Aires) for the server time zone setting.
-RUN apk add --no-cache icu-libs tzdata
+# icu-data-full: icu-libs alone brings the English culture data only, so a player's language like
+# "pl" isn't found and every player gets the English texts.
+RUN apk add --no-cache icu-libs icu-data-full tzdata
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 EXPOSE 8080

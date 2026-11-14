@@ -3615,4 +3615,55 @@
   <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
     <value>Das Attribut der Gegenstandsanforderungen, für das diese Formel gilt.</value>
   </data>
+  <data name="WarpInfo_IsWarpable_Caption" xml:space="preserve">
+    <value>Für Spieler verfügbar</value>
+  </data>
+  <data name="WarpInfo_IsWarpable_Description" xml:space="preserve">
+    <value>Ob Spieler diesen Warp verwenden können. Er schränkt Spieler nur ein, wenn er ausgeschaltet ist: Dann ist der Warp nicht in der Warp-Liste des Clients, und die Warp-Anfrage eines Spielers wird abgelehnt; Game Master können ihn weiterhin verwenden.</value>
+  </data>
+  <data name="Character_WaitingItems_Caption" xml:space="preserve">
+    <value>Wartende Gegenstände</value>
+  </data>
+  <data name="Character_WaitingItems_Description" xml:space="preserve">
+    <value>Gegenstände, die in ihrem Lagerplatz keinen Platz fanden und auf Platz im Inventar warten. Sie werden hineingelegt, sobald sie passen.</value>
+  </data>
+  <data name="WaitingItem_TypeCaption" xml:space="preserve">
+    <value>Wartender Gegenstand</value>
+  </data>
+  <data name="WaitingItem_TypeCaptionPlural" xml:space="preserve">
+    <value>Wartende Gegenstände</value>
+  </data>
+  <data name="WaitingItem_TypeDescription" xml:space="preserve">
+    <value>Ein Gegenstand, der auf Platz im Inventar eines Charakters wartet.</value>
+  </data>
+  <data name="WaitingItem_Item_Caption" xml:space="preserve">
+    <value>Gegenstand</value>
+  </data>
+  <data name="WaitingItem_Item_Description" xml:space="preserve">
+    <value>Der wartende Gegenstand.</value>
+  </data>
+  <data name="WaitingItem_Reason_Caption" xml:space="preserve">
+    <value>Grund</value>
+  </data>
+  <data name="WaitingItem_Reason_Description" xml:space="preserve">
+    <value>Warum der Gegenstand wartet.</value>
+  </data>
+  <data name="WaitingItem_AddedAt_Caption" xml:space="preserve">
+    <value>Hinzugefügt am</value>
+  </data>
+  <data name="WaitingItem_AddedAt_Description" xml:space="preserve">
+    <value>Seit wann der Gegenstand wartet (UTC). Die ältesten Gegenstände werden zuerst ins Inventar gelegt.</value>
+  </data>
+  <data name="WaitingItemReason_TypeCaption" xml:space="preserve">
+    <value>Grund für wartenden Gegenstand</value>
+  </data>
+  <data name="WaitingItemReason_TypeDescription" xml:space="preserve">
+    <value>Warum ein Gegenstand auf Platz im Inventar wartet.</value>
+  </data>
+  <data name="WaitingItemReason_NoSpaceWhenLoaded_Caption" xml:space="preserve">
+    <value>Kein Platz beim Laden</value>
+  </data>
+  <data name="WaitingItemReason_NoSpaceWhenLoaded_Description" xml:space="preserve">
+    <value>Der Gegenstand fand beim Laden seines Lagerplatzes keinen Platz, z. B. weil die Größe seiner Definition gewachsen ist.</value>
+  </data>
 </root>

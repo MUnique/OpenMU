@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.GameLogic.WaitingItems;
 using MUnique.OpenMU.PlugIns;
 using static MUnique.OpenMU.DataModel.InventoryConstants;
 
@@ -25,11 +26,26 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <param name="player">The player.</param>
     /// <param name="context">The game context.</param>
     public InventoryStorage(Player player, IGameContext context)
+        : this(player, context, [])
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InventoryStorage" /> class.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="context">The game context.</param>
+    /// <param name="itemsWithoutPlace">
+    /// Collects the items which find no place in the main inventory or in their extension. They get another try
+    /// when all extensions exist, and only the ones which still find no place wait for space.
+    /// </param>
+    private InventoryStorage(Player player, IGameContext context, List<Item> itemsWithoutPlace)
         : base(
             GetInventorySize(0),
             EquippableSlotsCount,
             0,
-            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.InventorySize))
+            new ItemStorageAdapter(player.SelectedCharacter?.Inventory ?? throw Error.NotInitializedProperty(player, "SelectedCharacter.Inventory"), FirstEquippableItemSlotIndex, player.InventorySize),
+            KeepItemWithoutPlace(itemsWithoutPlace))
     {
         this._player = player;
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item, eventArgs.IsEquipped).ConfigureAwait(false);
@@ -43,11 +59,23 @@ public class InventoryStorage : Storage, IInventoryStorage
             for (int i = 0; i < player.SelectedCharacter.InventoryExtensions; i++)
             {
                 var offset = FirstExtensionItemSlotIndex + (i * sizePerExtension);
-                var extension = new Storage(sizePerExtension, 0, offset, this.ItemStorage);
+                var extension = new Storage(sizePerExtension, 0, offset, this.ItemStorage, KeepItemWithoutPlace(itemsWithoutPlace));
                 extensions.Add(extension);
             }
 
             this.Extensions = extensions;
+        }
+
+        if (itemsWithoutPlace.Count > 0)
+        {
+            // The items are still in the item storage. Like in the Storage, each one is removed only after
+            // it was put aside, so that none is lost when putting it aside throws.
+            var putAside = player.PutAsideWhenLoaded(player.SelectedCharacter);
+            foreach (var item in itemsWithoutPlace.Where(item => !this.TryAddItemWithoutPlace(item)).ToList())
+            {
+                putAside(item);
+                this.ItemStorage.Items.Remove(item);
+            }
         }
 
         this.InitializePowerUps();
@@ -149,6 +177,21 @@ public class InventoryStorage : Storage, IInventoryStorage
         {
             await handler(eventArgs).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Creates the function which keeps an item, which finds no place when a storage is loaded, in the given list
+    /// instead of putting it aside, so that it gets another try when all extensions exist.
+    /// </summary>
+    /// <param name="itemsWithoutPlace">The list of the items without place.</param>
+    /// <returns>The function; it doesn't take the item, so it stays in the item storage.</returns>
+    private static Func<Item, bool> KeepItemWithoutPlace(List<Item> itemsWithoutPlace)
+    {
+        return item =>
+        {
+            itemsWithoutPlace.Add(item);
+            return false;
+        };
     }
 
     private bool IsWearingSlot(int slot)

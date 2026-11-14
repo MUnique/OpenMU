@@ -101,6 +101,49 @@ public sealed class Party : AsyncDisposable
     }
 
     /// <summary>
+    /// Makes <paramref name="newMaster"/> the party master.
+    /// The master is always the first entry of the party list (the client shows the first entry as master,
+    /// and the kick request is validated against it), so the new master is moved to index 0 while the
+    /// relative order of all other members is kept; the former master becomes the second entry.
+    /// </summary>
+    /// <param name="newMaster">The member who should become the party master.</param>
+    /// <returns>
+    /// True if the master was changed; false if the member is not part of this party, is already the master,
+    /// or is currently not connected.
+    /// </returns>
+    public async ValueTask<bool> ChangeMasterAsync(IPartyMember newMaster)
+    {
+        lock (this._writeLock)
+        {
+            var index = Array.IndexOf(this._partyMembers, newMaster);
+            if (index <= 0 || !newMaster.IsConnected)
+            {
+                // index < 0: not in this party; index 0: already the master.
+                return false;
+            }
+
+            var updated = new IPartyMember[this._partyMembers.Length];
+            updated[0] = newMaster;
+            var target = 1;
+            for (var i = 0; i < this._partyMembers.Length; i++)
+            {
+                if (i != index)
+                {
+                    updated[target++] = this._partyMembers[i];
+                }
+            }
+
+            this._partyMembers = updated;
+            this.PartyMaster = newMaster;
+        }
+
+        // The party list packet has no master field, the order is the information.
+        // The health values of the view plugins are recalculated per index on each update, so they need no handling here.
+        await this.SendPartyListAsync().ConfigureAwait(false);
+        return true;
+    }
+
+    /// <summary>
     /// Replaces <paramref name="oldMember"/> with <paramref name="newMember"/> in-place,
     /// preserving the member's slot index and master status.
     /// </summary>

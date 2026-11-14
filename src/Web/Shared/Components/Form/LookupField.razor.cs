@@ -25,6 +25,12 @@ public partial class LookupField<TObject>
     public string? Label { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether all available options should be displayed when the field receives focus.
+    /// </summary>
+    [Parameter]
+    public bool ShowAllOnFocus { get; set; }
+
+    /// <summary>
     /// Gets or sets the persistence context.
     /// </summary>
     [CascadingParameter]
@@ -52,7 +58,10 @@ public partial class LookupField<TObject>
     private ILookupController EffectiveLookupController => this.ExplicitLookupController ?? this.LookupController;
 
     /// <inheritdoc />
-    protected override bool TryParseValueFromString(string? value, [MaybeNullWhen(false)] out TObject result, [NotNullWhen(false)] out string? validationErrorMessage)
+    protected override bool TryParseValueFromString(
+        string? value,
+        [MaybeNullWhen(false)] out TObject result,
+        [NotNullWhen(false)] out string? validationErrorMessage)
     {
         throw new NotImplementedException();
     }

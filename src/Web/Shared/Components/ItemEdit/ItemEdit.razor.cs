@@ -51,7 +51,20 @@ public sealed partial class ItemEdit : IDisposable
     [Parameter]
     public EventCallback ItemChanged { get; set; }
 
-    private Func<IncreasableItemOption, string> CaptionFactory => obj => $"{(obj.PowerUpDefinition ?? obj.LevelDependentOptions.FirstOrDefault()?.PowerUpDefinition)?.TargetAttribute} ({obj.Number})";
+    private Func<IncreasableItemOption, string> CaptionFactory => obj =>
+    {
+        var powerUp = obj.PowerUpDefinition
+            ?? obj.LevelDependentOptions?
+                .OrderBy(option => option.Level)
+                .FirstOrDefault(option => option.PowerUpDefinition is not null)?
+                .PowerUpDefinition;
+
+        var caption = powerUp?.ToString()
+            ?? obj.OptionType?.ToString()
+            ?? nameof(IncreasableItemOption);
+
+        return $"{caption} (#{obj.Number})";
+    };
 
     /// <inheritdoc />
     public void Dispose()

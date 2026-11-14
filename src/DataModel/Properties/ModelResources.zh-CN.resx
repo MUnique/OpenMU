@@ -6460,4 +6460,49 @@
   <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
     <value>此公式适用的物品需求属性。</value>
   </data>
+  <data name="Character_WaitingItems_Caption" xml:space="preserve">
+    <value>等待中的物品</value>
+  </data>
+  <data name="Character_WaitingItems_Description" xml:space="preserve">
+    <value>在其存放位置找不到空间、正在等待背包空间的物品。有足够空间时会自动放入背包。</value>
+  </data>
+  <data name="WaitingItem_TypeCaption" xml:space="preserve">
+    <value>等待中的物品</value>
+  </data>
+  <data name="WaitingItem_TypeCaptionPlural" xml:space="preserve">
+    <value>等待中的物品</value>
+  </data>
+  <data name="WaitingItem_TypeDescription" xml:space="preserve">
+    <value>正在等待角色背包空间的物品。</value>
+  </data>
+  <data name="WaitingItem_Item_Caption" xml:space="preserve">
+    <value>物品</value>
+  </data>
+  <data name="WaitingItem_Item_Description" xml:space="preserve">
+    <value>正在等待的物品。</value>
+  </data>
+  <data name="WaitingItem_Reason_Caption" xml:space="preserve">
+    <value>原因</value>
+  </data>
+  <data name="WaitingItem_Reason_Description" xml:space="preserve">
+    <value>物品等待的原因。</value>
+  </data>
+  <data name="WaitingItem_AddedAt_Caption" xml:space="preserve">
+    <value>添加时间</value>
+  </data>
+  <data name="WaitingItem_AddedAt_Description" xml:space="preserve">
+    <value>物品开始等待的时间（UTC）。最早的物品最先放入背包。</value>
+  </data>
+  <data name="WaitingItemReason_TypeCaption" xml:space="preserve">
+    <value>物品等待原因</value>
+  </data>
+  <data name="WaitingItemReason_TypeDescription" xml:space="preserve">
+    <value>物品等待背包空间的原因。</value>
+  </data>
+  <data name="WaitingItemReason_NoSpaceWhenLoaded_Caption" xml:space="preserve">
+    <value>加载时无空间</value>
+  </data>
+  <data name="WaitingItemReason_NoSpaceWhenLoaded_Description" xml:space="preserve">
+    <value>加载存放位置时物品找不到空间，例如其定义的尺寸变大了。</value>
+  </data>
 </root>

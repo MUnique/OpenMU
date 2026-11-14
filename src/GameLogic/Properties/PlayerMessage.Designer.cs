@@ -752,6 +752,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} item(s) wait for space in your inventory. They are put into it as soon as they fit:.
+        /// </summary>
+        public static string ItemsWaitForSpace {
+            get {
+                return ResourceManager.GetString("ItemsWaitForSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
         /// </summary>
         public static string KanturuRequiredItemDestroyed {
@@ -949,6 +958,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t delete a character while items wait for it whose item type doesn&apos;t exist anymore. Please ask an admin..
+        /// </summary>
+        public static string CantDeleteCharacterWithUndeliverableWaitingItems {
+            get {
+                return ResourceManager.GetString("CantDeleteCharacterWithUndeliverableWaitingItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t delete a character while items wait for space in its inventory. Enter the game with it and make room first..
+        /// </summary>
+        public static string CantDeleteCharacterWithWaitingItems {
+            get {
+                return ResourceManager.GetString("CantDeleteCharacterWithWaitingItems", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t delete a guild member. Remove the character from guild first..
         /// </summary>
@@ -1639,6 +1666,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string KillAllMonstersFormat {
             get {
                 return ResourceManager.GetString("KillAllMonstersFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ... and {0} more. /waiting lists more of them..
+        /// </summary>
+        public static string MoreWaitingItems {
+            get {
+                return ResourceManager.GetString("MoreWaitingItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ... and {0} more..
+        /// </summary>
+        public static string MoreWaitingItemsNotNamed {
+            get {
+                return ResourceManager.GetString("MoreWaitingItemsNotNamed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No items wait for space in your inventory..
+        /// </summary>
+        public static string NoWaitingItems {
+            get {
+                return ResourceManager.GetString("NoWaitingItems", resourceCulture);
             }
         }
         
@@ -2948,6 +3002,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} was put into your inventory..
+        /// </summary>
+        public static string WaitingItemDelivered {
+            get {
+                return ResourceManager.GetString("WaitingItemDelivered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This warp is only available to game masters..
+        /// </summary>
+        public static string WarpOnlyForGameMasters {
+            get {
+                return ResourceManager.GetString("WarpOnlyForGameMasters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [World] {0}: {1}.
         /// </summary>
         public static string WorldChatMessage {
@@ -3187,6 +3259,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ItemBoxRequiresLevel {
             get {
                 return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can't be used on this map..
+        /// </summary>
+        public static string ItemCantBeUsedOnThisMap {
+            get {
+                return ResourceManager.GetString("ItemCantBeUsedOnThisMap", resourceCulture);
             }
         }
     }

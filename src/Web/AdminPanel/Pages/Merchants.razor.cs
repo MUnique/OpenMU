@@ -15,6 +15,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Pages.MerchantShop;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Toast;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -27,11 +28,13 @@ public partial class Merchants : ComponentBase, IDisposable
     private readonly PaginationState _merchantPagination = new() { ItemsPerPage = 20 };
     private readonly PaginationState _itemPagination = new() { ItemsPerPage = 20 };
     private readonly CancellationTokenSource _disposeCts = new();
+    private readonly MerchantShopExportImportService _shopExportImportService = new();
 
     private List<MerchantStorageViewModel>? _viewModels;
     private MerchantStorageViewModel? _selectedMerchant;
     private IContext? _persistenceContext;
     private IDisposable? _navigationLockDisposable;
+    private int _shopEditorRevision;
 
     /// <summary>
     /// Gets or sets the guard which checks the permission of the current user before saving.
@@ -102,6 +105,15 @@ public partial class Merchants : ComponentBase, IDisposable
         // Awaited within the component lifecycle, so Blazor renders the loading state first and
         // re-renders on completion - and ignores the completion if the component is gone by then.
         await this.LoadDataAsync(this._disposeCts.Token).ConfigureAwait(true);
+    }
+
+    private static string FormatProblems(IReadOnlyList<string> problems)
+    {
+        const int maxShownProblems = 5;
+        var text = string.Join(" ", problems.Take(maxShownProblems));
+        return problems.Count > maxShownProblems
+            ? $"{text} (+{problems.Count - maxShownProblems} more)"
+            : text;
     }
 
     private async ValueTask OnBeforeInternalNavigationAsync(LocationChangingContext context)
@@ -223,6 +235,79 @@ public partial class Merchants : ComponentBase, IDisposable
         }
 
         this._selectedMerchant = null;
+    }
+
+    private string BuildShopExport()
+    {
+        if (this._selectedMerchant is not { } merchant)
+        {
+            throw new InvalidOperationException("No merchant is selected.");
+        }
+
+        return this._shopExportImportService.BuildExport(merchant.Merchant);
+    }
+
+    private async Task ImportShopAsync(string json)
+    {
+        if (this._selectedMerchant is not { } merchant || this._persistenceContext is not { } context)
+        {
+            return;
+        }
+
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
+        var isConfirmed = await this.JavaScript.InvokeAsync<bool>(
+                "window.confirm",
+                string.Format(Resources.ShopImportQuestion, merchant.Name))
+            .ConfigureAwait(true);
+        if (!isConfirmed)
+        {
+            return;
+        }
+
+        // The awaits above give the user the chance to select another merchant, or to discard the changes,
+        // which replaces the context and the view models. The replacement must only be applied to what was confirmed.
+        if (!ReferenceEquals(this._selectedMerchant, merchant) || !ReferenceEquals(this._persistenceContext, context))
+        {
+            this.ToastService.ShowWarning(Resources.ShopImportSelectionChanged);
+            return;
+        }
+
+        MerchantShopImportResult? result;
+        try
+        {
+            result = await this._shopExportImportService
+                .TryApplyImportAsync(merchant.Merchant, json, context, this._disposeCts.Token)
+                .ConfigureAwait(true);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            // The shop might be partially replaced, because staged deletions can't be undone.
+            this.Logger.LogError(ex, "Error importing the shop of merchant {merchant}", merchant.Name);
+            this._shopEditorRevision++;
+            this.ToastService.ShowError(Resources.ShopImportFailed);
+            return;
+        }
+
+        if (result is null)
+        {
+            this.ToastService.ShowError(Resources.ShopImportInvalidFile);
+            return;
+        }
+
+        if (result.Problems.Count > 0)
+        {
+            this.ToastService.ShowError(string.Format(Resources.ShopImportRejected, FormatProblems(result.Problems)));
+            return;
+        }
+
+        // The previous items are replaced, so the item editor must not keep a selection and edit view of them.
+        this._shopEditorRevision++;
+        this.ToastService.ShowSuccess(string.Format(Resources.ShopImported, result.ImportedItemCount));
     }
 
     /// <summary>

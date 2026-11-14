@@ -6820,6 +6820,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files..
+        /// </summary>
+        public static string ShowWarpListExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show warp list (extended).
+        /// </summary>
+        public static string ShowWarpListExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The extended implementation of the IShowShopItemListPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ShowShopItemListExtendedPlugIn_Description {
@@ -8017,5 +8035,29 @@ namespace MUnique.OpenMU.GameServer.Properties {
 
         /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
         public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinViewPlugIn_Name text.</summary>
+        public static string LuckyCoinViewPlugIn_Name => ResourceManager.GetString("LuckyCoinViewPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinViewPlugIn_Description text.</summary>
+        public static string LuckyCoinViewPlugIn_Description => ResourceManager.GetString("LuckyCoinViewPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinCountRequestHandlerPlugIn_Name text.</summary>
+        public static string LuckyCoinCountRequestHandlerPlugIn_Name => ResourceManager.GetString("LuckyCoinCountRequestHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinCountRequestHandlerPlugIn_Description text.</summary>
+        public static string LuckyCoinCountRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinCountRequestHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinRegistrationRequestHandlerPlugIn_Name text.</summary>
+        public static string LuckyCoinRegistrationRequestHandlerPlugIn_Name => ResourceManager.GetString("LuckyCoinRegistrationRequestHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinRegistrationRequestHandlerPlugIn_Description text.</summary>
+        public static string LuckyCoinRegistrationRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinRegistrationRequestHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinExchangeRequestHandlerPlugIn_Name text.</summary>
+        public static string LuckyCoinExchangeRequestHandlerPlugIn_Name => ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized LuckyCoinExchangeRequestHandlerPlugIn_Description text.</summary>
+        public static string LuckyCoinExchangeRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Description", resourceCulture)!;
     }
 }

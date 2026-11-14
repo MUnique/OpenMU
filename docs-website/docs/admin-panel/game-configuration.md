@@ -84,6 +84,21 @@ Route `merchants`
 A more comfortable editor for NPC merchants: pick a merchant and edit the items
 it offers with the graphical item storage editor instead of the generic form.
 
+**Export shop** downloads the items of the selected merchant as a JSON file,
+**Import shop** reads such a file back in. The file contains the full state of
+each item: slot, definition, level, durability, skill, sockets, pet experience,
+all options and the ancient sets. Items are referenced by their definition
+group and number, so a file can be applied to another configuration. The import
+is all-or-nothing: if the configuration doesn't know an item, an option or an
+ancient set of the file, or if the items don't fit into the shop, nothing is
+imported and the problems are listed, so the file can be adjusted.
+
+The file contains only the items and no merchant name, so it can be imported
+into any merchant to duplicate a shop. Import replaces all items of the shop;
+the money of the storage is not touched. Like other changes on this page, the
+import is only applied after you save; use "Discard changes" to undo it.
+Export first if you want to keep the previous shop.
+
 ## Character classes
 
 Route `edit-config-grid/…CharacterClass/`
@@ -234,6 +249,20 @@ Route `edit-config-grid/…WarpInfo/`
 
 The entries of the in-game warp list: index, name, target gate, level requirement
 and cost.
+
+The [open source client](https://github.com/sven-n/MuMain) gets this list when a
+character enters the game and shows it in its warp window, so changes show up
+there after the next character selection. The original client shows the warp
+list of its data files; a warp which isn't in there can't be selected with it.
+
+*Warpable* only restricts players, and only when it's off: then the warp isn't
+in the list of the open source client, and the server refuses it when a player
+asks for it, e.g. with the move chat command. Game masters can still use it.
+A new season 6 configuration has it off for the warps which the original client
+doesn't offer in its warp window: Crywolf (reached by walking), Loren Market
+(reached through an NPC) and the second LaCleon warp. For an existing
+configuration, the optional update *Restrict warps outside of the original warp
+window* does the same.
 
 ## Jewel mixes
 

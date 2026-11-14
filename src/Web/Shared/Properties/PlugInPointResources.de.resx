@@ -120,6 +120,12 @@
   <data name="Plugins which will be executed when an attackable object got hit by an attacker." xml:space="preserve">
     <value>Plugins, die ausgeführt werden, wenn ein angreifbares Objekt von einem Angreifer getroffen wurde.</value>
   </data>
+  <data name="Attackable got hit with skill" xml:space="preserve">
+    <value>Angreifbares Objekt mit Skill getroffen</value>
+  </data>
+  <data name="Plugins which will be executed when an attackable object got hit by an attacker, with the used skill (null for a basic attack)." xml:space="preserve">
+    <value>Plugins, die ausgeführt werden, wenn ein angreifbares Objekt von einem Angreifer getroffen wurde, mit dem verwendeten Skill (null bei einem normalen Angriff).</value>
+  </data>
   <data name="Player gained master level" xml:space="preserve">
     <value>Spieler hat Master-Level erreicht</value>
   </data>

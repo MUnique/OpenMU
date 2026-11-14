@@ -1432,6 +1432,12 @@
   <data name="SoccerSpawnGatePlugIn_Description" xml:space="preserve">
     <value>将正在参加足球比赛的玩家生成在足球场上。</value>
   </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Name" xml:space="preserve">
+    <value>复活护身符</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugIn_Description" xml:space="preserve">
+    <value>携带复活护身符的玩家死亡后在死亡地点复活，并消耗该护身符。不适用于小游戏、决斗和战盟战。</value>
+  </data>
   <data name="PetExperiencePlugIn_Name" xml:space="preserve">
     <value>宠物经验分配</value>
   </data>
@@ -1804,4 +1810,61 @@
   <data name="IllusionTempleAllianceStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院盟军物品仓库的交互。盟军将圣物送至此处可获得一分。</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Name" xml:space="preserve"><value>幻影寺院幻影物品仓库交互</value></data>
   <data name="IllusionTempleIllusionStorageTalkPlugIn_Description" xml:space="preserve"><value>处理玩家与幻影寺院幻影物品仓库的交互。幻影军将圣物送至此处可获得一分。</value></data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption" xml:space="preserve">
+    <value>物品组</value>
+  </data>
+  <data name="TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption" xml:space="preserve">
+    <value>物品编号</value>
+  </data>
+  <data name="LuckyCoinFeaturePlugIn_Name" xml:space="preserve">
+    <value>幸运币活动</value>
+  </data>
+  <data name="LuckyCoinFeaturePlugIn_Description" xml:space="preserve">
+    <value>玩家可以在NPC德尔加多处登记幸运币，或用10、20或30枚幸运币兑换一件物品。兑换的奖励在此配置。</value>
+  </data>
+  <data name="GladiatorsHonorConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>角斗士的荣耀使用</value>
+  </data>
+  <data name="GladiatorsHonorConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>应用角斗士的荣耀的效果，该物品只能在囚禁之岛使用。</value>
+  </data>
+  <data name="VulcanusExperiencePlugIn_Name" xml:space="preserve">
+    <value>囚禁之岛经验加成</value>
+  </data>
+  <data name="VulcanusExperiencePlugIn_Description" xml:space="preserve">
+    <value>按玩家在囚禁之岛的经验倍率（例如角斗士的荣耀）增加其在囚禁之岛获得的经验。</value>
+  </data>
+  <data name="VulcanusMapConfiguration_MapNumber_Name" xml:space="preserve">
+    <value>地图编号</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugIn_Name" xml:space="preserve">
+    <value>等待物品发放</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugIn_Description" xml:space="preserve">
+    <value>角色进入游戏或打开仓库时以及之后定期，将等待背包空间的物品放入背包（有足够空间时）。停用后物品会继续等待。</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Name" xml:space="preserve">
+    <value>等待物品命令</value>
+  </data>
+  <data name="WaitingItemsChatCommandPlugIn_Description" xml:space="preserve">
+    <value>处理 /waiting，列出等待背包空间的物品。</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name" xml:space="preserve">
+    <value>检查间隔</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description" xml:space="preserve">
+    <value>多久将等待的物品放入背包一次（有足够空间时）。</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>列出的物品数</value>
+  </data>
+  <data name="WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>进入游戏或打开仓库时告知玩家的等待物品数量，每条消息一件。</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Name" xml:space="preserve">
+    <value>列出的物品数</value>
+  </data>
+  <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
+    <value>列出的等待物品数量，每条消息一件。</value>
+  </data>
 </root>

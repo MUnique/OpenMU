@@ -136,6 +136,28 @@ public class AttributeSystem : IAttributeSystem, IEnumerable<IAttribute>, IDispo
     }
 
     /// <summary>
+    /// Adds a stat attribute after the construction, e.g. when the character class changed while the
+    /// character is in the game and the new class brings a stat the old one didn't have (Master Level).
+    /// </summary>
+    /// <param name="statAttribute">The stat attribute.</param>
+    /// <returns><c>True</c>, if it was added; <c>false</c>, if the system already holds its definition.</returns>
+    public bool TryAddStatAttribute(IAttribute statAttribute)
+    {
+        lock (this._attributesLock)
+        {
+            if (this._attributes.ContainsKey(statAttribute.Definition))
+            {
+                return false;
+            }
+
+            this._attributes.Add(statAttribute.Definition, statAttribute);
+        }
+
+        this.OnAttributeAdded(statAttribute);
+        return true;
+    }
+
+    /// <summary>
     /// Gets the composable attribute.
     /// </summary>
     /// <param name="attributeDefinition">The attribute definition.</param>

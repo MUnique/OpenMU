@@ -12,6 +12,8 @@
                @bind-Value="@this.CurrentValue"
                SearchMethod="@((text, _) => this.EffectiveLookupController.GetSuggestionsAsync<TObject>(text, this.PersistenceContext))"
                EnableDropDown="true"
+               ShowDropDownOnFocus="@ShowAllOnFocus"
+               ClearSearchOnFocus="@ShowAllOnFocus"
                MaximumSuggestions="20"
                Placeholder="@Resources.Search"
                Id="@this.FieldIdentifier.FieldName">

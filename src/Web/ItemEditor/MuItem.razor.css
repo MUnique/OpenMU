@@ -3,6 +3,7 @@
     left: -38px;
     top: -42px;
     user-select: none;
+    pointer-events: none;
 }
 
 .mu-item {
