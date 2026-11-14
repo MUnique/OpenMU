@@ -43,8 +43,7 @@ public class TradeAcceptAction : BaseTradeAction
                 catch (Exception ex)
                 {
                     tradeAccepter.Logger.LogError(ex, "Error while opening a trade between {tradeAccepter} and {tradePartner}", tradeAccepter, tradePartner);
-                    await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
-                    await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                    await new TradeCancelAction().CancelTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
                 }
             }
         }

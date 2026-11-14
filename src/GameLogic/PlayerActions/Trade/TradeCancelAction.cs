@@ -15,10 +15,15 @@ public class TradeCancelAction : BaseTradeAction
     /// Cancels the trade.
     /// </summary>
     /// <param name="trader">The trader.</param>
-    public async ValueTask CancelTradeAsync(ITrader trader)
+    public ValueTask CancelTradeAsync(ITrader trader) => this.CancelTradeAsync(trader, trader.TradingPartner);
+
+    /// <summary>Cancels only the captured pair, preserving replacement trades and their notifications.</summary>
+    /// <param name="trader">The trader.</param>
+    /// <param name="expectedPartner">The captured partner, or null for a request without a partner.</param>
+    internal async ValueTask CancelTradeAsync(ITrader trader, ITrader? expectedPartner)
     {
         using var loggerScope = (trader as Player)?.Logger.BeginScope(this.GetType());
-        var tradingPartner = trader.TradingPartner;
+        var tradingPartner = expectedPartner;
         var traderNotification = ValueTask.CompletedTask;
         var partnerNotification = ValueTask.CompletedTask;
         Exception? error = null;

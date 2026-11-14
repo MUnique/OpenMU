@@ -1221,6 +1221,118 @@ public class TradeTest
         Assert.That(trader2.TradingPartner, Is.Null);
     }
 
+    /// <summary>A captured pair cannot cancel a replacement attached to either original participant.</summary>
+    /// <param name="replaceTrader">Whether the original trader, rather than the original partner, opens the replacement.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CapturedCancellationPreservesReplacementAsync(bool replaceTrader)
+    {
+        var trader = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var partner = await PlayerTestHelper.CreatePlayerAsync(trader.GameContext).ConfigureAwait(false);
+        var replacement = await PlayerTestHelper.CreatePlayerAsync(trader.GameContext).ConfigureAwait(false);
+        trader.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        var action = new TradeCancelAction();
+        try
+        {
+            Assert.That(await trader.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(trader, partner)).ConfigureAwait(false), Is.True);
+            await partner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(partner, true)).ConfigureAwait(false);
+            await trader.RunPersistenceExclusiveAsync(() => action.CancelTradeAsync(trader)).ConfigureAwait(false);
+            var replaced = replaceTrader ? trader : partner;
+            replaced.Money = 200;
+            Assert.That(await replacement.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(replacement, replaced)).ConfigureAwait(false), Is.True);
+            await replaced.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(replaced, true)).ConfigureAwait(false);
+            await replaced.RunPersistenceExclusiveAsync(() => new TradeMoneyAction().TradeMoneyAsync(replaced, 60)).ConfigureAwait(false);
+            var backup = replaced.BackupInventory;
+            var replacementBackup = replacement.BackupInventory;
+            foreach (var player in new[] { trader, partner, replacement })
+            {
+                Mock.Get(player.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Invocations.Clear();
+            }
+
+            await trader.RunPersistenceExclusiveAsync(() => action.CancelTradeAsync(trader, partner)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(replaced.TradingPartner, Is.SameAs(replacement));
+                Assert.That(replacement.TradingPartner, Is.SameAs(replaced));
+                Assert.That(replaced.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(replacement.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(replaced.BackupInventory, Is.SameAs(backup));
+                Assert.That(replacement.BackupInventory, Is.SameAs(replacementBackup));
+                Assert.That(replaced.Money, Is.EqualTo(140));
+                Assert.That(replaced.TradingMoney, Is.EqualTo(60));
+            });
+            foreach (var player in new[] { trader, partner, replacement })
+            {
+                Mock.Get(player.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+            }
+
+            await replacement.RunPersistenceExclusiveAsync(() => action.CancelTradeAsync(replacement)).ConfigureAwait(false);
+            Assert.That(replaced.Money, Is.EqualTo(200));
+        }
+        finally
+        {
+            await trader.DisposeAsync().ConfigureAwait(false);
+            await partner.DisposeAsync().ConfigureAwait(false);
+            await replacement.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Owned notifying cancellation completes both sides and preserves the first post-reset error.</summary>
+    [Test]
+    public async Task CapturedCancellationCompletesBothSidesAfterErrorAsync()
+    {
+        var trader = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var partner = await PlayerTestHelper.CreatePlayerAsync(trader.GameContext).ConfigureAwait(false);
+        Assert.That(await trader.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(trader, partner)).ConfigureAwait(false), Is.True);
+        await partner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(partner, true)).ConfigureAwait(false);
+        var active = new AsyncLocal<bool>();
+        var error = new InvalidOperationException("Owned cancellation metric failed.");
+        using var listener = new MeterListener();
+        listener.InstrumentPublished = (instrument, subscriber) =>
+        {
+            if (instrument.Meter.Name == BaseTradeAction.MeterName && instrument.Name == "CancelledTradesCount")
+            {
+                subscriber.EnableMeasurementEvents(instrument);
+            }
+        };
+        listener.SetMeasurementEventCallback<int>((_, _, _, _) =>
+        {
+            if (active.Value)
+            {
+                throw error;
+            }
+        });
+        listener.Start();
+        try
+        {
+            var cancellation = Task.Run(async () =>
+            {
+                active.Value = true;
+                try
+                {
+                    await trader.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(trader, partner)).ConfigureAwait(false);
+                }
+                finally
+                {
+                    active.Value = false;
+                }
+            });
+            Assert.That(Assert.ThrowsAsync<InvalidOperationException>(async () => await cancellation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false)), Is.SameAs(error));
+            foreach (var player in new[] { trader, partner })
+            {
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(player.TradingPartner, Is.Null);
+                Assert.That(player.BackupInventory, Is.Null);
+                Mock.Get(player.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+            }
+        }
+        finally
+        {
+            await trader.DisposeAsync().ConfigureAwait(false);
+            await partner.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
     private static byte[] CreateTradeRequestPacket(ushort targetId)
     {
         var packet = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TradeRequestRef.Length];
