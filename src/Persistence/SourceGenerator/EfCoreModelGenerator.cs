@@ -181,41 +181,6 @@ internal partial class {className} : {fullName}, IIdentifiable
         });
     }
 
-    private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
-    {
-        var standaloneCollectionProperties = ModelGeneratorHelper.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
-        foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
-        {
-            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
-
-            var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, joinTypeName)}
-
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
-
-using System.ComponentModel.DataAnnotations.Schema;
-using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Persistence.EntityFramework;
-
-[Table(nameof({joinTypeName}), Schema = {(ModelGeneratorHelper.IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
-internal partial class {joinTypeName}
-{{
-    public Guid {propertyInfo.ReflectedType.Name}Id {{ get; set; }}
-    public {propertyInfo.ReflectedType.Name} {propertyInfo.ReflectedType.Name} {{ get; set; }}
-
-    public Guid {elementType.Name}Id {{ get; set; }}
-    public {elementType.Name} {elementType.Name} {{ get; set; }}
-}}
-
-internal partial class {propertyInfo.ReflectedType.Name}
-{{
-    public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
-}}
-";
-            yield return (joinTypeName, source);
-        }
-    }
-
     /// <summary>
     /// Generates the converter, which converts the objects of this model to the objects of the basic model.
     /// </summary>
@@ -393,6 +358,41 @@ internal sealed class BasicModelConverter
         return type.IsGenericType
             ? $"{type.Namespace}.{type.Name.Substring(0, type.Name.IndexOf('`'))}<{string.Join(", ", type.GetGenericArguments().Select(GetTypeName))}>"
             : type.FullName!.Replace('+', '.');
+    }
+
+    private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
+    {
+        var standaloneCollectionProperties = ModelGeneratorHelper.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
+        foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
+        {
+            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
+            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
+
+            var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, joinTypeName)}
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof({joinTypeName}), Schema = {(ModelGeneratorHelper.IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+internal partial class {joinTypeName}
+{{
+    public Guid {propertyInfo.ReflectedType.Name}Id {{ get; set; }}
+    public {propertyInfo.ReflectedType.Name} {propertyInfo.ReflectedType.Name} {{ get; set; }}
+
+    public Guid {elementType.Name}Id {{ get; set; }}
+    public {elementType.Name} {elementType.Name} {{ get; set; }}
+}}
+
+internal partial class {propertyInfo.ReflectedType.Name}
+{{
+    public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
+}}
+";
+            yield return (joinTypeName, source);
+        }
     }
 
     private string GenerateDbContext()

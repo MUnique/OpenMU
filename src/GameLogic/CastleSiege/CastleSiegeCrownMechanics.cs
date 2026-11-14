@@ -288,6 +288,7 @@ public static class CastleSiegeCrownMechanics
         {
             return;
         }
+
         foreach (var player in context.GetSiegePlayers())
         {
             if (IsAttackingSide(context.GetPlayerJoinSide(player)))

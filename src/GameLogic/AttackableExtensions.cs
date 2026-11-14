@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -19,6 +20,15 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
+    extension(IAttackable attackable)
+    {
+        /// <summary>
+        /// Gets a value indicating whether this instance is a summoned monster.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1101:PrefixLocalCallsWithThis", Justification = "The receiver of an extension block can't be prefixed with 'this'.")]
+        public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
+    }
+
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
     private const short StunnedMagicEffectNumber = 61;     // 0x3D
 
@@ -28,14 +38,6 @@ public static class AttackableExtensions
             { Stats.CurrentMana, Stats.ManaUsageReduction },
             { Stats.CurrentAbility, Stats.AbilityUsageReduction },
         };
-
-    extension(IAttackable attackable)
-    {
-        /// <summary>
-        /// Gets a value indicating whether this instance is a summoned monster.
-        /// </summary>
-        public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
-    }
 
     /// <summary>
     /// Determines whether an attack is blocked because the target or the player attacker is in a safezone.
