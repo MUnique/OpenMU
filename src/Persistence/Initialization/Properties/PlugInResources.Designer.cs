@@ -1091,5 +1091,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddProtectionTalismansUpdatePlugIn_Description text.</summary>
         public static string AddProtectionTalismansUpdatePlugIn_Description => ResourceManager.GetString("AddProtectionTalismansUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixCrywolfGateTerrainUpdatePlugIn_Name text.</summary>
+        public static string FixCrywolfGateTerrainUpdatePlugIn_Name => ResourceManager.GetString("FixCrywolfGateTerrainUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixCrywolfGateTerrainUpdatePlugIn_Description text.</summary>
+        public static string FixCrywolfGateTerrainUpdatePlugIn_Description => ResourceManager.GetString("FixCrywolfGateTerrainUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }

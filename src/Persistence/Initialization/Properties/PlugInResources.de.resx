@@ -958,4 +958,10 @@
   <data name="AddProtectionTalismansUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt den Talisman des Wächters, der vor der Todesstrafe schützt, und den Talisman des Gegenstandsschutzes hinzu, der die Haltbarkeit der ausgerüsteten Gegenstände erhält.</value>
   </data>
+  <data name="FixCrywolfGateTerrainUpdatePlugIn_Name" xml:space="preserve">
+    <value>Eingang nach Crywolf im Tal von Loren korrigieren</value>
+  </data>
+  <data name="FixCrywolfGateTerrainUpdatePlugIn_Description" xml:space="preserve">
+    <value>Macht den südlichen Zugang zum Tor der Festung Crywolf im Tal von Loren begehbar, den Spieler außerhalb der Burgbelagerung benutzen. Der nördliche Zugang und alle anderen Felder bleiben unverändert.</value>
+  </data>
 </root>
