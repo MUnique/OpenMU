@@ -358,7 +358,8 @@ internal sealed class PlayerMapTransitions
             return;
         }
 
-        if (player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
+        // A generic relocation still carrying an owned death is movement, not a revival: it uses the map change handshake.
+        if (player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn && !IsRelocatingOwnedDeath())
         {
             // Older clients use a separate packet for the respawn, while newer don't.
             // It requires a slightly different logic.
@@ -368,17 +369,30 @@ internal sealed class PlayerMapTransitions
                 return;
             }
 
-            player.CurrentMap = map;
-            if (tryPreparePlacement is null && placementOwner is not null)
+            if (!IsRelocatingOwnedDeath())
             {
-                // A generic relocation still carrying an owned death is movement, not a revival.
-                await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+                await RespawnOnMapAsync(respawnPlugIn, map).ConfigureAwait(false);
+                return;
             }
-            else
-            {
-                await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
-            }
+        }
 
+        player.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+        if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
+        {
+            return;
+        }
+
+        // after this, the Client will send us a F3 12 packet, to tell us it loaded
+        // the map and is ready to receive the new meet player/monster etc.
+        // Then ClientReadyAfterMapChange is called.
+        await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+
+        bool IsRelocatingOwnedDeath() => tryPreparePlacement is null && placementOwner is not null;
+
+        async ValueTask RespawnOnMapAsync(IRespawnAfterDeathPlugIn respawnPlugIn, GameMap map)
+        {
+            player.CurrentMap = map;
+            await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
             if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
             {
                 return;
@@ -396,25 +410,17 @@ internal sealed class PlayerMapTransitions
                 return;
             }
 
-            await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+            await using (var arrival = await player.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false))
+            {
+                // A death published while changing map needs this same state exclusion; adopt it before arriving.
+                arrival.Allowed &= player.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap
+                    && IsCurrentPlacement() && ReferenceEquals(player.CurrentMap, map);
+            }
+
             if (IsCurrentPlacement() && ReferenceEquals(player.CurrentMap, map) && player.PlayerState.CurrentState == GameLogic.PlayerState.EnteredWorld)
             {
                 await player.CompleteMapChangeDeathAsync().ConfigureAwait(false);
             }
-        }
-        else
-        {
-            player.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
-            if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
-            {
-                return;
-            }
-
-            await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
-
-            // after this, the Client will send us a F3 12 packet, to tell us it loaded
-            // the map and is ready to receive the new meet player/monster etc.
-            // Then ClientReadyAfterMapChange is called.
         }
 
         bool PrepareOwnedPlacement()

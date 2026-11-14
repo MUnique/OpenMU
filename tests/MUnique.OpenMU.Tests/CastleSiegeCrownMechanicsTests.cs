@@ -1314,6 +1314,12 @@ public class CastleSiegeCrownMechanicsTests
             await CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1).ConfigureAwait(false);
             release.TrySetResult();
             await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (lethal)
+            {
+                // The relocated reserved death arrives through the client's ready packet.
+                await SendClientReadyAsync(victim).ConfigureAwait(false);
+            }
+
             Assert.Multiple(() =>
             {
                 Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(lethal ? 0 : 10));
@@ -1388,6 +1394,9 @@ public class CastleSiegeCrownMechanicsTests
             await relocation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             Assert.That(victim.IsAlive, Is.False);
             await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+            // The relocated reserved death arrives through the client's ready packet.
+            await SendClientReadyAsync(victim).ConfigureAwait(false);
             await restored.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await Task.Delay(50).ConfigureAwait(false);
             Assert.Multiple(() =>
@@ -1516,11 +1525,10 @@ public class CastleSiegeCrownMechanicsTests
                 Assert.That(mapChange.PositionY, Is.EqualTo(victim.Position.Y));
             }
 
-            if (!legacy && relocate)
+            if (relocate && (!legacy || lethal))
             {
-                var ready = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.ClientReadyAfterMapChangeRef.Length];
-                _ = new MUnique.OpenMU.Network.Packets.ClientToServer.ClientReadyAfterMapChangeRef(ready);
-                await victim.RunPersistenceExclusiveAsync(() => new MUnique.OpenMU.GameServer.MessageHandler.Character.CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(victim, ready)).ConfigureAwait(false);
+                // A relocated reserved death uses the map change handshake with every client.
+                await SendClientReadyAsync(victim).ConfigureAwait(false);
             }
 
             Assert.That(victim.CurrentMap, Is.SameAs(fixture.SiegeMap));
@@ -1665,6 +1673,13 @@ public class CastleSiegeCrownMechanicsTests
         }
 
         public ValueTask MapChangeFailedAsync() => ValueTask.CompletedTask;
+    }
+
+    private static async Task SendClientReadyAsync(Player player)
+    {
+        var ready = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.ClientReadyAfterMapChangeRef.Length];
+        _ = new MUnique.OpenMU.Network.Packets.ClientToServer.ClientReadyAfterMapChangeRef(ready);
+        await player.RunPersistenceExclusiveAsync(() => new MUnique.OpenMU.GameServer.MessageHandler.Character.CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(player, ready)).ConfigureAwait(false);
     }
 
     [System.Runtime.CompilerServices.UnsafeAccessor(System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = "_pendingDeathRespawn")]

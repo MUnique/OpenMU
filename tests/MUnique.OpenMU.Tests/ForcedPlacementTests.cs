@@ -170,7 +170,8 @@ public class ForcedPlacementTests
 
             release.TrySetResult();
             await placement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-            if (!legacy && stage is not ("cleanup" or "teardown" or "remove-teardown"))
+            // A relocation which adopted a death of this life uses the map change handshake with every client.
+            if ((!legacy || stage == "remove") && stage is not ("cleanup" or "teardown" or "remove-teardown"))
             {
                 await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
             }
@@ -290,10 +291,8 @@ public class ForcedPlacementTests
             Assert.That(target.Attributes[Stats.CurrentHealth], Is.Zero);
             release.TrySetResult();
             await placement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-            if (!legacy)
-            {
-                await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
-            }
+            // The relocated reserved death waits for the ready packet with every client.
+            await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
 
             await restored.Task.WaitAsync(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
             if (!legacy)
@@ -365,13 +364,11 @@ public class ForcedPlacementTests
 
             // An ordinary forced placement supplies a valid gate; its existing arrival path owns retry.
             await peer.RunPersistenceExclusiveAsync(() => target.RespawnAtAsync(destination.SafeZoneSpawnGate!)).ConfigureAwait(false);
-            if (!legacy)
+            // The relocated reserved death waits for the ready packet with every client.
+            await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
+            if (target.PlayerState.CurrentState == PlayerState.ChangingMap)
             {
                 await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
-                if (target.PlayerState.CurrentState == PlayerState.ChangingMap)
-                {
-                    await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
-                }
             }
 
             Assert.Multiple(() =>
