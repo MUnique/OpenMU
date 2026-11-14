@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -107,6 +108,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     private (IAttacker? Killer, DeathInformation Death)? _pendingMapChangeDeath;
 
     private bool _hasReservedLethalHit;
+
+    // State exclusion owns preparation; an old life cannot release a replacement's admission owner.
+    private ItemAwareAttributeSystem? _forcedPlacementPreparation;
 
     // An independent disconnect may overlap packet-driven logout; neither may republish trade availability early.
     private int _removalsInProgress;
@@ -684,9 +688,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public DateTime LastShieldRecoveryHiatusAccrual { get; set; } = DateTime.UtcNow;
 
+    /// <summary>Gets a value indicating whether this life's forced placement is closing its interactions.</summary>
+    internal bool IsPreparingForcedPlacement => this.Attributes is { } attributes
+        && ReferenceEquals(Volatile.Read(ref this._forcedPlacementPreparation), attributes);
+
     /// <summary>Gets a value indicating whether a live character can publish trade state, excluding scoped world removal.</summary>
     /// <remarks>Read the removal guard first so its final decrement publishes the cleared character to this reader.</remarks>
-    internal bool IsAvailableForTrade => Volatile.Read(ref this._removalsInProgress) == 0 && this.SelectedCharacter is not null && this.IsAlive;
+    internal bool IsAvailableForTrade => Volatile.Read(ref this._removalsInProgress) == 0 && !this.IsPreparingForcedPlacement && this.SelectedCharacter is not null && this.IsAlive;
 
     /// <summary>
     /// Gets a value indicating whether this thread is committing this player's hit resources.
@@ -1670,49 +1678,81 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <returns>Whether this operation owns the existing changing-map state.</returns>
     internal async ValueTask<bool> PrepareForForcedPlacementAsync(Func<bool> isCurrentLife)
     {
-        while (true)
+        var attributes = this.Attributes;
+        var acquired = false;
+        try
         {
-            State state;
-            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
             {
-                state = this.PlayerState.CurrentState;
-                context.Allowed &= isCurrentLife() && state != GameLogic.PlayerState.NpcDialogOpened;
-                if (context.Allowed)
+                context.Allowed = false;
+                if (attributes is null || !isCurrentLife() || ReferenceEquals(this._forcedPlacementPreparation, attributes))
                 {
-                    return true;
+                    return false;
                 }
 
-                if (!isCurrentLife() || (state != GameLogic.PlayerState.PartyRequest
-                    && state != GameLogic.PlayerState.TradeRequested && state != GameLogic.PlayerState.TradeOpened
-                    && state != GameLogic.PlayerState.TradeButtonPressed && state != GameLogic.PlayerState.NpcDialogOpened))
+                this._forcedPlacementPreparation = attributes;
+                acquired = true;
+            }
+
+            while (true)
+            {
+                State state;
+                NpcDialogContext? dialog;
+                await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
+                {
+                    state = this.PlayerState.CurrentState;
+                    dialog = this.OpenedNpcContext;
+                    context.Allowed &= isCurrentLife() && state != GameLogic.PlayerState.NpcDialogOpened;
+                    if (context.Allowed)
+                    {
+                        return true;
+                    }
+
+                    if (!isCurrentLife() || (state != GameLogic.PlayerState.PartyRequest
+                        && state != GameLogic.PlayerState.TradeRequested && state != GameLogic.PlayerState.TradeOpened
+                        && state != GameLogic.PlayerState.TradeButtonPressed && state != GameLogic.PlayerState.NpcDialogOpened))
+                    {
+                        return false;
+                    }
+                }
+
+                if (state == GameLogic.PlayerState.PartyRequest)
+                {
+                    await new GameLogic.PlayerActions.Party.PartyResponseAction().HandleResponseAsync(this, false).ConfigureAwait(false);
+                }
+                else if (state == GameLogic.PlayerState.NpcDialogOpened)
+                {
+                    if (dialog is not null)
+                    {
+                        await new CloseNpcDialogAction().CloseNpcDialogAsync(this, dialog).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                        context.Allowed &= isCurrentLife() && this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpcContext is null;
+                    }
+                }
+                else
+                {
+                    await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+                }
+
+                if (this.PlayerState.CurrentState == state)
                 {
                     return false;
                 }
             }
-
-            if (state == GameLogic.PlayerState.PartyRequest)
+        }
+        finally
+        {
+            if (acquired)
             {
-                await new GameLogic.PlayerActions.Party.PartyResponseAction().HandleResponseAsync(this, false).ConfigureAwait(false);
-            }
-            else if (state == GameLogic.PlayerState.NpcDialogOpened)
-            {
-                if (this.OpenedNpc is not null)
+                await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+                context.Allowed = false;
+                if (ReferenceEquals(this._forcedPlacementPreparation, attributes))
                 {
-                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
+                    this._forcedPlacementPreparation = null;
                 }
-                else
-                {
-                    await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
-            }
-
-            if (this.PlayerState.CurrentState == state)
-            {
-                return false;
             }
         }
     }
@@ -2128,18 +2168,40 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
+        ExceptionDispatchInfo? effectFailure = null;
         try
         {
             if (applyOrdinaryHitEffects)
             {
-                if (this.Attributes![Stats.IsFrozen] > 0)
+                try
                 {
-                    await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
+                    if (this.Attributes![Stats.IsFrozen] > 0)
+                    {
+                        await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    effectFailure = ExceptionDispatchInfo.Capture(ex);
                 }
 
-                if (this.Attributes![Stats.IsAsleep] > 0)
+                try
                 {
-                    await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+                    if (this.Attributes![Stats.IsAsleep] > 0)
+                    {
+                        await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (effectFailure is null)
+                    {
+                        effectFailure = ExceptionDispatchInfo.Capture(ex);
+                    }
+                    else
+                    {
+                        this.Logger.LogError(ex, "Error waking the character after an earlier hit-effect failure.");
+                    }
                 }
             }
 
@@ -2162,13 +2224,26 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
         }
+        catch (Exception ex) when (effectFailure is not null)
+        {
+            this.Logger.LogError(ex, "Error publishing an accepted hit after its effect update failed.");
+        }
         finally
         {
             if (killed)
             {
-                await this.OnDeathAsync(attacker, ownedDeath).ConfigureAwait(false);
+                try
+                {
+                    await this.OnDeathAsync(attacker, ownedDeath).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (effectFailure is not null)
+                {
+                    this.Logger.LogError(ex, "Error completing death after an earlier hit-effect failure.");
+                }
             }
         }
+
+        effectFailure?.Throw();
 
         if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
         {
@@ -2228,9 +2303,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         while (true)
         {
             State state;
+            NpcDialogContext? dialog;
             await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
             {
                 state = this.PlayerState.CurrentState;
+                dialog = this.OpenedNpcContext;
                 if (ownedDeath is not null)
                 {
                     lock (this._hitLock)
@@ -2276,13 +2353,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
             else
             {
-                if (this.OpenedNpc is not null)
+                if (dialog is not null)
                 {
-                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
+                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this, dialog).ConfigureAwait(false);
                 }
                 else
                 {
-                    await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                    await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                    var current = this.GetPlacementDeathSnapshot();
+                    context.Allowed &= this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpcContext is null
+                        && (ownedDeath is null || (current.Reserved && ReferenceEquals(current.Death, ownedDeath)));
                 }
             }
 

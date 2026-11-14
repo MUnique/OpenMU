@@ -16,11 +16,13 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -781,6 +783,75 @@ public class CastleSiegeCrownMechanicsTests
         {
             await victim.DisposeAsync().ConfigureAwait(false);
             await peer.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    /// <summary>Living Crown victims cannot defeat placement by reopening Chaos Goblin during normal close/save.</summary>
+    /// <param name="reopen">Whether the victim requests the same dialog after its normal World publication.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CrownRelocationCannotBeDefeatedByReopenedNpcAsync(bool reopen)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: false).ConfigureAwait(false);
+        var definition = new Mock<MonsterDefinition>();
+        definition.SetupAllProperties();
+        definition.Setup(d => d.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> { new() });
+        definition.Object.Number = 238;
+        definition.Object.NpcWindow = NpcWindow.ChaosMachine;
+        var goblin = new NonPlayerCharacter(new MonsterSpawnArea(), definition.Object, fixture.SiegeMap) { Position = victim.Position };
+        await fixture.SiegeMap.AddAsync(goblin).ConfigureAwait(false);
+        var packet = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef.Length];
+        _ = new MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef(packet) { NpcId = goblin.Id };
+        var closed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        victim.Attributes![Stats.CurrentHealth] = 100;
+        victim.Money = 200;
+        await victim.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(victim, packet)).ConfigureAwait(false);
+        victim.PlayerState.StateChanged += args =>
+        {
+            if (args.PreviousState == PlayerState.NpcDialogOpened && args.CurrentStateState == PlayerState.EnteredWorld)
+            {
+                closed.TrySetResult();
+            }
+
+            return ValueTask.CompletedTask;
+        };
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Invocations.Clear();
+        var relocation = Task.Run(async () => await winner.RunPersistenceExclusiveAsync(
+            () => CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1)).ConfigureAwait(false));
+        try
+        {
+            await closed.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (reopen)
+            {
+                // Independent player's packet context; the siege thread is in the real one-second close/save.
+                for (var attempt = 0; attempt < 8; attempt++)
+                {
+                    await victim.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(victim, packet)).ConfigureAwait(false);
+                }
+            }
+
+            await relocation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+                Assert.That(victim.OpenedNpc, Is.Null);
+                Assert.That(victim.BackupInventory, Is.Null);
+                Assert.That(victim.Money, Is.EqualTo(200));
+            });
+            Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Verify(v => v.MapChangeAsync(), Times.Once);
+            await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            Assert.That(victim.IsAlive, Is.True);
+        }
+        finally
+        {
+            await relocation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await fixture.SiegeMap.RemoveAsync(goblin).ConfigureAwait(false);
+            await goblin.DisposeAsync().ConfigureAwait(false);
+            await victim.DisposeAsync().ConfigureAwait(false);
             await winner.DisposeAsync().ConfigureAwait(false);
             fixture.GameServerContext.Dispose();
         }

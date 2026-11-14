@@ -15,6 +15,10 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.GameLogic.PlayerActions.Party;
+using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.Views.Vault;
@@ -307,6 +311,350 @@ public class TalkNpcActionTests
         finally
         {
             await player.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A delayed external merchant close cannot clear a successor dialog's context, vault or crafting snapshot.</summary>
+    /// <param name="crafting">Whether the successor owns a crafting inventory backup rather than vault storage.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task ExternalCloseCannotClearSuccessorDialogAsync(bool crafting)
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var first = 0;
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if ((LogLevel)i.Arguments[0] == LogLevel.Debug && i.Arguments[2].ToString()!.Contains("closes NPC", StringComparison.Ordinal)
+                    && Interlocked.Exchange(ref first, 1) == 0)
+                {
+                    entered.TrySetResult();
+                    Assert.That(release.Wait(TimeSpan.FromSeconds(5)), Is.True);
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        using var game = CreateServerContext(factory.Object);
+        var player = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        player.Money = 200;
+        var oldNpc = CreateNpc(NpcWindow.Merchant);
+        var next = CreateNpc(crafting ? NpcWindow.ChaosMachine : NpcWindow.VaultStorage);
+        next.Definition.Number = 239;
+        if (crafting)
+        {
+            next.Definition.ItemCraftings.Add(new MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting());
+        }
+        else
+        {
+            var storage = new Mock<ItemStorage>();
+            storage.Setup(s => s.Items).Returns(new List<Item>());
+            Mock.Get(player.Account!).SetupProperty(a => a.Vault, storage.Object);
+        }
+
+        await player.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(player, oldNpc)).ConfigureAwait(false);
+        var closing = Task.Run(async () => await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await player.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(player, next)).ConfigureAwait(false);
+            var dialog = player.OpenedNpcContext;
+            var vault = player.Vault;
+            var backup = player.BackupInventory;
+            release.Set();
+            await closing.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.NpcDialogOpened));
+                Assert.That(player.OpenedNpcContext, Is.SameAs(dialog));
+                Assert.That(player.OpenedNpc, Is.SameAs(next));
+                Assert.That(player.Vault, Is.SameAs(vault));
+                Assert.That(player.BackupInventory, Is.SameAs(backup));
+            });
+            await player.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(player)).ConfigureAwait(false);
+            Assert.That(player.BackupInventory, Is.Null);
+            Assert.That(player.Vault, Is.Null);
+            var inventory = player.Inventory!;
+            player.Money = 300;
+            await player.RemoveFromGameAsync().ConfigureAwait(false);
+            Assert.That(inventory.ItemStorage.Money, Is.EqualTo(300), "Later character teardown cannot restore a successor's stale crafting snapshot.");
+        }
+        finally
+        {
+            release.Set();
+            await closing.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await player.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Every preparation exit restores normal NPC, party and trade admission without changing living flags.</summary>
+    /// <param name="exit">The successful, refused or exceptional preparation exit.</param>
+    [TestCase("success")]
+    [TestCase("refused")]
+    [TestCase("exception")]
+    public async Task ForcedPreparationReleasesAdmissionAsync(string exit)
+    {
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        var failure = new InvalidOperationException("close logging failed");
+        var failed = 0;
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if (exit == "exception" && i.Arguments[2].ToString()!.Contains("closes NPC", StringComparison.Ordinal)
+                    && Interlocked.Exchange(ref failed, 1) == 0)
+                {
+                    throw failure;
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        using var game = CreateServerContext(factory.Object);
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var npc = CreateNpc(NpcWindow.ChaosMachine);
+        npc.Definition.Number = 239;
+        try
+        {
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+            if (exit == "refused")
+            {
+                var checks = 0;
+                Assert.That(await target.PrepareForForcedPlacementAsync(() => Interlocked.Increment(ref checks) == 1).ConfigureAwait(false), Is.False);
+            }
+            else if (exit == "exception")
+            {
+                var observed = Assert.ThrowsAsync<InvalidOperationException>(async () => await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false));
+                Assert.That(observed, Is.SameAs(failure));
+            }
+            else
+            {
+                await target.RespawnAtAsync(new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+            }
+
+            Assert.That(target.IsPreparingForcedPlacement, Is.False);
+            Assert.That(target.IsAlive, Is.True);
+            if (target.OpenedNpc is not null)
+            {
+                await target.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(target)).ConfigureAwait(false);
+            }
+
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+            Assert.That(target.OpenedNpc, Is.SameAs(npc));
+            await target.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(target)).ConfigureAwait(false);
+            await peer.RunPersistenceExclusiveAsync(() => new PartyRequestAction().HandlePartyRequestAsync(peer, target)).ConfigureAwait(false);
+            Assert.That(target.LastPartyRequester, Is.SameAs(peer));
+            await target.RunPersistenceExclusiveAsync(() => new PartyResponseAction().HandleResponseAsync(target, false)).ConfigureAwait(false);
+            Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, target)).ConfigureAwait(false), Is.True);
+            await target.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(target)).ConfigureAwait(false);
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Old-life completion cannot release replacement-life preparation or admit new interactions into it.</summary>
+    [Test]
+    public async Task ReplacementPreparationKeepsItsAdmissionOwnerAsync()
+    {
+        var entered = new[] { new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously), new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously) };
+        using var oldRelease = new ManualResetEventSlim();
+        using var newRelease = new ManualResetEventSlim();
+        var releases = new[] { oldRelease, newRelease };
+        var closes = 0;
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if (i.Arguments[2].ToString()!.Contains("closes NPC", StringComparison.Ordinal))
+                {
+                    var index = Interlocked.Increment(ref closes) - 1;
+                    if (index < entered.Length)
+                    {
+                        entered[index].TrySetResult();
+                        Assert.That(releases[index].Wait(TimeSpan.FromSeconds(5)), Is.True);
+                    }
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        using var game = CreateServerContext(factory.Object);
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var character = target.SelectedCharacter!;
+        character.Name = "PrepLife";
+        Mock.Get(target.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        var npc = CreateNpc(NpcWindow.ChaosMachine);
+        npc.Definition.Number = 239;
+        await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+        var gate = new ExitGate { Map = target.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 };
+        var original = Task.Run(async () => await target.RespawnAtAsync(gate).ConfigureAwait(false));
+        var replacement = Task.CompletedTask;
+        try
+        {
+            await entered[0].Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.IsPreparingForcedPlacement, Is.True);
+            Assert.That(await target.PrepareForForcedPlacementAsync(() => true).ConfigureAwait(false), Is.False);
+            Assert.That(target.IsPreparingForcedPlacement, Is.True, "Competing same-life refusal cannot release the active owner.");
+            var oldAttributes = target.Attributes;
+            await target.RunPersistenceExclusiveAsync(() => new LogoutAction().LogoutAsync(target, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
+            await target.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(target)).ConfigureAwait(false);
+            await target.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(target, character.Name)).ConfigureAwait(false);
+            Assert.That(target.Attributes, Is.Not.SameAs(oldAttributes));
+            Assert.That(target.IsPreparingForcedPlacement, Is.False, "An old-life owner does not block a selected replacement life.");
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+            replacement = Task.Run(async () => await target.RespawnAtAsync(gate).ConfigureAwait(false));
+            await entered[1].Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            oldRelease.Set();
+            await original.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.IsPreparingForcedPlacement, Is.True);
+            for (var attempt = 0; attempt < 8; attempt++)
+            {
+                await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+                await peer.RunPersistenceExclusiveAsync(() => new PartyRequestAction().HandlePartyRequestAsync(peer, target)).ConfigureAwait(false);
+                Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, target)).ConfigureAwait(false), Is.False);
+            }
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.OpenedNpc, Is.Null);
+                Assert.That(target.LastPartyRequester, Is.Null);
+                Assert.That(target.TradingPartner, Is.Null);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(target.IsAlive, Is.True);
+            });
+            newRelease.Set();
+            await replacement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.IsPreparingForcedPlacement, Is.False);
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, npc)).ConfigureAwait(false);
+            Assert.That(target.OpenedNpc, Is.SameAs(npc));
+        }
+        finally
+        {
+            oldRelease.Set();
+            newRelease.Set();
+            await Task.WhenAll(original, replacement).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Missing or stale expected identity cannot select and close an unrelated current opening.</summary>
+    /// <param name="crafting">Whether the successor owns a crafting snapshot.</param>
+    /// <param name="missing">Whether the caller supplied null instead of the original context.</param>
+    [TestCase(false, false)]
+    [TestCase(false, true)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task StaleExpectedClosePreservesCurrentDialogAsync(bool crafting, bool missing)
+    {
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var first = CreateNpc(NpcWindow.Merchant);
+        var next = CreateNpc(crafting ? NpcWindow.ChaosMachine : NpcWindow.VaultStorage);
+        next.Definition.Number = 239;
+        if (crafting)
+        {
+            next.Definition.ItemCraftings.Add(new MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting());
+        }
+        else
+        {
+            var vault = new Mock<ItemStorage>();
+            vault.Setup(s => s.Items).Returns(new List<Item>());
+            Mock.Get(target.Account!).SetupProperty(a => a.Vault, vault.Object);
+        }
+
+        try
+        {
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, first)).ConfigureAwait(false);
+            var oldDialog = target.OpenedNpcContext;
+            await target.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(target)).ConfigureAwait(false);
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, next)).ConfigureAwait(false);
+            var current = target.OpenedNpcContext;
+            var storage = target.Vault;
+            var backup = target.BackupInventory;
+            await new CloseNpcDialogAction().CloseNpcDialogAsync(target, missing ? null : oldDialog).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.OpenedNpcContext, Is.SameAs(current));
+                Assert.That(target.Vault, Is.SameAs(storage));
+                Assert.That(target.BackupInventory, Is.SameAs(backup));
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.NpcDialogOpened));
+            });
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Close starts before a successor opens; asynchronous completion/errors do not retain state exclusion.</summary>
+    /// <param name="failure">Whether the old view fails immediately, after awaiting, or not at all.</param>
+    [TestCase("none")]
+    [TestCase("sync")]
+    [TestCase("async")]
+    public async Task CloseResponseIsStartedOnceOutsideCompletionScopeAsync(string failure)
+    {
+        var logger = new Mock<ILogger>();
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        using var game = CreateServerContext(factory.Object);
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var first = CreateNpc(NpcWindow.ChaosMachine);
+        first.Definition.Number = 239;
+        first.Definition.ItemCraftings.Add(new MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting());
+        var next = CreateNpc(NpcWindow.Merchant);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var events = new List<string>();
+        var error = new InvalidOperationException("close view failed");
+        Mock.Get(target.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>()!).Setup(v => v.DialogClosedAsync(first.Definition)).Returns(() =>
+        {
+            events.Add("close-start");
+            entered.TrySetResult();
+            if (failure == "sync")
+            {
+                throw error;
+            }
+
+            return CompleteResponseAsync();
+        });
+        await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, first)).ConfigureAwait(false);
+        var closing = Task.Run(async () => await new CloseNpcDialogAction().CloseNpcDialogAsync(target).ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(target, next)).ConfigureAwait(false);
+            events.Add("next-open");
+            var current = target.OpenedNpcContext;
+            release.TrySetResult();
+            await closing.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(events, Is.EqualTo(new[] { "close-start", "next-open" }));
+                Assert.That(target.OpenedNpcContext, Is.SameAs(current));
+                Assert.That(target.BackupInventory, Is.Null);
+                Assert.That(logger.Invocations.Any(i => i.Arguments.Any(a => ReferenceEquals(a, error))), Is.EqualTo(failure != "none"));
+            });
+            Mock.Get(target.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>()!).Verify(v => v.DialogClosedAsync(first.Definition), Times.Once);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await closing.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+        }
+
+        async ValueTask CompleteResponseAsync()
+        {
+            await release.Task.ConfigureAwait(false);
+            if (failure == "async")
+            {
+                throw error;
+            }
         }
     }
 

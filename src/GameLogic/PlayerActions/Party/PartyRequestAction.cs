@@ -72,6 +72,7 @@ public class PartyRequestAction
         await using (var context = await toRequest.PlayerState.TryBeginAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
         {
             context.Allowed &= player.IsAlive && toRequest.IsAlive
+                && !player.IsPreparingForcedPlacement && !toRequest.IsPreparingForcedPlacement
                 && !ReferenceEquals(player, toRequest) && toRequest.LastPartyRequester is null;
             if (!context.Allowed)
             {

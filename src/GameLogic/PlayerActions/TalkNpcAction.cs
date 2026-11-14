@@ -39,7 +39,7 @@ public class TalkNpcAction
         var dialog = new Player.NpcDialogContext(npc);
         await using (var context = await player.PlayerState.TryBeginAdvanceToAsync(expectedState).ConfigureAwait(false))
         {
-            if (!player.IsAlive)
+            if (!player.IsAlive || player.IsPreparingForcedPlacement)
             {
                 context.Allowed = false;
                 return;

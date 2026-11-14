@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -1071,6 +1072,172 @@ public class ConcurrentHitApplicationTests
         }
 
         async Task AttackAsync() => await target.AttackByAsync(attacker, null, false).ConfigureAwait(false);
+    }
+
+    /// <summary>A real frozen-effect snapshot may expire before shortening without losing accepted-hit publication.</summary>
+    /// <param name="expire">Whether the snapshotted real effect is disposed before DecreaseTimer.</param>
+    /// <param name="lethal">Whether the committed hit owns death.</param>
+    /// <param name="laterFailure">Whether an actual later death subscriber also faults.</param>
+    [TestCase(false, false, false)]
+    [TestCase(false, true, false)]
+    [TestCase(true, false, false)]
+    [TestCase(true, true, false)]
+    [TestCase(true, true, true)]
+    public async Task FrozenSnapshotFailureCannotHideAcceptedHitAsync(bool expire, bool lethal, bool laterFailure)
+    {
+        var target = await CreatePlayerAsync(lethal ? 10 : 1000).ConfigureAwait(false);
+        var attacker = await CreatePlayerAsync(1000, sameWorldAs: target).ConfigureAwait(false);
+        Add(attacker, Stats.AttackRatePvp, 100000);
+        Add(attacker, Stats.MinimumPhysBaseDmg, 100);
+        Add(attacker, Stats.MaximumPhysBaseDmg, 100);
+        Add(target, Stats.SoulBarrierManaTollPerHit, 7);
+        target.Attributes![Stats.CurrentMana] = 80;
+        var asleep = new MagicEffect(TimeSpan.FromMinutes(1), new MagicEffectDefinition { Number = 200 },
+            new MagicEffect.ElementWithTarget(new SimpleElement(1, AggregateType.AddRaw), Stats.IsAsleep));
+        await target.MagicEffectList.AddEffectAsync(asleep).ConfigureAwait(false);
+        var frozen = new MagicEffect(TimeSpan.FromMinutes(1), new MagicEffectDefinition { Number = 201 },
+            new MagicEffect.ElementWithTarget(new SimpleElement(1, AggregateType.AddRaw), Stats.IsFrozen));
+        await target.MagicEffectList.AddEffectAsync(frozen).ConfigureAwait(false);
+        var elements = frozen.PowerUpElements.ToArray();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var enumerations = 0;
+        frozen.PowerUpElements = EnumerateElements();
+        var targetHits = 0;
+        var attackerHits = 0;
+        var healthUpdates = 0;
+        var deaths = 0;
+        var secondaryFailure = new InvalidOperationException("later death subscriber failed");
+        var insideAttack = new AsyncLocal<bool>();
+        ObjectDisposedException? originalFailure = null;
+        EventHandler<FirstChanceExceptionEventArgs> captureFailure = (_, args) =>
+        {
+            if (insideAttack.Value && args.Exception is ObjectDisposedException error && error.ObjectName == nameof(MagicEffect))
+            {
+                Interlocked.CompareExchange(ref originalFailure, error, null);
+            }
+        };
+        AppDomain.CurrentDomain.FirstChanceException += captureFailure;
+        DeathInformation? observedDeath = null;
+        target.Died += (_, death) =>
+        {
+            Interlocked.Increment(ref deaths);
+            observedDeath = death;
+            if (laterFailure)
+            {
+                throw secondaryFailure;
+            }
+        };
+        var reportedHealth = float.NaN;
+        var sleepAtHit = float.NaN;
+        var manaAtHit = float.NaN;
+        HitInfo observedHit = default;
+        View<IShowHitPlugIn>(target).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>())).Returns((IAttackable _, HitInfo hit) =>
+        {
+            observedHit = hit;
+            sleepAtHit = target.Attributes[Stats.IsAsleep];
+            manaAtHit = target.Attributes[Stats.CurrentMana];
+            Interlocked.Increment(ref targetHits);
+            return ValueTask.CompletedTask;
+        });
+        View<IShowHitPlugIn>(attacker).Setup(v => v.ShowHitAsync(target, It.IsAny<HitInfo>())).Returns(() =>
+        {
+            Interlocked.Increment(ref attackerHits);
+            return ValueTask.CompletedTask;
+        });
+        View<IUpdateStatsPlugIn>(target).Setup(v => v.UpdateStatsAsync(Stats.CurrentHealth, It.IsAny<float>())).Returns((AttributeDefinition _, float value) =>
+        {
+            reportedHealth = value;
+            Interlocked.Increment(ref healthUpdates);
+            return ValueTask.CompletedTask;
+        });
+        var gotHit = new Mock<IAttackableGotHitPlugIn>();
+        target.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IAttackableGotHitPlugIn>(gotHit.Object);
+        var gotHitAfterViews = false;
+        gotHit.Setup(p => p.AttackableGotHit(target, attacker, It.IsAny<HitInfo>())).Callback(() => gotHitAfterViews = targetHits == 1 && attackerHits == 1);
+        var attack = Task.Run(async () =>
+        {
+            insideAttack.Value = true;
+            await target.AttackByAsync(attacker, null, false).ConfigureAwait(false);
+        });
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(target.Attributes[Stats.CurrentHealth], Is.LessThan(lethal ? 10 : 1000), "The real resource commit precedes the effect-list snapshot enumeration.");
+            Assert.That(target.Attributes[Stats.CurrentMana], Is.EqualTo(73));
+            var committedHealth = target.Attributes[Stats.CurrentHealth];
+            var committedShield = target.Attributes[Stats.CurrentShield];
+            var deathOwner = target.LastDeath;
+            if (expire)
+            {
+                await frozen.DisposeAsync().ConfigureAwait(false);
+                Assert.That(target.MagicEffectList.ContainsEffect(frozen.Id), Is.False);
+            }
+
+            release.Set();
+            if (expire)
+            {
+                var error = Assert.ThrowsAsync<ObjectDisposedException>(async () => await attack.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false));
+                Assert.That(error, Is.SameAs(originalFailure), "First-chance original effect exception survives later notifications/death faults.");
+            }
+            else
+            {
+                await attack.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.SelectedCharacter, Is.Not.Null, "The target remains connected and selected.");
+                Assert.That(targetHits, Is.EqualTo(1));
+                Assert.That(attackerHits, Is.EqualTo(1));
+                Assert.That(healthUpdates, Is.EqualTo(1));
+                Assert.That(deaths, Is.EqualTo(lethal ? 1 : 0));
+                Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(committedHealth));
+                Assert.That(target.Attributes[Stats.CurrentShield], Is.EqualTo(committedShield));
+                Assert.That(target.Attributes[Stats.CurrentMana], Is.EqualTo(73));
+                Assert.That(reportedHealth, Is.EqualTo(committedHealth));
+                Assert.That(observedHit.HealthDamage, Is.GreaterThan(0));
+                Assert.That(sleepAtHit, Is.Zero, "Wake is attempted even if frozen shortening faults.");
+                Assert.That(manaAtHit, Is.EqualTo(73));
+                Assert.That(gotHitAfterViews, Is.True);
+                if (lethal)
+                {
+                    Assert.That(observedDeath, Is.SameAs(deathOwner));
+                    Assert.That(target.LastDeath, Is.SameAs(deathOwner));
+                }
+            });
+            gotHit.Verify(p => p.AttackableGotHit(target, attacker, It.IsAny<HitInfo>()), Times.Once);
+        }
+        finally
+        {
+            release.Set();
+            try
+            {
+                await attack.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (expire && (ex is ObjectDisposedException || ReferenceEquals(ex, secondaryFailure)))
+            {
+                // Also observe the unchanged baseline's masked primary while unwinding a red assertion.
+            }
+
+            AppDomain.CurrentDomain.FirstChanceException -= captureFailure;
+            await target.DisposeAsync().ConfigureAwait(false);
+            await attacker.DisposeAsync().ConfigureAwait(false);
+        }
+
+        IEnumerable<MagicEffect.ElementWithTarget> EnumerateElements()
+        {
+            if (Interlocked.Increment(ref enumerations) == 1)
+            {
+                entered.TrySetResult();
+                Assert.That(release.Wait(TimeSpan.FromSeconds(5)), Is.True);
+            }
+
+            foreach (var element in elements)
+            {
+                yield return element;
+            }
+        }
     }
 
     /// <summary>Ordinary, reflected and damage-over-time hits share one resource commit.</summary>

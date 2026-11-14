@@ -17,43 +17,85 @@ public class CloseNpcDialogAction
     /// Closes the currently opened npc dialog.
     /// </summary>
     /// <param name="player">The player who wants to close the dialog.</param>
-    public async ValueTask CloseNpcDialogAsync(Player player)
+    public ValueTask CloseNpcDialogAsync(Player player) => this.CloseNpcDialogAsync(player, player.OpenedNpcContext);
+
+    /// <summary>Closes only the captured opening, without clearing a successor's dialog resources.</summary>
+    /// <param name="player">The player.</param>
+    /// <param name="expectedDialog">The immutable opening to close; null never selects another opening.</param>
+    internal async ValueTask CloseNpcDialogAsync(Player player, Player.NpcDialogContext? expectedDialog)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        var npc = player.OpenedNpc;
-        if (npc != null && await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
+        var view = player.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>();
+        var response = ValueTask.CompletedTask;
+        var closed = false;
+        try
         {
-            player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
-            player.OpenedNpc = null;
-            player.Vault = null;
-            if (npc.Definition.ItemCraftings.Any())
+            await using (var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
             {
-                // The backup which was taken when the crafting dialog opened only guards a disconnect while
-                // it's open. Kept beyond, a disconnect would roll the inventory back to that moment, losing or
-                // duplicating everything since. Items left in the machine are returned through the temporary
-                // storage instead.
-                player.BackupInventory = null;
+                context.Allowed &= expectedDialog is not null && ReferenceEquals(player.OpenedNpcContext, expectedDialog)
+                    && player.PlayerState.CurrentState == PlayerState.NpcDialogOpened;
+                if (context.Allowed)
+                {
+                    player.OpenedNpc = null;
+                    player.Vault = null;
+                    if (expectedDialog!.Npc.Definition.ItemCraftings.Any())
+                    {
+                        // Only this opening owns the disconnect snapshot; never clear a successor's backup.
+                        player.BackupInventory = null;
+                    }
+
+                    try
+                    {
+                        response = view?.DialogClosedAsync(expectedDialog.Npc.Definition) ?? ValueTask.CompletedTask;
+                    }
+                    catch (Exception ex)
+                    {
+                        response = ValueTask.FromException(ex);
+                    }
+
+                    closed = true;
+                }
             }
 
-            await player.InvokeViewPlugInAsync<INpcDialogClosedPlugIn>(p => p.DialogClosedAsync(npc.Definition)).ConfigureAwait(false);
-            if (npc.Definition.Number == ChaosGoblinNumber)
+            if (closed)
             {
-                try
-                {
-                    await Task.Delay(1000).ConfigureAwait(false);
-                    player.Logger.LogInformation("Saving changes after closing the chaos goblin ...");
-                    await player.SaveProgressAsync().ConfigureAwait(false);
-                    player.Logger.LogInformation("Saved changes after closing the chaos goblin ...");
-                }
-                catch (Exception ex)
-                {
-                    player.Logger.LogError(ex, "Couldn't save changes after closing the chaos goblin for player {player}", player);
-                }
+                player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {expectedDialog!.Npc}");
+            }
+            else
+            {
+                player.Logger.LogDebug($"Captured dialog could not be closed by player {player.SelectedCharacter?.Name} in state {player.PlayerState}.");
             }
         }
-        else
+        finally
         {
-            player.Logger.LogDebug($"Dialog of NPC {player.OpenedNpc} could not be closed by player {player.SelectedCharacter?.Name} because the player has the wrong state {player.PlayerState}");
+            // Capture once before World is published; completion and persistence never hold state exclusion.
+            try
+            {
+                await response.ConfigureAwait(false);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Writing is not allowed after writer was completed", StringComparison.Ordinal))
+            {
+                // The connection closed while its result was pending, as in ordinary view invocation.
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Error when invoking view action of {viewType}", typeof(INpcDialogClosedPlugIn));
+            }
+        }
+
+        if (closed && expectedDialog!.Npc.Definition.Number == ChaosGoblinNumber)
+        {
+            try
+            {
+                await Task.Delay(1000).ConfigureAwait(false);
+                player.Logger.LogInformation("Saving changes after closing the chaos goblin ...");
+                await player.SaveProgressAsync().ConfigureAwait(false);
+                player.Logger.LogInformation("Saved changes after closing the chaos goblin ...");
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Couldn't save changes after closing the chaos goblin for player {player}", player);
+            }
         }
     }
 }
