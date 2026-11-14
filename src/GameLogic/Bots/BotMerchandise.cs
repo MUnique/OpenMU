@@ -299,9 +299,13 @@ internal static class BotMerchandise
             await StoreCloseAction.CloseStoreAsync(bot).ConfigureAwait(false);
         }
 
-        if (shift.IsStoreOpened)
+        if (shift.IsStoreOpened && !shift.IsSettled)
         {
             await RemoveIncomeAsync(bot, shift).ConfigureAwait(false);
+
+            // A sale right before the store was closed queued another removal of the income, which runs
+            // after this one - it must not take the goods retired below for income.
+            shift.IsSettled = true;
             await RetireUnsoldGoodsAsync(bot).ConfigureAwait(false);
         }
     }
@@ -340,7 +344,7 @@ internal static class BotMerchandise
     /// <returns>The task.</returns>
     internal static async ValueTask RemoveIncomeAsync(Player bot, BotMarketShift shift)
     {
-        if (!shift.IsStoreOpened || bot.Inventory is not { } inventory)
+        if (!shift.IsStoreOpened || shift.IsSettled || bot.Inventory is not { } inventory)
         {
             return;
         }

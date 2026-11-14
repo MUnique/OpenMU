@@ -21,6 +21,7 @@ internal sealed class BotMarketShift
     private volatile bool _isStoreOpened;
     private volatile bool _isOpenRequested;
     private volatile bool _isEnding;
+    private volatile bool _isSettled;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BotMarketShift"/> class.
@@ -112,5 +113,16 @@ internal sealed class BotMarketShift
     {
         get => this._isEnding;
         set => this._isEnding = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the store of the shift is closed and its income removed.
+    /// A removal of the income which was queued by a late sale does nothing afterward - the goods taken
+    /// out of the store meanwhile aren't income (see <see cref="BotMerchandise.CloseShiftStoreAsync"/>).
+    /// </summary>
+    public bool IsSettled
+    {
+        get => this._isSettled;
+        set => this._isSettled = value;
     }
 }

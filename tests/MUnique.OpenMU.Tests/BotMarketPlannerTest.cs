@@ -514,6 +514,40 @@ public class BotMarketPlannerTest
         Assert.That(plugIn.CountUnsoldShift(inStore, Now.AddHours(25)), Is.EqualTo(2));
     }
 
+    /// <summary>
+    /// A sale right before the end of a shift queues a removal of its income, which runs after the store
+    /// was closed. By then, the goods without a buyer are back in the inventory - they aren't income and
+    /// stay with the bot, to be sold to an NPC.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask LateIncomeRemovalKeepsTheRetiredGoodsAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext([new PlugInConfiguration { TypeId = typeof(BotMerchantPlugIn).GUID, IsActive = true }]);
+        var plugIn = gameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()!;
+        plugIn.Configuration = new BotMerchantConfiguration { UnsoldShiftsUntilNpc = 1 };
+        var buyer = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        await AddPricedGoodsAsync(bot, 2).ConfigureAwait(false);
+        var goods = bot.ShopStorage!.Items.ToList();
+        bot.Money = 1000;
+        var shift = CreateShift();
+        shift.MoneyAtOpen = bot.Money;
+        shift.ItemsAtOpen = bot.Inventory!.Items.ToHashSet();
+        shift.IsStoreOpened = true;
+        bot.ShopStorage.StoreOpen = true;
+        bot.MarketShift = shift;
+
+        plugIn.ItemSold(bot, goods[0], buyer);
+        await BotMerchandise.CloseShiftStoreAsync(bot, shift).ConfigureAwait(false);
+        Assert.That(bot.Inventory.Items, Is.SupersetOf(goods));
+
+        await bot.DrainPendingBotActionsAsync().ConfigureAwait(false);
+
+        Assert.That(bot.Inventory.Items, Is.SupersetOf(goods));
+        Assert.That(bot.Money, Is.EqualTo(1000));
+    }
+
     private static BotMarketShift CreateShift()
         => new(new GameMapDefinition { Number = BotMerchantConfiguration.DefaultMarketMapNumber }, Arrival, "Good stuff", Now, Now.AddMinutes(60));
 
