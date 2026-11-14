@@ -4,6 +4,13 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Diagnostics.Metrics;
+using System.Threading;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.GameLogic.PlayerActions.Party;
+
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
@@ -173,6 +180,183 @@ public class PlayerRemovalTradeTests
             await room.CancelDuelAsync().ConfigureAwait(false);
             await duel.WaitAsync(TimeSpan.FromSeconds(8)).ConfigureAwait(false);
             await owner.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Disconnect must exclude invitations while its previous cancellation result is pending.</summary>
+    [Test]
+    public async Task PendingDisconnectCannotStrandLateInvitationAsync()
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync(GameContextTestHelper.CreateGameContext()).ConfigureAwait(false);
+        var oldPeer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var requester = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var partyRecipient = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        await owner.RunPersistenceExclusiveAsync(() => new PartyRequestAction().HandlePartyRequestAsync(owner, partyRecipient)).ConfigureAwait(false);
+        Assert.That(partyRecipient.LastPartyRequester, Is.SameAs(owner));
+        await OpenTradeAsync(owner, oldPeer).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Mock.Get(owner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(async () =>
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        });
+        var disconnect = Task.Run(async () => await owner.DisconnectAsync().ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(owner.IsDisposing, Is.False);
+                Assert.That(owner.IsAlive, Is.True);
+                Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(owner.TradingPartner, Is.Null);
+            });
+            await Task.Run(async () => await partyRecipient.RunPersistenceExclusiveAsync(
+                () => new PartyResponseAction().HandleResponseAsync(partyRecipient, true)).ConfigureAwait(false)).ConfigureAwait(false);
+            var admitted = await Task.Run(async () => await requester.RunPersistenceExclusiveAsync(
+                () => new TradeRequestAction().RequestTradeAsync(requester, owner)).ConfigureAwait(false)).ConfigureAwait(false);
+            release.TrySetResult();
+            await disconnect.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(partyRecipient.Party, Is.Null, "A live-looking requester is departing before Disconnected.");
+                Assert.That(owner.Party, Is.Null);
+                Assert.That(admitted, Is.False);
+                Assert.That(requester.TradingPartner, Is.Null, "No manual cancel packet should be required after peer disconnects.");
+                Assert.That(requester.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(owner.TradingPartner, Is.Null);
+                Assert.That(owner.SelectedCharacter, Is.Null);
+            });
+            await OpenTradeAsync(requester, oldPeer).ConfigureAwait(false);
+            await requester.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(requester)).ConfigureAwait(false);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await disconnect.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await requester.DisposeAsync().ConfigureAwait(false);
+            await oldPeer.DisposeAsync().ConfigureAwait(false);
+            await partyRecipient.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>An independently completed logout cannot release the still-pending disconnect's admission count.</summary>
+    [Test]
+    public async Task NestedRemovalAndReselectionKeepDisconnectAdmissionAsync()
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var requester = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var character = owner.SelectedCharacter!;
+        character.Name = "Reselect";
+        Mock.Get(owner.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        owner.Attributes![Stats.CurrentHealth] = 100;
+        var life = owner.Attributes;
+        await OpenTradeAsync(owner, peer).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Mock.Get(owner.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Setup(v => v.TradeFinishedAsync(TradeResult.Cancelled)).Returns(async () =>
+        {
+            entered.TrySetResult();
+            await release.Task.ConfigureAwait(false);
+        });
+        var disconnect = Task.Run(async () => await owner.DisconnectAsync().ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+                () => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection)).ConfigureAwait(false)).ConfigureAwait(false);
+            await owner.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(owner)).ConfigureAwait(false);
+            await owner.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(owner, character.Name)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(owner.IsAlive, Is.True);
+                Assert.That(owner.Attributes, Is.Not.SameAs(life));
+                Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(owner.SelectedCharacter, Is.SameAs(character));
+            });
+            Assert.That(await Task.Run(async () => await requester.RunPersistenceExclusiveAsync(
+                () => new TradeRequestAction().RequestTradeAsync(requester, owner)).ConfigureAwait(false)).ConfigureAwait(false), Is.False);
+            release.TrySetResult();
+            await disconnect.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(owner.SelectedCharacter, Is.Null, "Disconnect still closes the session, including a concurrent reselection.");
+            Assert.That(requester.TradingPartner, Is.Null);
+            await OpenTradeAsync(requester, peer).ConfigureAwait(false);
+            await requester.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(requester)).ConfigureAwait(false);
+        }
+        finally
+        {
+            release.TrySetResult();
+            await disconnect.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await requester.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A real post-reset cancellation failure releases only this disconnect's departure scope.</summary>
+    [Test]
+    public async Task FailedDisconnectReleasesAdmissionAfterCleanupAsync()
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        var requester = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        await OpenTradeAsync(owner, peer).ConfigureAwait(false);
+        var error = new InvalidOperationException("Cancellation metric failed.");
+        var active = new AsyncLocal<bool>();
+        using var listener = new MeterListener();
+        listener.InstrumentPublished = (instrument, subscriber) =>
+        {
+            if (instrument.Meter.Name == BaseTradeAction.MeterName && instrument.Name == "CancelledTradesCount")
+            {
+                subscriber.EnableMeasurementEvents(instrument);
+            }
+        };
+        listener.SetMeasurementEventCallback<int>((_, _, _, _) =>
+        {
+            if (active.Value)
+            {
+                throw error;
+            }
+        });
+        listener.Start();
+        try
+        {
+            var disconnect = Task.Run(async () =>
+            {
+                active.Value = true;
+                try
+                {
+                    await owner.DisconnectAsync().ConfigureAwait(false);
+                }
+                finally
+                {
+                    active.Value = false;
+                }
+            });
+            Assert.That(Assert.ThrowsAsync<InvalidOperationException>(async () => await disconnect.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false)), Is.SameAs(error));
+            Assert.Multiple(() =>
+            {
+                Assert.That(owner.IsAlive, Is.True);
+                Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(owner.SelectedCharacter, Is.Not.Null);
+                Assert.That(owner.TradingPartner, Is.Null);
+                Assert.That(peer.TradingPartner, Is.Null);
+                Assert.That(owner.BackupInventory, Is.Null);
+                Assert.That(peer.BackupInventory, Is.Null);
+            });
+            await OpenTradeAsync(requester, owner).ConfigureAwait(false);
+            await requester.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(requester)).ConfigureAwait(false);
+            await owner.DisconnectAsync().ConfigureAwait(false);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Finished));
+        }
+        finally
+        {
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await requester.DisposeAsync().ConfigureAwait(false);
             await peer.DisposeAsync().ConfigureAwait(false);
         }
     }

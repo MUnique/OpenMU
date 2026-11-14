@@ -696,6 +696,22 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <remarks>Read the removal guard first so its final decrement publishes the cleared character to this reader.</remarks>
     internal bool IsAvailableForTrade => Volatile.Read(ref this._removalsInProgress) == 0 && !this.IsPreparingForcedPlacement && this.SelectedCharacter is not null && this.IsAlive;
 
+    /// <summary>Gets a value indicating whether the current requester may join a party, including an ordinary living map transfer.</summary>
+    internal bool IsAvailableAsPartyRequester
+    {
+        get
+        {
+            lock (this._hitLock)
+            {
+                return Volatile.Read(ref this._removalsInProgress) == 0
+                    && !this.IsDisposing && !this.IsDisposed && this.SelectedCharacter is not null
+                    && !this.IsPreparingForcedPlacement && !this._hasReservedLethalHit
+                    && !this.PlayerState.CurrentState.IsDisconnectedOrFinished()
+                    && (this.IsAlive || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap);
+            }
+        }
+    }
+
     /// <summary>
     /// Gets a value indicating whether this thread is committing this player's hit resources.
     /// </summary>
@@ -1170,66 +1186,85 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask DisconnectAsync()
     {
-        await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
-        if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Disconnected).ConfigureAwait(false))
+        var registeredRemoval = false;
+        try
         {
-            try
+            // Disconnect has admission windows before its nested world removal begins.
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+            {
+                context.Allowed = false;
+                Interlocked.Increment(ref this._removalsInProgress);
+                registeredRemoval = true;
+            }
+
+            await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+            if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Disconnected).ConfigureAwait(false))
             {
                 try
                 {
-                    await this.InternalDisconnectAsync().ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    // The subscribers below are what take the player out of the game context's player
-                    // list - and, for a remote player, dispose it. A teardown which throws half way
-                    // must not skip them: the state machine has already left the state this method
-                    // needs to advance from, so no later call can raise the event again. The player
-                    // would stay in the list, counting towards the server's maximum player count and
-                    // keeping its whole object graph alive, until the process restarts.
-                    this.Logger.LogError(ex, "Error while disconnecting player {Player}; continuing the teardown.", this);
-
-                    // Saving is the LAST step of the regular teardown (see RemoveFromGameAsync), so
-                    // the throw above may well have skipped it. Without a save, continuing would turn
-                    // the failure into silent data loss: the caller sees a successful logout, disposes
-                    // this instance, and the next session loads the character from the database -
-                    // rolled back to its last periodic save.
                     try
                     {
-                        await this.SaveProgressAsync().ConfigureAwait(false);
+                        await this.InternalDisconnectAsync().ConfigureAwait(false);
                     }
-                    catch (Exception saveException)
+                    catch (Exception ex)
                     {
-                        this.Logger.LogError(saveException, "Couldn't save the progress of player {Player} after its teardown failed.", this);
-                    }
-                }
+                        // The subscribers below are what take the player out of the game context's player
+                        // list - and, for a remote player, dispose it. A teardown which throws half way
+                        // must not skip them: the state machine has already left the state this method
+                        // needs to advance from, so no later call can raise the event again. The player
+                        // would stay in the list, counting towards the server's maximum player count and
+                        // keeping its whole object graph alive, until the process restarts.
+                        this.Logger.LogError(ex, "Error while disconnecting player {Player}; continuing the teardown.", this);
 
-                if (this.PlayerDisconnected is { } disconnectedEventHandler)
-                {
-                    this.PlayerDisconnected = null;
-
-                    // One by one instead of awaiting the multicast delegate: invoking a multicast
-                    // ValueTask delegate awaits only the LAST subscriber's task, so the earlier ones
-                    // (the removal from the game context's player list) would run unobserved and
-                    // possibly still be in flight while the last one (which disposes a remote player)
-                    // executes. Isolating each subscriber also keeps one failing handler from skipping
-                    // the others - the handler list is already dropped, so nothing could re-run them.
-                    foreach (var subscriber in disconnectedEventHandler.GetInvocationList())
-                    {
+                        // Saving is the LAST step of the regular teardown (see RemoveFromGameAsync), so
+                        // the throw above may well have skipped it. Without a save, continuing would turn
+                        // the failure into silent data loss: the caller sees a successful logout, disposes
+                        // this instance, and the next session loads the character from the database -
+                        // rolled back to its last periodic save.
                         try
                         {
-                            await ((AsyncEventHandler<Player>)subscriber)(this).ConfigureAwait(false);
+                            await this.SaveProgressAsync().ConfigureAwait(false);
                         }
-                        catch (Exception ex)
+                        catch (Exception saveException)
                         {
-                            this.Logger.LogError(ex, "A PlayerDisconnected subscriber of player {Player} failed.", this);
+                            this.Logger.LogError(saveException, "Couldn't save the progress of player {Player} after its teardown failed.", this);
+                        }
+                    }
+
+                    if (this.PlayerDisconnected is { } disconnectedEventHandler)
+                    {
+                        this.PlayerDisconnected = null;
+
+                        // One by one instead of awaiting the multicast delegate: invoking a multicast
+                        // ValueTask delegate awaits only the LAST subscriber's task, so the earlier ones
+                        // (the removal from the game context's player list) would run unobserved and
+                        // possibly still be in flight while the last one (which disposes a remote player)
+                        // executes. Isolating each subscriber also keeps one failing handler from skipping
+                        // the others - the handler list is already dropped, so nothing could re-run them.
+                        foreach (var subscriber in disconnectedEventHandler.GetInvocationList())
+                        {
+                            try
+                            {
+                                await ((AsyncEventHandler<Player>)subscriber)(this).ConfigureAwait(false);
+                            }
+                            catch (Exception ex)
+                            {
+                                this.Logger.LogError(ex, "A PlayerDisconnected subscriber of player {Player} failed.", this);
+                            }
                         }
                     }
                 }
+                finally
+                {
+                    await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Finished).ConfigureAwait(false);
+                }
             }
-            finally
+        }
+        finally
+        {
+            if (registeredRemoval)
             {
-                await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Finished).ConfigureAwait(false);
+                Interlocked.Decrement(ref this._removalsInProgress);
             }
         }
     }

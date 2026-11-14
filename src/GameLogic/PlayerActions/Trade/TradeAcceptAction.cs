@@ -88,7 +88,8 @@ public class TradeAcceptAction : BaseTradeAction
             && temporaryStorage.Items.Any()
             && !await trader.Inventory!.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
         {
-            trader.Logger.LogWarning("Could not return the items of the temporary storage of {trader} to the inventory before opening a trade.", trader);
+            // Existing opening-error cleanup cancels both requests without owning these items.
+            throw new InvalidOperationException("Could not return temporary storage items to the inventory before opening a trade.");
         }
 
         // Cancellation uses this same state exclusion to clear the backup. Never publish it

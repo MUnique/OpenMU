@@ -56,8 +56,12 @@ public class BaseTradeAction
     protected void ResetTradeState(ITrader trader)
     {
         trader.TradingPartner = null;
-        trader.BackupInventory = null;
-        trader.TemporaryStorage!.Clear();
+        if (trader.BackupInventory is not null)
+        {
+            // A pending invitation never owned items left here by a previous NPC window.
+            trader.TemporaryStorage!.Clear();
+            trader.BackupInventory = null;
+        }
     }
 
     /// <summary>
@@ -123,7 +127,6 @@ public class BaseTradeAction
                 }
 
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
-                trader.BackupInventory = null;
             }
 
             this.ResetTradeState(trader);

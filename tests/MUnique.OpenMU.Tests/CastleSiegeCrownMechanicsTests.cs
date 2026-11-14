@@ -28,6 +28,7 @@ using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
@@ -887,6 +888,72 @@ public class CastleSiegeCrownMechanicsTests
             await fixture.SiegeMap.RemoveAsync(goblin).ConfigureAwait(false);
             await goblin.DisposeAsync().ConfigureAwait(false);
             await victim.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    /// <summary>Crown cleanup of a pending trade preserves items left by a closed real Chaos Goblin.</summary>
+    [Test]
+    public async Task CrownPendingTradePreservesClosedChaosItemsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: false).ConfigureAwait(false);
+        var peer = await fixture.CreatePlayerAsync(DefenseGuildId, "Peer", CastleSiegeJoinSide.Defense, 61, 61).ConfigureAwait(false);
+        var definition = new Mock<MonsterDefinition>();
+        definition.SetupAllProperties();
+        definition.Setup(d => d.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting>
+        {
+            new() { SimpleCraftingSettings = victim.PersistenceContext.CreateNew<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings>() },
+        });
+        definition.Object.Number = 238;
+        definition.Object.NpcWindow = NpcWindow.ChaosMachine;
+        var goblin = new NonPlayerCharacter(new MonsterSpawnArea(), definition.Object, fixture.SiegeMap) { Position = victim.Position };
+        await fixture.SiegeMap.AddAsync(goblin).ConfigureAwait(false);
+        var inventory = victim.Inventory!;
+        var temporary = victim.TemporaryStorage!;
+        var item = victim.PersistenceContext.CreateNew<Item>();
+        item.Definition = new MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition { Width = 1, Height = 1, Durability = 9, IsTradable = true };
+        item.Level = 3;
+        item.Durability = 7;
+        var id = item.GetId();
+        Assert.That(id, Is.Not.EqualTo(Guid.Empty));
+        var talk = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef.Length];
+        _ = new MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef(talk) { NpcId = goblin.Id };
+        try
+        {
+            victim.Attributes![Stats.CurrentHealth] = 100;
+            peer.Attributes![Stats.CurrentHealth] = 100;
+            Assert.That(await inventory.AddItemAsync(20, item).ConfigureAwait(false), Is.True);
+            await victim.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(victim, talk)).ConfigureAwait(false);
+            await victim.RunPersistenceExclusiveAsync(() => new MUnique.OpenMU.GameLogic.PlayerActions.Items.MoveItemAction().MoveItemAsync(victim, 20, Storages.Inventory, 0, Storages.ChaosMachine)).ConfigureAwait(false);
+            Assert.That(temporary.Items.Single(), Is.SameAs(item));
+            await victim.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(victim)).ConfigureAwait(false);
+            victim.Money = 1234;
+            Assert.That(victim.BackupInventory, Is.Null);
+            Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, victim)).ConfigureAwait(false), Is.True);
+            await winner.RunPersistenceExclusiveAsync(() => CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+                Assert.That(victim.TradingPartner, Is.Null);
+                Assert.That(peer.TradingPartner, Is.Null);
+                Assert.That(inventory.Items.Concat(temporary.Items).Count(i => i.GetId() == id), Is.EqualTo(1));
+                Assert.That(victim.Money, Is.EqualTo(1234));
+                Assert.That(item.Level, Is.EqualTo(3));
+                Assert.That(item.Durability, Is.EqualTo(7));
+            });
+            await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            await victim.RemoveFromGameAsync().ConfigureAwait(false);
+            Assert.That(inventory.Items.Count(i => i.GetId() == id), Is.EqualTo(1));
+        }
+        finally
+        {
+            await fixture.SiegeMap.RemoveAsync(goblin).ConfigureAwait(false);
+            await goblin.DisposeAsync().ConfigureAwait(false);
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
             await winner.DisposeAsync().ConfigureAwait(false);
             fixture.GameServerContext.Dispose();
         }

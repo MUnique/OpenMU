@@ -25,6 +25,12 @@ public class CloseNpcDialogAction
     internal async ValueTask CloseNpcDialogAsync(Player player, Player.NpcDialogContext? expectedDialog)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
+        if (expectedDialog is not { } dialog)
+        {
+            player.Logger.LogDebug($"Captured dialog could not be closed by player {player.SelectedCharacter?.Name} in state {player.PlayerState}.");
+            return;
+        }
+
         var view = player.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>();
         var response = ValueTask.CompletedTask;
         var closed = false;
@@ -32,13 +38,13 @@ public class CloseNpcDialogAction
         {
             await using (var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
             {
-                context.Allowed &= expectedDialog is not null && ReferenceEquals(player.OpenedNpcContext, expectedDialog)
+                context.Allowed &= ReferenceEquals(player.OpenedNpcContext, dialog)
                     && player.PlayerState.CurrentState == PlayerState.NpcDialogOpened;
                 if (context.Allowed)
                 {
                     player.OpenedNpc = null;
                     player.Vault = null;
-                    if (expectedDialog!.Npc.Definition.ItemCraftings.Any())
+                    if (dialog.Npc.Definition.ItemCraftings.Any())
                     {
                         // Only this opening owns the disconnect snapshot; never clear a successor's backup.
                         player.BackupInventory = null;
@@ -46,7 +52,7 @@ public class CloseNpcDialogAction
 
                     try
                     {
-                        response = view?.DialogClosedAsync(expectedDialog.Npc.Definition) ?? ValueTask.CompletedTask;
+                        response = view?.DialogClosedAsync(dialog.Npc.Definition) ?? ValueTask.CompletedTask;
                     }
                     catch (Exception ex)
                     {
@@ -59,7 +65,7 @@ public class CloseNpcDialogAction
 
             if (closed)
             {
-                player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {expectedDialog!.Npc}");
+                player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {dialog.Npc}");
             }
             else
             {
@@ -83,7 +89,7 @@ public class CloseNpcDialogAction
             }
         }
 
-        if (closed && expectedDialog!.Npc.Definition.Number == ChaosGoblinNumber)
+        if (closed && dialog.Npc.Definition.Number == ChaosGoblinNumber)
         {
             try
             {

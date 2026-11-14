@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -15,6 +16,9 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -304,6 +308,187 @@ public class CraftingDialogBackupInventoryTests
             await target.DisposeAsync().ConfigureAwait(false);
             await attacker.DisposeAsync().ConfigureAwait(false);
             await seed.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A pending invitation never owns items left by a closed crafting window.</summary>
+    /// <param name="departure">The actual lifecycle or ordinary trade completion.</param>
+    [TestCase("logout")]
+    [TestCase("disconnect")]
+    [TestCase("death")]
+    [TestCase("placement")]
+    [TestCase("cancel")]
+    [TestCase("accept")]
+    [TestCase("no-request")]
+    public async Task PendingInvitationPreservesClosedCraftingItemsAsync(string departure)
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        owner.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        owner.Attributes![Stats.CurrentHealth] = 10;
+        peer.Attributes![Stats.CurrentHealth] = 100;
+        var inventory = owner.Inventory!;
+        var character = owner.SelectedCharacter!;
+        owner.CurrentMap!.Definition.ExitGates.Add(new ExitGate { Map = owner.CurrentMap.Definition, IsSpawnGate = true, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 });
+        var ingredient = owner.PersistenceContext.CreateNew<Item>();
+        ingredient.Definition = new ItemDefinition { Width = 1, Height = 1, Durability = 9, IsTradable = true };
+        ingredient.Durability = 7;
+        ingredient.Level = 3;
+        var id = ingredient.GetId();
+        Assert.That(id, Is.Not.EqualTo(Guid.Empty));
+        Assert.That(await inventory.AddItemAsync(20, ingredient).ConfigureAwait(false), Is.True);
+        var temporary = owner.TemporaryStorage!;
+        try
+        {
+            var npc = CreateCraftingNpc();
+            npc.Definition.Number = 238;
+            npc.Definition.ItemCraftings.Single().SimpleCraftingSettings = owner.PersistenceContext.CreateNew<SimpleCraftingSettings>();
+            await owner.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(owner, npc)).ConfigureAwait(false);
+            await owner.RunPersistenceExclusiveAsync(() => new MoveItemAction().MoveItemAsync(owner, 20, Storages.Inventory, 0, Storages.ChaosMachine)).ConfigureAwait(false);
+            Assert.That(temporary.Items.Single(), Is.SameAs(ingredient));
+            await owner.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(owner)).ConfigureAwait(false);
+            inventory.ItemStorage.Money = 1234; // Post-close gains must not roll back to the crafting snapshot.
+            Assert.That(owner.BackupInventory, Is.Null);
+            if (departure != "no-request")
+            {
+                Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, owner)).ConfigureAwait(false), Is.True);
+                Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeRequested));
+                Assert.That(owner.BackupInventory, Is.Null);
+            }
+
+            switch (departure)
+            {
+                case "logout":
+                    await owner.RunPersistenceExclusiveAsync(() => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
+                    break;
+                case "disconnect":
+                    Assert.That(owner.IsDisposing, Is.False);
+                    await owner.DisconnectAsync().ConfigureAwait(false);
+                    break;
+                case "death":
+                    await peer.RunPersistenceExclusiveAsync(() => owner.ApplyPoisonDamageAsync(peer, 10)).ConfigureAwait(false);
+                    Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                    break;
+                case "placement":
+                    await owner.RespawnAtAsync(new ExitGate { Map = owner.CurrentMap!.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 }).ConfigureAwait(false);
+                    break;
+                case "accept":
+                    await owner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(owner, true)).ConfigureAwait(false);
+                    Assert.That(owner.BackupInventory!.Items, Does.Contain(ingredient));
+                    await owner.RunPersistenceExclusiveAsync(() => new MoveItemAction().MoveItemAsync(owner, ingredient.ItemSlot, Storages.Inventory, 0, Storages.Trade)).ConfigureAwait(false);
+                    await owner.RunPersistenceExclusiveAsync(() => new TradeMoneyAction().TradeMoneyAsync(owner, 60)).ConfigureAwait(false);
+                    await owner.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(owner)).ConfigureAwait(false);
+                    break;
+                case "cancel":
+                    await owner.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(owner)).ConfigureAwait(false);
+                    break;
+                case "no-request":
+                    break;
+                default:
+                    throw new AssertionException($"Unknown {nameof(departure)}.");
+            }
+
+            // Check conservation before teardown can hide which cancellation erased the item.
+            Assert.Multiple(() =>
+            {
+                Assert.That(inventory.Items.Concat(temporary.Items).Count(i => i.GetId() == id), Is.EqualTo(1));
+                Assert.That(peer.Inventory!.Items.Concat(peer.TemporaryStorage!.Items).Any(i => i.GetId() == id), Is.False);
+                Assert.That(ingredient.Level, Is.EqualTo(3));
+                Assert.That(ingredient.Durability, Is.EqualTo(7));
+                Assert.That(inventory.ItemStorage.Money, Is.EqualTo(1234));
+                Assert.That(owner.BackupInventory, Is.Null);
+                Assert.That(owner.TradingPartner, Is.Null);
+                Assert.That(peer.TradingPartner, Is.Null);
+            });
+            if (owner.SelectedCharacter is not null)
+            {
+                await owner.RemoveFromGameAsync().ConfigureAwait(false);
+            }
+
+            Assert.That(character.Inventory!.Items.Count(i => i.GetId() == id), Is.EqualTo(1));
+            Assert.That(character.Inventory.Money, Is.EqualTo(1234));
+        }
+        finally
+        {
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A failed all-item return must not turn old crafting items into trade-owned escrow.</summary>
+    /// <param name="freeSlots">Zero denies immediately; one exercises partial transfer and rollback.</param>
+    [TestCase(0)]
+    [TestCase(1)]
+    public async Task FullInventoryRefusesTradeWithoutOwningCraftingItemsAsync(int freeSlots)
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        owner.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        var inventory = owner.Inventory!;
+        var temporary = owner.TemporaryStorage!;
+        var definition = new ItemDefinition { Width = 1, Height = 1, IsTradable = true, Durability = 9 };
+        var ingredients = new[] { owner.PersistenceContext.CreateNew<Item>(), owner.PersistenceContext.CreateNew<Item>() };
+        var fillers = new List<Item>();
+        try
+        {
+            var npc = CreateCraftingNpc();
+            npc.Definition.Number = 238;
+            npc.Definition.ItemCraftings.Single().SimpleCraftingSettings = owner.PersistenceContext.CreateNew<SimpleCraftingSettings>();
+            await owner.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(owner, npc)).ConfigureAwait(false);
+            for (byte index = 0; index < ingredients.Length; index++)
+            {
+                var item = ingredients[index];
+                item.Definition = definition;
+                item.Level = 3;
+                item.Durability = 7;
+                Assert.That(await inventory.AddItemAsync(20, item).ConfigureAwait(false), Is.True);
+                await owner.RunPersistenceExclusiveAsync(() => new MoveItemAction().MoveItemAsync(owner, 20, Storages.Inventory, index, Storages.ChaosMachine)).ConfigureAwait(false);
+            }
+
+            await owner.RunPersistenceExclusiveAsync(() => new CloseNpcDialogAction().CloseNpcDialogAsync(owner)).ConfigureAwait(false);
+            for (byte slot = InventoryConstants.EquippableSlotsCount; slot < InventoryConstants.FirstExtensionItemSlotIndex - freeSlots; slot++)
+            {
+                var filler = owner.PersistenceContext.CreateNew<Item>();
+                filler.Definition = definition;
+                fillers.Add(filler);
+                Assert.That(await inventory.AddItemAsync(slot, filler).ConfigureAwait(false), Is.True);
+            }
+
+            owner.Money = 1234;
+            var ids = inventory.Items.Concat(temporary.Items).Select(i => i.GetId()).Order().ToArray();
+            Assert.That(ids.Distinct().Count(), Is.EqualTo(ids.Length));
+            Assert.That(await peer.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(peer, owner)).ConfigureAwait(false), Is.True);
+            await owner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(owner, true)).ConfigureAwait(false);
+            var stateAfterAcceptance = owner.PlayerState.CurrentState;
+            var backupAfterAcceptance = owner.BackupInventory;
+            // A later real cancel must not erase items even if a failed return wrongly opened the trade.
+            await owner.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(owner)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(stateAfterAcceptance, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(backupAfterAcceptance, Is.Null);
+                Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(owner.BackupInventory, Is.Null);
+                Assert.That(peer.BackupInventory, Is.Null);
+                Assert.That(owner.TradingPartner, Is.Null);
+                Assert.That(peer.TradingPartner, Is.Null);
+                Assert.That(owner.Money, Is.EqualTo(1234));
+                Assert.That(inventory.Items.Concat(temporary.Items).Select(i => i.GetId()).Order(), Is.EqualTo(ids));
+                Assert.That(temporary.Items.Select(i => i.GetId()), Is.EquivalentTo(ingredients.Select(i => i.GetId())));
+                Assert.That(ingredients.All(i => i.Level == 3 && i.Durability == 7), Is.True);
+            });
+        }
+        finally
+        {
+            // Leave room for ordinary teardown only after all conservation checks.
+            foreach (var filler in fillers)
+            {
+                await inventory.RemoveItemAsync(filler).ConfigureAwait(false);
+            }
+
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
         }
     }
 
