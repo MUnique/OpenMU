@@ -369,7 +369,16 @@ internal sealed class PlayerMapTransitions
             }
 
             player.CurrentMap = map;
-            await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
+            if (tryPreparePlacement is null && placementOwner is not null)
+            {
+                // A generic relocation still carrying an owned death is movement, not a revival.
+                await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+            }
+            else
+            {
+                await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
+            }
+
             if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
             {
                 return;

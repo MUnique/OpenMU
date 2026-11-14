@@ -121,6 +121,7 @@ public class ForcedPlacementTests
         if (legacy)
         {
             Mock.Get(target.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>()!).Setup(v => v.RespawnAsync()).Returns(PacketAsync);
+            Mock.Get(target.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Setup(v => v.MapChangeAsync()).Returns(PacketAsync);
         }
         else
         {
@@ -269,6 +270,7 @@ public class ForcedPlacementTests
         if (legacy)
         {
             Mock.Get(target.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>()!).Setup(v => v.RespawnAsync()).Returns(PacketAsync);
+            Mock.Get(target.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Setup(v => v.MapChangeAsync()).Returns(PacketAsync);
         }
         else
         {

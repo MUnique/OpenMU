@@ -19,15 +19,16 @@ public class TradeAcceptAction : BaseTradeAction
     public async ValueTask HandleTradeAcceptAsync(ITrader tradeAccepter, bool accept)
     {
         var tradePartner = tradeAccepter.TradingPartner;
-        if (accept && tradePartner != null)
+        if (tradePartner is null)
+        {
+            return;
+        }
+
+        if (accept)
         {
             if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
             {
-                ////Something bad happened here...
-                await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
-                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
-                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
-                await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+                await new TradeCancelAction().CancelTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
             }
             else
             {
@@ -49,14 +50,7 @@ public class TradeAcceptAction : BaseTradeAction
         }
         else
         {
-            if (tradePartner != null)
-            {
-                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
-                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
-            }
-
-            await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
-            await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+            await new TradeCancelAction().CancelTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
         }
     }
 

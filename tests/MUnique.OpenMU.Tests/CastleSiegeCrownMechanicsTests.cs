@@ -1364,13 +1364,15 @@ public class CastleSiegeCrownMechanicsTests
         });
         Mock.Get(victim.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>()!).Setup(v => v.RespawnAsync()).Returns(() =>
         {
-            if (Interlocked.Increment(ref placements) == 2)
+            Interlocked.Increment(ref placements);
+            if (victim.Attributes![Stats.CurrentHealth] == victim.Attributes[Stats.MaximumHealth])
             {
                 restored.TrySetResult();
             }
 
             return ValueTask.CompletedTask;
         });
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Invocations.Clear();
         var lethal = victim.ApplyPoisonDamageAsync(winner, 10).AsTask();
         try
         {
@@ -1395,8 +1397,9 @@ public class CastleSiegeCrownMechanicsTests
                 Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(victim.Attributes[Stats.MaximumHealth]));
                 Assert.That(victim.LastDeath, Is.SameAs(owned));
                 Assert.That(deaths, Is.EqualTo(1));
-                Assert.That(placements, Is.EqualTo(2));
+                Assert.That(placements, Is.EqualTo(1));
             });
+            Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Verify(v => v.MapChangeAsync(), Times.Once);
         }
         finally
         {
@@ -1406,6 +1409,262 @@ public class CastleSiegeCrownMechanicsTests
             await winner.DisposeAsync().ConfigureAwait(false);
             fixture.GameServerContext.Dispose();
         }
+    }
+
+    /// <summary>Observe actual legacy and newer Crown relocation packets without changing original death ownership.</summary>
+    /// <param name="legacy">Whether the concrete075 respawn view is present.</param>
+    /// <param name="lethal">Whether an actual death timer is pending.</param>
+    /// <param name="initialHealth">Current health before the optional lethal hit.</param>
+    /// <param name="relocate">Whether Crown relocates before the original death timer.</param>
+    /// <param name="beforeRelocationMilliseconds">Elapsed real timer time before Crown capture.</param>
+    [TestCase(true, true, 10, true, 0)]
+    [TestCase(false, true, 10, true, 0)]
+    [TestCase(true, false, 10, true, 0)]
+    [TestCase(false, false, 10, true, 0)]
+    [TestCase(true, false, 0, true, 0)]
+    [TestCase(false, false, 0, true, 0)]
+    [TestCase(true, true, 10, false, 0)]
+    [TestCase(false, true, 10, false, 0)]
+    [TestCase(true, true, 10, true, 1500)]
+    public async Task CrownReservedDeathWireObservationAsync(bool legacy, bool lethal, int initialHealth, bool relocate, int beforeRelocationMilliseconds)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        using var output = new System.IO.MemoryStream();
+        var writer = System.IO.Pipelines.PipeWriter.Create(output, new System.IO.Pipelines.StreamPipeWriterOptions(leaveOpen: true));
+        var connection = new Mock<MUnique.OpenMU.Network.IConnection>();
+        connection.SetupGet(c => c.Connected).Returns(true);
+        connection.SetupGet(c => c.Output).Returns(writer);
+        connection.SetupGet(c => c.OutputLock).Returns(new Nito.AsyncEx.AsyncLock());
+        var restoredPacket = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60,
+            createPlayer: context => new CrownWirePlayer((IGameServerContext)context, connection.Object, legacy, () => restoredPacket.TrySetResult())).ConfigureAwait(false);
+        fixture.SiegeMap.Definition.ExitGates.Add(new BasicModel.ExitGate { Map = fixture.SiegeMap.Definition, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+        victim.Attributes![Stats.CurrentHealth] = initialHealth;
+        var enteredAlive = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        ValueTask ObserveArrivalAsync((GameMap Map, ILocateable Object) arrival)
+        {
+            if (ReferenceEquals(arrival.Object, victim) && victim.IsAlive && victim.Attributes[Stats.CurrentHealth] == victim.Attributes[Stats.MaximumHealth])
+            {
+                enteredAlive.TrySetResult();
+            }
+
+            return ValueTask.CompletedTask;
+        }
+
+        fixture.SiegeMap.ObjectAdded += ObserveArrivalAsync;
+        var start = checked((int)output.Length);
+        var elapsed = Stopwatch.StartNew();
+        var deaths = 0;
+        victim.Died += (_, _) => Interlocked.Increment(ref deaths);
+        try
+        {
+            if (lethal)
+            {
+                await victim.ApplyPoisonDamageAsync(winner, (uint)initialHealth).ConfigureAwait(false);
+            }
+
+            if (beforeRelocationMilliseconds > 0)
+            {
+                await Task.Delay(beforeRelocationMilliseconds).ConfigureAwait(false);
+            }
+
+            var death = victim.LastDeath;
+            CancellationTokenSource? source;
+            await using (var scope = await victim.PlayerState.TryBeginAdvanceToAsync(victim.PlayerState.CurrentState).ConfigureAwait(false))
+            {
+                scope.Allowed = false;
+                source = DeathRespawnCancellation(victim);
+            }
+
+            if (relocate)
+            {
+                await winner.RunPersistenceExclusiveAsync(() => CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1)).ConfigureAwait(false);
+            }
+
+            CancellationTokenSource? after;
+            await using (var scope = await victim.PlayerState.TryBeginAdvanceToAsync(victim.PlayerState.CurrentState).ConfigureAwait(false))
+            {
+                scope.Allowed = false;
+                after = DeathRespawnCancellation(victim);
+            }
+
+            var immediate = ReadCrownPackets(output.ToArray().AsSpan(start));
+            var genericPacket = legacy ? "MapChanged075" : "MapChanged";
+            if (legacy && !lethal)
+            {
+                genericPacket = $"Respawn075:{initialHealth}";
+            }
+
+            var expectedImmediate = relocate ? new[] { genericPacket } : Array.Empty<string>();
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { legacy, lethal, initialHealth, relocate, elapsedMilliseconds = elapsed.ElapsedMilliseconds, immediate, alive = victim.IsAlive, state = victim.PlayerState.CurrentState.ToString(), hp = victim.Attributes[Stats.CurrentHealth], sameSource = ReferenceEquals(source, after), reserved = victim.GetPlacementDeathSnapshot().Reserved }));
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.LastDeath, Is.SameAs(death));
+                Assert.That(after, Is.SameAs(source));
+                Assert.That(victim.GetPlacementDeathSnapshot().Reserved, Is.EqualTo(lethal));
+                Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(lethal ? 0 : initialHealth));
+                Assert.That(victim.IsAlive, Is.EqualTo(!lethal && legacy));
+                Assert.That(immediate, Is.EqualTo(expectedImmediate));
+            });
+            if (legacy && lethal && relocate)
+            {
+                MUnique.OpenMU.Network.Packets.ServerToClient.MapChanged075Ref mapChange = output.ToArray().AsSpan(start, MUnique.OpenMU.Network.Packets.ServerToClient.MapChanged075Ref.Length);
+                Assert.That(mapChange.IsMapChange, Is.True);
+                Assert.That(mapChange.MapNumber, Is.EqualTo(victim.SelectedCharacter!.CurrentMap!.Number));
+                Assert.That(mapChange.PositionX, Is.EqualTo(victim.Position.X));
+                Assert.That(mapChange.PositionY, Is.EqualTo(victim.Position.Y));
+            }
+
+            if (!legacy && relocate)
+            {
+                var ready = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.ClientReadyAfterMapChangeRef.Length];
+                _ = new MUnique.OpenMU.Network.Packets.ClientToServer.ClientReadyAfterMapChangeRef(ready);
+                await victim.RunPersistenceExclusiveAsync(() => new MUnique.OpenMU.GameServer.MessageHandler.Character.CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(victim, ready)).ConfigureAwait(false);
+            }
+
+            Assert.That(victim.CurrentMap, Is.SameAs(fixture.SiegeMap));
+            if (lethal)
+            {
+                await restoredPacket.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                if (!legacy)
+                {
+                    await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+                }
+
+                await enteredAlive.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(victim.Attributes[Stats.MaximumHealth]));
+                Assert.That(victim.IsAlive, Is.True);
+                Assert.That(victim.GetPlacementDeathSnapshot().Reserved, Is.False);
+                Assert.That(victim.LastDeath, Is.SameAs(death));
+                Assert.That(deaths, Is.EqualTo(1));
+            }
+
+            var finalPackets = ReadCrownPackets(output.ToArray().AsSpan(start));
+            if (legacy && lethal)
+            {
+                Assert.That(finalPackets.Count(p => p.StartsWith("Respawn075:", StringComparison.Ordinal)), Is.EqualTo(1));
+                Assert.That(finalPackets.Last(), Is.EqualTo($"Respawn075:{victim.Attributes[Stats.MaximumHealth]}"));
+            }
+
+            Assert.That(fixture.SiegeMap.GetPlayers().Count(p => ReferenceEquals(p, victim)), Is.EqualTo(1));
+            Console.WriteLine(Convert.ToHexString(output.ToArray().AsSpan(start)));
+            Console.WriteLine($"{string.Join(",", finalPackets)}; elapsedMs={elapsed.ElapsedMilliseconds}");
+        }
+        finally
+        {
+            fixture.SiegeMap.ObjectAdded -= ObserveArrivalAsync;
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            await writer.CompleteAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    /// <summary>The real version-selected container registers the075 map and respawn producers.</summary>
+    [Test]
+    public async Task LegacyMapViewSelectionIsAvailableAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext, new MUnique.OpenMU.Network.PlugIns.ClientVersion(0, 75, MUnique.OpenMU.Network.PlugIns.ClientLanguage.English));
+        try
+        {
+            Assert.That(player.ViewPlugIns.GetPlugIn<IMapChangePlugIn>(), Is.TypeOf<MUnique.OpenMU.GameServer.RemoteView.World.MapChangePlugIn075>());
+            Assert.That(player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>(), Is.TypeOf<MUnique.OpenMU.GameServer.RemoteView.World.RespawnAfterDeathPlugIn075>());
+        }
+        finally
+        {
+            await player.DisposeAsync().ConfigureAwait(false);
+            output.Dispose();
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    private static List<string> ReadCrownPackets(ReadOnlySpan<byte> bytes)
+    {
+        var packets = new List<string>();
+        for (var offset = 0; offset < bytes.Length; offset += bytes[offset + 1])
+        {
+            Assert.That(bytes.Length - offset, Is.GreaterThanOrEqualTo(4));
+            Assert.That(bytes[offset + 1], Is.GreaterThan(3));
+            Assert.That(offset + bytes[offset + 1], Is.LessThanOrEqualTo(bytes.Length));
+            if (bytes[offset + 2] == 0xF3)
+            {
+                Assert.That(bytes[offset + 1], Is.EqualTo(MUnique.OpenMU.Network.Packets.ServerToClient.RespawnAfterDeath075Ref.Length));
+                Assert.That(bytes[offset + 3], Is.EqualTo(4));
+                packets.Add($"Respawn075:{System.Buffers.Binary.BinaryPrimitives.ReadUInt16LittleEndian(bytes[(offset + 8)..])}");
+            }
+            else
+            {
+                Assert.That(bytes[offset + 2], Is.EqualTo(0x1C));
+                Assert.That(bytes[offset], Is.EqualTo(0xC3));
+                if (bytes[offset + 1] == 8)
+                {
+                    packets.Add("MapChanged075");
+                }
+                else
+                {
+                    Assert.That(bytes[offset + 1], Is.EqualTo(MUnique.OpenMU.Network.Packets.ServerToClient.MapChangedRef.Length));
+                    packets.Add("MapChanged");
+                }
+            }
+        }
+
+        return packets;
+    }
+
+    private sealed class CrownWirePlayer(IGameServerContext context, MUnique.OpenMU.Network.IConnection connection, bool legacy, Action restored)
+        : MUnique.OpenMU.GameServer.RemoteView.RemotePlayer(context, connection, new MUnique.OpenMU.Network.PlugIns.ClientVersion((byte)(legacy ? 0 : 6), (byte)(legacy ? 75 : 3), MUnique.OpenMU.Network.PlugIns.ClientLanguage.English))
+    {
+        protected override ICustomPlugInContainer<IViewPlugIn> CreateViewPlugInContainer() => new CrownWireViews(this, legacy, restored);
+    }
+
+    private sealed class CrownWireViews(MUnique.OpenMU.GameServer.RemoteView.RemotePlayer player, bool legacy, Action restored) : ICustomPlugInContainer<IViewPlugIn>
+    {
+        private readonly MockViewPlugInContainer _other = new();
+        public T? GetPlugIn<T>() where T : class, IViewPlugIn
+        {
+            if (typeof(T) == typeof(IRespawnAfterDeathPlugIn))
+            {
+                return legacy ? (T)(IViewPlugIn)new ObservedCrownRespawn(player, restored) : null;
+            }
+
+            return typeof(T) == typeof(IMapChangePlugIn) ? (T)(IViewPlugIn)new ObservedCrownMapChange(player, legacy, restored) : this._other.GetPlugIn<T>();
+        }
+    }
+
+    private sealed class ObservedCrownRespawn(MUnique.OpenMU.GameServer.RemoteView.RemotePlayer player, Action restored) : IRespawnAfterDeathPlugIn
+    {
+        public async ValueTask RespawnAsync()
+        {
+            await new MUnique.OpenMU.GameServer.RemoteView.World.RespawnAfterDeathPlugIn075(player).RespawnAsync().ConfigureAwait(false);
+            if (player.Attributes![Stats.CurrentHealth] == player.Attributes[Stats.MaximumHealth])
+            {
+                restored();
+            }
+        }
+    }
+
+    private sealed class ObservedCrownMapChange(MUnique.OpenMU.GameServer.RemoteView.RemotePlayer player, bool legacy, Action restored) : IMapChangePlugIn
+    {
+        public async ValueTask MapChangeAsync()
+        {
+            if (legacy)
+            {
+                await new MUnique.OpenMU.GameServer.RemoteView.World.MapChangePlugIn075(player).MapChangeAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                await new MUnique.OpenMU.GameServer.RemoteView.World.MapChangePlugIn(player).MapChangeAsync().ConfigureAwait(false);
+            }
+
+            if (player.Attributes![Stats.CurrentHealth] == player.Attributes[Stats.MaximumHealth])
+            {
+                restored();
+            }
+        }
+
+        public ValueTask MapChangeFailedAsync() => ValueTask.CompletedTask;
     }
 
     [System.Runtime.CompilerServices.UnsafeAccessor(System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = "_pendingDeathRespawn")]
@@ -1581,10 +1840,16 @@ public class CastleSiegeCrownMechanicsTests
             CastleSiegeJoinSide side,
             byte x,
             byte y,
-            bool useRespawnPlugIn = true)
+            bool useRespawnPlugIn = true,
+            Func<IGameContext, Player>? createPlayer = null)
         {
             Player player;
-            if (useRespawnPlugIn)
+            if (createPlayer is not null)
+            {
+                player = createPlayer(this.GameServerContext);
+                await PlayerTestHelper.EnterWorldAsync(player, PlayerTestHelper.CreateCharacter(this.GameServerContext)).ConfigureAwait(false);
+            }
+            else if (useRespawnPlugIn)
             {
                 player = await PlayerTestHelper.CreatePlayerAsync(this.GameServerContext).ConfigureAwait(false);
             }
