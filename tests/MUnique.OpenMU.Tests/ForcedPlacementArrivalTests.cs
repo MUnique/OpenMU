@@ -56,7 +56,7 @@ public class ForcedPlacementArrivalTests
         await using var fixture = await ArrivalFixture.CreateAsync(new ClientVersion(season, episode, ClientLanguage.English), sameMap).ConfigureAwait(false);
         var victim = fixture.Victim;
         var death = await fixture.KillVictimAsync().ConfigureAwait(false);
-        var source = DeathRespawnCancellation(victim);
+        var source = await ReadDeathRespawnCancellationAsync(victim).ConfigureAwait(false);
 
         var relocation = await fixture.MarkAsync().ConfigureAwait(false);
         await fixture.Peer.RunPersistenceExclusiveAsync(() => victim.RespawnAtAsync(fixture.Gate)).ConfigureAwait(false);
@@ -75,6 +75,7 @@ public class ForcedPlacementArrivalTests
         var ready = await fixture.MarkAsync().ConfigureAwait(false);
         await fixture.SendReadyAsync().ConfigureAwait(false);
         var afterReady = await fixture.ReadSinceAsync(ready).ConfigureAwait(false);
+        var arrivedSource = await ReadDeathRespawnCancellationAsync(victim).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(afterReady.Select(p => p.Code), Does.Contain(MeetPlayersCode), "The world is sent after the client is ready.");
@@ -82,7 +83,7 @@ public class ForcedPlacementArrivalTests
             Assert.That(fixture.Destination.GetPlayers().Count(p => ReferenceEquals(p, victim)), Is.EqualTo(1));
             Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
             Assert.That(victim.IsAlive, Is.False, "Arrival does not revive a reserved death.");
-            Assert.That(DeathRespawnCancellation(victim), Is.SameAs(source));
+            Assert.That(arrivedSource, Is.SameAs(source));
         });
 
         var repeated = await fixture.MarkAsync().ConfigureAwait(false);
@@ -111,17 +112,18 @@ public class ForcedPlacementArrivalTests
         await using var fixture = await ArrivalFixture.CreateAsync(new ClientVersion(6, 3, ClientLanguage.English), false).ConfigureAwait(false);
         var victim = fixture.Victim;
         var death = await fixture.KillVictimAsync().ConfigureAwait(false);
-        var source = DeathRespawnCancellation(victim);
+        var source = await ReadDeathRespawnCancellationAsync(victim).ConfigureAwait(false);
         await fixture.Peer.RunPersistenceExclusiveAsync(() => victim.RespawnAtAsync(fixture.Gate)).ConfigureAwait(false);
 
         await Task.Delay(TimeSpan.FromSeconds(4)).ConfigureAwait(false);
+        var loadingSource = await ReadDeathRespawnCancellationAsync(victim).ConfigureAwait(false);
         Assert.Multiple(() =>
         {
             Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
             Assert.That(victim.CurrentMap, Is.Null);
             Assert.That(victim.IsAlive, Is.False);
             Assert.That(victim.LastDeath, Is.SameAs(death));
-            Assert.That(DeathRespawnCancellation(victim), Is.SameAs(source));
+            Assert.That(loadingSource, Is.SameAs(source));
         });
 
         await fixture.SendReadyAsync().ConfigureAwait(false);
@@ -256,6 +258,14 @@ public class ForcedPlacementArrivalTests
     [System.Runtime.CompilerServices.UnsafeAccessor(System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = "_respawnAfterDeathCts")]
     private static extern ref CancellationTokenSource? DeathRespawnCancellation(Player player);
 
+    private static async ValueTask<CancellationTokenSource?> ReadDeathRespawnCancellationAsync(Player player)
+    {
+        // Copies the private timer under the state exclusion which owns it, without changing the state.
+        await using var scope = await player.PlayerState.TryBeginAdvanceToAsync(player.PlayerState.CurrentState).ConfigureAwait(false);
+        scope.Allowed = false;
+        return DeathRespawnCancellation(player);
+    }
+
     private sealed class ArrivalFixture : IAsyncDisposable
     {
         private readonly MemoryStream _output;
@@ -353,12 +363,14 @@ public class ForcedPlacementArrivalTests
         public async ValueTask WaitAliveAsync(TimeSpan? timeout = null)
         {
             var deadline = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(6));
-            while (!this.Victim.IsAlive && DateTime.UtcNow < deadline)
+            // Liveness is restored before the awaited map add; the arrival is complete with the state.
+            while (!(this.Victim.IsAlive && this.Victim.PlayerState.CurrentState == PlayerState.EnteredWorld) && DateTime.UtcNow < deadline)
             {
                 await Task.Delay(25).ConfigureAwait(false);
             }
 
             Assert.That(this.Victim.IsAlive, Is.True);
+            Assert.That(this.Victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
         }
 
         public static async ValueTask WaitUntilAsync(Func<bool> condition, TimeSpan timeout)
