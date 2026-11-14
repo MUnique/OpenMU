@@ -5,12 +5,15 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
@@ -22,6 +25,7 @@ using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer.MessageHandler.Character;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>Forced placement claims map change before detachment and preserves the current character/death across awaits.</summary>
 [TestFixture]
@@ -311,6 +315,295 @@ public class ForcedPlacementTests
             await target.DisposeAsync().ConfigureAwait(false);
             await peer.DisposeAsync().ConfigureAwait(false);
         }
+    }
+
+    /// <summary>A failed real timer gate selection may retry at an existing subsequent map arrival.</summary>
+    /// <param name="legacy">Whether the arrival completes server-side or through Ready.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task FailedDeathRespawnRetriesOnMapArrivalAsync(bool legacy)
+    {
+        var configuration = PlayerTestHelper.CreateGameConfiguration();
+        var failed = new TaskCompletionSource<Exception>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if ((LogLevel)i.Arguments[0] == LogLevel.Error && i.Arguments[2].ToString()!.Contains("Unexpected error during respawning", StringComparison.Ordinal))
+                {
+                    failed.TrySetResult((Exception)i.Arguments[3]);
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var initializer = new MapInitializer(configuration, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(configuration, new InMemoryPersistenceContextProvider(), initializer, factory.Object, new PlugInManager(null, factory.Object, null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        initializer.PlugInManager = game.PlugInManager;
+        initializer.PathFinderPool = game.PathFinderPool;
+        var target = new PlacementPlayer(game, legacy);
+        await PlayerTestHelper.EnterWorldAsync(target, PlayerTestHelper.CreateCharacter(game)).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        var deaths = 0;
+        target.Died += (_, _) => Interlocked.Increment(ref deaths);
+        try
+        {
+            // Map0 has no spawn gate: the real timer's gate selection throws, without a fake continuation.
+            await target.ApplyPoisonDamageAsync(peer, 10).ConfigureAwait(false);
+            var death = target.LastDeath;
+            var error = await failed.Task.WaitAsync(TimeSpan.FromSeconds(6)).ConfigureAwait(false);
+            Assert.That(error, Is.TypeOf<InvalidOperationException>());
+            Assert.That(error.Message, Does.Contain("has no spawn gate"));
+            var destination = await CreatePlacementMapAsync(game, 1).ConfigureAwait(false);
+            Assert.That(target.GetPlacementDeathSnapshot(), Is.EqualTo((death, true)));
+            Assert.That(target.Attributes[Stats.CurrentHealth], Is.Zero);
+            await target.ApplyPoisonDamageAsync(peer, 1).ConfigureAwait(false);
+            Assert.That(deaths, Is.EqualTo(1));
+
+            // An ordinary forced placement supplies a valid gate; its existing arrival path owns retry.
+            await peer.RunPersistenceExclusiveAsync(() => target.RespawnAtAsync(destination.SafeZoneSpawnGate!)).ConfigureAwait(false);
+            if (!legacy)
+            {
+                await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
+                if (target.PlayerState.CurrentState == PlayerState.ChangingMap)
+                {
+                    await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
+                }
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(target.Attributes[Stats.MaximumHealth]));
+                Assert.That(target.GetPlacementDeathSnapshot(), Is.EqualTo((death, false)));
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(destination.GetPlayers().Count(p => ReferenceEquals(p, target)), Is.EqualTo(1));
+            });
+        }
+        finally
+        {
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Real map-add registration precedes its awaited callbacks; late placement must preserve the current life.</summary>
+    /// <param name="transition">The ordinary transition while the real add callback is held.</param>
+    [TestCase("logout")]
+    [TestCase("reselect")]
+    [TestCase("warp")]
+    public async Task RegisteredPlacementDoesNotLeaveOldMapEntryAsync(string transition)
+    {
+        var peer = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = new PlacementPlayer(peer.GameContext, true);
+        await PlayerTestHelper.EnterWorldAsync(target, PlayerTestHelper.CreateCharacter(peer.GameContext)).ConfigureAwait(false);
+        var character = target.SelectedCharacter!;
+        character.Name = "AddLife";
+        Mock.Get(target.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        var destination = await CreatePlacementMapAsync(peer.GameContext, 1).ConfigureAwait(false);
+        var next = await CreatePlacementMapAsync(peer.GameContext, 2).ConfigureAwait(false);
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var additions = 0;
+        destination.ObjectAdded += async args =>
+        {
+            if (ReferenceEquals(args.Object, target) && Interlocked.Increment(ref additions) == 1)
+            {
+                entered.TrySetResult();
+                await release.Task.ConfigureAwait(false);
+            }
+        };
+        var placement = Task.Run(async () => await peer.RunPersistenceExclusiveAsync(() => target.RespawnAtAsync(destination.SafeZoneSpawnGate!)).ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(destination.GetPlayers().Count(p => ReferenceEquals(p, target)), Is.EqualTo(1));
+            if (transition == "warp")
+            {
+                await target.RunPersistenceExclusiveAsync(() => target.WarpToAsync(next.SafeZoneSpawnGate!)).ConfigureAwait(false);
+                await target.RunPersistenceExclusiveAsync(() => new CharacterClientReadyPacketHandlerPlugIn().HandlePacketAsync(target, CreateReadyPacket())).ConfigureAwait(false);
+            }
+            else
+            {
+                await target.RunPersistenceExclusiveAsync(() => new LogoutAction().LogoutAsync(target, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
+                Assert.That(destination.GetPlayers(), Does.Not.Contain(target));
+                if (transition == "reselect")
+                {
+                    await target.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(target)).ConfigureAwait(false);
+                    await target.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(target, character.Name)).ConfigureAwait(false);
+                }
+            }
+
+            release.TrySetResult();
+            await placement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                if (transition == "reselect")
+                {
+                    Assert.That(target.CurrentMap, Is.SameAs(destination));
+                    Assert.That(destination.GetPlayers().Count(p => ReferenceEquals(p, target)), Is.EqualTo(1), "Old placement must not remove replacement life from same map.");
+                }
+                else
+                {
+                    Assert.That(destination.GetPlayers(), Does.Not.Contain(target), "Real removal already removed the early registration; old add does not register it again.");
+                }
+
+                if (transition == "warp")
+                {
+                    Assert.That(target.CurrentMap, Is.SameAs(next));
+                    Assert.That(next.GetPlayers().Count(p => ReferenceEquals(p, target)), Is.EqualTo(1));
+                }
+            });
+        }
+        finally
+        {
+            release.TrySetResult();
+            await placement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>An exceptional attempt releases only its own still-current claim, never a concurrent replacement's.</summary>
+    /// <param name="operation">The lifecycle operation while gate selection is awaiting.</param>
+    [TestCase("concurrent")]
+    [TestCase("teardown")]
+    [TestCase("replacement")]
+    public async Task ExceptionalRespawnPreservesClaimOwnershipAsync(string operation)
+    {
+        var peer = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = new PlacementPlayer(peer.GameContext, true);
+        await PlayerTestHelper.EnterWorldAsync(target, PlayerTestHelper.CreateCharacter(peer.GameContext)).ConfigureAwait(false);
+        var character = target.SelectedCharacter!;
+        character.Name = "ClaimLife";
+        Mock.Get(target.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        var destination = await CreatePlacementMapAsync(peer.GameContext, 1).ConfigureAwait(false);
+        var gate = destination.SafeZoneSpawnGate!;
+        target.Attributes![Stats.CurrentHealth] = 10;
+        await target.ApplyPoisonDamageAsync(peer, 10).ConfigureAwait(false);
+        var oldDeath = target.LastDeath;
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var replacementEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var replacementRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var failure = new InvalidOperationException("gate selection failed");
+        var firstOld = 0;
+        var firstNew = 0;
+        var packets = 0;
+        Mock.Get(target.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>()!).Setup(v => v.RespawnAsync()).Returns(() =>
+        {
+            Interlocked.Increment(ref packets);
+            return ValueTask.CompletedTask;
+        });
+        var selection = new Mock<IPlayerSpawnGateSelectionPlugIn>();
+        selection.Setup(p => p.SelectSpawnGateAsync(target, It.IsAny<SpawnGateSelectionArgs>())).Returns(async (Player _, SpawnGateSelectionArgs args) =>
+        {
+            var isOriginalDeath = ReferenceEquals(target.LastDeath, oldDeath);
+            if (isOriginalDeath && Interlocked.Exchange(ref firstOld, 1) == 0)
+            {
+                entered.TrySetResult();
+                await release.Task.ConfigureAwait(false);
+                throw failure;
+            }
+
+            if (!isOriginalDeath && operation == "replacement" && Interlocked.Exchange(ref firstNew, 1) == 0)
+            {
+                replacementEntered.TrySetResult();
+                await replacementRelease.Task.ConfigureAwait(false);
+            }
+
+            args.Gate = gate;
+        });
+        target.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerSpawnGateSelectionPlugIn>(selection.Object);
+        var original = Task.Run(async () => await target.RespawnAfterDeathAsync().ConfigureAwait(false));
+        var replacement = Task.CompletedTask;
+        DeathInformation? newDeath = null;
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (operation == "teardown")
+            {
+                await target.DisconnectAsync().ConfigureAwait(false);
+            }
+            else if (operation == "replacement")
+            {
+                await target.RunPersistenceExclusiveAsync(() => new LogoutAction().LogoutAsync(target, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
+                await target.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(target)).ConfigureAwait(false);
+                await target.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(target, character.Name)).ConfigureAwait(false);
+                await target.KillInstantlyAsync().ConfigureAwait(false);
+                newDeath = target.LastDeath;
+                Assert.That(newDeath, Is.Not.SameAs(oldDeath));
+                replacement = Task.Run(async () => await target.RespawnAfterDeathAsync().ConfigureAwait(false));
+                await replacementEntered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+            else
+            {
+                await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
+                Assert.That(packets, Is.Zero, "An active attempt retains its claim until it fails.");
+            }
+
+            release.TrySetResult();
+            var observed = Assert.ThrowsAsync<InvalidOperationException>(async () => await original.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false));
+            Assert.That(observed, Is.SameAs(failure), "Claim cleanup must preserve the original exception.");
+            if (operation == "replacement")
+            {
+                await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
+                Assert.That(packets, Is.Zero, "Old failure must not release the new death's in-flight claim.");
+                Assert.That(target.GetPlacementDeathSnapshot(), Is.EqualTo((newDeath, true)));
+                replacementRelease.TrySetResult();
+                await replacement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.That(target.LastDeath, Is.SameAs(newDeath));
+                Assert.That(target.IsAlive, Is.True);
+            }
+            else if (operation == "teardown")
+            {
+                await target.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+                Assert.That(target.SelectedCharacter, Is.Null);
+                Assert.That(destination.GetPlayers(), Does.Not.Contain(target));
+                Assert.That(packets, Is.Zero);
+            }
+            else
+            {
+                await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false);
+                Assert.That(target.LastDeath, Is.SameAs(oldDeath));
+                Assert.That(target.IsAlive, Is.True);
+                Assert.That(packets, Is.EqualTo(1));
+            }
+        }
+        finally
+        {
+            release.TrySetResult();
+            replacementRelease.TrySetResult();
+            try
+            {
+                await original.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+            catch (InvalidOperationException ex) when (ReferenceEquals(ex, failure))
+            {
+                // Expected failing gate selection, also when an earlier assertion fails.
+            }
+
+            await replacement.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    private static async Task<GameMap> CreatePlacementMapAsync(IGameContext game, short number)
+    {
+        var definition = new Mock<GameMapDefinition>();
+        definition.SetupAllProperties();
+        var source = game.Configuration.Maps.First();
+        definition.Setup(m => m.DropItemGroups).Returns(source.DropItemGroups);
+        definition.Setup(m => m.MonsterSpawns).Returns(source.MonsterSpawns);
+        definition.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        definition.Object.Number = number;
+        definition.Object.TerrainData = source.TerrainData;
+        definition.Object.ExitGates.Add(new ExitGate { Map = definition.Object, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+        game.Configuration.Maps.Add(definition.Object);
+        return (await game.GetMapAsync((ushort)number).ConfigureAwait(false))!;
     }
 
     private static byte[] CreateReadyPacket()

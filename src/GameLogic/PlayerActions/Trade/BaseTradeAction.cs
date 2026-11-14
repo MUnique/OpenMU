@@ -82,7 +82,6 @@ public class BaseTradeAction
 
     private async ValueTask CancelTradeCoreAsync(ITrader trader, bool checkState, ITrader? expectedPartner, Action<ValueTask>? onNotificationStarted)
     {
-        CancelledTrades.Add(1);
         await using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
             context.Allowed &= trader.PlayerState.CurrentState == PlayerState.TradeRequested
@@ -135,5 +134,7 @@ public class BaseTradeAction
                 onNotificationStarted(trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)));
             }
         }
+
+        CancelledTrades.Add(1);
     }
 }

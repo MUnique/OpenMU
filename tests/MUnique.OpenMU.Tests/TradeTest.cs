@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Collections.Concurrent;
 using System.IO.Pipelines;
+using System.Diagnostics.Metrics;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -861,6 +862,116 @@ public class TradeTest
 
         Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(view => view!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
         Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(view => view!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+    }
+
+    /// <summary>The cancellation counter counts completed participants, not rejected guard checks.</summary>
+    /// <param name="operation">The accepted or rejected cancellation path.</param>
+    [TestCase("state")]
+    [TestCase("identity")]
+    [TestCase("accepted")]
+    [TestCase("pair")]
+    public async Task CancelledTradeMetricCountsCompletedParticipantsAsync(string operation)
+    {
+        var state = operation == "state" ? PlayerState.EnteredWorld : PlayerState.TradeOpened;
+        var owner = this.CreateTrader(state);
+        var peer = this.CreateTrader(state);
+        owner.TradingPartner = peer;
+        peer.TradingPartner = owner;
+        var expected = operation == "identity" ? this.CreateTrader(state) : peer;
+        var active = new AsyncLocal<bool>();
+        var count = 0;
+        var published = new List<int>();
+        using var listener = new MeterListener();
+        listener.InstrumentPublished = (instrument, subscriber) =>
+        {
+            if (instrument.Meter.Name == BaseTradeAction.MeterName && instrument.Name == "CancelledTradesCount")
+            {
+                subscriber.EnableMeasurementEvents(instrument);
+            }
+        };
+        listener.SetMeasurementEventCallback<int>((_, value, _, _) =>
+        {
+            if (active.Value)
+            {
+                count += value;
+                published.Add((owner.PlayerState.CurrentState == PlayerState.EnteredWorld ? 1 : 0)
+                    + (peer.PlayerState.CurrentState == PlayerState.EnteredWorld ? 1 : 0));
+            }
+        });
+        listener.Start();
+        active.Value = true;
+        try
+        {
+            if (operation == "pair")
+            {
+                await new TradeCancelAction().CancelTradeAsync(owner).ConfigureAwait(false);
+            }
+            else
+            {
+                ValueTask notification = default;
+                await new BaseTradeAction().CancelTradeAndStartNotificationAsync(owner, expected, pending => notification = pending).ConfigureAwait(false);
+                await notification.ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            active.Value = false;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(count, Is.EqualTo(operation == "pair" ? 2 : operation == "accepted" ? 1 : 0));
+            Assert.That(published, Is.EqualTo(operation == "pair" ? new[] { 1, 2 } : operation == "accepted" ? new[] { 1 } : Array.Empty<int>()), "Synchronous metric callbacks must run after state publication.");
+        });
+    }
+
+    /// <summary>A requester may confirm its visible response while the accepter's second open awaits real output flush.</summary>
+    [Test]
+    public async Task RequesterConfirmationDuringSecondOpenPreservesValidTradeAsync()
+    {
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var requester = await PlayerTestHelper.CreatePlayerAsync(target.GameContext).ConfigureAwait(false);
+        target.Money = 100;
+        requester.Money = 200;
+        var pipe = new Pipe(new PipeOptions(pauseWriterThreshold: 1, resumeWriterThreshold: 1));
+        var connection = new Mock<IConnection>();
+        connection.SetupGet(c => c.Connected).Returns(true);
+        connection.SetupGet(c => c.Output).Returns(pipe.Writer);
+        connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
+        Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Setup(v => v.ShowTradeRequestAnswerAsync(true))
+            .Returns(() => ServerPackets.ConnectionExtensions.SendTradeRequestAnswerAsync(connection.Object, true, target.Name, (ushort)target.Level, 0));
+        Assert.That(await requester.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(requester, target)).ConfigureAwait(false), Is.True);
+        var opening = Task.Run(async () => await target.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(target, true)).ConfigureAwait(false));
+        try
+        {
+            var packet = await pipe.Reader.ReadAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(System.Buffers.BuffersExtensions.ToArray(packet.Buffer)[2], Is.EqualTo(ServerPackets.TradeRequestAnswerRef.Code));
+            Assert.That(opening.IsCompleted, Is.False);
+            // This is a different player's request context, never a descendant of the output callback.
+            await requester.RunPersistenceExclusiveAsync(() => new TradeButtonAction().TradeButtonChangedAsync(requester, TradeButtonState.Checked)).ConfigureAwait(false);
+            pipe.Reader.AdvanceTo(packet.Buffer.End);
+            await opening.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(requester.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+                Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(requester.TradingPartner, Is.SameAs(target));
+                Assert.That(target.TradingPartner, Is.SameAs(requester));
+                Assert.That(target.BackupInventory!.Money, Is.EqualTo(100));
+                Assert.That(requester.BackupInventory!.Money, Is.EqualTo(200));
+            });
+            await requester.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(requester)).ConfigureAwait(false);
+            Assert.That(target.BackupInventory, Is.Null);
+            Assert.That(requester.BackupInventory, Is.Null);
+        }
+        finally
+        {
+            await pipe.Reader.CompleteAsync().ConfigureAwait(false);
+            await opening.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await pipe.Writer.CompleteAsync().ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await requester.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>

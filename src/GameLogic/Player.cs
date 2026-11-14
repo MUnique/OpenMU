@@ -1787,6 +1787,23 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 await this.RespawnOfDuelPartnerIfInDuelAsync().ConfigureAwait(false);
             }
         }
+        catch
+        {
+            if (!prepared)
+            {
+                await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+                context.Allowed = false;
+                if (ReferenceEquals(this._respawnAfterDeathCts, source) && ReferenceEquals(this.LastDeath, death)
+                    && this._pendingDeathRespawn is { Claimed: true } pending
+                    && ReferenceEquals(pending.Source, source) && ReferenceEquals(pending.Death, death))
+                {
+                    // A later map arrival may retry this death; never release a replacement's claim.
+                    this._pendingDeathRespawn = (source, death, false);
+                }
+            }
+
+            throw;
+        }
         finally
         {
             if (prepared)
