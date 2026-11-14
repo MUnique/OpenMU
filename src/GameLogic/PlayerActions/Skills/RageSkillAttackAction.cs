@@ -61,10 +61,24 @@ public class RageSkillAttackAction
         }
 
         var explicitTarget = player.GetObject(explicitTargetId) as IAttackable;
-        if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { Skill: { } usedSkill } skill
-                                     || (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range)))
+        if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { Skill: { } usedSkill } skill)
         {
             return;
+        }
+
+        if (explicitTarget is not null && !explicitTarget.IsActive())
+        {
+            explicitTarget = null;
+        }
+
+        if (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range + 2))
+        {
+            if (explicitTarget is not ISupportWalk { IsWalking: true })
+            {
+                await player.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(explicitTarget, MoveType.Instant)).ConfigureAwait(false);
+            }
+
+            explicitTarget = null;
         }
 
         // The additional targets are searched around the explicit target, so the skill also hits
@@ -74,7 +88,7 @@ public class RageSkillAttackAction
             player,
             explicitTarget,
             searchCenter,
-            map.GetAttackablesInRange(searchCenter, usedSkill.Range));
+            map.GetAttackablesInRange(searchCenter, usedSkill.Range).Where(t => t.IsActive()));
 
         await player.InvokeViewPlugInAsync<IShowRageAttackRangePlugIn>(p => p.ShowRageAttackRangeAsync(skillId, targets)).ConfigureAwait(false);
 

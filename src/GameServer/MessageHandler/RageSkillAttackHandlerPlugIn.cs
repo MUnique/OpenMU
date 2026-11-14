@@ -36,7 +36,7 @@ internal class RageSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 
         var target = player.GetObject(targetId) as IAttackable;
         if (player.SkillList is null || player.SkillList.GetSkill(message.SkillId) is not { } skill
-                                     || target is null || !target.IsInRange(player.Position, skill.Skill!.Range))
+                                     || target is null || !target.IsInRange(player.Position, skill.Skill!.Range + 2))
         {
             return;
         }
