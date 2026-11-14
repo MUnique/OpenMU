@@ -27,5 +27,10 @@ public class ChatMessageWhisperProcessor : BannableChatMessageBaseProcessor
                 await sender.NotifyChatMessageSentAsync(content.Message, ChatMessageType.Whisper, whisperReceiver).ConfigureAwait(false);
             }
         }
+        else
+        {
+            // Tell the sender that the receiver is unknown on this game server, instead of silently dropping the whisper.
+            await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), content.PlayerName).ConfigureAwait(false);
+        }
     }
 }
