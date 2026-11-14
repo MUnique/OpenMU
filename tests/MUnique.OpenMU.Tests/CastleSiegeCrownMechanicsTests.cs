@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Threading;
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.GameLogic.Views;
@@ -18,6 +19,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Party;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
@@ -889,6 +892,329 @@ public class CastleSiegeCrownMechanicsTests
         }
     }
 
+    /// <summary>A real death timer cannot consume its death before a Crown preparation permits actual placement.</summary>
+    /// <param name="overlap">Whether the normal close remains held while the original three-second timer runs.</param>
+    /// <param name="legacy">Whether the victim completes placement without a Ready packet.</param>
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    [TestCase(true, false)]
+    public async Task CrownPreparationPreservesDueDeathUntilPlacementClaimAsync(bool overlap, bool legacy)
+    {
+        var closing = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var releaseClose = new ManualResetEventSlim();
+        var held = 0;
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if ((LogLevel)i.Arguments[0] == LogLevel.Information && string.Equals(i.Arguments[2].ToString(), "Saving changes after closing the chaos goblin ...", StringComparison.Ordinal))
+                {
+                    Volatile.Write(ref held, 1);
+                    closing.TrySetResult();
+                    try
+                    {
+                        if (!releaseClose.Wait(TimeSpan.FromSeconds(10)))
+                        {
+                            throw new TimeoutException("Crown preparation close was not released.");
+                        }
+                    }
+                    finally
+                    {
+                        Volatile.Write(ref held, 0);
+                    }
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var fixture = await CreateFixtureAsync(factory.Object).ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: legacy).ConfigureAwait(false);
+        var npcDefinition = new Mock<MonsterDefinition>();
+        npcDefinition.SetupAllProperties();
+        npcDefinition.Setup(n => n.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> { new() });
+        npcDefinition.Object.Number = 238;
+        npcDefinition.Object.NpcWindow = NpcWindow.ChaosMachine;
+        var npc = new NonPlayerCharacter(new MonsterSpawnArea(), npcDefinition.Object, fixture.SiegeMap) { Position = victim.Position };
+        await fixture.SiegeMap.AddAsync(npc).ConfigureAwait(false);
+        var packet = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef.Length];
+        _ = new MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef(packet) { NpcId = npc.Id };
+        await victim.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(victim, packet)).ConfigureAwait(false);
+        victim.Attributes![Stats.CurrentHealth] = 10;
+        var hitEntered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseHit = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()!).Setup(v => v.ShowHitAsync(victim, It.IsAny<HitInfo>())).Returns(async () =>
+        {
+            hitEntered.TrySetResult();
+            await releaseHit.Task.ConfigureAwait(false);
+        });
+        var timerGate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var gateSelection = new Mock<IPlayerSpawnGateSelectionPlugIn>();
+        gateSelection.Setup(p => p.SelectSpawnGateAsync(victim, It.IsAny<SpawnGateSelectionArgs>())).Returns((Player _, SpawnGateSelectionArgs args) =>
+        {
+            args.Gate = fixture.Context.GetRespawnGate(CastleSiegeJoinSide.Attack1);
+            timerGate.TrySetResult();
+            return ValueTask.CompletedTask;
+        });
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerSpawnGateSelectionPlugIn>(gateSelection.Object);
+        var deaths = 0;
+        victim.Died += (_, _) => Interlocked.Increment(ref deaths);
+        var death = Task.Run(async () => await winner.RunPersistenceExclusiveAsync(() => victim.ApplyPoisonDamageAsync(winner, 10)).ConfigureAwait(false));
+        var crown = Task.CompletedTask;
+        try
+        {
+            await hitEntered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var owner = victim.LastDeath;
+            crown = Task.Run(async () => await CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1).ConfigureAwait(false));
+            await closing.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(victim.IsPreparingForcedPlacement, Is.True);
+            if (!overlap)
+            {
+                releaseClose.Set();
+                await crown.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            releaseHit.TrySetResult();
+            await death.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (overlap)
+            {
+                // Observe the REAL timer's preparation outcome, not an invented respawn call or veto.
+                await timerGate.Task.WaitAsync(TimeSpan.FromSeconds(6)).ConfigureAwait(false);
+                // Public HP/reservation cannot prove the real timer reached its defer-or-commit decision.
+                // Copy private phase values under state; never retain or mutate the accessor refs.
+                CancellationTokenSource? observedSource = null;
+                var observed = false;
+                var started = Stopwatch.StartNew();
+                while (!observed && started.Elapsed < TimeSpan.FromSeconds(5))
+                {
+                    await using (var context = await victim.PlayerState.TryBeginAdvanceToAsync(victim.PlayerState.CurrentState).ConfigureAwait(false))
+                    {
+                        context.Allowed = false;
+                        var pending = PendingDeathRespawn(victim);
+                        observedSource = DeathRespawnCancellation(victim);
+                        observed = !victim.GetPlacementDeathSnapshot().Reserved || pending is { Claimed: false };
+                    }
+
+                    if (!observed)
+                    {
+                        await Task.Delay(10).ConfigureAwait(false);
+                    }
+                }
+
+                Assert.That(observed, Is.True, "Timer must either defer its claim or expose the unsafe early ownership release.");
+                Assert.That(Volatile.Read(ref held), Is.EqualTo(1));
+                TestContext.Progress.WriteLine($"Held Crown: state={victim.PlayerState.CurrentState}, alive={victim.IsAlive}, HP={victim.Attributes[Stats.CurrentHealth]}, reserved={victim.GetPlacementDeathSnapshot().Reserved}, CTS={observedSource is not null}");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                    Assert.That(victim.IsAlive, Is.False);
+                    Assert.That(victim.GetPlacementDeathSnapshot(), Is.EqualTo((owner, true)), "No death consumption before a placement owns its claim.");
+                    Assert.That(observedSource, Is.Not.Null);
+                    Assert.That(victim.Attributes[Stats.CurrentHealth], Is.Zero);
+                });
+                releaseClose.Set();
+                await crown.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+
+            var complete = Stopwatch.StartNew();
+            while ((!victim.IsAlive || victim.PlayerState.CurrentState == PlayerState.ChangingMap) && complete.Elapsed < TimeSpan.FromSeconds(6))
+            {
+                if (victim.PlayerState.CurrentState == PlayerState.ChangingMap && victim.CurrentMap is null)
+                {
+                    await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+                }
+
+                await Task.Delay(10).ConfigureAwait(false);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(victim.IsAlive, Is.True);
+                Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(victim.Attributes[Stats.CurrentHealth], Is.EqualTo(victim.Attributes[Stats.MaximumHealth]));
+                Assert.That(victim.LastDeath, Is.SameAs(owner));
+                Assert.That(deaths, Is.EqualTo(1));
+                Assert.That(victim.IsPreparingForcedPlacement, Is.False);
+            });
+        }
+        finally
+        {
+            releaseHit.TrySetResult();
+            releaseClose.Set();
+            await Task.WhenAll(death, crown).WaitAsync(TimeSpan.FromSeconds(6)).ConfigureAwait(false);
+            await fixture.SiegeMap.RemoveAsync(npc).ConfigureAwait(false);
+            await npc.DisposeAsync().ConfigureAwait(false);
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    /// <summary>Actual mid-warp selection excludes CurrentMap-null; a completed Ready makes Crown relocation eligible again.</summary>
+    /// <param name="readyBeforeCrown">Whether the ordinary Ready packet completed before capture.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CrownSelectionFollowsRealWarpReadyMembershipAsync(bool readyBeforeCrown)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: false).ConfigureAwait(false);
+        var gate = new ExitGate { Map = fixture.SiegeMap.Definition, X1 = 62, X2 = 62, Y1 = 61, Y2 = 61 };
+        Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Invocations.Clear();
+        try
+        {
+            await victim.RunPersistenceExclusiveAsync(() => new WarpAction().WarpToAsync(victim, new WarpInfo { Gate = gate })).ConfigureAwait(false);
+            if (readyBeforeCrown)
+            {
+                await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            }
+
+            Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(readyBeforeCrown ? PlayerState.EnteredWorld : PlayerState.ChangingMap));
+            Assert.That(fixture.Context.GetSiegePlayers().Contains(victim), Is.EqualTo(readyBeforeCrown));
+            await winner.RunPersistenceExclusiveAsync(() => CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1)).ConfigureAwait(false);
+            if (readyBeforeCrown)
+            {
+                var respawn = fixture.Context.GetRespawnGate(CastleSiegeJoinSide.Attack1)!;
+                Assert.That(victim.SelectedCharacter!.PositionX, Is.InRange(respawn.X1, respawn.X2));
+                Assert.That(victim.SelectedCharacter.PositionY, Is.InRange(respawn.Y1, respawn.Y2));
+            }
+            else
+            {
+                Assert.That(victim.SelectedCharacter!.PositionX, Is.EqualTo(62));
+                Assert.That(victim.SelectedCharacter.PositionY, Is.EqualTo(61));
+            }
+
+            Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Verify(v => v.MapChangeAsync(), Times.Exactly(readyBeforeCrown ? 2 : 1));
+            await victim.RunPersistenceExclusiveAsync(() => victim.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            Assert.That(victim.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+            Assert.That(victim.IsAlive, Is.True);
+            Assert.That(fixture.SiegeMap.GetPlayers().Count(p => ReferenceEquals(p, victim)), Is.EqualTo(1));
+        }
+        finally
+        {
+            await victim.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
+    /// <summary>A later captured attacker may start an allowed move while an earlier snapshot entry awaits normal NPC close.</summary>
+    /// <param name="readyBeforeResume">Whether that move finishes Ready before the Crown loop resumes.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task CrownSnapshotRetainsFirstWarpOwnerAsync(bool readyBeforeResume)
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var held = 0;
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if ((LogLevel)i.Arguments[0] == LogLevel.Information && string.Equals(i.Arguments[2].ToString(), "Saving changes after closing the chaos goblin ...", StringComparison.Ordinal))
+                {
+                    Volatile.Write(ref held, 1);
+                    entered.TrySetResult();
+                    try
+                    {
+                        if (!release.Wait(TimeSpan.FromSeconds(5)))
+                        {
+                            throw new TimeoutException("Crown snapshot test did not release the earlier NPC close.");
+                        }
+                    }
+                    finally
+                    {
+                        Volatile.Write(ref held, 0);
+                    }
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var fixture = await CreateFixtureAsync(factory.Object).ConfigureAwait(false);
+        var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        var first = await fixture.CreatePlayerAsync(DefenseGuildId, "First", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: false).ConfigureAwait(false);
+        var second = await fixture.CreatePlayerAsync(DefenseGuildId, "Second", CastleSiegeJoinSide.Defense, 62, 60, useRespawnPlugIn: false).ConfigureAwait(false);
+        var ordered = fixture.Context.GetSiegePlayers().Where(p => !ReferenceEquals(p, winner)).ToArray();
+        var blocker = ordered[0];
+        var mover = ordered[1];
+        var definition = new Mock<MonsterDefinition>();
+        definition.SetupAllProperties();
+        definition.Setup(d => d.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting> { new() });
+        definition.Object.Number = 238;
+        definition.Object.NpcWindow = NpcWindow.ChaosMachine;
+        var npc = new NonPlayerCharacter(new MonsterSpawnArea(), definition.Object, fixture.SiegeMap) { Position = blocker.Position };
+        await fixture.SiegeMap.AddAsync(npc).ConfigureAwait(false);
+        var talk = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef.Length];
+        _ = new MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef(talk) { NpcId = npc.Id };
+        await blocker.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(blocker, talk)).ConfigureAwait(false);
+        // An explicitly permitted configured move, not a direct field mutation or unlisted destination.
+        using var configurationContext = fixture.PersistenceContextProvider.CreateNewConfigurationContext();
+        var gate = configurationContext.CreateNew<ExitGate>();
+        gate.Map = fixture.SiegeMap.Definition;
+        gate.X1 = gate.X2 = 62;
+        gate.Y1 = gate.Y2 = 61;
+        var warpInfo = configurationContext.CreateNew<WarpInfo>();
+        warpInfo.Index = 777;
+        warpInfo.Gate = gate;
+        warpInfo.Costs = 5;
+        warpInfo.LevelRequirement = 0;
+        fixture.GameServerContext.Configuration.WarpList.Add(warpInfo);
+        fixture.GameServerContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        mover.Money = 200;
+        var move = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.WarpCommandRequestRef.Length];
+        _ = new MUnique.OpenMU.Network.Packets.ClientToServer.WarpCommandRequestRef(move) { WarpInfoIndex = 777 };
+        Mock.Get(mover.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Invocations.Clear();
+        var crown = Task.Run(async () => await CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1).ConfigureAwait(false));
+        try
+        {
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(Volatile.Read(ref held), Is.EqualTo(1));
+            Assert.That(mover.CurrentMap, Is.SameAs(fixture.SiegeMap), "The later attacker was present when the foreach snapshot was taken.");
+            Assert.That(mover.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+            await mover.RunPersistenceExclusiveAsync(() => new WarpHandlerPlugIn().HandlePacketAsync(mover, move)).ConfigureAwait(false);
+            Assert.That(mover.Money, Is.EqualTo(195), "The actual configured move handler accepted the gate and charged its cost.");
+            Assert.That(mover.CurrentMap, Is.Null);
+            Assert.That(mover.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+            if (readyBeforeResume)
+            {
+                await mover.RunPersistenceExclusiveAsync(() => mover.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            }
+
+            Assert.That(Volatile.Read(ref held), Is.EqualTo(1));
+            release.Set();
+            await crown.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (readyBeforeResume)
+            {
+                var respawn = fixture.Context.GetRespawnGate(CastleSiegeJoinSide.Attack1)!;
+                Assert.That(mover.SelectedCharacter!.PositionX, Is.InRange(respawn.X1, respawn.X2));
+                Assert.That(mover.SelectedCharacter.PositionY, Is.InRange(respawn.Y1, respawn.Y2));
+            }
+            else
+            {
+                Assert.That(mover.SelectedCharacter!.PositionX, Is.EqualTo(62), "Existing ChangingMap owner is intentionally not overwritten, even from an older snapshot.");
+                Assert.That(mover.SelectedCharacter.PositionY, Is.EqualTo(61));
+            }
+
+            Mock.Get(mover.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Verify(v => v.MapChangeAsync(), Times.Exactly(readyBeforeResume ? 2 : 1));
+            await mover.RunPersistenceExclusiveAsync(() => mover.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            await blocker.RunPersistenceExclusiveAsync(() => blocker.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            Assert.That(mover.IsAlive, Is.True);
+            Assert.That(mover.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        }
+        finally
+        {
+            release.Set();
+            await crown.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await fixture.SiegeMap.RemoveAsync(npc).ConfigureAwait(false);
+            await npc.DisposeAsync().ConfigureAwait(false);
+            await first.DisposeAsync().ConfigureAwait(false);
+            await second.DisposeAsync().ConfigureAwait(false);
+            await winner.DisposeAsync().ConfigureAwait(false);
+            fixture.GameServerContext.Dispose();
+        }
+    }
+
     /// <summary>Crown relocation is placement, not permission to discard another hit's lethal reservation.</summary>
     /// <param name="lethal">Whether the former defender is waiting on a lethal hit view.</param>
     [TestCase(false)]
@@ -1014,6 +1340,12 @@ public class CastleSiegeCrownMechanicsTests
             fixture.GameServerContext.Dispose();
         }
     }
+
+    [System.Runtime.CompilerServices.UnsafeAccessor(System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = "_pendingDeathRespawn")]
+    private static extern ref (CancellationTokenSource Source, DeathInformation Death, bool Claimed)? PendingDeathRespawn(Player player);
+
+    [System.Runtime.CompilerServices.UnsafeAccessor(System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = "_respawnAfterDeathCts")]
+    private static extern ref CancellationTokenSource? DeathRespawnCancellation(Player player);
 
     private static async ValueTask<TestFixture> CreateFixtureAsync(ILoggerFactory? loggerFactory = null)
     {

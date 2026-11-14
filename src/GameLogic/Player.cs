@@ -1675,8 +1675,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>Closes recognized interactions and claims map change before removing the player.</summary>
     /// <param name="isCurrentLife">Validates the captured character, attributes and death before claiming placement.</param>
+    /// <param name="tryPreparePlacement">Optional owned restoration commit; synchronous and invoked only inside successful state admission.</param>
     /// <returns>Whether this operation owns the existing changing-map state.</returns>
-    internal async ValueTask<bool> PrepareForForcedPlacementAsync(Func<bool> isCurrentLife)
+    internal async ValueTask<bool> PrepareForForcedPlacementAsync(Func<bool> isCurrentLife, Func<bool>? tryPreparePlacement = null)
     {
         var attributes = this.Attributes;
         var acquired = false;
@@ -1705,7 +1706,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                     context.Allowed &= isCurrentLife() && state != GameLogic.PlayerState.NpcDialogOpened;
                     if (context.Allowed)
                     {
-                        return true;
+                        try
+                        {
+                            context.Allowed &= tryPreparePlacement?.Invoke() ?? true;
+                            return context.Allowed;
+                        }
+                        catch
+                        {
+                            context.Allowed = false;
+                            throw;
+                        }
                     }
 
                     if (!isCurrentLife() || (state != GameLogic.PlayerState.PartyRequest
@@ -1814,13 +1824,28 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             gate ??= await this._mapTransitions.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false);
-            if (!await this.PrepareForRespawnAsync(source, death, token).ConfigureAwait(false))
+            if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: false).ConfigureAwait(false))
             {
                 return;
             }
 
-            prepared = true;
-            await this.RespawnAtAsync(gate).ConfigureAwait(false);
+            List<(AttributeDefinition Definition, float Value)> changes = [];
+            await this._mapTransitions.RespawnWithPreparationAsync(
+                gate,
+                () => prepared = this.TryPrepareForRespawn(source, death, token, changes),
+                () =>
+                {
+                    foreach (var (definition, value) in changes)
+                    {
+                        _ = this.NotifyAttributeValueChangedAsync(definition, value);
+                    }
+                }).ConfigureAwait(false);
+            if (!prepared)
+            {
+                await this.DeferDeathRespawnClaimAsync(source, death).ConfigureAwait(false);
+                return;
+            }
+
             if (!this.IsDisposed && !this.IsDisposing && this.SelectedCharacter is not null
                 && ReferenceEquals(this.LastDeath, death) && this._respawnAfterDeathCts is null)
             {
@@ -1831,15 +1856,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         {
             if (!prepared)
             {
-                await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
-                context.Allowed = false;
-                if (ReferenceEquals(this._respawnAfterDeathCts, source) && ReferenceEquals(this.LastDeath, death)
-                    && this._pendingDeathRespawn is { Claimed: true } pending
-                    && ReferenceEquals(pending.Source, source) && ReferenceEquals(pending.Death, death))
-                {
-                    // A later map arrival may retry this death; never release a replacement's claim.
-                    this._pendingDeathRespawn = (source, death, false);
-                }
+                await this.DeferDeathRespawnClaimAsync(source, death).ConfigureAwait(false);
             }
 
             throw;
@@ -2488,46 +2505,51 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask<bool> PrepareForRespawnAsync(CancellationTokenSource source, DeathInformation death, CancellationToken token)
+    private async ValueTask DeferDeathRespawnClaimAsync(CancellationTokenSource source, DeathInformation death)
     {
-        List<(AttributeDefinition Definition, float Value)> changes = [];
-        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        if (ReferenceEquals(this._respawnAfterDeathCts, source) && ReferenceEquals(this.LastDeath, death)
+            && this._pendingDeathRespawn is { Claimed: true } pending
+            && ReferenceEquals(pending.Source, source) && ReferenceEquals(pending.Death, death))
         {
-            context.Allowed = false;
-            lock (this._hitLock)
-            {
-                if (token.IsCancellationRequested || this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
-                    || !ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death)
-                    || !this._hasReservedLethalHit || this.PlayerState.CurrentState.IsDisconnectedOrFinished())
-                {
-                    return false;
-                }
-
-                if (this.CurrentMap is null || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
-                {
-                    this._pendingDeathRespawn = (source, death, false);
-                    return false;
-                }
-
-                this._hitAttributeChanges = changes;
-                try
-                {
-                    this.SetReclaimableAttributesToMaximum();
-                    this._hasReservedLethalHit = false;
-                    this._pendingMapChangeDeath = null;
-                    this._pendingDeathRespawn = null;
-                    this._respawnAfterDeathCts = null;
-                }
-                finally
-                {
-                    this._hitAttributeChanges = null;
-                }
-            }
+            // A later map arrival may retry this death; never release a replacement's claim.
+            this._pendingDeathRespawn = (source, death, false);
         }
+    }
 
-        foreach (var (definition, value) in changes)
+    // Placement owns state admission before consuming this death; notification starts outside state/hit exclusion.
+    private bool TryPrepareForRespawn(CancellationTokenSource source, DeathInformation death, CancellationToken token, List<(AttributeDefinition Definition, float Value)> changes)
+    {
+        lock (this._hitLock)
         {
-            _ = this.NotifyAttributeValueChangedAsync(definition, value);
+            if (token.IsCancellationRequested || this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                || !ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death)
+                || !this._hasReservedLethalHit || this.PlayerState.CurrentState.IsDisconnectedOrFinished()
+                || this._pendingDeathRespawn is not { Claimed: true } pending
+                || !ReferenceEquals(pending.Source, source) || !ReferenceEquals(pending.Death, death))
+            {
+                return false;
+            }
+
+            if (this.CurrentMap is null || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+            {
+                return false;
+            }
+
+            this._hitAttributeChanges = changes;
+            try
+            {
+                this.SetReclaimableAttributesToMaximum();
+                this._hasReservedLethalHit = false;
+                this._pendingMapChangeDeath = null;
+                this._pendingDeathRespawn = null;
+                this._respawnAfterDeathCts = null;
+            }
+            finally
+            {
+                this._hitAttributeChanges = null;
+            }
         }
 
         return true;
@@ -2535,19 +2557,68 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <summary>
     /// Called when this player is in a duel and was killed.
-    /// Sets the player back to its starting position and reclaims the attributes
-    /// so that they're ready for the next round.
+    /// Resets the partner only after placement owns the same live duel participant.
     /// </summary>
     private async ValueTask RespawnOfDuelPartnerIfInDuelAsync()
     {
-        if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom
-            && duelRoom.IsDuelist(this)
-            && (duelRoom.Requester == this ? duelRoom.Opponent : duelRoom.Requester) is { IsAlive: true, CurrentMap: not null } duelPartner
-            && duelRoom.GetSpawnGate(duelPartner) is { } partnerSpawnGate)
+        if (this.DuelRoom is not { State: DuelState.DuelStarted } duelRoom
+            || !duelRoom.IsDuelist(this)
+            || (duelRoom.Requester == this ? duelRoom.Opponent : duelRoom.Requester) is not { IsAlive: true, CurrentMap: not null } duelPartner
+            || duelRoom.GetSpawnGate(duelPartner) is not { } partnerSpawnGate)
         {
-            duelPartner.IsAlive = false; // Avoid ending the duel...
-            duelPartner.SetReclaimableAttributesToMaximum();
-            await duelPartner.RespawnAtAsync(partnerSpawnGate).ConfigureAwait(false);
+            return;
+        }
+
+        var character = this.SelectedCharacter;
+        var attributes = this.Attributes;
+        var partnerCharacter = duelPartner.SelectedCharacter;
+        var partnerAttributes = duelPartner.Attributes;
+        var initiatorDeath = this.LastDeath;
+        if (character is null || attributes is null || partnerCharacter is null || partnerAttributes is null)
+        {
+            return;
+        }
+
+        List<(AttributeDefinition Definition, float Value)> changes = [];
+        await duelPartner._mapTransitions.RespawnWithPreparationAsync(
+            partnerSpawnGate,
+            TryPreparePartner,
+            () =>
+            {
+                foreach (var (definition, value) in changes)
+                {
+                    _ = duelPartner.NotifyAttributeValueChangedAsync(definition, value);
+                }
+            }).ConfigureAwait(false);
+
+        bool TryPreparePartner()
+        {
+            lock (duelPartner._hitLock)
+            {
+                if (duelRoom.State != DuelState.DuelStarted || !ReferenceEquals(this.DuelRoom, duelRoom)
+                    || !ReferenceEquals(duelPartner.DuelRoom, duelRoom) || !duelRoom.IsDuelist(this) || !duelRoom.IsDuelist(duelPartner)
+                    || !ReferenceEquals(this.SelectedCharacter, character) || !ReferenceEquals(this.Attributes, attributes)
+                    || !ReferenceEquals(this.LastDeath, initiatorDeath)
+                    || !ReferenceEquals(duelPartner.SelectedCharacter, partnerCharacter) || !ReferenceEquals(duelPartner.Attributes, partnerAttributes)
+                    || this.IsDisposed || this.IsDisposing || !duelPartner.IsAlive || duelPartner._hasReservedLethalHit)
+                {
+                    return false;
+                }
+
+                duelPartner._hitAttributeChanges = changes;
+                try
+                {
+                    // Keep the normal false-before-removal hook semantics, but only for this admitted reset.
+                    duelPartner.IsAlive = false;
+                    duelPartner.SetReclaimableAttributesToMaximum();
+                }
+                finally
+                {
+                    duelPartner._hitAttributeChanges = null;
+                }
+
+                return true;
+            }
         }
     }
 

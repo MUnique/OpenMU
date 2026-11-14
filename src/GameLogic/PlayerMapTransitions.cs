@@ -191,119 +191,7 @@ internal sealed class PlayerMapTransitions
     /// Respawns the player at the specified gate.
     /// </summary>
     /// <param name="gate">The gate at which the player should be respawned.</param>
-    public async ValueTask RespawnAtAsync(ExitGate gate)
-    {
-        var player = this._player;
-        player.ThrowNotInitializedProperty(player.SelectedCharacter is null, nameof(player.SelectedCharacter));
-        var character = player.SelectedCharacter!;
-        var attributes = player.Attributes;
-        var deathSnapshot = player.GetPlacementDeathSnapshot();
-        var placementOwner = deathSnapshot.Reserved ? deathSnapshot.Death : null;
-        var claimedPlacement = false;
-        if (!await player.PrepareForForcedPlacementAsync(IsCurrentPlacement).ConfigureAwait(false))
-        {
-            return;
-        }
-
-        claimedPlacement = true;
-        if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
-        {
-            return;
-        }
-
-        var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
-
-        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap, IsCurrentPlacement).ConfigureAwait(false) || !IsCurrentPlacement())
-        {
-            return;
-        }
-
-        character.ThrowNotInitializedProperty(character.CurrentMap is null, nameof(character.CurrentMap));
-        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
-        if (!IsCurrentPlacement())
-        {
-            return;
-        }
-
-        if (player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
-        {
-            // Older clients use a separate packet for the respawn, while newer don't.
-            // It requires a slightly different logic.
-            var map = await this.GetMapToEnterAsync(character.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
-            if (!IsCurrentPlacement())
-            {
-                return;
-            }
-
-            player.CurrentMap = map;
-            await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
-            if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
-            {
-                return;
-            }
-
-            player.RestoreLivenessAfterPlacement();
-            await map.AddAsync(player).ConfigureAwait(false);
-            if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
-            {
-                if (player.IsDisposed || player.IsDisposing || player.SelectedCharacter is null)
-                {
-                    await map.RemoveAsync(player).ConfigureAwait(false);
-                }
-
-                return;
-            }
-
-            await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-            if (IsCurrentPlacement() && ReferenceEquals(player.CurrentMap, map) && player.PlayerState.CurrentState == GameLogic.PlayerState.EnteredWorld)
-            {
-                await player.CompleteMapChangeDeathAsync().ConfigureAwait(false);
-            }
-        }
-        else
-        {
-            player.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
-            if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
-            {
-                return;
-            }
-
-            await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
-
-            // after this, the Client will send us a F3 12 packet, to tell us it loaded
-            // the map and is ready to receive the new meet player/monster etc.
-            // Then ClientReadyAfterMapChange is called.
-        }
-
-        bool IsCurrentPlacement()
-        {
-            if (player.IsDisposed || player.IsDisposing || !ReferenceEquals(player.SelectedCharacter, character)
-                || !ReferenceEquals(player.Attributes, attributes) || player.PlayerState.CurrentState.IsDisconnectedOrFinished())
-            {
-                return false;
-            }
-
-            var current = player.GetPlacementDeathSnapshot();
-            if (!claimedPlacement)
-            {
-                return current.Reserved == deathSnapshot.Reserved && ReferenceEquals(current.Death, deathSnapshot.Death);
-            }
-
-            if (placementOwner is not null)
-            {
-                return current.Reserved && ReferenceEquals(current.Death, placementOwner);
-            }
-
-            if (current.Reserved && player.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
-            {
-                // One newly lethal hit of this life is handed off on arrival, never healed or replaced here.
-                placementOwner = current.Death;
-                return placementOwner is not null;
-            }
-
-            return !current.Reserved && ReferenceEquals(current.Death, deathSnapshot.Death);
-        }
-    }
+    public ValueTask RespawnAtAsync(ExitGate gate) => this.RespawnWithPreparationAsync(gate, null, null);
 
     /// <summary>
     /// Signals that the game client of the player is ready after a map change (data has been loaded etc.).
@@ -419,6 +307,153 @@ internal sealed class PlayerMapTransitions
         return targetMap?.SafeZoneSpawnGate
                ?? spawnTargetMapDefinition.GetSafezoneGate()
                ?? throw new InvalidOperationException($"Game map {spawnTargetMapDefinition} has no spawn gate.");
+    }
+
+    /// <summary>Claims placement before committing owned death restoration or a live duel-partner reset.</summary>
+    /// <param name="gate">The destination.</param>
+    /// <param name="tryPreparePlacement">Synchronous owned resource/liveness commit under state admission.</param>
+    /// <param name="publishPreparedAttributes">Starts captured attribute notifications outside exclusion, before map/view continuation.</param>
+    internal async ValueTask RespawnWithPreparationAsync(ExitGate gate, Func<bool>? tryPreparePlacement, Action? publishPreparedAttributes)
+    {
+        var player = this._player;
+        if (player.SelectedCharacter is not { } character)
+        {
+            // Owned preparation may resume after teardown; the generic public entry retains its initialized-property contract.
+            player.ThrowNotInitializedProperty(tryPreparePlacement is null, nameof(player.SelectedCharacter));
+            return;
+        }
+
+        var attributes = player.Attributes;
+        var deathSnapshot = player.GetPlacementDeathSnapshot();
+        var placementOwner = deathSnapshot.Reserved ? deathSnapshot.Death : null;
+        var claimedPlacement = false;
+        if (!await player.PrepareForForcedPlacementAsync(IsCurrentPlacement, PrepareOwnedPlacement).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        claimedPlacement = true;
+        if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
+        {
+            return;
+        }
+
+        publishPreparedAttributes?.Invoke();
+        if (!IsCurrentPlacement())
+        {
+            return;
+        }
+
+        var isRespawnOnSameMap = object.Equals(player.CurrentMap?.Definition, gate.Map);
+
+        if (!await this.TryRemoveFromCurrentMapAsync(isRespawnOnSameMap, IsCurrentPlacement).ConfigureAwait(false) || !IsCurrentPlacement())
+        {
+            return;
+        }
+
+        character.ThrowNotInitializedProperty(character.CurrentMap is null, nameof(character.CurrentMap));
+        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
+        if (!IsCurrentPlacement())
+        {
+            return;
+        }
+
+        if (player.ViewPlugIns.GetPlugIn<IRespawnAfterDeathPlugIn>() is { } respawnPlugIn)
+        {
+            // Older clients use a separate packet for the respawn, while newer don't.
+            // It requires a slightly different logic.
+            var map = await this.GetMapToEnterAsync(character.CurrentMap!).ConfigureAwait(false) ?? throw new InvalidOperationException("Current map not found.");
+            if (!IsCurrentPlacement())
+            {
+                return;
+            }
+
+            player.CurrentMap = map;
+            await respawnPlugIn.RespawnAsync().ConfigureAwait(false);
+            if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
+            {
+                return;
+            }
+
+            player.RestoreLivenessAfterPlacement();
+            await map.AddAsync(player).ConfigureAwait(false);
+            if (!IsCurrentPlacement() || !ReferenceEquals(player.CurrentMap, map))
+            {
+                if (player.IsDisposed || player.IsDisposing || player.SelectedCharacter is null)
+                {
+                    await map.RemoveAsync(player).ConfigureAwait(false);
+                }
+
+                return;
+            }
+
+            await player.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+            if (IsCurrentPlacement() && ReferenceEquals(player.CurrentMap, map) && player.PlayerState.CurrentState == GameLogic.PlayerState.EnteredWorld)
+            {
+                await player.CompleteMapChangeDeathAsync().ConfigureAwait(false);
+            }
+        }
+        else
+        {
+            player.CurrentMap = null; // Will be set again, when the client acknowledged the map change by F3 12 packet.
+            if (!IsCurrentPlacement() || player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap)
+            {
+                return;
+            }
+
+            await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeAsync()).ConfigureAwait(false);
+
+            // after this, the Client will send us a F3 12 packet, to tell us it loaded
+            // the map and is ready to receive the new meet player/monster etc.
+            // Then ClientReadyAfterMapChange is called.
+        }
+
+        bool PrepareOwnedPlacement()
+        {
+            if (tryPreparePlacement is null)
+            {
+                return true;
+            }
+
+            if (!tryPreparePlacement())
+            {
+                return false;
+            }
+
+            // Only this validated restoration may change the snapshot consumed by its own placement.
+            deathSnapshot = player.GetPlacementDeathSnapshot();
+            placementOwner = deathSnapshot.Reserved ? deathSnapshot.Death : null;
+            return true;
+        }
+
+        bool IsCurrentPlacement()
+        {
+            if (player.IsDisposed || player.IsDisposing || !ReferenceEquals(player.SelectedCharacter, character)
+                || !ReferenceEquals(player.Attributes, attributes) || player.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                return false;
+            }
+
+            var current = player.GetPlacementDeathSnapshot();
+            if (!claimedPlacement)
+            {
+                return current.Reserved == deathSnapshot.Reserved && ReferenceEquals(current.Death, deathSnapshot.Death);
+            }
+
+            if (placementOwner is not null)
+            {
+                return current.Reserved && ReferenceEquals(current.Death, placementOwner);
+            }
+
+            if (current.Reserved && player.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+            {
+                // One newly lethal hit of this life is handed off on arrival, never healed or replaced here.
+                placementOwner = current.Death;
+                return placementOwner is not null;
+            }
+
+            return !current.Reserved && ReferenceEquals(current.Death, deathSnapshot.Death);
+        }
     }
 
     /// <summary>

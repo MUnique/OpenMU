@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using System.Diagnostics;
 using System.Runtime.ExceptionServices;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
@@ -34,6 +35,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
+using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
 /// Damage conservation through the normal target entry points, including asynchronous notifications.
@@ -830,6 +832,282 @@ public class ConcurrentHitApplicationTests
         {
             room.State = DuelState.Undefined;
             await room.DisposeAsync().ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Actual duel reset cannot mark a partner nonalive when its existing legacy arrival owns placement.</summary>
+    /// <param name="overlap">Whether the partner's own death restoration is inside real map-add completion.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task DuelResetCannotInvalidatePartnerOwnedArrivalAsync(bool overlap)
+    {
+        var target = await CreatePlayerAsync(10).ConfigureAwait(false);
+        var peer = await CreatePlayerAsync(overlap ? 10 : 50, sameWorldAs: target).ConfigureAwait(false);
+        var map = target.CurrentMap!;
+        var gate = GateOf(target);
+        gate.IsSpawnGate = true;
+        map.Definition.ExitGates.Add(gate);
+        var safe = new Mock<GameMapDefinition>();
+        safe.SetupAllProperties();
+        safe.Setup(m => m.DropItemGroups).Returns(map.Definition.DropItemGroups);
+        safe.Setup(m => m.MonsterSpawns).Returns(map.Definition.MonsterSpawns);
+        safe.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        safe.Object.Number = 1;
+        safe.Object.TerrainData = map.Definition.TerrainData;
+        safe.Object.ExitGates.Add(new ExitGate { Map = safe.Object, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+        target.GameContext.Configuration.Maps.Add(safe.Object);
+        map.Definition.SafezoneMap = safe.Object;
+        var configuration = new Mock<DuelConfiguration>();
+        configuration.Object.MaximumScore = 10;
+        configuration.Setup(c => c.DuelAreas).Returns(new List<DuelArea> { new() { Index = 0, FirstPlayerGate = gate, SecondPlayerGate = gate } });
+        target.GameContext.Configuration.DuelConfiguration = configuration.Object;
+        ((GameContext)target.GameContext).DuelRoomManager = new DuelRoomManager(configuration.Object);
+        var room = (await target.GameContext.DuelRoomManager.GetFreeDuelRoomAsync(target, peer).ConfigureAwait(false))!;
+        target.DuelRoom = room;
+        peer.DuelRoom = room;
+        target.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IObjectRemovedFromMapPlugIn>(new MUnique.OpenMU.GameLogic.PlayerActions.Duel.EndDuelWhenLeavingDuelMapPlugIn());
+        target.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerSpawnGateSelectionPlugIn>(new DuelSpawnGatePlugIn());
+        var duel = room.RunDuelAsync();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var peerArrival = Task.CompletedTask;
+        var held = false;
+        map.ObjectAdded += async args =>
+        {
+            if (overlap && ReferenceEquals(args.Object, peer) && peer.IsAlive && peer.PlayerState.CurrentState == PlayerState.ChangingMap && !held)
+            {
+                held = true;
+                entered.TrySetResult();
+                await release.Task.ConfigureAwait(false);
+            }
+        };
+        try
+        {
+            var started = Stopwatch.StartNew();
+            while (room.State != DuelState.DuelStarted && started.Elapsed < TimeSpan.FromSeconds(8))
+            {
+                await Task.Delay(10).ConfigureAwait(false);
+            }
+
+            Assert.That(room.State, Is.EqualTo(DuelState.DuelStarted));
+            Assert.That(target.GameContext.DuelRoomManager.GetRoomByIndex(0), Is.SameAs(room));
+            if (overlap)
+            {
+                await target.RunPersistenceExclusiveAsync(() => peer.ApplyPoisonDamageAsync(target, 10)).ConfigureAwait(false);
+                await peer.RunPersistenceExclusiveAsync(() => peer.WarpToAsync(gate)).ConfigureAwait(false);
+            }
+
+            await peer.RunPersistenceExclusiveAsync(() => target.ApplyPoisonDamageAsync(peer, 10)).ConfigureAwait(false);
+            await target.RunPersistenceExclusiveAsync(() => target.WarpToAsync(gate)).ConfigureAwait(false);
+            var due = Stopwatch.StartNew();
+            var targetDue = false;
+            var peerDue = !overlap;
+            while (due.Elapsed < TimeSpan.FromSeconds(6))
+            {
+                await using (var context = await target.PlayerState.TryBeginAdvanceToAsync(target.PlayerState.CurrentState).ConfigureAwait(false))
+                {
+                    context.Allowed = false;
+                    targetDue = PendingDeathRespawn(target) is { Claimed: false };
+                }
+
+                if (overlap)
+                {
+                    await using var context = await peer.PlayerState.TryBeginAdvanceToAsync(peer.PlayerState.CurrentState).ConfigureAwait(false);
+                    context.Allowed = false;
+                    peerDue = PendingDeathRespawn(peer) is { Claimed: false };
+                }
+
+                if (targetDue && peerDue)
+                {
+                    break;
+                }
+
+                await Task.Delay(10).ConfigureAwait(false);
+            }
+
+            Assert.That(targetDue && peerDue, Is.True, "The real three-second timers must have handed their original deaths to map arrival.");
+            if (overlap)
+            {
+                peerArrival = Task.Run(async () => await peer.RunPersistenceExclusiveAsync(() => peer.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false));
+                await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.That(peer.IsAlive, Is.True);
+                Assert.That(peer.GetPlacementDeathSnapshot().Reserved, Is.False);
+            }
+
+            // Ready owns a complete existing due-timer retry, including the real private duel-reset caller.
+            await target.RunPersistenceExclusiveAsync(() => target.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+            Assert.That(peer.IsAlive, Is.True, "Refusing a competing reset must not invalidate the arrival which already restored liveness.");
+            release.TrySetResult();
+            await peerArrival.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var before = peer.Attributes![Stats.CurrentHealth];
+            await peer.ApplyPoisonDamageAsync(target, 1).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(peer.IsAlive, Is.True);
+                Assert.That(peer.Attributes[Stats.CurrentHealth], Is.EqualTo(before - 1), "The selected duelist must still accept damage, not be full-HP/nonalive.");
+                Assert.That(room.State, Is.EqualTo(DuelState.DuelStarted));
+            });
+        }
+        finally
+        {
+            release.TrySetResult();
+            await peerArrival.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await room.CancelDuelAsync().ConfigureAwait(false);
+            await duel.WaitAsync(TimeSpan.FromSeconds(8)).ConfigureAwait(false);
+            await target.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>A duel reset waiting in normal NPC close cannot heal or invalidate a changed partner/round.</summary>
+    /// <param name="change">The real death, selection or room-state change before admitted reset.</param>
+    [TestCase("death")]
+    [TestCase("reselect")]
+    [TestCase("cancel")]
+    public async Task DuelResetRefusalPreservesChangedPartnerAsync(string change)
+    {
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if ((LogLevel)i.Arguments[0] == LogLevel.Debug && i.Arguments[2].ToString()!.Contains("closes NPC", StringComparison.Ordinal))
+                {
+                    entered.TrySetResult();
+                    if (!release.Wait(TimeSpan.FromSeconds(8)))
+                    {
+                        throw new TimeoutException("Duel reset close was not released.");
+                    }
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var config = PlayerTestHelper.CreateGameConfiguration();
+        var initializer = new MapInitializer(config, NullLogger<MapInitializer>.Instance, NullDropGenerator.Instance, null);
+        using var game = new GameContext(config, new InMemoryPersistenceContextProvider(), initializer, factory.Object, new PlugInManager(null, factory.Object, null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        initializer.PlugInManager = game.PlugInManager;
+        initializer.PathFinderPool = game.PathFinderPool;
+        var target = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        peer.Attributes![Stats.CurrentHealth] = 50;
+        var character = peer.SelectedCharacter!;
+        character.Name = "DuelLife";
+        Mock.Get(peer.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        var map = target.CurrentMap!;
+        var gate = GateOf(target);
+        gate.IsSpawnGate = true;
+        map.Definition.ExitGates.Add(gate);
+        var safe = new Mock<GameMapDefinition>();
+        safe.SetupAllProperties();
+        safe.Setup(m => m.DropItemGroups).Returns(map.Definition.DropItemGroups);
+        safe.Setup(m => m.MonsterSpawns).Returns(map.Definition.MonsterSpawns);
+        safe.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
+        safe.Object.Number = 1;
+        safe.Object.TerrainData = map.Definition.TerrainData;
+        safe.Object.ExitGates.Add(new ExitGate { Map = safe.Object, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true });
+        config.Maps.Add(safe.Object);
+        map.Definition.SafezoneMap = safe.Object;
+        var duelConfiguration = new Mock<DuelConfiguration>();
+        duelConfiguration.Object.MaximumScore = 10;
+        duelConfiguration.Setup(c => c.DuelAreas).Returns(new List<DuelArea> { new() { Index = 0, FirstPlayerGate = gate, SecondPlayerGate = gate } });
+        config.DuelConfiguration = duelConfiguration.Object;
+        game.DuelRoomManager = new DuelRoomManager(duelConfiguration.Object);
+        game.PlugInManager.RegisterPlugInAtPlugInPoint<IObjectRemovedFromMapPlugIn>(new MUnique.OpenMU.GameLogic.PlayerActions.Duel.EndDuelWhenLeavingDuelMapPlugIn());
+        game.PlugInManager.RegisterPlugInAtPlugInPoint<IPlayerSpawnGateSelectionPlugIn>(new DuelSpawnGatePlugIn());
+        var room = (await game.DuelRoomManager.GetFreeDuelRoomAsync(target, peer).ConfigureAwait(false))!;
+        target.DuelRoom = room;
+        peer.DuelRoom = room;
+        var duel = room.RunDuelAsync();
+        var work = Task.CompletedTask;
+        try
+        {
+            var started = Stopwatch.StartNew();
+            while (room.State != DuelState.DuelStarted && started.Elapsed < TimeSpan.FromSeconds(8))
+            {
+                await Task.Delay(10).ConfigureAwait(false);
+            }
+
+            Assert.That(room.State, Is.EqualTo(DuelState.DuelStarted));
+            var definition = new Mock<MonsterDefinition>();
+            definition.SetupAllProperties();
+            definition.Setup(d => d.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting>());
+            definition.Object.Number = 239;
+            definition.Object.NpcWindow = NpcWindow.ChaosMachine;
+            var npc = new NonPlayerCharacter(new MonsterSpawnArea(), definition.Object, map);
+            await peer.RunPersistenceExclusiveAsync(() => new TalkNpcAction().TalkToNpcAsync(peer, npc)).ConfigureAwait(false);
+            await target.ApplyPoisonDamageAsync(peer, 10).ConfigureAwait(false);
+            // The real owned restoration entry invokes the private duel-round caller; primary cases use due timers/Ready.
+            work = Task.Run(async () => await target.RespawnAfterDeathAsync(gate).ConfigureAwait(false));
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(peer.IsAlive, Is.True, "No temporary departure/liveness mutation before placement admission.");
+            var oldAttributes = peer.Attributes;
+            DeathInformation? newDeath = null;
+            if (change == "death")
+            {
+                await peer.KillInstantlyAsync().ConfigureAwait(false);
+                newDeath = peer.LastDeath;
+                Assert.That(peer.GetPlacementDeathSnapshot(), Is.EqualTo((newDeath, true)));
+            }
+            else
+            {
+                if (change == "reselect")
+                {
+                    await peer.RunPersistenceExclusiveAsync(() => new LogoutAction().LogoutAsync(peer, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
+                }
+                else
+                {
+                    await room.CancelDuelAsync().ConfigureAwait(false);
+                }
+
+                await duel.WaitAsync(TimeSpan.FromSeconds(8)).ConfigureAwait(false);
+                if (change == "reselect")
+                {
+                    await peer.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(peer)).ConfigureAwait(false);
+                    await peer.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(peer, character.Name)).ConfigureAwait(false);
+                    Assert.That(peer.Attributes, Is.Not.SameAs(oldAttributes));
+                }
+                else
+                {
+                    if (peer.PlayerState.CurrentState == PlayerState.ChangingMap)
+                    {
+                        await peer.RunPersistenceExclusiveAsync(() => peer.ClientReadyAfterMapChangeAsync()).ConfigureAwait(false);
+                    }
+                }
+
+                peer.Attributes![Stats.CurrentHealth] = 37;
+                Assert.That(peer.IsAlive, Is.True);
+            }
+
+            release.Set();
+            await work.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(peer.IsPreparingForcedPlacement, Is.False);
+                if (change == "death")
+                {
+                    Assert.That(peer.GetPlacementDeathSnapshot(), Is.EqualTo((newDeath, true)));
+                    Assert.That(peer.IsAlive, Is.False);
+                    Assert.That(peer.Attributes![Stats.CurrentHealth], Is.Zero);
+                }
+                else
+                {
+                    Assert.That(peer.IsAlive, Is.True);
+                    Assert.That(peer.Attributes![Stats.CurrentHealth], Is.EqualTo(37), "Rejected stale room/life cannot heal the partner.");
+                }
+            });
+        }
+        finally
+        {
+            release.Set();
+            await work.WaitAsync(TimeSpan.FromSeconds(8)).ConfigureAwait(false);
+            await room.CancelDuelAsync().ConfigureAwait(false);
+            await duel.WaitAsync(TimeSpan.FromSeconds(8)).ConfigureAwait(false);
             await target.DisposeAsync().ConfigureAwait(false);
             await peer.DisposeAsync().ConfigureAwait(false);
         }
@@ -2221,6 +2499,10 @@ public class ConcurrentHitApplicationTests
             throw new InvalidOperationException("Expected test view failure.");
         }
     }
+
+    // Copy the existing due marker under state to prove a real timer handoff, not a guessed sleep.
+    [System.Runtime.CompilerServices.UnsafeAccessor(System.Runtime.CompilerServices.UnsafeAccessorKind.Field, Name = "_pendingDeathRespawn")]
+    private static extern ref (CancellationTokenSource Source, DeathInformation Death, bool Claimed)? PendingDeathRespawn(Player player);
 
     private static Mock<T> View<T>(Player player)
         where T : class, IViewPlugIn => Mock.Get(player.ViewPlugIns.GetPlugIn<T>()!);
