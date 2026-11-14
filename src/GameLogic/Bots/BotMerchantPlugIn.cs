@@ -109,6 +109,40 @@ public class BotMerchantPlugIn
     }
 
     /// <summary>
+    /// Takes the bot out of its party of bots for the shift (see <see cref="BotMarketPlanner.MayStartShift"/>).
+    /// </summary>
+    /// <remarks>
+    /// A player may have joined the party since the bot was picked, so the members are checked again
+    /// right before - a party with a player is never left.
+    /// </remarks>
+    /// <param name="bot">The bot.</param>
+    /// <returns><c>true</c>, if the bot is in no party anymore.</returns>
+    internal static async ValueTask<bool> LeavePartyAsync(OfflinePlayer bot)
+    {
+        if (bot.Party is not { } party)
+        {
+            return true;
+        }
+
+        if (!BotMarketPlanner.HasOnlyBots(party.PartyList))
+        {
+            return false;
+        }
+
+        try
+        {
+            await party.KickMySelfAsync(bot).ConfigureAwait(false);
+            bot.Logger.LogDebug("Bot '{Name}' leaves its party for a market shift.", bot.Name);
+        }
+        catch (Exception ex)
+        {
+            bot.Logger.LogWarning(ex, "Bot '{Name}' couldn't leave its party for a market shift.", bot.Name);
+        }
+
+        return bot.Party is null;
+    }
+
+    /// <summary>
     /// Counts one more market shift without a buyer for the good.
     /// </summary>
     /// <param name="item">The good.</param>
@@ -157,30 +191,6 @@ public class BotMerchantPlugIn
                 this._unsoldShifts.TryRemove(good);
             }
         }
-    }
-
-    /// <summary>
-    /// Takes the bot out of its party of bots for the shift (see <see cref="BotMarketPlanner.MayStartShift"/>).
-    /// </summary>
-    /// <returns><c>true</c>, if the bot is in no party anymore.</returns>
-    private static async ValueTask<bool> LeavePartyAsync(OfflinePlayer bot)
-    {
-        if (bot.Party is not { } party)
-        {
-            return true;
-        }
-
-        try
-        {
-            await party.KickMySelfAsync(bot).ConfigureAwait(false);
-            bot.Logger.LogDebug("Bot '{Name}' leaves its party for a market shift.", bot.Name);
-        }
-        catch (Exception ex)
-        {
-            bot.Logger.LogWarning(ex, "Bot '{Name}' couldn't leave its party for a market shift.", bot.Name);
-        }
-
-        return bot.Party is null;
     }
 
     /// <summary>
@@ -262,7 +272,10 @@ public class BotMerchantPlugIn
                 continue;
             }
 
-            if (!await LeavePartyAsync(bot).ConfigureAwait(false))
+            // The bot was picked before the awaits above; meanwhile, it may have started an errand,
+            // joined an event meeting or a party with a player.
+            if (!BotMarketPlanner.MayStartShift(bot, configuration, now)
+                || !await LeavePartyAsync(bot).ConfigureAwait(false))
             {
                 continue;
             }

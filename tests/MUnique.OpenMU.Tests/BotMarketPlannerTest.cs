@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -204,6 +205,34 @@ public class BotMarketPlannerTest
 
         Assert.That(BotMarketPlanner.HasOnlyBots([bot, otherBot]), Is.True);
         Assert.That(BotMarketPlanner.HasOnlyBots([bot, player]), Is.False);
+    }
+
+    /// <summary>
+    /// A player may join the party of a bot after the bot was picked for a shift: the bot then stays in the
+    /// party, while it leaves a party of bots.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async ValueTask PartyWhichAPlayerJoinedIsNotLeftAsync()
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        var otherBot = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        SetIsBot(bot, true);
+        SetIsBot(otherBot, true);
+        SetIsBot(player, false);
+        var party = new Party(new PartyManager(5, new NullLogger<Party>()), 5, new NullLogger<Party>());
+        await party.AddAsync(bot).ConfigureAwait(false);
+        await party.AddAsync(otherBot).ConfigureAwait(false);
+        await party.AddAsync(player).ConfigureAwait(false);
+
+        Assert.That(await BotMerchantPlugIn.LeavePartyAsync(bot).ConfigureAwait(false), Is.False);
+        Assert.That(bot.Party, Is.SameAs(party));
+
+        await party.KickMySelfAsync(player).ConfigureAwait(false);
+        Assert.That(await BotMerchantPlugIn.LeavePartyAsync(bot).ConfigureAwait(false), Is.True);
+        Assert.That(bot.Party, Is.Null);
     }
 
     /// <summary>
