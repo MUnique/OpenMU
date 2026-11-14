@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
@@ -794,7 +795,35 @@ public class CastleSiegeCrownMechanicsTests
     [TestCase(true)]
     public async Task CrownRelocationCannotBeDefeatedByReopenedNpcAsync(bool reopen)
     {
-        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var beforeSave = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var release = new ManualResetEventSlim();
+        var gateHeld = 0;
+        var logger = new Mock<ILogger>();
+        logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        logger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(i =>
+            {
+                if ((LogLevel)i.Arguments[0] == LogLevel.Information
+                    && string.Equals(i.Arguments[2].ToString(), "Saving changes after closing the chaos goblin ...", StringComparison.Ordinal))
+                {
+                    Volatile.Write(ref gateHeld, 1);
+                    beforeSave.TrySetResult();
+                    try
+                    {
+                        if (!release.Wait(TimeSpan.FromSeconds(5)))
+                        {
+                            throw new TimeoutException("Crown test did not release the pre-save close barrier.");
+                        }
+                    }
+                    finally
+                    {
+                        Volatile.Write(ref gateHeld, 0);
+                    }
+                }
+            }));
+        var factory = new Mock<ILoggerFactory>();
+        factory.Setup(f => f.CreateLogger(It.IsAny<string>())).Returns(logger.Object);
+        var fixture = await CreateFixtureAsync(factory.Object).ConfigureAwait(false);
         var winner = await fixture.CreatePlayerAsync(AttackGuildId, "Winner", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
         var victim = await fixture.CreatePlayerAsync(DefenseGuildId, "Victim", CastleSiegeJoinSide.Defense, 61, 60, useRespawnPlugIn: false).ConfigureAwait(false);
         var definition = new Mock<MonsterDefinition>();
@@ -806,34 +835,36 @@ public class CastleSiegeCrownMechanicsTests
         await fixture.SiegeMap.AddAsync(goblin).ConfigureAwait(false);
         var packet = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef.Length];
         _ = new MUnique.OpenMU.Network.Packets.ClientToServer.TalkToNpcRequestRef(packet) { NpcId = goblin.Id };
-        var closed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         victim.Attributes![Stats.CurrentHealth] = 100;
         victim.Money = 200;
         await victim.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(victim, packet)).ConfigureAwait(false);
-        victim.PlayerState.StateChanged += args =>
-        {
-            if (args.PreviousState == PlayerState.NpcDialogOpened && args.CurrentStateState == PlayerState.EnteredWorld)
-            {
-                closed.TrySetResult();
-            }
-
-            return ValueTask.CompletedTask;
-        };
         Mock.Get(victim.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Invocations.Clear();
         var relocation = Task.Run(async () => await winner.RunPersistenceExclusiveAsync(
             () => CastleSiegeCrownMechanics.ChangeWinnerGuildAsync(fixture.Context, winner, CastleSiegeJoinSide.Attack1)).ConfigureAwait(false));
         try
         {
-            await closed.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await beforeSave.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(Volatile.Read(ref gateHeld), Is.EqualTo(1));
+            Assert.That(relocation.IsCompleted, Is.False);
             if (reopen)
             {
-                // Independent player's packet context; the siege thread is in the real one-second close/save.
+                // Even a continuation delayed beyond the old one-second window must hit the held placement.
+                await Task.Delay(1100).ConfigureAwait(false);
                 for (var attempt = 0; attempt < 8; attempt++)
                 {
+                    Assert.That(Volatile.Read(ref gateHeld), Is.EqualTo(1));
+                    Assert.That(release.IsSet, Is.False);
+                    Assert.That(relocation.IsCompleted, Is.False);
+                    Assert.That(victim.CurrentMap, Is.SameAs(fixture.SiegeMap));
+                    Assert.That(victim.CurrentMap!.GetObject(goblin.Id), Is.SameAs(goblin));
+                    // The real pre-save log is outside victim state and persistence exclusion.
                     await victim.RunPersistenceExclusiveAsync(() => new TalkNpcHandlerPlugIn().HandlePacketAsync(victim, packet)).ConfigureAwait(false);
+                    Assert.That(Volatile.Read(ref gateHeld), Is.EqualTo(1));
+                    Assert.That(relocation.IsCompleted, Is.False);
                 }
             }
 
+            release.Set();
             await relocation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             Assert.Multiple(() =>
             {
@@ -848,6 +879,7 @@ public class CastleSiegeCrownMechanicsTests
         }
         finally
         {
+            release.Set();
             await relocation.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             await fixture.SiegeMap.RemoveAsync(goblin).ConfigureAwait(false);
             await goblin.DisposeAsync().ConfigureAwait(false);
@@ -983,7 +1015,7 @@ public class CastleSiegeCrownMechanicsTests
         }
     }
 
-    private static async ValueTask<TestFixture> CreateFixtureAsync()
+    private static async ValueTask<TestFixture> CreateFixtureAsync(ILoggerFactory? loggerFactory = null)
     {
         var persistenceContextProvider = new InMemoryPersistenceContextProvider();
         BasicModel.GameConfiguration gameConfiguration;
@@ -1089,7 +1121,7 @@ public class CastleSiegeCrownMechanicsTests
             new Mock<IFriendServer>().Object,
             persistenceContextProvider,
             mapInitializer,
-            NullLoggerFactory.Instance,
+            loggerFactory ?? NullLoggerFactory.Instance,
             plugInManager,
             NullDropGenerator.Instance,
             new ConfigurationChangeMediator());
