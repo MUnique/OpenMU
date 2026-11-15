@@ -130,3 +130,13 @@ complexity and effort). Complexity 0 means we wont implement it.
 
 The character group also handles `InventoryRequest` (C3 F3 10) in the world and
 NPC-dialog states, returning an authoritative inventory snapshot.
+
+Ordinary item operations continue to push their existing inventory deltas. The
+explicit snapshot request supports resynchronization after an ambiguous reply
+and completion of NPC operations which may send no item delta: for example,
+repairing an item already at full durability returns without a durability update.
+Requests are throttled per player (250 ms by default, configurable on the handler).
+Waiting requests share a fresh snapshot; a request received after serialization
+starts waits for the next snapshot so an earlier response cannot acknowledge a
+later item action. Delayed refreshes are suppressed after returning to character
+selection.

@@ -481,6 +481,8 @@ public class MoveItemAction
             Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
             Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
             Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+
+            // These IDs select dialog operations over one temporary grid; crafting requests select recipes.
             Storages.LuckyItemExchange or Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
             _ => false,
         };

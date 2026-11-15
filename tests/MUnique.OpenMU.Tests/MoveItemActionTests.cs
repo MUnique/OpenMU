@@ -456,6 +456,43 @@ public class MoveItemActionTests
         Assert.That(player.TemporaryStorage!.GetItem(0), Is.Null);
     }
 
+    /// <summary>
+    /// Lucky dialog IDs alias one temporary grid: neither occupied heads nor footprint
+    /// cells can be overwritten or stacked through a different wire ID.
+    /// </summary>
+    [TestCase(Storages.LuckyItemExchange, Storages.LuckyItemRefinery)]
+    [TestCase(Storages.LuckyItemRefinery, Storages.LuckyItemExchange)]
+    public async ValueTask LuckyStorageAliasesRespectTheSameOccupiedGridAsync(Storages from, Storages to)
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var npc = new Mock<MonsterDefinition>();
+        npc.Setup(n => n.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting>());
+        npc.Object.NpcWindow = NpcWindow.CombineLuckyItem;
+        player.OpenedNpc = new NonPlayerCharacter(null!, npc.Object, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+        var definition = CreateDefinition(2, 1, 10);
+        var source = CreateItem(definition, 2);
+        var occupied = CreateItem(definition, 3);
+        await player.TemporaryStorage!.AddItemAsync(0, source).ConfigureAwait(false);
+        await player.TemporaryStorage.AddItemAsync(4, occupied).ConfigureAwait(false);
+        var action = new MoveItemAction();
+        foreach (var slot in new byte[] { 0, 4, 5 })
+        {
+            await action.MoveItemAsync(player, 0, from, slot, to).ConfigureAwait(false);
+            Assert.That(player.TemporaryStorage.GetItem(0), Is.SameAs(source));
+            Assert.That(player.TemporaryStorage.GetItem(4), Is.SameAs(occupied));
+            Assert.That((source.Durability, occupied.Durability), Is.EqualTo((2f, 3f)));
+            Assert.That(player.TemporaryStorage.Items.Count(), Is.EqualTo(2));
+        }
+
+        await action.MoveItemAsync(player, 0, from, 8, to).ConfigureAwait(false);
+        Assert.That(player.TemporaryStorage.GetItem(0), Is.Null);
+        Assert.That(player.TemporaryStorage.GetItem(8), Is.SameAs(source));
+        Assert.That(player.TemporaryStorage.GetItem(4), Is.SameAs(occupied));
+        Assert.That(player.TemporaryStorage.Items.Count(i => ReferenceEquals(i, source)), Is.EqualTo(1));
+        Assert.That(player.TemporaryStorage.Items.Count(), Is.EqualTo(2));
+    }
+
     private static Storage CreateVaultStorage()
     {
         var itemStorage = new Mock<ItemStorage>();
