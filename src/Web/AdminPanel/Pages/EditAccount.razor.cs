@@ -5,15 +5,18 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Threading;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.Shared.Components.Form;
 
 /// <summary>
 /// The edit page for account data.
 /// </summary>
 [Route("/edit-account/{accountId:guid}/{typeString}/{id:guid}")]
+[Authorize(Policy = AdminPolicies.Operator)]
 public partial class EditAccount : EditBase
 {
     /// <summary>
@@ -30,6 +33,9 @@ public partial class EditAccount : EditBase
 
     /// <inheritdoc />
     protected override IDataSource EditDataSource => this.AccountData;
+
+    /// <inheritdoc />
+    protected override string SavePolicy => AdminPolicies.Operator;
 
     /// <summary>
     /// Gets the closed <see cref="AutoForm{T}"/> type for the current <see cref="EditBase.Type"/>.

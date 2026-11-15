@@ -1,0 +1,2753 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Create" xml:space="preserve">
+    <value>Criar</value>
+  </data>
+  <data name="Reload" xml:space="preserve">
+    <value>Recarregar</value>
+  </data>
+  <data name="AdminUsers" xml:space="preserve">
+    <value>Usuários administradores</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Ações</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Alterar a senha</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Excluir</value>
+  </data>
+  <data name="Duplicate" xml:space="preserve">
+    <value>Duplicado</value>
+  </data>
+  <data name="DuplicatedSuccessfully" xml:space="preserve">
+    <value>'{0}' duplicado com sucesso.</value>
+  </data>
+  <data name="CouldNotFindToDuplicate" xml:space="preserve">
+    <value>Não foi possível encontrar '{0}' para duplicar.</value>
+  </data>
+  <data name="TypeDoesNotSupportCloning" xml:space="preserve">
+    <value>O tipo '{0}' não suporta clonagem.</value>
+  </data>
+  <data name="FailedToClone" xml:space="preserve">
+    <value>Falha ao clonar '{0}'.</value>
+  </data>
+  <data name="ErrorDuplicating" xml:space="preserve">
+    <value>Erro ao duplicar '{0}': {1}</value>
+  </data>
+  <data name="CreateUser" xml:space="preserve">
+    <value>Criar usuário</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Carregando ...</value>
+  </data>
+  <data name="CreateConnectServer" xml:space="preserve">
+    <value>Criar servidor de conexão</value>
+  </data>
+  <data name="CreateGameServer" xml:space="preserve">
+    <value>Criar servidor de jogo</value>
+  </data>
+  <data name="ServerWithIdAlreadyExists" xml:space="preserve">
+    <value>O servidor com ID {0} já existe. Por favor, use outro valor.</value>
+  </data>
+  <data name="ServerWithPortAlreadyExists" xml:space="preserve">
+    <value>Já existe um servidor com porta TCP {0}. Por favor, use outra porta TCP.</value>
+  </data>
+  <data name="CreatingConfigurationInfo" xml:space="preserve">
+    <value>Criando configuração...</value>
+  </data>
+  <data name="SavingConfigurationInfo" xml:space="preserve">
+    <value>Salvando configuração...</value>
+  </data>
+  <data name="ConnectionServerConfigurationSaved" xml:space="preserve">
+    <value>A configuração do servidor de conexão foi salva. Inicializando o servidor de conexão...</value>
+  </data>
+  <data name="InitializingConnectServerInfo" xml:space="preserve">
+    <value>Inicializando o Connect Server...</value>
+  </data>
+  <data name="NoChangesSaved" xml:space="preserve">
+    <value>Nenhuma alteração foi salva.</value>
+  </data>
+  <data name="UnexpectedErrorOccurred" xml:space="preserve">
+    <value>Ocorreu um erro inesperado: {0}.</value>
+  </data>
+  <data name="GameServerConfigurationSavedInfo" xml:space="preserve">
+    <value>A configuração do servidor do jogo foi salva. Inicializando o servidor do jogo...</value>
+  </data>
+  <data name="InitializingGameServerInfo" xml:space="preserve">
+    <value>Inicializando o servidor de jogos...</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
+  <data name="SavedChanges" xml:space="preserve">
+    <value>As alterações foram salvas.</value>
+  </data>
+  <data name="NoChangesToSave" xml:space="preserve">
+    <value>Não houve alterações para salvar.</value>
+  </data>
+  <data name="FailedByUninitializedContext" xml:space="preserve">
+    <value>Falha, contexto não inicializado</value>
+  </data>
+  <data name="UnsavedChangesQuestion" xml:space="preserve">
+    <value>Existem alterações não salvas. Tem certeza de que deseja descartá-los?</value>
+  </data>
+  <data name="DownloadAsJson" xml:space="preserve">
+    <value>Baixar como JSON</value>
+  </data>
+  <data name="LoadingErrorCheckLog" xml:space="preserve">
+    <value>Não foi possível carregar os dados. Verifique os registros para obter detalhes.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Erro</value>
+  </data>
+  <data name="MapEditor" xml:space="preserve">
+    <value>Editor de mapas</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="AddNew" xml:space="preserve">
+    <value>Adicionar novo</value>
+  </data>
+  <data name="CouldNotLoadMapDataCheckTheLogs" xml:space="preserve">
+    <value>Não foi possível carregar os dados do mapa. Verifique os registros para obter detalhes.</value>
+  </data>
+  <data name="UnexpectedErrorCheckLogs" xml:space="preserve">
+    <value>Ocorreu um erro inesperado: {0}. Veja os registros para mais detalhes.</value>
+  </data>
+  <data name="UnhandledErrorOccurred" xml:space="preserve">
+    <value>Ocorreu um erro não tratado.</value>
+  </data>
+  <data name="DevelopmentEnvironmentWarning" xml:space="preserve">
+    <value>&lt;strong&gt;O ambiente de desenvolvimento não deve ser habilitado para aplicativos implantados.&lt;/strong&gt;
+    Isso pode resultar na exibição de informações confidenciais de exceções para os usuários finais.
+    Para depuração local, ative o ambiente de &lt;strong&gt;Desenvolvimento&lt;/strong&gt; definindo a variável de ambiente &lt;strong&gt;ASPNETCORE_ENVIRONMENT&lt;/strong&gt; como &lt;strong&gt;Desenvolvimento&lt;/strong&gt;
+    e reiniciando o aplicativo.</value>
+  </data>
+  <data name="SwappingToDevForMoreInformation" xml:space="preserve">
+    <value>Mudar para o ambiente de &lt;strong&gt;Desenvolvimento&lt;/strong&gt; exibirá informações mais detalhadas sobre o erro ocorrido.</value>
+  </data>
+  <data name="AnErrorOccurredWhileProcessingYourRequest" xml:space="preserve">
+    <value>Ocorreu um erro ao processar sua solicitação</value>
+  </data>
+  <data name="DevelopmentMode" xml:space="preserve">
+    <value>Modo de desenvolvimento</value>
+  </data>
+  <data name="GameServer" xml:space="preserve">
+    <value>Servidor de Jogo</value>
+  </data>
+  <data name="WelcomeMessage" xml:space="preserve">
+    <value>Bem-vindo ao painel de administração do OpenMU.</value>
+  </data>
+  <data name="OpenMUAdminPanel" xml:space="preserve">
+    <value>Painel de administração OpenMU</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Sobre</value>
+  </data>
+  <data name="LogFiles" xml:space="preserve">
+    <value>Arquivos de Log</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Metrics" xml:space="preserve">
+    <value>Métricas</value>
+  </data>
+  <data name="Tracing" xml:space="preserve">
+    <value>Rastreamento</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>Nome do arquivo</value>
+  </data>
+  <data name="LastUpdate" xml:space="preserve">
+    <value>Última atualização</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Tamanho</value>
+  </data>
+  <data name="ServerID" xml:space="preserve">
+    <value>ID do servidor</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Desconectar</value>
+  </data>
+  <data name="LiveMap" xml:space="preserve">
+    <value>Mapa ao vivo</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="Merchants" xml:space="preserve">
+    <value>Comerciantes</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Voltar</value>
+  </data>
+  <data name="DiscardChanges" xml:space="preserve">
+    <value>Descartar alterações</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Salvar alterações</value>
+  </data>
+  <data name="ExtensionPoint" xml:space="preserve">
+    <value>Ponto de Extensão</value>
+  </data>
+  <data name="PluginName" xml:space="preserve">
+    <value>Nome do plug-in</value>
+  </data>
+  <data name="PluginType" xml:space="preserve">
+    <value>Tipo de plug-in</value>
+  </data>
+  <data name="Plugins" xml:space="preserve">
+    <value>Plug-ins</value>
+  </data>
+  <data name="Deactivate" xml:space="preserve">
+    <value>Desativar</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Ativar</value>
+  </data>
+  <data name="Servers" xml:space="preserve">
+    <value>Servidores</value>
+  </data>
+  <data name="ServerName" xml:space="preserve">
+    <value>Nome do servidor</value>
+  </data>
+  <data name="PlayerCount" xml:space="preserve">
+    <value>Jogadores</value>
+  </data>
+  <data name="CurrentState" xml:space="preserve">
+    <value>Estado atual</value>
+  </data>
+  <data name="ConnectServer" xml:space="preserve">
+    <value>Servidor de Conexão</value>
+  </data>
+  <data name="ReloadConfigurationAndRestartAllGameServers" xml:space="preserve">
+    <value>Recarregue a configuração e reinicie todos os servidores de jogo</value>
+  </data>
+  <data name="DatabaseStatus" xml:space="preserve">
+    <value>Status do banco de dados</value>
+  </data>
+  <data name="CantConnectToTheDatabaseProbablyNotCreatedYet" xml:space="preserve">
+    <value>Não é possível conectar-se ao banco de dados. Provavelmente ainda não foi criado.</value>
+  </data>
+  <data name="InitializedGameVersion" xml:space="preserve">
+    <value>Versão do jogo inicializada</value>
+  </data>
+  <data name="NoInitializedDataFound" xml:space="preserve">
+    <value>Nenhum dado inicializado encontrado!</value>
+  </data>
+  <data name="ReInstall" xml:space="preserve">
+    <value>Reinstale</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Atualizar</value>
+  </data>
+  <data name="UpToDate" xml:space="preserve">
+    <value>Atualizado</value>
+  </data>
+  <data name="NotCreated" xml:space="preserve">
+    <value>Não criado</value>
+  </data>
+  <data name="UpdateRequired" xml:space="preserve">
+    <value>Atualização necessária</value>
+  </data>
+  <data name="Setup" xml:space="preserve">
+    <value>Instalação</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Início</value>
+  </data>
+  <data name="Accounts" xml:space="preserve">
+    <value>Contas</value>
+  </data>
+  <data name="OnlineAccounts" xml:space="preserve">
+    <value>Contas on-line</value>
+  </data>
+  <data name="Updates" xml:space="preserve">
+    <value>Atualizações</value>
+  </data>
+  <data name="AvailableUpdates" xml:space="preserve">
+    <value>atualizações disponíveis</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Usuários</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>Sistema</value>
+  </data>
+  <data name="GameClients" xml:space="preserve">
+    <value>Clientes de jogos</value>
+  </data>
+  <data name="Monsters" xml:space="preserve">
+    <value>Monstros</value>
+  </data>
+  <data name="MerchantStores" xml:space="preserve">
+    <value>Lojas comerciais</value>
+  </data>
+  <data name="CharacterClasses" xml:space="preserve">
+    <value>Classes de personagens</value>
+  </data>
+  <data name="Skills" xml:space="preserve">
+    <value>Habilidades</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Unid</value>
+  </data>
+  <data name="DropItemGroups" xml:space="preserve">
+    <value>Eliminar grupos de itens</value>
+  </data>
+  <data name="GameMaps" xml:space="preserve">
+    <value>Mapas de jogo</value>
+  </data>
+  <data name="MiniGames" xml:space="preserve">
+    <value>Minijogos</value>
+  </data>
+  <data name="WarpList" xml:space="preserve">
+    <value>Lista de distorção</value>
+  </data>
+  <data name="JewelMixes" xml:space="preserve">
+    <value>Misturas de joias</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Em geral</value>
+  </data>
+  <data name="FullConfiguration" xml:space="preserve">
+    <value>Configuração completa</value>
+  </data>
+  <data name="GameConfiguration" xml:space="preserve">
+    <value>Configuração do jogo</value>
+  </data>
+  <data name="ReinstallConfirmation" xml:space="preserve">
+    <value>Tem certeza? Todos os dados atuais estão sendo excluídos e instalados recentemente.</value>
+  </data>
+  <data name="PleaseFirstInstallTheDatabaseUpdatesOnTheSetupPage" xml:space="preserve">
+    <value>Por favor, primeiro instale as atualizações do banco de dados na página de configuração.</value>
+  </data>
+  <data name="InstalledOn" xml:space="preserve">
+    <value>Instalado em {0}.</value>
+  </data>
+  <data name="NoConfigurationDataUpdateAvailable" xml:space="preserve">
+    <value>Nenhuma atualização de dados de configuração disponível.</value>
+  </data>
+  <data name="NewConfigurationUpdatesAvailable" xml:space="preserve">
+    <value>Novas atualizações para os dados de configuração estão disponíveis. Você pode selecionar aqueles que devem ser aplicados à sua configuração.</value>
+  </data>
+  <data name="MandatoryUpdatesAreAlwaysAppliedAndCannotBeDeselected" xml:space="preserve">
+    <value>As atualizações obrigatórias são sempre aplicadas e não podem ser desmarcadas.</value>
+  </data>
+  <data name="TheUpdatesRequireARestartOfTheServerProcessToTakeEffect" xml:space="preserve">
+    <value>As atualizações exigem a reinicialização do processo do servidor para terem efeito.</value>
+  </data>
+  <data name="Updating" xml:space="preserve">
+    <value>Atualizando...</value>
+  </data>
+  <data name="ApplyingUpdates" xml:space="preserve">
+    <value>Aplicando atualizações...</value>
+  </data>
+  <data name="UpdateFailed" xml:space="preserve">
+    <value>Falha na atualização!</value>
+  </data>
+  <data name="ApplySelectedUpdates" xml:space="preserve">
+    <value>Aplicar atualizações selecionadas</value>
+  </data>
+  <data name="PatchVersion" xml:space="preserve">
+    <value>Versão Patch</value>
+  </data>
+  <data name="MajorVersion" xml:space="preserve">
+    <value>Principal</value>
+  </data>
+  <data name="PatchAddress" xml:space="preserve">
+    <value>Endereço de patch</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>segundos</value>
+  </data>
+  <data name="MinorVersion" xml:space="preserve">
+    <value>Menor</value>
+  </data>
+  <data name="Patch" xml:space="preserve">
+    <value>Correção</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Salvar</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="InstallingPleaseWait" xml:space="preserve">
+    <value>Instalando, aguarde...</value>
+  </data>
+  <data name="PleaseRestartTheConnectAndGameServerContainers" xml:space="preserve">
+    <value>Reinicie o servidor central e os contêineres do servidor de jogo.</value>
+  </data>
+  <data name="FinishedHaveFun" xml:space="preserve">
+    <value>Finalizado! Divirta-se :)</value>
+  </data>
+  <data name="FirstCloseAllConnectionsToTheServer" xml:space="preserve">
+    <value>Primeiro, feche todas as conexões com o servidor.</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SelectTheGameVersion" xml:space="preserve">
+    <value>Selecione a versão do jogo</value>
+  </data>
+  <data name="HowManyGameServersQuestion" xml:space="preserve">
+    <value>Quantos servidores de jogo você deseja?</value>
+  </data>
+  <data name="TestAccountsQuestion" xml:space="preserve">
+    <value>Você quer contas de teste?</value>
+  </data>
+  <data name="YesCreateTestAccounts" xml:space="preserve">
+    <value>Sim, crie contas de teste</value>
+  </data>
+  <data name="StartInstall" xml:space="preserve">
+    <value>Iniciar a instalação</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Sim</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Não</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Começar</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Parar</value>
+  </data>
+  <data name="RemoveServer" xml:space="preserve">
+    <value>Remover servidor</value>
+  </data>
+  <data name="ServerDeleteProceedQuestion" xml:space="preserve">
+    <value>O servidor será excluído do banco de dados. Tem certeza de que deseja prosseguir?</value>
+  </data>
+  <data name="ServerControl" xml:space="preserve">
+    <value>Controle de servidor</value>
+  </data>
+  <data name="TotalPlayers" xml:space="preserve">
+    <value>Total de jogadores</value>
+  </data>
+  <data name="SocketNumber" xml:space="preserve">
+    <value>Soquete {0}</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Ação</value>
+  </data>
+  <data name="GameServerCount" xml:space="preserve">
+    <value>Contagem de servidores de jogo</value>
+  </data>
+  <data name="JsonBackup" xml:space="preserve">
+    <value>Backup JSON (lento!)</value>
+  </data>
+  <data name="ExportJsonBackup" xml:space="preserve">
+    <value>Exportar backup JSON</value>
+  </data>
+  <data name="ImportJsonBackup" xml:space="preserve">
+    <value>Importar backup JSON</value>
+  </data>
+  <data name="ImportingBackupPleaseWait" xml:space="preserve">
+    <value>Importando backup, aguarde...</value>
+  </data>
+  <data name="BackupImportSucceeded" xml:space="preserve">
+    <value>Importação de backup bem-sucedida. Reinicie o processo do servidor para aplicar as alterações.</value>
+  </data>
+  <data name="BackupImportFailed" xml:space="preserve">
+    <value>Falha na importação de backup.</value>
+  </data>
+  <data name="SelectZipFileToRestore" xml:space="preserve">
+    <value>Selecione um arquivo de backup .zip para restaurar</value>
+  </data>
+  <data name="SelectedFileIsNoBackup" xml:space="preserve">
+    <value>O arquivo selecionado não é um arquivo de backup. O banco de dados foi deixado intacto.</value>
+  </data>
+  <data name="DatabaseSnapshot" xml:space="preserve">
+    <value>Instantâneo do banco de dados</value>
+  </data>
+  <data name="DatabaseSnapshotDescription" xml:space="preserve">
+    <value>Um instantâneo contém todos os dados do banco de dados e é criado e restaurado muito mais rapidamente. Ele pode ser restaurado por esta ou por uma versão mais recente do servidor, que aplica as atualizações do banco de dados aos dados restaurados. Para transferir dados para uma versão mais antiga, use o backup acima.</value>
+  </data>
+  <data name="ExportSnapshot" xml:space="preserve">
+    <value>Exportar instantâneo</value>
+  </data>
+  <data name="SelectZipFileToRestoreSnapshot" xml:space="preserve">
+    <value>Selecione um arquivo de instantâneo .zip para restaurar</value>
+  </data>
+  <data name="IncludeAccounts" xml:space="preserve">
+    <value>Incluir as contas (demora mais)</value>
+  </data>
+  <data name="Character" xml:space="preserve">
+    <value>Personagem</value>
+  </data>
+  <data name="StartedAt" xml:space="preserve">
+    <value>Começou em</value>
+  </data>
+  <data name="ActiveOfflinePlayer" xml:space="preserve">
+    <value>Player offline ativo</value>
+  </data>
+  <data name="CouldNotFindToDelete" xml:space="preserve">
+    <value>Não foi possível encontrar '{0}' para excluir.</value>
+  </data>
+  <data name="DeleteFailedReferenced" xml:space="preserve">
+    <value>Não foi possível excluir '{0}', provavelmente porque ele é referenciado por outro objeto. Para obter detalhes, consulte o registro</value>
+  </data>
+  <data name="CreatedSuccessfully" xml:space="preserve">
+    <value>Novo objeto criado com sucesso.</value>
+  </data>
+  <data name="ShowEntryForm" xml:space="preserve">
+    <value>Mostrar formulário de inscrição</value>
+  </data>
+  <data name="HideEntryForm" xml:space="preserve">
+    <value>Ocultar formulário de inscrição</value>
+  </data>
+  <data name="AllGameServers" xml:space="preserve">
+    <value>Todos os servidores de jogo</value>
+  </data>
+  <data name="GlobalMessage" xml:space="preserve">
+    <value>Mensagem global</value>
+  </data>
+  <data name="GlobalMessageNoTarget" xml:space="preserve">
+    <value>Nenhum servidor de jogo em execução para enviar a mensagem.</value>
+  </data>
+  <data name="GlobalMessageSendFailed" xml:space="preserve">
+    <value>Falha ao enviar a mensagem para {0}: {1}</value>
+  </data>
+  <data name="GlobalMessageSent" xml:space="preserve">
+    <value>Mensagem enviada.</value>
+  </data>
+  <data name="MessagePlaceholder" xml:space="preserve">
+    <value>Digite a mensagem...</value>
+  </data>
+  <data name="MessageType" xml:space="preserve">
+    <value>Tipo de mensagem</value>
+  </data>
+  <data name="MessageTypeGolden" xml:space="preserve">
+    <value>Dourado (centro)</value>
+  </data>
+  <data name="MessageTypeBlue" xml:space="preserve">
+    <value>Azul (sistema)</value>
+  </data>
+  <data name="MessageTypeSlide" xml:space="preserve">
+    <value>Slide (banda superior)</value>
+  </data>
+  <data name="OnlineCount" xml:space="preserve">
+    <value>{0} on-line</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Alvo</value>
+  </data>
+  <data name="LogViewer" xml:space="preserve">
+    <value>Visualizador de Logs</value>
+  </data>
+  <data name="Live" xml:space="preserve">
+    <value>Ao vivo</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="FilterLogEntries" xml:space="preserve">
+    <value>Filtrar entradas de log...</value>
+  </data>
+  <data name="NoLogEntriesFound" xml:space="preserve">
+    <value>Nenhuma entrada de log encontrada.</value>
+  </data>
+  <data name="NoLogEntriesMatchFilter" xml:space="preserve">
+    <value>Nenhuma entrada de log corresponde ao seu filtro.</value>
+  </data>
+  <data name="ShowingXOfYLines" xml:space="preserve">
+    <value>Mostrando {0} de {1} linhas (últimas {2} linhas carregadas).</value>
+  </data>
+  <data name="ScrollToBottom" xml:space="preserve">
+    <value>Role para baixo</value>
+  </data>
+  <data name="ReloadFileList" xml:space="preserve">
+    <value>Recarregar lista de arquivos</value>
+  </data>
+  <data name="DownloadFile" xml:space="preserve">
+    <value>Baixar arquivo</value>
+  </data>
+  <data name="ChatCommands" xml:space="preserve">
+    <value>Comandos de bate-papo</value>
+  </data>
+  <data name="CommandColumn" xml:space="preserve">
+    <value>Comando</value>
+  </data>
+  <data name="CommandDescription" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="CommandUsage" xml:space="preserve">
+    <value>Uso</value>
+  </data>
+  <data name="MinimumCharacterStatus" xml:space="preserve">
+    <value>Status obrigatório</value>
+  </data>
+  <data name="NoParameters" xml:space="preserve">
+    <value>Este comando não possui parâmetros.</value>
+  </data>
+  <data name="ParameterName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="ParameterShortName" xml:space="preserve">
+    <value>Nome curto</value>
+  </data>
+  <data name="ParameterType" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="ParameterValidValues" xml:space="preserve">
+    <value>Valores válidos</value>
+  </data>
+  <data name="ParametersOf" xml:space="preserve">
+    <value>Parâmetros de {0}</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Obrigatório</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Entrar</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Sair</value>
+  </data>
+  <data name="LoginName" xml:space="preserve">
+    <value>Nome de login</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Senha</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Entrar</value>
+  </data>
+  <data name="SignedInAs" xml:space="preserve">
+    <value>Conectado como</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Mantenha-me conectado</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>O nome de login ou a senha estão errados.</value>
+  </data>
+  <data name="AccountLockedOut" xml:space="preserve">
+    <value>Muitas tentativas fracassadas. Por favor, tente novamente mais tarde.</value>
+  </data>
+  <data name="TwoFactorTitle" xml:space="preserve">
+    <value>Autenticação de dois fatores</value>
+  </data>
+  <data name="TwoFactorPrompt" xml:space="preserve">
+    <value>Insira o código do seu aplicativo autenticador.</value>
+  </data>
+  <data name="AuthenticatorCode" xml:space="preserve">
+    <value>Código autenticador</value>
+  </data>
+  <data name="RecoveryCode" xml:space="preserve">
+    <value>Código de recuperação</value>
+  </data>
+  <data name="UseRecoveryCode" xml:space="preserve">
+    <value>Use um código de recuperação</value>
+  </data>
+  <data name="UseAuthenticatorCode" xml:space="preserve">
+    <value>Use um código autenticador</value>
+  </data>
+  <data name="InvalidTwoFactorCode" xml:space="preserve">
+    <value>O código não é válido.</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Verificar</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Acesso negado</value>
+  </data>
+  <data name="AccessDeniedDescription" xml:space="preserve">
+    <value>Sua conta não tem permissão para abrir esta página.</value>
+  </data>
+  <data name="ChangeNotPermitted" xml:space="preserve">
+    <value>Sua conta não tem permissão para fazer essa alteração.</value>
+  </data>
+  <data name="AccountSecurity" xml:space="preserve">
+    <value>Segurança da conta</value>
+  </data>
+  <data name="TwoFactorAuthentication" xml:space="preserve">
+    <value>Autenticação de dois fatores</value>
+  </data>
+  <data name="TwoFactorEnabled" xml:space="preserve">
+    <value>A autenticação de dois fatores está habilitada.</value>
+  </data>
+  <data name="TwoFactorDisabled" xml:space="preserve">
+    <value>A autenticação de dois fatores ainda não está configurada.</value>
+  </data>
+  <data name="SetUpAuthenticator" xml:space="preserve">
+    <value>Configurar aplicativo autenticador</value>
+  </data>
+  <data name="DisableTwoFactor" xml:space="preserve">
+    <value>Desative a autenticação de dois fatores</value>
+  </data>
+  <data name="ScanQrCode" xml:space="preserve">
+    <value>Digitalize este código QR com seu aplicativo autenticador, por exemplo Microsoft Authenticator.</value>
+  </data>
+  <data name="ManualKeyHint" xml:space="preserve">
+    <value>Não é possível digitalizar? Insira esta chave manualmente:</value>
+  </data>
+  <data name="ConfirmSetupHint" xml:space="preserve">
+    <value>Para finalizar, insira o código que seu aplicativo mostra agora.</value>
+  </data>
+  <data name="RecoveryCodes" xml:space="preserve">
+    <value>Códigos de recuperação</value>
+  </data>
+  <data name="RecoveryCodesHint" xml:space="preserve">
+    <value>Guarde esses códigos em algum lugar seguro. Cada um deles pode ser usado uma vez para fazer login quando você não tiver seu aplicativo autenticador. Eles são mostrados apenas agora.</value>
+  </data>
+  <data name="RemainingRecoveryCodes" xml:space="preserve">
+    <value>Códigos de recuperação restantes</value>
+  </data>
+  <data name="GenerateNewRecoveryCodes" xml:space="preserve">
+    <value>Gere novos códigos de recuperação</value>
+  </data>
+  <data name="TwoFactorRequiredTitle" xml:space="preserve">
+    <value>A autenticação de dois fatores é necessária</value>
+  </data>
+  <data name="TwoFactorRequiredDescription" xml:space="preserve">
+    <value>A configuração do servidor exige que cada usuário do painel de administração use um segundo fator. Configure seu aplicativo autenticador para continuar.</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Funções</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Papel</value>
+  </data>
+  <data name="TwoFactor" xml:space="preserve">
+    <value>Segundo fator</value>
+  </data>
+  <data name="LastLogin" xml:space="preserve">
+    <value>Último login</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Habilitado</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Desabilitado</value>
+  </data>
+  <data name="NoAdminUserWarning" xml:space="preserve">
+    <value>Ainda não existe nenhum usuário do painel de administração, portanto, o painel está atualmente acessível sem login. Crie o primeiro usuário assim que o banco de dados estiver configurado ou configure um usuário de bootstrap.</value>
+  </data>
+  <data name="CreateFirstUser" xml:space="preserve">
+    <value>Crie o primeiro usuário</value>
+  </data>
+  <data name="UserCreated" xml:space="preserve">
+    <value>O usuário foi criado.</value>
+  </data>
+  <data name="UserDeleted" xml:space="preserve">
+    <value>O usuário foi excluído.</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>A senha foi alterada.</value>
+  </data>
+  <data name="TwoFactorResetForUser" xml:space="preserve">
+    <value>O segundo fator do usuário foi redefinido.</value>
+  </data>
+  <data name="ResetTwoFactor" xml:space="preserve">
+    <value>Redefinir segundo fator</value>
+  </data>
+  <data name="CannotDeleteLastUser" xml:space="preserve">
+    <value>O último usuário restante não pode ser excluído.</value>
+  </data>
+  <data name="CannotModifyBootstrapUser" xml:space="preserve">
+    <value>O usuário bootstrap é definido pela configuração e não pode ser alterado aqui.</value>
+  </data>
+  <data name="ApiKeys" xml:space="preserve">
+    <value>Chaves de API</value>
+  </data>
+  <data name="ApiKeysDescription" xml:space="preserve">
+    <value>Aplicativos externos, como um inicializador de jogos ou um site, autenticam-se na API pública em /api com uma dessas chaves. Dê a cada aplicativo sua própria chave, para que uma única possa ser revogada.</value>
+  </data>
+  <data name="ApiKeyName" xml:space="preserve">
+    <value>Aplicativo</value>
+  </data>
+  <data name="ApiKeyPrefix" xml:space="preserve">
+    <value>Chave</value>
+  </data>
+  <data name="CreateApiKey" xml:space="preserve">
+    <value>Criar chave de API</value>
+  </data>
+  <data name="DeleteApiKey" xml:space="preserve">
+    <value>Excluir chave de API</value>
+  </data>
+  <data name="DeleteApiKeyQuestion" xml:space="preserve">
+    <value>Você realmente deseja excluir a chave de API de '{0}'? O aplicativo que o utiliza para de funcionar imediatamente.</value>
+  </data>
+  <data name="ApiKeyCreated" xml:space="preserve">
+    <value>A chave API foi criada.</value>
+  </data>
+  <data name="ApiKeyDeleted" xml:space="preserve">
+    <value>A chave API foi excluída.</value>
+  </data>
+  <data name="ApiKeyEnabled" xml:space="preserve">
+    <value>A chave API foi habilitada.</value>
+  </data>
+  <data name="ApiKeyDisabled" xml:space="preserve">
+    <value>A chave API foi desativada.</value>
+  </data>
+  <data name="ApiKeyShownOnce" xml:space="preserve">
+    <value>Copie esta chave agora</value>
+  </data>
+  <data name="ApiKeyShownOnceDescription" xml:space="preserve">
+    <value>Apenas o hash da chave é armazenado, portanto esta é a única vez que ela é mostrada. Se ela for perdida, exclua a chave e crie uma nova.</value>
+  </data>
+  <data name="ApiKeyNeedsAUser" xml:space="preserve">
+    <value>Crie o primeiro usuário do painel de administração antes de uma chave API: até então, qualquer pessoa que chegasse ao painel de administração poderia criar uma chave, e ela continuaria funcionando depois.</value>
+  </data>
+  <data name="ApiKeyCreatedBeforeFirstUser" xml:space="preserve">
+    <value>Criado antes do primeiro usuário</value>
+  </data>
+  <data name="ApiKeysCreatedBeforeFirstUserHint" xml:space="preserve">
+    <value>As chaves marcadas como “Criadas antes do primeiro usuário” foram criadas enquanto o painel de administração não tinha usuário, quando qualquer pessoa que o acessasse poderia criar chaves. Eles foram desativados uma vez. Habilite essa chave somente se você mesmo a criou, ou melhor, substitua-a: crie uma nova chave, coloque-a no aplicativo e exclua a antiga.</value>
+  </data>
+  <data name="ApiKeysOfSetupModeDisabled" xml:space="preserve">
+    <value>{0} As chaves de API foram desativadas: elas foram criadas enquanto o painel de administração não tinha usuário, quando qualquer pessoa que o acessasse poderia criar chaves. Na página Chaves de API, habilite apenas as chaves que você mesmo criou.</value>
+  </data>
+  <data name="NoApiKeys" xml:space="preserve">
+    <value>Nenhuma chave de API foi criada ainda.</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Habilitar</value>
+  </data>
+  <data name="Disable" xml:space="preserve">
+    <value>Desativar</value>
+  </data>
+  <data name="CopyToClipboard" xml:space="preserve">
+    <value>Cópia</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>A chave API foi copiada para a área de transferência.</value>
+  </data>
+  <data name="CopyToClipboardFailed" xml:space="preserve">
+    <value>A chave de API não pôde ser copiada. Selecione e copie-o manualmente.</value>
+  </data>
+  <data name="NetworkAnalyzer" xml:space="preserve">
+    <value>Analisador de Rede</value>
+  </data>
+  <data name="ChatServer" xml:space="preserve">
+    <value>Servidor de Chat</value>
+  </data>
+  <data name="Connections" xml:space="preserve">
+    <value>Conexões</value>
+  </data>
+  <data name="NoConnectionsFound" xml:space="preserve">
+    <value>Nenhuma conexão encontrada.</value>
+  </data>
+  <data name="SelectAConnection" xml:space="preserve">
+    <value>Selecione uma conexão para ver seu tráfego de rede.</value>
+  </data>
+  <data name="NetworkAnalyzerNotAvailable" xml:space="preserve">
+    <value>O analisador de rede está disponível apenas na implantação multifuncional, pois precisa dos servidores no mesmo processo.</value>
+  </data>
+  <data name="CapturedPackets" xml:space="preserve">
+    <value>Pacotes Capturados</value>
+  </data>
+  <data name="Timestamp" xml:space="preserve">
+    <value>Carimbo de data e hora</value>
+  </data>
+  <data name="Direction" xml:space="preserve">
+    <value>Direção</value>
+  </data>
+  <data name="PacketCode" xml:space="preserve">
+    <value>Código</value>
+  </data>
+  <data name="PacketMessage" xml:space="preserve">
+    <value>Mensagem</value>
+  </data>
+  <data name="PacketDetails" xml:space="preserve">
+    <value>Detalhes do pacote</value>
+  </data>
+  <data name="ExtractedInformation" xml:space="preserve">
+    <value>Informações extraídas</value>
+  </data>
+  <data name="RawData" xml:space="preserve">
+    <value>Dados brutos</value>
+  </data>
+  <data name="ClearPackets" xml:space="preserve">
+    <value>Claro</value>
+  </data>
+  <data name="ToServer" xml:space="preserve">
+    <value>Para o servidor</value>
+  </data>
+  <data name="ToClient" xml:space="preserve">
+    <value>Para o cliente</value>
+  </data>
+  <data name="FilterPackets" xml:space="preserve">
+    <value>Filtrar por código ou mensagem</value>
+  </data>
+  <data name="NoPacketsCaptured" xml:space="preserve">
+    <value>Nenhum pacote capturado ainda.</value>
+  </data>
+  <data name="SelectAPacket" xml:space="preserve">
+    <value>Selecione um pacote para ver seu conteúdo.</value>
+  </data>
+  <data name="FollowNewPackets" xml:space="preserve">
+    <value>Seguir</value>
+  </data>
+  <data name="AnalyzeTraffic" xml:space="preserve">
+    <value>Analise o tráfego de rede</value>
+  </data>
+  <data name="ConnectionNotFound" xml:space="preserve">
+    <value>A conexão solicitada não está mais disponível (mais). Selecione uma das conexões listadas.</value>
+  </data>
+  <data name="FollowNewPacketsHint" xml:space="preserve">
+    <value>Mostra os pacotes mais recentes e rola até eles. Ele é desativado enquanto você rola para cima, para que a visualização não se mova.</value>
+  </data>
+  <data name="CastleSiege" xml:space="preserve">
+    <value>Castle Siege</value>
+  </data>
+  <data name="CastleSiegeAllInOneHint" xml:space="preserve">
+    <value>O gerenciamento do Castle Siege está disponível apenas quando o painel de administração e um servidor de jogo são executados no mesmo processo.</value>
+  </data>
+  <data name="CastleSiegeManualRefreshHint" xml:space="preserve">
+    <value>A página mostra um instantâneo. Use Atualizar para carregar o estado atual do Castle Siege.</value>
+  </data>
+  <data name="CastleSiegeStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CastleSiegeState" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="CastleSiegeStartedUtc" xml:space="preserve">
+    <value>Iniciado (UTC)</value>
+  </data>
+  <data name="CastleSiegeEndsUtc" xml:space="preserve">
+    <value>Termina (UTC)</value>
+  </data>
+  <data name="CastleSiegeOwner" xml:space="preserve">
+    <value>Proprietário</value>
+  </data>
+  <data name="CastleSiegeUnoccupied" xml:space="preserve">
+    <value>Desocupado</value>
+  </data>
+  <data name="CastleSiegeRegistrations" xml:space="preserve">
+    <value>Inscrições</value>
+  </data>
+  <data name="CastleSiegeEconomy" xml:space="preserve">
+    <value>Economia</value>
+  </data>
+  <data name="CastleSiegeChaosMachineTax" xml:space="preserve">
+    <value>Imposto sobre máquinas do caos</value>
+  </data>
+  <data name="CastleSiegePersonalStoreTax" xml:space="preserve">
+    <value>Imposto sobre loja pessoal</value>
+  </data>
+  <data name="CastleSiegeLandOfTrialsFee" xml:space="preserve">
+    <value>Taxa da Terra das Provações</value>
+  </data>
+  <data name="CastleSiegeTribute" xml:space="preserve">
+    <value>Tributo</value>
+  </data>
+  <data name="CastleSiegeStateAndOwner" xml:space="preserve">
+    <value>Estado e proprietário</value>
+  </data>
+  <data name="CastleSiegeForceState" xml:space="preserve">
+    <value>Estado de força</value>
+  </data>
+  <data name="CastleSiegeForce" xml:space="preserve">
+    <value>Força</value>
+  </data>
+  <data name="CastleSiegeForceStateHint" xml:space="preserve">
+    <value>A transição é processada pelo próximo cronômetro do Castle Siege.</value>
+  </data>
+  <data name="CastleSiegeChangeOwner" xml:space="preserve">
+    <value>Alterar proprietário</value>
+  </data>
+  <data name="CastleSiegeGuildName" xml:space="preserve">
+    <value>Nome da guilda</value>
+  </data>
+  <data name="CastleSiegeChangeOwnerHint" xml:space="preserve">
+    <value>A mudança de proprietário inicia uma nova posse e cancela os impostos, tributos e acesso anteriores à Terra das Provações.</value>
+  </data>
+  <data name="CastleSiegeResetCycle" xml:space="preserve">
+    <value>Limpar registros e redefinir para Idle1</value>
+  </data>
+  <data name="CastleSiegeTaxesAndTribute" xml:space="preserve">
+    <value>Impostos e tributos</value>
+  </data>
+  <data name="CastleSiegeChaosTaxPercent" xml:space="preserve">
+    <value>Imposto do caos (%)</value>
+  </data>
+  <data name="CastleSiegeStoreTaxPercent" xml:space="preserve">
+    <value>Imposto da loja (%)</value>
+  </data>
+  <data name="CastleSiegeHuntFee" xml:space="preserve">
+    <value>Taxa de caça</value>
+  </data>
+  <data name="CastleSiegeSaveTaxes" xml:space="preserve">
+    <value>Salvar impostos</value>
+  </data>
+  <data name="CastleSiegeClearTribute" xml:space="preserve">
+    <value>Limpar tributo</value>
+  </data>
+  <data name="CastleSiegeRegisteredGuilds" xml:space="preserve">
+    <value>Guildas registradas</value>
+  </data>
+  <data name="CastleSiegeNoRegisteredGuilds" xml:space="preserve">
+    <value>Nenhuma guilda está registrada.</value>
+  </data>
+  <data name="CastleSiegeName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="CastleSiegeGuildDeleted" xml:space="preserve">
+    <value>Guilda excluída</value>
+  </data>
+  <data name="CastleSiegeMarks" xml:space="preserve">
+    <value>Marcas</value>
+  </data>
+  <data name="CastleSiegeRegistrationOrder" xml:space="preserve">
+    <value>Ordem de registro</value>
+  </data>
+  <data name="CastleSiegeNpcStatus" xml:space="preserve">
+    <value>Status do NPC</value>
+  </data>
+  <data name="CastleSiegeMonster" xml:space="preserve">
+    <value>Monstro</value>
+  </data>
+  <data name="CastleSiegeInstance" xml:space="preserve">
+    <value>Instância</value>
+  </data>
+  <data name="CastleSiegeDefense" xml:space="preserve">
+    <value>Defesa</value>
+  </data>
+  <data name="CastleSiegeRegeneration" xml:space="preserve">
+    <value>Regeneração</value>
+  </data>
+  <data name="CastleSiegeLife" xml:space="preserve">
+    <value>Vida</value>
+  </data>
+  <data name="CastleSiegeHitPoints" xml:space="preserve">
+    <value>HP</value>
+  </data>
+  <data name="CastleSiegeAlive" xml:space="preserve">
+    <value>Vivo</value>
+  </data>
+  <data name="CastleSiegePersistent" xml:space="preserve">
+    <value>Persistente</value>
+  </data>
+  <data name="CastleSiegeConfirmOwnerTitle" xml:space="preserve">
+    <value>Mudar o proprietário do Castle Siege?</value>
+  </data>
+  <data name="CastleSiegeConfirmOwner" xml:space="preserve">
+    <value>Atribuir o castelo a '{0}'? Isso limpa os impostos, tributos e acesso anteriores à Terra das Provações.</value>
+  </data>
+  <data name="CastleSiegeConfirmResetTitle" xml:space="preserve">
+    <value>Redefinir o ciclo do Castle Siege?</value>
+  </data>
+  <data name="CastleSiegeConfirmReset" xml:space="preserve">
+    <value>Limpar todos os registros e guildas selecionadas, remover NPCs do Castle Siege e agendar Idle1?</value>
+  </data>
+  <data name="CastleSiegeConfirmClearTributeTitle" xml:space="preserve">
+    <value>Limpar o tributo ao Castle Siege?</value>
+  </data>
+  <data name="CastleSiegeConfirmClearTribute" xml:space="preserve">
+    <value>Limpar permanentemente todos os tributos acumulados do Castle Siege?</value>
+  </data>
+  <data name="CastleSiegeConfirmRemoveRegistrationTitle" xml:space="preserve">
+    <value>Remover o registro da guilda?</value>
+  </data>
+  <data name="CastleSiegeConfirmRemoveRegistration" xml:space="preserve">
+    <value>Remover o registro do Castle Siege para '{0}'?</value>
+  </data>
+  <data name="CastleSiegeStateScheduled" xml:space="preserve">
+    <value>A transição do estado Castle Siege foi agendada.</value>
+  </data>
+  <data name="CastleSiegeOwnerUpdated" xml:space="preserve">
+    <value>O proprietário do Castle Siege foi atualizado.</value>
+  </data>
+  <data name="CastleSiegeCycleReset" xml:space="preserve">
+    <value>Os registros do Castle Siege foram cancelados e o Idle1 foi agendado.</value>
+  </data>
+  <data name="CastleSiegeTaxesUpdated" xml:space="preserve">
+    <value>Os impostos do Castle Siege foram atualizados.</value>
+  </data>
+  <data name="CastleSiegeTributeCleared" xml:space="preserve">
+    <value>O tributo ao Castle Siege foi cancelado.</value>
+  </data>
+  <data name="CastleSiegeRegistrationRemoved" xml:space="preserve">
+    <value>O registro da guilda foi removido.</value>
+  </data>
+  <data name="CastleSiegeErrorInvalidState" xml:space="preserve">
+    <value>O estado de Castle Siege selecionado é inválido.</value>
+  </data>
+  <data name="CastleSiegeErrorNotInitialized" xml:space="preserve">
+    <value>Castle Siege não foi inicializado neste servidor de jogo.</value>
+  </data>
+  <data name="CastleSiegeErrorGuildNameRequired" xml:space="preserve">
+    <value>Digite um nome de guilda.</value>
+  </data>
+  <data name="CastleSiegeErrorGameServerContextRequired" xml:space="preserve">
+    <value>Alterar o proprietário requer um contexto de servidor de jogo.</value>
+  </data>
+  <data name="CastleSiegeErrorGuildNotFound" xml:space="preserve">
+    <value>A guilda não foi encontrada.</value>
+  </data>
+  <data name="CastleSiegeErrorOwnerChangeDuringBattle" xml:space="preserve">
+    <value>O proprietário não pode ser alterado enquanto a batalha de cerco estiver em andamento.</value>
+  </data>
+  <data name="CastleSiegeErrorResetDuringActiveSiege" xml:space="preserve">
+    <value>O ciclo do Castle Siege não pode ser reiniciado enquanto a preparação do cerco, a batalha ou o processamento de resultados estiverem ativos.</value>
+  </data>
+  <data name="CastleSiegeErrorTaxOutOfRange" xml:space="preserve">
+    <value>Um ou mais valores de impostos estão fora do intervalo suportado.</value>
+  </data>
+  <data name="CastleSiegeErrorTaxChangeDuringBattle" xml:space="preserve">
+    <value>Os impostos não podem ser alterados enquanto a batalha de cerco estiver em andamento.</value>
+  </data>
+  <data name="CastleSiegeErrorTributeClearDuringBattle" xml:space="preserve">
+    <value>O tributo não pode ser concluído enquanto a batalha de cerco estiver em andamento.</value>
+  </data>
+  <data name="CastleSiegeErrorRegistrationChangeOutsideRegistration" xml:space="preserve">
+    <value>Os registros da guilda só podem ser alterados durante um estado de registro.</value>
+  </data>
+  <data name="CastleSiegeErrorRegistrationMissing" xml:space="preserve">
+    <value>O registro não existe mais.</value>
+  </data>
+  <data name="CastleSiegeErrorGameServerUnavailable" xml:space="preserve">
+    <value>O servidor de jogo selecionado não está mais disponível.</value>
+  </data>
+  <data name="CastleSiegeErrorAllInOneDeploymentRequired" xml:space="preserve">
+    <value>O gerenciamento do Castle Siege requer uma implantação de servidor de jogo tudo-em-um.</value>
+  </data>
+  <data name="CastleSiegeErrorPlugInInactive" xml:space="preserve">
+    <value>O plug-in Castle Siege não está ativo neste servidor de jogo.</value>
+  </data>
+  <data name="CastleSiegeErrorUnexpected" xml:space="preserve">
+    <value>A operação Castle Siege falhou inesperadamente. Verifique o log do servidor para obter detalhes.</value>
+  </data>
+  <data name="ArchivedSessions" xml:space="preserve">
+    <value>Sessões arquivadas</value>
+  </data>
+  <data name="NoArchivedSessions" xml:space="preserve">
+    <value>Nenhuma sessão arquivada.</value>
+  </data>
+  <data name="ArchivedSession" xml:space="preserve">
+    <value>Arquivo</value>
+  </data>
+  <data name="SessionIsRunning" xml:space="preserve">
+    <value>Correndo</value>
+  </data>
+  <data name="ObserveAccount" xml:space="preserve">
+    <value>Observar</value>
+  </data>
+  <data name="ObserveAccountHint" xml:space="preserve">
+    <value>Arquiva o tráfego desta conta para cada uma de suas sessões, até que ela seja desativada novamente.</value>
+  </data>
+  <data name="DeleteArchivedSession" xml:space="preserve">
+    <value>Exclua a sessão arquivada</value>
+  </data>
+  <data name="DeleteArchivedSessionQuestion" xml:space="preserve">
+    <value>Você está prestes a excluir a sessão arquivada '{0}'. Tem certeza?</value>
+  </data>
+  <data name="DownloadArchivedSession" xml:space="preserve">
+    <value>Baixe a sessão arquivada</value>
+  </data>
+  <data name="Players" xml:space="preserve">
+    <value>Jogadores</value>
+  </data>
+  <data name="OffLevelPlayers" xml:space="preserve">
+    <value>Jogadores fora de nível</value>
+  </data>
+  <data name="BotPlayers" xml:space="preserve">
+    <value>Jogadores bot</value>
+  </data>
+  <data name="Party" xml:space="preserve">
+    <value>Festa</value>
+  </data>
+  <data name="CreateGameServer_ServerId" xml:space="preserve">
+    <value>ID do servidor</value>
+  </data>
+  <data name="CreateGameServer_Description" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="CreateGameServer_ExperienceRate" xml:space="preserve">
+    <value>Taxa de experiência</value>
+  </data>
+  <data name="CreateGameServer_PvpEnabled" xml:space="preserve">
+    <value>Habilitar PvP</value>
+  </data>
+  <data name="CreateGameServer_ServerConfiguration" xml:space="preserve">
+    <value>Configuração do servidor</value>
+  </data>
+  <data name="CreateGameServer_Client" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="CreateGameServer_NetworkPort" xml:space="preserve">
+    <value>Porta de escuta</value>
+  </data>
+  <data name="CreateConnectServer_ServerId" xml:space="preserve">
+    <value>ID do servidor</value>
+  </data>
+  <data name="CreateConnectServer_Description" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="CreateConnectServer_Client" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="CreateConnectServer_NetworkPort" xml:space="preserve">
+    <value>Porta de escuta</value>
+  </data>
+  <data name="PageNotFound" xml:space="preserve">
+    <value>Não encontrado</value>
+  </data>
+  <data name="PageNotFoundDescription" xml:space="preserve">
+    <value>Desculpe, o conteúdo que você procura não existe.</value>
+  </data>
+  <data name="PartySummary" xml:space="preserve">
+    <value>Grupo de {0}: {1} membros</value>
+  </data>
+  <data name="DeletedSuccessfully" xml:space="preserve">
+    <value>Excluído '{0}' com sucesso.</value>
+  </data>
+  <data name="InvalidCloneMethod" xml:space="preserve">
+    <value>O tipo '{0}' deve ter um método Clone que receba '{1}' e retorne '{0}'.</value>
+  </data>
+  <data name="ConfigurationEntryName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="LogReadError" xml:space="preserve">
+    <value>Erro ao ler o arquivo de log: {0}</value>
+  </data>
+  <data name="CouldNotSaveEntry" xml:space="preserve">
+    <value>Não foi possível salvar a nova entrada: {0}</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Confirmar exclusão</value>
+  </data>
+  <data name="ConfirmDeleteEntry" xml:space="preserve">
+    <value>Você está prestes a excluir '{0}'. Tem certeza?</value>
+  </data>
+  <data name="CreateEntry" xml:space="preserve">
+    <value>Criar {0}</value>
+  </data>
+  <data name="DuplicateEntry" xml:space="preserve">
+    <value>Duplicar '{0}'</value>
+  </data>
+  <data name="ReconnectJoining" xml:space="preserve">
+    <value>Voltando ao servidor...</value>
+  </data>
+  <data name="ReconnectRetryBefore" xml:space="preserve">
+    <value>Falha ao reingressar... tentando novamente em</value>
+  </data>
+  <data name="ReconnectRetryAfter" xml:space="preserve">
+    <value>segundos.</value>
+  </data>
+  <data name="ReconnectFailed" xml:space="preserve">
+    <value>Falha ao participar novamente. Tente novamente ou recarregue a página.</value>
+  </data>
+  <data name="ReconnectRetry" xml:space="preserve">
+    <value>Tentar novamente</value>
+  </data>
+  <data name="ReconnectPaused" xml:space="preserve">
+    <value>A sessão foi pausada pelo servidor.</value>
+  </data>
+  <data name="ReconnectResume" xml:space="preserve">
+    <value>Retomar</value>
+  </data>
+  <data name="ReconnectResumeFailed" xml:space="preserve">
+    <value>Falha ao retomar a sessão. Por favor, recarregue a página.</value>
+  </data>
+  <data name="RoleAdministrator" xml:space="preserve"><value>Administrador</value></data>
+  <data name="RoleOperator" xml:space="preserve"><value>Operador</value></data>
+  <data name="RoleViewer" xml:space="preserve"><value>Somente leitura</value></data>
+  <data name="RoleCashShop" xml:space="preserve"><value>Apenas moedas de cash shop</value></data>
+  <data name="Guilds" xml:space="preserve">
+    <value>Guildas</value>
+  </data>
+  <data name="Guild" xml:space="preserve">
+    <value>Guilda</value>
+  </data>
+  <data name="Alliance" xml:space="preserve">
+    <value>Aliança</value>
+  </data>
+  <data name="Members" xml:space="preserve">
+    <value>Membros</value>
+  </data>
+  <data name="Score" xml:space="preserve">
+    <value>Pontuação</value>
+  </data>
+  <data name="Notice" xml:space="preserve">
+    <value>Perceber</value>
+  </data>
+  <data name="Position" xml:space="preserve">
+    <value>Posição</value>
+  </data>
+  <data name="CharacterClass" xml:space="preserve">
+    <value>Classe de personagem</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="MasterLevel" xml:space="preserve">
+    <value>Nível Mestre</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Conta</value>
+  </data>
+  <data name="GuildNotFound" xml:space="preserve">
+    <value>A guilda não foi encontrada. Pode ter sido excluído.</value>
+  </data>
+  <data name="EmptyValue" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="PartyBadgeTitle" xml:space="preserve">
+    <value>Grupo de {0}: {1} membros</value>
+  </data>
+  <data name="AddChancePercent" xml:space="preserve">
+    <value>Adicionar chance (%)</value>
+  </data>
+  <data name="AddDropItemGroup" xml:space="preserve">
+    <value>Adicionar grupo de itens descartados</value>
+  </data>
+  <data name="AddDropsForItem" xml:space="preserve">
+    <value>Adicione gotas para outro item (por exemplo, uma caixa)</value>
+  </data>
+  <data name="AddDropsForMonster" xml:space="preserve">
+    <value>Adicione drops para outro monstro</value>
+  </data>
+  <data name="AddsRandomly" xml:space="preserve">
+    <value>Adiciona aleatoriamente</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Tem certeza?</value>
+  </data>
+  <data name="AssignToAllMaps" xml:space="preserve">
+    <value>Atribuir a todos os mapas</value>
+  </data>
+  <data name="AssignedMaps" xml:space="preserve">
+    <value>Mapas atribuídos</value>
+  </data>
+  <data name="ChanceHint" xml:space="preserve">
+    <value>A chance desse grupo ser selecionado para queda é de 0 a 100%. Uma chance de 100% significa que o grupo cai sempre, além dos grupos baseados em chance.</value>
+  </data>
+  <data name="ChancePercent" xml:space="preserve">
+    <value>Chance (%)</value>
+  </data>
+  <data name="DeleteDropItemGroupQuestion" xml:space="preserve">
+    <value>Você está prestes a excluir o grupo de itens descartados '{0}'. Tem certeza?</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="DropEffect" xml:space="preserve">
+    <value>Efeito de queda</value>
+  </data>
+  <data name="DropItemGroupStillUsed" xml:space="preserve">
+    <value>O grupo de itens descartados '{0}' não pode ser excluído porque ainda é usado por: {1}</value>
+  </data>
+  <data name="DropLevel" xml:space="preserve">
+    <value>Nível de queda</value>
+  </data>
+  <data name="DropLevelHint" xml:space="preserve">
+    <value>O nível mínimo do monstro no qual o item pode cair aleatoriamente.</value>
+  </data>
+  <data name="DropsFromMonsters" xml:space="preserve">
+    <value>Gotas de monstros</value>
+  </data>
+  <data name="EditDetails" xml:space="preserve">
+    <value>Editar detalhes</value>
+  </data>
+  <data name="ExcellentItemDropLevelDelta" xml:space="preserve">
+    <value>Excelente delta de nível de queda de item</value>
+  </data>
+  <data name="ExcellentItemDropLevelDeltaHint" xml:space="preserve">
+    <value>Um monstro deve estar pelo menos este número acima do nível de drop de um item, para que o item possa cair como um item excelente.</value>
+  </data>
+  <data name="GameMap" xml:space="preserve">
+    <value>Mapa</value>
+  </data>
+  <data name="GeneralDropSettings" xml:space="preserve">
+    <value>Configurações gerais</value>
+  </data>
+  <data name="GuaranteedDrops" xml:space="preserve">
+    <value>Gotas garantidas</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="ItemBoxDrops" xml:space="preserve">
+    <value>Caixa de itens cai</value>
+  </data>
+  <data name="ItemBoxDropsDescription" xml:space="preserve">
+    <value>Define o que cai quando um jogador deixa cair um item como uma caixa (por exemplo, Caixa da Sorte, Caixa de Kundun). Um dos grupos do nível de item de origem correspondente é selecionado por acaso.</value>
+  </data>
+  <data name="ItemDropDurationSeconds" xml:space="preserve">
+    <value>Duração da queda do item (segundos)</value>
+  </data>
+  <data name="ItemDrops" xml:space="preserve">
+    <value>Quedas de itens</value>
+  </data>
+  <data name="ItemDropsPageDescription" xml:space="preserve">
+    <value>Configure todos os itens descartados em uma página. As alterações só são aplicadas após salvar.</value>
+  </data>
+  <data name="ItemLevel" xml:space="preserve">
+    <value>Nível do item</value>
+  </data>
+  <data name="ItemLevelHint" xml:space="preserve">
+    <value>O nível do item atribuído ao item descartado. Se estiver vazio, o nível é determinado pelo nível do monstro para itens aleatórios.</value>
+  </data>
+  <data name="ItemOption" xml:space="preserve">
+    <value>Opção de item</value>
+  </data>
+  <data name="ItemOptionDropChances" xml:space="preserve">
+    <value>Chances de opção de item</value>
+  </data>
+  <data name="ItemOptionDropChancesDescription" xml:space="preserve">
+    <value>As chances de que as opções sejam adicionadas aleatoriamente aos itens descartados.</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="MapDropItemGroups" xml:space="preserve">
+    <value>Grupos de descarte de mapas</value>
+  </data>
+  <data name="MapDropItemGroupsDescription" xml:space="preserve">
+    <value>Eliminar grupos que se aplicam a monstros nos mapas atribuídos. Grupos que não estão atribuídos a nenhum mapa não são eliminados.</value>
+  </data>
+  <data name="MaximumDropLevel" xml:space="preserve">
+    <value>Nível máximo de queda</value>
+  </data>
+  <data name="MaximumDropLevelHint" xml:space="preserve">
+    <value>O nível máximo do monstro no qual o item pode cair aleatoriamente. Se estiver vazio, não há limite superior.</value>
+  </data>
+  <data name="MaximumItemLevel" xml:space="preserve">
+    <value>Máx. nível de item</value>
+  </data>
+  <data name="MaximumItemOptionLevelDrop" xml:space="preserve">
+    <value>Nível máximo de opção de item</value>
+  </data>
+  <data name="MaximumItemOptionLevelDropHint" xml:space="preserve">
+    <value>O nível máximo da opção de item (por exemplo, +4, +8, +12, +16) que pode ser adicionado a um item descartado.</value>
+  </data>
+  <data name="MaximumMonsterLevel" xml:space="preserve">
+    <value>Máx. nível de monstro</value>
+  </data>
+  <data name="MaximumOptionsPerItem" xml:space="preserve">
+    <value>Máximo de opções por item</value>
+  </data>
+  <data name="MiniGameUsage" xml:space="preserve">
+    <value>Minijogo '{0}'</value>
+  </data>
+  <data name="MinimumItemLevel" xml:space="preserve">
+    <value>Min. nível de item</value>
+  </data>
+  <data name="MinimumMonsterLevel" xml:space="preserve">
+    <value>Min. nível de monstro</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>Dinheiro</value>
+  </data>
+  <data name="MoneyAmount" xml:space="preserve">
+    <value>Quantidade de dinheiro</value>
+  </data>
+  <data name="MonsterDrops" xml:space="preserve">
+    <value>Gotas de monstro</value>
+  </data>
+  <data name="MonsterDropsDescription" xml:space="preserve">
+    <value>Solte grupos de monstros específicos. Eles são considerados além dos grupos de queda do mapa quando o monstro é morto.</value>
+  </data>
+  <data name="NewDropItemGroup" xml:space="preserve">
+    <value>Novo grupo de itens descartados</value>
+  </data>
+  <data name="NewDropItemGroupOf" xml:space="preserve">
+    <value>Queda de {0}</value>
+  </data>
+  <data name="NoDropChance" xml:space="preserve">
+    <value>Sem queda</value>
+  </data>
+  <data name="NoDropItemGroups" xml:space="preserve">
+    <value>Não há grupos de itens descartados.</value>
+  </data>
+  <data name="NoItems" xml:space="preserve">
+    <value>Nenhum item</value>
+  </data>
+  <data name="NumberOfMaximumItemDrops" xml:space="preserve">
+    <value>Máximo de itens descartados</value>
+  </data>
+  <data name="NumberOfMaximumItemDropsHint" xml:space="preserve">
+    <value>O número máximo de itens que este monstro deixa cair quando é morto.</value>
+  </data>
+  <data name="OnlyForMonster" xml:space="preserve">
+    <value>Somente para monstro</value>
+  </data>
+  <data name="PossibleItems" xml:space="preserve">
+    <value>Itens possíveis</value>
+  </data>
+  <data name="PossibleItemsHint" xml:space="preserve">
+    <value>Se nenhum item for selecionado, itens aleatórios serão descartados dependendo do tipo e do nível do monstro.</value>
+  </data>
+  <data name="QuestAndEventDropItemGroups" xml:space="preserve">
+    <value>Grupos de missões e eventos</value>
+  </data>
+  <data name="QuestAndEventDropItemGroupsDescription" xml:space="preserve">
+    <value>Solte grupos que são usados ​​​​para missões ou recompensas de jogos.</value>
+  </data>
+  <data name="QuestUsage" xml:space="preserve">
+    <value>Missão '{0}'</value>
+  </data>
+  <data name="RandomAncientItems" xml:space="preserve">
+    <value>Itens antigos aleatórios</value>
+  </data>
+  <data name="RandomItemsByMonsterLevel" xml:space="preserve">
+    <value>Itens aleatórios por nível de monstro</value>
+  </data>
+  <data name="RandomlyDroppedItems" xml:space="preserve">
+    <value>Itens descartados aleatoriamente</value>
+  </data>
+  <data name="RandomlyDroppedItemsDescription" xml:space="preserve">
+    <value>Define quais itens podem ser dropados como itens aleatórios (por exemplo, pelos grupos de drop comuns e excelentes) e em quais níveis de monstros.</value>
+  </data>
+  <data name="RemoveFromAllMaps" xml:space="preserve">
+    <value>Remover de todos os mapas</value>
+  </data>
+  <data name="RemoveFromMonster" xml:space="preserve">
+    <value>Remover do monstro</value>
+  </data>
+  <data name="RequiredCharacterLevel" xml:space="preserve">
+    <value>Nível de personagem necessário</value>
+  </data>
+  <data name="ShouldDropMoney" xml:space="preserve">
+    <value>Solte dinheiro (em vez de adicioná-lo diretamente ao inventário)</value>
+  </data>
+  <data name="ShowOnlyDroppableItems" xml:space="preserve">
+    <value>Mostrar apenas itens que caem de monstros</value>
+  </data>
+  <data name="SourceItemLevel" xml:space="preserve">
+    <value>Nível do item de origem</value>
+  </data>
+  <data name="SourceItemLevelHint" xml:space="preserve">
+    <value>O nível do item descartado (por exemplo, a caixa) ao qual este grupo se aplica.</value>
+  </data>
+  <data name="TotalChance" xml:space="preserve">
+    <value>Chance total</value>
+  </data>
+  <data name="TotalChanceExceedsHint" xml:space="preserve">
+    <value>A chance total ultrapassa 100%. As chances são reduzidas proporcionalmente.</value>
+  </data>
+  <data name="UsedBy" xml:space="preserve">
+    <value>Usado por</value>
+  </data>
+  <data name="Monster" xml:space="preserve">
+    <value>Monstro</value>
+  </data>
+  <data name="MonsterLevel" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="MonsterDropChanceOverview" xml:space="preserve">
+    <value>Visão geral da chance de drop por monstro</value>
+  </data>
+  <data name="MonsterDropChanceOverviewDescription" xml:space="preserve">
+    <value>As chances de drop de cada monstro gerado em um mapa, considerando as restrições de nível de monstro dos grupos de drop do mapa e os grupos de drop específicos de monstros. As chances se aplicam a cada jogada de queda, um monstro rola até o máximo de itens descartados. Drops de itens de missão não estão incluídos. Se a chance total exceder 100%, as chances serão reduzidas proporcionalmente e não haverá chance de queda.</value>
+  </data>
+  <data name="ContentActivation" xml:space="preserve">
+    <value>Ativação de conteúdo</value>
+  </data>
+  <data name="ContentActivationDescription" xml:space="preserve">
+    <value>Ative ou desative mapas, classes de personagens, monstros, itens e minijogos, por ex. restringir o jogo ao conteúdo de uma determinada temporada. As entradas inativas permanecem na configuração, mas não estão disponíveis no jogo. Os monstros que já foram gerados permanecem até que o servidor do jogo seja reiniciado.</value>
+  </data>
+  <data name="ContentType" xml:space="preserve">
+    <value>Contente</value>
+  </data>
+  <data name="ActivateAllShown" xml:space="preserve">
+    <value>Ative todos mostrados</value>
+  </data>
+  <data name="DeactivateAllShown" xml:space="preserve">
+    <value>Desativar tudo mostrado</value>
+  </data>
+  <data name="ActiveCountFormat" xml:space="preserve">
+    <value>{0} de {1} ativos</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Ativo</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Número</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="AllEntries" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="OnlyActive" xml:space="preserve">
+    <value>Somente ativo</value>
+  </data>
+  <data name="OnlyInactive" xml:space="preserve">
+    <value>Apenas inativo</value>
+  </data>
+  <data name="IntroducedIn" xml:space="preserve">
+    <value>Introduzido em</value>
+  </data>
+  <data name="GameVersionUnknown" xml:space="preserve">
+    <value>Desconhecido</value>
+  </data>
+  <data name="GameVersionFormat" xml:space="preserve">
+    <value>Versão {0}</value>
+  </data>
+  <data name="SeasonFormat" xml:space="preserve">
+    <value>Temporada {0}</value>
+  </data>
+  <data name="SeasonEpisodeFormat" xml:space="preserve">
+    <value>Temporada {0} Episódio {1}</value>
+  </data>
+  <data name="RestrictToGameVersion" xml:space="preserve">
+    <value>Restringir à versão do jogo</value>
+  </data>
+  <data name="RestrictToGameVersionHint" xml:space="preserve">
+    <value>Ativa todo o conteúdo introduzido até a versão do jogo selecionada e desativa o conteúdo introduzido posteriormente. O conteúdo de uma versão desconhecida não é alterado. As alterações são armazenadas após salvar.</value>
+  </data>
+  <data name="Captions" xml:space="preserve">
+    <value>Legendas</value>
+  </data>
+  <data name="CaptionsDescription" xml:space="preserve">
+    <value>Compara as legendas da configuração, por ex. os nomes de mapas e monstros, com suas fontes integradas. Traduções novas e atualizadas são selecionadas; os textos personalizados só são alterados se você os selecionar.</value>
+  </data>
+  <data name="AllLocalizationsInPlace" xml:space="preserve">
+    <value>Todas as localizações disponíveis estão em vigor.</value>
+  </data>
+  <data name="CaptionsLoading" xml:space="preserve">
+    <value>Comparando as legendas com suas fontes ...</value>
+  </data>
+  <data name="CaptionLanguageSummary" xml:space="preserve">
+    <value>{0}: {1} alterações</value>
+  </data>
+  <data name="CaptionAllLanguages" xml:space="preserve">
+    <value>Todos os idiomas</value>
+  </data>
+  <data name="CaptionAllKinds" xml:space="preserve">
+    <value>Todos os tipos de mudanças</value>
+  </data>
+  <data name="CaptionNeutralText" xml:space="preserve">
+    <value>Neutro (Inglês)</value>
+  </data>
+  <data name="CaptionObject" xml:space="preserve">
+    <value>Objeto</value>
+  </data>
+  <data name="CaptionProperty" xml:space="preserve">
+    <value>Propriedade</value>
+  </data>
+  <data name="CaptionLanguage" xml:space="preserve">
+    <value>Linguagem</value>
+  </data>
+  <data name="CaptionChange" xml:space="preserve">
+    <value>Mudar</value>
+  </data>
+  <data name="CaptionCurrentText" xml:space="preserve">
+    <value>Texto atual</value>
+  </data>
+  <data name="CaptionSourceText" xml:space="preserve">
+    <value>Novo texto</value>
+  </data>
+  <data name="CaptionChangeKind_Missing" xml:space="preserve">
+    <value>Novo</value>
+  </data>
+  <data name="CaptionChangeKind_Updated" xml:space="preserve">
+    <value>Atualizado</value>
+  </data>
+  <data name="CaptionChangeKind_Removed" xml:space="preserve">
+    <value>Removido</value>
+  </data>
+  <data name="CaptionChangeKind_Customized" xml:space="preserve">
+    <value>Personalizado</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Selecionar tudo</value>
+  </data>
+  <data name="SelectRecommended" xml:space="preserve">
+    <value>Selecione recomendado</value>
+  </data>
+  <data name="SelectNone" xml:space="preserve">
+    <value>Selecione nenhum</value>
+  </data>
+  <data name="ApplySelectedChanges" xml:space="preserve">
+    <value>Aplicar alterações selecionadas</value>
+  </data>
+  <data name="ApplyingChanges" xml:space="preserve">
+    <value>Aplicando alterações...</value>
+  </data>
+  <data name="AppliedCaptionChanges" xml:space="preserve">
+    <value>{0} alterações foram aplicadas.</value>
+  </data>
+  <data name="LinkBuiltInCaptions" xml:space="preserve">
+    <value>Vincular legendas integradas</value>
+  </data>
+  <data name="LinkBuiltInCaptionsDescription" xml:space="preserve">
+    <value>As configurações que foram criadas com uma versão mais antiga ainda não conhecem as fontes de suas legendas integradas, portanto não podem receber novas traduções. A vinculação executa a inicialização dos dados na memória e vincula as legendas correspondentes às suas fontes. Nenhum texto é alterado.</value>
+  </data>
+  <data name="LinkingBuiltInCaptions" xml:space="preserve">
+    <value>Vinculando legendas integradas...</value>
+  </data>
+  <data name="LinkedBuiltInCaptions" xml:space="preserve">
+    <value>{0} legendas foram vinculadas às suas fontes. {1} legendas foram ignoradas porque o texto neutro foi personalizado.</value>
+  </data>
+  <data name="CaptionsUnresolvedSources" xml:space="preserve">
+    <value>{0} fontes de legendas não estão disponíveis nesta versão, portanto, essas legendas não podem ser comparadas, por exemplo, {1}.</value>
+  </data>
+  <data name="CaptionsNotLinkedTitle" xml:space="preserve">
+    <value>Vincule as legendas integradas</value>
+  </data>
+  <data name="CaptionsNotLinkedDescription" xml:space="preserve">
+    <value>As legendas desta configuração ainda não conhecem suas fontes. Esse é o caso das configurações criadas com uma versão mais antiga do OpenMU. A vinculação é necessária uma vez; posteriormente esta página mostra quais traduções podem ser adicionadas ou atualizadas.</value>
+  </data>
+  <data name="CaptionsLinkedCount" xml:space="preserve">
+    <value>{0} legendas estão vinculadas às suas fontes.</value>
+  </data>
+  <data name="CaptionsReviewTitle" xml:space="preserve">
+    <value>Revise e aplique as alterações</value>
+  </data>
+  <data name="CaptionsReviewDescription" xml:space="preserve">
+    <value>As legendas a seguir diferem de suas fontes. As alterações recomendadas já estão selecionadas. Os textos personalizados só são alterados se você os selecionar.</value>
+  </data>
+  <data name="CaptionChangeKind_Missing_Description" xml:space="preserve">
+    <value>Uma tradução está disponível, mas falta na configuração, ou é apenas uma cópia do texto em inglês.</value>
+  </data>
+  <data name="CaptionChangeKind_Updated_Description" xml:space="preserve">
+    <value>O texto incorporado foi alterado e o texto configurado ainda é aquele que foi originalmente assumido.</value>
+  </data>
+  <data name="CaptionChangeKind_Removed_Description" xml:space="preserve">
+    <value>A tradução integrada não existe mais e o texto configurado ainda é aquele que foi originalmente assumido.</value>
+  </data>
+  <data name="CaptionChangeKind_Customized_Description" xml:space="preserve">
+    <value>O texto configurado difere porque foi alterado ou sua origem é desconhecida. Ele só será substituído se você o selecionar.</value>
+  </data>
+  <data name="CaptionsLinkAgainTitle" xml:space="preserve">
+    <value>Vincular legendas novamente</value>
+  </data>
+  <data name="CaptionsLinkAgainDescription" xml:space="preserve">
+    <value>Vincula as legendas integradas que ainda não estão vinculadas, por exemplo, após as atualizações de configuração adicionarem novos objetos. Legendas e textos vinculados não são alterados.</value>
+  </data>
+  <data name="CaptionsNextStepReview" xml:space="preserve">
+    <value>Revise as alterações abaixo e aplique as selecionadas.</value>
+  </data>
+  <data name="CaptionLinkStep_LoadingConfiguration" xml:space="preserve">
+    <value>Carregando a configuração</value>
+  </data>
+  <data name="CaptionLinkStep_CreatingReferenceConfiguration" xml:space="preserve">
+    <value>Criando a configuração de referência (a inicialização dos dados é executada na memória)</value>
+  </data>
+  <data name="CaptionLinkStep_LinkingCaptions" xml:space="preserve">
+    <value>Vinculando as legendas</value>
+  </data>
+  <data name="CaptionLinkStep_Saving" xml:space="preserve">
+    <value>Salvando as alterações</value>
+  </data>
+  <data name="CaptionsLinkingHint" xml:space="preserve">
+    <value>A vinculação pode demorar um pouco, principalmente porque a inicialização dos dados é executada na memória. Por favor, mantenha esta página aberta.</value>
+  </data>
+  <data name="CaptionsLinkingElapsed" xml:space="preserve">
+    <value>Tempo decorrido: {0}</value>
+  </data>
+  <data name="CaptionsLinkableTitle" xml:space="preserve">
+    <value>Vincular novas legendas integradas</value>
+  </data>
+  <data name="CaptionsLinkableDescription" xml:space="preserve">
+    <value>{0} legendas integradas ainda não estão vinculadas às suas fontes, portanto suas traduções não podem ser revisadas aqui: {1}. Esse geralmente é o caso após uma atualização das traduções adicionadas do OpenMU, por ex. para nomes de itens. A vinculação não altera nenhum texto.</value>
+  </data>
+  <data name="CaptionsCheckingLinkable" xml:space="preserve">
+    <value>Verificando legendas integradas que ainda não estão vinculadas...</value>
+  </data>
+  <data name="CashShopCoinsOf" xml:space="preserve">
+    <value>Moedas da loja à vista de {0}</value>
+  </data>
+  <data name="CashShopCoinsDescription" xml:space="preserve">
+    <value>Os saldos são os que foram salvos por último. As moedas concedidas ficam pendentes até que o servidor do jogo as aplique, o que acontecerá na próxima vez que o jogador abrir a loja de dinheiro.</value>
+  </data>
+  <data name="CashShopCoinsAccountNotFound" xml:space="preserve">
+    <value>A conta não existe.</value>
+  </data>
+  <data name="CashShopGrantCoins" xml:space="preserve">
+    <value>Conceder moedas</value>
+  </data>
+  <data name="CashShopCoinType" xml:space="preserve">
+    <value>Moeda</value>
+  </data>
+  <data name="CashShopAmount" xml:space="preserve">
+    <value>Quantia</value>
+  </data>
+  <data name="CashShopGrants" xml:space="preserve">
+    <value>Subsídios</value>
+  </data>
+  <data name="CashShopGrantedBy" xml:space="preserve">
+    <value>Concedido por</value>
+  </data>
+  <data name="CashShopReference" xml:space="preserve">
+    <value>Referência</value>
+  </data>
+  <data name="CashShopAppliedAt" xml:space="preserve">
+    <value>Aplicado</value>
+  </data>
+  <data name="CashShopPending" xml:space="preserve">
+    <value>Pendente</value>
+  </data>
+  <data name="CashShopPendingAmount" xml:space="preserve">
+    <value>{0} pendente</value>
+  </data>
+  <data name="CashShopNoGrants" xml:space="preserve">
+    <value>Nenhuma moeda foi concedida ainda.</value>
+  </data>
+  <data name="CashShopAmountMustNotBeZero" xml:space="preserve">
+    <value>O valor não deve ser zero. Use um valor negativo para pegar moedas.</value>
+  </data>
+  <data name="CashShopCoinsGranted" xml:space="preserve">
+    <value>As moedas foram concedidas.</value>
+  </data>
+  <data name="CashShopCoins" xml:space="preserve">
+    <value>Moedas</value>
+  </data>
+  <data name="CashShopCatalog" xml:space="preserve">
+    <value>Loja de dinheiro</value>
+  </data>
+  <data name="CashShopCatalogDescription" xml:space="preserve">
+    <value>O cliente do jogo mostra os pacotes, nomes, preços e períodos do seu próprio script de cash shop. Aqui você edita o lado do servidor: quais pacotes estão à venda, quais itens são entregues e quais preços são cobrados. Pacotes e produtos são identificados pelos números do script do cliente, portanto mantenha-os iguais ao script da versão configurada; um preço diferente não é mostrado pelo cliente.</value>
+  </data>
+  <data name="CashShopNotConfigured" xml:space="preserve">
+    <value>A loja de dinheiro não está configurada. Instale a atualização de configuração 'Adicionar loja de dinheiro' para adicionar o catálogo do cliente do jogo.</value>
+  </data>
+  <data name="CashShopVersions" xml:space="preserve">
+    <value>Versões do script do cliente</value>
+  </data>
+  <data name="CashShopScriptVersion" xml:space="preserve">
+    <value>Roteiro</value>
+  </data>
+  <data name="CashShopBannerVersion" xml:space="preserve">
+    <value>Bandeira</value>
+  </data>
+  <data name="CashShopSaleZone" xml:space="preserve">
+    <value>Zona de venda</value>
+  </data>
+  <data name="CashShopYear" xml:space="preserve">
+    <value>Ano</value>
+  </data>
+  <data name="CashShopYearId" xml:space="preserve">
+    <value>ID dentro do ano</value>
+  </data>
+  <data name="CashShopPackages" xml:space="preserve">
+    <value>Pacotes</value>
+  </data>
+  <data name="CashShopOnlyForSale" xml:space="preserve">
+    <value>Apenas pacotes à venda</value>
+  </data>
+  <data name="CashShopPackageSequence" xml:space="preserve">
+    <value>Número do pacote</value>
+  </data>
+  <data name="CashShopProductSequence" xml:space="preserve">
+    <value>Número do produto</value>
+  </data>
+  <data name="CashShopPriceSequence" xml:space="preserve">
+    <value>Número do preço</value>
+  </data>
+  <data name="CashShopPrice" xml:space="preserve">
+    <value>Preço</value>
+  </data>
+  <data name="CashShopBundlePrice" xml:space="preserve">
+    <value>Preço do pacote</value>
+  </data>
+  <data name="CashShopForSale" xml:space="preserve">
+    <value>À venda</value>
+  </data>
+  <data name="CashShopGiftable" xml:space="preserve">
+    <value>Presenteável</value>
+  </data>
+  <data name="CashShopBundle" xml:space="preserve">
+    <value>Pacote</value>
+  </data>
+  <data name="CashShopSellable" xml:space="preserve">
+    <value>Vendável</value>
+  </data>
+  <data name="CashShopProducts" xml:space="preserve">
+    <value>Produtos</value>
+  </data>
+  <data name="CashShopBundleProductsDescription" xml:space="preserve">
+    <value>Um pacote entrega todos os seus produtos pelo preço do pacote.</value>
+  </data>
+  <data name="CashShopPriceOptionsDescription" xml:space="preserve">
+    <value>Os produtos são opções de preço, dos quais o jogador compra um pelo seu preço.</value>
+  </data>
+  <data name="CashShopItem" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="CashShopItemLevel" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="CashShopQuantity" xml:space="preserve">
+    <value>Quantidade</value>
+  </data>
+  <data name="CashShopDurationHours" xml:space="preserve">
+    <value>Duração (horas)</value>
+  </data>
+  <data name="CashShopAddPackage" xml:space="preserve">
+    <value>Adicionar pacote</value>
+  </data>
+  <data name="CashShopAddProduct" xml:space="preserve">
+    <value>Adicionar produto</value>
+  </data>
+  <data name="CashShopDeletePackage" xml:space="preserve">
+    <value>Excluir pacote</value>
+  </data>
+  <data name="CashShopDeletePackageQuestion" xml:space="preserve">
+    <value>Você realmente deseja excluir este pacote?</value>
+  </data>
+  <data name="CashShopIssueNoProducts" xml:space="preserve">
+    <value>O pacote não contém produtos.</value>
+  </data>
+  <data name="CashShopIssueDuplicatePackageSequence" xml:space="preserve">
+    <value>Outro pacote possui o número {0}.</value>
+  </data>
+  <data name="CashShopIssueDuplicatePriceSequence" xml:space="preserve">
+    <value>Vários produtos possuem o número de preço {0}.</value>
+  </data>
+  <data name="CashShopIssueMissingItem" xml:space="preserve">
+    <value>O produto {0} não possui nenhum item.</value>
+  </data>
+  <data name="CashShopIssueTimeLimited" xml:space="preserve">
+    <value>O produto {0} é limitado no tempo e ainda não é compatível.</value>
+  </data>
+  <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
+    <value>O preço do pacote é negativo.</value>
+  </data>
+  <data name="CashShopIssueNegativePrice" xml:space="preserve">
+    <value>O produto {0} tem um preço negativo.</value>
+  </data>
+  <data name="CashShopIssueInvalidQuantity" xml:space="preserve">
+    <value>O produto {0} tem uma quantidade inferior a 1.</value>
+  </data>
+  <data name="TerrainEditor" xml:space="preserve">
+    <value>Editor de terreno</value>
+  </data>
+  <data name="LoggingConfiguration" xml:space="preserve">
+    <value>Configuração de Log</value>
+  </data>
+  <data name="LoggingConfigurationDescription" xml:space="preserve">
+    <value>A criação de log do servidor está configurada no arquivo {0}. Quando você salva, os níveis de log alterados são aplicados imediatamente. As fontes adicionadas ou removidas e todas as outras configurações entram em vigor após a reinicialização do servidor.</value>
+  </data>
+  <data name="LoggingConfigurationNotAvailable" xml:space="preserve">
+    <value>A configuração de registro só pode ser editada quando o painel de administração é executado no processo do servidor (implantação completa).</value>
+  </data>
+  <data name="LogLevels" xml:space="preserve">
+    <value>Níveis de Log</value>
+  </data>
+  <data name="DefaultLogLevel" xml:space="preserve">
+    <value>Nível padrão</value>
+  </data>
+  <data name="LogLevelOverrides" xml:space="preserve">
+    <value>Níveis por fonte</value>
+  </data>
+  <data name="LogLevelOverridesDescription" xml:space="preserve">
+    <value>Uma fonte é o nome de um criador de logs, geralmente o nome completo de uma classe ou um namespace que abrange todos os criadores de logs nela. A fonte mais específica vence.</value>
+  </data>
+  <data name="LogSource" xml:space="preserve">
+    <value>Fonte</value>
+  </data>
+  <data name="AdvancedJson" xml:space="preserve">
+    <value>Avançado (JSON)</value>
+  </data>
+  <data name="AdvancedLoggingJsonDescription" xml:space="preserve">
+    <value>Aqui você pode editar toda a seção Serilog do arquivo de configuração, por exemplo, para adicionar coletores ou filtros. Consulte a documentação do Serilog para as configurações disponíveis.</value>
+  </data>
+  <data name="LoggingConfigurationSaved" xml:space="preserve">
+    <value>A configuração de registro foi salva.</value>
+  </data>
+  <data name="LoggingConfigurationLoadError" xml:space="preserve">
+    <value>Não foi possível carregar a configuração de geração de registros: {0}</value>
+  </data>
+  <data name="LoggingConfigurationSaveError" xml:space="preserve">
+    <value>Não foi possível salvar a configuração de registro: {0}</value>
+  </data>
+  <data name="LoggingConfigurationInvalidJson" xml:space="preserve">
+    <value>O JSON é inválido: {0}</value>
+  </data>
+  <data name="LogLevelOverridesInvalid" xml:space="preserve">
+    <value>Cada fonte precisa de um nome e cada nome só pode ser usado uma vez.</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Painel</value>
+  </data>
+  <data name="DashboardPlayersOnline" xml:space="preserve">
+    <value>Jogadores on-line</value>
+  </data>
+  <data name="DashboardPlayerCapacity" xml:space="preserve">
+    <value>de {0} slots nos servidores de jogo em execução</value>
+  </data>
+  <data name="DashboardServersRunning" xml:space="preserve">
+    <value>Servidores em execução</value>
+  </data>
+  <data name="DashboardServersNotRunning" xml:space="preserve">
+    <value>{0} não está em execução</value>
+  </data>
+  <data name="DashboardAllServersRunning" xml:space="preserve">
+    <value>Todos os servidores estão em execução</value>
+  </data>
+  <data name="DashboardNewAccounts" xml:space="preserve">
+    <value>+{0} registrados nos últimos 7 dias</value>
+  </data>
+  <data name="DashboardBannedAccounts" xml:space="preserve">
+    <value>{0} banidos</value>
+  </data>
+  <data name="DashboardAlliances" xml:space="preserve">
+    <value>{0} alianças</value>
+  </data>
+  <data name="DashboardCharacters" xml:space="preserve">
+    <value>{0} personagens</value>
+  </data>
+  <data name="DashboardNotAvailable" xml:space="preserve">
+    <value>Não disponível</value>
+  </data>
+  <data name="DashboardOnlineHistory" xml:space="preserve">
+    <value>Jogadores online nas últimas 24 horas</value>
+  </data>
+  <data name="DashboardOnlineHistoryDescription" xml:space="preserve">
+    <value>Gráfico dos jogadores online nas últimas 24 horas. Atualmente {0}, pico {1}, baixo {2}.</value>
+  </data>
+  <data name="DashboardSampleInterval" xml:space="preserve">
+    <value>amostrado a cada {0} minutos</value>
+  </data>
+  <data name="DashboardCollectingData" xml:space="preserve">
+    <value>Coletando dados. O histórico começa quando o painel de administração é iniciado.</value>
+  </data>
+  <data name="DashboardHoursAgo" xml:space="preserve">
+    <value>{0} horas atrás</value>
+  </data>
+  <data name="DashboardNow" xml:space="preserve">
+    <value>agora</value>
+  </data>
+  <data name="DashboardCurrent" xml:space="preserve">
+    <value>Agora</value>
+  </data>
+  <data name="DashboardPeak" xml:space="preserve">
+    <value>Pico</value>
+  </data>
+  <data name="DashboardLow" xml:space="preserve">
+    <value>Baixo</value>
+  </data>
+  <data name="DashboardManageServers" xml:space="preserve">
+    <value>Gerenciar servidores</value>
+  </data>
+  <data name="DashboardConnections" xml:space="preserve">
+    <value>{0} conexões</value>
+  </data>
+  <data name="DashboardAdministratorsOnly" xml:space="preserve">
+    <value>Somente administradores</value>
+  </data>
+  <data name="DashboardUptime" xml:space="preserve">
+    <value>Tempo no ar</value>
+  </data>
+  <data name="DashboardUptimeValue" xml:space="preserve">
+    <value>{0} d {1} h {2} min</value>
+  </data>
+  <data name="DashboardMemory" xml:space="preserve">
+    <value>Memória</value>
+  </data>
+  <data name="DashboardMemoryValue" xml:space="preserve">
+    <value>{0:N0} MB em uso</value>
+  </data>
+  <data name="DashboardVersion" xml:space="preserve">
+    <value>Versão</value>
+  </data>
+  <data name="DashboardDatabase" xml:space="preserve">
+    <value>Banco de dados</value>
+  </data>
+  <data name="DashboardDatabaseConnected" xml:space="preserve">
+    <value>Conectado</value>
+  </data>
+  <data name="DashboardDatabaseNotReachable" xml:space="preserve">
+    <value>Inacessível</value>
+  </data>
+  <data name="DashboardConfigurationUpdates" xml:space="preserve">
+    <value>Atualizações de configuração</value>
+  </data>
+  <data name="DashboardUpdatesAvailable" xml:space="preserve">
+    <value>atualizações estão disponíveis para a configuração do seu jogo.</value>
+  </data>
+  <data name="DashboardNoUpdates" xml:space="preserve">
+    <value>A configuração do seu jogo está atualizada.</value>
+  </data>
+  <data name="DashboardReviewUpdates" xml:space="preserve">
+    <value>Revise as atualizações</value>
+  </data>
+  <data name="DashboardQuickActions" xml:space="preserve">
+    <value>Ações rápidas</value>
+  </data>
+  <data name="DashboardOpen" xml:space="preserve">
+    <value>Abrir</value>
+  </data>
+  <data name="ExternalLinks" xml:space="preserve">
+    <value>Ligações</value>
+  </data>
+  <data name="ExternalLinksOf" xml:space="preserve">
+    <value>Links de {0}</value>
+  </data>
+  <data name="ExternalLinksDescription" xml:space="preserve">
+    <value>Os usuários de serviços externos, como Discord, que estão vinculados à conta. Os jogadores vinculam suas contas no jogo com o link /discord.</value>
+  </data>
+  <data name="ExternalLinksAccountNotFound" xml:space="preserve">
+    <value>A conta não foi encontrada.</value>
+  </data>
+  <data name="ExternalLinksNone" xml:space="preserve">
+    <value>A conta não está vinculada.</value>
+  </data>
+  <data name="ExternalLinkService" xml:space="preserve">
+    <value>Serviço</value>
+  </data>
+  <data name="ExternalLinkUser" xml:space="preserve">
+    <value>Usuário</value>
+  </data>
+  <data name="ExternalLinkCharacter" xml:space="preserve">
+    <value>Aparece como</value>
+  </data>
+  <data name="ExternalLinkLinkedAt" xml:space="preserve">
+    <value>Vinculado em</value>
+  </data>
+  <data name="ExternalLinkPending" xml:space="preserve">
+    <value>Código válido até {0}</value>
+  </data>
+  <data name="ExternalLinkRemoved" xml:space="preserve">
+    <value>O link foi removido.</value>
+  </data>
+  <data name="Discord" xml:space="preserve">
+    <value>Discórdia</value>
+  </data>
+  <data name="DiscordDescription" xml:space="preserve">
+    <value>Traz o jogo para o seu servidor Discord: notificações de eventos, um bot com comandos de barra, contas vinculadas e ponte de chat. Siga as etapas de cima para baixo. As configurações são salvas em {0} e a integração do Discord é reiniciada imediatamente.</value>
+  </data>
+  <data name="DiscordNotAvailable" xml:space="preserve">
+    <value>Esta página só está disponível quando o painel de administração é executado no processo do servidor. Na implantação distribuída, a integração do Discord é executada em um contêiner próprio, que é configurado com variáveis ​​de ambiente, consulte a documentação.</value>
+  </data>
+  <data name="DiscordLoadError" xml:space="preserve">
+    <value>Não foi possível carregar as configurações de {0}: {1}</value>
+  </data>
+  <data name="DiscordSaveError" xml:space="preserve">
+    <value>Não foi possível salvar as configurações: {0}</value>
+  </data>
+  <data name="DiscordSaved" xml:space="preserve">
+    <value>Configurações salvas e aplicadas. Consulte a entrega para verificar os destinos.</value>
+  </data>
+  <data name="DiscordInvalidId" xml:space="preserve">
+    <value>'{0}' não é um identificador válido do Discord.</value>
+  </data>
+  <data name="DiscordDefinedElsewhere" xml:space="preserve">
+    <value>Definido por uma variável de ambiente ou outra fonte de configuração, que tem precedência sobre esta página.</value>
+  </data>
+  <data name="DiscordSecretSet" xml:space="preserve">
+    <value>Definir - deixe vazio para mantê-lo</value>
+  </data>
+  <data name="DiscordStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="DiscordStatusNotConfigured" xml:space="preserve">
+    <value>O bot ainda não está configurado. Comece com a etapa 1.</value>
+  </data>
+  <data name="DiscordStatusConnected" xml:space="preserve">
+    <value>O bot está conectado como {0} e está em {1} servidores Discord.</value>
+  </data>
+  <data name="DiscordStatusConnecting" xml:space="preserve">
+    <value>O bot está se conectando ao Discord...</value>
+  </data>
+  <data name="DiscordStatusStopped" xml:space="preserve">
+    <value>O bot não está em execução. Você pode iniciá-lo na página dos servidores.</value>
+  </data>
+  <data name="DiscordProblemTokenRejected" xml:space="preserve">
+    <value>Discord rejeitou o token. Copie-o novamente do portal do desenvolvedor (Bot → Reset Token).</value>
+  </data>
+  <data name="DiscordProblemIntentNotEnabled" xml:space="preserve">
+    <value>O Discord não permite que o bot leia mensagens. Habilite o conteúdo da mensagem em Bot → Privileged Gateway Intents no portal do desenvolvedor ou desative Ler mensagens na etapa 5.</value>
+  </data>
+  <data name="DiscordProblemStartFailed" xml:space="preserve">
+    <value>O bot não pôde ser iniciado. O arquivo de log diz o porquê.</value>
+  </data>
+  <data name="DiscordSettingsError" xml:space="preserve">
+    <value>Não foi possível aplicar as configurações: {0}</value>
+  </data>
+  <data name="DiscordWebhooksOnly" xml:space="preserve">
+    <value>Sem o bot, as notificações são postadas pelos webhooks da etapa 4.</value>
+  </data>
+  <data name="DiscordPublisherInactive" xml:space="preserve">
+    <value>O plugin Game Event Publisher está inativo, então nada acontece no Discord quando algo acontece no jogo.</value>
+  </data>
+  <data name="DiscordPublisherActive" xml:space="preserve">
+    <value>O plugin Game Event Publisher está ativo. Na página de plugins, você escolhe o que publicar.</value>
+  </data>
+  <data name="DiscordStep1Title" xml:space="preserve">
+    <value>1. Crie o bot</value>
+  </data>
+  <data name="DiscordStep1Text" xml:space="preserve">
+    <value>No portal do desenvolvedor Discord, crie um novo aplicativo com o nome do seu servidor. Em Bot, clique em Redefinir token e cole o token aqui. Trate-a como uma senha: ela está armazenada no arquivo de configuração do servidor, não no banco de dados.</value>
+  </data>
+  <data name="DiscordOpenDeveloperPortal" xml:space="preserve">
+    <value>Abra o portal do desenvolvedor Discord</value>
+  </data>
+  <data name="DiscordToken" xml:space="preserve">
+    <value>Símbolo do bot</value>
+  </data>
+  <data name="DiscordSkipBot" xml:space="preserve">
+    <value>Você pode pular o bot e postar notificações apenas com webhooks, veja a etapa 4.</value>
+  </data>
+  <data name="DiscordStep2Title" xml:space="preserve">
+    <value>2. Convide o bot</value>
+  </data>
+  <data name="DiscordStep2Text" xml:space="preserve">
+    <value>Convide o bot para o seu servidor Discord. O link pede as permissões que o bot precisa.</value>
+  </data>
+  <data name="DiscordInviteBot" xml:space="preserve">
+    <value>Convide o bot</value>
+  </data>
+  <data name="DiscordInviteNeedsToken" xml:space="preserve">
+    <value>Insira o token primeiro.</value>
+  </data>
+  <data name="DiscordStep3Title" xml:space="preserve">
+    <value>3. Configure seu servidor Discord</value>
+  </data>
+  <data name="DiscordStep3Text" xml:space="preserve">
+    <value>Escolha o servidor Discord cujos canais recebem as notificações e o status. Nele, os comandos do bot ficam disponíveis imediatamente.</value>
+  </data>
+  <data name="DiscordServer" xml:space="preserve">
+    <value>Servidor do Discord</value>
+  </data>
+  <data name="DiscordServerNone" xml:space="preserve">
+    <value>(o único em que o bot está)</value>
+  </data>
+  <data name="DiscordServerId" xml:space="preserve">
+    <value>Identificador do servidor Discord</value>
+  </data>
+  <data name="DiscordServerIdHint" xml:space="preserve">
+    <value>Quando o bot estiver conectado, você pode escolher o servidor Discord aqui. Caso contrário, habilite o modo de desenvolvedor nas configurações avançadas do Discord, clique com o botão direito no servidor e selecione Copiar ID do servidor.</value>
+  </data>
+  <data name="DiscordSetUpServer" xml:space="preserve">
+    <value>Crie canais e funções</value>
+  </data>
+  <data name="DiscordSetUpServerText" xml:space="preserve">
+    <value>Cria as funções, categorias e canais que o bot usa, como a configuração /openmu no Discord. O que já existe é mantido, então você pode fazer novamente a qualquer momento. O bot precisa das permissões Gerenciar canais e Gerenciar funções para isso.</value>
+  </data>
+  <data name="DiscordSetUpServerNeedsBot" xml:space="preserve">
+    <value>O bot deve estar conectado e no servidor Discord.</value>
+  </data>
+  <data name="DiscordSetUpCreated" xml:space="preserve">
+    <value>Criado: {0}</value>
+  </data>
+  <data name="DiscordSetUpAdopted" xml:space="preserve">
+    <value>Já está lá: {0}</value>
+  </data>
+  <data name="DiscordSetUpFailed" xml:space="preserve">
+    <value>Falha: {0}</value>
+  </data>
+  <data name="DiscordSetUpPublic" xml:space="preserve">
+    <value>Visível para todos, porque suas funções estão faltando: {0}</value>
+  </data>
+  <data name="DiscordSetUpRoleHint" xml:space="preserve">
+    <value>Na lista de funções do servidor Discord, mova a função do bot acima de Linked Player, para que o bot possa atribuir essa função aos jogadores vinculados.</value>
+  </data>
+  <data name="DiscordStep4Title" xml:space="preserve">
+    <value>4. Notificações</value>
+  </data>
+  <data name="DiscordStep4Text" xml:space="preserve">
+    <value>Escolha um canal pelo nome. Uma seleção vazia herda o layout padrão; um canal de bot configurado tem preferência sobre seu webhook enquanto o bot está conectado.</value>
+  </data>
+  <data name="DiscordCategory" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="DiscordChannelId" xml:space="preserve">
+    <value>Canal do bot</value>
+  </data>
+  <data name="DiscordWebhookUrl" xml:space="preserve">
+    <value>URL do webhook</value>
+  </data>
+  <data name="DiscordCategory_Events" xml:space="preserve">
+    <value>Minijogos, invasões e seus vencedores</value>
+  </data>
+  <data name="DiscordCategory_CastleSiege" xml:space="preserve">
+    <value>O Castle Siege</value>
+  </data>
+  <data name="DiscordCategory_WorldNews" xml:space="preserve">
+    <value>Mortes de chefes, quedas raras e marcos de nível</value>
+  </data>
+  <data name="DiscordCategory_Notices" xml:space="preserve">
+    <value>Avisos de mestres de jogo</value>
+  </data>
+  <data name="DiscordCategory_StaffAlerts" xml:space="preserve">
+    <value>Comandos que os mestres do jogo usaram no Discord</value>
+  </data>
+  <data name="DiscordLanguage" xml:space="preserve">
+    <value>Linguagem</value>
+  </data>
+  <data name="DiscordEventAnnouncingServers" xml:space="preserve">
+    <value>Servidores de jogo que anunciam eventos</value>
+  </data>
+  <data name="DiscordEventAnnouncingServersHint" xml:space="preserve">
+    <value>Identificadores separados por vírgulas. Vazio: tudo. Quando vários servidores de jogo executam os mesmos eventos, escolha um deles para evitar mensagens duplicadas.</value>
+  </data>
+  <data name="DiscordStep5Title" xml:space="preserve">
+    <value>5. Ponte de bate-papo (opcional)</value>
+  </data>
+  <data name="DiscordStep5Text" xml:space="preserve">
+    <value>Escolha onde os bate-papos da guilda podem ser conectados e se as mensagens do Discord serão encaminhadas para o jogo. Ative a publicação do bate-papo do jogo abaixo para encaminhar mensagens na outra direção.</value>
+  </data>
+  <data name="DiscordBindingMode" xml:space="preserve">
+    <value>Onde as guildas podem vincular seu chat</value>
+  </data>
+  <data name="DiscordBindingMode_Both" xml:space="preserve">
+    <value>No seu servidor Discord e nos das guildas</value>
+  </data>
+  <data name="DiscordBindingMode_HostedOnly" xml:space="preserve">
+    <value>Somente no seu servidor Discord</value>
+  </data>
+  <data name="DiscordBindingMode_GuildOwnedOnly" xml:space="preserve">
+    <value>Somente nos servidores Discord das guildas</value>
+  </data>
+  <data name="DiscordAllowedServers" xml:space="preserve">
+    <value>Servidores Discord permitidos de guildas</value>
+  </data>
+  <data name="DiscordAllowedServersHint" xml:space="preserve">
+    <value>Identificadores separados por vírgulas. Vazio: tudo.</value>
+  </data>
+  <data name="DiscordReadMessages" xml:space="preserve">
+    <value>Ler mensagens</value>
+  </data>
+  <data name="DiscordReadMessagesHint" xml:space="preserve">
+    <value>As mensagens normais nos canais vinculados são enviadas para o jogo. Isso requer o conteúdo da mensagem de intenção privilegiada (portal do desenvolvedor → Bot → Privileged Gateway Intents). Sem ele, os jogadores escrevem com /say.</value>
+  </data>
+  <data name="DiscordMaximumMessageLength" xml:space="preserve">
+    <value>Comprimento máximo de uma mensagem do Discord</value>
+  </data>
+  <data name="DiscordMaximumMessagesPerMinute" xml:space="preserve">
+    <value>Máximo de mensagens por minuto de um usuário Discord</value>
+  </data>
+  <data name="DiscordStep6Title" xml:space="preserve">
+    <value>Avançado</value>
+  </data>
+  <data name="DiscordStatusChannelId" xml:space="preserve">
+    <value>Canal da mensagem de status</value>
+  </data>
+  <data name="DiscordStatusUpdateInterval" xml:space="preserve">
+    <value>Intervalo de atualização de status (segundos)</value>
+  </data>
+  <data name="DiscordLayoutFile" xml:space="preserve">
+    <value>Arquivo de layout</value>
+  </data>
+  <data name="DiscordLayoutFilePlaceholder" xml:space="preserve">
+    <value>o layout padrão</value>
+  </data>
+  <data name="DiscordCreateScheduledEvents" xml:space="preserve">
+    <value>Crie um evento Discord para o próximo cerco ao castelo</value>
+  </data>
+  <data name="DiscordMaximumQueuedMessages" xml:space="preserve">
+    <value>Máximo de mensagens em espera por canal</value>
+  </data>
+  <data name="DiscordTest" xml:space="preserve">
+    <value>Enviar mensagem de teste</value>
+  </data>
+  <data name="DiscordTestHint" xml:space="preserve">
+    <value>Test posta uma mensagem de teste com as configurações salvas, da mesma forma que as notificações da categoria: pelo bot em seu canal, caso contrário pelo webhook. Salve suas alterações primeiro.</value>
+  </data>
+  <data name="DiscordTest_SentByBot" xml:space="preserve">
+    <value>Postado em {0} pelo bot.</value>
+  </data>
+  <data name="DiscordTest_SentByWebhook" xml:space="preserve">
+    <value>Postado pelo webhook.</value>
+  </data>
+  <data name="DiscordTest_NoChannel" xml:space="preserve">
+    <value>Não postado: não existe canal do bot nem webhook.</value>
+  </data>
+  <data name="DiscordTest_ChannelUnavailable" xml:space="preserve">
+    <value>O bot não vê o canal {0}. Foi excluído?</value>
+  </data>
+  <data name="DiscordTest_MissingPermissions" xml:space="preserve">
+    <value>O bot não tem permissão para postar em {0}. Verifique as permissões do canal.</value>
+  </data>
+  <data name="DiscordTest_WebhookInvalid" xml:space="preserve">
+    <value>O Discord não conhece o webhook. Copie seu URL novamente.</value>
+  </data>
+  <data name="DiscordTest_Failed" xml:space="preserve">
+    <value>Falha: {0}</value>
+  </data>
+  <data name="DiscordCheckServer" xml:space="preserve">
+    <value>Verifique permissões e canais</value>
+  </data>
+  <data name="DiscordCheckServerText" xml:space="preserve">
+    <value>Verifica as permissões do bot, o papel dos jogadores vinculados e os canais no servidor Discord escolhido, com as configurações salvas.</value>
+  </data>
+  <data name="DiscordCheckServerNeedsServer" xml:space="preserve">
+    <value>O bot deve estar conectado e o servidor Discord deve ser escolhido e salvo.</value>
+  </data>
+  <data name="DiscordCheckServerName" xml:space="preserve">
+    <value>Servidor do Discord {0}:</value>
+  </data>
+  <data name="DiscordCheckPermissionsOk" xml:space="preserve">
+    <value>O bot tem todas as permissões necessárias.</value>
+  </data>
+  <data name="DiscordCheckPermissionsMissing" xml:space="preserve">
+    <value>O bot não tem estas permissões: {0}. Convide-o novamente com o link do passo 2, ou entregue-o à sua função.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Assignable" xml:space="preserve">
+    <value>O bot pode atribuir o papel de jogadores vinculados.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_Missing" xml:space="preserve">
+    <value>O papel dos jogadores vinculados não existe. Crie os canais e funções.</value>
+  </data>
+  <data name="DiscordCheckLinkedRole_AboveBot" xml:space="preserve">
+    <value>O papel dos jogadores vinculados está acima do papel do bot, então o bot não pode dar isso. Mova a função do bot acima dele na lista de funções.</value>
+  </data>
+  <data name="DiscordCheckChannelsOk" xml:space="preserve">
+    <value>Cada categoria de notificações possui um canal do bot.</value>
+  </data>
+  <data name="DiscordCheckChannelsMissing" xml:space="preserve">
+    <value>Estas categorias não possuem canal do bot: {0}. Eles são postados apenas por um webhook.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelOk" xml:space="preserve">
+    <value>O bot mostra o status em seu canal de status.</value>
+  </data>
+  <data name="DiscordCheckStatusChannelMissing" xml:space="preserve">
+    <value>Não há canal de status, então o bot não mostra o status.</value>
+  </data>
+  <data name="DiscordPublisherActivated" xml:space="preserve">
+    <value>O Game Event Publisher está ativo agora. Na página de plugins, você escolhe o que publicar.</value>
+  </data>
+  <data name="DiscordPublisherSwitch" xml:space="preserve">
+    <value>Publique os eventos do jogo (plugin Game Event Publisher)</value>
+  </data>
+  <data name="DiscordPublisherDeactivated" xml:space="preserve">
+    <value>O Game Event Publisher está inativo agora, então nada do jogo é mais postado no Discord.</value>
+  </data>
+  <data name="DiscordDefaultChannel" xml:space="preserve">
+    <value>Padrão: #{0}</value>
+  </data>
+  <data name="DiscordNoDefaultChannel" xml:space="preserve">
+    <value>Não postado</value>
+  </data>
+  <data name="DiscordStep4WebhookText" xml:space="preserve">
+    <value>Sem o bot, cada categoria é postada por um webhook do seu canal: no Discord, abra as configurações do canal, Integrações → Webhooks, crie um webhook e cole aqui sua URL. Trate isso como uma senha.</value>
+  </data>
+  <data name="DiscordStep4WebhookFallbackText" xml:space="preserve">
+    <value>Um webhook publica apenas uma categoria que não possui canal do bot. Com o bot, você não precisa deles e pode removê-los.</value>
+  </data>
+  <data name="DiscordStepDone" xml:space="preserve">
+    <value>Verificado</value>
+  </data>
+  <data name="DiscordStepProblem" xml:space="preserve">
+    <value>Verifique isso</value>
+  </data>
+  <data name="DiscordUnsavedChanges" xml:space="preserve">
+    <value>Existem alterações não salvas. Salve-os primeiro: os testes e a configuração do servidor Discord utilizam as configurações salvas.</value>
+  </data>
+  <data name="DiscordTestAll" xml:space="preserve">
+    <value>Envie mensagens de teste para categorias habilitadas</value>
+  </data>
+  <data name="DiscordLayoutPreview" xml:space="preserve">
+    <value>O que é criado</value>
+  </data>
+  <data name="DiscordLayoutRoles" xml:space="preserve">
+    <value>Funções: {0}</value>
+  </data>
+  <data name="DiscordLayoutVisibleTo" xml:space="preserve">
+    <value>visível apenas para {0}</value>
+  </data>
+  <data name="DiscordChatBindings" xml:space="preserve">
+    <value>Bate-papos vinculados</value>
+  </data>
+  <data name="DiscordChatBindingsNone" xml:space="preserve">
+    <value>Nenhum bate-papo de uma guilda ou aliança está vinculado ainda.</value>
+  </data>
+  <data name="DiscordChatBindingsNeedBot" xml:space="preserve">
+    <value>Os chats vinculados são mostrados quando o bot está conectado.</value>
+  </data>
+  <data name="DiscordChatBindingGuild" xml:space="preserve">
+    <value>Guilda</value>
+  </data>
+  <data name="DiscordChatBindingChannel" xml:space="preserve">
+    <value>Canal</value>
+  </data>
+  <data name="DiscordChatBindingBoundBy" xml:space="preserve">
+    <value>Obrigado por</value>
+  </data>
+  <data name="DiscordChatBindingUnknownChannel" xml:space="preserve">
+    <value>canal desconhecido {0}</value>
+  </data>
+  <data name="DiscordChatBindingRemoved" xml:space="preserve">
+    <value>A ligação foi removida. O canal no Discord é mantido.</value>
+  </data>
+  <data name="DiscordScope_Guild" xml:space="preserve">
+    <value>guilda</value>
+  </data>
+  <data name="DiscordScope_Alliance" xml:space="preserve">
+    <value>aliança</value>
+  </data>
+  <data name="DiscordOverview" xml:space="preserve"><value>Configure notificações do Discord, vinculação de contas e bate-papo. Salve e aplique suas alterações antes de verificar a entrega.</value></data>
+  <data name="DiscordConfigurationSource" xml:space="preserve"><value>Fonte de configuração</value></data>
+  <data name="DiscordConfigurationSourcesHint" xml:space="preserve"><value>As configurações do arquivo são editáveis ​​aqui. As variáveis ​​ambientais e outras fontes prioritárias permanecem geridas externamente; valores secretos são mantidos mascarados.</value></data>
+  <data name="DiscordMode" xml:space="preserve"><value>Modo de integração</value></data>
+  <data name="DiscordModeBot" xml:space="preserve"><value>Bot Discord – notificações, comandos e bate-papo</value></data>
+  <data name="DiscordModeWebhooks" xml:space="preserve"><value>Webhooks – apenas notificações</value></data>
+  <data name="DiscordModeHint" xml:space="preserve"><value>Escolha os recursos que você precisa. O modo somente Webhook interrompe o bot quando você salva e mantém seu token para uso posterior.</value></data>
+  <data name="DiscordWebhooksModeReady" xml:space="preserve"><value>Modo Webhooks: nenhuma conexão de bot é necessária. Configure os destinos abaixo.</value></data>
+  <data name="DiscordConfigured" xml:space="preserve"><value>Configurado · não verificado</value></data>
+  <data name="DiscordApplying" xml:space="preserve"><value>Aplicando alterações…</value></data>
+  <data name="DiscordApplied" xml:space="preserve"><value>Configurações aplicadas. Verifique a entrega para verificar esta configuração.</value></data>
+  <data name="DiscordSaveApply" xml:space="preserve"><value>Salvar e aplicar</value></data>
+  <data name="DiscordDiscardChanges" xml:space="preserve"><value>Descartar alterações</value></data>
+  <data name="DiscordKeepEditing" xml:space="preserve"><value>Continue editando</value></data>
+  <data name="DiscordConfirmDiscard" xml:space="preserve"><value>Descartar todas as configurações não salvas nesta página?</value></data>
+  <data name="DiscordNavigationBlocked" xml:space="preserve"><value>Salve ou descarte suas alterações antes de sair desta página.</value></data>
+  <data name="DiscordPublisherStaged" xml:space="preserve"><value>As alterações na publicação de eventos do jogo são aplicadas com Salvar e aplicar. A seleção de eventos está disponível ao lado de cada categoria de notificação.</value></data>
+  <data name="DiscordPublisherMissing" xml:space="preserve"><value>A configuração do Game Event Publisher está ausente. Configure-o na página de plug-ins.</value></data>
+  <data name="DiscordSecretStaged" xml:space="preserve"><value>Deixe o campo vazio para manter o token salvo. As substituições e remoções entram em vigor quando você salva.</value></data>
+  <data name="DiscordProvisioningChanges" xml:space="preserve"><value>Os canais e funções existentes são adotados pelo nome. Suas permissões de acesso poderão ser atualizadas. Nada é excluído. Os canais privados da equipe serão ignorados se as funções ou permissões exigidas estiverem ausentes.</value></data>
+  <data name="DiscordShowWebhookFallbacks" xml:space="preserve"><value>Mostrar destinos de webhook opcionais</value></data>
+  <data name="DiscordSourceEvents" xml:space="preserve"><value>Eventos de jogos para publicar</value></data>
+  <data name="DiscordOff" xml:space="preserve"><value>Desligado</value></data>
+  <data name="DiscordRouteBot" xml:space="preserve"><value>Bot → #{0}</value></data>
+  <data name="DiscordRouteWebhook" xml:space="preserve"><value>Webhook configurado</value></data>
+  <data name="DiscordRouteNone" xml:space="preserve"><value>Nenhum destino disponível</value></data>
+  <data name="DiscordCategoryName_Events" xml:space="preserve"><value>Eventos</value></data>
+  <data name="DiscordCategoryName_CastleSiege" xml:space="preserve"><value>Castle Siege</value></data>
+  <data name="DiscordCategoryName_WorldNews" xml:space="preserve"><value>Notícias do mundo</value></data>
+  <data name="DiscordCategoryName_Notices" xml:space="preserve"><value>Anúncios da GM</value></data>
+  <data name="DiscordCategoryName_StaffAlerts" xml:space="preserve"><value>Registro de auditoria da equipe</value></data>
+  <data name="DiscordDeliveryOnly" xml:space="preserve"><value>Isso posta uma mensagem no Discord e verifica apenas a entrega. Isso não prova que a publicação de eventos de jogos esteja habilitada.</value></data>
+  <data name="DiscordLastChecked" xml:space="preserve"><value>Última verificação: {0} (UTC)</value></data>
+  <data name="DiscordEventFilters" xml:space="preserve"><value>Filtros de chefe e marco de nível</value></data>
+  <data name="DiscordFilterHint" xml:space="preserve"><value>Insira números separados por vírgulas. Uma lista de chefes vazia anuncia que nenhum chefe foi morto; uma lista de marcos vazia não anuncia nenhum marco de nível.</value></data>
+  <data name="DiscordChatSetup" xml:space="preserve"><value>Vincule sua conta no jogo, resgate o código no Discord e selecione seu personagem mestre da guilda com /character, se necessário. Use /guildchat create no servidor principal do Discord ou /guildchat bind em um canal que você gerencia no servidor da sua guilda.</value></data>
+  <data name="DiscordForwardNormalMessages" xml:space="preserve"><value>Encaminhar mensagens normais do canal para o jogo (caso contrário, use /say)</value></data>
+  <data name="DiscordBindingRemovalImmediate" xml:space="preserve"><value>A desvinculação se aplica imediatamente e interrompe o encaminhamento do bate-papo. O canal Discord é mantido.</value></data>
+  <data name="DiscordConfirmUnbind" xml:space="preserve"><value>Parar de encaminhar este bate-papo de guilda ou aliança agora? O canal e suas mensagens serão mantidos.</value></data>
+  <data name="DiscordUnbindChat" xml:space="preserve"><value>Desvincular bate-papo agora</value></data>
+  <data name="DiscordManagedKey" xml:space="preserve"><value>Gerenciado externamente. Chave de configuração: {0}</value></data>
+  <data name="DiscordMinimum" xml:space="preserve"><value>Insira um valor de pelo menos {0}.</value></data>
+  <data name="DiscordSavedConnectionFailed" xml:space="preserve"><value>Configurações salvas, mas o bot não conseguiu se conectar. Resolva o problema de conexão mostrado acima.</value></data>
+  <data name="DiscordNotConfigured" xml:space="preserve"><value>Não configurado</value></data>
+  <data name="DiscordChooseServer" xml:space="preserve"><value>Escolha um servidor Discord</value></data>
+  <data name="DiscordStaffPrivacy" xml:space="preserve"><value>Escolha um canal privado da equipe. As mensagens de auditoria da GM podem conter informações confidenciais.</value></data>
+  <data name="AuditHistory" xml:space="preserve"><value>Histórico de auditoria</value></data>
+  <data name="AuditPendingExplanation" xml:space="preserve"><value>As entradas pendentes têm um resultado desconhecido. Verifique o estado atual antes de tentar novamente uma ação.</value></data>
+  <data name="AuditUnavailable" xml:space="preserve"><value>Não foi possível carregar o histórico de auditoria. Verifique a conexão do banco de dados do administrador.</value></data>
+  <data name="AuditTime" xml:space="preserve"><value>Hora (UTC)</value></data>
+  <data name="AuditPrincipal" xml:space="preserve"><value>Principal</value></data>
+  <data name="AuditFrontend" xml:space="preserve"><value>Front-end</value></data>
+  <data name="AuditOperation" xml:space="preserve"><value>Operação</value></data>
+  <data name="AuditArguments" xml:space="preserve"><value>Argumentos</value></data>
+  <data name="AuditOutcome" xml:space="preserve"><value>Resultado</value></data>
+  <data name="AuditPrevious" xml:space="preserve"><value>Anterior</value></data>
+  <data name="AuditNext" xml:space="preserve"><value>Próximo</value></data>
+  <data name="Leaderboards" xml:space="preserve">
+    <value>Tabelas de classificação</value>
+  </data>
+  <data name="LeaderboardMiniGame_DevilSquare" xml:space="preserve"><value>Praça do Diabo</value></data>
+  <data name="LeaderboardMiniGame_BloodCastle" xml:space="preserve"><value>Blood Castle</value></data>
+  <data name="LeaderboardMiniGame_ChaosCastle" xml:space="preserve"><value>Chaos Castle</value></data>
+  <data name="LeaderboardMiniGame_IllusionTemple" xml:space="preserve"><value>Templo da Ilusão</value></data>
+  <data name="LeaderboardMiniGame_Doppelganger" xml:space="preserve"><value>Sósia</value></data>
+  <data name="LeaderboardMiniGame_Kanturu" xml:space="preserve"><value>Kanturu</value></data>
+  <data name="LeaderboardMiniGame_ImperialGuardian" xml:space="preserve"><value>Guardião Imperial</value></data>
+  <data name="LeaderboardsDescription" xml:space="preserve">
+    <value>Os melhores personagens dos minijogos que salvam suas estatísticas de classificação, classificados pela soma de suas pontuações. Bots não estão incluídos.</value>
+  </data>
+  <data name="LeaderboardsNoMiniGames" xml:space="preserve">
+    <value>Nenhum minijogo salva suas estatísticas de classificação. Ative "Salvar estatísticas de classificação" para um minijogo ver sua tabela de classificação.</value>
+  </data>
+  <data name="LeaderboardNoEntries" xml:space="preserve">
+    <value>Nenhum jogo finalizado ainda.</value>
+  </data>
+  <data name="LeaderboardPeriod" xml:space="preserve">
+    <value>Período</value>
+  </data>
+  <data name="LeaderboardPeriodAllTime" xml:space="preserve">
+    <value>Todo o tempo</value>
+  </data>
+  <data name="LeaderboardPeriodLast30Days" xml:space="preserve">
+    <value>Últimos 30 dias</value>
+  </data>
+  <data name="LeaderboardPeriodLast7Days" xml:space="preserve">
+    <value>Últimos 7 dias</value>
+  </data>
+  <data name="LeaderboardTotalScore" xml:space="preserve">
+    <value>Pontuação total</value>
+  </data>
+  <data name="LeaderboardBestScore" xml:space="preserve">
+    <value>Melhor pontuação</value>
+  </data>
+  <data name="LeaderboardGames" xml:space="preserve">
+    <value>Jogos</value>
+  </data>
+  <data name="AllowedMcpTools" xml:space="preserve">
+    <value>Ferramentas MCP permitidas (separadas por vírgulas; vazio permite todas as ferramentas para a função)</value>
+  </data>
+  <data name="EditorContextChanged" xml:space="preserve">
+    <value>A configuração mudou enquanto este editor estava aberto. Copie todas as edições não salvas e use Atualizar para recarregar os dados atuais antes de salvar.</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannels" xml:space="preserve">
+    <value>Crie canais de guilda automaticamente</value>
+  </data>
+  <data name="DiscordAutoCreateHostedChannelsHint" xml:space="preserve">
+    <value>Assim que um mestre da guilda é vinculado, o bot cria o canal da guilda na categoria GUILDS do seu servidor Discord e vincula o chat da guilda a ele. Somente membros vinculados da guilda podem vê-lo, e o mestre da guilda pode moderar suas mensagens. Guildas cujo chat já está vinculado mantêm seu canal. Novas guildas e novos mestres de guilda são adquiridos em cerca de dez minutos.</value>
+  </data>
+  <data name="ContentActivationConfirmFormat" xml:space="preserve">
+    <value>{0} entradas serão ativadas e {1} entradas desativadas. Continuar?</value>
+  </data>
+  <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
+    <value>Salve ou descarte as alterações pendentes primeiro.</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Inspecionar</value>
+  </data>
+  <data name="ExcellentOptionsChance" xml:space="preserve">
+    <value>Excelente chance de opção (%)</value>
+  </data>
+  <data name="ExcellentOptionsMaximumOptionsPerItem" xml:space="preserve">
+    <value>Máximo de excelentes opções por item</value>
+  </data>
+  <data name="ExcellentOptionsHint" xml:space="preserve">
+    <value>Vazio significa que se aplica o valor da definição de opção excelente do item. A primeira opção é sempre adicionada sem chance.</value>
+  </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>Exportar loja</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>Importar loja</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>A importação substitui todos os itens da loja de "{0}". Continuar?</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>{0} item(ns) foram importados para a loja. Use "Salvar alterações" para aplicá-los.</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>O arquivo não é uma exportação de loja válida.</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>A loja não foi alterada, pois o arquivo contém entradas que não podem ser importadas: {0}</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>A importação foi cancelada, pois o comerciante selecionado ou a sessão de edição mudou nesse meio tempo.</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>A importação falhou. A loja pode ter sido alterada parcialmente; use "Descartar alterações" para desfazer as alterações não salvas.</value>
+  </data>
+</root>

@@ -103,7 +103,7 @@ public class BotConfiguration
     public bool BotsPayResetCosts { get; set; }
 
     /// <summary>
-    /// Gets or sets how many Jewels of Bless, Soul and Life a bot keeps of each kind. Bots only pick up
+    /// Gets or sets how many Jewels of Bless, Soul, Life and Chaos a bot keeps of each kind. Bots only pick up
     /// the jewels they can actually spend on their own gear (see <c>BotJewelHandler</c>) and stop
     /// collecting a kind once they hold this many; whatever they carry above it is sold on the next
     /// merchant visit. The sensible value depends entirely on the server's drop rates - on a high rate
@@ -123,6 +123,15 @@ public class BotConfiguration
     public int PotionStockCharges { get; set; } = 60;
 
     /// <summary>
+    /// Gets or sets the maps bots never warp to: they don't pick them as hunting grounds, don't follow
+    /// a party leader there, don't enter events held on them, and a bot which logs in on one leaves it.
+    /// Players are not affected. Empty by default; servers use it for maps where a bot does more harm
+    /// than good, like the Arena (players' duels and cage tricks) or Crywolf.
+    /// </summary>
+    [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_MapsForbiddenForBots_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_MapsForbiddenForBots_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+    public ICollection<GameMapDefinition> MapsForbiddenForBots { get; set; } = new List<GameMapDefinition>();
+
+    /// <summary>
     /// Gets or sets a comma separated list of login names of existing accounts to animate as bots.
     /// This is an optional extra hook alongside the generated population (see
     /// <see cref="NumberOfAccounts"/>): every listed account gets a bot driving its first character.
@@ -131,6 +140,16 @@ public class BotConfiguration
     /// </summary>
     [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_ProofOfConceptAccounts_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.BotConfiguration_ProofOfConceptAccounts_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public string ProofOfConceptAccounts { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Whether bots may not warp to the map. Compared by map number: the definitions of the running maps
+    /// and the ones referenced by this configuration aren't always the same instances.
+    /// </summary>
+    /// <param name="map">The map.</param>
+    /// <returns><c>True</c>, if the map is in <see cref="MapsForbiddenForBots"/>.</returns>
+    /// <remarks>Deliberately a method, like <see cref="GetEffectiveCharactersPerAccount"/>.</remarks>
+    public bool IsMapForbidden(GameMapDefinition? map)
+        => map is not null && this.MapsForbiddenForBots.Any(m => m.Number == map.Number);
 
     /// <summary>
     /// Gets the effective, clamped number of characters per account.

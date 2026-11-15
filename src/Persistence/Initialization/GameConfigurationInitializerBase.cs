@@ -313,5 +313,11 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
 
         var movementSpeedFactor = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(movementSpeedFactor);
+
+        var hitShockChance = this.Context.CreateNew<ConstValueAttribute>(0.25f, Stats.HitShockChance.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(hitShockChance);
+
+        var hitShockDamageThreshold = this.Context.CreateNew<ConstValueAttribute>(5f, Stats.HitShockDamageThreshold.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
+        this.GameConfiguration.GlobalBaseAttributeValues.Add(hitShockDamageThreshold);
     }
 }

@@ -618,7 +618,7 @@ public class AncientSets : InitializerBase
             (15, ItemGroups.Gloves, Stats.TotalVitality, 2),
             (15, ItemGroups.Pants, Stats.TotalVitality, 2),
             (15, ItemGroups.Armor, Stats.TotalVitality, 2),
-            (21, ItemGroups.Misc1, Stats.TotalVitality, 2)); // Ring of Fire
+            (21, ItemGroups.Misc1, Stats.TotalEnergy, 2)); // Ring of Fire
 
         var agnis = this.AddAncientSet(
             LocalizedString.FromResource(() => ItemSetNames.Agnis),

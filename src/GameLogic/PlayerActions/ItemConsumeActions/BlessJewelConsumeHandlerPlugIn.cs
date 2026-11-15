@@ -38,7 +38,7 @@ public class BlessJewelConsumeHandlerPlugIn : UpgradeItemLevelJewelConsumeHandle
     protected override bool ModifyItem(Item item, IContext persistenceContext)
     {
         if (this.Configuration?.RepairTargetItems.Contains(item.Definition!) is true
-            && item.Durability < item.GetMaximumDurabilityOfOnePiece())
+            && item.Durability() < item.GetMaximumDurabilityOfOnePiece())
         {
             item.Durability = item.GetMaximumDurabilityOfOnePiece();
             return true;

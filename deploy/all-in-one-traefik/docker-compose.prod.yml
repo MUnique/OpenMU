@@ -27,7 +27,7 @@ services:
       - "traefik.http.routers.openmu.rule=Host(`${DOMAIN}`)"
 
   database:
-    image: postgres
+    image: postgres:18
     container_name: database
     environment:
       POSTGRES_PASSWORD: ${DB_ADMIN_PW:-admin}

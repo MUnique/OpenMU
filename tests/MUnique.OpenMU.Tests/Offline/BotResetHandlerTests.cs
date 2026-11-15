@@ -85,7 +85,7 @@ public class BotResetHandlerTests
         Assert.That((int)player.Attributes[Stats.Resets], Is.EqualTo(1));
         Assert.That((int)player.Attributes[Stats.Level], Is.EqualTo(10));
         Assert.That(player.SelectedCharacter!.LevelUpPoints, Is.EqualTo(1000));
-        Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(0));
+        Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(ResetCharacterAction.GetExperienceForLevel(this._gameContext, 10)));
         Assert.That(player.Money, Is.EqualTo(100));
     }
 

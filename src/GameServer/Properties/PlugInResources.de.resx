@@ -2667,4 +2667,34 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>Die erweiterte Implementierung von IShowItemCraftingPreviewPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
   </data>
+  <data name="ShowWarpListExtendedPlugIn_Name" xml:space="preserve">
+    <value>Warp-Liste anzeigen (erweitert)</value>
+  </data>
+  <data name="ShowWarpListExtendedPlugIn_Description" xml:space="preserve">
+    <value>Sendet die Warp-Liste des Servers an den Open-Source-Client, der sie in seinem Warp-Fenster statt der Warp-Liste seiner Datendateien anzeigt.</value>
+  </data>
+  <data name="LuckyCoinViewPlugIn_Name" xml:space="preserve">
+    <value>Glücksmünzen-Ansicht</value>
+  </data>
+  <data name="LuckyCoinViewPlugIn_Description" xml:space="preserve">
+    <value>Die Standardimplementierung von ILuckyCoinViewPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
+  </data>
+  <data name="LuckyCoinCountRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für die Anzahl der Glücksmünzen</value>
+  </data>
+  <data name="LuckyCoinCountRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler für die Anfrage der Anzahl der registrierten Glücksmünzen, die beim Öffnen des Registrierungsdialogs des NPC Delgado gesendet wird.</value>
+  </data>
+  <data name="LuckyCoinRegistrationRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für die Registrierung von Glücksmünzen</value>
+  </data>
+  <data name="LuckyCoinRegistrationRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler für die Anfrage, eine Glücksmünze beim NPC Delgado zu registrieren.</value>
+  </data>
+  <data name="LuckyCoinExchangeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für den Tausch von Glücksmünzen</value>
+  </data>
+  <data name="LuckyCoinExchangeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler für die Anfrage, Glücksmünzen beim NPC Delgado gegen einen Gegenstand zu tauschen.</value>
+  </data>
 </root>

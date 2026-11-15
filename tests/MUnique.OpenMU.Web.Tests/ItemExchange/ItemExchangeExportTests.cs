@@ -210,6 +210,20 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
+    /// Tests that an edit which starts while the file is written from the configuration which the
+    /// admin panel has loaded isn't part of the file: the stored configuration is written instead.
+    /// </summary>
+    [Test]
+    public async Task EditDuringTheExportIsLeftOutAsync()
+    {
+        var (stored, configurations) = await CreateEditedConfigurationAsync(hasChanges: false, changesAfterLoad: true).ConfigureAwait(false);
+
+        var file = await new ItemExchangeOperations(stored, configurations, NullLogger<ItemExchangeOperations>.Instance).ExportAsync(default).ConfigureAwait(false);
+
+        Assert.That(GetItemKeys(file), Is.EqualTo(new[] { (0, 1) }));
+    }
+
+    /// <summary>
     /// Tests that items outside the client's groups and numbers are left out, because the client refuses
     /// the whole file because of them, and that the others are sorted.
     /// </summary>
@@ -287,6 +301,62 @@ public sealed class ItemExchangeExportTests
         Assert.That(items, Is.EqualTo(repeated.OrderBy(item => item.GetId())));
     }
 
+    /// <summary>
+    /// Tests the size: <c>width</c> and <c>height</c> are the item's, e.g. 1x1 for the Seed Spheres.
+    /// </summary>
+    /// <remarks>
+    /// The file's items are compared with the exported ones in their order, so that items which
+    /// share their group and number, and the ones which the file leaves out, don't matter here.
+    /// </remarks>
+    [Test]
+    public void SizeIsTheItemsWidthAndHeight()
+    {
+        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
+        var items = file.RootElement.GetProperty("items").EnumerateArray().ToList();
+        var exported = ItemExchangeExport.GetExportedItems(this._seasonSixConfiguration).ToList();
+
+        Assert.That(ItemExchangeExport.Fields.Select(field => field.Key), Is.SupersetOf(new[] { "width", "height" }));
+        Assert.That(items, Has.Count.EqualTo(exported.Count));
+        foreach (var (definition, item) in exported.Zip(items))
+        {
+            Assert.That(GetNumberOrZero(item, "width"), Is.EqualTo(definition.Width), $"width of {definition.Group},{definition.Number}");
+            Assert.That(GetNumberOrZero(item, "height"), Is.EqualTo(definition.Height), $"height of {definition.Group},{definition.Number}");
+        }
+
+        var seedSphere = items.First(item => item.GetProperty("group").GetInt32() == 12 && item.GetProperty("number").GetInt32() == 118);
+        Assert.That(seedSphere.GetProperty("width").GetInt32(), Is.EqualTo(1));
+        Assert.That(seedSphere.GetProperty("height").GetInt32(), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Tests that a width or a height of 0, the client's default, is left out as the client's files
+    /// leave it out, each on its own.
+    /// </summary>
+    [Test]
+    public void SizeOfZeroIsLeftOut()
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using var context = provider.CreateNewContext();
+        var configuration = context.CreateNew<GameConfiguration>();
+        AddItem(context, configuration, 14, 3);
+        var wide = CreateItem(context, 14, 4);
+        wide.Width = 2;
+        configuration.Items.Add(wide);
+        var high = CreateItem(context, 14, 5);
+        high.Height = 3;
+        configuration.Items.Add(high);
+
+        using var file = Parse(ItemExchangeExport.Write(configuration, ItemExchangeExport.ClientGameVersion));
+        var items = file.RootElement.GetProperty("items");
+
+        Assert.That(items[0].TryGetProperty("width", out _), Is.False);
+        Assert.That(items[0].TryGetProperty("height", out _), Is.False);
+        Assert.That(items[1].GetProperty("width").GetInt32(), Is.EqualTo(2));
+        Assert.That(items[1].TryGetProperty("height", out _), Is.False);
+        Assert.That(items[2].TryGetProperty("width", out _), Is.False);
+        Assert.That(items[2].GetProperty("height").GetInt32(), Is.EqualTo(3));
+    }
+
     private static JsonDocument Parse(byte[] file) => JsonDocument.Parse(file);
 
     private static List<(int Group, int Number)> GetItemKeys(byte[] file)
@@ -328,7 +398,9 @@ public sealed class ItemExchangeExportTests
     /// Creates a stored configuration with the item 0/1, and the admin panel's copy of it, which
     /// has the item 0/2 as well.
     /// </summary>
-    private static async Task<(IPersistenceContextProvider Stored, IDataSource<GameConfiguration> Configurations)> CreateEditedConfigurationAsync(bool hasChanges)
+    /// <param name="hasChanges">Whether the admin panel has changes when the export asks first.</param>
+    /// <param name="changesAfterLoad">Whether the admin panel has changes when the export asks again.</param>
+    private static async Task<(IPersistenceContextProvider Stored, IDataSource<GameConfiguration> Configurations)> CreateEditedConfigurationAsync(bool hasChanges, bool changesAfterLoad = false)
     {
         var stored = new InMemoryPersistenceContextProvider();
         Guid id;
@@ -348,7 +420,8 @@ public sealed class ItemExchangeExportTests
         AddItem(editContext, edited, 0, 2);
 
         var adminPanelContext = new Mock<IContext>();
-        adminPanelContext.Setup(context => context.HasChanges).Returns(hasChanges);
+        var questions = 0;
+        adminPanelContext.Setup(context => context.HasChanges).Returns(() => questions++ == 0 ? hasChanges : hasChanges || changesAfterLoad);
         var configurations = new Mock<IDataSource<GameConfiguration>>();
         configurations
             .Setup(source => source.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
@@ -357,6 +430,11 @@ public sealed class ItemExchangeExportTests
             .Setup(source => source.GetContextAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(adminPanelContext.Object);
         return (stored, configurations.Object);
+    }
+
+    private static int GetNumberOrZero(JsonElement item, string key)
+    {
+        return item.TryGetProperty(key, out var value) ? value.GetInt32() : 0;
     }
 
     private static void AddItem(IContext context, GameConfiguration configuration, byte group, short number)

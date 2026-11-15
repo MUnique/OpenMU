@@ -135,6 +135,11 @@ public sealed class ItemPickupHandler
 
     private bool ShouldPickUpDrop(IIdentifiable drop)
     {
+        if (drop is DroppedMoney money && !this.CanTakeMoney(money))
+        {
+            return false;
+        }
+
         if (this._config!.PickAllItems)
         {
             return true;
@@ -158,6 +163,19 @@ public sealed class ItemPickupHandler
         return false;
     }
 
+    /// <summary>
+    /// Determines whether picking up the money would give the player anything.
+    /// </summary>
+    /// <remarks>
+    /// A player at the money limit is refused every money drop. Walking to it anyway kept a player near
+    /// the limit going back and forth between the money and its fight, every time the drop was no longer
+    /// ignored. In a party, another member may take the money, so it's still picked up.
+    /// </remarks>
+    private bool CanTakeMoney(DroppedMoney money)
+    {
+        return this._player.Party is not null || MoneyDistribution.CanPay(this._player, money.Amount);
+    }
+
     private bool ShouldPickUp(Item item)
     {
         if (this._config is null)
@@ -168,8 +186,8 @@ public sealed class ItemPickupHandler
         if (this._config.PickJewel && IsJewel(item))
         {
             // A human's helper takes every jewel - its owner trades, crafts or hoards them later. A bot
-            // has no later: it can only spend Bless, Soul and Life on its own gear, so a Jewel of Chaos
-            // or a stock-exceeding Soul is a backpack slot it never gets back.
+            // has no later: it spends Bless, Soul and Life on its own gear and Chaos at the chaos machine,
+            // so a Jewel of Creation or a stock-exceeding Soul is a backpack slot it never gets back.
             return this._player.Account?.IsBot != true
                    || Bots.BotJewelHandler.WantsMoreOf(this._player, item);
         }

@@ -735,6 +735,9 @@
   <data name="AccessDeniedDescription" xml:space="preserve">
     <value>Ihr Konto ist nicht berechtigt, diese Seite zu öffnen.</value>
   </data>
+  <data name="ChangeNotPermitted" xml:space="preserve">
+    <value>Ihr Konto ist nicht berechtigt, diese Änderung vorzunehmen.</value>
+  </data>
   <data name="AccountSecurity" xml:space="preserve">
     <value>Kontosicherheit</value>
   </data>
@@ -1713,6 +1716,9 @@
   <data name="Active" xml:space="preserve">
     <value>Aktiv</value>
   </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inaktiv</value>
+  </data>
   <data name="Number" xml:space="preserve">
     <value>Nummer</value>
   </data>
@@ -2598,5 +2604,32 @@
   </data>
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Speichere oder verwirf zuerst die ausstehenden Änderungen.</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Untersuchen</value>
+  </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>Shop exportieren</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>Shop importieren</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>Der Import ersetzt alle Items des Shops von "{0}". Fortfahren?</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>{0} Item(s) wurden in den Shop importiert. Mit "Änderungen speichern" werden sie übernommen.</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>Die Datei ist kein gültiger Shop-Export.</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>Der Import wurde abgebrochen, da sich der ausgewählte Händler oder die Bearbeitungssitzung in der Zwischenzeit geändert hat.</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>Der Import ist fehlgeschlagen. Der Shop ist möglicherweise teilweise geändert; nutze "Änderungen verwerfen", um die ungespeicherten Änderungen zurückzusetzen.</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>Der Shop wurde nicht geändert, da die Datei Einträge enthält, die nicht importiert werden können: {0}</value>
   </data>
 </root>

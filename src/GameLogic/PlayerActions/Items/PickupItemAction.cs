@@ -40,8 +40,20 @@ public class PickupItemAction
             case DroppedMoney droppedMoney:
                 if (!await TryPickupMoneyAsync(player, droppedMoney).ConfigureAwait(false))
                 {
-                    LogRefusal(player, droppedMoney, CanPickup(player, droppedMoney) ? "nobody could take the money (maximum money or no eligible party member)" : GetDistanceOrDeathReason(player));
-                    await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
+                    var inRange = CanPickup(player, droppedMoney);
+                    var moneyLimitReached = inRange && MoneyDistribution.IsInventoryMoneyLimitReached(player, droppedMoney.Amount);
+                    LogRefusal(
+                        player,
+                        droppedMoney,
+                        !inRange
+                            ? GetDistanceOrDeathReason(player)
+                            : moneyLimitReached
+                                ? $"inventory money limit reached ({player.Money} of {player.GameContext?.Configuration?.MaximumInventoryMoney})"
+                                : "nobody could take the money (no eligible party member)");
+
+                    // The client shows "carrying too much zen" for this reason, instead of the generic "can't pick that up".
+                    var reason = moneyLimitReached ? ItemPickFailReason.MaximumInventoryMoneyReached : ItemPickFailReason.General;
+                    await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(reason)).ConfigureAwait(false);
                 }
 
                 break;

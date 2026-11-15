@@ -1,4 +1,4 @@
-﻿// <copyright file="ObjectExtensions.cs" company="MUnique">
+// <copyright file="ObjectExtensions.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -19,6 +19,7 @@ public static class ObjectExtensions
 {
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> IdProperties = new();
     private static readonly ConcurrentDictionary<Type, PropertyInfo?> NameProperties = new();
+    private static readonly ConcurrentDictionary<Type, PropertyInfo?> NumberProperties = new();
 
     /// <summary>
     /// Gets the guid identifier of an object, which has the name "Id".
@@ -99,5 +100,28 @@ public static class ObjectExtensions
         };
 
         return result ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Gets the number of an object, which identifies it in the game, e.g. the number of a monster or an item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns>The number of the object, if it has one; otherwise, <c>null</c>.</returns>
+    public static int? GetNumber(this object item)
+    {
+        if (!NumberProperties.TryGetValue(item.GetType(), out var numberProperty))
+        {
+            numberProperty = item.GetType().GetProperties()
+                .FirstOrDefault(p => p.Name.Equals("Number")
+                                     && (p.PropertyType == typeof(short)
+                                         || p.PropertyType == typeof(ushort)
+                                         || p.PropertyType == typeof(byte)
+                                         || p.PropertyType == typeof(int)));
+            NumberProperties.TryAdd(item.GetType(), numberProperty);
+        }
+
+        return numberProperty?.GetValue(item) is { } number
+            ? Convert.ToInt32(number, CultureInfo.InvariantCulture)
+            : null;
     }
 }

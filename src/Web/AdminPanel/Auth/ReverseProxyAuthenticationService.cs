@@ -119,9 +119,10 @@ public class ReverseProxyAuthenticationService
     /// Authenticates the principal of a request of the reverse proxy.
     /// </summary>
     /// <param name="principal">The principal, authenticated by the cookie of the original request.</param>
+    /// <param name="requiredRole">The optional role which the user needs at least, e.g. <see cref="AdminRoles.Operator"/>.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The answer for the reverse proxy.</returns>
-    public async ValueTask<ReverseProxyAuthenticationResult> AuthenticateAsync(ClaimsPrincipal principal, CancellationToken cancellationToken = default)
+    public async ValueTask<ReverseProxyAuthenticationResult> AuthenticateAsync(ClaimsPrincipal principal, string? requiredRole = null, CancellationToken cancellationToken = default)
     {
         if (!await this._userAvailability.AnyUserExistsAsync(cancellationToken).ConfigureAwait(false))
         {
@@ -134,6 +135,13 @@ public class ReverseProxyAuthenticationService
         }
 
         if (AdminRoles.All.LastOrDefault(principal.IsInRole) is not { } role)
+        {
+            return new ReverseProxyAuthenticationResult(StatusCodes.Status403Forbidden);
+        }
+
+        // An unknown role is rejected, so that a typo in the proxy configuration doesn't open the access.
+        if (requiredRole is not null
+            && (!AdminRoles.All.Contains(requiredRole, StringComparer.Ordinal) || !principal.IsInRole(requiredRole)))
         {
             return new ReverseProxyAuthenticationResult(StatusCodes.Status403Forbidden);
         }

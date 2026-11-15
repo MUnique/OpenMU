@@ -72,9 +72,18 @@
         </button>
         @if (this.Server.Type is ServerType.GameServer or ServerType.ConnectServer)
         {
-          <button type="button" class="btn btn-danger btn-sm" title="@Resources.Remove" @onclick="this.OnDeleteServerClickAsync">
-            <span class="oi oi-trash"></span>
-          </button>
+          <AuthorizeView Policy="@AdminPolicies.Administrator">
+            <Authorized>
+              <button type="button" class="btn btn-danger btn-sm" title="@Resources.Remove" @onclick="this.OnDeleteServerClickAsync">
+                <span class="oi oi-trash"></span>
+              </button>
+            </Authorized>
+            <NotAuthorized>
+              <button type="button" class="btn btn-secondary btn-sm" title="@Resources.Remove" disabled>
+                <span class="oi oi-trash"></span>
+              </button>
+            </NotAuthorized>
+          </AuthorizeView>
         }
       }
       else
@@ -118,6 +127,12 @@
     /// </summary>
     [Inject]
     public IConnectServerInstanceManager ConnectServerInstanceManager { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before deleting.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the <see cref="IPersistenceContextProvider"/>.
@@ -193,6 +208,12 @@
     {
       if (this.Server.Type is not (ServerType.GameServer or ServerType.ConnectServer))
       {
+        return;
+      }
+
+      if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+      {
+        this.ToastService.ShowError(Resources.ChangeNotPermitted);
         return;
       }
 

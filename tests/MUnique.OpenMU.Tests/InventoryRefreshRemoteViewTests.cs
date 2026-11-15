@@ -58,7 +58,7 @@ public class InventoryRefreshRemoteViewTests
         player.OpenedNpc = new NonPlayerCharacter(null!, npc.Object, null!);
         Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
         var move = new MoveItemAction();
-        await move.MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.LuckyItemExchange).ConfigureAwait(false);
+        await move.MoveItemAsync(player, 20, Storages.Inventory, 0, Storages.LuckyItemTrade).ConfigureAwait(false);
         Assert.That(player.TemporaryStorage!.GetItem(0), Is.SameAs(source));
         output.SetLength(0);
         output.Position = 0;

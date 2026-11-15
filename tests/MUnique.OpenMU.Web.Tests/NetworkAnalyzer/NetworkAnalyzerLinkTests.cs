@@ -12,6 +12,7 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Web.AdminPanel.Pages;
 using MUnique.OpenMU.Web.Shared.Services;
+using MUnique.OpenMU.Web.Tests.AdminAuth;
 
 /// <summary>
 /// Tests for the links which lead to the network analyzer page.
@@ -69,6 +70,7 @@ public class NetworkAnalyzerLinkTests
     {
         var context = new BunitContext();
         context.JSInterop.Mode = JSRuntimeMode.Loose;
+        context.AddAdministratorAuthorization();
 
         var serverProvider = new Mock<IServerProvider>();
         serverProvider.Setup(provider => provider.Servers).Returns(new List<IManageableServer>());

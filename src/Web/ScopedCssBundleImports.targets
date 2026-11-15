@@ -40,4 +40,22 @@ if (fixedText != text)
   <Target Name="_AbsolutizeScopedCssBundleImports" AfterTargets="BundleScopedCssFiles" Condition="Exists('$(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css')">
     <AbsolutizeScopedCssBundleImports BundleFile="$(IntermediateOutputPath)scopedcss/bundle/$(PackageId).styles.css" />
   </Target>
+
+  <!-- Preload headers resolve against the same two-segment bundle URL as its @imports. -->
+  <Target Name="_RelativizeScopedCssPreloadHeaders" AfterTargets="ResolveBundledCssAssets" Condition="'@(_ResolvedScopedCssBundleEndpoints)' != '' and '@(_ScopedCssAppBundleStaticWebAssetEndpoint)' != ''">
+    <ItemGroup>
+      <_RelativeScopedCssPreloads Include="Replace">
+        <UpdateTarget>Header</UpdateTarget>
+        <Name>Link</Name>
+        <NewValue>@(_ResolvedScopedCssBundleEndpoints-&gt;'&lt;../../%(Identity)&gt;; rel="preload"; as="style"', ', ')</NewValue>
+      </_RelativeScopedCssPreloads>
+    </ItemGroup>
+    <UpdateStaticWebAssetEndpoints EndpointsToUpdate="@(_ScopedCssAppBundleStaticWebAssetEndpoint)" AllEndpoints="@(_ScopedCssAppBundleStaticWebAssetEndpoint)" Operations="@(_RelativeScopedCssPreloads)">
+      <Output TaskParameter="UpdatedEndpoints" ItemName="_RelativizedScopedCssBundleEndpoints" />
+    </UpdateStaticWebAssetEndpoints>
+    <ItemGroup>
+      <_ScopedCssAppBundleStaticWebAssetEndpoint Remove="@(_RelativizedScopedCssBundleEndpoints)" />
+      <_ScopedCssAppBundleStaticWebAssetEndpoint Include="@(_RelativizedScopedCssBundleEndpoints)" />
+    </ItemGroup>
+  </Target>
 </Project>

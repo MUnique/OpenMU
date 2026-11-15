@@ -48,6 +48,10 @@ A position outside the bound is rejected and resynchronized; the walk is not
 performed. This protection is part of `PlayerMovement` and remains active when
 the plugin is disabled.
 
+When the start of a walk is taken over, the other players in view only get the
+walk, which starts at the new position. They don't get an extra position
+update before it, which their clients would show as a glide.
+
 ### Attacking
 
 Attacks are checked with a token bucket. Every attack consumes a token, and

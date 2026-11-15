@@ -704,7 +704,7 @@ public class KanturuPhaseRunnerTests
 
     private static Monster CreateNightmare(GameMap map, IGameContext gameContext)
     {
-        var definition = new MonsterDefinition { ObjectKind = NpcObjectKind.Monster };
+        var definition = new MonsterDefinition { Id = Guid.NewGuid(), ObjectKind = NpcObjectKind.Monster };
         definition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1000 });
         var spawnArea = new MonsterSpawnArea
         {

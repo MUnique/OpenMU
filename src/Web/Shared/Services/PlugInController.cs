@@ -30,6 +30,7 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     private Guid _pointFilter;
     private string _nameFilter = string.Empty;
     private string _typeFilter = string.Empty;
+    private PlugInActiveFilter _activeFilter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlugInController" /> class.
@@ -86,6 +87,19 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         set
         {
             this._pointFilter = value;
+            this.DataChanged?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the filter for the active state of the plugins.
+    /// </summary>
+    public PlugInActiveFilter ActiveFilter
+    {
+        get => this._activeFilter;
+        set
+        {
+            this._activeFilter = value;
             this.DataChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -344,7 +358,8 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         return gameConfig.PlugInConfigurations.Where(c => allPlugIns.TryGetValue(c.TypeId, out var plugInType)
                                                           && this.FilterByPoint(plugInType)
                                                           && this.FilterByName(plugInType)
-                                                          && this.FilterByTypeName(plugInType))
+                                                          && this.FilterByTypeName(plugInType)
+                                                          && this.FilterByActiveState(c))
             .OrderBy(p => p.CustomConfiguration is null); // First the ones which can be configured
     }
 
@@ -410,6 +425,16 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
         var description = plugInType.GetCustomAttribute<DisplayAttribute>()?.GetDescription();
         return GetPlugInName(plugInType).Contains(this.NameFilter, StringComparison.InvariantCultureIgnoreCase)
             || (description?.Contains(this.NameFilter, StringComparison.InvariantCultureIgnoreCase) ?? false);
+    }
+
+    private bool FilterByActiveState(PlugInConfiguration configuration)
+    {
+        return this.ActiveFilter switch
+        {
+            PlugInActiveFilter.Active => configuration.IsActive,
+            PlugInActiveFilter.Inactive => !configuration.IsActive,
+            _ => true,
+        };
     }
 
     private bool FilterByPoint(Type plugInType)

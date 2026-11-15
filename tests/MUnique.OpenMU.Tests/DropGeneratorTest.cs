@@ -1,10 +1,11 @@
-﻿// <copyright file="DropGeneratorTest.cs" company="MUnique">
+// <copyright file="DropGeneratorTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -77,6 +78,111 @@ public class DropGeneratorTest
 
         Assert.That(item, Is.Not.Null);
         Assert.That(item!.Definition, Is.EqualTo(uncappedItem));
+    }
+
+    /// <summary>
+    /// Tests that an item which is configured in a drop group of the map drops from monsters
+    /// which are much stronger than its drop level, e.g. Loch's Feather (drop level 78) in Icarus.
+    /// </summary>
+    /// <param name="monsterLevel">The level of the monster.</param>
+    [TestCase(82)]
+    [TestCase(89)]
+    [TestCase(90)]
+    [TestCase(100)]
+    public async ValueTask TestMapGroupItemDropsRegardlessOfLevelGapAsync(byte monsterLevel)
+    {
+        var feather = this.CreateItemDefinition(13, 14, 78);
+        var dropGroup = this.CreateDropItemGroup(feather);
+        dropGroup.ItemType = SpecialItemType.None;
+        dropGroup.MinimumMonsterLevel = 82;
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, monsterLevel), 1, player).ConfigureAwait(false);
+
+        Assert.That(items.FirstOrDefault()?.Definition, Is.EqualTo(feather));
+    }
+
+    /// <summary>
+    /// Tests that the maximum drop level of an item still applies to the drop groups of the map.
+    /// </summary>
+    [Test]
+    public async ValueTask TestMapGroupItemRespectsMaximumDropLevelAsync()
+    {
+        var feather = this.CreateItemDefinition(13, 14, 78, 89);
+        var dropGroup = this.CreateDropItemGroup(feather);
+        dropGroup.ItemType = SpecialItemType.None;
+
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 90), 1, player).ConfigureAwait(false);
+
+        Assert.That(items, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a random item drop still skips items whose drop level is far below the monster level.
+    /// </summary>
+    [Test]
+    public async ValueTask TestRandomDropSkipsItemsFarBelowMonsterLevelAsync()
+    {
+        var lowItem = this.CreateItemDefinition(0, 1, 78);
+        var fittingItem = this.CreateItemDefinition(0, 2, 95);
+        lowItem.DropsFromMonsters = true;
+        fittingItem.DropsFromMonsters = true;
+        var monster = this.GetMonster(1, 100);
+        monster.DropItemGroups.Add(10000, SpecialItemType.RandomItem, false);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(lowItem, fittingItem), this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        Assert.That(items.FirstOrDefault()?.Definition, Is.EqualTo(fittingItem));
+    }
+
+    /// <summary>
+    /// Tests that the bonus item drop rate of a player, e.g. of a Seal of Wealth, raises the chance
+    /// of a drop item group which drops items.
+    /// </summary>
+    /// <param name="bonusItemDropRate">The bonus item drop rate of the player.</param>
+    /// <param name="expectDrop">If set to <c>true</c>, an item is expected to drop.</param>
+    [TestCase(0f, false)]
+    [TestCase(0.5f, true)]
+    public async ValueTask TestBonusItemDropRateRaisesItemChanceAsync(float bonusItemDropRate, bool expectDrop)
+    {
+        var item = this.CreateItemDefinition(14, 13, 0);
+        var dropGroup = this.CreateDropItemGroup(item);
+        dropGroup.Chance = 0.4;
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes!.AddElement(new SimpleElement(bonusItemDropRate, AggregateType.AddRaw), Stats.BonusItemDropRate);
+        player.CurrentMap!.Definition.DropItemGroups.Add(dropGroup);
+
+        // The roll of 0.5 misses the chance of 40 %, but hits the raised chance of 60 %.
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.5));
+        var (items, _) = await generator.GenerateItemDropsAsync(this.GetMonster(1, 10), 1, player).ConfigureAwait(false);
+
+        Assert.That(items.Any(), Is.EqualTo(expectDrop));
+    }
+
+    /// <summary>
+    /// Tests that the bonus item drop rate doesn't raise the chance of money drops.
+    /// </summary>
+    [Test]
+    public async ValueTask TestBonusItemDropRateKeepsMoneyChanceAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes!.AddElement(new SimpleElement(0.5f, AggregateType.AddRaw), Stats.BonusItemDropRate);
+        var monster = this.GetMonster(1, 10);
+        monster.DropItemGroups.Add(4000, SpecialItemType.Money, false);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.5));
+        var (items, money) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+
+        Assert.That(items, Is.Empty);
+        Assert.That(money, Is.Null);
     }
 
     /// <summary>
@@ -250,6 +356,74 @@ public class DropGeneratorTest
         Assert.That(config.ExcellentItemDropLevelDelta, Is.EqualTo(50));
     }
 
+    /// <summary>
+    /// Tests that a drop group can override the maximum number of excellent options of the item definition,
+    /// so that e.g. a specific level of a box of kundun can drop items with more excellent options.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropUsesMaximumOptionsOfDropGroup()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 3);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+        dropGroup.ExcellentOptionsMaximumOptionsPerItem = 3;
+        dropGroup.ExcellentOptionsAddChance = 1f;
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(3));
+    }
+
+    /// <summary>
+    /// Tests that the maximum number of excellent options of the item definition is used when the drop group doesn't override it.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropUsesMaximumOptionsOfItemDefinition()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 3, maximumOptionsPerItem: 2);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(2));
+    }
+
+    /// <summary>
+    /// Tests that a drop group which allows more excellent options than the item definition provides
+    /// doesn't try to add more than the available ones.
+    /// </summary>
+    [Test]
+    public void TestExcellentDropStopsAtAvailableOptions()
+    {
+        var itemDefinition = this.CreateExcellentCapableItemDefinition(0, 0, 0, optionCount: 2);
+
+        var dropGroup = this.CreateExcellentDropGroup(itemDefinition);
+        dropGroup.ExcellentOptionsMaximumOptionsPerItem = 5;
+        dropGroup.ExcellentOptionsAddChance = 1f;
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizerWithIncreasingInts());
+        var item = generator.GenerateItemDrop(dropGroup);
+
+        Assert.That(item, Is.Not.Null);
+        Assert.That(item!.ItemOptions.Count(o => object.Equals(o.ItemOption?.OptionType, ItemOptionTypes.Excellent)), Is.EqualTo(2));
+    }
+
+    private IRandomizer GetRandomizerWithIncreasingInts()
+    {
+        var randomizer = new Mock<IRandomizer>();
+        var counter = 0;
+        randomizer.Setup(r => r.NextInt(It.IsAny<int>(), It.IsAny<int>()))
+            .Returns((int min, int max) => min + (counter++ % (max - min)));
+        randomizer.Setup(r => r.NextDouble()).Returns(0);
+        randomizer.Setup(r => r.NextRandomBool(It.IsAny<double>())).Returns(true);
+        return randomizer.Object;
+    }
+
     private static void AssertExcellentWithoutSockets(Item? item, ItemDefinition expectedDefinition)
     {
         Assert.That(item, Is.Not.Null);
@@ -278,11 +452,14 @@ public class DropGeneratorTest
         return dropGroup.Object;
     }
 
-    private ItemDefinition CreateExcellentCapableItemDefinition(byte group, short number, int maximumSockets)
+    private ItemDefinition CreateExcellentCapableItemDefinition(byte group, short number, int maximumSockets, int optionCount = 1, int maximumOptionsPerItem = 1)
     {
-        var excellentOption = new BasicModel.IncreasableItemOption { OptionType = ItemOptionTypes.Excellent };
-        var excellentOptions = new BasicModel.ItemOptionDefinition { MaximumOptionsPerItem = 1 };
-        excellentOptions.PossibleOptions.Add(excellentOption);
+        var excellentOptions = new BasicModel.ItemOptionDefinition { MaximumOptionsPerItem = maximumOptionsPerItem };
+        for (int i = 0; i < optionCount; i++)
+        {
+            // Distinct ids, because the basic model determines equality by the id.
+            excellentOptions.PossibleOptions.Add(new BasicModel.IncreasableItemOption { Id = Guid.NewGuid(), OptionType = ItemOptionTypes.Excellent });
+        }
 
         var itemDefinition = new Mock<ItemDefinition>();
         itemDefinition.SetupAllProperties();

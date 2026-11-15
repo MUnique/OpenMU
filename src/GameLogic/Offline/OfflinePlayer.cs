@@ -19,7 +19,7 @@ public class OfflinePlayer : Player
     /// A player who killed this bot this many times gets no (further) revenge: walking back a third
     /// time into the same lost fight would just be a death loop feeding the killer free kills.
     /// </summary>
-    private const int RepeatedKillThreshold = 2;
+    internal const int RepeatedKillThreshold = 2;
 
     /// <summary>
     /// How long an attack by a player stays "hot" as a self-defense target, counted from the LAST hit
@@ -139,6 +139,13 @@ public class OfflinePlayer : Player
     internal Bots.PendingPartyInvite? PendingPartyInvite { get; set; }
 
     /// <summary>
+    /// Gets or sets the hunting ground or target this bot has claimed, or <c>null</c> if it has none.
+    /// Maintained by <see cref="Bots.BotNavigator"/>; independent bots use it to avoid farming each
+    /// other's spot. The claim survives short errands such as shopping, so the bot can return to it.
+    /// </summary>
+    internal Bots.HuntingSpot? HuntingSpot { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the bot is currently on a shopping trip (walking to
     /// or trading with a merchant), maintained by <see cref="Bots.BotNavigator"/>. While on an errand
     /// the bot declines party invitations, like a busy player would.
@@ -151,6 +158,21 @@ public class OfflinePlayer : Player
     /// While on an errand the bot declines party invitations, like a busy player would.
     /// </summary>
     internal bool IsOnBuffTrip { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the bot is currently on its way to the chaos machine to
+    /// upgrade a piece of its gear, maintained by <see cref="Bots.BotNavigator"/>. Like the other
+    /// errands, it makes the bot decline party invitations meanwhile.
+    /// </summary>
+    internal bool IsOnChaosMachineTrip { get; set; }
+
+    /// <summary>
+    /// Gets or sets the meeting point at which the bot waits for players after announcing an opened
+    /// event, set by <see cref="Bots.BotChatPlugIn"/> and carried out by <see cref="Bots.BotNavigator"/>.
+    /// Unlike an errand, it does not make the bot decline party invitations - being invited is what
+    /// it waits for.
+    /// </summary>
+    internal Bots.BotEventMeeting? EventMeeting { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the
@@ -236,6 +258,16 @@ public class OfflinePlayer : Player
     {
         this._aggression = new Aggression(aggressor, DateTime.UtcNow);
     }
+
+    /// <summary>
+    /// Gets how often the player killed this bot recently (within the memory of the revenge logic).
+    /// </summary>
+    /// <param name="killer">The killing player.</param>
+    /// <returns>The number of recent deaths by this player; 0 when none is remembered.</returns>
+    internal int GetRecentDeathCount(Player killer)
+        => this._deathsByKiller.TryGetValue(killer.Name, out var record) && DateTime.UtcNow - record.LastDeathUtc <= DeathCountMemory
+            ? record.Count
+            : 0;
 
     /// <summary>
     /// Registers that a (human) player killed this bot. The first kill makes a revenge pending: after

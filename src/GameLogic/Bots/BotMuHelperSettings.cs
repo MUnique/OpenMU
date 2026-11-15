@@ -15,6 +15,12 @@ using MUnique.OpenMU.GameLogic.MuHelper;
 /// </summary>
 internal sealed class BotMuHelperSettings : IMuHelperSettings
 {
+    /// <summary>
+    /// The hunting range shared by the combat handler and the navigator. Ground claims use twice this
+    /// distance, so independent bots' hunting areas do not overlap.
+    /// </summary>
+    internal const int DefaultHuntingRange = 6;
+
     /// <inheritdoc />
     public int BasicSkillId => 0;
 
@@ -58,7 +64,7 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     public bool UseCombo => false;
 
     /// <inheritdoc />
-    public int HuntingRange => 6;
+    public int HuntingRange => DefaultHuntingRange;
 
     /// <inheritdoc />
     public int MaxSecondsAway => 30;

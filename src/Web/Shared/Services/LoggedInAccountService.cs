@@ -59,7 +59,7 @@ public class LoggedInAccountService : IDataService<LoggedInAccount>, ISupportDat
             async _ =>
             {
                 await this._loginServer.LogOffAsync(account.LoginName, account.Server).ConfigureAwait(false);
-                var server = this._serverProvider.Servers.FirstOrDefault(s => s.Id == account.Server);
+                var server = this._serverProvider.Servers.OfType<IGameServer>().FirstOrDefault(s => s.Id == account.Server);
                 if (server is IGameServer gameServer)
                 {
                     await gameServer.DisconnectAccountAsync(account.LoginName).ConfigureAwait(false);

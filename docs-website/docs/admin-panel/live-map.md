@@ -51,6 +51,27 @@ A temporary ban set from the live map changes the state of the account. Review
 and lift it on the [Accounts page](accounts.md).
 :::
 
+## Filtering the monsters
+
+A busy map shows hundreds of monsters. To find some of them — for example the
+golden monsters of an invasion — use **Filter monsters** above the player list:
+
+1. Choose how the name is compared: **contains**, **starts with** or
+   **ends with**.
+2. Type the text. The comparison ignores the case.
+
+While a text is set, only the monsters whose name matches stay on the map.
+Players and the other NPCs, like merchants and guards, are always shown.
+Monsters which spawn later are filtered as well.
+
+Below the filter is the list of the matching monsters with their position. It is
+refreshed every second. Clicking a row selects the monster, like a click on the
+map. Clear the text, or click the button next to it, to show all monsters again.
+
+For example, *contains* `dragon` finds Budge Dragon, Red Dragon and
+Golden Dragon, and *starts with* `golden` finds the monsters of a Golden
+Invasion.
+
 ## Slow or lost connections
 
 The game never waits for the browser of an admin who watches the live map. While

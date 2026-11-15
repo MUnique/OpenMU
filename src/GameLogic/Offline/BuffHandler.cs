@@ -64,7 +64,7 @@ public sealed class BuffHandler
                 if (this._cachedAutoBuffIds is null || skillCount != this._cachedAutoBuffSkillCount)
                 {
                     var learnedBuffs = skillList.Skills
-                        .Where(s => s.Skill is { SkillType: SkillType.Buff, MagicEffectDef: not null })
+                        .Where(s => s.Skill is { SkillType: SkillType.Buff, MagicEffectDef: { Duration: not null } })
                         .Select(s => (int)s.Skill!.Number)
                         .OrderBy(n => n)
                         .Take(BuffSlotCount)
@@ -131,7 +131,10 @@ public sealed class BuffHandler
             }
 
             var skillEntry = this._player.SkillList?.GetSkill((ushort)buffId);
-            if (skillEntry?.Skill?.MagicEffectDef is null
+
+            // Effects without a duration (e.g. Heal) are instant and cannot be applied as a buff;
+            // trying to would throw on every tick and stop the whole helper.
+            if (skillEntry?.Skill?.MagicEffectDef is not { Duration: not null }
                 || !this.CanCast(skillEntry.Skill))
             {
                 continue;

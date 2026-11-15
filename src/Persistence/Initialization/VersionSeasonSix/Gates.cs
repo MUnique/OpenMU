@@ -13,6 +13,11 @@ using MUnique.OpenMU.Interfaces;
 public class Gates : InitializerBase
 {
     /// <summary>
+    /// The area of the spawn gate of the santa village, where the invitation to the santa village warps the player to.
+    /// </summary>
+    internal static readonly (byte X1, byte Y1, byte X2, byte Y2) SantaVillageSpawnGate = (221, 23, 225, 27);
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Gates" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -69,7 +74,7 @@ public class Gates : InitializerBase
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(22, LocalizedString.FromResource(() => WarpNames.Tarkan2), 8500, 140, gates[77]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(23, LocalizedString.FromResource(() => WarpNames.Icarus), 10000, 170, gates[63]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(25, LocalizedString.FromResource(() => WarpNames.Aida1), 8500, 150, gates[119]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(26, LocalizedString.FromResource(() => WarpNames.Crywolf), 10000, 190, gates[118]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(26, LocalizedString.FromResource(() => WarpNames.Crywolf), 10000, 190, gates[118], isWarpable: false));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(27, LocalizedString.FromResource(() => WarpNames.Aida2), 8500, 150, gates[140]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(28, LocalizedString.FromResource(() => WarpNames.KanturuRuins1), 9000, 160, gates[138]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(29, LocalizedString.FromResource(() => WarpNames.KanturuRuins2), 9000, 160, gates[141]));
@@ -79,15 +84,28 @@ public class Gates : InitializerBase
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(33, LocalizedString.FromResource(() => WarpNames.PeaceSwamp), 15000, 400, gates[273]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(34, LocalizedString.FromResource(() => WarpNames.Raklion), 15000, 280, gates[287]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(42, LocalizedString.FromResource(() => WarpNames.Vulcanus), 15000, 30, gates[294]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(44, LocalizedString.FromResource(() => WarpNames.LorenMarket), 18000, 200, gates[333]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(44, LocalizedString.FromResource(() => WarpNames.LorenMarket), 18000, 200, gates[333], isWarpable: false));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(43, LocalizedString.FromResource(() => WarpNames.Elveland3), 3000, 10, gates[269]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(45, LocalizedString.FromResource(() => WarpNames.KanturuRuins3), 15000, 160, gates[334]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(46, LocalizedString.FromResource(() => WarpNames.Karutan1), 13000, 170, gates[335]));
         this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(47, LocalizedString.FromResource(() => WarpNames.Karutan2), 14000, 170, gates[344]));
-        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(48, LocalizedString.FromResource(() => WarpNames.LaCleon), 15000, 280, gates[287]));
+        this.GameConfiguration.WarpList.Add(this.CreateWarpInfo(48, LocalizedString.FromResource(() => WarpNames.LaCleon), 15000, 280, gates[287], isWarpable: false));
     }
 
-    private WarpInfo CreateWarpInfo(ushort index, LocalizedString name, int costs, int levelRequirement, ExitGate gate)
+    /// <summary>
+    /// Creates a warp list entry.
+    /// </summary>
+    /// <param name="index">The index which the client sends in the warp request.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="costs">The costs in zen.</param>
+    /// <param name="levelRequirement">The level requirement.</param>
+    /// <param name="gate">The target gate.</param>
+    /// <param name="isWarpable">
+    /// <c>false</c> for the warps which the original client doesn't offer in its warp window, e.g. because the map
+    /// is reached by walking (Crywolf) or through an NPC (Loren Market), see <see cref="WarpInfo.IsWarpable"/>.
+    /// </param>
+    /// <returns>The created warp list entry.</returns>
+    private WarpInfo CreateWarpInfo(ushort index, LocalizedString name, int costs, int levelRequirement, ExitGate gate, bool isWarpable = true)
     {
         var warpInfo = this.Context.CreateNew<WarpInfo>();
         warpInfo.Index = index;
@@ -95,6 +113,7 @@ public class Gates : InitializerBase
         warpInfo.Costs = costs;
         warpInfo.LevelRequirement = levelRequirement;
         warpInfo.Gate = gate;
+        warpInfo.IsWarpable = isWarpable;
         return warpInfo;
     }
 
@@ -277,7 +296,7 @@ public class Gates : InitializerBase
         // Kanturu
         targetGates.Add(138, this.CreateExitGate(maps[37], 19, 217, 21, 219, 0, true));
         targetGates.Add(141, this.CreateExitGate(maps[37], 205, 36, 208, 41, 0));
-        targetGates.Add(334, this.CreateExitGate(maps[37], 66, 183, 74, 191, 0));
+        targetGates.Add(334, this.CreateExitGate(maps[37], 67, 183, 74, 189, 0));
         targetGates.Add(126, this.CreateExitGate(maps[37], 17, 219, 21, 220, 0));
         targetGates.Add(132, this.CreateExitGate(maps[37], 85, 89, 86, 92, 0));
 
@@ -430,6 +449,11 @@ public class Gates : InitializerBase
         targetGates.Add(330, this.CreateExitGate(maps[66], 134, 69, 139, 74, 0, true));
         targetGates.Add(331, this.CreateExitGate(maps[67], 106, 60, 111, 62, 0, true));
         targetGates.Add(332, this.CreateExitGate(maps[68], 92, 13, 97, 17, 0, true));
+
+        // Santa Village
+        // The original gate list contains no gate for it, because the invitation to the santa village warps the player there directly.
+        // So, this gate doesn't get a number. Its area consists of walkable coordinates of the safezone.
+        this.CreateExitGate(maps[62], SantaVillageSpawnGate.X1, SantaVillageSpawnGate.Y1, SantaVillageSpawnGate.X2, SantaVillageSpawnGate.Y2, 0, true);
 
         // Loren Market
         targetGates.Add(333, this.CreateExitGate(maps[79], 126, 142, 129, 148, 0, true));

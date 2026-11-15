@@ -25,24 +25,25 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 internal static class BotJewelHandler
 {
     /// <summary>
-    /// The jewels a bot has a use for: it upgrades its own gear with them (see the policy above).
-    /// Everything else - Chaos, Creation, Guardian, Gemstone, Harmony, the refine stones - is only
-    /// spendable by trading or crafting, which a bot does neither of.
+    /// The jewels a bot has a use for: it upgrades its own gear with Bless, Soul and Life (see the policy
+    /// above), and spends Chaos together with Bless and Soul on the +10 ... +15 mixes at the chaos machine
+    /// (see <see cref="BotChaosMachineHandler"/>). Everything else - Creation, Guardian, Gemstone, Harmony,
+    /// the refine stones - is only spendable by trading or by other craftings, which a bot does not do.
     /// </summary>
     internal static readonly ItemIdentifier[] UsableJewels =
     [
         ItemConstants.JewelOfBless,
         ItemConstants.JewelOfSoul,
         ItemConstants.JewelOfLife,
+        ItemConstants.JewelOfChaos,
     ];
 
     /// <summary>
-    /// Jewels a bot may still be carrying from before but can never spend: it neither trades nor crafts.
+    /// Jewels a bot may still be carrying from before but can never spend (see <see cref="UsableJewels"/>).
     /// They are not picked up anymore, so this is about clearing out what is already in the backpack.
     /// </summary>
     internal static readonly ItemIdentifier[] UnusableJewels =
     [
-        ItemConstants.JewelOfChaos,
         ItemConstants.JewelOfCreation,
         ItemConstants.JewelOfGuardian,
         ItemConstants.Gemstone,
@@ -186,7 +187,7 @@ internal static class BotJewelHandler
         // 1. Bless - free progress: push the weakest equipped piece towards +6.
         if (blessLeft > 0
             && blessStock.Count > 0
-            && equipped.Where(i => i.CanLevelBeUpgraded() && i.Level <= BlessMaxTargetLevel)
+            && equipped.Where(i => i.CanLevelBeUpgraded() && i.Level <= BlessMaxTargetLevel && StaysWearable(player, i))
                 .OrderBy(i => i.Level)
                 .FirstOrDefault() is { } blessTarget)
         {
@@ -199,7 +200,8 @@ internal static class BotJewelHandler
             && soulStock.Count >= MinSoulStock
             && equipped.Where(i => i.CanLevelBeUpgraded()
                                    && i.Level >= SoulMinTargetLevel
-                                   && i.Level <= (HasLuck(i) ? SoulMaxTargetLevelLucky : SoulMaxTargetLevelPlain))
+                                   && i.Level <= (HasLuck(i) ? SoulMaxTargetLevelLucky : SoulMaxTargetLevelPlain)
+                                   && StaysWearable(player, i))
                 .OrderByDescending(HasLuck)
                 .ThenBy(i => i.Level)
                 .FirstOrDefault() is { } soulTarget)
@@ -236,7 +238,6 @@ internal static class BotJewelHandler
             return false;
         }
 
-        var limit = GetStockLimit(player);
         var counts = new Dictionary<ItemIdentifier, int>();
         foreach (var item in inventory.Items)
         {
@@ -258,7 +259,7 @@ internal static class BotJewelHandler
             }
 
             var count = counts.GetValueOrDefault(identifier) + 1;
-            if (count > limit)
+            if (count > GetStockLimit(player, identifier))
             {
                 return true;
             }
@@ -295,7 +296,7 @@ internal static class BotJewelHandler
 
         var identifier = new ItemIdentifier(definition.Number, definition.Group);
         return UsableJewels.Contains(identifier)
-               && CountInStock(player, identifier) < GetStockLimit(player);
+               && CountInStock(player, identifier) < GetStockLimit(player, identifier);
     }
 
     /// <summary>
@@ -308,6 +309,20 @@ internal static class BotJewelHandler
            ?? DefaultJewelStockPerKind;
 
     /// <summary>
+    /// Gets the number of jewels of the given kind a bot keeps: the configured stock, except for the
+    /// Jewel of Chaos, which only a bot with a worn lucky piece it can still mix (see
+    /// <see cref="BotChaosMachineHandler"/>) has a use for - for all the others it is a blocked
+    /// backpack slot.
+    /// </summary>
+    /// <param name="player">The bot player.</param>
+    /// <param name="identifier">The jewel kind.</param>
+    /// <returns>The stock limit of that kind.</returns>
+    internal static int GetStockLimit(Player player, ItemIdentifier identifier)
+        => identifier == ItemConstants.JewelOfChaos && !BotChaosMachineHandler.HasMixablePiece(player)
+            ? 0
+            : GetStockLimit(player);
+
+    /// <summary>
     /// Counts how many jewels of the given kind the bot carries.
     /// </summary>
     /// <param name="player">The bot player.</param>
@@ -315,6 +330,16 @@ internal static class BotJewelHandler
     /// <returns>The number of jewels of that kind in the inventory.</returns>
     internal static int CountInStock(Player player, ItemIdentifier identifier)
         => player.Inventory?.Items.Count(i => IsJewel(i, identifier)) ?? 0;
+
+    /// <summary>
+    /// Whether the item carries the luck option.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns><c>True</c>, if the item has luck.</returns>
+    internal static bool HasLuck(Item item)
+    {
+        return item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck);
+    }
 
     /// <summary>
     /// Applies one jewel to one equipped item the way a player does it: take the piece off into a free
@@ -376,8 +401,10 @@ internal static class BotJewelHandler
                && identifier == new ItemIdentifier(definition.Number, definition.Group);
     }
 
-    private static bool HasLuck(Item item)
-    {
-        return item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.Luck);
-    }
+    /// <summary>
+    /// Whether the bot could still wear the piece one level up - it takes the piece off for the jewel and
+    /// has to put it back on; a piece it can't wear anymore ends up sold as junk.
+    /// </summary>
+    private static bool StaysWearable(Player player, Item item)
+        => BotGearPlanner.MeetsRequirementsOnBaseStats(player, BotGearPlanner.UpgradedCopy(item));
 }

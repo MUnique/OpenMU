@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Character;
+using MUnique.OpenMU.GameLogic.WaitingItems;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -59,6 +60,18 @@ public class DeleteCharacterAction
         if (player.GameContext is IGameServerContext gameServerContext && await gameServerContext.GuildServer.GetGuildPositionAsync(character.Id).ConfigureAwait(false) != GuildPosition.Undefined)
         {
             await player.ShowLocalizedBlueMessageAsync(PlayerMessage.CantDeleteGuildMember).ConfigureAwait(false);
+            return CharacterDeleteResult.Unsuccessful;
+        }
+
+        // The waiting items are deleted with the character, but an item which waits because it found no place
+        // in the vault belongs to the account. An item without a definition is kept until the definition is back,
+        // so it prevents the deletion, too; only an admin can solve that.
+        if (character.WaitingItems is { Count: > 0 })
+        {
+            var message = character.HasDeliverableWaitingItems()
+                ? nameof(PlayerMessage.CantDeleteCharacterWithWaitingItems)
+                : nameof(PlayerMessage.CantDeleteCharacterWithUndeliverableWaitingItems);
+            await player.ShowLocalizedBlueMessageAsync(message).ConfigureAwait(false);
             return CharacterDeleteResult.Unsuccessful;
         }
 

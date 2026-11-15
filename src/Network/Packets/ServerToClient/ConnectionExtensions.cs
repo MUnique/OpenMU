@@ -1046,7 +1046,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="headerCode">The header code.</param>
-    /// <param name="objectId">The object id.</param>
+    /// <param name="objectId">The object ID; its most significant bit indicates whether the target receives a hit shock.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="kind">The kind.</param>
     /// <param name="isRageFighterStreakHit">The is rage fighter streak hit.</param>
@@ -1094,9 +1094,9 @@ public static class ConnectionExtensions
     /// <param name="isRageFighterStreakFinalHit">The is rage fighter streak final hit.</param>
     /// <param name="isDoubleDamage">The is double damage.</param>
     /// <param name="isTripleDamage">The is triple damage.</param>
-    /// <param name="objectId">The object id.</param>
-    /// <param name="healthStatus">Gets or sets the status of the remaining health in fractions of 1/250.</param>
-    /// <param name="shieldStatus">Gets or sets the status of the remaining shield in fractions of 1/250.</param>
+    /// <param name="objectId">The object ID; its most significant bit indicates whether the target receives a hit shock.</param>
+    /// <param name="healthStatus">The status of the remaining health in fractions of 1/250.</param>
+    /// <param name="shieldStatus">The status of the remaining shield in fractions of 1/250.</param>
     /// <param name="healthDamage">The health damage.</param>
     /// <param name="shieldDamage">The shield damage.</param>
     /// <remarks>
@@ -5946,6 +5946,92 @@ public static class ConnectionExtensions
             var packet = new IllusionTempleSkillEndRef(connection.Output.GetSpan(length)[..length]);
             packet.TempleNumber = @templeNumber;
             packet.State = @state;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LuckyCoinCountResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="count">The count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player opened the lucky coin registration dialog of the NPC Delgado, which requests the count of the registered coins.
+    /// Causes reaction on client side: The client shows the count of the registered lucky coins in the dialog.
+    /// </remarks>
+    public static async ValueTask SendLuckyCoinCountResponseAsync(this IConnection? connection, uint @count)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LuckyCoinCountResponseRef.Length;
+            var packet = new LuckyCoinCountResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Count = @count;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LuckyCoinRegistrationResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="count">The count.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to register a lucky coin at the NPC Delgado.
+    /// Causes reaction on client side: The client unlocks the register button. When the coin was registered, it shows the new count of the registered coins; otherwise, it shows a message.
+    /// </remarks>
+    public static async ValueTask SendLuckyCoinRegistrationResponseAsync(this IConnection? connection, LuckyCoinRegistrationResponse.LuckyCoinRegistrationResult @result, uint @count)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LuckyCoinRegistrationResponseRef.Length;
+            var packet = new LuckyCoinRegistrationResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Count = @count;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LuckyCoinExchangeResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">The result.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player requested to exchange lucky coins for an item at the NPC Delgado.
+    /// Causes reaction on client side: The client unlocks the exchange buttons and shows a message about the result.
+    /// </remarks>
+    public static async ValueTask SendLuckyCoinExchangeResponseAsync(this IConnection? connection, LuckyCoinExchangeResponse.LuckyCoinExchangeResult @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LuckyCoinExchangeResponseRef.Length;
+            var packet = new LuckyCoinExchangeResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
 
             return packet.Header.Length;
         }

@@ -72,7 +72,9 @@ public static class AuthEndpoints
                 AdminAuthenticationDefaults.ReverseProxyAuthenticationEndpointPath,
                 async (HttpContext httpContext, ReverseProxyAuthenticationService authenticationService) =>
                 {
-                    var result = await authenticationService.AuthenticateAsync(httpContext.User, httpContext.RequestAborted).ConfigureAwait(false);
+                    // The proxy can require a minimum role for a location, e.g. "?role=Operator".
+                    var requiredRole = httpContext.Request.Query["role"].FirstOrDefault();
+                    var result = await authenticationService.AuthenticateAsync(httpContext.User, requiredRole, httpContext.RequestAborted).ConfigureAwait(false);
                     if (result is { UserName: { } userName, Role: { } role })
                     {
                         httpContext.Response.Headers[ReverseProxyAuthenticationService.UserHeaderName] = userName;

@@ -2352,52 +2352,52 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseRateBonus from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseRateBonus {
+        /// <summary>Gets DestroyArmorDefenseRateBonus from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseRateBonus {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseRateBonus", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseRateBonus", resourceCulture);
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseBonusLevel10 from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseBonusLevel10 {
+        /// <summary>Gets DestroyArmorDefenseBonusLevel10 from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseBonusLevel10 {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseBonusLevel10", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseBonusLevel10", resourceCulture);
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseBonusLevel11 from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseBonusLevel11 {
+        /// <summary>Gets DestroyArmorDefenseBonusLevel11 from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseBonusLevel11 {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseBonusLevel11", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseBonusLevel11", resourceCulture);
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseBonusLevel12 from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseBonusLevel12 {
+        /// <summary>Gets DestroyArmorDefenseBonusLevel12 from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseBonusLevel12 {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseBonusLevel12", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseBonusLevel12", resourceCulture);
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseBonusLevel13 from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseBonusLevel13 {
+        /// <summary>Gets DestroyArmorDefenseBonusLevel13 from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseBonusLevel13 {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseBonusLevel13", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseBonusLevel13", resourceCulture);
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseBonusLevel14 from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseBonusLevel14 {
+        /// <summary>Gets DestroyArmorDefenseBonusLevel14 from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseBonusLevel14 {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseBonusLevel14", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseBonusLevel14", resourceCulture);
             }
         }
 
-        /// <summary>Gets DestoryArmorDefenseBonusLevel15 from the configuration name resources.</summary>
-        public static string DestoryArmorDefenseBonusLevel15 {
+        /// <summary>Gets DestroyArmorDefenseBonusLevel15 from the configuration name resources.</summary>
+        public static string DestroyArmorDefenseBonusLevel15 {
             get {
-                return ResourceManager.GetString("DestoryArmorDefenseBonusLevel15", resourceCulture);
+                return ResourceManager.GetString("DestroyArmorDefenseBonusLevel15", resourceCulture);
             }
         }
 

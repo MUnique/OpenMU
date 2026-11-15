@@ -1,4 +1,5 @@
 ﻿@page "/gameServer/{gameServerId:int}/map/{mapId:guid}"
+@attribute [Authorize(Policy = AdminPolicies.Operator)]
 @implements IDisposable
 
 @using MUnique.OpenMU.Web.AdminPanel.Properties

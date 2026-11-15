@@ -53,6 +53,11 @@ What exactly drops for a selected group depends on its *possible items* and its
 random item which fits to the monster level, a random excellent or ancient item,
 or money — the amount of money is the experience the monster gave, plus 7.
 
+The possible items of a group drop at every monster level from their *drop
+level* up to their *maximum drop level*. A random item, on the other hand, is
+only one whose drop level is less than 12 levels below the monster level, so
+that strong monsters don't drop items of the beginner maps.
+
 ## Sections
 
 ### General settings
@@ -109,8 +114,11 @@ level. The possible items of a map group are additionally filtered by the
 monster level, so that e.g. a high level item doesn't drop from a low level
 monster.
 
-A group which isn't assigned to any map doesn't drop anywhere.
-**Add drop item group** creates a new one, the 🗑 button deletes a group.
+A group which isn't assigned to any map doesn't drop anywhere; such a group is
+marked with **Not assigned to any map** in the list. **Add drop item group**
+creates a new one and assigns it to all maps, so that it takes effect right away;
+remove the maps it shouldn't apply to in its details. The 🗑 button deletes a
+group.
 
 ### Monster drops
 
@@ -147,6 +155,18 @@ map drop groups, a group has:
 | Drop effect | The effect which is shown in the game client, e.g. fireworks |
 
 ![Item box drops](/img/admin-panel/item-box-drops.png)
+
+A group of type `Excellent` can override how many excellent options an item gets
+and the chance for each additional one:
+
+| Field | Meaning |
+|---|---|
+| Excellent option chance | The chance per excellent option. Empty uses the chance of the excellent option definition of the item. |
+| Maximum excellent options per item | How many excellent options an item can get at most. Empty uses the value of the item's excellent option definition. The first option is always added without a chance. |
+
+This is how a server can make only e.g. *Box of Kundun +5* drop items with up to
+six excellent options, while the lower boxes and the normal drops stay as they
+are. The same fields exist on map and monster drop groups.
 
 To add drops to an item which has none yet, select it at the bottom of the
 section and click **Add drop item group**.

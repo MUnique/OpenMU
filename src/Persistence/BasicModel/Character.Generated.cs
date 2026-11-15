@@ -128,6 +128,27 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="WaitingItems" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("waitingItems")]
+    public ICollection<WaitingItem> RawWaitingItems { get; } = new List<WaitingItem>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.WaitingItem> WaitingItems
+    {
+        get => base.WaitingItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.WaitingItem, WaitingItem>(this.RawWaitingItems);
+        protected set
+        {
+            this.WaitingItems.Clear();
+            foreach (var item in value)
+            {
+                this.WaitingItems.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="CharacterClass" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("characterClass")]

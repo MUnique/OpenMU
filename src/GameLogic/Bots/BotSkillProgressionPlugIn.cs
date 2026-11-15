@@ -120,12 +120,23 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
         var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
 
+        long InvestedOf(AttributeDefinition stat)
+        {
+            var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            return (long)(player.Attributes?[stat] ?? 0f) - (long)(classBase?.BaseValue ?? 0f);
+        }
+
         // Mirrors the capacity checks of the stat-increase action (a stat's configured maximum on fun
         // servers), plus the bot's personal vitality target on reset-meta servers: a full stat drops
         // out of the split, so its share flows into the rest of the build instead of getting lost.
         long CapacityOf(AttributeDefinition stat)
         {
             var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            if (classBase is null)
+            {
+                return 0; // a stat the class doesn't have (e.g. leadership) can't take points.
+            }
+
             var current = (long)(player.Attributes?[stat] ?? 0f);
             var capacity = long.MaxValue;
             if (classBase?.Attribute?.MaximumValue is { } maximumValue)
@@ -135,14 +146,26 @@ public class BotSkillProgressionPlugIn : ICharacterLevelUpPlugIn
 
             if (vitalityTarget is { } target && stat == Stats.BaseVitality)
             {
-                var invested = current - (long)(classBase?.BaseValue ?? 0f);
-                capacity = Math.Min(capacity, target - invested);
+                capacity = Math.Min(capacity, target - InvestedOf(stat));
             }
 
             return capacity;
         }
 
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf))
+        // The gear requirements come first, so the bot can always put its worn gear back on and wear
+        // what it finds at its level (see BotGearPlanner).
+        var equippedItems = player.Inventory?.Items.Where(i => i.ItemSlot < InventoryConstants.EquippableSlotsCount) ?? [];
+        var minimums = BotGearPlanner.GetStatMinimums(
+            player.GameContext.Configuration,
+            characterClass,
+            character.Name,
+            player.Level,
+            equippedItems,
+            BotProgression.GetTotalPoints(points, characterClass, InvestedOf));
+
+        // The invested points make the split aim at the build's proportions over the whole career,
+        // so the few points of a single level-up don't round the small-weight stats down to nothing.
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf, minimums))
         {
             if (amount > 0)
             {

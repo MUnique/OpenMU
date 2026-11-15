@@ -76,6 +76,164 @@ public sealed class InventoryPlacementService
         return null;
     }
 
+    /// <summary>
+    /// Determines whether an item can be placed at the top-left slot of a storage section.
+    /// </summary>
+    /// <param name="item">The item to move.</param>
+    /// <param name="slot">The top-left destination slot.</param>
+    /// <param name="existingItems">All items belonging to the storage.</param>
+    /// <param name="startIndex">The first slot displayed by the target section.</param>
+    /// <param name="rows">The number of rows in the target section.</param>
+    /// <returns><c>true</c> when the entire item rectangle fits; otherwise, <c>false</c>.</returns>
+    public bool CanMoveItem(Item item, int slot, IEnumerable<Item> existingItems, int startIndex, int rows)
+    {
+        var relativeSlot = slot - startIndex;
+        if (relativeSlot < 0)
+        {
+            return false;
+        }
+
+        return this.CanMoveItem(
+            item,
+            relativeSlot % InventoryConstants.RowSize,
+            relativeSlot / InventoryConstants.RowSize,
+            existingItems,
+            startIndex,
+            rows);
+    }
+
+    /// <summary>
+    /// Determines whether an item can be placed at the specified column and row of a storage section.
+    /// </summary>
+    /// <param name="item">The item to move.</param>
+    /// <param name="column">The zero-based destination column.</param>
+    /// <param name="row">The zero-based destination row.</param>
+    /// <param name="existingItems">All items belonging to the storage.</param>
+    /// <param name="startIndex">The first slot displayed by the target section.</param>
+    /// <param name="rows">The number of rows in the target section.</param>
+    /// <returns><c>true</c> when the entire item rectangle fits; otherwise, <c>false</c>.</returns>
+    public bool CanMoveItem(Item item, int column, int row, IEnumerable<Item> existingItems, int startIndex, int rows)
+    {
+        var width = item.Definition?.Width ?? 1;
+        var height = item.Definition?.Height ?? 1;
+        var sectionSize = rows * InventoryConstants.RowSize;
+        if (rows <= 0 || column < 0 || row < 0 || row >= rows || column + width > InventoryConstants.RowSize || row + height > rows || width == 0 || height == 0)
+        {
+            return false;
+        }
+
+        var relativeSlot = (row * InventoryConstants.RowSize) + column;
+        var occupiedSlots = existingItems
+            .Where(existing => !ReferenceEquals(existing, item)
+                && existing.ItemSlot >= startIndex
+                && existing.ItemSlot < startIndex + sectionSize)
+            .SelectMany(existing => this.GetItemSlotsInSection(existing, startIndex))
+            .ToHashSet();
+
+        for (var rowOffset = 0; rowOffset < height; rowOffset++)
+        {
+            for (var columnOffset = 0; columnOffset < width; columnOffset++)
+            {
+                var targetCell = relativeSlot + (rowOffset * InventoryConstants.RowSize) + columnOffset;
+                if (occupiedSlots.Contains(targetCell))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Moves an item to a cell in the specified storage section when its entire rectangle fits.
+    /// </summary>
+    /// <param name="item">The item to move.</param>
+    /// <param name="slot">The top-left destination slot.</param>
+    /// <param name="existingItems">All items belonging to the storage.</param>
+    /// <param name="startIndex">The first slot displayed by the target section.</param>
+    /// <param name="rows">The number of rows in the target section.</param>
+    /// <returns><c>true</c> when the item was moved; otherwise, <c>false</c>.</returns>
+    public bool TryMoveItem(Item item, byte slot, IEnumerable<Item> existingItems, int startIndex, int rows)
+    {
+        if (!this.CanMoveItem(item, slot, existingItems, startIndex, rows))
+        {
+            return false;
+        }
+
+        item.ItemSlot = slot;
+        return true;
+    }
+
+    /// <summary>
+    /// Moves an item to the specified column and row when its entire rectangle fits.
+    /// </summary>
+    /// <param name="item">The item to move.</param>
+    /// <param name="column">The zero-based destination column.</param>
+    /// <param name="row">The zero-based destination row.</param>
+    /// <param name="existingItems">All items belonging to the storage.</param>
+    /// <param name="startIndex">The first slot displayed by the target section.</param>
+    /// <param name="rows">The number of rows in the target section.</param>
+    /// <returns><c>true</c> when the item was moved; otherwise, <c>false</c>.</returns>
+    public bool TryMoveItem(Item item, int column, int row, IEnumerable<Item> existingItems, int startIndex, int rows)
+    {
+        if (!this.CanMoveItem(item, column, row, existingItems, startIndex, rows))
+        {
+            return false;
+        }
+
+        item.ItemSlot = (byte)(startIndex + (row * InventoryConstants.RowSize) + column);
+        return true;
+    }
+
+    /// <summary>
+    /// Calculates the item top-left coordinates from the cell currently under the pointer.
+    /// </summary>
+    /// <param name="hoveredSlot">The slot currently under the pointer.</param>
+    /// <param name="startIndex">The first slot displayed by the target section.</param>
+    /// <param name="columnOffset">The grabbed column within the dragged item.</param>
+    /// <param name="rowOffset">The grabbed row within the dragged item.</param>
+    /// <returns>The zero-based item top-left column and row within the target section.</returns>
+    public static (int Column, int Row) GetDropPosition(int hoveredSlot, int startIndex, byte columnOffset, byte rowOffset)
+    {
+        var relativeSlot = hoveredSlot - startIndex;
+        return (
+            (relativeSlot % InventoryConstants.RowSize) - columnOffset,
+            (relativeSlot / InventoryConstants.RowSize) - rowOffset);
+    }
+
+    /// <summary>
+    /// Determines whether an item can be equipped into a compatible empty equipment slot.
+    /// </summary>
+    /// <param name="item">The item to equip.</param>
+    /// <param name="slot">The target equipment slot.</param>
+    /// <param name="existingItems">All items belonging to the storage.</param>
+    /// <returns><c>true</c> when the item can be equipped; otherwise, <c>false</c>.</returns>
+    public bool CanEquipItem(Item item, byte slot, IEnumerable<Item> existingItems)
+    {
+        return slot < InventoryConstants.EquippableSlotsCount
+            && item.Definition?.ItemSlot?.ItemSlots.Contains(slot) == true
+            && existingItems.All(existing => ReferenceEquals(existing, item) || existing.ItemSlot != slot);
+    }
+
+    /// <summary>
+    /// Moves an item to a compatible empty equipment slot.
+    /// </summary>
+    /// <param name="item">The item to equip.</param>
+    /// <param name="slot">The target equipment slot.</param>
+    /// <param name="existingItems">All items belonging to the storage.</param>
+    /// <returns><c>true</c> when the item was equipped; otherwise, <c>false</c>.</returns>
+    public bool TryEquipItem(Item item, byte slot, IEnumerable<Item> existingItems)
+    {
+        if (!this.CanEquipItem(item, slot, existingItems))
+        {
+            return false;
+        }
+
+        item.ItemSlot = slot;
+        return true;
+    }
+
     private byte GetMaxSlot()
     {
         return this._storageType switch
@@ -117,11 +275,21 @@ public sealed class InventoryPlacementService
         return (byte)InventoryConstants.RowSize;
     }
 
-    private HashSet<byte> GetAllOccupiedSlots(IEnumerable<Item> existingItems)
+    private IEnumerable<int> GetItemSlotsInSection(Item item, int startIndex)
     {
-        return existingItems
-            .SelectMany(this.GetItemSlots)
-            .ToHashSet();
+        var relativeSlot = item.ItemSlot - startIndex;
+        var column = relativeSlot % InventoryConstants.RowSize;
+        var row = relativeSlot / InventoryConstants.RowSize;
+        var width = item.Definition?.Width ?? 1;
+        var height = item.Definition?.Height ?? 1;
+
+        for (var rowOffset = 0; rowOffset < height; rowOffset++)
+        {
+            for (var columnOffset = 0; columnOffset < width; columnOffset++)
+            {
+                yield return ((row + rowOffset) * InventoryConstants.RowSize) + column + columnOffset;
+            }
+        }
     }
 
     private IEnumerable<byte> GetItemSlots(Item item)

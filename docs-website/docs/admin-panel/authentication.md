@@ -132,9 +132,14 @@ Each user has one role. They build up on each other:
 
 | Role | May do |
 |---|---|
-| **Viewer** | See the servers, accounts and the configuration |
-| **Operator** | Everything above, plus operating the servers and editing accounts |
-| **Administrator** | Everything above, plus the setup, plugins, configuration updates, log files, the logging configuration and the user management |
+| **Viewer** | See the servers, the accounts, the guilds and the leaderboards |
+| **Operator** | Everything above, plus operating the servers, editing accounts and the live maps, where players can be disconnected and banned |
+| **Administrator** | Everything above, plus the game configuration, adding and removing servers, the network analyzer, the setup, plugins, configuration updates, log files, the logging configuration and the user management |
+
+In the distributed deployment, the live maps are served by the game servers
+themselves. The nginx configuration asks the admin panel whether the user is
+logged in as an Operator or Administrator before it passes a request on to a
+game server.
 
 Give each administrator their own user, so you can remove one without changing
 everybody else's password.
@@ -251,7 +256,8 @@ client's `docs/item-data.md`.
 * One export runs at a time. A request in the meantime gets `429 Too Many
   Requests`, with `Retry-After` in seconds.
 * The file names the item fields it carries in its `fields` list; the client
-  keeps its own values of the other fields.
+  keeps its own values of the other fields. So far it carries the item size
+  (`width`, `height`).
 * Items outside the client's groups (0 to 15) and numbers (0 to 511) are left
   out, because the client would refuse the whole file. The log names them.
 * The file names the game version of the configuration, `season6` for Season 6.

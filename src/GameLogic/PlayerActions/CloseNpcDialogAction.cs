@@ -33,6 +33,10 @@ public class CloseNpcDialogAction
                 // duplicating everything since. Items left in the machine are returned through the temporary
                 // storage instead.
                 player.BackupInventory = null;
+
+                // Items the player left in the machine would stay hidden in the server's tray, out of the
+                // client's inventory and out of its (reset) tray, until the next login.
+                await player.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);
             }
 
             await player.InvokeViewPlugInAsync<INpcDialogClosedPlugIn>(p => p.DialogClosedAsync(npc.Definition)).ConfigureAwait(false);

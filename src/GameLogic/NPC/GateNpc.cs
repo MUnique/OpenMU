@@ -18,6 +18,7 @@ public class GateNpc : NonPlayerCharacter, ISummonable
     private readonly Task _warpTask;
     private readonly CancellationTokenSource _cts;
     private int _enterCount;
+    private volatile bool _closedByWarpTask;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GateNpc" /> class.
@@ -49,18 +50,28 @@ public class GateNpc : NonPlayerCharacter, ISummonable
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
-        this._cts.Cancel();
-        this._cts.Dispose();
+        if (disposing)
+        {
+            this._cts.Cancel();
+            this._cts.Dispose();
+        }
+
         base.Dispose(disposing);
     }
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-        await this._cts.CancelAsync().ConfigureAwait(false);
-        this._cts.Dispose();
+        if (!this._closedByWarpTask)
+        {
+            // Closed from outside (e.g. map shutdown): stop the warp task and wait for it.
+            // The CancellationTokenSource is disposed later in Dispose(bool).
+            await this._cts.CancelAsync().ConfigureAwait(false);
+            await this._warpTask.ConfigureAwait(false);
+        }
 
-        await this._warpTask.ConfigureAwait(false);
+        // When the warp task closes the gate itself (lifespan over, summoner dead, gate full),
+        // it must not wait for itself here, otherwise the gate is never removed from the map.
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
@@ -119,6 +130,7 @@ public class GateNpc : NonPlayerCharacter, ISummonable
         }
         finally
         {
+            this._closedByWarpTask = true;
             await this.DisposeAsync().ConfigureAwait(false);
         }
     }

@@ -47,6 +47,7 @@
     {
         <LookupField
             @bind-Value="@this._viewModel.AncientSet"
+            ShowAllOnFocus="true"
             ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleAncientSets))" />
 
         @if (this._viewModel.AncientBonus is { } ancientBonus)
@@ -63,6 +64,7 @@
     {
         <MultiLookupField
             @bind-Value="@this._viewModel.ExcellentOptions"
+            ShowAllOnFocus="true"
             CaptionFactory=@this.CaptionFactory
             ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleExcellentOptions.SelectMany(o => o.PossibleOptions)))" />
     }
@@ -71,6 +73,7 @@
     {
         <MultiLookupField
             @bind-Value="@this._viewModel.WingOptions"
+            ShowAllOnFocus="true"
             CaptionFactory=@this.CaptionFactory
             ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleWingOptions.SelectMany(o => o.PossibleOptions)))" />
     }
@@ -82,6 +85,7 @@
             <LookupField
                 TObject="IncreasableItemOption"
                 @bind-Value="@this._viewModel.NormalOption"
+                ShowAllOnFocus="true"
                 CaptionFactory="@this.CaptionFactory"
                 ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleNormalOptions))" />
         }
@@ -89,6 +93,7 @@
         {
             <BooleanField @bind-Value="@this._viewModel.HasOption" />
         }
+
         @if (this._viewModel.NormalOptionLink is { } optionLink
             && optionLink.ItemOption?.LevelDependentOptions.Max(o => o.Level) is { } maxLevel and > 1)
         {
@@ -112,14 +117,16 @@
             </select>
         }
     }
-    
+
     @if (this._viewModel.PossibleHarmonyOptions.Any())
     {
         <LookupField
             TObject="IncreasableItemOption"
             @bind-Value="@this._viewModel.HarmonyOption"
+            ShowAllOnFocus="true"
             CaptionFactory="@this.CaptionFactory"
             ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleHarmonyOptions))" />
+
         @if (this._viewModel.HarmonyOptionLink is { } optionLink
              && optionLink.ItemOption?.LevelDependentOptions.Count > 1
              && optionLink.ItemOption?.LevelDependentOptions.Max(o => o.Level) is { } maxLevel and > 1
@@ -158,19 +165,21 @@
             <li>
                 <LookupField
                     Label="@socket.Caption"
-                @bind-Value="@socket.Option"
-                ExplicitLookupController=@(new EnumerableLookupController(this._viewModel.PossibleSocketOptions))></LookupField>
-            @if (socket.Option is { } socketOption)
-            {
-                <NumberField
-                    Min="1"
-                    Max="@socketOption.Option.LevelDependentOptions.Max(o => o.Level)"
-                    Label="@(Resources.OptionLevel + ":")" @bind-Value="socket.Level" />
-            }
-            else
-            {
-                <div></div>
-            }
+                    ShowAllOnFocus="true"
+                    @bind-Value="@socket.Option"
+                    CaptionFactory="@(option => option?.ToString() ?? string.Empty)"
+                    ExplicitLookupController=@(new EnumerableLookupController(this._viewModel.PossibleSocketOptions))></LookupField>
+                @if (socket.Option is { } socketOption)
+                {
+                    <NumberField
+                        Min="1"
+                        Max="@socketOption.Option.LevelDependentOptions.Max(o => o.Level)"
+                        Label="@(Resources.OptionLevel + ":")" @bind-Value="socket.Level" />
+                }
+                else
+                {
+                    <div></div>
+                }
             </li>
         }
         </ul>
@@ -181,6 +190,7 @@
         <LookupField
             TObject="IncreasableItemOption"
             @bind-Value="@this._viewModel.SocketBonusOption"
+            ShowAllOnFocus="true"
             CaptionFactory="@this.CaptionFactory"
             ExplicitLookupController="@(new EnumerableLookupController(this._viewModel.PossibleSocketBonusOptions))" />
     }
@@ -189,6 +199,7 @@
     {
         <LookupField
             @bind-Value="@this._viewModel.FenrirOption"
+            ShowAllOnFocus="true"
             ExplicitLookupController="@(new EnumerableLookupController(ItemViewModel.FenrirOptions))" />
     }
     

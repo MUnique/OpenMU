@@ -4,13 +4,16 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>
 /// Edit page for the <see cref="MUnique.OpenMU.Web.AdminPanel.Components.ConnectServer.ConnectServerConfiguration"/>.
 /// </summary>
 [Route("/edit-connectionServer/{id:guid}")]
+[Authorize(Policy = AdminPolicies.Administrator)]
 public sealed partial class EditConnectionServer : EditBase
 {
     /// <inheritdoc />

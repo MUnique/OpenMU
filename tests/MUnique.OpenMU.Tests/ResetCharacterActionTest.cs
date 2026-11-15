@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -11,6 +12,8 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Resets;
+using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests for <see cref="ResetCharacterAction"/>.
@@ -129,6 +132,42 @@ public class ResetCharacterActionTest
 
         Assert.That((int)player.Attributes[Stats.Resets], Is.EqualTo(1));
         Assert.That(player.SelectedCharacter!.LevelUpPoints, Is.EqualTo(1_800));
+    }
+
+    /// <summary>
+    /// Verifies that a reset to a level above 1 starts with the experience of that level,
+    /// so the next level up needs only the experience of one level.
+    /// </summary>
+    /// <param name="levelAfterReset">The configured level after the reset.</param>
+    [TestCase(1)]
+    [TestCase(10)]
+    public async Task ExperienceMatchesLevelAfterResetAsync(int levelAfterReset)
+    {
+        var gameConfiguration = PlayerTestHelper.CreateGameConfiguration();
+        gameConfiguration.MaximumLevel = 400;
+        var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(gameConfiguration, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        player.Attributes![Stats.Level] = 400;
+        player.Money = 1_000;
+        player.SelectedCharacter!.Experience = gameContext.ExperienceTable[400] + 1234;
+
+        var requiredItem = new ItemDefinition { Name = "Jewel of Creation", Group = 14, Number = 22, Width = 1, Height = 1 };
+        var configuration = this.CreateConfiguration(requiredItem);
+        configuration.LevelAfterReset = levelAfterReset;
+        player.GameContext.FeaturePlugIns.AddPlugIn(new ResetFeaturePlugIn { Configuration = configuration }, true);
+
+        await AddRequiredItemsAsync(player, requiredItem, 2).ConfigureAwait(false);
+        var action = new ResetCharacterAction(player, await CreateResetNpcAsync(player).ConfigureAwait(false));
+
+        await action.ResetCharacterAsync().ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes[Stats.Resets], Is.EqualTo(1));
+        Assert.That((int)player.Attributes[Stats.Level], Is.EqualTo(levelAfterReset));
+        Assert.That(player.SelectedCharacter.Experience, Is.EqualTo(player.GameContext.ExperienceTable[levelAfterReset]));
+        Assert.That(player.SelectedCharacter.Experience, Is.LessThan(player.GameContext.ExperienceTable[levelAfterReset + 1]));
     }
 
     private static async ValueTask AddRequiredItemsAsync(Player player, ItemDefinition requiredItem, int count)

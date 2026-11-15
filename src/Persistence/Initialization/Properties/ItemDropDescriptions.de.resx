@@ -201,4 +201,22 @@
   <data name="OldJewelleryCaseMoney" xml:space="preserve">
     <value>Alte Schmuckschatulle – Geld</value>
   </data>
+  <data name="GoldenBoxExcellentItems" xml:space="preserve">
+    <value>Goldene Box – Exzellente Gegenstände</value>
+  </data>
+  <data name="GoldenBoxJewels" xml:space="preserve">
+    <value>Goldene Box – Juwelen</value>
+  </data>
+  <data name="GoldenBoxMoney" xml:space="preserve">
+    <value>Goldene Box – Geld</value>
+  </data>
+  <data name="SilverBoxExcellentItems" xml:space="preserve">
+    <value>Silberne Box – Exzellente Gegenstände</value>
+  </data>
+  <data name="SilverBoxJewels" xml:space="preserve">
+    <value>Silberne Box – Juwelen</value>
+  </data>
+  <data name="SilverBoxMoney" xml:space="preserve">
+    <value>Silberne Box – Geld</value>
+  </data>
 </root>

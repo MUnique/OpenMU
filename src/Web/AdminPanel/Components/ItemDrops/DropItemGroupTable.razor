@@ -45,8 +45,14 @@
         var boxGroup = group as ItemDropItemGroup;
         <tr @key="group" class="group-row">
             <td class="description-column">
-                <input type="text" class="form-control form-control-sm" value="@group.Description.ValueInNeutralLanguage"
-                       @onchange="@(e => SetDescription(group, e.Value?.ToString()))" />
+                <div class="d-flex align-items-center gap-2">
+                    <input type="text" class="form-control form-control-sm" value="@group.Description.ValueInNeutralLanguage"
+                           @onchange="@(e => SetDescription(group, e.Value?.ToString()))" />
+                    @if (this.WarnWhenUnassigned && this.GetAssignedMaps(group).Count == 0)
+                    {
+                        <span class="badge text-bg-warning text-nowrap" title="@Resources.MapDropItemGroupsDescription">@Resources.NotAssignedToAnyMap</span>
+                    }
+                </div>
             </td>
             <td>
                 <select class="form-select form-select-sm type-select" @bind="group.ItemType">
@@ -139,6 +145,18 @@
                                                  Value="@group.Monster"
                                                  ValueExpression="@(() => group.Monster)"
                                                  ValueChanged="@(monster => group.Monster = monster)" />
+                                </div>
+                            }
+                            @if (group.ItemType == SpecialItemType.Excellent)
+                            {
+                                <div class="col-lg-6">
+                                    <label class="form-label fw-semibold">@Resources.ExcellentOptionsChance</label>
+                                    <input type="number" class="form-control form-control-sm" step="any" min="0" max="100"
+                                           @bind:get="ToPercent(group.ExcellentOptionsAddChance)" @bind:set="@(value => group.ExcellentOptionsAddChance = FromPercent(value))" />
+                                    <label class="form-label fw-semibold mt-2">@Resources.ExcellentOptionsMaximumOptionsPerItem</label>
+                                    <input type="number" class="form-control form-control-sm" min="0" max="20"
+                                           @bind="group.ExcellentOptionsMaximumOptionsPerItem" />
+                                    <small class="text-muted d-block">@Resources.ExcellentOptionsHint</small>
                                 </div>
                             }
                         </div>

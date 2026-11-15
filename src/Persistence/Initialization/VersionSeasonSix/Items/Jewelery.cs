@@ -28,6 +28,114 @@ internal class Jewelery : Version095d.Items.Jewelery
     {
     }
 
+    /// <summary>
+    /// Creates the rings and necklaces of the in-game shop, which don't exist yet.
+    /// </summary>
+    /// <returns>The created items.</returns>
+    /// <remarks>
+    /// Their bonuses are fixed, they have no options and can't be upgraded. The values are the ones which
+    /// the game client shows (MuMain item data src/bin/Data/Items/Group13_Helper.json, and for the
+    /// Lethal Wizard's Ring the special options of ZzzInfomation.cpp). Like the excellent options, the
+    /// percentages of the client are multipliers or chances here.
+    /// Like the other jewelery, they wear out slowly while they're equipped outside of the safezone.
+    /// In the shop, they're sold for a limited time, which isn't supported yet, so the packages which
+    /// contain them stay not for sale.
+    /// The rules which block trading them are applied by the <see cref="ItemRules"/>. They can still be sold to
+    /// an NPC, so a player can get rid of one which wore out, because they can't be repaired.
+    /// </remarks>
+    internal IReadOnlyList<ItemDefinition> CreateCashShopJewelery()
+    {
+        var createdItems = new List<ItemDefinition>();
+        void CreateIfMissing(byte number, int slot, LocalizedString name, byte durability, params (AttributeDefinition Attribute, float Value, AggregateType AggregateType)[] powerUps)
+        {
+            if (this.GameConfiguration.Items.Any(item => item.Group == 13 && item.Number == number))
+            {
+                return;
+            }
+
+            var item = this.CreateJewelery(number, slot, false, name, 0, durability, null, null, withHealthOption: false);
+            item.MaximumItemLevel = 0;
+            foreach (var (attribute, value, aggregateType) in powerUps)
+            {
+                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(attribute, value, aggregateType));
+            }
+
+            createdItems.Add(item);
+        }
+
+        // The client defines no durability for the rings and necklaces other than the Lethal Wizard's Ring,
+        // but an item without durability has no effect, so they get the maximum, like the Panda Ring.
+        const byte defaultDurability = 255;
+        const int ringSlot = 10;
+        const int pendantSlot = 9;
+
+        // Damage +15%, wizardry damage +15% and attack speed +10, like the Wizard's Ring with +10%.
+        CreateIfMissing(
+            107,
+            ringSlot,
+            LocalizedString.FromResource(() => ItemNames.LethalWizardsRing),
+            100,
+            (Stats.MinimumPhysBaseDmg, 1.15f, AggregateType.Multiplicate),
+            (Stats.MaximumPhysBaseDmg, 1.15f, AggregateType.Multiplicate),
+            (Stats.MinimumWizBaseDmg, 1.15f, AggregateType.Multiplicate),
+            (Stats.MaximumWizBaseDmg, 1.15f, AggregateType.Multiplicate),
+            (Stats.AttackSpeedAny, 10, AggregateType.AddRaw));
+
+        // Each of the others has an automatic HP recovery of 3% and one bonus.
+        var healthRecovery = (Stats.HealthRecoveryMultiplier, 0.03f, AggregateType.AddRaw);
+        CreateIfMissing(
+            109,
+            ringSlot,
+            LocalizedString.FromResource(() => ItemNames.SapphireRing),
+            defaultDurability,
+            healthRecovery,
+            (Stats.MaximumMana, 1.04f, AggregateType.Multiplicate));
+        CreateIfMissing(
+            110,
+            ringSlot,
+            LocalizedString.FromResource(() => ItemNames.RubyRing),
+            defaultDurability,
+            healthRecovery,
+            (Stats.MaximumHealth, 1.04f, AggregateType.Multiplicate));
+        CreateIfMissing(
+            111,
+            ringSlot,
+            LocalizedString.FromResource(() => ItemNames.TopazRing),
+            defaultDurability,
+            healthRecovery,
+            (Stats.MoneyAmountRate, 1.3f, AggregateType.Multiplicate));
+        CreateIfMissing(
+            112,
+            ringSlot,
+            LocalizedString.FromResource(() => ItemNames.AmethystRing),
+            defaultDurability,
+            healthRecovery,
+            (Stats.ArmorDamageDecrease, 0.04f, AggregateType.AddRaw));
+        CreateIfMissing(
+            113,
+            pendantSlot,
+            LocalizedString.FromResource(() => ItemNames.RubyNecklace),
+            defaultDurability,
+            healthRecovery,
+            (Stats.ExcellentDamageChance, 0.1f, AggregateType.AddRaw));
+        CreateIfMissing(
+            114,
+            pendantSlot,
+            LocalizedString.FromResource(() => ItemNames.EmeraldNecklace),
+            defaultDurability,
+            healthRecovery,
+            (Stats.AttackSpeedAny, 7, AggregateType.AddRaw));
+        CreateIfMissing(
+            115,
+            pendantSlot,
+            LocalizedString.FromResource(() => ItemNames.SapphireNecklace),
+            defaultDurability,
+            healthRecovery,
+            (Stats.ManaAfterMonsterKillMultiplier, 1f / 8f, AggregateType.AddRaw));
+
+        return createdItems;
+    }
+
     /// <inheritdoc/>
     protected override void CreateItems()
     {
@@ -54,16 +162,7 @@ internal class Jewelery : Version095d.Items.Jewelery
 
         this.CreateWizardsRing();
 
-        /* Cash shop rings
-        this.CreateJewelery(107, 10, false, "Lethal Wizard's Ring", 0, 100, null, null, null);
-        this.CreateJewelery(109, 10, false, "Sapphire Ring", 0, 0, null, null, null);
-        this.CreateJewelery(110, 10, false, "Ruby Ring", 0, 0, null, null, null);
-        this.CreateJewelery(111, 10, false, "Topaz Ring", 0, 0, null, null, null);
-        this.CreateJewelery(112, 10, false, "Amethyst Ring", 0, 0, null, null, null);
-        this.CreateJewelery(113, 9, false, "Ruby Necklace", 0, 0, null, null, null);
-        this.CreateJewelery(114, 9, false, "Emerald Necklace", 0, 0, null, null, null);
-        this.CreateJewelery(115, 9, false, "Sapphire Necklace", 0, 0, null, null, null);
-        */
+        this.CreateCashShopJewelery();
 
 #pragma warning disable SA1117 // Parameters should be on same line or separete lines
         var eliteSkeletonRing = this.CreateTransformationRing(39, LocalizedString.FromResource(() => ItemNames.EliteSkeletonTransformationRing), 10, 255, 10, CharacterTransformationSkin.EliteSkeleton,

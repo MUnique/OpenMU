@@ -28,4 +28,14 @@ public enum MixResult
     /// The item will be downgraded 2 or 3 levels and its item option will be removed.
     /// </summary>
     ThirdWingsDowngradedRandom = 3,
+
+    /// <summary>
+    /// The item will disappear. If the crafting fails, it protects the referenced required items
+    /// (<see cref="ItemCraftingRequiredItem.Reference"/> greater than <c>0</c>), which then stay as is
+    /// instead of getting their own fail result.
+    /// </summary>
+    /// <remarks>
+    /// Used by the Talisman of Chaos Assembly, which keeps the item of a +10 to +15 item upgrade.
+    /// </remarks>
+    DisappearAndProtectReferencedItems = 4,
 }

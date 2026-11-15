@@ -70,6 +70,13 @@ public partial class DropItemGroupTable
     public string? RemoveTitle { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether a warning is shown for groups which are not assigned to any map.
+    /// Such groups don't drop anywhere, see <see cref="Maps"/>.
+    /// </summary>
+    [Parameter]
+    public bool WarnWhenUnassigned { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback which is called when the map assignment of a group changed.
     /// </summary>
     [Parameter]
@@ -80,6 +87,10 @@ public partial class DropItemGroupTable
     private static double ToPercent(double chance) => Math.Round(chance * 100.0, 8);
 
     private static double FromPercent(double percent) => Math.Clamp(percent / 100.0, 0.0, 1.0);
+
+    private static double? ToPercent(float? chance) => chance is { } value ? Math.Round(value * 100.0, 8) : null;
+
+    private static float? FromPercent(double? percent) => percent is { } value ? (float)Math.Clamp(value / 100.0, 0.0, 1.0) : null;
 
     private static void SetDescription(DropItemGroup group, string? text)
     {

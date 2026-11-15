@@ -7,11 +7,12 @@
 @inherits NotifyableInputBase<MUnique.OpenMU.Interfaces.LocalizedString>
 
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
+@inject IOptions<MUnique.OpenMU.Web.Shared.ContentLanguageOptions> ContentLanguageOptions
 
 <div class="mb-3">
   <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
-  @foreach (var culture in this.LocalizationOptions.Value.SupportedUICultures ?? [])
+  @foreach (var culture in this.GetCultures())
   {
     <div class="mb-1 localized-value">
       <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
@@ -62,6 +63,47 @@
         result = new(value ?? string.Empty);
         validationErrorMessage = null;
         return true;
+    }
+
+    /// <summary>
+    /// Gets the languages to show a field for: the languages of the admin panel, the configured
+    /// content languages (see <see cref="MUnique.OpenMU.Web.Shared.ContentLanguageOptions"/>), and
+    /// every language the text already has a translation in - so no translation is hidden.
+    /// </summary>
+    private List<CultureInfo> GetCultures()
+    {
+        var cultures = new List<CultureInfo>(this.LocalizationOptions.Value.SupportedUICultures ?? []);
+        foreach (var name in this.ContentLanguageOptions.Value.ContentLanguages ?? [])
+        {
+            AddCulture(name);
+        }
+
+        if (this.Value.Value is not null)
+        {
+            foreach (var translation in this.Value.GetTranslations())
+            {
+                AddCulture(translation.Key);
+            }
+        }
+
+        return cultures;
+
+        void AddCulture(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name) || cultures.Any(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                return;
+            }
+
+            try
+            {
+                cultures.Add(CultureInfo.GetCultureInfo(name));
+            }
+            catch (CultureNotFoundException)
+            {
+                // Unknown to the culture data of this host (e.g. a container without the full ICU data).
+            }
+        }
     }
 
     private string GetValueForCulture(CultureInfo culture)

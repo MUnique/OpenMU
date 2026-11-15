@@ -83,7 +83,7 @@ public class ResetCharacterAction
 
         this._player.Attributes[Stats.Resets] = resetProgression.NextResetCount;
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
-        this._player.SelectedCharacter.Experience = 0;
+        this._player.SelectedCharacter.Experience = GetExperienceForLevel(this._player.GameContext, configuration.LevelAfterReset);
         this.UpdateStats(configuration, resetProgression);
         if (configuration.MoveHome)
         {
@@ -111,6 +111,26 @@ public class ResetCharacterAction
         }
 
         await this._player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, this._npc)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the total experience a character has when it reaches the given level.
+    /// A reset which starts above level 1 has to start with this amount; otherwise the
+    /// character has to collect the experience of all lower levels again before the next
+    /// level up, and the client's experience bar stays empty until then.
+    /// </summary>
+    /// <param name="gameContext">The game context with the experience table.</param>
+    /// <param name="level">The level.</param>
+    /// <returns>The total experience at the start of the level.</returns>
+    internal static long GetExperienceForLevel(IGameContext gameContext, int level)
+    {
+        var experienceTable = gameContext.ExperienceTable;
+        if (level <= 0 || experienceTable.Length == 0)
+        {
+            return 0;
+        }
+
+        return experienceTable[Math.Min(level, experienceTable.Length - 1)];
     }
 
     private int GetResetCount()

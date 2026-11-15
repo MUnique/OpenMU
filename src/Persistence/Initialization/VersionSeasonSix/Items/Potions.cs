@@ -19,6 +19,11 @@ using MUnique.OpenMU.Persistence.Initialization.Skills;
 public class Potions : InitializerBase
 {
     /// <summary>
+    /// The maximum number of elite potions in one stack, which matches the client.
+    /// </summary>
+    private const byte ElitePotionMaximumStack = 50;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Potions"/> class.
     /// </summary>
     /// <param name="context">The persistence context.</param>
@@ -61,6 +66,58 @@ public class Potions : InitializerBase
         this.GameConfiguration.Items.Add(this.CreateCherryBlossomWine());
         this.GameConfiguration.Items.Add(this.CreateCherryBlossomRiceCake());
         this.GameConfiguration.Items.Add(this.CreateCherryBlossomFlowerPetal());
+
+        this.CreateElitePotions();
+    }
+
+    /// <summary>
+    /// Creates the elite potions of the in-game shop, which don't exist yet.
+    /// They recover a percentage of the maximum health, mana or shield immediately,
+    /// which is configured at their consume handler plugins.
+    /// The rules which block trading and selling them are applied by the <see cref="ItemRules"/>.
+    /// </summary>
+    /// <returns>The created items.</returns>
+    internal IReadOnlyList<ItemDefinition> CreateElitePotions()
+    {
+        return new[]
+            {
+                this.CreateElitePotion(70, LocalizedString.FromResource(() => ItemNames.EliteHealingPotion)),
+                this.CreateElitePotion(71, LocalizedString.FromResource(() => ItemNames.EliteManaPotion)),
+                this.CreateElitePotion(94, LocalizedString.FromResource(() => ItemNames.MediumEliteHealingPotion)),
+                this.CreateElitePotion(133, LocalizedString.FromResource(() => ItemNames.EliteShieldPotion)),
+            }
+            .OfType<ItemDefinition>()
+            .ToList();
+    }
+
+    /// <summary>
+    /// Creates an elite potion, if it doesn't exist yet.
+    /// </summary>
+    /// <param name="number">The item number.</param>
+    /// <param name="name">The name.</param>
+    /// <returns>The created item, or <c>null</c> if it already exists.</returns>
+    /// <remarks>
+    /// The client stacks them up to <see cref="ElitePotionMaximumStack"/> pieces.
+    /// </remarks>
+    private ItemDefinition? CreateElitePotion(short number, LocalizedString name)
+    {
+        const byte group = 14;
+        if (this.GameConfiguration.Items.Any(item => item.Group == group && item.Number == number))
+        {
+            return null;
+        }
+
+        var potion = this.Context.CreateNew<ItemDefinition>();
+        potion.Name = name;
+        potion.Number = number;
+        potion.Group = group;
+        potion.DropsFromMonsters = false;
+        potion.Durability = ElitePotionMaximumStack;
+        potion.Width = 1;
+        potion.Height = 1;
+        potion.SetGuid(potion.Group, potion.Number);
+        this.GameConfiguration.Items.Add(potion);
+        return potion;
     }
 
     private ItemDefinition CreateAlcohol()

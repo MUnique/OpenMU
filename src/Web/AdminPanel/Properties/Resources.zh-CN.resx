@@ -774,6 +774,9 @@
   <data name="AccessDeniedDescription" xml:space="preserve">
     <value>您的账号无权访问此页面。</value>
   </data>
+  <data name="ChangeNotPermitted" xml:space="preserve">
+    <value>您的账号无权进行此更改。</value>
+  </data>
   <data name="AccountSecurity" xml:space="preserve">
     <value>账号安全</value>
   </data>
@@ -2083,6 +2086,13 @@
   <data name="Leaderboards" xml:space="preserve">
     <value>排行榜</value>
   </data>
+  <data name="LeaderboardMiniGame_DevilSquare" xml:space="preserve"><value>恶魔广场</value></data>
+  <data name="LeaderboardMiniGame_BloodCastle" xml:space="preserve"><value>血色城堡</value></data>
+  <data name="LeaderboardMiniGame_ChaosCastle" xml:space="preserve"><value>赤色要塞</value></data>
+  <data name="LeaderboardMiniGame_IllusionTemple" xml:space="preserve"><value>幻影寺院</value></data>
+  <data name="LeaderboardMiniGame_Doppelganger" xml:space="preserve"><value>生魂广场</value></data>
+  <data name="LeaderboardMiniGame_Kanturu" xml:space="preserve"><value>提炼之塔</value></data>
+  <data name="LeaderboardMiniGame_ImperialGuardian" xml:space="preserve"><value>帝国要塞</value></data>
   <data name="LeaderboardsDescription" xml:space="preserve">
     <value>保存排名统计的小游戏中的最佳角色，按其分数总和排名。不包括机器人。</value>
   </data>
@@ -2169,6 +2179,9 @@
   </data>
   <data name="Active" xml:space="preserve">
     <value>已启用</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>未启用</value>
   </data>
   <data name="ActiveCountFormat" xml:space="preserve">
     <value>已启用 {0} 个，共 {1} 个</value>
@@ -2766,5 +2779,32 @@
   </data>
   <data name="LogLevelOverridesInvalid" xml:space="preserve">
     <value>每个日志来源都必须填写名称，且名称不能重复。</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>检查</value>
+  </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>导出商店</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>导入商店</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>导入将替换“{0}”商店中的所有物品。是否继续？</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>已将 {0} 件物品导入商店。请使用“保存更改”应用这些更改。</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>该文件不是有效的商店导出文件。</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>商店未更改，因为文件包含无法导入的条目：{0}</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>导入已取消，因为所选商人或编辑会话在此期间发生了变化。</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>导入失败。商店可能已被部分修改；请使用“放弃更改”撤销未保存的更改。</value>
   </data>
 </root>

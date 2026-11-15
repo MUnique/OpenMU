@@ -1,5 +1,4 @@
-﻿
-.equipped-container {
+﻿.equipped-container {
     --boxSize: 42px;
     --storageColumns: 8;
     background-image: url('/_content/MUnique.OpenMU.Web.ItemEditor/img/equipment_back.png');
@@ -8,31 +7,46 @@
     display: flex;
     position: relative;
 }
-    .equipped-container > div {
-        position: absolute;
-    }
+
+.equipped-container > div {
+    position: absolute;
+}
+
+.equipped-container.drag-active > div {
+    cursor: copy;
+}
+
+.equipped-container.drag-active > div.drop-preview-valid {
+    background-color: rgb(173 255 47 / 35%);
+    box-shadow: inset 0 0 0 2px greenyellow;
+}
+
+.equipped-container.drag-active > div.drop-preview-invalid {
+    background-color: rgb(255 69 69 / 30%);
+    box-shadow: inset 0 0 0 2px #ff4545;
+}
 
 .slot-left {
     width: calc(var(--boxSize) * 2);
-    height: calc(var(--boxSize) * 4);
+    height: calc(var(--boxSize) * 3);
     left: 0px;
-    top: 96px;
+    top: 94px;
 }
 
-    .slot-left ::deep > .w_1 {
-        left: calc(var(--boxSize) * 0.5);
-    }
+.slot-left ::deep > .w_1 {
+    left: calc(var(--boxSize) * 0.5);
+}
 
 .slot-right {
     width: calc(var(--boxSize) * 2);
-    height: calc(var(--boxSize) * 4);
+    height: calc(var(--boxSize) * 3);
     left: 241px;
-    top: 96px;
+    top: 94px;
 }
 
-    .slot-right ::deep > .w_1 {
-        left: calc(var(--boxSize) * 0.5);
-    }
+.slot-right ::deep > .w_1 {
+    left: calc(var(--boxSize) * 0.5);
+}
 
 .slot-helm {
     width: calc(var(--boxSize) * 2);
@@ -74,56 +88,60 @@
     height: calc(var(--boxSize) * 2);
     left: 208px;
     top: 2px;
+    overflow: hidden;
 }
 
-  .slot-wings ::deep .mu-item img {
+.slot-wings ::deep > .mu-item {
     top: 0;
     left: 0;
-    max-width: 120%;
-    max-height: 150%;
-  }
-
-  .slot-wings ::deep > .h_3 {
-    top: calc(var(--boxSize) * -0.5);
-  }
-  .slot-wings ::deep > .w_4 {
-    width: calc(var(--boxSize) * 3);
-  }
-  .slot-wings ::deep > .w_5 {
-    width: calc(var(--boxSize) * 3);
-  }
-
-.slot-pet {
-    width: calc(var(--boxSize) * 1);
-    height: calc(var(--boxSize) * 1);
-    left: 0px;
-    top: 2px;
+    width: 100%;
+    height: 100%;
 }
 
-    .slot-pet ::deep > .w_1 {
-        left: calc(var(--boxSize) * 0.5);
-    }
-    .slot-pet ::deep > .h_1 {
-        top: calc(var(--boxSize) * 0.5);
-    }
+.slot-wings ::deep .mu-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+.slot-pet {
+    width: calc(var(--boxSize) * 2);
+    height: calc(var(--boxSize) * 2);
+    left: 0px;
+    top: 0px;
+}
+
+.slot-pet ::deep > .w_1 {
+    left: calc(var(--boxSize) * 0.5);
+}
+
+.slot-pet ::deep > .h_1 {
+    top: calc(var(--boxSize) * 0.5);
+}
 
 .slot-pendant {
-    width: calc(var(--boxSize) * 1);
-    height: calc(var(--boxSize) * 1);
+    width: var(--boxSize);
+    height: var(--boxSize);
     left: 82px;
     top: 96px;
 }
 
 .slot-ring1 {
-    width: calc(var(--boxSize) * 1);
-    height: calc(var(--boxSize) * 1);
+    width: var(--boxSize);
+    height: var(--boxSize);
     left: 82px;
     top: 231px;
 }
 
 .slot-ring2 {
-    width: calc(var(--boxSize) * 1);
-    height: calc(var(--boxSize) * 1);
+    width: var(--boxSize);
+    height: var(--boxSize);
     left: 203px;
     top: 231px;
 }

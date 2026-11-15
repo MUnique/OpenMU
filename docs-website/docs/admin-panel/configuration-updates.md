@@ -6,7 +6,7 @@ description: Apply the configuration data updates which ship with new OpenMU ver
 
 # Configuration updates
 
-**Navigation:** *Updates* — route `/config-updates`
+**Navigation:** *System → Updates* — route `/config-updates`
 
 OpenMU is under active development, and new versions regularly bring changes to
 the **game configuration data**: a corrected monster stat, a new drop item group,
@@ -17,7 +17,8 @@ so those changes cannot simply be applied by updating the software. Instead they
 come as *configuration updates*, which you apply here.
 
 The navigation menu shows a badge with the number of available updates, so you
-notice them after an upgrade.
+notice them after an upgrade. While the *System* group is collapsed, the badge
+is shown beside *System*.
 
 ## Applying updates
 

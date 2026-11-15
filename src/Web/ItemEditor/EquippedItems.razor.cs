@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Web.ItemEditor;
 using Microsoft.AspNetCore.Components;
 
 /// <summary>
-/// Component for a item box.
+/// Component for equipped items.
 /// </summary>
 public partial class EquippedItems
 {
@@ -27,6 +27,10 @@ public partial class EquippedItems
         "slot-ring2",
     };
 
+    private readonly InventoryPlacementService _placementService = new(StorageType.Inventory, 0);
+    private byte? _previewSlot;
+    private bool _previewIsValid;
+
     /// <summary>
     /// Gets or sets the selected item.
     /// </summary>
@@ -34,10 +38,34 @@ public partial class EquippedItems
     public Item? SelectedItem { get; set; }
 
     /// <summary>
+    /// Gets or sets the item which is currently being dragged.
+    /// </summary>
+    [Parameter]
+    public Item? DraggedItem { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback when the selected item changed.
     /// </summary>
     [Parameter]
     public EventCallback<Item?> SelectedItemChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback when an item starts being dragged.
+    /// </summary>
+    [Parameter]
+    public EventCallback<(Item Item, byte ColumnOffset, byte RowOffset)> OnDragStarted { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback when dragging ends.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragEnded { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback when an item is dropped on an equipment slot.
+    /// </summary>
+    [Parameter]
+    public EventCallback<(byte Slot, int StartIndex, int Rows, bool IsEquipmentSlot)> OnItemDropped { get; set; }
 
     /// <summary>
     /// Sets the selected item.
@@ -48,7 +76,7 @@ public partial class EquippedItems
         this.SelectedItem = viewModel.Item;
         if (this.SelectedItemChanged.HasDelegate)
         {
-            await this.SelectedItemChanged.InvokeAsync(viewModel.Item).ConfigureAwait(true);
+            await this.SelectedItemChanged.InvokeAsync(viewModel.Item).ConfigureAwait(false);
         }
     }
 
@@ -56,6 +84,10 @@ public partial class EquippedItems
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (this.DraggedItem is null)
+        {
+            this._previewSlot = null;
+        }
     }
 
     /// <inheritdoc />
@@ -71,11 +103,38 @@ public partial class EquippedItems
         return this.Value?.Items.FirstOrDefault(item => item.ItemSlot == slot)?.AsViewModel();
     }
 
+    private void OnDragOver(byte slot)
+    {
+        if (this.DraggedItem is not { } draggedItem || this.Value is not { } storage || this._previewSlot == slot)
+        {
+            return;
+        }
+
+        this._previewSlot = slot;
+        this._previewIsValid = this._placementService.CanEquipItem(draggedItem, slot, storage.Items);
+        this.StateHasChanged();
+    }
+
+    private string GetDropPreviewClass(byte slot)
+    {
+        if (this._previewSlot != slot)
+        {
+            return string.Empty;
+        }
+
+        return this._previewIsValid ? "drop-preview-valid" : "drop-preview-invalid";
+    }
+
+    private Task DropAsync(byte slot)
+    {
+        return this.OnItemDropped.InvokeAsync((slot, 0, 0, true));
+    }
+
     private async Task OnItemMovedAsync()
     {
         if (this.SelectedItemChanged.HasDelegate)
         {
-            await this.SelectedItemChanged.InvokeAsync(this.SelectedItem).ConfigureAwait(true);
+            await this.SelectedItemChanged.InvokeAsync(this.SelectedItem).ConfigureAwait(false);
         }
     }
 }

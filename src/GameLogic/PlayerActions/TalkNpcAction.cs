@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 using MUnique.OpenMU.GameLogic.Views.Vault;
+using MUnique.OpenMU.GameLogic.WaitingItems;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -72,6 +73,12 @@ public class TalkNpcAction
     private async ValueTask ShowDialogOfOpenedNpcAsync(Player player)
     {
         var npcStats = player.OpenedNpc!.Definition;
+        if (npcStats.ItemCraftings.Any())
+        {
+            // Leftovers of a crafting dialog which was left without closing it properly.
+            await player.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);
+        }
+
         switch (npcStats.NpcWindow)
         {
             case NpcWindow.Undefined:
@@ -101,8 +108,16 @@ public class TalkNpcAction
             case NpcWindow.VaultStorage:
                 player.Account!.Vault ??= player.PersistenceContext.CreateNew<ItemStorage>();
                 var warehouseSize = player.Account.IsVaultExtended ? InventoryConstants.WarehouseSize * 2 : InventoryConstants.WarehouseSize;
-                player.Vault = new Storage(warehouseSize, player.Account.Vault);
+                var character = player.SelectedCharacter!;
+                var waitingItemCount = character.WaitingItems?.Count ?? 0;
+                player.Vault = new Storage(warehouseSize, 0, 0, player.Account.Vault, player.PutAsideWhenLoaded(character));
                 await player.InvokeViewPlugInAsync<IShowVaultPlugIn>(p => p.ShowVaultAsync()).ConfigureAwait(false);
+                if ((character.WaitingItems?.Count ?? 0) > waitingItemCount
+                    && WaitingItemsDeliveryPlugIn.GetActive(player.GameContext) is { } delivery)
+                {
+                    await delivery.DeliverAndShowAsync(player).ConfigureAwait(false);
+                }
+
                 break;
             case NpcWindow.GuildMaster:
                 if (await this.IsPlayedAllowedToCreateGuildAsync(player).ConfigureAwait(false))

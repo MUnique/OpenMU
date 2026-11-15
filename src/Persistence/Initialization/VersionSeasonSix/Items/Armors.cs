@@ -163,8 +163,8 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(44, 3, 2, 2, LocalizedString.FromResource(() => ItemNames.LiliumArmor), 113, 71, 84, 0, 110, 50, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(45, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.TitanArmor), 132, 81, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateArmor(46, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.BraveArmor), 128, 62, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        this.CreateArmor(47, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.DestoryArmor), 131, 80, 86, 0, 212, 57, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateArmor(48, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.PhantomArmor), 125, 66, 86, 0, 62, 19, 165, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateArmor(47, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.PhantomArmor), 131, 80, 86, 0, 212, 57, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateArmor(48, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.DestroyArmor), 125, 66, 86, 0, 62, 19, 165, 0, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateArmor(49, 3, 2, 2, LocalizedString.FromResource(() => ItemNames.SeraphimArmor), 129, 60, 86, 0, 55, 197, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateArmor(50, 3, 2, 2, LocalizedString.FromResource(() => ItemNames.FaithArmor), 122, 52, 86, 0, 32, 29, 138, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateArmor(51, 3, 2, 3, LocalizedString.FromResource(() => ItemNames.PaewangArmor), 132, 58, 86, 0, 105, 38, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
@@ -222,8 +222,8 @@ public class Armors : ArmorInitializerBase
         this.CreateArmor(44, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.LiliumPants), 102, 52, 82, 0, 75, 30, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateArmor(45, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.TitanPants), 116, 74, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateArmor(46, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.BravePants), 112, 58, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        this.CreateArmor(47, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.DestoryPants), 115, 66, 86, 0, 212, 57, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateArmor(48, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.PhantomPants), 113, 51, 86, 0, 62, 19, 165, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateArmor(47, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.PhantomPants), 115, 66, 86, 0, 212, 57, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateArmor(48, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.DestroyPants), 113, 51, 86, 0, 62, 19, 165, 0, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateArmor(49, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.SeraphimPants), 116, 53, 86, 0, 55, 197, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateArmor(50, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.FaithPants), 109, 46, 86, 0, 32, 29, 138, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateArmor(51, 4, 2, 2, LocalizedString.FromResource(() => ItemNames.PaewangPants), 116, 46, 86, 0, 105, 38, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);
@@ -281,8 +281,8 @@ public class Armors : ArmorInitializerBase
         this.CreateGloves(44, LocalizedString.FromResource(() => ItemNames.LiliumGloves), 82, 45, 6, 80, 0, 75, 20, 0, 0, 0, 0, 0, 2);
         this.CreateGloves(45, LocalizedString.FromResource(() => ItemNames.TitanGloves), 100, 56, 7, 86, 0, 222, 32, 0, 1, 0, 0, 0, 0);
         this.CreateGloves(46, LocalizedString.FromResource(() => ItemNames.BraveGloves), 97, 42, 7, 86, 0, 74, 162, 0, 1, 0, 0, 0, 0);
-        this.CreateGloves(47, LocalizedString.FromResource(() => ItemNames.DestroyGloves), 101, 49, 7, 86, 0, 212, 57, 0, 0, 0, 1, 0, 0);
-        this.CreateGloves(48, LocalizedString.FromResource(() => ItemNames.PhantomGloves), 99, 40, 7, 86, 0, 62, 19, 0, 0, 0, 1, 0, 0);
+        this.CreateGloves(47, LocalizedString.FromResource(() => ItemNames.PhantomGloves), 101, 49, 7, 86, 0, 212, 57, 0, 0, 0, 1, 0, 0);
+        this.CreateGloves(48, LocalizedString.FromResource(() => ItemNames.DestroyGloves), 99, 40, 7, 86, 0, 62, 19, 0, 0, 0, 1, 0, 0);
         this.CreateGloves(49, LocalizedString.FromResource(() => ItemNames.SeraphimGloves), 100, 43, 7, 86, 0, 55, 197, 0, 0, 1, 0, 0, 0);
         this.CreateGloves(50, LocalizedString.FromResource(() => ItemNames.FaithGloves), 95, 36, 7, 86, 0, 32, 29, 0, 0, 1, 0, 0, 0);
         this.CreateGloves(51, LocalizedString.FromResource(() => ItemNames.PaewangGloves), 101, 34, 7, 86, 0, 105, 38, 0, 0, 0, 0, 1, 0);
@@ -336,8 +336,8 @@ public class Armors : ArmorInitializerBase
         this.CreateBoots(44, LocalizedString.FromResource(() => ItemNames.LiliumBoots), 90, 50, 0, 85, 0, 150, 30, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0);
         this.CreateBoots(45, LocalizedString.FromResource(() => ItemNames.TitanBoots), 96, 57, 0, 86, 0, 222, 32, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
         this.CreateBoots(46, LocalizedString.FromResource(() => ItemNames.BraveBoots), 93, 45, 0, 86, 0, 74, 162, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
-        this.CreateBoots(47, LocalizedString.FromResource(() => ItemNames.DestoryBoots), 97, 54, 0, 86, 0, 212, 57, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateBoots(48, LocalizedString.FromResource(() => ItemNames.PhantomBoots), 94, 44, 0, 86, 0, 62, 19, 165, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateBoots(47, LocalizedString.FromResource(() => ItemNames.PhantomBoots), 97, 54, 0, 86, 0, 212, 57, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0);
+        this.CreateBoots(48, LocalizedString.FromResource(() => ItemNames.DestroyBoots), 94, 44, 0, 86, 0, 62, 19, 165, 0, 0, 0, 0, 0, 1, 0, 0, 0);
         this.CreateBoots(49, LocalizedString.FromResource(() => ItemNames.SeraphimBoots), 97, 42, 0, 86, 0, 55, 197, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateBoots(50, LocalizedString.FromResource(() => ItemNames.FaithBoots), 92, 35, 0, 86, 0, 32, 29, 138, 0, 0, 0, 0, 1, 0, 0, 0, 0);
         this.CreateBoots(51, LocalizedString.FromResource(() => ItemNames.PhaewangBoots), 98, 38, 0, 86, 0, 105, 38, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0);

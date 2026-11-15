@@ -67,6 +67,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new HarmonyOptions(this.Context, this.GameConfiguration).Initialize();
         new GuardianOptions(this.Context, this.GameConfiguration).Initialize();
         new Armors(this.Context, this.GameConfiguration).Initialize();
+        new LuckyItems(this.Context, this.GameConfiguration).Initialize();
         new Weapons(this.Context, this.GameConfiguration).Initialize();
         new Potions(this.Context, this.GameConfiguration).Initialize();
         new Jewels(this.Context, this.GameConfiguration).Initialize();
@@ -76,6 +77,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new AncientSets(this.Context, this.GameConfiguration).Initialize();
         new BoxOfLuck(this.Context, this.GameConfiguration).Initialize();
         new GensRewardItems(this.Context, this.GameConfiguration).Initialize();
+        new GoblinBoxItems(this.Context, this.GameConfiguration).Initialize();
         this.CreateJewelMixes();
         new NpcInitialization(this.Context, this.GameConfiguration).Initialize();
         new InvasionMobsInitialization(this.Context, this.GameConfiguration).Initialize();
@@ -84,6 +86,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         this.WireRenaDropToEventMaps();
         new SocketSystem(this.Context, this.GameConfiguration).Initialize();
         new ChaosMixes(this.Context, this.GameConfiguration).Initialize();
+        new CraftingTalismans(this.Context, this.GameConfiguration).Initialize();
         new Gates(this.Context, this.GameConfiguration).Initialize();
         new Quest(this.Context, this.GameConfiguration).Initialize();
         new Quests(this.Context, this.GameConfiguration).Initialize();
@@ -96,7 +99,9 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         new IllusionTempleInitializer(this.Context, this.GameConfiguration).Initialize();
         new ImperialGuardianInitializer(this.Context, this.GameConfiguration).Initialize();
         new CrywolfInitializer(this.Context, this.GameConfiguration).Initialize();
+        EventTicketItems.AssignFreeTicketItems(this.GameConfiguration);
         new CashShopItems(this.Context, this.GameConfiguration).Initialize();
+        new BuffItems(this.Context, this.GameConfiguration).Initialize();
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();

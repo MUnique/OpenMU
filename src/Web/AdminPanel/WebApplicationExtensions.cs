@@ -25,6 +25,7 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Components;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Services;
+using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
 using MUnique.OpenMU.Web.Shared.Models;
 using MUnique.OpenMU.Web.Shared.Services;
@@ -59,7 +60,8 @@ public static class WebApplicationExtensions
             {
                 o.AddSupportedCultures(supportedCultures);
                 o.AddSupportedUICultures(supportedCultures);
-            });
+            })
+            .Configure<ContentLanguageOptions>(builder.Configuration.GetSection("AdminPanel"));
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
@@ -148,7 +150,7 @@ public static class WebApplicationExtensions
         app.UseAdminPanelAuth();
 
         // The log files may contain sensitive information, so they are only served to authorized users.
-        app.UseAuthorizedPath("/logs");
+        app.UseAuthorizedPath("/logs", AdminPolicies.Administrator);
         app.UseStaticFiles(new StaticFileOptions
         {
             FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "logs")),

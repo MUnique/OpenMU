@@ -66,6 +66,15 @@ internal partial class Character : MUnique.OpenMU.DataModel.Entities.Character, 
     public override ICollection<MUnique.OpenMU.DataModel.Entities.CharacterQuestState> QuestStates => base.QuestStates ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.CharacterQuestState, CharacterQuestState>(this.RawQuestStates);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="WaitingItems" />.
+    /// </summary>
+    public ICollection<WaitingItem> RawWaitingItems { get; } = new EntityFramework.List<WaitingItem>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Entities.WaitingItem> WaitingItems => base.WaitingItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Entities.WaitingItem, WaitingItem>(this.RawWaitingItems);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="CharacterClass"/>.
     /// </summary>
     public Guid? CharacterClassId { get; set; }

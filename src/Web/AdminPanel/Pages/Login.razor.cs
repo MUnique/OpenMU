@@ -202,29 +202,8 @@ public partial class Login : IAsyncDisposable
         // The return url may belong to another application behind the same reverse proxy, e.g. Grafana.
         // When the admin panel is hosted at the root path, the router would handle it as one of its own pages,
         // so it has to be loaded from the server.
-        var returnUrl = this.GetSafeReturnUrl();
+        var returnUrl = ReturnUrlValidator.GetSafeReturnUrl(this.ReturnUrl, this.NavigationManager.BaseUri);
         this.NavigationManager.NavigateTo(returnUrl, forceLoad: returnUrl.Length > 0);
-    }
-
-    /// <summary>
-    /// Gets the return url, making sure that it stays within this application.
-    /// </summary>
-    private string GetSafeReturnUrl()
-    {
-        if (string.IsNullOrWhiteSpace(this.ReturnUrl))
-        {
-            return string.Empty;
-        }
-
-        // An absolute or protocol relative url could send the user to a foreign site after login.
-        if (this.ReturnUrl.StartsWith('/')
-            || this.ReturnUrl.StartsWith('\\')
-            || this.ReturnUrl.Contains("://", StringComparison.Ordinal))
-        {
-            return string.Empty;
-        }
-
-        return this.ReturnUrl;
     }
 
     private void ToggleRecoveryCode()

@@ -22,11 +22,18 @@ Set the following in the admin host's `appsettings.json` and restart it:
       "ReadOnly": true,
       "MaxBulkSize": 100,
       "RequestsPerMinute": 60,
-      "MaxRequestBodyBytes": 65536
+      "MaxRequestBodyBytes": 65536,
+      "MaxPanelPluginConfigurationLength": 1048576
     }
   }
 }
 ```
+
+`MaxPanelPluginConfigurationLength` is not an MCP setting: it limits the size
+(in characters) of a plugin configuration saved by the panel's graphical
+editor, which always saves the whole configuration. It applies even when MCP is
+disabled. Raise it if saving a plugin with long text lists reports that the
+limit is exceeded.
 
 Alternatively, set `OPENMU_MCP_ENABLED=true` in the admin host's environment
 (including Docker), or `AdminPanel__Mcp__Enabled=true` through standard .NET

@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.Form;
 
@@ -16,6 +18,7 @@ using MUnique.OpenMU.Web.Shared.Components.Form;
 [Route("/edit-config/{typeString}/")]
 [Route("/edit-config/{typeString}/{id:guid}")]
 [Route("/edit-config/{typeString}/{id:guid}/hide-collections")]
+[Authorize(Policy = AdminPolicies.Administrator)]
 public sealed partial class EditConfig : EditBase
 {
     private static readonly IDictionary<Type, IList<(string Caption, string Path)>> EditorPages =

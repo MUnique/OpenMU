@@ -220,6 +220,14 @@ public class MoveItemAction
             {
                 await tradingPartner.InvokeViewPlugInAsync<ITradeItemAppearPlugIn>(p => p.TradeItemAppearAsync(toSlot, item)).ConfigureAwait(false);
             }
+
+            // A changed offer takes both confirmations back, as a changed amount of money does (TradeMoneyAction).
+            // Otherwise a trader could take an item out after the partner confirmed, confirm, and get the
+            // partner's items for less than they agreed to.
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IChangeTradeButtonStatePlugIn>(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red)).ConfigureAwait(false);
+            await tradingPartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false);
+            await tradingPartner.InvokeViewPlugInAsync<IChangeTradeButtonStatePlugIn>(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Red)).ConfigureAwait(false);
         }
 
         return true;
@@ -278,7 +286,7 @@ public class MoveItemAction
             case Storages.SeedSphereCrafting:
             case Storages.SeedMountCrafting:
             case Storages.SeedUnmountCrafting:
-            case Storages.LuckyItemExchange:
+            case Storages.LuckyItemTrade:
             case Storages.LuckyItemRefinery:
                 if (player.TemporaryStorage is not null)
                 {
@@ -483,7 +491,7 @@ public class MoveItemAction
             Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
 
             // These IDs select dialog operations over one temporary grid; crafting requests select recipes.
-            Storages.LuckyItemExchange or Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
+            Storages.LuckyItemTrade or Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
             _ => false,
         };
     }

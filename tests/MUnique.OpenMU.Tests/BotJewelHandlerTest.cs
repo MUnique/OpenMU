@@ -175,6 +175,9 @@ public class BotJewelHandlerTest
         item.Setup(i => i.ItemSetGroups).Returns(new List<ItemOfItemSet>());
         var definition = new Mock<ItemDefinition>();
         definition.SetupAllProperties();
+        definition.Setup(d => d.PossibleItemSetGroups).Returns(new List<ItemSetGroup>());
+        definition.Setup(d => d.BasePowerUpAttributes).Returns(new List<ItemBasePowerUpDefinition>());
+        definition.Setup(d => d.Requirements).Returns(new List<AttributeRequirement>());
         var itemSlot = new Mock<ItemSlotType>();
         itemSlot.Setup(s => s.ItemSlots).Returns(new List<int> { slot });
         definition.Setup(d => d.ItemSlot).Returns(itemSlot.Object);

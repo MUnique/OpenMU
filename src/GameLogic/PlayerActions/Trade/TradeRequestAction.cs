@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 
 /// <summary>
@@ -23,6 +24,12 @@ public class TradeRequestAction
         {
             player.Logger.LogWarning("This or the requested player is template player, cannot trade.");
             return false;
+        }
+
+        if (player is Player requester && partner is Player requested
+            && requester.GameContext.PlugInManager.GetPlugInPoint<ITradeRequestedPlugIn>() is { } plugInPoint)
+        {
+            await plugInPoint.TradeRequestedAsync(requester, requested).ConfigureAwait(false);
         }
 
         if (player.ViewPlugIns.GetPlugIn<IShowTradeRequestPlugIn>() is null || partner.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>() is null)

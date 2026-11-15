@@ -53,7 +53,15 @@ public static class ItemExchangeExport
     /// <summary>
     /// Gets the item fields the file carries, in the order the client writes them.
     /// </summary>
-    internal static IReadOnlyList<ItemExchangeField> Fields { get; } = [];
+    /// <remarks>
+    /// A field has the client's key and meaning, e.g. the size, <c>width</c> and <c>height</c>, is
+    /// the cells the item takes in an item grid.
+    /// </remarks>
+    internal static IReadOnlyList<ItemExchangeField> Fields { get; } =
+    [
+        NumberField("width", item => item.Width),
+        NumberField("height", item => item.Height),
+    ];
 
     /// <summary>
     /// Writes the exchange file of the items of the configuration.
@@ -150,5 +158,24 @@ public static class ItemExchangeExport
     private static bool IsKnownToTheClient(ItemDefinition item)
     {
         return item.Group <= MaximumGroup && item.Number >= 0 && item.Number <= MaximumNumber;
+    }
+
+    /// <summary>
+    /// Creates a number field, which is left out when it's 0, the client's default, as the
+    /// client's files leave it out.
+    /// </summary>
+    /// <param name="key">The client's key of the field, which the file lists and the items carry.</param>
+    /// <param name="value">Gets the field's value of an item.</param>
+    /// <returns>The field.</returns>
+    private static ItemExchangeField NumberField(string key, Func<ItemDefinition, int> value)
+    {
+        return new(key, (writer, item) =>
+        {
+            var number = value(item);
+            if (number != 0)
+            {
+                writer.WriteNumber(key, number);
+            }
+        });
     }
 }

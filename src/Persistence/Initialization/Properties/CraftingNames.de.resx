@@ -126,4 +126,13 @@
   <data name="GemstoneRefinery" xml:space="preserve">
     <value>Edelstein-Veredelung</value>
   </data>
+  <data name="GoldenBoxCombination" xml:space="preserve">
+    <value>Goldene-Box-Kombination</value>
+  </data>
+  <data name="SilverBoxCombination" xml:space="preserve">
+    <value>Silberne-Box-Kombination</value>
+  </data>
+  <data name="LuckyItemExchange" xml:space="preserve">
+    <value>Glücksgegenstand-Tausch</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-﻿// <copyright file="EditItemDrops.razor.cs" company="MUnique">
+// <copyright file="EditItemDrops.razor.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -15,6 +15,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -51,6 +52,12 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
     {
         this._additionEditContext = new EditContext(this._addition);
     }
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the data source.
@@ -394,7 +401,13 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
 
     private void OnAddMapGroup()
     {
-        this.CreateGroup();
+        // A new map group is assigned to all maps, so that it takes effect right away.
+        // The maps can be adjusted afterwards, like with the 'Assign to all maps' button.
+        var group = this.CreateGroup();
+        foreach (var map in this._maps)
+        {
+            map.DropItemGroups.Add(group);
+        }
     }
 
     private void OnAddMonsterGroup(MonsterDefinition monster)
@@ -493,6 +506,12 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
 
     private async Task OnSaveButtonClickAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             if (this._persistenceContext is { } context)

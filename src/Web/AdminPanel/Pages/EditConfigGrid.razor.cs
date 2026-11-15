@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared;
 using MUnique.OpenMU.Web.Shared.Components.Modal;
@@ -37,6 +38,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public string TypeString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the guard which checks the permission of the current user before saving.
+    /// </summary>
+    [Inject]
+    public AdminPolicyGuard PolicyGuard { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the data source.
@@ -108,6 +115,11 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private string? NameFilter { get; set; }
 
+    /// <summary>
+    /// Gets a value indicating whether at least one entry has a number which can be displayed and used for sorting.
+    /// </summary>
+    private bool HasNumbers => this._viewModels?.Any(viewModel => viewModel.Number is not null) ?? false;
+
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
@@ -171,9 +183,13 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
             data = await context.GetAsync(this.Type, cancellationToken).ConfigureAwait(false);
         }
 
+        // Objects with a number, like monsters, are ordered by it; the name is only the fallback
+        // for objects without a number, and for entries which share the same number.
         this._viewModels = data.OfType<object>()
             .Select(o => new ViewModel(o))
-            .OrderBy(o => o.Name)
+            .OrderBy(o => o.Number is null)
+            .ThenBy(o => o.Number)
+            .ThenBy(o => o.Name)
             .ToList();
 
         await this.InvokeAsync(async () =>
@@ -191,6 +207,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task OnDeleteButtonClickAsync(ViewModel viewModel)
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             var dialogResult = await this.ModalService.ShowQuestionAsync(Resources.ConfirmDelete, string.Format(Resources.ConfirmDeleteEntry, viewModel.Name)).ConfigureAwait(true);
@@ -225,6 +247,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task OnCreateButtonClickAsync()
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         var cancellationToken = this._disposeCts?.Token ?? default;
         var gameConfiguration = await this.DataSource.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         var creationContext = this.PersistenceContextProvider.CreateNewTypedContext(this.Type!, true, gameConfiguration);
@@ -278,6 +306,12 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
 
     private async Task OnDuplicateButtonClickAsync(ViewModel viewModel)
     {
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Administrator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
         try
         {
             var cancellationToken = this._disposeCts?.Token ?? default;
@@ -471,6 +505,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         {
             this.Parent = parent;
             this.Id = parent.GetId();
+            this.Number = parent.GetNumber();
             this.Name = parent.GetName();
         }
 
@@ -484,6 +519,11 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         /// Gets or sets the identifier of the object.
         /// </summary>
         public Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of the object, e.g. the number of a monster or an item, if it has one.
+        /// </summary>
+        public int? Number { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the object.

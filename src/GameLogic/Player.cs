@@ -829,6 +829,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return hitInfo;
         }
 
+        if (this.Attributes[Stats.IsFrozen] > 0)
+        {
+            await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
+        }
+
         if (this.Attributes[Stats.IsAsleep] > 0)
         {
             await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
@@ -1333,6 +1338,14 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="decrement">The decrement.</param>
     public async ValueTask DecreaseItemDurabilityAsync(Item item, double decrement)
     {
+        if (this.Attributes?[Stats.ItemDurabilityProtection] > 0
+            && item.ItemSlot != InventoryConstants.PetSlot
+            && !item.IsTrainablePet())
+        {
+            // E.g. the Talisman of Item Protection keeps the durability of all equipped items, except pets.
+            return;
+        }
+
         var previousFactor = item.GetCurrentDurabilityFactor();
         if (item.DecreaseDurability(decrement))
         {
@@ -1342,6 +1355,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         if (previousFactor != item.GetCurrentDurabilityFactor())
         {
             await this._storages.Inventory!.AsInventoryStorage!.RaiseEquippedItemsChangedAsync(item, true, true).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Returns the items which are still in the temporary storage (the tray of a crafting NPC)
+    /// to the inventory and tells the client about it. Without the update, the client keeps
+    /// showing neither the tray nor the inventory slots until the next login.
+    /// </summary>
+    public async ValueTask ReturnTemporaryStorageItemsAsync()
+    {
+        if (await this._storages.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
+        {
+            await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
         }
     }
 
@@ -1723,8 +1749,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
         if (oversd < 0)
         {
-            this.Attributes[Stats.CurrentShield] = 0;
             healthDamage += (uint)(oversd * (-1));
+
+            if (this.Attributes[Stats.CurrentShield] > 0
+                && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
+                && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio])
+            {
+                await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.ShieldBurst), true).ConfigureAwait(false);
+            }
+
+            this.Attributes[Stats.CurrentShield] = 0;
         }
         else
         {
@@ -1946,6 +1980,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
+    /// Moves the character to the safezone of a mini game map, if it was saved on one and doesn't
+    /// rejoin a running game. E.g. the winners of the Illusion Temple stay on its map until they close the
+    /// result dialog; a character which left the game there would otherwise log in on the empty event map.
+    /// </summary>
+    /// <param name="character">The character.</param>
+    private void MoveOutOfMiniGameMap(Character character)
+    {
+        if (character.CurrentMap is not { } map
+            || this.GameContext.Configuration.MiniGameDefinitions?.Any(definition => Equals(definition.Entrance?.Map, map)) is not true)
+        {
+            return;
+        }
+
+        var targetMap = this.GameContext.Configuration.GetActiveSpawnMap(map.SafezoneMap, character.CharacterClass?.HomeMap);
+        if (targetMap?.GetSafezoneGate() is not { } spawnGate)
+        {
+            this.Logger.LogWarning("Character {character} is on the mini game map {map}, but there is no safezone to move it to.", character, map);
+            return;
+        }
+
+        this.Logger.LogInformation("Character {character} is on the mini game map {map} without a running game, moving it to {targetMap}.", character, map, targetMap);
+        character.CurrentMap = targetMap;
+        character.PositionX = (byte)Rand.NextInt(spawnGate.X1, spawnGate.X2 + 1);
+        character.PositionY = (byte)Rand.NextInt(spawnGate.Y1, spawnGate.Y2 + 1);
+    }
+
+    /// <summary>
     /// Releases the attribute system of the character which was in the game.
     /// </summary>
     /// <remarks>
@@ -1972,6 +2033,53 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         (this.SkillList as IDisposable)?.Dispose();
         this.SkillList = null;
+    }
+
+    /// <summary>
+    /// Applies a class change of the selected character, which happened while it's in the game (quest
+    /// evolution), to the running attribute system. The system is built with the class of the moment of
+    /// entering the game, so without this a fresh master class would have no Master Level stat and no
+    /// master points per level up until the next login: the master level-ups would be lost silently.
+    /// Only the stat attributes and the base values are applied; the attribute combinations of the new
+    /// class follow with the next login.
+    /// </summary>
+    /// <param name="previousClass">The character class before the change.</param>
+    public void ApplyCharacterClassChange(CharacterClass previousClass)
+    {
+        if (this.SelectedCharacter is not { CharacterClass: { } newClass } character
+            || this.Attributes is not { } attributes
+            || ReferenceEquals(previousClass, newClass))
+        {
+            return;
+        }
+
+        this.AddMissingStatAttributes();
+        foreach (var statAttribute in character.Attributes)
+        {
+            attributes.TryAddStatAttribute(statAttribute);
+        }
+
+        foreach (var oldValue in previousClass.BaseAttributeValues
+                     .Where(o => !newClass.BaseAttributeValues.Any(n => n.Definition == o.Definition && n.Value == o.Value))
+                     .ToList())
+        {
+            attributes.RemoveElement(oldValue, oldValue.Definition);
+        }
+
+        foreach (var newValue in newClass.BaseAttributeValues
+                     .Where(n => !previousClass.BaseAttributeValues.Any(o => o.Definition == n.Definition && o.Value == n.Value))
+                     .ToList())
+        {
+            attributes.AddElement(newValue, newValue.Definition);
+        }
+
+        this.Logger.LogInformation(
+            "Character {Name} changed class in the game from {Previous} to {New}; master level {MasterLevel}, master points per level up {Points}.",
+            character.Name,
+            previousClass.Name,
+            newClass.Name,
+            attributes[Stats.MasterLevel],
+            attributes[Stats.MasterPointsPerLevelUp]);
     }
 
     /// <summary>
@@ -2079,7 +2187,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         selectedCharacter.CurrentMap ??= selectedCharacter.CharacterClass?.HomeMap;
         this.MoveOutOfInactiveMap(selectedCharacter);
-        await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false);
+        if (!await this.GameContext.MiniGames.TryRejoinAsync(this).ConfigureAwait(false))
+        {
+            this.MoveOutOfMiniGameMap(selectedCharacter);
+        }
+
         this.AddMissingStatAttributes();
 
         // The previous character of this connection may still hold its attribute system.

@@ -57,9 +57,16 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
     public ValueTask<JsonObject> ReplaceFromPanelAsync(Guid pluginId, object configuration, string serializedConfiguration, bool apply, string? confirmationToken, CancellationToken cancellationToken)
     {
         var type = plugins.KnownPlugInTypes.SingleOrDefault(t => t.GUID == pluginId)?.GetCustomConfigurationType();
-        if (type is null || !type.IsInstanceOfType(configuration) || serializedConfiguration.Length > 65536)
+        if (type is null || !type.IsInstanceOfType(configuration))
         {
-            throw new AdminOperationException("The editor model does not match the installed plugin or exceeds the size limit.", AdminOperationErrorKind.InvalidInput);
+            throw new AdminOperationException("The editor model does not match the installed plugin.", AdminOperationErrorKind.InvalidInput);
+        }
+
+        if (serializedConfiguration.Length > settings.MaxPanelPluginConfigurationLength)
+        {
+            throw new AdminOperationException(
+                $"The plugin settings have {serializedConfiguration.Length} characters, more than the limit of {settings.MaxPanelPluginConfigurationLength}. Raise AdminPanel:Mcp:MaxPanelPluginConfigurationLength to save them.",
+                AdminOperationErrorKind.InvalidInput);
         }
 
         ConfigurationPatch.Validate(configuration);

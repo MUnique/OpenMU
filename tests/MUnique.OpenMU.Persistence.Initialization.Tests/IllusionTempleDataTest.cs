@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
+using IIdentifiable = MUnique.OpenMU.Persistence.IIdentifiable;
 
 /// <summary>
 /// Tests the data of the illusion temple event.
@@ -76,6 +77,8 @@ internal class IllusionTempleDataTest
         RevertToStateBeforeTheEvent(gameConfiguration);
 
         var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 0; // The reverted pre-event fixture has not received version one.
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
@@ -102,10 +105,169 @@ internal class IllusionTempleDataTest
             definition.MinimumPlayerCount = 0;
         }
 
-        await new IllusionTempleDataUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 0; // The missing-field fixture predates version one's repair.
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.That(GetTempleDefinitions(gameConfiguration), Has.All.Matches<MiniGameDefinition>(d => d.MinimumPlayerCount > 0));
         Assert.That(GetTempleDefinitions(gameConfiguration), Has.Count.EqualTo(TempleMapNumbers.Length), "The update must not duplicate the existing definitions.");
+    }
+
+    /// <summary>
+    /// Repairs the ticket reference of existing temples both before and after the version-one item renumbering.
+    /// The legacy initializer selected the Scroll of Blood definition while it still had number 51.
+    /// </summary>
+    /// <param name="numbersAlreadyCorrected">Whether version one already corrected the item numbers.</param>
+    /// <returns>The task.</returns>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task UpdateRepairsExistingTempleTicketBindingAsync(bool numbersAlreadyCorrected)
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var covenant = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 51 });
+        var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
+        var covenantId = ((IIdentifiable)covenant).Id;
+        var scrollId = ((IIdentifiable)scrollOfBlood).Id;
+        var definitions = GetTempleDefinitions(gameConfiguration);
+        if (!numbersAlreadyCorrected)
+        {
+            covenant.Number = 50;
+            scrollOfBlood.Number = 51;
+        }
+
+        // Keep every existing definition: only its legacy ticket binding is reproduced.
+        foreach (var definition in definitions)
+        {
+            definition.TicketItem = scrollOfBlood;
+        }
+
+        var itemsBefore = gameConfiguration.Items.ToArray();
+        var levelsBefore = definitions.Select(definition => definition.TicketItemLevel).ToArray();
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = numbersAlreadyCorrected ? 1 : 0;
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(definitions.Select(definition => definition.TicketItem), Has.All.SameAs(covenant));
+                Assert.That(covenant.Number, Is.EqualTo(51));
+                Assert.That(scrollOfBlood.Number, Is.EqualTo(50));
+                Assert.That(((IIdentifiable)covenant).Id, Is.EqualTo(covenantId));
+                Assert.That(((IIdentifiable)scrollOfBlood).Id, Is.EqualTo(scrollId));
+                Assert.That(GetTempleDefinitions(gameConfiguration), Has.Count.EqualTo(definitions.Count));
+                Assert.That(definitions.All(original => gameConfiguration.MiniGameDefinitions.Any(current => ReferenceEquals(current, original))), Is.True);
+                Assert.That(definitions.Select(definition => definition.TicketItemLevel), Is.EqualTo(levelsBefore));
+                Assert.That(gameConfiguration.Items, Has.Count.EqualTo(itemsBefore.Length));
+                Assert.That(itemsBefore.All(original => gameConfiguration.Items.Any(current => ReferenceEquals(current, original))), Is.True);
+            });
+        }
+    }
+
+    /// <summary>
+    /// Owner-selected tickets and detached definitions with the legacy ticket's id are not defaults to repair.
+    /// </summary>
+    /// <param name="customization">The owner-selected ticket, detached reference, definition id or ticket level to preserve.</param>
+    /// <returns>The task.</returns>
+    [TestCase("owned-ticket")]
+    [TestCase("detached-ticket")]
+    [TestCase("definition-id")]
+    [TestCase("ticket-level")]
+    public async Task UpdatePreservesCustomizedTempleTicketBindingAsync(string customization)
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var scrollOfBlood = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 50 });
+        var selectedTicket = customization == "owned-ticket"
+            ? gameConfiguration.Items.Single(item => item is { Group: 13, Number: 18 })
+            : scrollOfBlood;
+        if (customization == "detached-ticket")
+        {
+            selectedTicket = new MUnique.OpenMU.Persistence.BasicModel.ItemDefinition
+            {
+                Id = ((IIdentifiable)scrollOfBlood).Id,
+                Group = scrollOfBlood.Group,
+                Number = scrollOfBlood.Number,
+                Name = scrollOfBlood.Name,
+            };
+        }
+
+        var definition = GetTempleDefinitions(gameConfiguration).Single(temple => temple.GameLevel == 6);
+        if (customization == "definition-id")
+        {
+            ((IIdentifiable)definition).Id = Guid.NewGuid();
+        }
+
+        var definitionId = ((IIdentifiable)definition).Id;
+        definition.TicketItem = selectedTicket;
+        var selectedLevel = customization == "ticket-level" ? 3 : 6;
+        definition.TicketItemLevel = selectedLevel;
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            Assert.That(definition.TicketItem, Is.SameAs(selectedTicket));
+            Assert.That(definition.TicketItemLevel, Is.EqualTo(selectedLevel));
+            Assert.That(((IIdentifiable)definition).Id, Is.EqualTo(definitionId));
+        }
+    }
+
+    /// <summary>
+    /// Updating an installed version one must not replay its broad content changes over owner customizations.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task VersionTwoPreservesVersionOneContentCustomizationsAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 1;
+
+        var map = gameConfiguration.Maps.Single(candidate => candidate.Number == 45);
+        var safezone = gameConfiguration.Maps.Single(candidate => candidate.Number == 0);
+        map.SafezoneMap = safezone;
+        var spawn = context.CreateNew<MonsterSpawnArea>();
+        spawn.GameMap = map;
+        spawn.MonsterDefinition = gameConfiguration.Monsters.Single(monster => monster.Number == 658);
+        spawn.Quantity = 1;
+        spawn.X1 = spawn.X2 = 150;
+        spawn.Y1 = spawn.Y2 = 100;
+        map.MonsterSpawns.Add(spawn);
+        var spawnSettings = (spawn.Quantity, spawn.X1, spawn.X2, spawn.Y1, spawn.Y2);
+        var definition = GetTempleDefinitions(gameConfiguration).Single(temple => temple.GameLevel == 6);
+        var ticket = gameConfiguration.Items.Single(item => item is { Group: 13, Number: 18 });
+        definition.TicketItem = ticket;
+
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            Assert.That(map.SafezoneMap, Is.SameAs(safezone));
+            Assert.That(map.MonsterSpawns.Any(current => ReferenceEquals(current, spawn)), Is.True);
+            Assert.That((spawn.Quantity, spawn.X1, spawn.X2, spawn.Y1, spawn.Y2), Is.EqualTo(spawnSettings));
+            Assert.That(definition.TicketItem, Is.SameAs(ticket));
+            Assert.That(installedUpdate.Version, Is.EqualTo(2));
+        }
     }
 
     private static async Task<GameConfiguration> CreateSeason6ConfigurationAsync()

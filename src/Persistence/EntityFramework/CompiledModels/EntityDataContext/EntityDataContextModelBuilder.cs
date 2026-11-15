@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("d0cd420d-3762-4348-9c86-9b56b26661de"), entityTypeCount: 129)
+            : base(skipDetectChanges: false, modelId: new Guid("265f0f2e-638f-4ec5-8ec3-a189197d916a"), entityTypeCount: 130)
         {
         }
 
@@ -146,6 +146,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var statAttribute = StatAttributeEntityType.Create(this);
             var statAttributeDefinition = StatAttributeDefinitionEntityType.Create(this);
             var systemConfiguration = SystemConfigurationEntityType.Create(this);
+            var waitingItem = WaitingItemEntityType.Create(this);
             var warpInfo = WarpInfoEntityType.Create(this);
 
             AccountEntityType.CreateForeignKey1(account, itemStorage);
@@ -345,8 +346,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             MiniGameChangeEventEntityType.CreateForeignKey2(miniGameChangeEvent, monsterSpawnArea);
             MiniGameChangeEventEntityType.CreateForeignKey3(miniGameChangeEvent, monsterDefinition);
             MiniGameDefinitionEntityType.CreateForeignKey1(miniGameDefinition, exitGate);
-            MiniGameDefinitionEntityType.CreateForeignKey2(miniGameDefinition, gameConfiguration);
-            MiniGameDefinitionEntityType.CreateForeignKey3(miniGameDefinition, itemDefinition);
+            MiniGameDefinitionEntityType.CreateForeignKey2(miniGameDefinition, itemDefinition);
+            MiniGameDefinitionEntityType.CreateForeignKey3(miniGameDefinition, gameConfiguration);
+            MiniGameDefinitionEntityType.CreateForeignKey4(miniGameDefinition, itemDefinition);
             MiniGameRankingEntryEntityType.CreateForeignKey1(miniGameRankingEntry, character);
             MiniGameRankingEntryEntityType.CreateForeignKey2(miniGameRankingEntry, miniGameDefinition);
             MiniGameRewardEntityType.CreateForeignKey1(miniGameReward, dropItemGroup);
@@ -400,6 +402,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             StatAttributeEntityType.CreateForeignKey3(statAttribute, attributeDefinition);
             StatAttributeDefinitionEntityType.CreateForeignKey1(statAttributeDefinition, attributeDefinition);
             StatAttributeDefinitionEntityType.CreateForeignKey2(statAttributeDefinition, characterClass);
+            WaitingItemEntityType.CreateForeignKey1(waitingItem, character);
+            WaitingItemEntityType.CreateForeignKey2(waitingItem, item);
             WarpInfoEntityType.CreateForeignKey1(warpInfo, gameConfiguration);
             WarpInfoEntityType.CreateForeignKey2(warpInfo, exitGate);
 
@@ -531,6 +535,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             StatAttributeEntityType.CreateAnnotations(statAttribute);
             StatAttributeDefinitionEntityType.CreateAnnotations(statAttributeDefinition);
             SystemConfigurationEntityType.CreateAnnotations(systemConfiguration);
+            WaitingItemEntityType.CreateAnnotations(waitingItem);
             WarpInfoEntityType.CreateAnnotations(warpInfo);
 
             AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);

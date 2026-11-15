@@ -188,7 +188,25 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 07, 29, 20, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 5, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        // Replaying version one's content changes could overwrite owner-customized spawns or safezones.
+        if (installedVersion is null or < 1)
+        {
+            await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
+        }
+
+        this.FixTicketBindings(gameConfiguration);
+    }
 
     /// <inheritdoc />
 #pragma warning disable CS1998
@@ -242,6 +260,30 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         {
             covenant.Number = 51;
             scrollOfBlood.Number = 50;
+        }
+    }
+
+    /// <summary>
+    /// Repairs the seeded ticket references left pointing at the Scroll of Blood after version one's renumbering.
+    /// Only owned item instances and the unchanged default temple definition ids and ticket levels are recognized.
+    /// </summary>
+    private void FixTicketBindings(GameConfiguration gameConfiguration)
+    {
+        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 51 && item.Name.ValueInNeutralLanguage == "Illusion Sorcerer Covenant");
+        var scrollOfBlood = gameConfiguration.Items.FirstOrDefault(item => item.Group == 13 && item.Number == 50 && item.Name.ValueInNeutralLanguage == "Scroll of Blood");
+        if (covenant is null || scrollOfBlood is null)
+        {
+            return;
+        }
+
+        foreach (var definition in gameConfiguration.MiniGameDefinitions.Where(definition =>
+                     definition.Type == MiniGameType.IllusionTemple
+                     && definition.GameLevel is >= 1 and <= 6
+                     && definition.TicketItemLevel == definition.GameLevel
+                     && definition.GetId() == GuidHelper.CreateGuid<MiniGameDefinition>((short)MiniGameType.IllusionTemple, definition.GameLevel)
+                     && ReferenceEquals(definition.TicketItem, scrollOfBlood)))
+        {
+            definition.TicketItem = covenant;
         }
     }
 
@@ -339,13 +381,14 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
                 continue;
             }
 
-            this.RemoveObsoleteStatueSpawns(map);
-
             if (map.MonsterSpawns.Any(spawn => spawn.MonsterDefinition == stoneStatue))
             {
+                this.RemoveObsoleteStatueSpawns(map);
                 continue;
             }
 
+            // The spawn numbers match the ones of the temple map initializers, so an updated database ends
+            // up with the same deterministic ids as a fresh installation.
             short spawnNumber = 100;
             foreach (var (x, y) in StatuePositions)
             {
@@ -353,28 +396,30 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
                 this.AddSpawn(context, map, spawnNumber++, stoneStatue, x, y, SpawnTrigger.ManuallyForEvent);
             }
 
-            this.AddSpawn(context, map, spawnNumber++, allianceGuardian, AllianceGuardianPosition.X, AllianceGuardianPosition.Y, SpawnTrigger.AutomaticDuringEvent);
-            this.AddSpawn(context, map, spawnNumber++, illusionGuardian, IllusionGuardianPosition.X, IllusionGuardianPosition.Y, SpawnTrigger.AutomaticDuringEvent);
-            this.AddSpawn(context, map, spawnNumber++, allianceBox, AllianceBoxPosition.X, AllianceBoxPosition.Y, SpawnTrigger.AutomaticDuringEvent);
-            this.AddSpawn(context, map, spawnNumber++, illusionBox, IllusionBoxPosition.X, IllusionBoxPosition.Y, SpawnTrigger.AutomaticDuringEvent);
+            this.AddSpawn(context, map, 110, allianceGuardian, AllianceGuardianPosition.X, AllianceGuardianPosition.Y, SpawnTrigger.AutomaticDuringEvent);
+            this.AddSpawn(context, map, 111, illusionGuardian, IllusionGuardianPosition.X, IllusionGuardianPosition.Y, SpawnTrigger.AutomaticDuringEvent);
+            this.AddSpawn(context, map, 112, allianceBox, AllianceBoxPosition.X, AllianceBoxPosition.Y, SpawnTrigger.AutomaticDuringEvent);
+            this.AddSpawn(context, map, 113, illusionBox, IllusionBoxPosition.X, IllusionBoxPosition.Y, SpawnTrigger.AutomaticDuringEvent);
 
-            if (temple.ArenaMonsterCycleLength <= 0)
+            if (temple.ArenaMonsterCycleLength > 0)
             {
-                continue;
-            }
-
-            for (var i = 0; i < ArenaMonsterPositions.Length; i++)
-            {
-                var monsterNumber = (short)(temple.ArenaMonsterBase + (i % temple.ArenaMonsterCycleLength));
-                var monsterDefinition = gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == monsterNumber);
-                if (monsterDefinition is null)
+                for (var i = 0; i < ArenaMonsterPositions.Length; i++)
                 {
-                    continue;
-                }
+                    var monsterNumber = (short)(temple.ArenaMonsterBase + (i % temple.ArenaMonsterCycleLength));
+                    var monsterDefinition = gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == monsterNumber);
+                    if (monsterDefinition is null)
+                    {
+                        continue;
+                    }
 
-                var (x, y) = ArenaMonsterPositions[i];
-                this.AddSpawn(context, map, spawnNumber++, monsterDefinition, x, y, SpawnTrigger.AutomaticDuringEvent);
+                    var (x, y) = ArenaMonsterPositions[i];
+                    this.AddSpawn(context, map, (short)(120 + i), monsterDefinition, x, y, SpawnTrigger.AutomaticDuringEvent);
+                }
             }
+
+            // Only after adding the new spawns: the obsolete ones used the spawn numbers 100 to 110, so the
+            // ones whose id got reused by a new spawn have already been overwritten in place.
+            this.RemoveObsoleteStatueSpawns(map);
         }
     }
 
@@ -396,10 +441,23 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Adds a spawn with a deterministic id to the map. If the map already has a spawn with the same id
+    /// (e.g. one of the obsolete statue spawns), it is overwritten instead - creating a second entity with
+    /// the same id would fail when saving, because the existing one is already tracked by the context,
+    /// even if it got removed from the map.
+    /// </summary>
     private void AddSpawn(IContext context, GameMapDefinition map, short spawnNumber, MonsterDefinition monsterDefinition, byte x, byte y, SpawnTrigger spawnTrigger)
     {
-        var area = context.CreateNew<MonsterSpawnArea>();
-        area.SetGuid(map.Number, spawnNumber);
+        var id = GuidHelper.CreateGuid<MonsterSpawnArea>(map.Number, spawnNumber);
+        var area = map.MonsterSpawns.FirstOrDefault(spawn => spawn.GetId() == id);
+        if (area is null)
+        {
+            area = context.CreateNew<MonsterSpawnArea>();
+            area.SetGuid(id);
+            map.MonsterSpawns.Add(area);
+        }
+
         area.GameMap = map;
         area.MonsterDefinition = monsterDefinition;
         area.Quantity = 1;
@@ -409,7 +467,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         area.X2 = x;
         area.Y1 = y;
         area.Y2 = y;
-        map.MonsterSpawns.Add(area);
+        area.WaveNumber = 0;
     }
 
     /// <summary>

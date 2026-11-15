@@ -48,6 +48,18 @@ public static class ExpressionExtensions
     }
 
     /// <summary>
+    /// Determines whether the accessed member is marked with <see cref="CollapsedByDefaultAttribute"/>.
+    /// </summary>
+    /// <typeparam name="TProperty">The type of the property.</typeparam>
+    /// <param name="expression">The expression.</param>
+    /// <returns>
+    ///   <c>true</c> if the accessed member is marked with <see cref="CollapsedByDefaultAttribute"/>; otherwise, <c>false</c>.
+    /// </returns>
+    public static bool IsCollapsedByDefault<TProperty>(this Expression<Func<TProperty>> expression)
+        => expression.Body is MemberExpression memberExpression
+           && memberExpression.Member.GetCustomAttribute<CollapsedByDefaultAttribute>() is { };
+
+    /// <summary>
     /// Determines whether the accessed member is marked with <see cref="ScaffoldColumnAttribute"/>.
     /// </summary>
     /// <typeparam name="TProperty">The type of the property.</typeparam>

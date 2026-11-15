@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -91,6 +92,128 @@ public class CraftingDialogBackupInventoryTests
             Assert.That(ingredient.ItemSlot, Is.EqualTo(ingredientSlot));
             Assert.That(player.BackupInventory, Is.Null);
         });
+    }
+
+    /// <summary>
+    /// Verifies that an item left in the machine is back in the inventory right after the dialog is
+    /// closed, instead of staying hidden in the temporary storage until the next login.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemLeftInTheMachineIsReturnedWhenTheDialogIsClosedAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var inventory = InventoryOf(player).ItemStorage;
+        var ingredient = CreateItem();
+        Assert.That(await InventoryOf(player).AddItemAsync(ingredient).ConfigureAwait(false), Is.True);
+        await new TalkNpcAction().TalkToNpcAsync(player, CreateCraftingNpc()).ConfigureAwait(false);
+        await PutIntoTheMachineAsync(player, ingredient).ConfigureAwait(false);
+
+        await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.Items.Count(item => ReferenceEquals(item, ingredient)), Is.EqualTo(1));
+            Assert.That(TemporaryStorageOf(player).Items, Is.Empty);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that an item left in the machine is not lost when the inventory got full in the meantime:
+    /// it goes to the vault. A player lost an excellent staff this way, when he disconnected with
+    /// the machine open after he moved other items into the inventory.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemLeftInTheMachineGoesToTheVaultWhenTheInventoryIsFullAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var vault = SetUpVault(player);
+        var inventory = InventoryOf(player);
+        var ingredient = CreateItem();
+        Assert.That(await inventory.AddItemAsync(ingredient).ConfigureAwait(false), Is.True);
+        await new TalkNpcAction().TalkToNpcAsync(player, CreateCraftingNpc()).ConfigureAwait(false);
+        await PutIntoTheMachineAsync(player, ingredient).ConfigureAwait(false);
+        player.BackupInventory = null; // only the items of the tray are left, as after a dialog which was closed
+        await FillAsync(inventory).ConfigureAwait(false);
+
+        await player.RemoveFromGameAsync().ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.ItemStorage.Items, Does.Not.Contain(ingredient));
+            Assert.That(vault.Items.Count(item => ReferenceEquals(item, ingredient)), Is.EqualTo(1));
+            Assert.That(player.TemporaryStorage, Is.Null);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that an item left in the machine goes to the vault when the dialog is closed while
+    /// the inventory has no space for it (same placement as when the player disconnects).
+    /// </summary>
+    [Test]
+    public async ValueTask ItemLeftInTheMachineGoesToTheVaultWhenTheDialogIsClosedWithAFullInventoryAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var vault = SetUpVault(player);
+        var inventory = InventoryOf(player);
+        var ingredient = CreateItem();
+        Assert.That(await inventory.AddItemAsync(ingredient).ConfigureAwait(false), Is.True);
+        await new TalkNpcAction().TalkToNpcAsync(player, CreateCraftingNpc()).ConfigureAwait(false);
+        await PutIntoTheMachineAsync(player, ingredient).ConfigureAwait(false);
+        await FillAsync(inventory).ConfigureAwait(false);
+
+        await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.ItemStorage.Items, Does.Not.Contain(ingredient));
+            Assert.That(vault.Items.Count(item => ReferenceEquals(item, ingredient)), Is.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that an item left in the machine is never dropped from the temporary storage when neither
+    /// the inventory nor the vault have space for it, so that it can be returned later.
+    /// </summary>
+    [Test]
+    public async ValueTask ItemLeftInTheMachineStaysInTheTemporaryStorageWhenNothingHasSpaceAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var vault = SetUpVault(player);
+        var inventory = InventoryOf(player);
+        var ingredient = CreateItem();
+        Assert.That(await inventory.AddItemAsync(ingredient).ConfigureAwait(false), Is.True);
+        await new TalkNpcAction().TalkToNpcAsync(player, CreateCraftingNpc()).ConfigureAwait(false);
+        await PutIntoTheMachineAsync(player, ingredient).ConfigureAwait(false);
+        player.BackupInventory = null; // only the items of the tray are left, as after a dialog which was closed
+        await FillAsync(inventory).ConfigureAwait(false);
+        await FillAsync(new Storage(InventoryConstants.WarehouseSize, vault)).ConfigureAwait(false);
+
+        await player.RemoveFromGameAsync().ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(inventory.ItemStorage.Items, Does.Not.Contain(ingredient));
+            Assert.That(vault.Items, Does.Not.Contain(ingredient));
+            Assert.That(TemporaryStorageOf(player).Items, Does.Contain(ingredient));
+        });
+    }
+
+    private static ItemStorage SetUpVault(Player player)
+    {
+        var vaultMock = new Mock<ItemStorage>();
+        vaultMock.SetupAllProperties();
+        vaultMock.Setup(v => v.Items).Returns(new List<Item>());
+        var vault = vaultMock.Object;
+        Mock.Get(player.Account!).SetupProperty(account => account.Vault, vault);
+        return vault;
+    }
+
+    private static async ValueTask FillAsync(IStorage storage)
+    {
+        while (await storage.AddItemAsync(CreateItem()).ConfigureAwait(false))
+        {
+            // Adds items until there is no space left.
+        }
     }
 
     private static async ValueTask PutIntoTheMachineAsync(Player player, Item item)

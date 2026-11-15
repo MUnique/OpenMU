@@ -110,7 +110,7 @@ services:
       start_period: 10s
 
   database:
-    image: postgres
+    image: postgres:18
     container_name: postgres
     restart: unless-stopped
     environment:

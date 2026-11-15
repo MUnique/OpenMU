@@ -136,6 +136,49 @@ public sealed class ConfigurationReviewTests
         source.Verify(s => s.InvalidateAsync(), Times.Once);
     }
 
+    /// <summary>The panel editor saves configurations above the MCP request size, up to the owner's configurable limit.</summary>
+    /// <param name="limit">The configured maximum length of a panel plugin configuration.</param>
+    /// <param name="expectSaved">Whether the configuration is expected to be saved.</param>
+    [TestCase(1024 * 1024, true)]
+    [TestCase(70000, false)]
+    public async Task PanelPluginConfigurationSizeLimitIsConfigurableAsync(int limit, bool expectSaved)
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using var setup = provider.CreateNewContext();
+        var config = setup.CreateNew<GameConfiguration>();
+        var plugin = setup.CreateNew<PlugInConfiguration>();
+        plugin.TypeId = typeof(ReviewPlugin).GUID;
+        plugin.CustomConfiguration = "{}";
+        config.PlugInConfigurations.Add(plugin);
+        await setup.SaveChangesAsync().ConfigureAwait(false);
+        var source = new Mock<IDataSource<GameConfiguration>>();
+        source.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(config);
+        var manager = new PlugInManager([], NullLoggerFactory.Instance, null, null);
+        manager.RegisterPlugIn<MUnique.OpenMU.GameLogic.PlugIns.IPeriodicTaskPlugIn, ReviewPlugin>();
+        var settings = new AdminWriteSettings { ReadOnly = false, MaxPanelPluginConfigurationLength = limit };
+        var writes = new PluginWriteOperations(provider, source.Object, manager, AdminOperationTestServices.CreateExecutor(), new AdminChangeConfirmation(TimeProvider.System), settings);
+
+        // Larger than the former fixed limit of 65536 characters, like a plugin with long text lists.
+        var editorModel = new ReviewSettings { Endpoint = new string('x', 80000) };
+        var serialized = new PlugInConfiguration();
+        serialized.SetConfiguration(editorModel, null);
+        var json = serialized.CustomConfiguration!;
+
+        if (expectSaved)
+        {
+            var preview = await writes.ReplaceFromPanelAsync(plugin.TypeId, editorModel, json, false, null, default).ConfigureAwait(false);
+            await writes.ReplaceFromPanelAsync(plugin.TypeId, editorModel, json, true, preview["confirmationToken"]!.GetValue<string>(), default).ConfigureAwait(false);
+            Assert.That(plugin.CustomConfiguration, Is.EqualTo(json));
+        }
+        else
+        {
+            var error = Assert.ThrowsAsync<AdminOperationException>(async () => await writes.ReplaceFromPanelAsync(plugin.TypeId, editorModel, json, false, null, default).ConfigureAwait(false));
+            Assert.That(error!.Kind, Is.EqualTo(AdminOperationErrorKind.InvalidInput));
+            Assert.That(error.Message, Does.Contain("MaxPanelPluginConfigurationLength"));
+            Assert.That(plugin.CustomConfiguration, Is.EqualTo("{}"));
+        }
+    }
+
     /// <summary>Represents an external plugin with both marked and legacy unmarked sensitive fields.</summary>
     [System.Runtime.InteropServices.Guid("a55e453b-96f6-4093-8f1c-7631647c9179")]
     public sealed class ReviewPlugin : MUnique.OpenMU.GameLogic.PlugIns.IPeriodicTaskPlugIn, ISupportCustomConfiguration<ReviewSettings>

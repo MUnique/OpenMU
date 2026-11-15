@@ -34,18 +34,29 @@ public static class PlayerMoneyExtensions
     /// <returns><c>True</c>, if the player inventory had space to add money; Otherwise, <c>false</c>.</returns>
     public static bool TryAddMoney(this Player player, int value)
     {
-        if (player.Money + value > player.GameContext?.Configuration?.MaximumInventoryMoney)
-        {
-            return false;
-        }
-
-        if (player.Money + value < 0)
+        if (!player.CanAddMoney(value))
         {
             return false;
         }
 
         player.Money = checked(player.Money + value);
         return true;
+    }
+
+    /// <summary>
+    /// Determines whether the money could be added to the player inventory, without adding it.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="value">The value that should be added.</param>
+    /// <returns><c>True</c>, if <see cref="TryAddMoney"/> would add the money; Otherwise, <c>false</c>.</returns>
+    public static bool CanAddMoney(this Player player, int value)
+    {
+        if (player.Money + value > player.GameContext?.Configuration?.MaximumInventoryMoney)
+        {
+            return false;
+        }
+
+        return player.Money + value >= 0;
     }
 
     /// <summary>

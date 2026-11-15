@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
 
@@ -66,7 +67,7 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         this._dropper = dropper;
         this._owners = owners;
         this._wasItemPersisted = wasItemPersisted;
-        this._removeTimer = new Timer(this.DisposeAndDelete, null, (int)map.ItemDropDuration.TotalMilliseconds, Timeout.Infinite);
+        this._removeTimer = new Timer(this.OnRemoveTimerElapsed, null, (int)map.ItemDropDuration.TotalMilliseconds, Timeout.Infinite);
     }
 
     /// <summary>
@@ -84,6 +85,16 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
 
     /// <inheritdoc/>
     public GameMap CurrentMap { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether only the owners can pick up this item, during its whole lifetime on the ground.
+    /// </summary>
+    public bool OwnerOnly { get; init; }
+
+    /// <summary>
+    /// Gets the callback which is invoked when the item disappears from the ground without being picked up.
+    /// </summary>
+    public Func<DroppedItem, ValueTask>? Expired { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the owner-pickup priority period is still active.
@@ -105,6 +116,11 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
     {
         Item? stackTarget = null;
         if (!this._availableToPick)
+        {
+            return (false, stackTarget);
+        }
+
+        if (this.OwnerOnly && !this.IsPlayerAnOwner(player))
         {
             return (false, stackTarget);
         }
@@ -133,6 +149,12 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
             && DateTime.UtcNow < this._dropTimestamp.Add(TimeUntilDropIsFree))
         {
             return (false, stackTarget);
+        }
+
+        if (this.Item.IsStackable())
+        {
+            // The whole drop doesn't fit on any stack: fill the incomplete stack first, the rest is picked up as usual.
+            await this.TryFillPartialStackAsync(player).ConfigureAwait(false);
         }
 
         return (await this.TryPickUpAsync(player).ConfigureAwait(false), stackTarget);
@@ -168,6 +190,39 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
+    private async void OnRemoveTimerElapsed(object? state)
+    {
+        var expiredCallback = this.Expired;
+        if (expiredCallback is null)
+        {
+            this.DisposeAndDelete(state);
+            return;
+        }
+
+        var dropper = this._dropper;
+        try
+        {
+            bool expired;
+            using (await this._pickupLock.LockAsync().ConfigureAwait(false))
+            {
+                expired = this._availableToPick;
+                this._availableToPick = false;
+            }
+
+            this.DisposeAndDelete(state);
+            if (expired)
+            {
+                await expiredCallback(this).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            // we have to catch all errors, because it runs under a pooled thread without an additional safety net ;-)
+            dropper?.Logger.LogError(ex, "Error during DroppedItem.OnRemoveTimerElapsed");
+        }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -257,6 +312,35 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
         }
 
         return true;
+    }
+
+    private async ValueTask TryFillPartialStackAsync(Player player)
+    {
+        var partialTarget = player.Inventory?.Items.FirstOrDefault(i => this.Item.CanPartiallyStackOn(i));
+        if (partialTarget is null)
+        {
+            return;
+        }
+
+        using (await this._pickupLock.LockAsync().ConfigureAwait(false))
+        {
+            if (!this._availableToPick)
+            {
+                return;
+            }
+
+            var partialAmount = (byte)Math.Min(partialTarget.Definition!.Durability - partialTarget.Durability, this.Item.Durability);
+            if (partialAmount <= 0)
+            {
+                return;
+            }
+
+            partialTarget.Durability += partialAmount;
+            this.Item.Durability -= partialAmount;
+        }
+
+        player.Logger.LogInformation("Item '{0}' partially stacked on '{1}' of player '{2}', durability of the stack is now {3}.", this, partialTarget, player, partialTarget.Durability);
+        await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(partialTarget, false)).ConfigureAwait(false);
     }
 
     private async ValueTask<bool> TryStackOnItemAsync(Player player, Item stackTarget)

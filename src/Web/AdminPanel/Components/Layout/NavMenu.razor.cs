@@ -25,6 +25,10 @@ public partial class NavMenu : IDisposable
 
     private int _availableConfigUpdates;
 
+    private bool _expandSystem;
+
+    private bool _expandInspect;
+
     [Inject]
     private IMigratableDatabaseContextProvider PersistenceContextProvider { get; set; } = null!;
 
@@ -154,5 +158,15 @@ public partial class NavMenu : IDisposable
     private void ToggleNavMenu()
     {
         this._collapseNavMenu = !this._collapseNavMenu;
+    }
+
+    private void ToggleSystem()
+    {
+        this._expandSystem = !this._expandSystem;
+    }
+
+    private void ToggleInspect()
+    {
+        this._expandInspect = !this._expandInspect;
     }
 }

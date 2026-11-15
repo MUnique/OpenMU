@@ -52,12 +52,14 @@ public class Pets : InitializerBase
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(2, 0, 1, 1, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, true, true,
+            (Stats.IsUniriaEquipped, 1, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
         var dinorant = this.CreatePet(3, SkillNumber.FireBreath, 1, 1, LocalizedString.FromResource(() => ItemNames.HornOfDinorant), 110, false, true,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
+            (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
@@ -114,7 +116,7 @@ public class Pets : InitializerBase
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
             (Stats.BonusExperienceRate, 0.3f, AggregateType.AddRaw),
             (Stats.IsPetSkeletonEquipped, 1, AggregateType.AddRaw));
-#pragma warning restore SA1011
+#pragma warning restore SA1117
 
         // Items which are required for crafting:
         this.CreateSpirit();

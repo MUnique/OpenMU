@@ -2356,6 +2356,7 @@
           <Index>3</Index>
           <Type>ShortBigEndian</Type>
           <Name>ObjectId</Name>
+          <Description>The object ID; its most significant bit indicates whether the target receives a hit shock.</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -2446,18 +2447,19 @@
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>ObjectId</Name>
+          <Description>The object ID; its most significant bit indicates whether the target receives a hit shock.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>HealthStatus</Name>
-          <Description>Gets or sets the status of the remaining health in fractions of 1/250.</Description>
+          <Description>The status of the remaining health in fractions of 1/250.</Description>
         </Field>
         <Field>
           <Index>7</Index>
           <Type>Byte</Type>
           <Name>ShieldStatus</Name>
-          <Description>Gets or sets the status of the remaining shield in fractions of 1/250.</Description>
+          <Description>The status of the remaining shield in fractions of 1/250.</Description>
         </Field>
         <Field>
           <Index>8</Index>
@@ -5126,8 +5128,8 @@
               <Value>16</Value>
             </EnumValue>
             <EnumValue>
-              <Name>ShieldLost</Name>
-              <Description>The players shield depleted.</Description>
+              <Name>ShieldBurst</Name>
+              <Description>The player's shield depleted with significant damage to health.</Description>
               <Value>17</Value>
             </EnumValue>
           </Values>
@@ -10472,6 +10474,110 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>BF</Code>
+      <SubCode>0B</SubCode>
+      <Name>LuckyCoinCountResponse</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player opened the lucky coin registration dialog of the NPC Delgado, which requests the count of the registered coins.</SentWhen>
+      <CausedReaction>The client shows the count of the registered lucky coins in the dialog.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0C</SubCode>
+      <Name>LuckyCoinRegistrationResponse</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to register a lucky coin at the NPC Delgado.</SentWhen>
+      <CausedReaction>The client unlocks the register button. When the coin was registered, it shows the new count of the registered coins; otherwise, it shows a message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LuckyCoinRegistrationResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>LuckyCoinRegistrationResult</Name>
+          <Description>Defines the result of the lucky coin registration request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotEnoughItems</Name>
+              <Description>The player has no lucky coin in the inventory.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Registered</Name>
+              <Description>The lucky coin was registered.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AlreadyApplied</Name>
+              <Description>The account already applied, and it can only apply once.</Description>
+              <Value>100</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
+      <SubCode>0D</SubCode>
+      <Name>LuckyCoinExchangeResponse</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player requested to exchange lucky coins for an item at the NPC Delgado.</SentWhen>
+      <CausedReaction>The client unlocks the exchange buttons and shows a message about the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Enum</Type>
+          <TypeName>LuckyCoinExchangeResult</TypeName>
+          <Name>Result</Name>
+        </Field>
+      </Fields>
+      <Enums>
+        <Enum>
+          <Name>LuckyCoinExchangeResult</Name>
+          <Description>Defines the result of the lucky coin exchange request.</Description>
+          <Values>
+            <EnumValue>
+              <Name>NotEnoughItems</Name>
+              <Description>The player doesn't have enough lucky coins in the inventory.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Exchanged</Name>
+              <Description>The lucky coins were exchanged for an item.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>InventoryFull</Name>
+              <Description>The inventory has not enough space for the item. The client asks for a free space of 2 x 4.</Description>
+              <Value>2</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>BF</Code>
       <SubCode>0E</SubCode>
       <Name>DoppelgangerEnterResult</Name>
       <Length>5</Length>
@@ -12790,6 +12896,69 @@
           </Values>
         </Enum>
       </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>09</SubCode>
+      <Name>WarpListExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the character entered the game world, when the client is the open source client.</SentWhen>
+      <CausedReaction>The client shows these warps in its warp window (and accepts them for the warp chat command) instead of the warp list of its data files. Warps which the client knows keep the name of its data files; others get the name of this message.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>WarpListEntry</TypeName>
+          <Name>Warps</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>WarpListEntry</Name>
+          <Description>A warp which the player can select in the warp window.</Description>
+          <Length>44</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Index</Name>
+              <Description>The index of the warp, which the client sends in the WarpCommandRequest.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>MapNumber</Name>
+              <Description>The number of the map to which the warp leads.</Description>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>LevelRequirement</Name>
+              <Description>The required character level, as configured. Character classes with a reduced warp level requirement get the reduction on top of it, like in the warp list of the data files.</Description>
+            </Field>
+            <Field>
+              <Index>8</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>Costs</Name>
+              <Description>The zen which the warp costs.</Description>
+            </Field>
+            <Field>
+              <Index>12</Index>
+              <Type>String</Type>
+              <Name>Name</Name>
+              <Length>32</Length>
+              <Description>The name of the warp, in the language of the player.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>

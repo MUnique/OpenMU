@@ -25,7 +25,7 @@ public class ItemCraftAction
     {
         var npcStats = player.OpenedNpc?.Definition;
 
-        var crafting = npcStats?.ItemCraftings.FirstOrDefault(c => c.Number == mixTypeId);
+        var crafting = this.FindCrafting(player, npcStats, mixTypeId);
         if (crafting is null)
         {
             await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(CraftingResult.IncorrectMixItems, null)).ConfigureAwait(false);
@@ -46,11 +46,17 @@ public class ItemCraftAction
 
         var itemList = player.TemporaryStorage?.Items.ToList() ?? new List<Item>();
         await player.InvokeViewPlugInAsync<IShowItemCraftingResultPlugIn>(p => p.ShowResultAsync(result.Item1, itemList.Count > 1 ? null : result.Item2)).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
-            p => p.ShowMerchantStoreItemListAsync(
-                itemList,
-                npcStats!.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
-            .ConfigureAwait(false);
+        if (npcStats!.NpcWindow != NpcWindow.CombineLuckyItem)
+        {
+            // The lucky item dialog gets its result item with the crafting result. The item list would put the
+            // items into the chaos machine dialog of the client instead.
+            await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
+                p => p.ShowMerchantStoreItemListAsync(
+                    itemList,
+                    npcStats.NpcWindow == NpcWindow.PetTrainer && result.Item1 != CraftingResult.Success ? StoreKind.ResurrectionFailed : StoreKind.ChaosMachine))
+                .ConfigureAwait(false);
+        }
+
         await this.ShowCraftingPreviewAsync(player).ConfigureAwait(false);
     }
 
@@ -98,6 +104,30 @@ public class ItemCraftAction
         }
 
         await previewPlugIn.ShowCraftingPreviewAsync(null, 0, 0).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Finds the crafting of the npc with the mix type identifier which the client sent.
+    /// </summary>
+    /// <remarks>
+    /// The client sends the same identifier for some different combinations, e.g. for creating
+    /// the Golden Box and the Silver Box. Then, the crafting whose required items are in the dialog is taken.
+    /// </remarks>
+    private ItemCrafting? FindCrafting(Player player, MonsterDefinition? npc, byte mixTypeId)
+    {
+        var craftings = npc?.ItemCraftings.Where(c => c.Number == mixTypeId).ToList();
+        if (craftings is not { Count: > 0 })
+        {
+            return null;
+        }
+
+        if (craftings.Count == 1)
+        {
+            return craftings[0];
+        }
+
+        return craftings.FirstOrDefault(c => this.GetCraftingHandler(c).TryGetRequiredItems(player, out _, out _) is null)
+               ?? craftings[0];
     }
 
     private IItemCraftingHandler GetCraftingHandler(ItemCrafting crafting)

@@ -250,5 +250,5 @@ public sealed class DiscordCommands
         return DiscordMessageFormatter.Escape(new LocalizedString(localizedValue).GetTranslation(this._culture) ?? localizedValue);
     }
 
-    private DiscordEmbed Answer(string title, string description) => new(title, description, AnswerColor, DateTime.UtcNow, null);
+    private DiscordEmbed Answer(string title, string description) => new(title, description.ReplaceLineEndings("\n"), AnswerColor, DateTime.UtcNow, null);
 }

@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Pages;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 using MUnique.OpenMU.Web.Shared.Components.MapEditor;
 
@@ -14,6 +16,7 @@ using MUnique.OpenMU.Web.Shared.Components.MapEditor;
 /// </summary>
 [Route("/map-editor")]
 [Route("/map-editor/{SelectedMapId:guid}")]
+[Authorize(Policy = AdminPolicies.Administrator)]
 public sealed class EditMap : MapEditorPageBase<MapEditor>
 {
     /// <inheritdoc />

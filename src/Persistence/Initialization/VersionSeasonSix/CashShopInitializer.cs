@@ -18,12 +18,20 @@ using MUnique.OpenMU.Interfaces;
 /// match the script of the configured version.
 /// The script doesn't define the item level, so it's taken from the product names,
 /// e.g. 'Box of Kundun +3' or 'Bundle of Jewel of Soul (30)'.
+/// The products of the Talisman of Luck define a rate (1, 5 or 10 %) instead of a quantity.
+/// It's delivered as the durability of the talisman, so it's used as quantity.
 /// Products whose item isn't defined in this configuration can't be delivered, and
 /// time-limited products neither, because items which expire aren't supported yet.
 /// Their packages are therefore initialized as not for sale.
 /// </remarks>
 internal sealed class CashShopInitializer : InitializerBase
 {
+    /// <summary>
+    /// The durability of a bought reset fruit, which the client defines for these items. The script of the client
+    /// lists a quantity of one, but the quantity of a stackable item is delivered as its durability.
+    /// </summary>
+    internal const int ResetFruitDurability = 100;
+
     // The script and banner versions which come with the game client.
     private const short ScriptSaleZone = 512;
 
@@ -67,6 +75,19 @@ internal sealed class CashShopInitializer : InitializerBase
         this.AddPackages(configuration);
     }
 
+    /// <summary>
+    /// Determines whether the configuration uses the cash shop script which comes with the game client,
+    /// so that its product sequences identify the products which this initializer creates.
+    /// </summary>
+    /// <param name="configuration">The cash shop configuration.</param>
+    /// <returns><c>true</c>, if the configuration uses the script of the game client.</returns>
+    internal static bool UsesClientScript(CashShopConfiguration configuration)
+    {
+        return configuration.ScriptSaleZone == ScriptSaleZone
+               && configuration.ScriptYear == ScriptYear
+               && configuration.ScriptYearId == ScriptYearId;
+    }
+
     private void AddPackages(CashShopConfiguration configuration)
     {
         this.AddPackage(configuration, 413, LocalizedString.FromResource(() => CashShopPackageNames.GoldChannelTicket), 190, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
@@ -90,17 +111,17 @@ internal sealed class CashShopInitializer : InitializerBase
             .AddProduct(122, 181, 0, 13, 113, 0, 1, 86400);
         this.AddPackage(configuration, 98, LocalizedString.FromResource(() => CashShopPackageNames.TalismanofLuck), 100, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
             .AddProduct(22, 37, 100, 14, 53, 0, 1, 0)
-            .AddProduct(22, 38, 400, 14, 53, 0, 1, 0);
+            .AddProduct(22, 38, 400, 14, 53, 0, 5, 0);
         this.AddPackage(configuration, 114, LocalizedString.FromResource(() => CashShopPackageNames.ResetFruitStrength), 250, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
-            .AddProduct(14, 24, 250, 13, 54, 0, 1, 0);
+            .AddProduct(14, 24, 250, 13, 54, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 112, LocalizedString.FromResource(() => CashShopPackageNames.ResetFruitQuickness), 250, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
-            .AddProduct(15, 25, 250, 13, 55, 0, 1, 0);
+            .AddProduct(15, 25, 250, 13, 55, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 110, LocalizedString.FromResource(() => CashShopPackageNames.ResetFruitHealth), 250, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
-            .AddProduct(16, 26, 250, 13, 56, 0, 1, 0);
+            .AddProduct(16, 26, 250, 13, 56, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 108, LocalizedString.FromResource(() => CashShopPackageNames.ResetFruitEnergy), 250, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
-            .AddProduct(17, 27, 250, 13, 57, 0, 1, 0);
+            .AddProduct(17, 27, 250, 13, 57, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 106, LocalizedString.FromResource(() => CashShopPackageNames.ResetFruitControl), 250, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
-            .AddProduct(18, 28, 250, 13, 58, 0, 1, 0);
+            .AddProduct(18, 28, 250, 13, 58, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 263, LocalizedString.FromResource(() => CashShopPackageNames.RageFighterCharacterCard), 500, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
             .AddProduct(284, 353, 500, 14, 169, 0, 1, 0);
         this.AddPackage(configuration, 126, LocalizedString.FromResource(() => CashShopPackageNames.SummonerCharacterCard), 500, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
@@ -458,21 +479,21 @@ internal sealed class CashShopInitializer : InitializerBase
             .AddProduct(70, 118, 60, 14, 113, 0, 1, 0);
         this.AddPackage(configuration, 99, LocalizedString.FromResource(() => CashShopPackageNames.BracketedTalismanofLuck), 100, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
             .AddProduct(22, 37, 100, 14, 53, 0, 1, 0)
-            .AddProduct(22, 38, 400, 14, 53, 0, 1, 0);
+            .AddProduct(22, 38, 400, 14, 53, 0, 5, 0);
         this.AddPackage(configuration, 264, LocalizedString.FromResource(() => CashShopPackageNames.BracketedRageFighterCharacterCard), 500, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
             .AddProduct(284, 353, 500, 14, 169, 0, 1, 0);
         this.AddPackage(configuration, 127, LocalizedString.FromResource(() => CashShopPackageNames.BracketedSummonerCharacterCard), 500, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
             .AddProduct(31, 53, 500, 14, 91, 0, 1, 0);
         this.AddPackage(configuration, 115, LocalizedString.FromResource(() => CashShopPackageNames.BracketedResetFruitStrength), 250, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(14, 24, 250, 13, 54, 0, 1, 0);
+            .AddProduct(14, 24, 250, 13, 54, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 113, LocalizedString.FromResource(() => CashShopPackageNames.BracketedResetFruitQuickness), 250, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(15, 25, 250, 13, 55, 0, 1, 0);
+            .AddProduct(15, 25, 250, 13, 55, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 111, LocalizedString.FromResource(() => CashShopPackageNames.BracketedResetFruitHealth), 250, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(16, 26, 250, 13, 56, 0, 1, 0);
+            .AddProduct(16, 26, 250, 13, 56, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 109, LocalizedString.FromResource(() => CashShopPackageNames.BracketedResetFruitEnergy), 250, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(17, 27, 250, 13, 57, 0, 1, 0);
+            .AddProduct(17, 27, 250, 13, 57, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 107, LocalizedString.FromResource(() => CashShopPackageNames.BracketedResetFruitControl), 250, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(18, 28, 250, 13, 58, 0, 1, 0);
+            .AddProduct(18, 28, 250, 13, 58, 0, ResetFruitDurability, 0);
         this.AddPackage(configuration, 2052, LocalizedString.FromResource(() => CashShopPackageNames.BlueGoldChannelPackage), 600, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: true)
             .AddProduct(912, 1113, 600, 13, 124, 0, 1, 2592000)
             .AddProduct(913, 1114, 480, 13, 124, 0, 1, 604800);
@@ -724,7 +745,7 @@ internal sealed class CashShopInitializer : InitializerBase
         this.AddPackage(configuration, 388, LocalizedString.FromResource(() => CashShopPackageNames.BundleofJewelofHarmony10), 4800, CashShopCoinType.GoblinPoints, isForSale: true, isGiftable: true, isBundle: false)
             .AddProduct(503, 582, 4800, 12, 140, 0, 1, 0);
         this.AddPackage(configuration, 389, LocalizedString.FromResource(() => CashShopPackageNames.TalismanofLuck10Percent), 3200, CashShopCoinType.GoblinPoints, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(504, 583, 3200, 14, 53, 0, 1, 0);
+            .AddProduct(504, 583, 3200, 14, 53, 0, 10, 0);
         this.AddPackage(configuration, 391, LocalizedString.FromResource(() => CashShopPackageNames.RareItemTicket8), 100000, CashShopCoinType.GoblinPoints, isForSale: true, isGiftable: true, isBundle: false)
             .AddProduct(506, 585, 100000, 14, 146, 0, 1, 0);
         this.AddPackage(configuration, 390, LocalizedString.FromResource(() => CashShopPackageNames.RareItemTicket11), 60000, CashShopCoinType.GoblinPoints, isForSale: true, isGiftable: true, isBundle: false)

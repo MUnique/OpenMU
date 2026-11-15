@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel;
@@ -218,6 +219,111 @@ public class TradeTest
         Assert.That(trader2.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
         inventoryMock.Verify(i => i.AddItemAsync(21, validItem.Object), Times.Once);
         Assert.That(trader1.BackupInventory, Is.Null);
+    }
+
+    /// <summary>
+    /// A trade already persisted to the trade context must never be rolled back because a player
+    /// persistence context cannot track the transferred item after the commit.
+    /// </summary>
+    [Test]
+    public async ValueTask CommittedTradeDoesNotRestoreOriginalInventoriesAfterTrackingConflictAsync()
+    {
+        var trader1 = this.CreateTrader(PlayerState.TradeOpened);
+        var trader2 = this.CreateTrader(PlayerState.TradeOpened);
+        trader1.TradingPartner = trader2;
+        trader2.TradingPartner = trader1;
+        trader1.Money = 1000;
+        trader2.Money = 1000;
+        trader1.TradingMoney = 100;
+        trader2.TradingMoney = 200;
+
+        var offered = this.GetItem();
+        offered.Definition = new ItemDefinition { Width = 1, Height = 1, IsTradable = true };
+        Mock.Get(trader1.TemporaryStorage!).Setup(s => s.Items).Returns(new List<Item> { offered });
+        Mock.Get(trader1.Inventory!).Setup(s => s.TryTakeAllAsync(It.IsAny<IStorage>())).Returns(new ValueTask<bool>(true));
+        Mock.Get(trader2.Inventory!).Setup(s => s.TryTakeAllAsync(It.IsAny<IStorage>())).Returns(new ValueTask<bool>(true));
+
+        var tradeContext = new Mock<IContext>();
+        tradeContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>())).Returns(new ValueTask<bool>(true));
+        var provider = new Mock<IPersistenceContextProvider>();
+        provider.Setup(p => p.CreateNewTradeContext()).Returns(tradeContext.Object);
+        var gameContext = new Mock<IGameContext>();
+        gameContext.Setup(c => c.PersistenceContextProvider).Returns(provider.Object);
+        gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager(null, new NullLoggerFactory(), null, null));
+        Mock.Get(trader1).Setup(t => t.GameContext).Returns(gameContext.Object);
+        Mock.Get(trader2).Setup(t => t.GameContext).Returns(gameContext.Object);
+        Mock.Get(trader2.PersistenceContext).Setup(c => c.AttachWithoutParent(offered))
+            .Throws(new InvalidOperationException("An item with the same Id is already tracked."));
+
+        var action = new TradeButtonAction();
+        await action.TradeButtonChangedAsync(trader1, TradeButtonState.Checked).ConfigureAwait(false);
+        await action.TradeButtonChangedAsync(trader2, TradeButtonState.Checked).ConfigureAwait(false);
+
+        tradeContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!)
+            .Verify(v => v!.TradeFinishedAsync(TradeResult.Success), Times.Once);
+        Mock.Get(trader2.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!)
+            .Verify(v => v!.TradeFinishedAsync(TradeResult.Success), Times.Once);
+        Assert.That(trader1.TradingPartner, Is.Null);
+        Assert.That(trader2.TradingPartner, Is.Null);
+        Assert.That(trader1.Money, Is.EqualTo(1200));
+        Assert.That(trader2.Money, Is.EqualTo(1100));
+        Mock.Get(trader1.Inventory!).Verify(i => i.Clear(), Times.Never);
+        Mock.Get(trader2.Inventory!).Verify(i => i.Clear(), Times.Never);
+    }
+
+    /// <summary>
+    /// An unsuccessful trade database save must still cancel safely, before any money
+    /// is credited or committed-trade results are reported.
+    /// </summary>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async ValueTask TradeSaveFailureDoesNotReportSuccessAsync(bool throwsException)
+    {
+        var trader1 = this.CreateTrader(PlayerState.TradeOpened);
+        var trader2 = this.CreateTrader(PlayerState.TradeOpened);
+        trader1.TradingPartner = trader2;
+        trader2.TradingPartner = trader1;
+        trader1.Money = 1000;
+        trader2.Money = 1000;
+        trader1.TradingMoney = 100;
+        trader2.TradingMoney = 200;
+
+        var offered = this.GetItem();
+        offered.Definition = new ItemDefinition { Width = 1, Height = 1, IsTradable = true };
+        Mock.Get(trader1.TemporaryStorage!).Setup(s => s.Items).Returns(new List<Item> { offered });
+        Mock.Get(trader1.Inventory!).Setup(s => s.TryTakeAllAsync(It.IsAny<IStorage>())).Returns(new ValueTask<bool>(true));
+        Mock.Get(trader2.Inventory!).Setup(s => s.TryTakeAllAsync(It.IsAny<IStorage>())).Returns(new ValueTask<bool>(true));
+        var tradeContext = new Mock<IContext>();
+        if (throwsException)
+        {
+            tradeContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .Throws(new InvalidOperationException("Trade persistence failed before commit."));
+        }
+        else
+        {
+            tradeContext.Setup(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .Returns(new ValueTask<bool>(false));
+        }
+        var provider = new Mock<IPersistenceContextProvider>();
+        provider.Setup(p => p.CreateNewTradeContext()).Returns(tradeContext.Object);
+        var gameContext = new Mock<IGameContext>();
+        gameContext.Setup(c => c.PersistenceContextProvider).Returns(provider.Object);
+        gameContext.Setup(c => c.PlugInManager).Returns(new PlugInManager(null, new NullLoggerFactory(), null, null));
+        Mock.Get(trader1).Setup(t => t.GameContext).Returns(gameContext.Object);
+        Mock.Get(trader2).Setup(t => t.GameContext).Returns(gameContext.Object);
+
+        var action = new TradeButtonAction();
+        await action.TradeButtonChangedAsync(trader1, TradeButtonState.Checked).ConfigureAwait(false);
+        await action.TradeButtonChangedAsync(trader2, TradeButtonState.Checked).ConfigureAwait(false);
+
+        tradeContext.Verify(c => c.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        Mock.Get(trader1.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!)
+            .Verify(v => v!.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+        Assert.That(trader1.Money, Is.EqualTo(1000));
+        Assert.That(trader2.Money, Is.EqualTo(1000));
+        Assert.That(trader1.TradingPartner, Is.Null);
+        Assert.That(trader2.TradingPartner, Is.Null);
     }
 
     private Item GetItem()

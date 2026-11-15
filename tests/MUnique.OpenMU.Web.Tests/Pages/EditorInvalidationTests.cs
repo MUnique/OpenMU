@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.Tests.Pages;
 
+using MUnique.OpenMU.Web.Tests.AdminAuth;
 using System.Threading;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -187,6 +188,7 @@ public sealed class EditorInvalidationTests
     private static Mock<IToastService> Configure(BunitContext context, IDataSource<GameConfiguration> source, IPersistenceContextProvider provider)
     {
         var toast = new Mock<IToastService>();
+        context.AddAdministratorAuthorization();
         context.Services.AddSingleton(source);
         context.Services.AddSingleton(provider);
         context.Services.AddSingleton(toast.Object);

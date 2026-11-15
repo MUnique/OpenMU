@@ -489,5 +489,47 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("OldJewelleryCaseMoney", resourceCulture);
             }
         }
+
+        /// <summary>Gets GoldenBoxExcellentItems from the configuration name resources.</summary>
+        public static string GoldenBoxExcellentItems {
+            get {
+                return ResourceManager.GetString("GoldenBoxExcellentItems", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenBoxJewels from the configuration name resources.</summary>
+        public static string GoldenBoxJewels {
+            get {
+                return ResourceManager.GetString("GoldenBoxJewels", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenBoxMoney from the configuration name resources.</summary>
+        public static string GoldenBoxMoney {
+            get {
+                return ResourceManager.GetString("GoldenBoxMoney", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SilverBoxExcellentItems from the configuration name resources.</summary>
+        public static string SilverBoxExcellentItems {
+            get {
+                return ResourceManager.GetString("SilverBoxExcellentItems", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SilverBoxJewels from the configuration name resources.</summary>
+        public static string SilverBoxJewels {
+            get {
+                return ResourceManager.GetString("SilverBoxJewels", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SilverBoxMoney from the configuration name resources.</summary>
+        public static string SilverBoxMoney {
+            get {
+                return ResourceManager.GetString("SilverBoxMoney", resourceCulture);
+            }
+        }
     }
 }

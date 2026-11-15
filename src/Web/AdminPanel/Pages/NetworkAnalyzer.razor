@@ -2,6 +2,7 @@
 @page "/network-analyzer/{ConnectionId:guid}"
 @page "/network-analyzer/archive/{*SessionId}"
 @page "/network-analyzer/player/{ServerId:int}/{PlayerName}"
+@attribute [Authorize(Policy = AdminPolicies.Administrator)]
 
 @using MUnique.OpenMU.Network.Analyzer
 @using MUnique.OpenMU.Web.AdminPanel.Components.NetworkAnalyzer

@@ -13,8 +13,21 @@ internal sealed class ConfigurationReadScope : IDisposable
 {
     private IContext? _context;
 
+    private IContext? _loadedContext;
+
     /// <summary>Gets the configuration snapshot for the lifetime of this scope.</summary>
     internal GameConfiguration Configuration { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets a value indicating whether the admin panel has unsaved changes now in the configuration
+    /// which it had loaded and which this scope reads.
+    /// </summary>
+    /// <remarks>
+    /// The scope reads the admin panel's configuration while it has no changes. An edit which starts
+    /// while it's read changes what is read, so a reader which must leave out unsaved changes asks
+    /// this afterwards and reads again.
+    /// </remarks>
+    internal bool LoadedConfigurationChanged => this._loadedContext?.HasChanges is true;
 
     /// <inheritdoc />
     public void Dispose() => this._context?.Dispose();
@@ -36,6 +49,7 @@ internal sealed class ConfigurationReadScope : IDisposable
         else
         {
             this.Configuration = owner;
+            this._loadedContext = shared;
         }
     }
 }

@@ -307,8 +307,10 @@ internal sealed class BotGenerator
     /// damage) and die instantly. The split follows the class build in <see cref="BotProgression"/>
     /// - the same split the bot keeps using for points it earns at runtime - and respects each stat's
     /// configured maximum (fun servers) as well as the bot's personal vitality target on reset-meta servers.
+    /// The requirements of the starter gear and of the gear the character finds at its level come first
+    /// (see <see cref="BotGearPlanner"/>).
     /// </summary>
-    private static void DistributeStatPoints(Character character, CharacterClass characterClass, bool resetMeta)
+    private static void DistributeStatPoints(Character character, CharacterClass characterClass, bool resetMeta, GameConfiguration configuration, int level)
     {
         var points = character.LevelUpPoints;
         if (points <= 0)
@@ -318,6 +320,13 @@ internal sealed class BotGenerator
 
         var weights = BotProgression.GetStatWeights(characterClass, character.Name);
         var vitalityTarget = resetMeta ? BotProgression.GetVitalityTarget(character.Name) : (int?)null;
+
+        long InvestedOf(AttributeDefinition stat)
+        {
+            var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
+            var classBase = characterClass.StatAttributes.FirstOrDefault(a => a.Attribute == stat);
+            return attribute is null ? 0 : (long)attribute.Value - (long)(classBase?.BaseValue ?? 0f);
+        }
 
         long CapacityOf(AttributeDefinition stat)
         {
@@ -336,14 +345,22 @@ internal sealed class BotGenerator
 
             if (vitalityTarget is { } target && stat == Stats.BaseVitality)
             {
-                var invested = (long)attribute.Value - (long)(classBase?.BaseValue ?? 0f);
-                capacity = Math.Min(capacity, target - invested);
+                capacity = Math.Min(capacity, target - InvestedOf(stat));
             }
 
             return capacity;
         }
 
-        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf))
+        var equippedItems = character.Inventory?.Items.Where(i => i.ItemSlot < InventoryConstants.EquippableSlotsCount) ?? [];
+        var minimums = BotGearPlanner.GetStatMinimums(
+            configuration,
+            characterClass,
+            character.Name,
+            level,
+            equippedItems,
+            BotProgression.GetTotalPoints(points, characterClass, InvestedOf));
+
+        foreach (var (stat, amount) in BotProgression.SplitPoints(points, weights, CapacityOf, InvestedOf, minimums))
         {
             var attribute = character.Attributes.FirstOrDefault(a => a.Definition == stat);
             if (attribute is not null)
@@ -548,7 +565,19 @@ internal sealed class BotGenerator
         character.Experience = experienceTable[Math.Min(level, experienceTable.Length - 1)];
         character.LevelUpPoints = CalculateLevelUpPoints(characterClass, level, seededResets, resetConfiguration);
         character.InventoryExtensions = BotInventoryExtensions;
-        DistributeStatPoints(character, characterClass, resetConfiguration is not null);
+
+        // A fresh character starts like a regular player's new character - weapon only, no armor -
+        // and loots its first set like everyone else. Veterans keep the basic set, without which
+        // they could not survive the maps their start level puts them on. The gear goes on before the
+        // stats are invested, so the investment covers its requirements (see BotGearPlanner).
+        var starterGear = new BotStarterGearEquipper(context, this._gameContext.Configuration, character, starterItemLevel);
+        starterGear.EquipWeapon();
+        if (equipStarterArmor)
+        {
+            starterGear.EquipArmorSet();
+        }
+
+        DistributeStatPoints(character, characterClass, resetConfiguration is not null, this._gameContext.Configuration, level);
 
         // Skills survive resets, so a seeded veteran knows everything the highest level of its past
         // cycles unlocked; level-gated skills are checked against that level, not the current one.
@@ -558,17 +587,6 @@ internal sealed class BotGenerator
         this.LearnClassSkills(context, character, characterClass, highestLevelReached);
 
         character.Inventory!.Money = StartMoney;
-
-        // A fresh character starts like a regular player's new character - weapon only, no armor -
-        // and loots its first set like everyone else. Veterans keep the basic set, without which
-        // they could not survive the maps their start level puts them on.
-        var starterGear = new BotStarterGearEquipper(context, this._gameContext.Configuration, character, starterItemLevel);
-        starterGear.EquipWeapon();
-        if (equipStarterArmor)
-        {
-            starterGear.EquipArmorSet();
-        }
-
         starterGear.AddPotions();
 
         account.Characters.Add(character);

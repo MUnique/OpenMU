@@ -108,6 +108,21 @@ public class LeaderboardsPageTests
         Assert.That(cut.Markup, Does.Contain("Current"));
     }
 
+    /// <summary>
+    /// A Chinese admin interface shows the localized mini game name in the leaderboard tab.
+    /// </summary>
+    [Test]
+    public void MiniGameTabUsesCurrentUiCulture()
+    {
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("zh-CN");
+
+        var cut = this._context.Render<Leaderboards>();
+        this.CompleteNextLoad("Player");
+        cut.WaitForState(() => cut.Markup.Contains("Player", StringComparison.Ordinal));
+
+        Assert.That(cut.Find(".nav-pills .nav-link").TextContent.Trim(), Is.EqualTo("血色城堡"));
+    }
+
     private void CompleteNextLoad(string characterName)
     {
         Assert.That(this._pendingLoads, Is.Not.Empty);

@@ -24,6 +24,12 @@ public sealed class CombatHandler
     private const byte BowRange = 6;
 
     /// <summary>
+    /// Targets are within one hunting range of the origin; a competing bot is within one hunting range
+    /// of a target. The lookup therefore needs twice the hunting range to see every competitor.
+    /// </summary>
+    private const int CompetitorLookupRangeFactor = 2;
+
+    /// <summary>
     /// How many levels above its own a bot may still consider a monster: without it, a level-1
     /// character (0 resets, 0 master level) could never engage anything above its nominal level.
     /// The real safety net is the damage/defense/hit-budget math below, not this ceiling, so a
@@ -512,10 +518,14 @@ public sealed class CombatHandler
             this._currentTarget = null;
         }
 
+        var targets = this.GetAttackableTargetsInHuntingRange().ToList();
         if (this._currentTarget is null)
         {
-            var targets = this.GetAttackableTargetsInHuntingRange().ToList();
-            var candidates = targets
+            // The competitor lookup is a second area-of-interest query, so it only runs when a new target
+            // is actually needed - not on every tick of a fight. The counts below stay unfiltered: claimed
+            // monsters are still part of the pack an area skill hits.
+            var pool = this.IsBot ? this.PreferUnclaimedTargets(targets) : targets;
+            var candidates = pool
                 .Where(m => m.Id != this._unreachableTargetId || DateTime.UtcNow >= this._unreachableTargetUntilUtc)
                 .OrderBy(m => m.GetDistanceTo(this._player))
                 .Take(this.IsBot ? 2 : 1)
@@ -527,15 +537,41 @@ public sealed class CombatHandler
             // overkill. A player's own offline session keeps hitting the nearest monster - it is his
             // character's hunting efficiency, not a crowd to camouflage.
             this._currentTarget = candidates.SelectRandom();
-            this._nearbyMonsterCount = targets.Count;
-            this._targetsAroundCurrent = CountPackAround(this._currentTarget, targets);
         }
-        else
+
+        this._nearbyMonsterCount = targets.Count;
+        this._targetsAroundCurrent = CountPackAround(this._currentTarget, targets);
+    }
+
+    /// <summary>
+    /// Prefers monsters no other bot outside the party is already hunting. If every monster in range is
+    /// contested, the ground is saturated - sharing it beats standing around, so the original list is
+    /// kept and the bot still fights. Only used to choose a new target; it does not influence the
+    /// monster counts used for the area skill decisions.
+    /// </summary>
+    private List<IAttackable> PreferUnclaimedTargets(List<IAttackable> targets)
+    {
+        var competitorSpots = this.GetNearbyCompetitorSpots();
+        if (competitorSpots.Count == 0)
         {
-            var targets = this.GetAttackableTargetsInHuntingRange().ToList();
-            this._nearbyMonsterCount = targets.Count;
-            this._targetsAroundCurrent = CountPackAround(this._currentTarget, targets);
+            return targets;
         }
+
+        var unclaimed = targets
+            .Where(t => t is not Monster monster || !HuntingSpotOccupancy.IsMonsterClaimed(monster.Position, competitorSpots, this.HuntingRange))
+            .ToList();
+        return unclaimed.Count > 0 ? unclaimed : targets;
+    }
+
+    private IReadOnlyList<HuntingSpot> GetNearbyCompetitorSpots()
+    {
+        if (this._player.CurrentMap is not { } map)
+        {
+            return [];
+        }
+
+        var nearby = map.GetAttackablesInRange(this.OriginPosition, this.HuntingRange * CompetitorLookupRangeFactor);
+        return HuntingSpotOccupancy.GetCompetitorSpots(this._player, nearby.OfType<Player>(), map.Definition.Number);
     }
 
     private IEnumerable<Monster> GetAttackableMonstersInHuntingRange()

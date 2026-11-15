@@ -42,6 +42,12 @@ public class PlayerLosesExperienceAfterDeathPlugIn : IAttackableGotKilledPlugIn,
             return;
         }
 
+        if (attributes[Stats.DeathPenaltyProtection] > 0)
+        {
+            // E.g. the Talisman of Guardian protects from the death penalty.
+            return;
+        }
+
         if (CrywolfPlugIn.GetContext(player.GameContext) is { } crywolf && crywolf.KeepsExperienceOnDeath(player.CurrentMap))
         {
             // During the battle of the crywolf event, the players don't lose experience on its map.

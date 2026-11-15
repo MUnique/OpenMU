@@ -239,6 +239,31 @@ public class BuffHandlerTests
         }
     }
 
+    /// <summary>
+    /// Tests that a configured skill whose magic effect has no duration (like Heal) is skipped
+    /// instead of throwing, which would abort the whole offline helper tick.
+    /// </summary>
+    [Test]
+    public async ValueTask SkillWithoutEffectDurationIsSkippedAsync()
+    {
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var heal = new Persistence.BasicModel.Skill
+        {
+            Number = 26,
+            SkillType = SkillType.Buff,
+            Target = SkillTarget.ImplicitPlayer,
+            Range = 3,
+            MagicEffectDef = new Persistence.BasicModel.MagicEffectDefinition { Number = 26 },
+        };
+        await player.SkillList!.AddLearnedSkillAsync(heal).ConfigureAwait(false);
+        var handler = new BuffHandler(player, new MuHelperSettings { BuffSkill0Id = heal.Number, HuntingRange = 5 });
+
+        var result = await handler.PerformBuffsAsync().ConfigureAwait(false);
+
+        Assert.That(result, Is.True);
+        Assert.That(player.MagicEffectList.HasEffect(heal.MagicEffectDef!), Is.False);
+    }
+
     private static GameMap CreateMap(short number)
     {
         return new GameMap(new Persistence.BasicModel.GameMapDefinition { Number = number }, TimeSpan.FromMinutes(1), 8);

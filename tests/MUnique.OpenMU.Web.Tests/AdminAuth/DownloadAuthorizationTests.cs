@@ -43,11 +43,16 @@ public sealed class DownloadAuthorizationTests : System.IDisposable
 
     private const string PasswordHash = "secret-password-hash";
 
+    private const string SecurityCode = "secret-security-code";
+
+    private const string VaultPassword = "secret-vault-password";
+
     private static readonly string[] RolesWithoutAccountAccess = [AdminRoles.Viewer, AdminRoles.CashShop];
 
     private WebApplication? _app;
     private HttpClient? _http;
     private string[] _downloadUris = [];
+    private Account? _account;
     private string _accountUri = string.Empty;
 
     /// <summary>Stops the host of the test.</summary>
@@ -118,6 +123,30 @@ public sealed class DownloadAuthorizationTests : System.IDisposable
             {
                 Assert.That(status, Is.EqualTo(HttpStatusCode.OK), uri);
             }
+        });
+    }
+
+    /// <summary>
+    /// The account download leaves the credentials of the account out, and doesn't remove them from the account itself.
+    /// </summary>
+    [Test]
+    public async Task AccountDownloadLeavesCredentialsOutAsync()
+    {
+        var http = await this.StartHostAsync(nameof(AdminRole.Administrator)).ConfigureAwait(false);
+        await LogInAsync(http).ConfigureAwait(false);
+
+        var account = (await GetAllAsync(http, [this._accountUri]).ConfigureAwait(false)).Single();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(account.Status, Is.EqualTo(HttpStatusCode.OK), account.Uri);
+            Assert.That(account.Content, Does.Contain("tester"));
+            Assert.That(account.Content, Does.Not.Contain(PasswordHash));
+            Assert.That(account.Content, Does.Not.Contain(SecurityCode));
+            Assert.That(account.Content, Does.Not.Contain(VaultPassword));
+            Assert.That(this._account?.PasswordHash, Is.EqualTo(PasswordHash));
+            Assert.That(this._account?.SecurityCode, Is.EqualTo(SecurityCode));
+            Assert.That(this._account?.VaultPassword, Is.EqualTo(VaultPassword));
         });
     }
 
@@ -238,10 +267,13 @@ public sealed class DownloadAuthorizationTests : System.IDisposable
         var account = context.CreateNew<Account>();
         account.LoginName = "tester";
         account.PasswordHash = PasswordHash;
+        account.SecurityCode = SecurityCode;
+        account.VaultPassword = VaultPassword;
         await context.SaveChangesAsync().ConfigureAwait(false);
         builder.Services.AddSingleton<IPersistenceContextProvider>(persistence);
         builder.Services.AddSingleton(CreateDataSource(configuration));
         builder.Services.AddSingleton(CreateDataSource(account));
+        this._account = account;
 
         this._accountUri = $"/download/{nameof(Account)}/{nameof(Account)}_{account.GetId()}.json";
         this._downloadUris =

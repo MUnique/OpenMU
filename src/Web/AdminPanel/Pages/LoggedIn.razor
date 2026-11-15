@@ -9,6 +9,7 @@
 @inject LoggedInAccountService AccountService;
 @inject OfflineAccountService OfflineService;
 @inject BotAccountService BotService;
+@inject AdminPolicyGuard PolicyGuard;
 @inject IServiceProvider ServiceProvider;
 @inject IToastService ToastService;
 
@@ -102,9 +103,11 @@
           <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
           <td>@item.StartedAt.ToString("yyyy-MM-dd HH:mm:ss") UTC</td>
           <td>
-            <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.OfflineService.StopOfflinePlayerAsync(item)">
-              <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
-            </button>
+            <AuthorizeView Policy="@AdminPolicies.Operator">
+              <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.StopOfflinePlayerAsync(item)">
+                <span class="oi oi-media-stop" aria-hidden="true" /> @Resources.Stop
+              </button>
+            </AuthorizeView>
           </td>
         </ItemTemplate>
       </DataTable>
@@ -136,6 +139,18 @@
 </div>
 
 @code {
+    private async Task StopOfflinePlayerAsync(OfflineAccount account)
+    {
+        // Stopping the session disconnects the player, which is up to an operator.
+        if (!await this.PolicyGuard.IsAuthorizedAsync(AdminPolicies.Operator).ConfigureAwait(true))
+        {
+            this.ToastService.ShowError(Resources.ChangeNotPermitted);
+            return;
+        }
+
+        await this.OfflineService.StopOfflinePlayerAsync(account).ConfigureAwait(true);
+    }
+
     private async Task SetAccountOfflineAsync(LoggedInAccount account)
     {
         try

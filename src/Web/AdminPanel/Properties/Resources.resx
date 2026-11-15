@@ -789,6 +789,9 @@
   <data name="AccessDeniedDescription" xml:space="preserve">
     <value>Your account is not permitted to open this page.</value>
   </data>
+  <data name="ChangeNotPermitted" xml:space="preserve">
+    <value>Your account is not permitted to make this change.</value>
+  </data>
   <data name="AccountSecurity" xml:space="preserve">
     <value>Account security</value>
   </data>
@@ -1531,6 +1534,9 @@
   <data name="MapDropItemGroupsDescription" xml:space="preserve">
     <value>Drop groups which apply to monsters on the assigned maps. Groups which are not assigned to any map don't drop.</value>
   </data>
+  <data name="NotAssignedToAnyMap" xml:space="preserve">
+    <value>Not assigned to any map</value>
+  </data>
   <data name="MaximumDropLevel" xml:space="preserve">
     <value>Maximum drop level</value>
   </data>
@@ -1686,6 +1692,9 @@
   </data>
   <data name="Active" xml:space="preserve">
     <value>Active</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
   </data>
   <data name="Number" xml:space="preserve">
     <value>Number</value>
@@ -2656,6 +2665,13 @@
   <data name="Leaderboards" xml:space="preserve">
     <value>Leaderboards</value>
   </data>
+  <data name="LeaderboardMiniGame_DevilSquare" xml:space="preserve"><value>Devil Square</value></data>
+  <data name="LeaderboardMiniGame_BloodCastle" xml:space="preserve"><value>Blood Castle</value></data>
+  <data name="LeaderboardMiniGame_ChaosCastle" xml:space="preserve"><value>Chaos Castle</value></data>
+  <data name="LeaderboardMiniGame_IllusionTemple" xml:space="preserve"><value>Illusion Temple</value></data>
+  <data name="LeaderboardMiniGame_Doppelganger" xml:space="preserve"><value>Doppelganger</value></data>
+  <data name="LeaderboardMiniGame_Kanturu" xml:space="preserve"><value>Kanturu</value></data>
+  <data name="LeaderboardMiniGame_ImperialGuardian" xml:space="preserve"><value>Imperial Guardian</value></data>
   <data name="LeaderboardsDescription" xml:space="preserve">
     <value>The best characters of the mini games which save their ranking statistics, ranked by the sum of their scores. Bots are not included.</value>
   </data>
@@ -2703,5 +2719,41 @@
   </data>
   <data name="SaveOrDiscardChangesFirst" xml:space="preserve">
     <value>Save or discard the pending changes first.</value>
+  </data>
+  <data name="Inspect" xml:space="preserve">
+    <value>Inspect</value>
+  </data>
+  <data name="ExcellentOptionsChance" xml:space="preserve">
+    <value>Excellent option chance (%)</value>
+  </data>
+  <data name="ExcellentOptionsMaximumOptionsPerItem" xml:space="preserve">
+    <value>Maximum excellent options per item</value>
+  </data>
+  <data name="ExcellentOptionsHint" xml:space="preserve">
+    <value>Empty means that the value of the excellent option definition of the item applies. The first option is always added without a chance.</value>
+  </data>
+  <data name="ExportShop" xml:space="preserve">
+    <value>Export shop</value>
+  </data>
+  <data name="ImportShop" xml:space="preserve">
+    <value>Import shop</value>
+  </data>
+  <data name="ShopImportQuestion" xml:space="preserve">
+    <value>Importing replaces all items of the shop of "{0}". Continue?</value>
+  </data>
+  <data name="ShopImported" xml:space="preserve">
+    <value>{0} item(s) were imported into the shop. Use "Save changes" to apply them.</value>
+  </data>
+  <data name="ShopImportInvalidFile" xml:space="preserve">
+    <value>The file is not a valid merchant shop export.</value>
+  </data>
+  <data name="ShopImportSelectionChanged" xml:space="preserve">
+    <value>The import was cancelled, because the selected merchant or the editing session changed in the meantime.</value>
+  </data>
+  <data name="ShopImportFailed" xml:space="preserve">
+    <value>The import failed. The shop may be partially changed; use "Discard changes" to undo the unsaved changes.</value>
+  </data>
+  <data name="ShopImportRejected" xml:space="preserve">
+    <value>The shop was not changed, because the file contains entries which can't be imported: {0}</value>
   </data>
 </root>
