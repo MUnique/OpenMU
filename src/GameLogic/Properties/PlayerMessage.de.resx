@@ -1045,4 +1045,7 @@ Inventarerweiterungen: {18}</value>
   <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
     <value>Ein Charakter, für den Gegenstände warten, deren Gegenstandsart es nicht mehr gibt, kann nicht gelöscht werden. Bitte wenden Sie sich an einen Admin.</value>
   </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>Der gleiche Gegenstand wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
+  </data>
 </root>

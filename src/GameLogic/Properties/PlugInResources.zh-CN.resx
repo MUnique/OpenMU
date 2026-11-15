@@ -1867,4 +1867,10 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>列出的等待物品数量，每条消息一件。</value>
   </data>
+  <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
+    <value>在背包中使用的物品</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Description" xml:space="preserve">
+    <value>雕像和护身符等物品在背包中使用。物品使用期间，其加成生效。</value>
+  </data>
 </root>

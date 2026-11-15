@@ -8898,5 +8898,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardGlobalNotices_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Items used inside the inventory.
+        /// </summary>
+        public static string InventoryItemUseFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemUseFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Items like the figurines and charms are used inside the inventory. While such an item is in use, its power-ups apply..
+        /// </summary>
+        public static string InventoryItemUseFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemUseFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }
