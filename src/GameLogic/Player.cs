@@ -116,9 +116,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     // State exclusion owns preparation; an old life cannot release a replacement's admission owner.
     private ItemAwareAttributeSystem? _forcedPlacementPreparation;
 
-    // An independent disconnect may overlap packet-driven logout; neither may republish trade availability early.
-    private int _removalsInProgress;
-
     private Character? _selectedCharacter;
 
     private ICustomPlugInContainer<IViewPlugIn>? _viewPlugIns;
@@ -383,11 +380,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <summary>
     /// Gets or sets the Monster of the current opened Monster dialog.
     /// </summary>
-    public NonPlayerCharacter? OpenedNpc
-    {
-        get => this.OpenedNpcContext?.Npc;
-        set => this.OpenedNpcContext = value is null ? null : new NpcDialogContext(value);
-    }
+    public NonPlayerCharacter? OpenedNpc { get; set; }
 
     /// <inheritdoc/>
     public StateMachine PlayerState { get; } = new(GameLogic.PlayerState.Initial);
@@ -696,35 +689,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     internal bool IsPreparingForcedPlacement => this.Attributes is { } attributes
         && ReferenceEquals(Volatile.Read(ref this._forcedPlacementPreparation), attributes);
 
-    /// <summary>Gets a value indicating whether a live character can publish trade state, excluding scoped world removal.</summary>
-    /// <remarks>Read the removal guard first so its final decrement publishes the cleared character to this reader.</remarks>
-    internal bool IsAvailableForTrade => Volatile.Read(ref this._removalsInProgress) == 0 && !this.IsPreparingForcedPlacement && this.SelectedCharacter is not null && this.IsAlive;
-
-    /// <summary>Gets a value indicating whether the current requester may join a party, including an ordinary living map transfer.</summary>
-    internal bool IsAvailableAsPartyRequester
-    {
-        get
-        {
-            lock (this._hitLock)
-            {
-                return Volatile.Read(ref this._removalsInProgress) == 0
-                    && !this.IsDisposing && !this.IsDisposed && this.SelectedCharacter is not null
-                    && !this.IsPreparingForcedPlacement && !this._hasReservedLethalHit
-                    && !this.PlayerState.CurrentState.IsDisconnectedOrFinished()
-                    && (this.IsAlive || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap);
-            }
-        }
-    }
+    /// <summary>Gets a value indicating whether a live character can publish trade state.</summary>
+    internal bool IsAvailableForTrade => !this.IsPreparingForcedPlacement && this.SelectedCharacter is not null && this.IsAlive;
 
     /// <summary>
     /// Gets a value indicating whether this thread is committing this player's hit resources.
     /// </summary>
     internal bool IsApplyingHitOnCurrentThread => Monitor.IsEntered(this._hitLock);
-
-    /// <summary>
-    /// Gets or sets the identity of one opened NPC dialog, including reopening the same NPC.
-    /// </summary>
-    internal NpcDialogContext? OpenedNpcContext { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
@@ -1182,85 +1153,66 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask DisconnectAsync()
     {
-        var registeredRemoval = false;
-        try
+        await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+        if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Disconnected).ConfigureAwait(false))
         {
-            // Disconnect has admission windows before its nested world removal begins.
-            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
-            {
-                context.Allowed = false;
-                Interlocked.Increment(ref this._removalsInProgress);
-                registeredRemoval = true;
-            }
-
-            await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
-            if (await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Disconnected).ConfigureAwait(false))
+            try
             {
                 try
                 {
+                    await this.InternalDisconnectAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    // The subscribers below are what take the player out of the game context's player
+                    // list - and, for a remote player, dispose it. A teardown which throws half way
+                    // must not skip them: the state machine has already left the state this method
+                    // needs to advance from, so no later call can raise the event again. The player
+                    // would stay in the list, counting towards the server's maximum player count and
+                    // keeping its whole object graph alive, until the process restarts.
+                    this.Logger.LogError(ex, "Error while disconnecting player {Player}; continuing the teardown.", this);
+
+                    // Saving is the LAST step of the regular teardown (see RemoveFromGameAsync), so
+                    // the throw above may well have skipped it. Without a save, continuing would turn
+                    // the failure into silent data loss: the caller sees a successful logout, disposes
+                    // this instance, and the next session loads the character from the database -
+                    // rolled back to its last periodic save.
                     try
                     {
-                        await this.InternalDisconnectAsync().ConfigureAwait(false);
+                        await this.SaveProgressAsync().ConfigureAwait(false);
                     }
-                    catch (Exception ex)
+                    catch (Exception saveException)
                     {
-                        // The subscribers below are what take the player out of the game context's player
-                        // list - and, for a remote player, dispose it. A teardown which throws half way
-                        // must not skip them: the state machine has already left the state this method
-                        // needs to advance from, so no later call can raise the event again. The player
-                        // would stay in the list, counting towards the server's maximum player count and
-                        // keeping its whole object graph alive, until the process restarts.
-                        this.Logger.LogError(ex, "Error while disconnecting player {Player}; continuing the teardown.", this);
+                        this.Logger.LogError(saveException, "Couldn't save the progress of player {Player} after its teardown failed.", this);
+                    }
+                }
 
-                        // Saving is the LAST step of the regular teardown (see RemoveFromGameAsync), so
-                        // the throw above may well have skipped it. Without a save, continuing would turn
-                        // the failure into silent data loss: the caller sees a successful logout, disposes
-                        // this instance, and the next session loads the character from the database -
-                        // rolled back to its last periodic save.
+                if (this.PlayerDisconnected is { } disconnectedEventHandler)
+                {
+                    this.PlayerDisconnected = null;
+
+                    // One by one instead of awaiting the multicast delegate: invoking a multicast
+                    // ValueTask delegate awaits only the LAST subscriber's task, so the earlier ones
+                    // (the removal from the game context's player list) would run unobserved and
+                    // possibly still be in flight while the last one (which disposes a remote player)
+                    // executes. Isolating each subscriber also keeps one failing handler from skipping
+                    // the others - the handler list is already dropped, so nothing could re-run them.
+                    foreach (var subscriber in disconnectedEventHandler.GetInvocationList())
+                    {
                         try
                         {
-                            await this.SaveProgressAsync().ConfigureAwait(false);
+                            await ((AsyncEventHandler<Player>)subscriber)(this).ConfigureAwait(false);
                         }
-                        catch (Exception saveException)
+                        catch (Exception ex)
                         {
-                            this.Logger.LogError(saveException, "Couldn't save the progress of player {Player} after its teardown failed.", this);
+                            this.Logger.LogError(ex, "A PlayerDisconnected subscriber of player {Player} failed.", this);
                         }
                     }
-
-                    if (this.PlayerDisconnected is { } disconnectedEventHandler)
-                    {
-                        this.PlayerDisconnected = null;
-
-                        // One by one instead of awaiting the multicast delegate: invoking a multicast
-                        // ValueTask delegate awaits only the LAST subscriber's task, so the earlier ones
-                        // (the removal from the game context's player list) would run unobserved and
-                        // possibly still be in flight while the last one (which disposes a remote player)
-                        // executes. Isolating each subscriber also keeps one failing handler from skipping
-                        // the others - the handler list is already dropped, so nothing could re-run them.
-                        foreach (var subscriber in disconnectedEventHandler.GetInvocationList())
-                        {
-                            try
-                            {
-                                await ((AsyncEventHandler<Player>)subscriber)(this).ConfigureAwait(false);
-                            }
-                            catch (Exception ex)
-                            {
-                                this.Logger.LogError(ex, "A PlayerDisconnected subscriber of player {Player} failed.", this);
-                            }
-                        }
-                    }
-                }
-                finally
-                {
-                    await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Finished).ConfigureAwait(false);
                 }
             }
-        }
-        finally
-        {
-            if (registeredRemoval)
+            finally
             {
-                Interlocked.Decrement(ref this._removalsInProgress);
+                await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Finished).ConfigureAwait(false);
             }
         }
     }
@@ -1493,59 +1445,38 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
     {
-        var registeredRemoval = false;
+        if (this.Party is { } party)
+        {
+            await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
+        }
+
+        await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
+
+        await this._mapTransitions.RemoveFromCurrentMapAsync().ConfigureAwait(false);
+
+        // The player always observes itself, so leaving the map doesn't remove it from its own
+        // observed objects. Without clearing them, entering the world again (e.g. after going back
+        // to the character selection) wouldn't show the player to itself as a new player in scope.
+        await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
+
+        await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
+
+        this.OpenedNpc = null;
+
+        await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
+        Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
+
+        await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+
         try
         {
-            // Trade publication uses this same state exclusion. Publish departure before capturing its trade.
-            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
-            {
-                context.Allowed = false;
-                Interlocked.Increment(ref this._removalsInProgress);
-                registeredRemoval = true;
-            }
-
-            await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
-
-            if (this.Party is { } party)
-            {
-                await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
-            }
-
-            await this.HandleMoveToNextSafezoneAsync().ConfigureAwait(false);
-
-            await this._mapTransitions.RemoveFromCurrentMapAsync().ConfigureAwait(false);
-
-            // The player always observes itself, so leaving the map doesn't remove it from its own
-            // observed objects. Without clearing them, entering the world again (e.g. after going back
-            // to the character selection) wouldn't show the player to itself as a new player in scope.
-            await this._observerToWorldViewAdapter.ClearObservingObjectsListAsync().ConfigureAwait(false);
-
-            await this._storages.RestoreTemporaryStorageItemsAsync().ConfigureAwait(false);
-
-            this.OpenedNpc = null;
-
-            await this.SetSelectedCharacterAsync(null).ConfigureAwait(false);
-
-            // The client may stop to report that it's alive when it leaves the world, see ReportAlive.
-            Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
-
-            await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
-
-            try
-            {
-                await this.SaveProgressAsync().ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
-            }
+            await this.SaveProgressAsync().ConfigureAwait(false);
         }
-        finally
+        catch (Exception ex)
         {
-            if (registeredRemoval)
-            {
-                Interlocked.Decrement(ref this._removalsInProgress);
-            }
+            this.Logger.LogError(ex, "Couldn't save when leaving the game. Player: {player}", this);
         }
     }
 
@@ -1749,11 +1680,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             while (true)
             {
                 State state;
-                NpcDialogContext? dialog;
+                NonPlayerCharacter? dialog;
                 await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
                 {
                     state = this.PlayerState.CurrentState;
-                    dialog = this.OpenedNpcContext;
+                    dialog = this.OpenedNpc;
                     context.Allowed &= isCurrentLife() && state != GameLogic.PlayerState.NpcDialogOpened;
                     if (context.Allowed)
                     {
@@ -1785,12 +1716,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 {
                     if (dialog is not null)
                     {
-                        await new CloseNpcDialogAction().CloseNpcDialogAsync(this, dialog).ConfigureAwait(false);
+                        await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
                     }
                     else
                     {
                         await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
-                        context.Allowed &= isCurrentLife() && this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpcContext is null;
+                        context.Allowed &= isCurrentLife() && this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpc is null;
                     }
                 }
                 else
@@ -2348,11 +2279,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         while (true)
         {
             State state;
-            NpcDialogContext? dialog;
+            NonPlayerCharacter? dialog;
             await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
             {
                 state = this.PlayerState.CurrentState;
-                dialog = this.OpenedNpcContext;
+                dialog = this.OpenedNpc;
                 if (ownedDeath is not null)
                 {
                     lock (this._hitLock)
@@ -2400,13 +2331,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 if (dialog is not null)
                 {
-                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this, dialog).ConfigureAwait(false);
+                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
                 }
                 else
                 {
                     await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
                     var current = this.GetPlacementDeathSnapshot();
-                    context.Allowed &= this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpcContext is null
+                    context.Allowed &= this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpc is null
                         && (ownedDeath is null || (current.Reserved && ReferenceEquals(current.Death, ownedDeath)));
                 }
             }
@@ -3423,12 +3354,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
         }
     }
-
-    /// <summary>
-    /// Identifies one dialog opening independently of the NPC's reusable world object.
-    /// </summary>
-    /// <param name="Npc">The NPC whose dialog was opened.</param>
-    internal sealed record NpcDialogContext(NonPlayerCharacter Npc);
 
     /// <summary>
     /// Ends the collection which <see cref="CollectAttributeChangesUnderHitLock"/> started, before the hit lock is released.

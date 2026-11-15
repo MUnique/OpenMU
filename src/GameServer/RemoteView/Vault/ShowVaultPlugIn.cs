@@ -30,33 +30,14 @@ public class ShowVaultPlugIn : IShowVaultPlugIn
     /// <inheritdoc/>
     public async ValueTask ShowVaultAsync()
     {
-        if (this._player.Vault is not { } vault)
+        if (this._player.Vault is null)
         {
             return;
         }
 
-        var expectedState = this._player.PlayerState.CurrentState;
         await this._player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(NpcWindow.VaultStorage)).ConfigureAwait(false);
-        if (!IsCurrentVault())
-        {
-            return;
-        }
-
-        await this._player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(vault.ItemStorage.Items, StoreKind.Normal)).ConfigureAwait(false);
-        if (!IsCurrentVault())
-        {
-            return;
-        }
-
+        await this._player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(this._player.Vault.ItemStorage.Items, StoreKind.Normal)).ConfigureAwait(false);
         await this._player.InvokeViewPlugInAsync<IUpdateVaultMoneyPlugIn>(p => p.UpdateVaultMoneyAsync(true)).ConfigureAwait(false);
-        if (!IsCurrentVault())
-        {
-            return;
-        }
-
         await this._player.InvokeViewPlugInAsync<IUpdateVaultStatePlugIn>(p => p.UpdateStateAsync()).ConfigureAwait(false);
-
-        bool IsCurrentVault() => this._player.IsAlive && this._player.PlayerState.CurrentState == expectedState
-            && ReferenceEquals(this._player.Vault, vault);
     }
 }

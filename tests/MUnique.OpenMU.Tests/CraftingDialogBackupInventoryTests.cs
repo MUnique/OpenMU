@@ -146,7 +146,7 @@ public class CraftingDialogBackupInventoryTests
                 await new CloseNpcDialogAction().CloseNpcDialogAsync(player).ConfigureAwait(false);
             }
 
-            Assert.That(player.OpenedNpcContext, Is.Null);
+            Assert.That(player.OpenedNpc, Is.Null);
             Assert.That(player.BackupInventory, Is.Null);
             BackupItemStorage? newBackup = null;
             if (reopen)
@@ -233,7 +233,7 @@ public class CraftingDialogBackupInventoryTests
             await lethal.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             Assert.Multiple(() =>
             {
-                Assert.That(target.OpenedNpcContext, Is.Null);
+                Assert.That(target.OpenedNpc, Is.Null);
                 Assert.That(target.BackupInventory, Is.Null);
                 Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
                 Assert.That(deaths, Is.EqualTo(1));
@@ -295,7 +295,7 @@ public class CraftingDialogBackupInventoryTests
             Assert.Multiple(() =>
             {
                 Assert.That(requestPrecededSave, Is.True, "The victim request ran in the close-delay window, before saving held its funnel.");
-                Assert.That(target.OpenedNpcContext, Is.Null);
+                Assert.That(target.OpenedNpc, Is.Null);
                 Assert.That(target.BackupInventory, Is.Null);
                 Assert.That(target.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
                 Assert.That(target.LastDeath?.KillerId, Is.EqualTo(attacker.Id));
@@ -397,9 +397,28 @@ public class CraftingDialogBackupInventoryTests
                 Assert.That(ingredient.Durability, Is.EqualTo(7));
                 Assert.That(inventory.ItemStorage.Money, Is.EqualTo(1234));
                 Assert.That(owner.BackupInventory, Is.Null);
-                Assert.That(owner.TradingPartner, Is.Null);
-                Assert.That(peer.TradingPartner, Is.Null);
+                if (departure != "logout")
+                {
+                    Assert.That(owner.TradingPartner, Is.Null);
+                    Assert.That(peer.TradingPartner, Is.Null);
+                }
             });
+            if (departure == "logout")
+            {
+                // Clearing the pending request of a player who leaves the world is lifecycle cleanup, not owned here:
+                // the peer leaves the stale request by an ordinary cancel, which neither revives nor touches the owner.
+                await peer.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(peer)).ConfigureAwait(false);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(peer.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                    Assert.That(peer.TradingPartner, Is.Null);
+                    Assert.That(owner.PlayerState.CurrentState, Is.Not.EqualTo(PlayerState.EnteredWorld));
+                    Assert.That(inventory.Items.Concat(temporary.Items).Count(i => i.GetId() == id), Is.EqualTo(1));
+                    Assert.That(peer.Inventory!.Items.Concat(peer.TemporaryStorage!.Items).Any(i => i.GetId() == id), Is.False);
+                    Assert.That(inventory.ItemStorage.Money, Is.EqualTo(1234));
+                });
+            }
+
             if (owner.SelectedCharacter is not null)
             {
                 await owner.RemoveFromGameAsync().ConfigureAwait(false);

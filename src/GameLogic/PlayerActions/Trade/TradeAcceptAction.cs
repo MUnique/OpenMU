@@ -19,38 +19,43 @@ public class TradeAcceptAction : BaseTradeAction
     public async ValueTask HandleTradeAcceptAsync(ITrader tradeAccepter, bool accept)
     {
         var tradePartner = tradeAccepter.TradingPartner;
-        if (tradePartner is null)
-        {
-            return;
-        }
-
-        if (accept)
+        if (accept && tradePartner != null)
         {
             if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
             {
-                await new TradeCancelAction().CancelTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
+                ////Something bad happened here...
+                await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+                await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
             }
             else
             {
                 try
                 {
-                    if (!await this.OpenTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false))
+                    if (await this.OpenTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false))
                     {
-                        return;
+                        await this.OpenTradeAsync(tradePartner, tradeAccepter).ConfigureAwait(false);
                     }
-
-                    await this.OpenTradeAsync(tradePartner, tradeAccepter).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     tradeAccepter.Logger.LogError(ex, "Error while opening a trade between {tradeAccepter} and {tradePartner}", tradeAccepter, tradePartner);
-                    await new TradeCancelAction().CancelTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
+                    await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+                    await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
                 }
             }
         }
         else
         {
-            await new TradeCancelAction().CancelTradeAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
+            if (tradePartner != null)
+            {
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+            }
+
+            await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+            await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
         }
     }
 
@@ -59,20 +64,11 @@ public class TradeAcceptAction : BaseTradeAction
     /// </summary>
     /// <param name="trader">Trader for which the trade should be opened.</param>
     /// <param name="expectedPartner">The partner of the accepted request.</param>
-    /// <returns>Whether the same trade is still open after its response.</returns>
+    /// <returns>Whether the trade is still open after its response.</returns>
     internal async ValueTask<bool> OpenTradeAsync(ITrader trader, ITrader expectedPartner)
     {
-        if (!IsCurrentTrade(trader, expectedPartner))
-        {
-            return false;
-        }
-
         // first make sure that all items which could be transferred are already present in the database
         await trader.SaveProgressAsync().ConfigureAwait(false);
-        if (!IsCurrentTrade(trader, expectedPartner))
-        {
-            return false;
-        }
 
         // Items which another window (e.g. the chaos machine) left in the temporary storage go back to
         // the inventory first. The trade uses the same storage, so they would be offered in the trade,
@@ -81,12 +77,12 @@ public class TradeAcceptAction : BaseTradeAction
             && temporaryStorage.Items.Any()
             && !await trader.Inventory!.TryTakeAllAsync(temporaryStorage).ConfigureAwait(false))
         {
-            // Existing opening-error cleanup cancels both requests without owning these items.
+            // Without a backup, the cancel of the opening error handling keeps these items where they are.
             throw new InvalidOperationException("Could not return temporary storage items to the inventory before opening a trade.");
         }
 
-        // Cancellation uses this same state exclusion to clear the backup. Never publish it
-        // from a continuation of a cancelled save or temporary-item return.
+        // A cancel (e.g. by a death) clears the backup under the same state exclusion. A continuation of a
+        // trade which was cancelled meanwhile must not publish a backup for the next interaction.
         await using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
         {
             context.Allowed = false;

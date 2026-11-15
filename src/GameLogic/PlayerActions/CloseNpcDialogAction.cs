@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
-using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
@@ -18,101 +17,65 @@ public class CloseNpcDialogAction
     /// Closes the currently opened npc dialog.
     /// </summary>
     /// <param name="player">The player who wants to close the dialog.</param>
-    public ValueTask CloseNpcDialogAsync(Player player) => this.CloseNpcDialogAsync(player, player.OpenedNpcContext);
-
-    /// <summary>Closes only the captured opening, without clearing a successor's dialog resources.</summary>
-    /// <param name="player">The player.</param>
-    /// <param name="expectedDialog">The immutable opening to close; null never selects another opening.</param>
-    internal async ValueTask CloseNpcDialogAsync(Player player, Player.NpcDialogContext? expectedDialog)
+    public async ValueTask CloseNpcDialogAsync(Player player)
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
-        if (expectedDialog is not { } dialog)
+        var npc = player.OpenedNpc;
+        var closed = false;
+        if (npc is not null)
         {
-            player.Logger.LogDebug($"Captured dialog could not be closed by player {player.SelectedCharacter?.Name} in state {player.PlayerState}.");
-            return;
+            await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+
+            // Only an opened dialog is closed here. A close request of a dialog which a death or a map change
+            // already ended must not bring that life back into the world.
+            context.Allowed &= player.PlayerState.CurrentState == PlayerState.NpcDialogOpened
+                && ReferenceEquals(player.OpenedNpc, npc);
+            if (context.Allowed)
+            {
+                player.OpenedNpc = null;
+                player.Vault = null;
+                if (npc.Definition.ItemCraftings.Any())
+                {
+                    // The backup which was taken when the crafting dialog opened only guards a disconnect while
+                    // it's open. Kept beyond, a disconnect would roll the inventory back to that moment, losing or
+                    // duplicating everything since. Items left in the machine are returned through the temporary
+                    // storage instead.
+                    player.BackupInventory = null;
+                }
+
+                closed = true;
+            }
         }
 
-        var view = player.ViewPlugIns.GetPlugIn<INpcDialogClosedPlugIn>();
-        var response = ValueTask.CompletedTask;
-        var inventoryUpdate = ValueTask.CompletedTask;
-        var closed = false;
-        try
+        if (closed)
         {
-            await using (var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
+            player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {npc}");
+            if (npc!.Definition.ItemCraftings.Any())
             {
-                context.Allowed &= ReferenceEquals(player.OpenedNpcContext, dialog)
-                    && player.PlayerState.CurrentState == PlayerState.NpcDialogOpened;
-                if (context.Allowed)
+                // Items the player left in the machine would stay hidden in the server's tray, out of the
+                // client's inventory and out of its (reset) tray, until the next login.
+                await player.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);
+            }
+
+            await player.InvokeViewPlugInAsync<INpcDialogClosedPlugIn>(p => p.DialogClosedAsync(npc.Definition)).ConfigureAwait(false);
+            if (npc.Definition.Number == ChaosGoblinNumber)
+            {
+                try
                 {
-                    player.OpenedNpc = null;
-                    player.Vault = null;
-                    if (dialog.Npc.Definition.ItemCraftings.Any())
-                    {
-                        // Only this opening owns the disconnect snapshot; never clear a successor's backup.
-                        player.BackupInventory = null;
-
-                        // Items the player left in the machine would stay hidden in the server's tray, out of the
-                        // client's inventory and out of its (reset) tray, until the next login. They are moved
-                        // before World is published, so that a following trade never shares this tray.
-                        if (await player.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
-                        {
-                            inventoryUpdate = player.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync());
-                        }
-                    }
-
-                    try
-                    {
-                        response = view?.DialogClosedAsync(dialog.Npc.Definition) ?? ValueTask.CompletedTask;
-                    }
-                    catch (Exception ex)
-                    {
-                        response = ValueTask.FromException(ex);
-                    }
-
-                    closed = true;
+                    await Task.Delay(1000).ConfigureAwait(false);
+                    player.Logger.LogInformation("Saving changes after closing the chaos goblin ...");
+                    await player.SaveProgressAsync().ConfigureAwait(false);
+                    player.Logger.LogInformation("Saved changes after closing the chaos goblin ...");
+                }
+                catch (Exception ex)
+                {
+                    player.Logger.LogError(ex, "Couldn't save changes after closing the chaos goblin for player {player}", player);
                 }
             }
-
-            if (closed)
-            {
-                player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {dialog.Npc}");
-            }
-            else
-            {
-                player.Logger.LogDebug($"Captured dialog could not be closed by player {player.SelectedCharacter?.Name} in state {player.PlayerState}.");
-            }
         }
-        finally
+        else
         {
-            // Capture once before World is published; completion and persistence never hold state exclusion.
-            await inventoryUpdate.ConfigureAwait(false);
-            try
-            {
-                await response.ConfigureAwait(false);
-            }
-            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Writing is not allowed after writer was completed", StringComparison.Ordinal))
-            {
-                // The connection closed while its result was pending, as in ordinary view invocation.
-            }
-            catch (Exception ex)
-            {
-                player.Logger.LogError(ex, "Error when invoking view action of {viewType}", typeof(INpcDialogClosedPlugIn));
-            }
-        }
-
-        if (closed && dialog.Npc.Definition.Number == ChaosGoblinNumber)
-        {
-            try
-            {
-                await Task.Delay(1000).ConfigureAwait(false);
-                player.Logger.LogInformation("Saving changes after closing the chaos goblin ...");
-                await player.SaveProgressAsync().ConfigureAwait(false);
-                player.Logger.LogInformation("Saved changes after closing the chaos goblin ...");
-            }
-            catch (Exception ex)
-            {
-                player.Logger.LogError(ex, "Couldn't save changes after closing the chaos goblin for player {player}", player);
-            }
+            player.Logger.LogDebug($"Dialog of NPC {player.OpenedNpc} could not be closed by player {player.SelectedCharacter?.Name} because the player has the wrong state {player.PlayerState}");
         }
     }
 }

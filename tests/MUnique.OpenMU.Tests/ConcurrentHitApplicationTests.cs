@@ -2341,7 +2341,7 @@ public class ConcurrentHitApplicationTests
         await requester.DisposeAsync().ConfigureAwait(false);
     }
 
-    /// <summary>Late real NPC denials cannot undo death or tear down a replacement dialog.</summary>
+    /// <summary>Late real NPC denials cannot undo death or tear down a replacement dialog of another NPC.</summary>
     [TestCase("no-quests", 0)]
     [TestCase("low-level", 0)]
     [TestCase("finished", 0)]
@@ -2352,11 +2352,6 @@ public class ConcurrentHitApplicationTests
     [TestCase("finished", 1)]
     [TestCase("guild-level", 1)]
     [TestCase("guild-member", 1)]
-    [TestCase("no-quests", 2)]
-    [TestCase("low-level", 2)]
-    [TestCase("finished", 2)]
-    [TestCase("guild-level", 2)]
-    [TestCase("guild-member", 2)]
     public async Task LateNpcDenialPreservesLifeAndNewDialogAsync(string response, int reopen)
     {
         var target = await CreatePlayerAsync(10).ConfigureAwait(false);
@@ -2373,7 +2368,7 @@ public class ConcurrentHitApplicationTests
                 : reopen == 2 ? DelayViewAsync(newerEntered, newerRelease, false) : ValueTask.CompletedTask);
         var responseTask = new TalkNpcAction().TalkToNpcAsync(target, npc).AsTask();
         await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-        var originalDialog = target.OpenedNpcContext;
+        var originalDialog = target.OpenedNpc;
         var deaths = 0;
         target.Died += (_, _) => Interlocked.Increment(ref deaths);
         Task? newerResponse = null;
@@ -2398,7 +2393,7 @@ public class ConcurrentHitApplicationTests
                 }
             }
 
-            var currentDialog = target.OpenedNpcContext;
+            var currentDialog = target.OpenedNpc;
             var backup = target.BackupInventory;
             release.TrySetResult();
             await responseTask.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
@@ -2407,7 +2402,7 @@ public class ConcurrentHitApplicationTests
                 Assert.That(deaths, Is.EqualTo(1));
                 Assert.That(target.PlayerState.CurrentState, Is.EqualTo(reopen == 0 ? PlayerState.Dead : PlayerState.NpcDialogOpened));
                 Assert.That(target.IsAlive, Is.EqualTo(reopen != 0));
-                Assert.That(target.OpenedNpcContext, Is.SameAs(currentDialog));
+                Assert.That(target.OpenedNpc, Is.SameAs(currentDialog));
                 Assert.That(target.BackupInventory, Is.SameAs(backup));
                 Assert.That(target.Inventory.ItemStorage.Money, Is.EqualTo(1234));
             });

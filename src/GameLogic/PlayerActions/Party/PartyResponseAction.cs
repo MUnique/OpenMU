@@ -36,7 +36,7 @@ public class PartyResponseAction
             player.LastPartyRequester = null;
         }
 
-        if (!player.IsAlive || partyRequester is null || partyRequester is Player { IsAvailableAsPartyRequester: false })
+        if (!player.IsAlive || partyRequester is null)
         {
             return;
         }
