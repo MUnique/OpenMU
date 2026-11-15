@@ -8059,5 +8059,10 @@ namespace MUnique.OpenMU.GameServer.Properties {
 
         /// <summary>Gets the localized LuckyCoinExchangeRequestHandlerPlugIn_Description text.</summary>
         public static string LuckyCoinExchangeRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Description", resourceCulture)!;
+        /// <summary>Gets the localized InventoryRequestHandlerPlugIn_Name text.</summary>
+        public static string InventoryRequestHandlerPlugIn_Name => ResourceManager.GetString("InventoryRequestHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized InventoryRequestHandlerPlugIn_Description text.</summary>
+        public static string InventoryRequestHandlerPlugIn_Description => ResourceManager.GetString("InventoryRequestHandlerPlugIn_Description", resourceCulture)!;
     }
 }
