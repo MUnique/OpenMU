@@ -412,6 +412,50 @@ public class MoveItemActionTests
         Assert.That(player.Inventory.GetItem(InventoryConstants.WingsSlot), Is.Null);
     }
 
+    /// <summary>
+    /// Item containers are accessible only through their matching NPC dialog.
+    /// </summary>
+    [TestCase(Storages.ChaosMachine, NpcWindow.CastleSeniorNPC)]
+    [TestCase(Storages.LuckyItemExchange, NpcWindow.CombineLuckyItem)]
+    [TestCase(Storages.LuckyItemRefinery, NpcWindow.CombineLuckyItem)]
+    public async ValueTask NpcStorageAcceptsRoundTripThroughMatchingDialogAsync(Storages storage, NpcWindow window)
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        var npc = new Mock<MonsterDefinition>();
+        npc.Setup(n => n.ItemCraftings).Returns(new List<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCrafting>());
+        npc.Object.NpcWindow = window;
+        player.OpenedNpc = new NonPlayerCharacter(null!, npc.Object, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+        var source = CreateItem(CreateDefinition(), 1);
+        await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+        var action = new MoveItemAction();
+
+        await action.MoveItemAsync(player, 20, Storages.Inventory, 0, storage).ConfigureAwait(false);
+        Assert.That(player.Inventory.GetItem(20), Is.Null);
+        Assert.That(player.TemporaryStorage!.GetItem(0), Is.SameAs(source));
+        await action.MoveItemAsync(player, 0, storage, 20, Storages.Inventory).ConfigureAwait(false);
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(source));
+        Assert.That(player.TemporaryStorage.GetItem(0), Is.Null);
+    }
+
+    /// <summary>
+    /// A matching item-storage number does not grant access at another NPC.
+    /// </summary>
+    [TestCase(Storages.LuckyItemExchange)]
+    [TestCase(Storages.LuckyItemRefinery)]
+    public async ValueTask LuckyStorageRejectsOtherNpcDialogsAsync(Storages storage)
+    {
+        var player = await CreateTestPlayerAsync().ConfigureAwait(false);
+        player.OpenedNpc = new NonPlayerCharacter(null!, new MonsterDefinition { NpcWindow = NpcWindow.ChaosMachine }, null!);
+        Assert.That(await player.PlayerState.TryAdvanceToAsync(PlayerState.NpcDialogOpened).ConfigureAwait(false), Is.True);
+        var source = CreateItem(CreateDefinition(), 1);
+        await player.Inventory!.AddItemAsync(20, source).ConfigureAwait(false);
+
+        await new MoveItemAction().MoveItemAsync(player, 20, Storages.Inventory, 0, storage).ConfigureAwait(false);
+        Assert.That(player.Inventory.GetItem(20), Is.SameAs(source));
+        Assert.That(player.TemporaryStorage!.GetItem(0), Is.Null);
+    }
+
     private static Storage CreateVaultStorage()
     {
         var itemStorage = new Mock<ItemStorage>();

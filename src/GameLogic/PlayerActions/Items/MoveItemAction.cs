@@ -278,6 +278,8 @@ public class MoveItemAction
             case Storages.SeedSphereCrafting:
             case Storages.SeedMountCrafting:
             case Storages.SeedUnmountCrafting:
+            case Storages.LuckyItemExchange:
+            case Storages.LuckyItemRefinery:
                 if (player.TemporaryStorage is not null)
                 {
                     result = new StorageInfo(player.TemporaryStorage, TemporaryStorageRows, 0, TemporaryStorageSize);
@@ -468,7 +470,7 @@ public class MoveItemAction
             Storages.PersonalStore => state == PlayerState.EnteredWorld && !(player.ShopStorage?.StoreOpen ?? true),
             Storages.Vault => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.VaultStorage,
             Storages.Trade => state == PlayerState.TradeOpened,
-            Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosMachine,
+            Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && (openedWindow == NpcWindow.ChaosMachine || openedWindow == NpcWindow.CastleSeniorNPC),
             Storages.PetTrainer => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.PetTrainer,
             Storages.Refinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ElphisRefinery,
             Storages.Smelting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.RefineStoneMaking,
@@ -479,6 +481,7 @@ public class MoveItemAction
             Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
             Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
             Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
+            Storages.LuckyItemExchange or Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
             _ => false,
         };
     }

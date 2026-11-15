@@ -83,6 +83,16 @@
           <Description>The storage of the seed sphere unmount dialog.</Description>
           <Value>14</Value>
         </EnumValue>
+        <EnumValue>
+          <Name>LuckyItemExchange</Name>
+          <Description>The storage of the lucky item exchange dialog.</Description>
+          <Value>15</Value>
+        </EnumValue>
+        <EnumValue>
+          <Name>LuckyItemRefinery</Name>
+          <Description>The storage of the lucky item refinery dialog.</Description>
+          <Value>16</Value>
+        </EnumValue>
       </Values>
     </Enum>
     <Enum>

@@ -109,7 +109,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *RequestAllyList*           | 0xE9              | 100%     | 3          |                                               |
 | *RequestAllyKickGuild*      | 0xEB              | 100%     | 3          |                                               |
 | *LoginLogoutGroup*            | 0xF1              | 100%     | 10         |                                               |
-| *CharacterGroup*              | 0xF3              | 100%     | 10         |                                               |
+| *CharacterGroup*              | 0xF3              | 100%     | 11         |                                               |
 |   - *Character list* | 0xF300            |      |          |                                               |
 |   - *Character creation* | 0xF301            |      |          |                                               |
 |   - *Character delete request* | 0xF302            |      |          |                                               |
@@ -127,3 +127,6 @@ complexity and effort). Complexity 0 means we wont implement it.
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |
 | *Walk*                        | 0xD4     | 100%     | 10         |                                               |
 
+
+The character group also handles `InventoryRequest` (C3 F3 10) in the world and
+NPC-dialog states, returning an authoritative inventory snapshot.
