@@ -19,6 +19,15 @@ public class TradeAcceptAction : BaseTradeAction
     public async ValueTask HandleTradeAcceptAsync(ITrader tradeAccepter, bool accept)
     {
         var tradePartner = tradeAccepter.TradingPartner;
+        if (tradePartner is not null && !ReferenceEquals(tradePartner.TradingPartner, tradeAccepter))
+        {
+            // The requester left this request (e.g. by a logout) and may have another partner now. The answer ends
+            // only this remaining half; the requester and its current partner aren't touched.
+            await EndStaleRequestAsync(tradeAccepter, tradePartner).ConfigureAwait(false);
+            await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+            return;
+        }
+
         if (accept && tradePartner != null)
         {
             if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
@@ -97,6 +106,18 @@ public class TradeAcceptAction : BaseTradeAction
 
         await trader.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);
         return IsCurrentTrade(trader, expectedPartner);
+    }
+
+    private static async ValueTask EndStaleRequestAsync(ITrader trader, ITrader expectedPartner)
+    {
+        await using var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        context.Allowed &= trader.PlayerState.CurrentState == PlayerState.TradeRequested
+            && ReferenceEquals(trader.TradingPartner, expectedPartner)
+            && !ReferenceEquals(expectedPartner.TradingPartner, trader);
+        if (context.Allowed)
+        {
+            trader.TradingPartner = null;
+        }
     }
 
     private static bool IsCurrentTrade(ITrader trader, ITrader expectedPartner)

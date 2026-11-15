@@ -43,10 +43,12 @@ public class TradeRequestAction
         }
 
         // Publish each side under its own state scope; never hold both state locks together.
+        // A trade is only requested from the entered world state, where a remaining partner reference is stale
+        // (e.g. a logout left it behind and nothing cleared it): it is replaced, like the reference of any trade.
         await using (var context = await partner.PlayerState.TryBeginAdvanceToAsync(PlayerState.TradeRequested).ConfigureAwait(false))
         {
             context.Allowed &= IsAvailableForTrade(player) && IsAvailableForTrade(partner)
-                && player.TradingPartner is null && partner.TradingPartner is null;
+                && player.PlayerState.CurrentState == PlayerState.EnteredWorld;
             if (!context.Allowed)
             {
                 return false;
@@ -60,8 +62,7 @@ public class TradeRequestAction
         {
             context.Allowed &= IsAvailableForTrade(player) && IsAvailableForTrade(partner)
                 && partner.PlayerState.CurrentState == PlayerState.TradeRequested
-                && ReferenceEquals(partner.TradingPartner, player)
-                && player.TradingPartner is null;
+                && ReferenceEquals(partner.TradingPartner, player);
             if (context.Allowed)
             {
                 player.TradingPartner = partner;
@@ -81,11 +82,9 @@ public class TradeRequestAction
 
         if (!published)
         {
-            if (!IsCurrentRequest(player, partner))
-            {
-                await ClearPendingRequestAsync(partner, player).ConfigureAwait(false);
-            }
-
+            // Refuse incomplete publication rather than leave an unseen reciprocal request reserved.
+            // Without invitation identities, a cancel/reopen race can also roll back a newer pending half.
+            await ClearPendingRequestAsync(partner, player).ConfigureAwait(false);
             return false;
         }
 

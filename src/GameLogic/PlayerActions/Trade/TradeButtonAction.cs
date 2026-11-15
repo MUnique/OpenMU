@@ -34,7 +34,15 @@ public class TradeButtonAction : BaseTradeAction
             && tradingPartner is not null
             && tradingPartner.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
         {
-            TradeResult result = await this.InternalFinishTradeAsync(trader, tradingPartner).ConfigureAwait(false);
+            if (await this.InternalFinishTradeAsync(trader, tradingPartner).ConfigureAwait(false) is not { } result)
+            {
+                // The partner left this trade (e.g. by a logout) and trades with another player now. Only this
+                // remaining side ends, with its own items; the other trade isn't touched.
+                await this.CancelTradeAsync(trader).ConfigureAwait(false);
+                await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+                return;
+            }
+
             if (result != TradeResult.Success)
             {
                 await this.CancelTradeAsync(tradingPartner, false).ConfigureAwait(false);
@@ -65,10 +73,18 @@ public class TradeButtonAction : BaseTradeAction
         return true;
     }
 
-    private async ValueTask<TradeResult> InternalFinishTradeAsync(ITrader trader, ITrader tradingPartner)
+    private async ValueTask<TradeResult?> InternalFinishTradeAsync(ITrader trader, ITrader tradingPartner)
     {
         await using var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         await using var partnerContext = await tradingPartner.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        if (!ReferenceEquals(trader.TradingPartner, tradingPartner) || !ReferenceEquals(tradingPartner.TradingPartner, trader))
+        {
+            // Not one trade: nothing may be moved between these two players.
+            context.Allowed = false;
+            partnerContext.Allowed = false;
+            return null;
+        }
+
         if (!context.Allowed || !partnerContext.Allowed)
         {
             context.Allowed = false;
