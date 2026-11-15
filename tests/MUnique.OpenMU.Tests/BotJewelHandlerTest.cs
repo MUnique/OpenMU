@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Bots;
 
 /// <summary>
@@ -126,6 +127,51 @@ public class BotJewelHandlerTest
             Assert.That(plan!.Value.Target, Is.SameAs(target));
             Assert.That(plan.Value.Jewel, Is.SameAs(life));
         }
+    }
+
+    /// <summary>
+    /// Life skips a piece whose option is already at its maximum: taking it off would gain nothing.
+    /// </summary>
+    /// <param name="optionLevel">The current level of the option.</param>
+    /// <param name="expectsUse">Whether a jewel use is expected.</param>
+    [TestCase(3, true)]
+    [TestCase(4, false)]
+    public async ValueTask LifeSkipsMaxedOptionAsync(int optionLevel, bool expectsUse)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 9).ConfigureAwait(false);
+        var option = new MUnique.OpenMU.Persistence.BasicModel.IncreasableItemOption { OptionType = ItemOptionTypes.Option };
+        for (var level = 1; level <= 4; level++)
+        {
+            option.LevelDependentOptions.Add(new MUnique.OpenMU.Persistence.BasicModel.ItemOptionOfLevel { Level = level });
+        }
+
+        target.ItemOptions.Add(new ItemOptionLink { ItemOption = option, Level = optionLevel });
+        await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfLife).ConfigureAwait(false);
+        await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfLife).ConfigureAwait(false);
+
+        var plan = BotJewelHandler.PlanNextUse(player, 0, 0, 1);
+
+        Assert.That(plan.HasValue, Is.EqualTo(expectsUse));
+    }
+
+    /// <summary>
+    /// Life skips a piece the bot doesn't meet the requirements of anymore, e.g. its wings after a reset:
+    /// it takes the piece off for the jewel and couldn't put it on again.
+    /// </summary>
+    [Test]
+    public async ValueTask LifeSkipsPieceTheBotCannotWearAgainAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await AddEquippedItemAsync(player, InventoryConstants.LeftHandSlot, 9).ConfigureAwait(false);
+        // A plain attribute requirement: the level one would need the item stat profiles of a full configuration.
+        target.Definition!.Requirements.Add(new MUnique.OpenMU.Persistence.BasicModel.AttributeRequirement { Attribute = Stats.MasterLevel, MinimumValue = 1 });
+        await AddJewelAsync(player, FirstBackpackSlot, ItemConstants.JewelOfLife).ConfigureAwait(false);
+        await AddJewelAsync(player, FirstBackpackSlot + 1, ItemConstants.JewelOfLife).ConfigureAwait(false);
+
+        var plan = BotJewelHandler.PlanNextUse(player, 0, 0, 1);
+
+        Assert.That(plan, Is.Null);
     }
 
     /// <summary>

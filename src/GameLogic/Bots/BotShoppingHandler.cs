@@ -148,6 +148,7 @@ internal static class BotShoppingHandler
         // The goods worth a stall on the market go into the own store instead of to the NPC (see
         // BotMerchantPlugIn) - before the dialog opens, because the game moves nothing into a store
         // during an NPC dialog. Nothing happens while the plugin is off.
+        await DiscardBackpackWingsAsync(player, inventory).ConfigureAwait(false);
         var stocked = await BotMerchandise.StockStoreAsync(player, GetSellableJunk(player, inventory)).ConfigureAwait(false);
 
         await TalkAction.TalkToNpcAsync(player, merchant).ConfigureAwait(false);
@@ -200,6 +201,24 @@ internal static class BotShoppingHandler
     }
 
     /// <summary>
+    /// Destroys the wings in the backpack of the bot instead of selling them. A bot's wings are granted
+    /// for free (see <see cref="BotWingHandler"/>), so like the outgrown pair they must never reach a
+    /// player through the bot's store, nor turn into Zen at the NPC. Worn wings never get here; a pair
+    /// in the backpack is one the bot could not put on again, and the next level milestone grants a new one.
+    /// </summary>
+    private static async ValueTask DiscardBackpackWingsAsync(OfflinePlayer player, IStorage inventory)
+    {
+        var wings = inventory.Items
+            .Where(i => i.ItemSlot >= InventoryConstants.EquippableSlotsCount && i.IsWing())
+            .ToList();
+        foreach (var item in wings)
+        {
+            await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
+            player.Logger.LogDebug("Bot '{Name}' discarded the wings '{Wings}' from its backpack.", player.Name, item);
+        }
+    }
+
+    /// <summary>
     /// Collects the backpack items the bot has no use for. Not its potions, not the jewels within its
     /// working stock, and not a piece it would put on - but everything else goes, treasures included.
     /// Unlike a player, a bot cannot trade an excellent piece away, so hoarding one only silts up the
@@ -222,6 +241,11 @@ internal static class BotShoppingHandler
             if (!definition.IsSellableToNpc)
             {
                 continue; // the merchant refuses it, and as unsold junk it would be destroyed under slot pressure.
+            }
+
+            if (item.IsWing())
+            {
+                continue; // never goods - see DiscardBackpackWingsAsync.
             }
 
             var identifier = new ItemIdentifier(definition.Number, definition.Group);
