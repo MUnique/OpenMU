@@ -5508,5 +5508,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GladiatorsHonor", resourceCulture);
             }
         }
+
+        /// <summary>Gets TalismanOfMobility from the configuration name resources.</summary>
+        public static string TalismanOfMobility {
+            get {
+                return ResourceManager.GetString("TalismanOfMobility", resourceCulture);
+            }
+        }
     }
 }

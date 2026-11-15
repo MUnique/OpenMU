@@ -2268,4 +2268,7 @@
   <data name="GladiatorsHonor" xml:space="preserve">
     <value>Ehre des Gladiators</value>
   </data>
+  <data name="TalismanOfMobility" xml:space="preserve">
+    <value>Talisman der Mobilität</value>
+  </data>
 </root>

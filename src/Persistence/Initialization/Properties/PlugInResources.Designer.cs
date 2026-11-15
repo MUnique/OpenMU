@@ -1079,6 +1079,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddSealItemDropRateUpdatePlugIn_Description text.</summary>
         public static string AddSealItemDropRateUpdatePlugIn_Description => ResourceManager.GetString("AddSealItemDropRateUpdatePlugIn_Description", resourceCulture)!;
         
+        /// <summary>Gets the localized AddTalismanOfMobilityUpdatePlugIn_Name text.</summary>
+        public static string AddTalismanOfMobilityUpdatePlugIn_Name => ResourceManager.GetString("AddTalismanOfMobilityUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddTalismanOfMobilityUpdatePlugIn_Description text.</summary>
+        public static string AddTalismanOfMobilityUpdatePlugIn_Description => ResourceManager.GetString("AddTalismanOfMobilityUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AdjustIceArrowFreezeDurationUpdatePlugIn_Name text.</summary>
         public static string AdjustIceArrowFreezeDurationUpdatePlugIn_Name => ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Name", resourceCulture)!;
 

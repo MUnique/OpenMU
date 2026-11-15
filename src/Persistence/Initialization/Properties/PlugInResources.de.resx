@@ -942,6 +942,12 @@
   <data name="AddSealItemDropRateUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt dem Siegel des Wohlstands, dem Siegel der Göttlichkeit und dem Meistersiegel des Wohlstands die Item-Droprate von 150 % hinzu, und fügt das zweite Siegel des Wohlstands (13/116) hinzu, das nur die Item-Droprate erhöht.</value>
   </data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Name" xml:space="preserve">
+    <value>Talisman der Mobilität hinzufügen</value>
+  </data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt den Talisman der Mobilität hinzu, der einen Ort speichert und den Charakter dorthin zurückversetzt. Die Pakete des In-Game-Shops, die ihn enthalten, werden zum Verkauf angeboten.</value>
+  </data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einfrierdauer des Eis-Pfeils anpassen</value>
   </data>

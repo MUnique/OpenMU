@@ -2352,4 +2352,7 @@
   <data name="GladiatorsHonor" xml:space="preserve">
     <value>角斗士的荣耀</value>
   </data>
+  <data name="TalismanOfMobility" xml:space="preserve">
+    <value>机动护身符</value>
+  </data>
 </root>

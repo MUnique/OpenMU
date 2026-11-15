@@ -2352,4 +2352,7 @@
   <data name="GladiatorsHonor" xml:space="preserve">
     <value>Gladiator's Honor</value>
   </data>
+  <data name="TalismanOfMobility" xml:space="preserve">
+    <value>Talisman of Mobility</value>
+  </data>
 </root>

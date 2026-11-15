@@ -446,6 +446,8 @@
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept.</value></data>
   <data name="AddSealItemDropRateUpdatePlugIn_Name" xml:space="preserve"><value>Add the item drop rate of seals</value></data>
   <data name="AddSealItemDropRateUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the item drop rate of 150 % to the Seals of Wealth and Divinity and the Master Seal of Wealth, and adds the second Seal of Wealth (13/116), which only raises the item drop rate.</value></data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Name" xml:space="preserve"><value>Add the Talisman of Mobility</value></data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Mobility, which saves a place and warps the character back to it. The packages of the in-game shop which contain it are put on sale.</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve"><value>Adjust Ice Arrow freeze duration</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects.</value></data>
   <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>Season 6 monster spawns of Devias, Noria and Elvenland</value></data>

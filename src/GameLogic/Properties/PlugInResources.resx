@@ -2120,4 +2120,10 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>The number of waiting items which are named, one per message.</value>
   </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Talisman of Mobility Consume Handler</value>
+  </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the Talisman of Mobility. The first usage saves the place of the character, the second one warps it back to the saved place.</value>
+  </data>
 </root>
