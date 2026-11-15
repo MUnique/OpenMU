@@ -2801,4 +2801,10 @@
   <data name="LuckyCoinExchangeRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler for the request to exchange lucky coins for an item at the NPC Delgado.</value>
   </data>
+  <data name="InventoryRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Inventory - Request inventory snapshot</value>
+  </data>
+  <data name="InventoryRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles inventory refresh requests (0xF3, 0x10) by returning the current inventory, with configurable per-player throttling.</value>
+  </data>
 </root>

@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using System.Reflection;
 using System.Threading;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -150,10 +149,9 @@ public class InventoryRequestHandlerTests
     /// <returns>The packet handler.</returns>
     internal static ISubPacketHandlerPlugIn CreateHandler(TimeProvider? clock = null)
     {
-        var type = typeof(IPacketHandlerPlugIn).Assembly.GetType("MUnique.OpenMU.GameServer.MessageHandler.Character.InventoryRequestHandlerPlugIn", throwOnError: true)!;
         return clock is null
-            ? (ISubPacketHandlerPlugIn)Activator.CreateInstance(type)!
-            : (ISubPacketHandlerPlugIn)Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.NonPublic, null, [clock], null)!;
+            ? new InventoryRequestHandlerPlugIn()
+            : new InventoryRequestHandlerPlugIn(clock);
     }
 
     private static (Mock<TimeProvider> Clock, TaskCompletionSource<(TimerCallback Callback, object? State, TimeSpan Delay)> Timer) CreateClock()
@@ -163,7 +161,7 @@ public class InventoryRequestHandlerTests
         clock.Setup(c => c.GetTimestamp()).Returns(0);
         var created = new TaskCompletionSource<(TimerCallback, object?, TimeSpan)>(TaskCreationOptions.RunContinuationsAsynchronously);
         clock.Setup(c => c.CreateTimer(It.IsAny<TimerCallback>(), It.IsAny<object?>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
-            .Returns((TimerCallback callback, object? state, TimeSpan due, TimeSpan period) =>
+            .Returns((TimerCallback callback, object? state, TimeSpan due, TimeSpan _) =>
             {
                 created.TrySetResult((callback, state, due));
                 return Mock.Of<ITimer>();

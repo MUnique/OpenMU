@@ -137,6 +137,11 @@ explicit snapshot request supports resynchronization after an ambiguous reply
 and completion of NPC operations which may send no item delta: for example,
 repairing an item already at full durability returns without a durability update.
 Requests are throttled per player (250 ms by default, configurable on the handler).
+The connection's `PacketPipeReaderBase` awaits `Connection.ReadPacketAsync`,
+which awaits its packet subscribers. `RemotePlayer.PacketReceivedAsync` in turn
+awaits the complete handler through `RunPersistenceExclusiveAsync`. Thus, an item
+operation sent before the refresh on the same connection completes first. The
+refresh lock only serializes snapshots; it does not order background game actions.
 Waiting requests share a fresh snapshot; a request received after serialization
 starts waits for the next snapshot so an earlier response cannot acknowledge a
 later item action. Delayed refreshes are suppressed after returning to character

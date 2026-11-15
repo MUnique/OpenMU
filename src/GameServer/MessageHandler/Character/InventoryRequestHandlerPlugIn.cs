@@ -14,10 +14,18 @@ using MUnique.OpenMU.PlugIns;
 using Nito.AsyncEx;
 
 /// <summary>
-/// Returns an authoritative inventory snapshot after previously queued actions.
+/// Returns an authoritative inventory snapshot after earlier packets on the same connection.
 /// </summary>
+/// <remarks>
+/// Packet ordering is provided by the connection, not by this handler's serialization lock:
+/// <see cref="MUnique.OpenMU.Network.PacketPipeReaderBase"/> awaits each packet before reading
+/// the next one. <see cref="MUnique.OpenMU.Network.Connection"/> awaits its packet subscribers,
+/// and <see cref="MUnique.OpenMU.GameServer.RemoteView.RemotePlayer"/> awaits the packet handler
+/// through its persistence-exclusive action. Item handlers therefore finish before a subsequent
+/// inventory request on that connection. This does not order unrelated background game actions.
+/// </remarks>
 [PlugIn]
-[Display(Name = nameof(PlugInResources.UpdateInventoryListPlugIn_Name), Description = nameof(PlugInResources.UpdateInventoryListPlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Display(Name = nameof(PlugInResources.InventoryRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.InventoryRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("db463aa9-e091-42e4-a926-c68ba24cfdf9")]
 [BelongsToGroup(CharacterGroupHandlerPlugIn.GroupKey)]
 internal class InventoryRequestHandlerPlugIn : ISubPacketHandlerPlugIn, ISupportCustomConfiguration<InventoryRequestHandlerConfiguration>, ISupportDefaultCustomConfiguration
