@@ -1203,6 +1203,35 @@ internal sealed class BotNavigator : AsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Lowest level at which this bot warps on its own: its lowest
+    /// class-reduced warp requirement, so special classes keep their edge.
+    /// Warps with requirements (e.g. a minimum master level) count only while the bot fulfills them.
+    /// The floor of the other warps is cached per configuration and class; both change rarely.
+    /// </summary>
+    internal int GetMinWarpLevel()
+    {
+        var configuration = this._player.GameContext.Configuration;
+        var characterClass = this._player.SelectedCharacter?.CharacterClass;
+        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
+            || !ReferenceEquals(characterClass, this._warpFloorClass))
+        {
+            this._warpFloorConfiguration = configuration;
+            this._warpFloorClass = characterClass;
+            this._minWarpLevel = configuration.WarpList
+                .Where(warp => warp.Requirements is not { Count: > 0 })
+                .Select(this.GetEffectiveLevelRequirement)
+                .DefaultIfEmpty(FallbackMinWarpLevel)
+                .Min();
+        }
+
+        return configuration.WarpList
+            .Where(warp => warp.Requirements is { Count: > 0 } && warp.GetMissingRequirement(this._player) is null)
+            .Select(this.GetEffectiveLevelRequirement)
+            .Append(this._minWarpLevel)
+            .Min();
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -2861,28 +2890,8 @@ internal sealed class BotNavigator : AsyncDisposable
         return mapWarps.Where(w => w.IsAllowedFor(this._player));
     }
 
-    /// <summary>
-    /// Lowest level at which this bot warps on its own: its lowest
-    /// class-reduced warp requirement, so special classes keep their edge.
-    /// Cached per configuration and class; both change rarely.
-    /// </summary>
-    private int GetMinWarpLevel()
-    {
-        var configuration = this._player.GameContext.Configuration;
-        var characterClass = this._player.SelectedCharacter?.CharacterClass;
-        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
-            || !ReferenceEquals(characterClass, this._warpFloorClass))
-        {
-            this._warpFloorConfiguration = configuration;
-            this._warpFloorClass = characterClass;
-            this._minWarpLevel = configuration.WarpList
-                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement)
-                .DefaultIfEmpty(FallbackMinWarpLevel)
-                .Min();
-        }
-
-        return this._minWarpLevel;
-    }
+    private int GetEffectiveLevelRequirement(WarpInfo warp)
+        => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement;
 
     /// <summary>
     /// Whether the bot can pay the warp's fare. A bot travels on the same terms as a player - it pays

@@ -379,6 +379,27 @@ public class WarpListTests
         Assert.That(legal, Is.EquivalentTo(expectedIndexes));
     }
 
+    /// <summary>
+    /// Tests that the lowest level at which a bot warps on its own counts a warp with requirements
+    /// only while the bot fulfills them.
+    /// </summary>
+    /// <param name="masterLevel">The master level of the bot.</param>
+    /// <param name="expected">The lowest warp level of the bot.</param>
+    [TestCase(0, 50)]
+    [TestCase(10, 20)]
+    public async Task BotWarpFloorCountsWarpsWithRequirementsOnlyWhenFulfilledAsync(int masterLevel, int expected)
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        bot.Attributes![Stats.MasterLevel] = masterLevel;
+        gameContext.Configuration.WarpList.Clear();
+        gameContext.Configuration.WarpList.Add(CreateWarp(1, "Plain", 7, 50, 2000));
+        gameContext.Configuration.WarpList.Add(CreateWarp(2, "Master", 8, 20, 2000, (Stats.MasterLevel, 10)));
+        var navigator = new BotNavigator(bot);
+
+        Assert.That(navigator.GetMinWarpLevel(), Is.EqualTo(expected));
+    }
+
     private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs, params (AttributeDefinition Attribute, int MinimumValue)[] requirements)
     {
         var warp = new Persistence.BasicModel.WarpInfo
