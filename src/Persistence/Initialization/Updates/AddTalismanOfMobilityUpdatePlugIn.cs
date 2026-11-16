@@ -17,20 +17,10 @@ using MUnique.OpenMU.PlugIns;
 /// This update adds the Talisman of Mobility and puts the packages of the in-game shop which contain it on sale.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddTalismanOfMobilityUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.AddTalismanOfMobilityUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
+[Display(Name = nameof(PlugInResources.AddTalismanOfMobilityUpdatePlugIn_Name), Description = nameof(PlugInResources.AddTalismanOfMobilityUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("123277D4-E0F0-4F92-9F94-F64F15F840CD")]
 public class AddTalismanOfMobilityUpdatePlugIn : UpdatePlugInBase
 {
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add the Talisman of Mobility";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update adds the Talisman of Mobility, which saves a place and warps the character back to it. The packages of the in-game shop which contain it are put on sale.";
-
     /// <summary>
     /// The product sequence of the products of the in-game shop which contain the Talisman of Mobility.
     /// </summary>
@@ -40,10 +30,10 @@ public class AddTalismanOfMobilityUpdatePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => PlugInResources.AddTalismanOfMobilityUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => PlugInResources.AddTalismanOfMobilityUpdatePlugIn_Description;
 
     /// <inheritdoc />
     /// <remarks>

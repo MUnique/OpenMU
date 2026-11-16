@@ -4,8 +4,11 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Moq;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.Pathfinding;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
@@ -50,6 +53,33 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
 
         Assert.That(await new TalismanOfMobilityConsumeHandlerPlugIn().ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
         Assert.That(talisman.Durability, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// A character which doesn't fulfill the requirements of the saved map anymore, e.g. because it lost its wings
+    /// after saving a place in Icarus, isn't warped and keeps the talisman and the saved place.
+    /// </summary>
+    [Test]
+    public async Task CharacterWhichDoesNotFulfillMapRequirementsKeepsTalismanAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var talisman = CreateTalisman();
+        var handler = new TalismanOfMobilityConsumeHandlerPlugIn();
+        player.Position = SavedPosition;
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+
+        Mock.Get(player.CurrentMap!.Definition)
+            .Setup(map => map.MapRequirements)
+            .Returns(new List<AttributeRequirement> { new BasicModel.AttributeRequirement { Attribute = Stats.CanFly, MinimumValue = 1 } });
+        player.Position = new Point(30, 40);
+
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
+        Assert.That(talisman.Durability, Is.EqualTo(1));
+        Assert.That(player.Position, Is.EqualTo(new Point(30, 40)));
+
+        Mock.Get(player.CurrentMap.Definition).Setup(map => map.MapRequirements).Returns(new List<AttributeRequirement>());
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+        Assert.That(talisman.Durability, Is.Zero);
     }
 
     private static async ValueTask<Player> CreatePlayerAsync()

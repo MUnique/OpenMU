@@ -18,6 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// The game client describes it as "Saves the location with the right-mouse-click. Returns to the saved location by a click.".
 /// The place is saved at the character, so it's kept when the character leaves the game.
 /// It can't be used in mini games and duels, because these have their own maps and spawn places.
+/// The character returns only if it still fulfills the requirements of the saved map, e.g. wings for Icarus;
+/// otherwise the talisman isn't used up and the place stays saved.
 /// </remarks>
 [Guid("23071045-4323-4B5F-B26B-5283EEB130C1")]
 [PlugIn]
@@ -55,32 +57,41 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             return true;
         }
 
-        if (await GetSavedGateAsync(player, character).ConfigureAwait(false) is not { } gate)
+        if (GetSavedMap(player, character) is not { } savedMap)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MobilityTalismanNoPlaceSaved)).ConfigureAwait(false);
             return false;
         }
 
+        if (savedMap.TryGetRequirementError(player, out var errorMessage))
+        {
+            // E.g. the character saved a place in Icarus and lost its wings; it keeps the talisman and the saved place.
+            await player.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
+            return false;
+        }
+
+        var gate = await GetSavedGateAsync(player, character, savedMap).ConfigureAwait(false);
         SetValue(player, character, Stats.MobilityTalismanMap, 0);
         await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
         await player.WarpToAsync(gate).ConfigureAwait(false);
         return true;
     }
 
-    private static async ValueTask<ExitGate?> GetSavedGateAsync(Player player, Character character)
+    private static GameMapDefinition? GetSavedMap(Player player, Character character)
     {
         var mapNumber = (int)GetValue(character, Stats.MobilityTalismanMap) - 1;
-        if (mapNumber < 0
-            || player.GameContext.Configuration.Maps.FirstOrDefault(map => map.Number == mapNumber) is not { IsActive: true } mapDefinition)
-        {
-            return null;
-        }
+        return mapNumber < 0
+            ? null
+            : player.GameContext.Configuration.Maps.FirstOrDefault(map => map.Number == mapNumber);
+    }
 
+    private static async ValueTask<ExitGate> GetSavedGateAsync(Player player, Character character, GameMapDefinition mapDefinition)
+    {
         var x = (byte)GetValue(character, Stats.MobilityTalismanX);
         var y = (byte)GetValue(character, Stats.MobilityTalismanY);
 
         // The map may be hosted by another game server; the warp then moves the player to it.
-        var map = await player.GameContext.GetMapAsync((ushort)mapNumber).ConfigureAwait(false);
+        var map = await player.GameContext.GetMapAsync((ushort)mapDefinition.Number).ConfigureAwait(false);
         return new ExitGate
         {
             Map = map?.Definition ?? mapDefinition,
