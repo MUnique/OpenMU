@@ -17,30 +17,35 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ItemPriceDefinitionNames {
-
-        private static System.Resources.ResourceManager resourceMan;
-
-        private static System.Globalization.CultureInfo resourceCulture;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        
+        private static global::System.Resources.ResourceManager resourceMan;
+        
+        private static global::System.Globalization.CultureInfo resourceCulture;
+        
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal ItemPriceDefinitionNames() {
         }
-
-        /// <summary>Gets ResourceManager from the configuration name resources.</summary>
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static System.Resources.ResourceManager ResourceManager {
+        
+        /// <summary>
+        ///   Returns the cached ResourceManager instance used by this class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
-                if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("MUnique.OpenMU.Persistence.Initialization.Properties.ItemPriceDefinitionNames", typeof(ItemPriceDefinitionNames).Assembly);
+                if (object.ReferenceEquals(resourceMan, null)) {
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("MUnique.OpenMU.Persistence.Initialization.Properties.ItemPriceDefinitionNames", typeof(ItemPriceDefinitionNames).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
-        /// <summary>Gets Culture from the configuration name resources.</summary>
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        public static System.Globalization.CultureInfo Culture {
+        
+        /// <summary>
+        ///   Overrides the current thread's CurrentUICulture property for all
+        ///   resource lookups using this strongly typed resource class.
+        /// </summary>
+        [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -48,459 +53,589 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 resourceCulture = value;
             }
         }
-
-        /// <summary>Gets Arrows from the configuration name resources.</summary>
-        public static string Arrows {
-            get {
-                return ResourceManager.GetString("Arrows", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Bolts from the configuration name resources.</summary>
-        public static string Bolts {
-            get {
-                return ResourceManager.GetString("Bolts", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets JewelOfBless from the configuration name resources.</summary>
-        public static string JewelOfBless {
-            get {
-                return ResourceManager.GetString("JewelOfBless", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets JewelOfSoul from the configuration name resources.</summary>
-        public static string JewelOfSoul {
-            get {
-                return ResourceManager.GetString("JewelOfSoul", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets JewelOfChaos from the configuration name resources.</summary>
-        public static string JewelOfChaos {
-            get {
-                return ResourceManager.GetString("JewelOfChaos", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets JewelOfLife from the configuration name resources.</summary>
-        public static string JewelOfLife {
-            get {
-                return ResourceManager.GetString("JewelOfLife", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets JewelOfCreation from the configuration name resources.</summary>
-        public static string JewelOfCreation {
-            get {
-                return ResourceManager.GetString("JewelOfCreation", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets JewelOfGuardian from the configuration name resources.</summary>
-        public static string JewelOfGuardian {
-            get {
-                return ResourceManager.GetString("JewelOfGuardian", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets GemstoneHarmonyAndRefineStones from the configuration name resources.</summary>
-        public static string GemstoneHarmonyAndRefineStones {
-            get {
-                return ResourceManager.GetString("GemstoneHarmonyAndRefineStones", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedJewelOfBless from the configuration name resources.</summary>
-        public static string PackedJewelOfBless {
-            get {
-                return ResourceManager.GetString("PackedJewelOfBless", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedJewelOfSoul from the configuration name resources.</summary>
-        public static string PackedJewelOfSoul {
-            get {
-                return ResourceManager.GetString("PackedJewelOfSoul", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedJewelOfChaos from the configuration name resources.</summary>
-        public static string PackedJewelOfChaos {
-            get {
-                return ResourceManager.GetString("PackedJewelOfChaos", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedJewelOfLife from the configuration name resources.</summary>
-        public static string PackedJewelOfLife {
-            get {
-                return ResourceManager.GetString("PackedJewelOfLife", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedJewelOfCreation from the configuration name resources.</summary>
-        public static string PackedJewelOfCreation {
-            get {
-                return ResourceManager.GetString("PackedJewelOfCreation", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedJewelOfGuardian from the configuration name resources.</summary>
-        public static string PackedJewelOfGuardian {
-            get {
-                return ResourceManager.GetString("PackedJewelOfGuardian", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets PackedGemstoneHarmonyAndRefineStones from the configuration name resources.</summary>
-        public static string PackedGemstoneHarmonyAndRefineStones {
-            get {
-                return ResourceManager.GetString("PackedGemstoneHarmonyAndRefineStones", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Fruits from the configuration name resources.</summary>
-        public static string Fruits {
-            get {
-                return ResourceManager.GetString("Fruits", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets LochsFeather from the configuration name resources.</summary>
-        public static string LochsFeather {
-            get {
-                return ResourceManager.GetString("LochsFeather", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets LargeHealingAndManaPotion from the configuration name resources.</summary>
-        public static string LargeHealingAndManaPotion {
-            get {
-                return ResourceManager.GetString("LargeHealingAndManaPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SiegePotion from the configuration name resources.</summary>
-        public static string SiegePotion {
-            get {
-                return ResourceManager.GetString("SiegePotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets OrderGuardianLifeStone from the configuration name resources.</summary>
-        public static string OrderGuardianLifeStone {
-            get {
-                return ResourceManager.GetString("OrderGuardianLifeStone", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ContractSummon from the configuration name resources.</summary>
-        public static string ContractSummon {
-            get {
-                return ResourceManager.GetString("ContractSummon", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SplinterOfArmor from the configuration name resources.</summary>
-        public static string SplinterOfArmor {
-            get {
-                return ResourceManager.GetString("SplinterOfArmor", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets BlessOfGuardian from the configuration name resources.</summary>
-        public static string BlessOfGuardian {
-            get {
-                return ResourceManager.GetString("BlessOfGuardian", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ClawOfBeast from the configuration name resources.</summary>
-        public static string ClawOfBeast {
-            get {
-                return ResourceManager.GetString("ClawOfBeast", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets FragmentOfHorn from the configuration name resources.</summary>
-        public static string FragmentOfHorn {
-            get {
-                return ResourceManager.GetString("FragmentOfHorn", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets BrokenHorn from the configuration name resources.</summary>
-        public static string BrokenHorn {
-            get {
-                return ResourceManager.GetString("BrokenHorn", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets HornOfFenrir from the configuration name resources.</summary>
-        public static string HornOfFenrir {
-            get {
-                return ResourceManager.GetString("HornOfFenrir", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SmallShieldPotion from the configuration name resources.</summary>
-        public static string SmallShieldPotion {
-            get {
-                return ResourceManager.GetString("SmallShieldPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ShieldPotion from the configuration name resources.</summary>
-        public static string ShieldPotion {
-            get {
-                return ResourceManager.GetString("ShieldPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets LargeShieldPotion from the configuration name resources.</summary>
-        public static string LargeShieldPotion {
-            get {
-                return ResourceManager.GetString("LargeShieldPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SmallComplexPotion from the configuration name resources.</summary>
-        public static string SmallComplexPotion {
-            get {
-                return ResourceManager.GetString("SmallComplexPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ComplexPotion from the configuration name resources.</summary>
-        public static string ComplexPotion {
-            get {
-                return ResourceManager.GetString("ComplexPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets LargeComplexPotion from the configuration name resources.</summary>
-        public static string LargeComplexPotion {
-            get {
-                return ResourceManager.GetString("LargeComplexPotion", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets HornOfDinorant from the configuration name resources.</summary>
-        public static string HornOfDinorant {
-            get {
-                return ResourceManager.GetString("HornOfDinorant", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets DevilsEye from the configuration name resources.</summary>
-        public static string DevilsEye {
-            get {
-                return ResourceManager.GetString("DevilsEye", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets DevilsKey from the configuration name resources.</summary>
-        public static string DevilsKey {
-            get {
-                return ResourceManager.GetString("DevilsKey", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets DevilsInvitation from the configuration name resources.</summary>
-        public static string DevilsInvitation {
-            get {
-                return ResourceManager.GetString("DevilsInvitation", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets RemedyOfLove from the configuration name resources.</summary>
-        public static string RemedyOfLove {
-            get {
-                return ResourceManager.GetString("RemedyOfLove", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Rena from the configuration name resources.</summary>
-        public static string Rena {
-            get {
-                return ResourceManager.GetString("Rena", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Ale from the configuration name resources.</summary>
-        public static string Ale {
-            get {
-                return ResourceManager.GetString("Ale", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets InvisibilityCloak from the configuration name resources.</summary>
-        public static string InvisibilityCloak {
-            get {
-                return ResourceManager.GetString("InvisibilityCloak", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ScrollOfArchangel from the configuration name resources.</summary>
-        public static string ScrollOfArchangel {
-            get {
-                return ResourceManager.GetString("ScrollOfArchangel", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets BloodBone from the configuration name resources.</summary>
-        public static string BloodBone {
-            get {
-                return ResourceManager.GetString("BloodBone", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets IllusionTempleTickets from the configuration name resources.</summary>
-        public static string IllusionTempleTickets {
-            get {
-                return ResourceManager.GetString("IllusionTempleTickets", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets FlameAndFeatherOfCondor from the configuration name resources.</summary>
-        public static string FlameAndFeatherOfCondor {
-            get {
-                return ResourceManager.GetString("FlameAndFeatherOfCondor", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ArmorOfGuardsman from the configuration name resources.</summary>
-        public static string ArmorOfGuardsman {
-            get {
-                return ResourceManager.GetString("ArmorOfGuardsman", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets WizardsRing from the configuration name resources.</summary>
-        public static string WizardsRing {
-            get {
-                return ResourceManager.GetString("WizardsRing", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Spirit from the configuration name resources.</summary>
-        public static string Spirit {
-            get {
-                return ResourceManager.GetString("Spirit", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets LostMap from the configuration name resources.</summary>
-        public static string LostMap {
-            get {
-                return ResourceManager.GetString("LostMap", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets SymbolOfKundun from the configuration name resources.</summary>
-        public static string SymbolOfKundun {
-            get {
-                return ResourceManager.GetString("SymbolOfKundun", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets HalloweenItems from the configuration name resources.</summary>
-        public static string HalloweenItems {
-            get {
-                return ResourceManager.GetString("HalloweenItems", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets GemOfSecret from the configuration name resources.</summary>
-        public static string GemOfSecret {
-            get {
-                return ResourceManager.GetString("GemOfSecret", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ImperialGuardianItems from the configuration name resources.</summary>
-        public static string ImperialGuardianItems {
-            get {
-                return ResourceManager.GetString("ImperialGuardianItems", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ChristmasStarAndFirecracker from the configuration name resources.</summary>
-        public static string ChristmasStarAndFirecracker {
-            get {
-                return ResourceManager.GetString("ChristmasStarAndFirecracker", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets CherryBlossomItems from the configuration name resources.</summary>
-        public static string CherryBlossomItems {
-            get {
-                return ResourceManager.GetString("CherryBlossomItems", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets FixedValue from the configuration name resources.</summary>
-        public static string FixedValue {
-            get {
-                return ResourceManager.GetString("FixedValue", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Potions from the configuration name resources.</summary>
-        public static string Potions {
-            get {
-                return ResourceManager.GetString("Potions", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets ValueBased from the configuration name resources.</summary>
-        public static string ValueBased {
-            get {
-                return ResourceManager.GetString("ValueBased", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets Accessories from the configuration name resources.</summary>
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Accessories.
+        /// </summary>
         public static string Accessories {
             get {
                 return ResourceManager.GetString("Accessories", resourceCulture);
             }
         }
-
-        /// <summary>Gets DarkRaven from the configuration name resources.</summary>
-        public static string DarkRaven {
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ale.
+        /// </summary>
+        public static string Ale {
             get {
-                return ResourceManager.GetString("DarkRaven", resourceCulture);
+                return ResourceManager.GetString("Ale", resourceCulture);
             }
         }
-
-        /// <summary>Gets DarkHorse from the configuration name resources.</summary>
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Armor of Guardsman.
+        /// </summary>
+        public static string ArmorOfGuardsman {
+            get {
+                return ResourceManager.GetString("ArmorOfGuardsman", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arrows.
+        /// </summary>
+        public static string Arrows {
+            get {
+                return ResourceManager.GetString("Arrows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bless of Guardian.
+        /// </summary>
+        public static string BlessOfGuardian {
+            get {
+                return ResourceManager.GetString("BlessOfGuardian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blood Bone.
+        /// </summary>
+        public static string BloodBone {
+            get {
+                return ResourceManager.GetString("BloodBone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bolts.
+        /// </summary>
+        public static string Bolts {
+            get {
+                return ResourceManager.GetString("Bolts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Broken Horn.
+        /// </summary>
+        public static string BrokenHorn {
+            get {
+                return ResourceManager.GetString("BrokenHorn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cherry Blossom items.
+        /// </summary>
+        public static string CherryBlossomItems {
+            get {
+                return ResourceManager.GetString("CherryBlossomItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Christmas Star and Firecracker.
+        /// </summary>
+        public static string ChristmasStarAndFirecracker {
+            get {
+                return ResourceManager.GetString("ChristmasStarAndFirecracker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Claw of Beast.
+        /// </summary>
+        public static string ClawOfBeast {
+            get {
+                return ResourceManager.GetString("ClawOfBeast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complex Potion.
+        /// </summary>
+        public static string ComplexPotion {
+            get {
+                return ResourceManager.GetString("ComplexPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract (Summon).
+        /// </summary>
+        public static string ContractSummon {
+            get {
+                return ResourceManager.GetString("ContractSummon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark Horse.
+        /// </summary>
         public static string DarkHorse {
             get {
                 return ResourceManager.GetString("DarkHorse", resourceCulture);
             }
         }
-
-        /// <summary>Gets OneHandedWeaponsAndShields from the configuration name resources.</summary>
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark Raven.
+        /// </summary>
+        public static string DarkRaven {
+            get {
+                return ResourceManager.GetString("DarkRaven", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Devil&apos;s Eye.
+        /// </summary>
+        public static string DevilsEye {
+            get {
+                return ResourceManager.GetString("DevilsEye", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Devil&apos;s Invitation.
+        /// </summary>
+        public static string DevilsInvitation {
+            get {
+                return ResourceManager.GetString("DevilsInvitation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Devil&apos;s Key.
+        /// </summary>
+        public static string DevilsKey {
+            get {
+                return ResourceManager.GetString("DevilsKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Equipment with a skill without value.
+        /// </summary>
+        public static string EquipmentWithSkillWithoutValue {
+            get {
+                return ResourceManager.GetString("EquipmentWithSkillWithoutValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fixed value.
+        /// </summary>
+        public static string FixedValue {
+            get {
+                return ResourceManager.GetString("FixedValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flame and Feather of Condor.
+        /// </summary>
+        public static string FlameAndFeatherOfCondor {
+            get {
+                return ResourceManager.GetString("FlameAndFeatherOfCondor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fragment of Horn.
+        /// </summary>
+        public static string FragmentOfHorn {
+            get {
+                return ResourceManager.GetString("FragmentOfHorn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fruits.
+        /// </summary>
+        public static string Fruits {
+            get {
+                return ResourceManager.GetString("Fruits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gem of Secret.
+        /// </summary>
+        public static string GemOfSecret {
+            get {
+                return ResourceManager.GetString("GemOfSecret", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gemstone, Jewel of Harmony and Refine Stones.
+        /// </summary>
+        public static string GemstoneHarmonyAndRefineStones {
+            get {
+                return ResourceManager.GetString("GemstoneHarmonyAndRefineStones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Halloween items.
+        /// </summary>
+        public static string HalloweenItems {
+            get {
+                return ResourceManager.GetString("HalloweenItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Horn of Dinorant.
+        /// </summary>
+        public static string HornOfDinorant {
+            get {
+                return ResourceManager.GetString("HornOfDinorant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Horn of Fenrir.
+        /// </summary>
+        public static string HornOfFenrir {
+            get {
+                return ResourceManager.GetString("HornOfFenrir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple tickets.
+        /// </summary>
+        public static string IllusionTempleTickets {
+            get {
+                return ResourceManager.GetString("IllusionTempleTickets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imperial Guardian items.
+        /// </summary>
+        public static string ImperialGuardianItems {
+            get {
+                return ResourceManager.GetString("ImperialGuardianItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invisibility Cloak.
+        /// </summary>
+        public static string InvisibilityCloak {
+            get {
+                return ResourceManager.GetString("InvisibilityCloak", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Bless.
+        /// </summary>
+        public static string JewelOfBless {
+            get {
+                return ResourceManager.GetString("JewelOfBless", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Chaos.
+        /// </summary>
+        public static string JewelOfChaos {
+            get {
+                return ResourceManager.GetString("JewelOfChaos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Creation.
+        /// </summary>
+        public static string JewelOfCreation {
+            get {
+                return ResourceManager.GetString("JewelOfCreation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Guardian.
+        /// </summary>
+        public static string JewelOfGuardian {
+            get {
+                return ResourceManager.GetString("JewelOfGuardian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Life.
+        /// </summary>
+        public static string JewelOfLife {
+            get {
+                return ResourceManager.GetString("JewelOfLife", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Soul.
+        /// </summary>
+        public static string JewelOfSoul {
+            get {
+                return ResourceManager.GetString("JewelOfSoul", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Large Complex Potion.
+        /// </summary>
+        public static string LargeComplexPotion {
+            get {
+                return ResourceManager.GetString("LargeComplexPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Large Healing and Mana Potion.
+        /// </summary>
+        public static string LargeHealingAndManaPotion {
+            get {
+                return ResourceManager.GetString("LargeHealingAndManaPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Large Shield Potion.
+        /// </summary>
+        public static string LargeShieldPotion {
+            get {
+                return ResourceManager.GetString("LargeShieldPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loch&apos;s Feather.
+        /// </summary>
+        public static string LochsFeather {
+            get {
+                return ResourceManager.GetString("LochsFeather", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lost Map.
+        /// </summary>
+        public static string LostMap {
+            get {
+                return ResourceManager.GetString("LostMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One-handed weapons and shields.
+        /// </summary>
         public static string OneHandedWeaponsAndShields {
             get {
                 return ResourceManager.GetString("OneHandedWeaponsAndShields", resourceCulture);
             }
         }
-
-        /// <summary>Gets OneHandedWeaponsWithSkillWithoutValue from the configuration name resources.</summary>
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One-handed weapons with a skill without value.
+        /// </summary>
         public static string OneHandedWeaponsWithSkillWithoutValue {
             get {
                 return ResourceManager.GetString("OneHandedWeaponsWithSkillWithoutValue", resourceCulture);
             }
         }
-
-        /// <summary>Gets EquipmentWithSkillWithoutValue from the configuration name resources.</summary>
-        public static string EquipmentWithSkillWithoutValue {
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order (Guardian/Life Stone).
+        /// </summary>
+        public static string OrderGuardianLifeStone {
             get {
-                return ResourceManager.GetString("EquipmentWithSkillWithoutValue", resourceCulture);
+                return ResourceManager.GetString("OrderGuardianLifeStone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Gemstone, Jewel of Harmony and Refine Stones.
+        /// </summary>
+        public static string PackedGemstoneHarmonyAndRefineStones {
+            get {
+                return ResourceManager.GetString("PackedGemstoneHarmonyAndRefineStones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Jewel of Bless.
+        /// </summary>
+        public static string PackedJewelOfBless {
+            get {
+                return ResourceManager.GetString("PackedJewelOfBless", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Jewel of Chaos.
+        /// </summary>
+        public static string PackedJewelOfChaos {
+            get {
+                return ResourceManager.GetString("PackedJewelOfChaos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Jewel of Creation.
+        /// </summary>
+        public static string PackedJewelOfCreation {
+            get {
+                return ResourceManager.GetString("PackedJewelOfCreation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Jewel of Guardian.
+        /// </summary>
+        public static string PackedJewelOfGuardian {
+            get {
+                return ResourceManager.GetString("PackedJewelOfGuardian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Jewel of Life.
+        /// </summary>
+        public static string PackedJewelOfLife {
+            get {
+                return ResourceManager.GetString("PackedJewelOfLife", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed Jewel of Soul.
+        /// </summary>
+        public static string PackedJewelOfSoul {
+            get {
+                return ResourceManager.GetString("PackedJewelOfSoul", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Potions.
+        /// </summary>
+        public static string Potions {
+            get {
+                return ResourceManager.GetString("Potions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remedy of Love.
+        /// </summary>
+        public static string RemedyOfLove {
+            get {
+                return ResourceManager.GetString("RemedyOfLove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rena.
+        /// </summary>
+        public static string Rena {
+            get {
+                return ResourceManager.GetString("Rena", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scroll of Archangel.
+        /// </summary>
+        public static string ScrollOfArchangel {
+            get {
+                return ResourceManager.GetString("ScrollOfArchangel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shield Potion.
+        /// </summary>
+        public static string ShieldPotion {
+            get {
+                return ResourceManager.GetString("ShieldPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Siege Potion.
+        /// </summary>
+        public static string SiegePotion {
+            get {
+                return ResourceManager.GetString("SiegePotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Small Complex Potion.
+        /// </summary>
+        public static string SmallComplexPotion {
+            get {
+                return ResourceManager.GetString("SmallComplexPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Small Shield Potion.
+        /// </summary>
+        public static string SmallShieldPotion {
+            get {
+                return ResourceManager.GetString("SmallShieldPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spirit.
+        /// </summary>
+        public static string Spirit {
+            get {
+                return ResourceManager.GetString("Spirit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Splinter of Armor.
+        /// </summary>
+        public static string SplinterOfArmor {
+            get {
+                return ResourceManager.GetString("SplinterOfArmor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Symbol of Kundun.
+        /// </summary>
+        public static string SymbolOfKundun {
+            get {
+                return ResourceManager.GetString("SymbolOfKundun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value based.
+        /// </summary>
+        public static string ValueBased {
+            get {
+                return ResourceManager.GetString("ValueBased", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wizard&apos;s Ring.
+        /// </summary>
+        public static string WizardsRing {
+            get {
+                return ResourceManager.GetString("WizardsRing", resourceCulture);
             }
         }
     }
