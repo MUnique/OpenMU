@@ -47,6 +47,29 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         _ = Task.Run(() => this.RunSummonPartyAsync(player, cancellationTokenSource));
     }
 
+    /// <summary>
+    /// Determines whether the warp list lets the target come to the map: when the map has warps,
+    /// the target has to reach the level of one of them and fulfill its requirements.
+    /// </summary>
+    /// <param name="map">The map of the summoner.</param>
+    /// <param name="target">The target which is summoned.</param>
+    /// <returns><c>True</c>, if the target may be summoned to the map.</returns>
+    internal static bool IsAllowedByTheWarpsInto(GameMapDefinition? map, Player target)
+    {
+        var warps = target.GameContext.Configuration.WarpList.Where(w => w.Gate?.Map == map).ToList();
+        if (warps.Count == 0)
+        {
+            return true;
+        }
+
+        if (target.Attributes?[Stats.TotalLevel] is not { } totalLevel)
+        {
+            return false;
+        }
+
+        return warps.Any(warp => warp.LevelRequirement <= totalLevel && warp.GetMissingRequirement(target) is null);
+    }
+
     private static async ValueTask SendSummonCanceledMessageAsync(Player player)
     {
         if (player.Party is not { } party)
@@ -172,18 +195,6 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
             return false;
         }
 
-        var warpInfo = player.GameContext.Configuration.WarpList.Where(w => w.Gate?.Map == player.CurrentMap?.Definition).OrderBy(w => w.LevelRequirement).FirstOrDefault();
-        if (warpInfo is null)
-        {
-            return true;
-        }
-
-        if (target.Attributes?[Stats.TotalLevel] is not { } totalLevel)
-        {
-            return false;
-        }
-
-        return warpInfo.LevelRequirement <= totalLevel
-               && warpInfo.GetMissingRequirement(target) is null;
+        return IsAllowedByTheWarpsInto(player.CurrentMap?.Definition, target);
     }
 }

@@ -10,7 +10,9 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
@@ -326,6 +328,55 @@ public class WarpListTests
         var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
         view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
         Assert.That(player.Money, Is.EqualTo(100000));
+    }
+
+    /// <summary>
+    /// Tests that a party member can be summoned to a map when one of its warps lets them in,
+    /// even if the warp with the lowest level requires something which they miss.
+    /// </summary>
+    /// <param name="totalLevel">The total level of the target.</param>
+    /// <param name="resets">The resets of the target.</param>
+    /// <param name="expected">Whether the target may be summoned.</param>
+    [TestCase(200, 0, true)]
+    [TestCase(50, 0, false)]
+    [TestCase(50, 5, true)]
+    public async Task SummonTargetNeedsOneUsableWarpIntoTheMapAsync(int totalLevel, int resets, bool expected)
+    {
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        target.Attributes!.AddElement(new SimpleElement(totalLevel, AggregateType.AddRaw), Stats.TotalLevel);
+        target.Attributes[Stats.Resets] = resets;
+        var lowWithResets = CreateWarp(1, "Low with resets", 7, 10, 2000, (Stats.Resets, 5));
+        var map = lowWithResets.Gate!.Map!;
+        var high = CreateWarp(2, "High", 7, 100, 2000);
+        high.Gate!.Map = map;
+        target.GameContext.Configuration.WarpList.Add(lowWithResets);
+        target.GameContext.Configuration.WarpList.Add(high);
+
+        Assert.That(SummonPartySkillPlugin.IsAllowedByTheWarpsInto(map, target), Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests that bots only pick warps whose requirements they fulfill.
+    /// </summary>
+    /// <param name="masterLevel">The master level of the bot.</param>
+    /// <param name="expectedIndexes">The indexes of the warps which the bot may use.</param>
+    [TestCase(0, new[] { 1 })]
+    [TestCase(10, new[] { 1, 2 })]
+    public async Task BotsSkipWarpsWhoseRequirementsTheyMissAsync(int masterLevel, int[] expectedIndexes)
+    {
+        var bot = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        bot.Attributes![Stats.Level] = 400;
+        bot.Attributes[Stats.MasterLevel] = masterLevel;
+        var plain = CreateWarp(1, "Plain", 7, 10, 2000);
+        var master = CreateWarp(2, "Master", 7, 10, 2000, (Stats.MasterLevel, 10));
+        var map = plain.Gate!.Map!;
+        master.Gate!.Map = map;
+        bot.GameContext.Configuration.WarpList.Add(plain);
+        bot.GameContext.Configuration.WarpList.Add(master);
+
+        var legal = BotChatPlugIn.GetLegalWarps(bot, map).Select(warp => warp.Index);
+
+        Assert.That(legal, Is.EquivalentTo(expectedIndexes));
     }
 
     private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs, params (AttributeDefinition Attribute, int MinimumValue)[] requirements)
