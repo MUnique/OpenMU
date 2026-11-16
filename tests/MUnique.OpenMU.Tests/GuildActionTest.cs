@@ -246,6 +246,20 @@ public class GuildActionTest : GuildTestBase
     }
 
     /// <summary>
+    /// Verifies that a pending relationship request is dropped when its recipient leaves the world,
+    /// so that it doesn't block later requests to the next character of the same connection.
+    /// </summary>
+    [Test]
+    public async ValueTask PendingRelationshipRequestIsClearedWhenRecipientLeavesWorldAsync()
+    {
+        this._guildMasterPlayer.PendingAllianceRequest = (this._player, ViewGuildRelationshipType.Alliance, ViewGuildRelationshipRequestType.Join);
+
+        await this._guildMasterPlayer.SetSelectedCharacterAsync(null).ConfigureAwait(false);
+
+        Assert.That(this._guildMasterPlayer.PendingAllianceRequest, Is.EqualTo(default((Player?, ViewGuildRelationshipType, ViewGuildRelationshipRequestType))));
+    }
+
+    /// <summary>
     /// Verifies that a member-guild master cannot remove another guild from the alliance.
     /// </summary>
     [Test]
