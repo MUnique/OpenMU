@@ -313,7 +313,8 @@ internal sealed class PlayerMapTransitions
     /// <param name="gate">The destination.</param>
     /// <param name="tryPreparePlacement">Synchronous owned resource/liveness commit under state admission.</param>
     /// <param name="publishPreparedAttributes">Sends the captured attribute notifications outside exclusion, before map/view continuation.</param>
-    internal async ValueTask RespawnWithPreparationAsync(ExitGate gate, Func<bool>? tryPreparePlacement, Func<ValueTask>? publishPreparedAttributes)
+    /// <param name="completePlacement">Synchronous owned bookkeeping after coordinate commit under state admission.</param>
+    internal async ValueTask RespawnWithPreparationAsync(ExitGate gate, Func<bool>? tryPreparePlacement, Func<ValueTask>? publishPreparedAttributes, Action? completePlacement = null)
     {
         var player = this._player;
         if (player.SelectedCharacter is not { } character)
@@ -356,7 +357,19 @@ internal sealed class PlayerMapTransitions
         }
 
         character.ThrowNotInitializedProperty(character.CurrentMap is null, nameof(character.CurrentMap));
-        await this.PlaceAtGateAsync(gate).ConfigureAwait(false);
+        await using (var placement = await player.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
+        {
+            placement.Allowed = false;
+            if (player.PlayerState.CurrentState != GameLogic.PlayerState.ChangingMap || !IsCurrentPlacement())
+            {
+                return;
+            }
+
+            this.CommitGateCoordinates(gate, character);
+            completePlacement?.Invoke();
+        }
+
+        await this.FinishGatePlacementAsync(gate).ConfigureAwait(false);
         if (!IsCurrentPlacement())
         {
             return;
@@ -487,12 +500,21 @@ internal sealed class PlayerMapTransitions
             return;
         }
 
+        this.CommitGateCoordinates(gate, character);
+        await this.FinishGatePlacementAsync(gate).ConfigureAwait(false);
+    }
+
+    private void CommitGateCoordinates(ExitGate gate, Character character)
+    {
         var landingPoint = gate.GetRandomPoint();
         character.PositionX = landingPoint.X;
         character.PositionY = landingPoint.Y;
         character.CurrentMap = gate.Map;
-        player.Rotation = gate.Direction;
+        this._player.Rotation = gate.Direction;
+    }
 
+    private async ValueTask FinishGatePlacementAsync(ExitGate gate)
+    {
         await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
 
         this._summon.PlaceAtGate(gate);

@@ -52,6 +52,10 @@ public class TradeAcceptAction : BaseTradeAction
                     tradeAccepter.Logger.LogError(ex, "Error while opening a trade between {tradeAccepter} and {tradePartner}", tradeAccepter, tradePartner);
                     await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
                     await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+
+                    // The first opener may already have received success; finish both views after rollback.
+                    await tradeAccepter.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+                    await tradePartner.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
                 }
             }
         }
