@@ -1051,4 +1051,10 @@ Inventarerweiterungen: {18}</value>
   <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
     <value>Mit einem Talisman der Mobilität wurde kein Ort gespeichert.</value>
   </data>
+  <data name="LandOfTrialsClosed" xml:space="preserve">
+    <value>Das Land der Prüfungen ist nur für die Allianz des Burgbesitzers geöffnet.</value>
+  </data>
+  <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
+    <value>Der Weg zurück zum gespeicherten Ort wird von einem geschlossenen Tor versperrt.</value>
+  </data>
 </root>

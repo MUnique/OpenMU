@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -382,6 +383,40 @@ public class CastleSiegeEconomyTests
             Assert.That(fixture.Context.SiegeData.TaxHunt, Is.EqualTo(allowed && taxType == CastleSiegeTaxType.HuntZone ? rate : 100u));
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(500));
         });
+    }
+
+    /// <summary>
+    /// Verifies that warping into the Land of Trials, e.g. by the Talisman of Mobility, follows the same access rules
+    /// as its guard: the owner alliance may always enter, everyone else only while the hunt zone is public.
+    /// </summary>
+    [Test]
+    public async ValueTask WarpToLandOfTrialsHonorsHuntZoneAccessAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var landOfTrials = new BasicModel.GameMapDefinition { Number = 31 };
+        var otherMap = fixture.GameServerContext.Configuration.Maps.First(map => map.Number == 0);
+        fixture.Context.Configuration.LandOfTrialsMapDefinition = landOfTrials;
+        var plugIn = new CastleSiegePlugIn();
+        await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+        var siegeData = plugIn.GetContext(fixture.GameServerContext)!.SiegeData;
+
+        async ValueTask<bool> IsDeniedAsync(Player player, GameMapDefinition map)
+        {
+            var eventArgs = new CancelEventArgs();
+            await plugIn.WarpGateEnteringAsync(player, new BasicModel.ExitGate { Map = map }, eventArgs).ConfigureAwait(false);
+            return eventArgs.Cancel;
+        }
+
+        siegeData.IsHuntZoneEnabled = false;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.True, "Closed hunt zone");
+        Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.False, "Owner");
+        Assert.That(await IsDeniedAsync(fixture.Visitor, otherMap).ConfigureAwait(false), Is.False, "Other map");
+
+        siegeData.IsHuntZoneEnabled = true;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.False, "Public hunt zone");
+
+        siegeData.IsOccupied = false;
+        Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.True, "Unoccupied castle");
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()

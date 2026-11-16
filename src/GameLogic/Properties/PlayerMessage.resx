@@ -1204,4 +1204,10 @@ Inventory Extensions: {18}</value>
   <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
     <value>No place has been saved with a Talisman of Mobility.</value>
   </data>
+  <data name="LandOfTrialsClosed" xml:space="preserve">
+    <value>The Land of Trials is only open to the alliance of the castle owner.</value>
+  </data>
+  <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
+    <value>The way back to the saved place is blocked by a closed gate.</value>
+  </data>
 </root>

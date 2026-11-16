@@ -112,6 +112,32 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
         denyingPlugIn.Verify(p => p.WarpGateEnteringAsync(player, It.Is<ExitGate>(gate => gate.X1 == SavedPosition.X && gate.Y1 == SavedPosition.Y), It.IsAny<CancelEventArgs>()), Times.Once);
     }
 
+    /// <summary>
+    /// When the saved place is on the current map and a <see cref="IPlayerTeleportRestrictionPlugIn"/> blocks the way,
+    /// e.g. by a closed castle gate, the character isn't warped and keeps the talisman and the saved place.
+    /// </summary>
+    [Test]
+    public async Task BlockedReturnOnTheSameMapKeepsTalismanAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var talisman = CreateTalisman();
+        var handler = new TalismanOfMobilityConsumeHandlerPlugIn();
+        player.Position = SavedPosition;
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+
+        var blockingPlugIn = new Mock<IPlayerTeleportRestrictionPlugIn>();
+        blockingPlugIn
+            .Setup(p => p.CheckTeleport(It.IsAny<Player>(), It.IsAny<Point>(), It.IsAny<CancelEventArgs>()))
+            .Callback<Player, Point, CancelEventArgs>((_, _, eventArgs) => eventArgs.Cancel = true);
+        player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint(blockingPlugIn.Object);
+        player.Position = new Point(30, 40);
+
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
+        Assert.That(talisman.Durability, Is.EqualTo(1));
+        Assert.That(player.Position, Is.EqualTo(new Point(30, 40)));
+        blockingPlugIn.Verify(p => p.CheckTeleport(player, SavedPosition, It.IsAny<CancelEventArgs>()), Times.Once);
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

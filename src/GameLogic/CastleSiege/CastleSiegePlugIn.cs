@@ -25,7 +25,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
-public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn, IPlayerSpawnGateSelectionPlugIn, IPlayerKillPenaltyExemptionPlugIn, IPlayerTeleportRestrictionPlugIn, IPlayerAttackRestrictionPlugIn
+public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn, IPlayerSpawnGateSelectionPlugIn, IPlayerKillPenaltyExemptionPlugIn, IPlayerTeleportRestrictionPlugIn, IPlayerAttackRestrictionPlugIn, IWarpGateEnteringPlugIn
 {
     private static readonly TimeSpan EconomySaveInterval = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
@@ -172,6 +172,34 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         {
             eventArgs.Cancel = true;
         }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// The Land of Trials is entered through its guard, which only lets the alliance of the castle owner
+    /// or, while the hunt zone is public, everyone else in. Other ways to warp there, e.g. the Talisman of Mobility,
+    /// must not bypass that.
+    /// </remarks>
+    public async ValueTask WarpGateEnteringAsync(Player player, ExitGate targetGate, CancelEventArgs eventArgs)
+    {
+        if (this.GetContext(player.GameContext) is not { Configuration.Enabled: true } context
+            || context.Configuration.LandOfTrialsMapDefinition is not { } landOfTrials
+            || targetGate.Map?.Number != landOfTrials.Number)
+        {
+            return;
+        }
+
+        if (context.SiegeData is { IsOccupied: true, OwnerGuildId: { } ownerGuildId })
+        {
+            if (context.SiegeData.IsHuntZoneEnabled
+                || await CastleSiegeTaxProvider.GetPersistentAllianceMasterGuildIdAsync(player).ConfigureAwait(false) == ownerGuildId)
+            {
+                return;
+            }
+        }
+
+        eventArgs.Cancel = true;
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LandOfTrialsClosed)).ConfigureAwait(false);
     }
 
     /// <summary>

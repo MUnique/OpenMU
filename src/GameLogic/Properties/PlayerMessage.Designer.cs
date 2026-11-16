@@ -3288,5 +3288,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MobilityTalismanNoPlaceSaved", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Land of Trials is only open to the alliance of the castle owner..
+        /// </summary>
+        public static string LandOfTrialsClosed {
+            get {
+                return ResourceManager.GetString("LandOfTrialsClosed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The way back to the saved place is blocked by a closed gate..
+        /// </summary>
+        public static string MobilityTalismanReturnBlocked {
+            get {
+                return ResourceManager.GetString("MobilityTalismanReturnBlocked", resourceCulture);
+            }
+        }
     }
 }

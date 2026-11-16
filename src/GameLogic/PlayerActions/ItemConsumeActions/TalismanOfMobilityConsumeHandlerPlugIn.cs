@@ -10,6 +10,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -22,7 +23,8 @@ using MUnique.OpenMU.PlugIns;
 /// It can't be used in mini games and duels, because these have their own maps and spawn places.
 /// The character returns only if it still fulfills the requirements of the saved map, e.g. wings for Icarus;
 /// otherwise the talisman isn't used up and the place stays saved.
-/// The same applies when an <see cref="IWarpGateEnteringPlugIn"/> denies the return, e.g. while an event map is closed.
+/// The same applies when an <see cref="IWarpGateEnteringPlugIn"/> denies the return, e.g. while an event map is closed,
+/// or when an <see cref="IPlayerTeleportRestrictionPlugIn"/> blocks the way to a place on the same map, e.g. a closed castle gate.
 /// </remarks>
 [Guid("23071045-4323-4B5F-B26B-5283EEB130C1")]
 [PlugIn]
@@ -81,6 +83,19 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             await plugInPoint.WarpGateEnteringAsync(player, gate, eventArgs).ConfigureAwait(false);
             if (eventArgs.Cancel)
             {
+                return false;
+            }
+        }
+
+        if (savedMap.Number == currentMap.Definition.Number
+            && player.GameContext.PlugInManager.GetPlugInPoint<IPlayerTeleportRestrictionPlugIn>() is { } restrictionPoint)
+        {
+            // On the same map, the return must not bypass what blocks a teleport, e.g. closed castle gates.
+            var eventArgs = new CancelEventArgs();
+            restrictionPoint.CheckTeleport(player, new Point(gate.X1, gate.Y1), eventArgs);
+            if (eventArgs.Cancel)
+            {
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MobilityTalismanReturnBlocked)).ConfigureAwait(false);
                 return false;
             }
         }
