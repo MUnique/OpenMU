@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Tests;
 
-using System.Diagnostics.Metrics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text.Json;
