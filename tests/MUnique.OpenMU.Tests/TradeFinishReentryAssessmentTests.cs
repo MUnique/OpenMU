@@ -1,9 +1,10 @@
-// <copyright file="TradeFinishReentryAssessmentTests.cs" company="MUnique">
+﻿// <copyright file="TradeFinishReentryAssessmentTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.ObjectModel;
 using System.Diagnostics.Metrics;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,9 +14,11 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 using MUnique.OpenMU.GameLogic.Views.Trade;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -25,11 +28,17 @@ using MUnique.OpenMU.PlugIns;
 [NonParallelizable]
 public class TradeFinishReentryAssessmentTests
 {
-    /// <summary>A peer withdraws after the unlocked confirmation check, before its state exclusion is acquired.</summary>
+    /// <summary>
+    /// A peer withdraws after the unlocked confirmation check, before its state exclusion is acquired. Like the packet
+    /// order in which the withdrawal came first, nothing is exchanged and the trade stays open; fresh confirmations
+    /// complete it with the offer which both then confirmed.
+    /// </summary>
     /// <param name="withdraw">Whether the independent peer sends its uncheck packet.</param>
-    [TestCase(false)]
-    [TestCase(true)]
-    public async Task ConfirmationMustStillHoldAtLockedFinishAsync(bool withdraw)
+    /// <param name="takeBack">Whether the peer then also takes its offered item back, which resets both confirmations.</param>
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task ConfirmationMustStillHoldAtLockedFinishAsync(bool withdraw, bool takeBack)
     {
         await using var fixture = await Fixture.CreateAsync().ConfigureAwait(false);
         var a = fixture.Players.OrderBy(p => p.PlayerState.TransitionLockId).First();
@@ -42,6 +51,10 @@ public class TradeFinishReentryAssessmentTests
         await OfferAsync(a, 20, 60).ConfigureAwait(false);
         await OfferAsync(b, 20, 25).ConfigureAwait(false);
         await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
+        var aFinished = Mock.Get(a.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+        var bFinished = Mock.Get(b.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+        var bButton = Mock.Get(b.ViewPlugIns.GetPlugIn<IChangeTradeButtonStatePlugIn>()!);
+        bButton.Invocations.Clear();
         var entered = Signal();
         var release = Signal();
         var armed = 1;
@@ -54,6 +67,7 @@ public class TradeFinishReentryAssessmentTests
             }
         };
         var finish = ButtonAsync(a, TradeButtonState.Checked);
+        var peerPacket = Task.CompletedTask;
         try
         {
             await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
@@ -63,52 +77,78 @@ public class TradeFinishReentryAssessmentTests
                 Assert.That(b.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
             }
 
+            if (takeBack)
+            {
+                // Same B packet funnel. Resetting A's confirmation needs A's state exclusion, which the finish holds.
+                peerPacket = RunAsync(b, () => new MoveItemAction().MoveItemAsync(b, 0, Storages.Trade, 20, Storages.Inventory));
+            }
+
             release.TrySetResult();
-            await finish.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await Task.WhenAll(finish, peerPacket).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             AssertConserved(fixture.Players, x, y);
-            if (withdraw)
+            if (!withdraw)
             {
-                // Withdrawal terminates this pair without exchange; a fresh opening requires new confirmations.
-                Assert.Multiple(() =>
-                {
-                    Assert.That(a.Inventory!.Items, Does.Not.Contain(y), "Unconfirmed exchange after peer withdrew before its lock.");
-                    Assert.That(b.Inventory!.Items, Does.Not.Contain(x));
-                    Assert.That(a.Money + (a.BackupInventory is null ? 0 : a.TradingMoney), Is.EqualTo(aMoney));
-                    Assert.That(b.Money + (b.BackupInventory is null ? 0 : b.TradingMoney), Is.EqualTo(bMoney));
-                });
-                Assert.That(a.Inventory!.Items, Does.Contain(x));
-                Assert.That(b.Inventory!.Items, Does.Contain(y));
                 AssertFree(a);
                 AssertFree(b);
-                Mock.Get(a.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
-                Mock.Get(b.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!).Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
-                await OpenAsync(a, b).ConfigureAwait(false);
-                await OfferAsync(a, x.ItemSlot, 60).ConfigureAwait(false);
-                await OfferAsync(b, y.ItemSlot, 25).ConfigureAwait(false);
+                Assert.That(a.Inventory!.Items, Does.Contain(y));
+                Assert.That(b.Inventory!.Items, Does.Contain(x));
+                Assert.That(a.Money, Is.EqualTo(aMoney - 35));
+                Assert.That(b.Money, Is.EqualTo(bMoney + 35));
+                aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+                bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+                return;
+            }
+
+            // Nothing was exchanged and the trade is still open with the withdrawn confirmation.
+            Assert.Multiple(() =>
+            {
+                Assert.That(a.Inventory!.Items, Does.Not.Contain(y), "Unconfirmed exchange after peer withdrew before its lock.");
+                Assert.That(b.Inventory!.Items, Does.Not.Contain(x));
+                Assert.That(a.TemporaryStorage!.Items, Does.Contain(x));
+                Assert.That(takeBack ? b.Inventory!.Items : b.TemporaryStorage!.Items, Does.Contain(y));
+                Assert.That(a.PlayerState.CurrentState, Is.EqualTo(takeBack ? PlayerState.TradeOpened : PlayerState.TradeButtonPressed));
+                Assert.That(b.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                Assert.That(a.TradingPartner, Is.SameAs(b));
+                Assert.That(b.TradingPartner, Is.SameAs(a));
+                Assert.That(a.BackupInventory, Is.Not.Null);
+                Assert.That(b.BackupInventory, Is.Not.Null);
+                Assert.That(a.TradingMoney, Is.EqualTo(60));
+                Assert.That(b.TradingMoney, Is.EqualTo(25));
+                Assert.That(a.Money, Is.EqualTo(aMoney - 60));
+                Assert.That(b.Money, Is.EqualTo(bMoney - 25));
+            });
+            aFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+            bFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+
+            if (!takeBack)
+            {
+                // As in the order where the withdrawal came first, B learns that A still confirms.
+                bButton.Verify(v => v.ChangeTradeButtonStateAsync(TradeButtonState.Checked), Times.Once);
+            }
+
+            if (takeBack)
+            {
                 await ButtonAsync(a, TradeButtonState.Checked).ConfigureAwait(false);
-                await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
-                AssertFree(a);
-                AssertFree(b);
-                Assert.That(a.Inventory!.Items, Does.Contain(y));
-                Assert.That(b.Inventory!.Items, Does.Contain(x));
-                Assert.That(a.Money, Is.EqualTo(aMoney - 35));
-                Assert.That(b.Money, Is.EqualTo(bMoney + 35));
-                AssertConserved(fixture.Players, x, y);
             }
-            else
-            {
-                AssertFree(a);
-                AssertFree(b);
-                Assert.That(a.Inventory!.Items, Does.Contain(y));
-                Assert.That(b.Inventory!.Items, Does.Contain(x));
-                Assert.That(a.Money, Is.EqualTo(aMoney - 35));
-                Assert.That(b.Money, Is.EqualTo(bMoney + 35));
-            }
+
+            await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
+            AssertFree(a);
+            AssertFree(b);
+            Assert.That(b.Inventory!.Items, Does.Contain(x));
+            Assert.That(a.Inventory!.Items, takeBack ? Does.Not.Contain(y) : Does.Contain(y));
+            Assert.That(b.Inventory!.Items, takeBack ? Does.Contain(y) : Does.Not.Contain(y));
+            Assert.That(a.Money, Is.EqualTo(aMoney - 35));
+            Assert.That(b.Money, Is.EqualTo(bMoney + 35));
+            aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+            bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+            aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Never);
+            bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Never);
+            AssertConserved(fixture.Players, x, y);
         }
         finally
         {
             release.TrySetResult();
-            await finish.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            await Task.WhenAll(finish, peerPacket).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
         }
     }
 
@@ -258,6 +298,277 @@ public class TradeFinishReentryAssessmentTests
         }
     }
 
+    /// <summary>
+    /// A storage fault after the first half of the item exchange already happened must not leave both traders in a
+    /// half-exchanged trade without a result: both halves are restored from their own backups and both traders get
+    /// the cancellation, while the fault itself stays observable to the packet handler.
+    /// </summary>
+    /// <param name="fault">Whether the receiving storage of the second half fails once.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task StorageFaultDuringExchangeRestoresBothHalvesAsync(bool fault)
+    {
+        var bItems = new FailingOnceItems();
+        await using var fixture = await Fixture.CreateAsync(bItems).ConfigureAwait(false);
+        var a = fixture.Players[0];
+        var b = fixture.Players[1];
+        var aMoney = a.Money;
+        var bMoney = b.Money;
+        var x = await AddItemAsync(a, 20).ConfigureAwait(false);
+        var y = await AddItemAsync(b, 20).ConfigureAwait(false);
+        await OpenAsync(a, b).ConfigureAwait(false);
+        await OfferAsync(a, 20, 60).ConfigureAwait(false);
+        await OfferAsync(b, 20, 25).ConfigureAwait(false);
+        var aStorage = a.SelectedCharacter!.Inventory!;
+        var bStorage = b.SelectedCharacter!.Inventory!;
+        Assert.That(bStorage.Items, Is.SameAs(bItems));
+        var aFinished = Mock.Get(a.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+        var bFinished = Mock.Get(b.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+        await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
+        bItems.Armed = fault;
+        var finish = ButtonAsync(a, TradeButtonState.Checked);
+        if (fault)
+        {
+            var error = Assert.ThrowsAsync<InvalidOperationException>(async () => await finish.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false));
+            Assert.That(error!.Message, Is.EqualTo(FailingOnceItems.Message));
+            Assert.That(bItems.Faults, Is.EqualTo(1), "The first half (y into A's inventory) was applied before the fault.");
+        }
+        else
+        {
+            await finish.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        }
+
+        AssertFree(a);
+        AssertFree(b);
+        AssertConserved(fixture.Players, x, y);
+        Assert.Multiple(() =>
+        {
+            Assert.That(a.Inventory!.Items, Does.Contain(fault ? x : y));
+            Assert.That(b.Inventory!.Items, Does.Contain(fault ? y : x));
+            Assert.That(a.Money, Is.EqualTo(fault ? aMoney : aMoney - 35));
+            Assert.That(b.Money, Is.EqualTo(fault ? bMoney : bMoney + 35));
+
+            // The persisted item collections agree with the live inventories.
+            Assert.That(aStorage.Items, Is.EquivalentTo(a.Inventory.Items));
+            Assert.That(bStorage.Items, Is.EquivalentTo(b.Inventory.Items));
+        });
+        var expected = fault ? TradeResult.Cancelled : TradeResult.Success;
+        aFinished.Verify(v => v.TradeFinishedAsync(expected), Times.Once);
+        bFinished.Verify(v => v.TradeFinishedAsync(expected), Times.Once);
+        aFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Once);
+        bFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Once);
+
+        if (fault)
+        {
+            // Both are free for an ordinary new trade, which then completes.
+            await OpenAsync(a, b).ConfigureAwait(false);
+            await OfferAsync(a, x.ItemSlot, 60).ConfigureAwait(false);
+            await OfferAsync(b, y.ItemSlot, 25).ConfigureAwait(false);
+            await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
+            await ButtonAsync(a, TradeButtonState.Checked).ConfigureAwait(false);
+            AssertFree(a);
+            AssertFree(b);
+            Assert.That(a.Inventory!.Items, Does.Contain(y));
+            Assert.That(b.Inventory!.Items, Does.Contain(x));
+            Assert.That(a.Money, Is.EqualTo(aMoney - 35));
+            Assert.That(b.Money, Is.EqualTo(bMoney + 35));
+            Assert.That(bStorage.Items, Is.EquivalentTo(b.Inventory.Items));
+            AssertConserved(fixture.Players, x, y);
+        }
+    }
+
+    /// <summary>
+    /// A state-changing veto against leaving the trade keeps the vetoed half in its trade with its own escrow, while the
+    /// other half is restored and released. Once the veto permits leaving, the vetoed trader's ordinary cancel
+    /// restores its own escrow, without touching the released partner.
+    /// </summary>
+    /// <param name="veto">Whether the finisher's transition back to the world is vetoed.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task VetoedHalfKeepsItsEscrowUntilItsCancelIsAllowedAsync(bool veto)
+    {
+        await using var fixture = await Fixture.CreateAsync().ConfigureAwait(false);
+        var a = fixture.Players[0];
+        var b = fixture.Players[1];
+        var aMoney = a.Money;
+        var bMoney = b.Money;
+        var x = await AddItemAsync(a, 20).ConfigureAwait(false);
+        var y = await AddItemAsync(b, 20).ConfigureAwait(false);
+        await OpenAsync(a, b).ConfigureAwait(false);
+        await OfferAsync(a, 20, 60).ConfigureAwait(false);
+        await OfferAsync(b, 20, 25).ConfigureAwait(false);
+        await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
+        var vetoing = veto;
+        a.PlayerState.StateChanges += change =>
+        {
+            if (Volatile.Read(ref vetoing) && change.NextState == PlayerState.EnteredWorld)
+            {
+                change.Cancel = true;
+            }
+
+            return ValueTask.CompletedTask;
+        };
+        var aFinished = Mock.Get(a.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+        var bFinished = Mock.Get(b.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+        await ButtonAsync(a, TradeButtonState.Checked).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        AssertConserved(fixture.Players, x, y);
+        AssertFree(b);
+        if (!veto)
+        {
+            AssertFree(a);
+            Assert.That(a.Inventory!.Items, Does.Contain(y));
+            Assert.That(b.Inventory!.Items, Does.Contain(x));
+            aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+            bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+            return;
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(b.Inventory!.Items, Does.Contain(y));
+            Assert.That(b.Money, Is.EqualTo(bMoney));
+            Assert.That(a.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+            Assert.That(a.TradingPartner, Is.SameAs(b));
+            Assert.That(a.TemporaryStorage!.Items, Does.Contain(x));
+            Assert.That(a.TradingMoney, Is.EqualTo(60));
+            Assert.That(a.BackupInventory, Is.Not.Null);
+        });
+        bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+        aFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+
+        // While vetoed, the cancel can't leave the trade either; afterwards it restores only A's own escrow.
+        await RunAsync(a, () => new TradeCancelAction().CancelTradeAsync(a)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        Assert.That(a.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeButtonPressed));
+        Assert.That(a.TemporaryStorage!.Items, Does.Contain(x));
+        Volatile.Write(ref vetoing, false);
+        await RunAsync(a, () => new TradeCancelAction().CancelTradeAsync(a)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        AssertFree(a);
+        AssertFree(b);
+        Assert.That(a.Inventory!.Items, Does.Contain(x));
+        Assert.That(a.Money, Is.EqualTo(aMoney));
+        Assert.That(b.Money, Is.EqualTo(bMoney));
+        aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+        bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+        AssertConserved(fixture.Players, x, y);
+    }
+
+    /// <summary>
+    /// A lethal hit which is already reserved, but whose death didn't close the trade yet, makes that trader
+    /// unavailable: the confirmed trade isn't exchanged at that moment, and the death then cancels it normally and
+    /// restores both traders. A nonlethal hit at the same point doesn't prevent the exchange.
+    /// </summary>
+    /// <param name="lethal">Whether the paused hit is lethal.</param>
+    /// <param name="finisherDies">Whether the hit trader is the finisher (otherwise its already confirmed partner).</param>
+    [TestCase(false, false)]
+    [TestCase(true, false)]
+    [TestCase(true, true)]
+    public async Task ReservedDeathPreventsTradeExchangeAsync(bool lethal, bool finisherDies)
+    {
+        await using var fixture = await Fixture.CreateAsync().ConfigureAwait(false);
+        var a = fixture.Players[0];
+        var b = fixture.Players[1];
+        var dying = finisherDies ? a : b;
+        var attacker = await PlayerTestHelper.CreatePlayerAsync(fixture.Game).ConfigureAwait(false);
+        var release = Signal();
+        var hit = Task.CompletedTask;
+        try
+        {
+            var aMoney = a.Money;
+            var bMoney = b.Money;
+            var x = await AddItemAsync(a, 20).ConfigureAwait(false);
+            var y = await AddItemAsync(b, 20).ConfigureAwait(false);
+            await OpenAsync(a, b).ConfigureAwait(false);
+            await OfferAsync(a, 20, 60).ConfigureAwait(false);
+            await OfferAsync(b, 20, 25).ConfigureAwait(false);
+            await ButtonAsync(b, TradeButtonState.Checked).ConfigureAwait(false);
+            dying.CurrentMap!.Definition.ExitGates.Add(new ExitGate { Map = dying.CurrentMap.Definition, IsSpawnGate = true, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1 });
+            dying.Attributes![Stats.CurrentHealth] = lethal ? 10 : 100;
+            var entered = Signal();
+            var holds = 0;
+            Mock.Get(dying.ViewPlugIns.GetPlugIn<IShowHitPlugIn>()!).Setup(v => v.ShowHitAsync(dying, It.IsAny<HitInfo>())).Returns(async () =>
+            {
+                if (Interlocked.Increment(ref holds) == 1)
+                {
+                    entered.TrySetResult();
+                    await release.Task.ConfigureAwait(false);
+                }
+            });
+            var aFinished = Mock.Get(a.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+            var bFinished = Mock.Get(b.ViewPlugIns.GetPlugIn<ITradeFinishedPlugIn>()!);
+
+            // The attacker uses only its own packet funnel; the finish uses A's funnel.
+            hit = Task.Run(async () => await attacker.RunPersistenceExclusiveAsync(() => dying.ApplyPoisonDamageAsync(attacker, 10)).ConfigureAwait(false));
+            await entered.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.That(dying.IsAlive, Is.EqualTo(!lethal));
+            await ButtonAsync(a, TradeButtonState.Checked).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            if (!lethal)
+            {
+                AssertFree(a);
+                AssertFree(b);
+                Assert.That(a.Inventory!.Items, Does.Contain(y));
+                Assert.That(b.Inventory!.Items, Does.Contain(x));
+                aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+                bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Once);
+            }
+            else
+            {
+                Assert.Multiple(() =>
+                {
+                    Assert.That(a.Inventory!.Items, Does.Not.Contain(y), "A trader with a reserved death exchanged items.");
+                    Assert.That(b.Inventory!.Items, Does.Not.Contain(x));
+                    Assert.That(a.TemporaryStorage!.Items, Does.Contain(x));
+                    Assert.That(b.TemporaryStorage!.Items, Does.Contain(y));
+                    Assert.That(a.TradingPartner, Is.SameAs(b));
+                    Assert.That(b.TradingPartner, Is.SameAs(a));
+                });
+                aFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+                bFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+            }
+
+            release.TrySetResult();
+            await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            AssertConserved(fixture.Players, x, y);
+            if (!lethal)
+            {
+                Assert.That(dying.IsAlive, Is.True);
+                Assert.That(dying.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                return;
+            }
+
+            // The death closed the trade through its normal cancellation and restored both traders.
+            var survivor = finisherDies ? b : a;
+            Assert.Multiple(() =>
+            {
+                Assert.That(dying.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+                Assert.That(survivor.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+                Assert.That(a.TradingPartner, Is.Null);
+                Assert.That(b.TradingPartner, Is.Null);
+                Assert.That(a.BackupInventory, Is.Null);
+                Assert.That(b.BackupInventory, Is.Null);
+                Assert.That(a.Inventory!.Items, Does.Contain(x));
+                Assert.That(b.Inventory!.Items, Does.Contain(y));
+                Assert.That(a.Money, Is.EqualTo(aMoney));
+                Assert.That(b.Money, Is.EqualTo(bMoney));
+            });
+            aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+            bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+            aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Never);
+            bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Success), Times.Never);
+        }
+        finally
+        {
+            release.TrySetResult();
+            try
+            {
+                await hit.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            }
+            finally
+            {
+                await attacker.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+    }
+
     private static TaskCompletionSource Signal() => new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     private static Task RunAsync(Player player, Func<ValueTask> action) => Task.Run(async () => await player.RunPersistenceExclusiveAsync(action).ConfigureAwait(false));
@@ -338,11 +649,35 @@ public class TradeFinishReentryAssessmentTests
         }
     }
 
+    /// <summary>The persisted item collection of a storage, which fails on its first addition once armed.</summary>
+    private sealed class FailingOnceItems : Collection<Item>
+    {
+        public const string Message = "Injected storage fault.";
+
+        public bool Armed { get; set; }
+
+        public int Faults { get; private set; }
+
+        protected override void InsertItem(int index, Item item)
+        {
+            if (this.Armed)
+            {
+                this.Armed = false;
+                this.Faults++;
+                throw new InvalidOperationException(Message);
+            }
+
+            base.InsertItem(index, item);
+        }
+    }
+
     private sealed class Fixture(GameContext game, Player[] players) : IAsyncDisposable
     {
         public Player[] Players { get; } = players;
 
-        public static async Task<Fixture> CreateAsync()
+        public GameContext Game => game;
+
+        public static async Task<Fixture> CreateAsync(ICollection<Item>? secondInventory = null)
         {
             var configuration = PlayerTestHelper.CreateGameConfiguration();
             configuration.MaximumInventoryMoney = 1_000_000;
@@ -354,7 +689,13 @@ public class TradeFinishReentryAssessmentTests
             var players = new Player[2];
             for (var i = 0; i < players.Length; i++)
             {
-                players[i] = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+                var character = PlayerTestHelper.CreateCharacter(game);
+                if (i == 1 && secondInventory is not null)
+                {
+                    Mock.Get(character.Inventory!).Setup(storage => storage.Items).Returns(secondInventory);
+                }
+
+                players[i] = await PlayerTestHelper.CreatePlayerAsync(game, character).ConfigureAwait(false);
                 players[i].Money = 200 + (i * 100);
             }
 

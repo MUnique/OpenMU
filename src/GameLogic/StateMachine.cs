@@ -16,6 +16,10 @@ public class StateMachine
     /// <summary>
     /// The lock object for state transitions.
     /// </summary>
+    /// <remarks>
+    /// A caller which holds the transition scopes of two players at once (the trade finish) must acquire them
+    /// in the order of <see cref="TransitionLockId"/>, so that two such callers can't wait for each other.
+    /// </remarks>
     private readonly AsyncLock _asyncLock = new();
 
     /// <summary>
