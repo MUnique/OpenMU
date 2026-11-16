@@ -196,4 +196,32 @@ public static class ItemExtensions
         item.Durability = Math.Max(item.Durability - decrement, 0.0);
         return item.Durability() != previousWholeDurability;
     }
+
+    /// <summary>
+    /// Determines whether the item is time-limited, i.e. it has an <see cref="Item.ExpiresAt"/>.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns><c>true</c>, if the item is time-limited; otherwise, <c>false</c>.</returns>
+    public static bool IsTimeLimited(this Item item) => item.ExpiresAt is not null;
+
+    /// <summary>
+    /// Determines whether the time-limited item has expired at the specified timestamp.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="utcNow">The current timestamp (UTC).</param>
+    /// <returns><c>true</c>, if the item is time-limited and has expired; otherwise, <c>false</c>.</returns>
+    public static bool IsExpired(this Item item, DateTime utcNow) => item.ExpiresAt is { } expiresAt && expiresAt <= utcNow;
+
+    /// <summary>
+    /// Determines whether a player can get rid of an expired time-limited item of this kind: by dropping it
+    /// or by selling it to an NPC merchant.
+    /// </summary>
+    /// <remarks>
+    /// An expired item has no effect, but stays in the inventory until the player gets rid of it.
+    /// So an item which allows neither must not become time-limited.
+    /// </remarks>
+    /// <param name="definition">The item definition.</param>
+    /// <returns><c>true</c>, if an expired item of this kind can be dropped or sold; otherwise, <c>false</c>.</returns>
+    public static bool CanBeDisposedOfWhenExpired(this ItemDefinition definition)
+        => definition.IsDroppable || definition.IsSellableToNpc || definition.IsSellableToNpcWhenExpired;
 }

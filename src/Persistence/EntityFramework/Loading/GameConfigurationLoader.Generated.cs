@@ -44,7 +44,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"IsVisible\", \"Name\" from config.\"ItemOptionType\"",
         "select \"Id\", \"BasePriceFormula\", \"CraftingReferencePrice\", \"GameConfigurationId\", \"Modifiers\", \"Name\", \"QuantityScaling\", \"SellingPriceRounding\" from config.\"ItemPriceDefinition\"",
         "select \"Id\", \"ItemPriceDefinitionId\", \"Level\", \"Price\" from config.\"ItemLevelPrice\"",
-        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
+        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsSellableToNpcWhenExpired\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ExcellentOptionsAddChance\", \"ExcellentOptionsMaximumOptionsPerItem\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
         "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"GameServerDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
@@ -77,7 +77,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"AddPercentage\", \"FailResult\", \"MaximumAmount\", \"MaximumItemLevel\", \"MinimumAmount\", \"MinimumItemLevel\", \"NpcPriceDivisor\", \"Reference\", \"SimpleCraftingSettingsId\", \"SuccessResult\" from config.\"ItemCraftingRequiredItem\"",
         "select \"Id\", \"AddLevel\", \"Durability\", \"ItemDefinitionId\", \"RandomMaximumLevel\", \"RandomMinimumLevel\", \"Reference\", \"SimpleCraftingSettingsId\" from config.\"ItemCraftingResultItem\"",
         "select \"Id\", \"Money\" from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))",
-        "select \"Id\", \"DefinitionId\", \"Durability\", \"HasSkill\", \"ItemSlot\", \"ItemStorageId\", \"Level\", \"PetExperience\", \"SocketCount\", \"StorePrice\", \"StorePriceCoinType\", \"StorePriceItemDefinitionId\" from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))",
+        "select \"Id\", \"DefinitionId\", \"Durability\", \"ExpiresAt\", \"HasSkill\", \"ItemSlot\", \"ItemStorageId\", \"Level\", \"PetExperience\", \"SocketCount\", \"StorePrice\", \"StorePriceCoinType\", \"StorePriceItemDefinitionId\" from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))",
         "select \"Id\", \"Index\", \"ItemId\", \"ItemOptionId\", \"Level\" from data.\"ItemOptionLink\" where (\"ItemId\" in (select \"Id\" from (select * from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))) \"Item\"))",
         "select \"Id\", \"Group\", \"MaximumCharacterLevel\", \"MinimumCharacterLevel\", \"MonsterDefinitionId\", \"Name\", \"Number\", \"QualifiedCharacterId\", \"QuestGiverId\", \"RefuseNumber\", \"Repeatable\", \"RequiredStartMoney\", \"RequiresClientAction\", \"StartingNumber\" from config.\"QuestDefinition\"",
         "select \"Id\", \"DropItemGroupId\", \"ItemId\", \"MinimumNumber\", \"QuestDefinitionId\" from config.\"QuestItemRequirement\"",
@@ -908,23 +908,24 @@ internal sealed partial class GameConfigurationLoader
             entity.IsQuestItem = reader.GetBoolean(16);
             entity.IsRepairable = reader.GetBoolean(17);
             entity.IsSellableToNpc = reader.GetBoolean(18);
-            entity.IsStorable = reader.GetBoolean(19);
-            entity.IsTradable = reader.GetBoolean(20);
-            if (!reader.IsDBNull(21)) { entity.ItemSlotId = reader.GetGuid(21); }
-            if (!reader.IsDBNull(22)) { entity.MaximumDropLevel = (global::System.Byte)reader.GetInt16(22); }
-            entity.MaximumItemLevel = (global::System.Byte)reader.GetInt16(23);
-            entity.MaximumSockets = reader.GetInt32(24);
-            entity.Name = reader.IsDBNull(25) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(25));
-            entity.Number = reader.GetInt16(26);
-            if (!reader.IsDBNull(27)) { entity.PetExperienceFormula = reader.GetString(27); }
-            if (!reader.IsDBNull(28)) { entity.PriceDefinitionId = reader.GetGuid(28); }
-            if (!reader.IsDBNull(29)) { entity.SkillId = reader.GetGuid(29); }
-            if (!reader.IsDBNull(30)) { entity.StatProfileId = reader.GetGuid(30); }
-            entity.StorageLimitPerCharacter = reader.GetInt32(31);
-            entity.Value = reader.GetInt32(32);
-            entity.Width = (global::System.Byte)reader.GetInt16(33);
+            entity.IsSellableToNpcWhenExpired = reader.GetBoolean(19);
+            entity.IsStorable = reader.GetBoolean(20);
+            entity.IsTradable = reader.GetBoolean(21);
+            if (!reader.IsDBNull(22)) { entity.ItemSlotId = reader.GetGuid(22); }
+            if (!reader.IsDBNull(23)) { entity.MaximumDropLevel = (global::System.Byte)reader.GetInt16(23); }
+            entity.MaximumItemLevel = (global::System.Byte)reader.GetInt16(24);
+            entity.MaximumSockets = reader.GetInt32(25);
+            entity.Name = reader.IsDBNull(26) ? default : new global::MUnique.OpenMU.Interfaces.LocalizedString(reader.GetString(26));
+            entity.Number = reader.GetInt16(27);
+            if (!reader.IsDBNull(28)) { entity.PetExperienceFormula = reader.GetString(28); }
+            if (!reader.IsDBNull(29)) { entity.PriceDefinitionId = reader.GetGuid(29); }
+            if (!reader.IsDBNull(30)) { entity.SkillId = reader.GetGuid(30); }
+            if (!reader.IsDBNull(31)) { entity.StatProfileId = reader.GetGuid(31); }
+            entity.StorageLimitPerCharacter = reader.GetInt32(32);
+            entity.Value = reader.GetInt32(33);
+            entity.Width = (global::System.Byte)reader.GetInt16(34);
             this._ItemDefinition[entity.Id] = entity;
-            this._ItemDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(21) ? null : reader.GetGuid(21), reader.IsDBNull(28) ? null : reader.GetGuid(28), reader.IsDBNull(29) ? null : reader.GetGuid(29), reader.IsDBNull(30) ? null : reader.GetGuid(30), reader.IsDBNull(7) ? null : reader.GetGuid(7)));
+            this._ItemDefinitionRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(22) ? null : reader.GetGuid(22), reader.IsDBNull(29) ? null : reader.GetGuid(29), reader.IsDBNull(30) ? null : reader.GetGuid(30), reader.IsDBNull(31) ? null : reader.GetGuid(31), reader.IsDBNull(7) ? null : reader.GetGuid(7)));
         }
     }
 
@@ -1521,17 +1522,18 @@ internal sealed partial class GameConfigurationLoader
             entity.Id = reader.GetGuid(0);
             if (!reader.IsDBNull(1)) { entity.DefinitionId = reader.GetGuid(1); }
             entity.Durability = reader.GetDouble(2);
-            entity.HasSkill = reader.GetBoolean(3);
-            entity.ItemSlot = (global::System.Byte)reader.GetInt16(4);
-            if (!reader.IsDBNull(5)) { entity.ItemStorageId = reader.GetGuid(5); }
-            entity.Level = (global::System.Byte)reader.GetInt16(6);
-            entity.PetExperience = reader.GetInt32(7);
-            entity.SocketCount = reader.GetInt32(8);
-            if (!reader.IsDBNull(9)) { entity.StorePrice = reader.GetInt32(9); }
-            if (!reader.IsDBNull(10)) { entity.StorePriceCoinType = (global::MUnique.OpenMU.DataModel.Configuration.CashShopCoinType)reader.GetInt32(10); }
-            if (!reader.IsDBNull(11)) { entity.StorePriceItemDefinitionId = reader.GetGuid(11); }
+            if (!reader.IsDBNull(3)) { entity.ExpiresAt = reader.GetFieldValue<global::System.DateTime>(3); }
+            entity.HasSkill = reader.GetBoolean(4);
+            entity.ItemSlot = (global::System.Byte)reader.GetInt16(5);
+            if (!reader.IsDBNull(6)) { entity.ItemStorageId = reader.GetGuid(6); }
+            entity.Level = (global::System.Byte)reader.GetInt16(7);
+            entity.PetExperience = reader.GetInt32(8);
+            entity.SocketCount = reader.GetInt32(9);
+            if (!reader.IsDBNull(10)) { entity.StorePrice = reader.GetInt32(10); }
+            if (!reader.IsDBNull(11)) { entity.StorePriceCoinType = (global::MUnique.OpenMU.DataModel.Configuration.CashShopCoinType)reader.GetInt32(11); }
+            if (!reader.IsDBNull(12)) { entity.StorePriceItemDefinitionId = reader.GetGuid(12); }
             this._Item[entity.Id] = entity;
-            this._ItemRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(5) ? null : reader.GetGuid(5), reader.IsDBNull(11) ? null : reader.GetGuid(11)));
+            this._ItemRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(6) ? null : reader.GetGuid(6), reader.IsDBNull(12) ? null : reader.GetGuid(12)));
         }
     }
 

@@ -120,6 +120,17 @@ public partial class ItemDefinition
     public bool IsRepairable { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets a value indicating whether an expired time-limited item of this kind can be sold to
+    /// an NPC merchant, even if <see cref="IsSellableToNpc"/> doesn't allow it.
+    /// </summary>
+    /// <remarks>
+    /// The items which are rented in the cash shop can't be sold while they are valid, but once they
+    /// expired. Together with <see cref="IsDroppable"/> and <see cref="IsSellableToNpc"/> it decides
+    /// whether the player can get rid of such an item.
+    /// </remarks>
+    public bool IsSellableToNpcWhenExpired { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the item.
     /// </summary>
     public LocalizedString Name { get; set; }
