@@ -211,10 +211,15 @@ internal static class BotJewelHandler
 
         // 3. Life - sparingly: at most one per trip, only on gear that is already +6 or better. Whether
         // the item can actually carry the option is the consume handler's call; a rejected consume
-        // keeps the jewel.
+        // keeps the jewel. A maxed option is skipped here, though: the piece would come off for
+        // nothing on every trip - and a bot which reset below the level requirement of its granted
+        // wings could not put them on again, so they ended up for sale.
         if (lifeLeft > 0
             && lifeStock.Count >= MinLifeStock
-            && equipped.Where(i => i.IsWearable() && i.Level >= LifeMinTargetLevel)
+            && equipped.Where(i => i.IsWearable()
+                                   && i.Level >= LifeMinTargetLevel
+                                   && CanOptionGrow(i)
+                                   && BotGearPlanner.MeetsRequirementsOnBaseStats(player, i))
                 .OrderByDescending(i => i.Level)
                 .FirstOrDefault() is { } lifeTarget)
         {
@@ -380,6 +385,12 @@ internal static class BotJewelHandler
             await MoveAction.MoveItemAsync(player, freeSlot, Storages.Inventory, equipSlot, Storages.Inventory).ConfigureAwait(false);
         }
 
+        if (inventory.GetItem(equipSlot) != target)
+        {
+            // The planner only picks pieces the bot can wear, so this points to a gap in its checks.
+            player.Logger.LogWarning("Bot '{Name}' could not put '{Item}' on again after using '{Jewel}'.", player.Name, target, jewel.Definition?.Name);
+        }
+
         var consumed = inventory.GetItem(jewelSlot) != jewel;
         if (consumed)
         {
@@ -407,4 +418,19 @@ internal static class BotJewelHandler
     /// </summary>
     private static bool StaysWearable(Player player, Item item)
         => BotGearPlanner.MeetsRequirementsOnBaseStats(player, BotGearPlanner.UpgradedCopy(item));
+
+    /// <summary>
+    /// Whether a Jewel of Life could still raise the option of the piece - the same check as the
+    /// consume handler (<c>ItemUpgradeConsumeHandlerPlugIn</c>). A piece without the option yet counts
+    /// as able to take one; that stays the consume handler's call.
+    /// </summary>
+    private static bool CanOptionGrow(Item item)
+    {
+        if (item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.Option) is not { } link)
+        {
+            return true;
+        }
+
+        return link.ItemOption?.LevelDependentOptions.Any(o => o.Level > link.Level && o.RequiredItemLevel <= item.Level) ?? false;
+    }
 }

@@ -296,6 +296,73 @@ first pair at level 180, the second at 280 and the third, master-only pair at
 400. Which class wears which pair comes from the item data, and the outgrown
 pair is destroyed rather than dropped.
 
+### Selling on the market
+
+With the `Bot merchants` plugin (off by default, next to `Bots` in the plugin
+list), the bots sell their best loot to the players in personal stores on Loren
+Market, the map which is made for them. There are no dedicated merchant bots:
+any bot from level 6 may become one now and then.
+
+On its trips to town, a bot puts the loot worth a stall into its personal store
+instead of selling it to the NPC, each piece with its price:
+
+| Goods | Price class |
+|---|---|
+| Ancient items | expensive |
+| Excellent items with two or more options | expensive |
+| Excellent items with one wanted option and luck | expensive |
+| Excellent items with one wanted option, without luck | medium |
+| Excellent items with only a cheap option, with luck | cheap |
+| Normal items of the higher sets from +7, with luck | cheap |
+| The jewels above the stock the bot keeps | its own price |
+
+The wanted options are damage decrease, defense success rate and reflection on
+armor, and excellent damage, the damage increases and attack speed on weapons;
+more life, mana or zen are the cheap ones. "Higher sets" start at the drop
+level 60. Each price class has its currency - zen or a jewel - with surcharges
+per level above +7 and per additional option, and ancient items and the best
+excellent items of the higher sets cost more. For each kind of jewel, the
+currency (zen or another jewel) and the price are set separately; by default,
+the jewels are sold for their value in zen. A store holds at most two jewels of
+a kind (`Jewels: maximum per kind`): Jewels of Chaos are the most common loot,
+and with more, many stalls offered nothing else. Prices in jewels need the
+`Player shop currencies` plugin with these jewels; goods whose currency isn't
+allowed are sold to the NPC as before. Players of the original client can only
+buy goods for zen.
+
+A zen price isn't exact to the last coin: when a good goes into the store, its
+price is drawn within 10 % up or down and rounded the way a player would ask
+for it - to 50,000 below a million, to 100,000 below ten million, to whole
+millions above. A Jewel of Chaos costs 750,000 at one merchant and 850,000 at
+another. The price stays until the good is sold or leaves the store; prices in
+jewels stay exact. `Zen price spread` 0 keeps all prices exact.
+
+With enough goods (4 by default, `Minimum goods to start`), a bot goes to the
+market for a shift of 30 to 90 minutes: through the map's spawn gate, regardless
+of the warp list, to a stall apart from the other merchants - anywhere in the
+safezone of the market, at least two tiles away from the walls, so no store
+blocks a corridor like the entrance. Some players sell in town instead, and so
+do 20 % of the shifts: in Lorencia, Devias, Noria or Elvenland, in the safezone
+near the spawn gate, in the middle of the town (`City merchants (%)`, `City map
+numbers`); a city without a free stall sends the bot to the market. Every store
+gets a name no other open store has. At most 50 bots per game server sell at the
+same time (`Maximum merchants`) - a ceiling, not a number of merchants: only
+bots with enough goods go, so there are few right after a server start. A bot
+leaves early when it sold everything, after 30 minutes without a sale, or when
+it logs out; then it warps home and goes back hunting, and its next shift is two
+hours later at the earliest. A bot in a party of bots leaves it for the shift,
+like a player who goes selling; a party with a player is never left. At most 3
+bots start a shift every 30 seconds (`New merchants per 30 seconds`), so after a
+server start the market fills up within minutes and the parties don't fall apart
+at once. On a shift, a bot declines party invitations.
+
+A bot buys nothing, so the zen and the jewels paid for its goods are removed
+right after each sale. There are no discounts - players would learn to wait for
+them. A good which found no buyer for three shifts leaves the store and is sold
+to the NPC, making room for fresh goods. The server counts these shifts in
+memory only: a restart, or a day in which the good wasn't on the market, starts
+the count over.
+
 ### Mini game events
 
 A bot never enters Blood Castle, Devil Square or Chaos Castle on its own — it
@@ -377,7 +444,8 @@ only talks about what it could actually do:
 | A player killed the bot (outside of an event) | normal chat, `{player}`, before it respawns — a different line when the same player kills it again | the bot |
 | A player mentioned the bot's name in the normal chat next to it | normal chat, the same lines as whisper replies | the bot |
 | A player wrote in the party chat (`~`) | party chat, the same lines as whisper replies | the bot whose name is in the message; without a name, one bot of the party - only when a keyword matches |
-| Now and then, like a merchant advertising (off by default — meant for a future merchant bot) | normal chat, `{location}` | a bot standing in a safezone which a player sees |
+| Now and then, advertising its goods (see Selling on the market) | normal chat, `{location}`, `{store}` | a bot behind its open store on the market or in a city which a player sees |
+| A player whispered to a merchant what it sells ("what are you selling?", "za ile?"), or asked it by name in the normal chat | the same way back: a line of the *merchant whisper replies* which points to its store, `{store}` | a bot behind its open store on the market or in a city |
 | A player stands near two bots (every 5 minutes per player) | normal chat: one bot says something, the other answers | two bots close together, both in a town or both out hunting |
 | A player asked the bot for a trade or challenged it to a duel | whisper, 70 % chance, `{player}` — the bot turns it down in any case (no trade window, no duels) | the bot |
 | A player whispered to the bot | whisper back, after a few seconds — answering the whisper's keywords (see below) | the bot |
