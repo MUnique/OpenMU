@@ -701,17 +701,15 @@ public class BotChatPlugIn
     /// <returns>The warp entries.</returns>
     internal static IEnumerable<WarpInfo> GetLegalWarps(Player bot, GameMapDefinition map)
     {
-        if (bot.SelectedCharacter is not { } character
+        if (bot.SelectedCharacter is null
             || BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(map) == true)
         {
             return [];
         }
 
-        var level = GetLevel(bot);
         return bot.GameContext.Configuration.WarpList.Where(warp =>
             warp.Gate?.Map?.Number == map.Number
-            && character.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) <= level
-            && !warp.Requirements.TryGetRequirementError(bot, out _));
+            && warp.IsAllowedFor(bot));
     }
 
     /// <summary>

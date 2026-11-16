@@ -2039,6 +2039,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Missing requirement for this warp: {0}.
+        /// </summary>
+        public static string MissingWarpRequirement {
+            get {
+                return ResourceManager.GetString("MissingWarpRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Money of &apos;{0}&apos;: {1}..
         /// </summary>
         public static string MoneyInfo {

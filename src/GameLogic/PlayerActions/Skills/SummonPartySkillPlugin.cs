@@ -184,6 +184,6 @@ public class SummonPartySkillPlugin : TargetedSkillPluginBase
         }
 
         return warpInfo.LevelRequirement <= totalLevel
-               && !warpInfo.Requirements.TryGetRequirementError(target, out _);
+               && warpInfo.GetMissingRequirement(target) is null;
     }
 }

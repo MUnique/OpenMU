@@ -279,13 +279,14 @@ public class WarpListTests
     }
 
     /// <summary>
-    /// Tests that a player who misses a required attribute of a warp can't use it: it's refused with the
-    /// message of a missing map requirement, and the costs aren't paid.
+    /// Tests that a player who misses a required attribute of a warp can't use it: it's refused with a
+    /// message which names the attribute and its minimum, and the costs aren't paid.
     /// </summary>
     /// <param name="attributeName">The name of the property of <see cref="Stats"/> which the player misses.</param>
-    [TestCase(nameof(Stats.MasterLevel))]
-    [TestCase(nameof(Stats.Resets))]
-    public async Task PlayerWhoMissesAWarpRequirementCantWarpAsync(string attributeName)
+    /// <param name="minimumValue">The minimum value of the attribute which the warp requires.</param>
+    [TestCase(nameof(Stats.MasterLevel), 50)]
+    [TestCase(nameof(Stats.Resets), 3)]
+    public async Task PlayerWhoMissesAWarpRequirementCantWarpAsync(string attributeName, int minimumValue)
     {
         var missing = (AttributeDefinition)typeof(Stats).GetProperty(attributeName)!.GetValue(null)!;
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
@@ -297,7 +298,31 @@ public class WarpListTests
 
         await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
 
-        var message = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, missing.Description);
+        var message = player.GetLocalizedMessage(nameof(PlayerMessage.MissingWarpRequirement), $"{missing.Designation} {minimumValue}");
+        Assert.That(message, Does.Contain($"{missing.Designation} {minimumValue}"));
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
+        Assert.That(player.Money, Is.EqualTo(100000));
+    }
+
+    /// <summary>
+    /// Tests that a player who misses a required attribute of the target map can't warp there,
+    /// and that the message names the attribute and its minimum.
+    /// </summary>
+    [Test]
+    public async Task PlayerWhoMissesAMapRequirementIsToldWhichAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        player.Attributes![Stats.Resets] = 1;
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000);
+        var map = (Persistence.BasicModel.GameMapDefinition)warp.Gate!.Map!;
+        map.MapRequirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.Resets, MinimumValue = 2 });
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var message = player.GetLocalizedMessage(nameof(PlayerMessage.MissingMapRequirement), $"{Stats.Resets.Designation} 2");
+        Assert.That(message, Does.Contain($"{Stats.Resets.Designation} 2"));
         var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
         view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
         Assert.That(player.Money, Is.EqualTo(100000));

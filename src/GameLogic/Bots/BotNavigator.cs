@@ -2833,7 +2833,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {
-        if (this._player.SelectedCharacter is not { } character
+        if (this._player.SelectedCharacter is null
             || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(mapDefinition) == true)
         {
             // A map forbidden for bots has no legal warp at all: no hunting ground, no leader to follow
@@ -2857,10 +2857,8 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Select the identity tier before applying access requirements. Otherwise an exact entry
         // which is too high-level could incorrectly fall through to an easier same-number entry.
-        // The warp's own requirements (e.g. a minimum master level) are checked by WarpAction, too.
-        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel
-                                   && !w.Requirements.TryGetRequirementError(this._player, out _));
+        // The level and the warp's own requirements (e.g. a minimum master level), as WarpAction checks them.
+        return mapWarps.Where(w => w.IsAllowedFor(this._player));
     }
 
     /// <summary>

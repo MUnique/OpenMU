@@ -639,6 +639,9 @@
   <data name="MissingMapRequirement" xml:space="preserve">
     <value>Fehlende Voraussetzung zum Betreten der Karte: {0}</value>
   </data>
+  <data name="MissingWarpRequirement" xml:space="preserve">
+    <value>Fehlende Voraussetzung für diesen Warp: {0}</value>
+  </data>
   <data name="UnexpectedErrorDuringClosingTrade" xml:space="preserve">
     <value>Beim Abschließen des Handels ist ein unerwarteter Fehler aufgetreten.</value>
   </data>
