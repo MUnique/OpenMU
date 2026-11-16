@@ -49,57 +49,7 @@ public class TradeButtonAction : BaseTradeAction
 
             if (result != TradeResult.Success)
             {
-                var traderNotification = ValueTask.CompletedTask;
-                var partnerNotification = ValueTask.CompletedTask;
-                Exception? firstError = null;
-                await ObserveAsync(async () =>
-                {
-                    await this.CancelTradeAsync(tradingPartner, expectedPartner: trader, startResult: () => partnerNotification = StartFailureResultAsync(tradingPartner)).ConfigureAwait(false);
-                }).ConfigureAwait(false);
-                await ObserveAsync(async () =>
-                {
-                    await this.CancelTradeAsync(trader, expectedPartner: tradingPartner, startResult: () => traderNotification = StartFailureResultAsync(trader)).ConfigureAwait(false);
-                }).ConfigureAwait(false);
-                await ObserveAsync(() => traderNotification).ConfigureAwait(false);
-                await ObserveAsync(() => partnerNotification).ConfigureAwait(false);
-                if (firstError is not null)
-                {
-                    ExceptionDispatchInfo.Capture(firstError).Throw();
-                }
-
-                (trader as Player)?.Logger.LogDebug($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
                 return;
-
-                ValueTask StartFailureResultAsync(ITrader participant)
-                {
-                    try
-                    {
-                        return participant.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(result));
-                    }
-                    catch (Exception error)
-                    {
-                        return ValueTask.FromException(error);
-                    }
-                }
-
-                async ValueTask ObserveAsync(Func<ValueTask> operation)
-                {
-                    try
-                    {
-                        await operation().ConfigureAwait(false);
-                    }
-                    catch (Exception error)
-                    {
-                        if (firstError is null)
-                        {
-                            firstError = error;
-                        }
-                        else
-                        {
-                            (trader as Player)?.Logger.LogError(error, "Additional error while rolling back a trade between {Trader} and {Partner}.", trader, tradingPartner);
-                        }
-                    }
-                }
             }
 
             await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(result)).ConfigureAwait(false);
@@ -132,29 +82,115 @@ public class TradeButtonAction : BaseTradeAction
         var traderFirst = traderState.TransitionLockId < partnerState.TransitionLockId;
         var firstState = traderFirst ? traderState : partnerState;
         var secondState = traderFirst ? partnerState : traderState;
-        await using var firstContext = await firstState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-        await using var secondContext = await secondState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-        var context = traderFirst ? firstContext : secondContext;
-        var partnerContext = traderFirst ? secondContext : firstContext;
-        if (!ReferenceEquals(trader.TradingPartner, tradingPartner) || !ReferenceEquals(tradingPartner.TradingPartner, trader))
+        var traderNotification = ValueTask.CompletedTask;
+        var partnerNotification = ValueTask.CompletedTask;
+        Exception? firstError = null;
+        TradeResult result;
+        await using (var firstContext = await firstState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
+        await using (var secondContext = await secondState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
         {
-            // Not one trade: nothing may be moved between these two players.
+            var context = traderFirst ? firstContext : secondContext;
+            var partnerContext = traderFirst ? secondContext : firstContext;
+            if (!ReferenceEquals(trader.TradingPartner, tradingPartner) || !ReferenceEquals(tradingPartner.TradingPartner, trader))
+            {
+                context.Allowed = false;
+                partnerContext.Allowed = false;
+                return null;
+            }
+
+            var traderAllowed = context.Allowed;
+            var partnerAllowed = partnerContext.Allowed;
             context.Allowed = false;
             partnerContext.Allowed = false;
-            return null;
+            if (!traderAllowed || !partnerAllowed
+                || traderState.CurrentState != PlayerState.TradeButtonPressed
+                || partnerState.CurrentState != PlayerState.TradeButtonPressed)
+            {
+                result = TradeResult.Cancelled;
+            }
+            else
+            {
+                result = await this.TransferTradeAsync(trader, tradingPartner, context, partnerContext).ConfigureAwait(false);
+            }
+
+            if (result != TradeResult.Success)
+            {
+                // Both exclusions still own the partially applied inventory until both rollback attempts finish.
+                await ObserveAsync(async () =>
+                {
+                    await RollbackAsync(tradingPartner, trader, partnerContext, partnerAllowed, () => partnerNotification = StartFailureResultAsync(tradingPartner)).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+                await ObserveAsync(async () =>
+                {
+                    await RollbackAsync(trader, tradingPartner, context, traderAllowed, () => traderNotification = StartFailureResultAsync(trader)).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+            }
         }
 
-        if (!context.Allowed || !partnerContext.Allowed)
+        if (result != TradeResult.Success)
         {
-            context.Allowed = false;
-            partnerContext.Allowed = false;
-            (trader as Player)?.Logger.LogDebug($"Unexpected player states. {trader.Name}:{trader.PlayerState}, {tradingPartner.Name}:{tradingPartner.PlayerState}");
-            return TradeResult.Cancelled;
+            await ObserveAsync(() => traderNotification).ConfigureAwait(false);
+            await ObserveAsync(() => partnerNotification).ConfigureAwait(false);
+            if (firstError is not null)
+            {
+                ExceptionDispatchInfo.Capture(firstError).Throw();
+            }
+
+            (trader as Player)?.Logger.LogDebug($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
         }
 
-        // Failure must retain the trade until guarded rollback restores resources before World publication.
-        context.Allowed = false;
-        partnerContext.Allowed = false;
+        return result;
+
+        async ValueTask RollbackAsync(ITrader participant, ITrader expectedPartner, StateMachine.StateChangeContext stateContext, bool allowed, Action startResult)
+        {
+            CancelledTrades.Add(1);
+            if (!allowed || !ReferenceEquals(participant.TradingPartner, expectedPartner)
+                || (participant.PlayerState.CurrentState != PlayerState.TradeRequested
+                    && participant.PlayerState.CurrentState != PlayerState.TradeOpened
+                    && participant.PlayerState.CurrentState != PlayerState.TradeButtonPressed))
+            {
+                return;
+            }
+
+            await this.RestoreTradeAsync(participant).ConfigureAwait(false);
+            startResult();
+            stateContext.Allowed = true;
+        }
+
+        ValueTask StartFailureResultAsync(ITrader participant)
+        {
+            try
+            {
+                return participant.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(result));
+            }
+            catch (Exception error)
+            {
+                return ValueTask.FromException(error);
+            }
+        }
+
+        async ValueTask ObserveAsync(Func<ValueTask> operation)
+        {
+            try
+            {
+                await operation().ConfigureAwait(false);
+            }
+            catch (Exception error)
+            {
+                if (firstError is null)
+                {
+                    firstError = error;
+                }
+                else
+                {
+                    (trader as Player)?.Logger.LogError(error, "Additional error while rolling back a trade between {Trader} and {Partner}.", trader, tradingPartner);
+                }
+            }
+        }
+    }
+
+    private async ValueTask<TradeResult> TransferTradeAsync(ITrader trader, ITrader tradingPartner, StateMachine.StateChangeContext context, StateMachine.StateChangeContext partnerContext)
+    {
         using var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext();
         var traderItems = trader.TemporaryStorage!.Items.ToList();
         var tradePartnerItems = tradingPartner.TemporaryStorage!.Items.ToList();
