@@ -294,7 +294,7 @@ internal class Vulcanus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(604, this.NpcDictionary[490], 237, 052); // Ruthless Lava Giant
         yield return this.CreateMonsterSpawn(605, this.NpcDictionary[490], 235, 058); // Ruthless Lava Giant
         yield return this.CreateMonsterSpawn(606, this.NpcDictionary[490], 205, 066); // Ruthless Lava Giant
-        yield return this.CreateMonsterSpawn(607, this.NpcDictionary[490], 174, 175, 068, 068); // Ruthless Lava Giant
+        yield return this.CreateMonsterSpawn(607, this.NpcDictionary[490], 174, 068); // Ruthless Lava Giant
         yield return this.CreateMonsterSpawn(608, this.NpcDictionary[490], 161, 057); // Ruthless Lava Giant
         yield return this.CreateMonsterSpawn(609, this.NpcDictionary[490], 154, 052); // Ruthless Lava Giant
         yield return this.CreateMonsterSpawn(610, this.NpcDictionary[490], 151, 012); // Ruthless Lava Giant
@@ -354,7 +354,7 @@ internal class Vulcanus : BaseMapInitializer
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 120 },
-                { Stats.MaximumHealth, 5000000 },
+                { Stats.MaximumHealth, 500000 },
                 { Stats.MinimumPhysBaseDmg, 850 },
                 { Stats.MaximumPhysBaseDmg, 950 },
                 { Stats.DefenseBase, 210 },

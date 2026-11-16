@@ -157,7 +157,7 @@ internal class Karutan2 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(405, this.NpcDictionary[576], 092, 080); // Narcondra
         yield return this.CreateMonsterSpawn(406, this.NpcDictionary[576], 141, 056); // Narcondra
         yield return this.CreateMonsterSpawn(407, this.NpcDictionary[576], 170, 035); // Narcondra
-        yield return this.CreateMonsterSpawn(408, this.NpcDictionary[576], 190, 192, 038, 038); // Narcondra
+        yield return this.CreateMonsterSpawn(408, this.NpcDictionary[576], 190, 038); // Narcondra
         yield return this.CreateMonsterSpawn(409, this.NpcDictionary[576], 195, 061); // Narcondra
         yield return this.CreateMonsterSpawn(410, this.NpcDictionary[576], 210, 043); // Narcondra
         yield return this.CreateMonsterSpawn(411, this.NpcDictionary[576], 202, 080); // Narcondra
@@ -241,7 +241,7 @@ internal class Karutan2 : BaseMapInitializer
                 { Stats.MaximumPhysBaseDmg, 790 },
                 { Stats.DefenseBase, 610 },
                 { Stats.AttackRatePvm, 1200 },
-                { Stats.DefenseRatePvm, 406 },
+                { Stats.DefenseRatePvm, 405 },
                 { Stats.PoisonResistance, 255f / 255 },
                 { Stats.IceResistance, 150f / 255 },
                 { Stats.LightningResistance, 255f / 255 },

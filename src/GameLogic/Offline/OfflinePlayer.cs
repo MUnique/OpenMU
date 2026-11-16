@@ -175,6 +175,18 @@ public class OfflinePlayer : Player
     internal Bots.BotEventMeeting? EventMeeting { get; set; }
 
     /// <summary>
+    /// Gets or sets the shift on the market during which the bot sells the goods of its personal store,
+    /// set by <see cref="Bots.BotMerchantPlugIn"/> and carried out by <see cref="Bots.BotNavigator"/>.
+    /// Like an errand, it makes the bot decline party invitations meanwhile.
+    /// </summary>
+    internal Bots.BotMarketShift? MarketShift { get; set; }
+
+    /// <summary>
+    /// Gets or sets the earliest time at which the bot may start its next market shift.
+    /// </summary>
+    internal DateTime NextMarketShiftUtc { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether a revenge against a player killer is pending or armed - the
     /// bot has unfinished business and is in no mood to group up.
     /// </summary>

@@ -145,6 +145,12 @@ internal static class BotShoppingHandler
             return false;
         }
 
+        // The goods worth a stall on the market go into the own store instead of to the NPC (see
+        // BotMerchantPlugIn) - before the dialog opens, because the game moves nothing into a store
+        // during an NPC dialog. Nothing happens while the plugin is off.
+        await DiscardBackpackWingsAsync(player, inventory).ConfigureAwait(false);
+        var stocked = await BotMerchandise.StockStoreAsync(player, GetSellableJunk(player, inventory)).ConfigureAwait(false);
+
         await TalkAction.TalkToNpcAsync(player, merchant).ConfigureAwait(false);
         if (player.OpenedNpc is null)
         {
@@ -175,9 +181,10 @@ internal static class BotShoppingHandler
             // "went and had nothing to do" apart from a silently failed trip. Every counter reports
             // what REALLY happened - a sale which the money limit refused is not a sale.
             player.Logger.LogDebug(
-                "Bot '{Name}' traded with '{Merchant}': sold {Sold} item(s), discarded {Discarded}, repaired {Repaired}, bought {Potions} potion stack(s) and {Jewels} jewel(s), {Money} zen left.",
+                "Bot '{Name}' traded with '{Merchant}': stocked {Stocked} item(s) for the market, sold {Sold} item(s), discarded {Discarded}, repaired {Repaired}, bought {Potions} potion stack(s) and {Jewels} jewel(s), {Money} zen left.",
                 player.Name,
                 merchant.Definition.Designation,
+                stocked,
                 sold,
                 discarded,
                 repaired,
@@ -191,6 +198,24 @@ internal static class BotShoppingHandler
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Destroys the wings in the backpack of the bot instead of selling them. A bot's wings are granted
+    /// for free (see <see cref="BotWingHandler"/>), so like the outgrown pair they must never reach a
+    /// player through the bot's store, nor turn into Zen at the NPC. Worn wings never get here; a pair
+    /// in the backpack is one the bot could not put on again, and the next level milestone grants a new one.
+    /// </summary>
+    private static async ValueTask DiscardBackpackWingsAsync(OfflinePlayer player, IStorage inventory)
+    {
+        var wings = inventory.Items
+            .Where(i => i.ItemSlot >= InventoryConstants.EquippableSlotsCount && i.IsWing())
+            .ToList();
+        foreach (var item in wings)
+        {
+            await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
+            player.Logger.LogDebug("Bot '{Name}' discarded the wings '{Wings}' from its backpack.", player.Name, item);
+        }
     }
 
     /// <summary>
@@ -216,6 +241,11 @@ internal static class BotShoppingHandler
             if (!definition.IsSellableToNpc)
             {
                 continue; // the merchant refuses it, and as unsold junk it would be destroyed under slot pressure.
+            }
+
+            if (item.IsWing())
+            {
+                continue; // never goods - see DiscardBackpackWingsAsync.
             }
 
             var identifier = new ItemIdentifier(definition.Number, definition.Group);

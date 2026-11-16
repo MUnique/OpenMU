@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
+namespace MUnique.OpenMU.Persistence.Initialization;
 
 /// <summary>
 /// An automatic monster spawn on a field map, which is shared between the map initializer and

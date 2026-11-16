@@ -177,8 +177,8 @@
   <data name="RegenerationsRefactorPlugInBase_Description" xml:space="preserve"><value>修正并调整生命值、魔力值和技能值的部分恢复属性。</value></data>
   <data name="AddDuelConfigurationPlugIn_Name" xml:space="preserve"><value>添加决斗配置</value></data>
   <data name="AddDuelConfigurationPlugIn_Description" xml:space="preserve"><value>添加决斗配置数据。</value></data>
-  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Name" xml:space="preserve"><value>修正血色城堡 7、8 层怪物属性</value></data>
-  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve"><value>交换血色城堡 7 层（怪物 138–143）和 8 层（怪物 428–433）的属性，使强度按 6、7、8 层递增。</value></data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Name" xml:space="preserve"><value>第六季血色城堡怪物属性</value></data>
+  <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve"><value>将血色城堡 1 至 8 层怪物的等级、生命值、伤害、防御力、攻击成功率和防御成功率、范围和延迟设为第六季的数据，使难度逐层递增。这些属性的自定义值将被覆盖。</value></data>
   <data name="AddDoppelgangerDataUpdatePlugIn_Name" xml:space="preserve"><value>添加镜像世界数据</value></data>
   <data name="AddDoppelgangerDataUpdatePlugIn_Description" xml:space="preserve"><value>添加镜像世界的副本配置。</value></data>
   <data name="FinishSummonerMasterTreePlugIn_Name" xml:space="preserve"><value>补全召唤术师大师技能树</value></data>
@@ -483,10 +483,12 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve"><value>添加全局受击硬直概率和伤害阈值设置，以及独角兽标记，使骑乘独角兽的玩家免受受击硬直效果。</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Name" xml:space="preserve"><value>修正坎特鲁废墟 3 的传送落点区域</value></data>
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>将坎特鲁废墟 3 的原始传送落点区域缩小至可行走地形。自定义目的地和无关设置保持不变。</value></data>
-  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>冰风谷、仙踪林和幻术园的第六季怪物刷新点</value></data>
-  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>将冰风谷、仙踪林和幻术园按地图四分之一区域分布的怪物刷新点，替换为第六季的布局：更小的区域和单个刷新点。并在仙踪林和幻术园加入蜘蛛。这些地图上野外怪物的自定义刷新点将被覆盖。同时移除地下城（254 个）和失落之塔（2 个）中重复的怪物刷新点。</value></data>
-  <data name="FieldMonsterSpawnsUpdatePlugInBase_Name" xml:space="preserve"><value>移除地下城和失落之塔中重复的怪物刷新点</value></data>
-  <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve"><value>移除被重复定义的怪物刷新点：地下城 254 个（因此怪物数量是预期的两倍），失落之塔 2 个。其他刷新点保持不变。</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>野外地图的第六季怪物刷新点</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>将野外地图的怪物刷新点调整为第六季的数据：冰风谷、仙踪林和幻术园按地图四分之一区域分布的刷新点替换为更小的区域和单个刷新点，并在仙踪林和幻术园加入蜘蛛。补充地下城、失落之塔、天空之城、卡利玛神庙 3、6 和 7、魔炼之地、幽暗森林、狼魂要塞、坎特鲁遗址和巴卡斯兵营缺少的刷新点，并移除多余的刷新点；修正狼魂要塞、巴卡斯兵营、安宁池、囚禁之岛和卡伦特中坐标错误的刷新点。同时移除地下城（254 个）和失落之塔（2 个）中重复的怪物刷新点。冰风谷、仙踪林和幻术园野外怪物的自定义刷新点将被覆盖。</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInBase_Name" xml:space="preserve"><value>野外地图的第六季怪物刷新点</value></data>
+  <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve"><value>将野外地图的怪物刷新点调整为第六季的数据（本版本同样使用）：冰风谷和仙踪林按地图四分之一区域分布的刷新点替换为更小的区域和单个刷新点，不含第六季的蜘蛛。补充地下城、失落之塔和天空之城缺少的刷新点，并移除多余的刷新点。同时移除地下城（254 个）和失落之塔（2 个）中重复的怪物刷新点。冰风谷和仙踪林野外怪物的自定义刷新点将被覆盖。</value></data>
+  <data name="MonsterStatsUpdatePlugInBase_Name" xml:space="preserve"><value>第六季怪物属性</value></data>
+  <data name="MonsterStatsUpdatePlugInBase_Description" xml:space="preserve"><value>将怪物的等级、生命值、伤害、防御力、攻击成功率和防御成功率、范围、延迟和重生时间设为第六季的数据（本版本同样使用）。修正野外怪物、入侵怪物和守卫，以及第六季中赤色要塞 4、7 层和恶魔广场 7 层的怪物。这些属性的自定义值将被覆盖。在第六季中，将卡利玛 7 的怪物 275 由“昆顿幻影 7”更名为“昆顿”。</value></data>
   <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
     <value>添加保护护身符</value>
   </data>

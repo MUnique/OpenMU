@@ -105,7 +105,13 @@ internal class Kalima7 : KalimaBase
         yield return this.CreateMonsterSpawn(157, this.NpcDictionary[337], 047, 107); // Schriker 7
         yield return this.CreateMonsterSpawn(158, this.NpcDictionary[337], 053, 093); // Schriker 7
         yield return this.CreateMonsterSpawn(159, this.NpcDictionary[337], 035, 087); // Schriker 7
-        yield return this.CreateMonsterSpawn(160, this.NpcDictionary[275], 026, 076); // Illusion of Kundun 7
+        yield return this.CreateMonsterSpawn(160, this.NpcDictionary[275], 026, 076); // Kundun
+        yield return this.CreateMonsterSpawn(161, this.NpcDictionary[337], 032, 077); // Schriker 7
+        yield return this.CreateMonsterSpawn(162, this.NpcDictionary[337], 041, 078); // Schriker 7
+        yield return this.CreateMonsterSpawn(163, this.NpcDictionary[337], 037, 067); // Schriker 7
+        yield return this.CreateMonsterSpawn(164, this.NpcDictionary[337], 046, 086); // Schriker 7
+        yield return this.CreateMonsterSpawn(165, this.NpcDictionary[337], 023, 085); // Schriker 7
+        yield return this.CreateMonsterSpawn(166, this.NpcDictionary[337], 023, 070); // Schriker 7
     }
 
     /// <inheritdoc/>
@@ -346,25 +352,25 @@ internal class Kalima7 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 275;
-            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IllusionOfKundun7);
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Kundun);
             monster.MoveRange = 3;
-            monster.AttackRange = 10;
-            monster.ViewRange = 7;
+            monster.AttackRange = 15;
+            monster.ViewRange = 10;
             monster.MoveDelay = new TimeSpan(800 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(10800 * TimeSpan.TicksPerSecond);
+            monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
+            monster.RespawnDelay = new TimeSpan(43200 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 140 },
-                { Stats.MaximumHealth, 140000 },
-                { Stats.MinimumPhysBaseDmg, 1070 },
-                { Stats.MaximumPhysBaseDmg, 1105 },
-                { Stats.DefenseBase, 892 },
-                { Stats.AttackRatePvm, 1200 },
-                { Stats.DefenseRatePvm, 450 },
+                { Stats.Level, 147 },
+                { Stats.MaximumHealth, 5000000 },
+                { Stats.MinimumPhysBaseDmg, 2000 },
+                { Stats.MaximumPhysBaseDmg, 2500 },
+                { Stats.DefenseBase, 1500 },
+                { Stats.AttackRatePvm, 2000 },
+                { Stats.DefenseRatePvm, 1000 },
                 { Stats.PoisonResistance, 60f / 255 },
                 { Stats.IceResistance, 60f / 255 },
                 { Stats.LightningResistance, 60f / 255 },
