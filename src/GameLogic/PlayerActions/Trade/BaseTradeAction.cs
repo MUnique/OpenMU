@@ -36,8 +36,9 @@ public class BaseTradeAction
     /// <param name="trader">The trader.</param>
     /// <param name="checkState">If set to <c>true</c>, the player state is checked. Otherwise, it's ignored.</param>
     /// <param name="expectedPartner">The peer which must still own this half, or null to leave peer ownership unchecked for existing rollback callers.</param>
+    /// <param name="startResult">Optional owned result start after reset and before this half publishes its available state. Completions must be observed outside the scope.</param>
     /// <returns>Whether this half was cleaned up.</returns>
-    protected async ValueTask<bool> CancelTradeAsync(ITrader trader, bool checkState = true, ITrader? expectedPartner = null)
+    protected async ValueTask<bool> CancelTradeAsync(ITrader trader, bool checkState = true, ITrader? expectedPartner = null, Action? startResult = null)
     {
         CancelledTrades.Add(1);
         await using (var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
@@ -86,6 +87,7 @@ public class BaseTradeAction
 
             // Still inside the state exclusion: the reset sees the backup which marks the trade's own items.
             this.ResetTradeState(trader);
+            startResult?.Invoke();
         }
 
         return true;

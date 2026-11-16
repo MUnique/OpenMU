@@ -52,6 +52,10 @@ public class StateMachine
     /// </summary>
     public bool Finished => this.CurrentState?.PossibleTransitions is null || this.CurrentState.PossibleTransitions.Count == 0;
 
+    /// <summary>Gets the existing exclusion identity for consistently ordering simultaneous state scopes.</summary>
+    /// <remarks>Nito assigns this stable per-lock identity lazily; its contract is semi-unique over very long allocation sequences.</remarks>
+    internal int TransitionLockId => this._asyncLock.Id;
+
     /// <summary>
     /// Tries to advance the state to <paramref name="nextState"/>.
     /// </summary>

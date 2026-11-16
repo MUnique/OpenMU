@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 
+using System.Runtime.ExceptionServices;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Persistence;
@@ -38,16 +39,67 @@ public class TradeButtonAction : BaseTradeAction
             {
                 // The partner left this trade (e.g. by a logout) and trades with another player now. Only this
                 // remaining side ends, with its own items; the other trade isn't touched.
-                await this.CancelTradeAsync(trader).ConfigureAwait(false);
-                await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+                if (await this.CancelTradeAsync(trader, expectedPartner: tradingPartner).ConfigureAwait(false))
+                {
+                    await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(TradeResult.Cancelled)).ConfigureAwait(false);
+                }
+
                 return;
             }
 
             if (result != TradeResult.Success)
             {
-                await this.CancelTradeAsync(tradingPartner, false).ConfigureAwait(false);
-                await this.CancelTradeAsync(trader, false).ConfigureAwait(false);
+                var traderNotification = ValueTask.CompletedTask;
+                var partnerNotification = ValueTask.CompletedTask;
+                Exception? firstError = null;
+                await ObserveAsync(async () =>
+                {
+                    await this.CancelTradeAsync(tradingPartner, expectedPartner: trader, startResult: () => partnerNotification = StartFailureResultAsync(tradingPartner)).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+                await ObserveAsync(async () =>
+                {
+                    await this.CancelTradeAsync(trader, expectedPartner: tradingPartner, startResult: () => traderNotification = StartFailureResultAsync(trader)).ConfigureAwait(false);
+                }).ConfigureAwait(false);
+                await ObserveAsync(() => traderNotification).ConfigureAwait(false);
+                await ObserveAsync(() => partnerNotification).ConfigureAwait(false);
+                if (firstError is not null)
+                {
+                    ExceptionDispatchInfo.Capture(firstError).Throw();
+                }
+
                 (trader as Player)?.Logger.LogDebug($"Cancelled the trade because of unfinished state. trader: {trader.Name}, partner:{tradingPartner.Name}");
+                return;
+
+                ValueTask StartFailureResultAsync(ITrader participant)
+                {
+                    try
+                    {
+                        return participant.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(result));
+                    }
+                    catch (Exception error)
+                    {
+                        return ValueTask.FromException(error);
+                    }
+                }
+
+                async ValueTask ObserveAsync(Func<ValueTask> operation)
+                {
+                    try
+                    {
+                        await operation().ConfigureAwait(false);
+                    }
+                    catch (Exception error)
+                    {
+                        if (firstError is null)
+                        {
+                            firstError = error;
+                        }
+                        else
+                        {
+                            (trader as Player)?.Logger.LogError(error, "Additional error while rolling back a trade between {Trader} and {Partner}.", trader, tradingPartner);
+                        }
+                    }
+                }
             }
 
             await trader.InvokeViewPlugInAsync<ITradeFinishedPlugIn>(p => p.TradeFinishedAsync(result)).ConfigureAwait(false);
@@ -75,8 +127,15 @@ public class TradeButtonAction : BaseTradeAction
 
     private async ValueTask<TradeResult?> InternalFinishTradeAsync(ITrader trader, ITrader tradingPartner)
     {
-        await using var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
-        await using var partnerContext = await tradingPartner.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        var traderState = trader.PlayerState;
+        var partnerState = tradingPartner.PlayerState;
+        var traderFirst = traderState.TransitionLockId < partnerState.TransitionLockId;
+        var firstState = traderFirst ? traderState : partnerState;
+        var secondState = traderFirst ? partnerState : traderState;
+        await using var firstContext = await firstState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        await using var secondContext = await secondState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        var context = traderFirst ? firstContext : secondContext;
+        var partnerContext = traderFirst ? secondContext : firstContext;
         if (!ReferenceEquals(trader.TradingPartner, tradingPartner) || !ReferenceEquals(tradingPartner.TradingPartner, trader))
         {
             // Not one trade: nothing may be moved between these two players.
@@ -93,6 +152,9 @@ public class TradeButtonAction : BaseTradeAction
             return TradeResult.Cancelled;
         }
 
+        // Failure must retain the trade until guarded rollback restores resources before World publication.
+        context.Allowed = false;
+        partnerContext.Allowed = false;
         using var itemContext = trader.GameContext.PersistenceContextProvider.CreateNewTradeContext();
         var traderItems = trader.TemporaryStorage!.Items.ToList();
         var tradePartnerItems = tradingPartner.TemporaryStorage!.Items.ToList();
@@ -129,6 +191,8 @@ public class TradeButtonAction : BaseTradeAction
             }
 
             itemsCommitted = true;
+            context.Allowed = true;
+            partnerContext.Allowed = true;
 
             // Item ownership is now committed. Move the escrowed money before any
             // post-commit attachment or client notification can fail.
