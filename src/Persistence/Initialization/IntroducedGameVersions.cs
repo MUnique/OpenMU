@@ -242,7 +242,7 @@ public static class IntroducedGameVersions
         (253, 255, GameVersion.Version029), // Potion Girl Amy - Lumen the Barmaid
         (256, 257, GameVersion.Season1), // Lahap - Elf Soldier
         (259, 274, GameVersion.Version099GPlus), // Oracle Layla - Schriker 6
-        (275, 275, GameVersion.Season1), // Illusion of Kundun 7
+        (275, 275, GameVersion.Season1), // Kundun
         (277, 278, GameVersion.Version100s), // Castle Gate1 - Life Stone
         (283, 283, GameVersion.Version100s), // Guardian Statue
         (285, 288, GameVersion.Version100s), // Guardian - Canon Tower

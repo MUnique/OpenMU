@@ -169,7 +169,7 @@ internal class ChaosCastle4 : BaseMapInitializer
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 65 },
-                { Stats.MaximumHealth, 65000 },
+                { Stats.MaximumHealth, 6500 },
                 { Stats.MinimumPhysBaseDmg, 185 },
                 { Stats.MaximumPhysBaseDmg, 210 },
                 { Stats.DefenseBase, 145 },

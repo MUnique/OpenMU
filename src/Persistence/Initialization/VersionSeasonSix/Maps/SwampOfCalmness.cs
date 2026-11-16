@@ -272,7 +272,7 @@ internal class SwampOfCalmness : BaseMapInitializer
         yield return this.CreateMonsterSpawn(411, this.NpcDictionary[443], 058, 020); // Sapi-Tres
         yield return this.CreateMonsterSpawn(412, this.NpcDictionary[443], 068, 015); // Sapi-Tres
         yield return this.CreateMonsterSpawn(413, this.NpcDictionary[443], 069, 023); // Sapi-Tres
-        yield return this.CreateMonsterSpawn(414, this.NpcDictionary[443], 039, 093, 020, 020); // Sapi-Tres
+        yield return this.CreateMonsterSpawn(414, this.NpcDictionary[443], 039, 020); // Sapi-Tres
         yield return this.CreateMonsterSpawn(415, this.NpcDictionary[443], 041, 026); // Sapi-Tres
         yield return this.CreateMonsterSpawn(416, this.NpcDictionary[445], 027, 053); // Shadow Knight
         yield return this.CreateMonsterSpawn(417, this.NpcDictionary[445], 032, 053); // Shadow Knight
@@ -567,7 +567,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.MinimumPhysBaseDmg, 635 },
                 { Stats.MaximumPhysBaseDmg, 665 },
                 { Stats.DefenseBase, 535 },
-                { Stats.AttackRatePvm, 983 },
+                { Stats.AttackRatePvm, 980 },
                 { Stats.DefenseRatePvm, 295 },
                 { Stats.PoisonResistance, 30f / 255 },
             };
@@ -646,7 +646,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             monster.AttackRange = 2;
             monster.ViewRange = 9;
             monster.MoveDelay = new TimeSpan(700 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(2550 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(2500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(8 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -678,7 +678,7 @@ internal class SwampOfCalmness : BaseMapInitializer
             monster.AttackRange = 2;
             monster.ViewRange = 9;
             monster.MoveDelay = new TimeSpan(700 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(2550 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(2500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(8 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;

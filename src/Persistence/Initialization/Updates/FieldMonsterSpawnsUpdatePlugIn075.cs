@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Removes the duplicate monster spawns of Dungeon and Lost Tower of version 0.75.
+/// Brings the automatic monster spawns of the field maps of version 0.75 to the Season 6 data.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FieldMonsterSpawnsUpdatePlugInBase_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FieldMonsterSpawnsUpdatePlugInBase_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]

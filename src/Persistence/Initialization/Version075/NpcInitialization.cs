@@ -142,13 +142,13 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 247;
             def.Designation = LocalizedString.FromResource(() => MonsterNames.CrossbowGuard);
             def.ObjectKind = NpcObjectKind.Guard;
-            def.MoveRange = 3;
-            def.AttackRange = 5;
-            def.ViewRange = 7;
+            def.MoveRange = 5;
+            def.AttackRange = 2;
+            def.ViewRange = 2;
             def.IntelligenceTypeName = typeof(GuardIntelligence).FullName;
             def.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             def.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
-            def.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            def.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             def.NumberOfMaximumItemDrops = 0;
             def.Attribute = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -182,13 +182,13 @@ internal partial class NpcInitialization : InitializerBase
             def.Number = 249;
             def.Designation = LocalizedString.FromResource(() => MonsterNames.BerdyshGuard);
             def.ObjectKind = NpcObjectKind.Guard;
-            def.MoveRange = 3;
-            def.AttackRange = 2;
-            def.ViewRange = 7;
+            def.MoveRange = 5;
+            def.AttackRange = 5;
+            def.ViewRange = 5;
             def.IntelligenceTypeName = typeof(GuardIntelligence).FullName;
             def.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             def.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
-            def.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            def.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             def.NumberOfMaximumItemDrops = 0;
             def.Attribute = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
