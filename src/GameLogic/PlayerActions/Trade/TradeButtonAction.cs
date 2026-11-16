@@ -22,7 +22,7 @@ public class TradeButtonAction : BaseTradeAction
         /// <summary>The partner left this trade; it wasn't touched.</summary>
         PartnerLeft,
 
-        /// <summary>The trade isn't confirmed by both available traders anymore and stays open.</summary>
+        /// <summary>The trade isn't confirmed by both traders anymore and stays open.</summary>
         Unconfirmed,
     }
 
@@ -62,8 +62,8 @@ public class TradeButtonAction : BaseTradeAction
 
             if (outcome == FinishOutcome.Unconfirmed)
             {
-                // Not both confirmed anymore (or a trader is unavailable): the trade stays open, as if the
-                // confirmation had arrived after the other change.
+                // Not both confirmed anymore: the trade stays open, as if the confirmation had arrived after the
+                // withdrawal.
                 if (trader.PlayerState.CurrentState == PlayerState.TradeButtonPressed)
                 {
                     await tradingPartner.InvokeViewPlugInAsync<IChangeTradeButtonStatePlugIn>(p => p.ChangeTradeButtonStateAsync(TradeButtonState.Checked)).ConfigureAwait(false);
@@ -134,19 +134,19 @@ public class TradeButtonAction : BaseTradeAction
             partnerContext.Allowed = false;
             if (traderAllowed && partnerAllowed && IsInOpenTrade(trader) && IsInOpenTrade(tradingPartner)
                 && (traderState.CurrentState != PlayerState.TradeButtonPressed
-                    || partnerState.CurrentState != PlayerState.TradeButtonPressed
-                    || !IsAvailable(trader)
-                    || !IsAvailable(tradingPartner)))
+                    || partnerState.CurrentState != PlayerState.TradeButtonPressed))
             {
-                // A confirmation was withdrawn after the unlocked check, or a trader is about to die or to be
-                // placed elsewhere, whose own flow closes the trade. Nothing is exchanged; the trade stays as it is.
+                // A confirmation was withdrawn after the unlocked check. Nothing is exchanged; the trade stays as it is.
                 return (FinishOutcome.Unconfirmed, TradeResult.Cancelled);
             }
 
             if (!traderAllowed || !partnerAllowed
                 || traderState.CurrentState != PlayerState.TradeButtonPressed
-                || partnerState.CurrentState != PlayerState.TradeButtonPressed)
+                || partnerState.CurrentState != PlayerState.TradeButtonPressed
+                || !IsAvailable(trader)
+                || !IsAvailable(tradingPartner))
             {
+                // A trader which is about to die or to be placed elsewhere doesn't exchange; the trade is rolled back.
                 result = TradeResult.Cancelled;
             }
             else

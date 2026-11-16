@@ -454,8 +454,9 @@ public class TradeFinishReentryAssessmentTests
 
     /// <summary>
     /// A lethal hit which is already reserved, but whose death didn't close the trade yet, makes that trader
-    /// unavailable: the confirmed trade isn't exchanged at that moment, and the death then cancels it normally and
-    /// restores both traders. A nonlethal hit at the same point doesn't prevent the exchange.
+    /// unavailable: the confirmed trade isn't exchanged, but cancelled and both traders are restored at once, without
+    /// depending on the other flow to close it. The death then finds no trade left. A nonlethal hit at the same point
+    /// doesn't prevent the exchange.
     /// </summary>
     /// <param name="lethal">Whether the paused hit is lethal.</param>
     /// <param name="finisherDies">Whether the hit trader is the finisher (otherwise its already confirmed partner).</param>
@@ -516,13 +517,16 @@ public class TradeFinishReentryAssessmentTests
                 {
                     Assert.That(a.Inventory!.Items, Does.Not.Contain(y), "A trader with a reserved death exchanged items.");
                     Assert.That(b.Inventory!.Items, Does.Not.Contain(x));
-                    Assert.That(a.TemporaryStorage!.Items, Does.Contain(x));
-                    Assert.That(b.TemporaryStorage!.Items, Does.Contain(y));
-                    Assert.That(a.TradingPartner, Is.SameAs(b));
-                    Assert.That(b.TradingPartner, Is.SameAs(a));
+                    Assert.That(a.Inventory!.Items, Does.Contain(x));
+                    Assert.That(b.Inventory!.Items, Does.Contain(y));
+                    Assert.That(a.TradingPartner, Is.Null);
+                    Assert.That(b.TradingPartner, Is.Null);
+                    Assert.That(a.Money, Is.EqualTo(aMoney));
+                    Assert.That(b.Money, Is.EqualTo(bMoney));
+                    Assert.That(dying.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld), "The reserved death hasn't reached its state yet.");
                 });
-                aFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
-                bFinished.Verify(v => v.TradeFinishedAsync(It.IsAny<TradeResult>()), Times.Never);
+                aFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
+                bFinished.Verify(v => v.TradeFinishedAsync(TradeResult.Cancelled), Times.Once);
             }
 
             release.TrySetResult();
@@ -535,7 +539,7 @@ public class TradeFinishReentryAssessmentTests
                 return;
             }
 
-            // The death closed the trade through its normal cancellation and restored both traders.
+            // The death found no trade left to close; nothing was restored twice.
             var survivor = finisherDies ? b : a;
             Assert.Multiple(() =>
             {
