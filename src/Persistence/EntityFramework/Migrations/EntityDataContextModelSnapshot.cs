@@ -383,6 +383,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("SkillId1")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("WarpInfoId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AttributeId");
@@ -396,6 +399,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("SkillId");
 
                     b.HasIndex("SkillId1");
+
+                    b.HasIndex("WarpInfoId");
 
                     b.ToTable("AttributeRequirement", "config");
                 });
@@ -4905,6 +4910,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("SkillId1")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", null)
+                        .WithMany("RawRequirements")
+                        .HasForeignKey("WarpInfoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("RawAttribute");
                 });
 
@@ -7068,6 +7078,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillComboDefinition", b =>
                 {
                     b.Navigation("RawSteps");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", b =>
+                {
+                    b.Navigation("RawRequirements");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WeightedValueTable", b =>

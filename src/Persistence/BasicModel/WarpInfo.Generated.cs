@@ -26,6 +26,27 @@ public partial class WarpInfo : MUnique.OpenMU.DataModel.Configuration.WarpInfo,
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="Requirements" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("requirements")]
+    public ICollection<AttributeRequirement> RawRequirements { get; } = new List<AttributeRequirement>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> Requirements
+    {
+        get => base.Requirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawRequirements);
+        protected set
+        {
+            this.Requirements.Clear();
+            foreach (var item in value)
+            {
+                this.Requirements.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw object of <see cref="Gate" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("gate")]

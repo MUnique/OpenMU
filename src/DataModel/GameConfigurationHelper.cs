@@ -99,6 +99,7 @@ public static class GameConfigurationHelper
                 .Concat(c.Items.SelectMany(item => item.Requirements))
                 .Concat(c.Skills.SelectMany(skill => skill.Requirements))
                 .Concat(c.Skills.SelectMany(skill => skill.ConsumeRequirements))
+                .Concat(c.WarpList.SelectMany(warp => warp.Requirements))
         },
         { typeof(MonsterDefinition), c => c.Monsters },
         { typeof(ItemStorage), c => c.Monsters.Select(m => m.MerchantStore).WhereNotNull() },
