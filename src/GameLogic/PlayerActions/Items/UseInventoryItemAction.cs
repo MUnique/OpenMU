@@ -19,26 +19,26 @@ public class UseInventoryItemAction
     /// <param name="player">The player.</param>
     /// <param name="slot">The inventory slot of the item.</param>
     /// <param name="requestedDurability">The requested durability, which tells whether the item should be in use,
-    /// see <see cref="InventoryUsedItemExtensions"/>.</param>
+    /// see <see cref="InventoryItemUseConfiguration.InUseDurability"/> and <see cref="InventoryItemUseConfiguration.NotInUseDurability"/>.</param>
     public async ValueTask SetItemInUseAsync(Player player, byte slot, byte requestedDurability)
     {
         if (player.PlayerState.CurrentState != PlayerState.EnteredWorld
             || player.Inventory?.GetItem(slot) is not { } item
             || slot <= InventoryConstants.LastEquippableItemSlotIndex
-            || !item.IsUsedInsideInventory(player.GameContext)
+            || item.GetInventoryItemUseConfiguration(player.GameContext) is not { } configuration
             || player.Attributes is not { } attributes)
         {
             return;
         }
 
-        if (requestedDurability is not (InventoryUsedItemExtensions.InUseDurability or InventoryUsedItemExtensions.NotInUseDurability))
+        if (requestedDurability != configuration.InUseDurability && requestedDurability != configuration.NotInUseDurability)
         {
             player.Logger.LogWarning("Player {player} requested durability {requestedDurability} for {item}, which isn't possible.", player, requestedDurability, item);
             await player.InvokeViewPlugInAsync<IInventoryItemUseChangedPlugIn>(p => p.InventoryItemUseChangedAsync(item)).ConfigureAwait(false);
             return;
         }
 
-        if (requestedDurability == InventoryUsedItemExtensions.InUseDurability
+        if (requestedDurability == configuration.InUseDurability
             && player.Inventory.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory(player.GameContext)))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SameItemAlreadyInUse)).ConfigureAwait(false);

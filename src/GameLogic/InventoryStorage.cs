@@ -245,7 +245,7 @@ public class InventoryStorage : Storage, IInventoryStorage
     private void OnItemAddedToInventory(Item item)
     {
         if (this._player.Attributes is not { } attributes
-            || !item.IsUsedInsideInventory(this._gameContext))
+            || item.GetInventoryItemUseConfiguration(this._gameContext) is not { } configuration)
         {
             return;
         }
@@ -256,11 +256,11 @@ public class InventoryStorage : Storage, IInventoryStorage
             return;
         }
 
-        if ((int)item.Durability != InventoryUsedItemExtensions.InUseDurability
+        if ((int)item.Durability != configuration.InUseDurability
             || this.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory(this._gameContext)))
         {
             // A new item starts without being used, and only one item of the same kind can be used at the same time.
-            item.Durability = InventoryUsedItemExtensions.NotInUseDurability;
+            item.Durability = configuration.NotInUseDurability;
         }
 
         attributes.UpdateInventoryUsedItemPowerUps(item, this._gameContext);
@@ -269,17 +269,22 @@ public class InventoryStorage : Storage, IInventoryStorage
     /// <summary>
     /// Handles an item which was removed from an inventory slot which isn't equippable.
     /// An item which is used inside the inventory stops being used when it leaves the inventory, e.g. when it's dropped.
+    /// Its power-ups are removed even when the item is no longer configured to be used inside the inventory,
+    /// so that the player doesn't keep them.
     /// </summary>
     /// <param name="item">The item.</param>
     private void OnItemRemovedFromInventory(Item item)
     {
-        if (item == this._itemMovedInsideInventory
-            || !item.IsUsedInsideInventory(this._gameContext))
+        if (item == this._itemMovedInsideInventory)
         {
             return;
         }
 
-        item.Durability = InventoryUsedItemExtensions.NotInUseDurability;
+        if (item.GetInventoryItemUseConfiguration(this._gameContext) is { } configuration)
+        {
+            item.Durability = configuration.NotInUseDurability;
+        }
+
         this._player.Attributes?.RemoveInventoryUsedItemPowerUps(item);
     }
 
@@ -352,7 +357,7 @@ public class InventoryStorage : Storage, IInventoryStorage
 
             foreach (var item in this.Items.Where(item => item.IsInUseInsideInventory(this._gameContext)))
             {
-                this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
+                this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes, true).ToList());
             }
 
             this.UpdateSetPowerUps();

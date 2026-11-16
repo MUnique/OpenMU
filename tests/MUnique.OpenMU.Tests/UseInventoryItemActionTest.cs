@@ -200,6 +200,69 @@ public class UseInventoryItemActionTest
         Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health));
     }
 
+    /// <summary>
+    /// Requesting the use of an item which is already in use keeps its bonus,
+    /// so that the current health isn't lowered to a temporarily lower maximum.
+    /// </summary>
+    [Test]
+    public async Task RepeatedUseKeepsCurrentHealthAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var charm = await AddCharmAsync(player).ConfigureAwait(false);
+        await this._action.SetItemInUseAsync(player, charm.ItemSlot, InUse).ConfigureAwait(false);
+        var maximumHealth = player.Attributes![Stats.MaximumHealth];
+        player.Attributes[Stats.CurrentHealth] = maximumHealth;
+
+        await this._action.SetItemInUseAsync(player, charm.ItemSlot, InUse).ConfigureAwait(false);
+
+        Assert.That(charm.Durability, Is.EqualTo(InUse));
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(maximumHealth));
+        Assert.That(player.Attributes[Stats.CurrentHealth], Is.EqualTo(maximumHealth));
+    }
+
+    /// <summary>
+    /// An item which leaves the inventory loses its bonus, even when it's no longer configured
+    /// to be used inside the inventory.
+    /// </summary>
+    [Test]
+    public async Task RemovedItemLosesBonusAfterConfigurationChangedAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var health = player.Attributes![Stats.MaximumHealth];
+        var charm = await AddCharmAsync(player).ConfigureAwait(false);
+        await this._action.SetItemInUseAsync(player, charm.ItemSlot, InUse).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health + CharmBonus));
+        player.GameContext.FeaturePlugIns.GetPlugIn<InventoryItemUseFeaturePlugIn>()!.Configuration = new InventoryItemUseConfiguration { Items = [] };
+
+        await player.Inventory!.RemoveItemAsync(charm).ConfigureAwait(false);
+
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health));
+    }
+
+    /// <summary>
+    /// The durability values which tell whether an item is in use are configured at the feature plug-in.
+    /// </summary>
+    [Test]
+    public async Task InUseDurabilityIsConfiguredAsync()
+    {
+        const byte configuredInUse = 200;
+        const byte configuredNotInUse = 201;
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var health = player.Attributes![Stats.MaximumHealth];
+        var configuration = new InventoryItemUseConfiguration { InUseDurability = configuredInUse, NotInUseDurability = configuredNotInUse };
+        player.GameContext.FeaturePlugIns.GetPlugIn<InventoryItemUseFeaturePlugIn>()!.Configuration = configuration;
+        var charm = await AddCharmAsync(player).ConfigureAwait(false);
+        Assert.That(charm.Durability, Is.EqualTo(configuredNotInUse));
+
+        await this._action.SetItemInUseAsync(player, charm.ItemSlot, InUse).ConfigureAwait(false);
+        Assert.That(charm.Durability, Is.EqualTo(configuredNotInUse));
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health));
+
+        await this._action.SetItemInUseAsync(player, charm.ItemSlot, configuredInUse).ConfigureAwait(false);
+        Assert.That(charm.Durability, Is.EqualTo(configuredInUse));
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health + CharmBonus));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

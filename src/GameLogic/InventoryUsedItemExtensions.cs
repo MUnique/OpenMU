@@ -9,22 +9,12 @@ using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
 /// Extensions for the items which are used inside the inventory, see <see cref="InventoryItemUseConfiguration"/>.
-/// Like in the game client, the durability of such an item tells whether it's in use:
-/// <see cref="InUseDurability"/> when it is, <see cref="NotInUseDurability"/> when it isn't.
+/// Like in the game client, the durability of such an item tells whether it's in use,
+/// see <see cref="InventoryItemUseConfiguration.InUseDurability"/> and <see cref="InventoryItemUseConfiguration.NotInUseDurability"/>.
 /// While it's in use, its power-ups apply, although it isn't equipped.
 /// </summary>
 public static class InventoryUsedItemExtensions
 {
-    /// <summary>
-    /// The durability of an item which is in use. It's the value which the game client expects.
-    /// </summary>
-    internal const byte InUseDurability = 254;
-
-    /// <summary>
-    /// The durability of an item which isn't in use. It's the value which the game client expects.
-    /// </summary>
-    internal const byte NotInUseDurability = 255;
-
     /// <summary>
     /// Determines whether the item is one which is used inside the inventory.
     /// </summary>
@@ -33,9 +23,7 @@ public static class InventoryUsedItemExtensions
     /// <returns><c>true</c>, if the item is used inside the inventory; otherwise, <c>false</c>.</returns>
     public static bool IsUsedInsideInventory(this Item item, IGameContext gameContext)
     {
-        return item.Definition is { } definition
-               && InventoryItemUseFeaturePlugIn.GetActiveConfiguration(gameContext) is { } configuration
-               && configuration.Contains(definition);
+        return item.GetInventoryItemUseConfiguration(gameContext) is not null;
     }
 
     /// <summary>
@@ -46,34 +34,44 @@ public static class InventoryUsedItemExtensions
     /// <returns><c>true</c>, if the item is in use inside the inventory; otherwise, <c>false</c>.</returns>
     public static bool IsInUseInsideInventory(this Item item, IGameContext gameContext)
     {
-        return item.HasInUseState() && item.IsUsedInsideInventory(gameContext);
+        return item.GetInventoryItemUseConfiguration(gameContext) is { } configuration
+               && item.HasInUseState(configuration);
     }
 
     /// <summary>
-    /// Determines whether the item has the state of an item which is in use inside the inventory:
-    /// it has the <see cref="InUseDurability"/> and it isn't equipped.
+    /// Gets the configuration of the items which are used inside the inventory, if the item is one of them.
     /// </summary>
     /// <param name="item">The item.</param>
-    /// <returns><c>true</c>, if the item has the state of an item which is in use inside the inventory; otherwise, <c>false</c>.</returns>
-    internal static bool HasInUseState(this Item item)
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The configuration, if the item is used inside the inventory; otherwise, <c>null</c>.</returns>
+    internal static InventoryItemUseConfiguration? GetInventoryItemUseConfiguration(this Item item, IGameContext gameContext)
     {
-        return (int)item.Durability == InUseDurability
-               && (item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex);
+        return item.Definition is { } definition
+               && InventoryItemUseFeaturePlugIn.GetActiveConfiguration(gameContext) is { } configuration
+               && configuration.Contains(definition)
+            ? configuration
+            : null;
     }
 
     /// <summary>
     /// Updates the power-ups of an item which is used inside the inventory:
-    /// they're removed, and added again when the item is in use.
+    /// they're added when the item is in use and don't exist yet, and removed when it isn't in use.
+    /// Existing power-ups are kept, because removing them could lower the current health, mana etc. of the player.
     /// </summary>
     /// <param name="attributes">The attribute system of the player.</param>
     /// <param name="item">The item.</param>
     /// <param name="gameContext">The game context.</param>
     internal static void UpdateInventoryUsedItemPowerUps(this ItemAwareAttributeSystem attributes, Item item, IGameContext gameContext)
     {
-        attributes.RemoveInventoryUsedItemPowerUps(item);
-        if (item.IsInUseInsideInventory(gameContext) && gameContext.ItemPowerUpFactory is { } factory)
+        if (!item.IsInUseInsideInventory(gameContext))
         {
-            attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, attributes).ToList());
+            attributes.RemoveInventoryUsedItemPowerUps(item);
+            return;
+        }
+
+        if (!attributes.ItemPowerUps.ContainsKey(item) && gameContext.ItemPowerUpFactory is { } factory)
+        {
+            attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, attributes, true).ToList());
         }
     }
 
@@ -91,5 +89,18 @@ public static class InventoryUsedItemExtensions
                 powerUp.Dispose();
             }
         }
+    }
+
+    /// <summary>
+    /// Determines whether the item has the state of an item which is in use inside the inventory:
+    /// it has the <see cref="InventoryItemUseConfiguration.InUseDurability"/> and it isn't equipped.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <returns><c>true</c>, if the item has the state of an item which is in use inside the inventory; otherwise, <c>false</c>.</returns>
+    private static bool HasInUseState(this Item item, InventoryItemUseConfiguration configuration)
+    {
+        return (int)item.Durability == configuration.InUseDurability
+               && (item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex);
     }
 }

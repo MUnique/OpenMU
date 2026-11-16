@@ -19,6 +19,16 @@ using MUnique.OpenMU.PlugIns;
 public class AddFigurinesAndCharmsUpdatePlugIn : UpdatePlugInBase
 {
     /// <summary>
+    /// The plug in name.
+    /// </summary>
+    internal const string PlugInName = "Add the figurines and charms";
+
+    /// <summary>
+    /// The plug in description.
+    /// </summary>
+    internal const string PlugInDescription = "This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory.";
+
+    /// <summary>
     /// The items of the products of the cash shop script of the game client, by their product sequence.
     /// </summary>
     private static readonly IReadOnlyDictionary<int, (byte Group, short Number)> ProductItems = new Dictionary<int, (byte Group, short Number)>
@@ -28,16 +38,6 @@ public class AddFigurinesAndCharmsUpdatePlugIn : UpdatePlugInBase
         { 461, (13, 130) },
         { 462, (13, 132) },
     };
-
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add the figurines and charms";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory.";
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;

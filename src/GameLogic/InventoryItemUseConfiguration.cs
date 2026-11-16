@@ -12,6 +12,16 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 public class InventoryItemUseConfiguration
 {
     /// <summary>
+    /// The default of <see cref="InUseDurability"/>, which is the value the game client expects.
+    /// </summary>
+    private const byte DefaultInUseDurability = 254;
+
+    /// <summary>
+    /// The default of <see cref="NotInUseDurability"/>, which is the value the game client expects.
+    /// </summary>
+    private const byte DefaultNotInUseDurability = 255;
+
+    /// <summary>
     /// Gets or sets the items which are used inside the inventory instead of being equipped.
     /// </summary>
     /// <remarks>
@@ -19,6 +29,24 @@ public class InventoryItemUseConfiguration
     /// and the worn horseshoe (134), which the game client requests to use with a right click in the inventory.
     /// </remarks>
     public IList<InventoryUsedItemIdentifier> Items { get; set; } = CreateDefaultItems();
+
+    /// <summary>
+    /// Gets or sets the durability of an item which is in use.
+    /// </summary>
+    /// <remarks>
+    /// Like in the game client, the durability of such an item tells whether it's in use,
+    /// so this value has to match the client.
+    /// </remarks>
+    public byte InUseDurability { get; set; } = DefaultInUseDurability;
+
+    /// <summary>
+    /// Gets or sets the durability of an item which isn't in use.
+    /// </summary>
+    /// <remarks>
+    /// Like in the game client, the durability of such an item tells whether it's in use,
+    /// so this value has to match the client. A new item starts with it.
+    /// </remarks>
+    public byte NotInUseDurability { get; set; } = DefaultNotInUseDurability;
 
     /// <summary>
     /// Determines whether the item definition belongs to an item which is used inside the inventory.

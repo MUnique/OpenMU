@@ -30,7 +30,10 @@ be changed in the admin panel.
   second one is refused with a message.
 * The item keeps its state when it is moved inside the inventory.
 * When the item leaves the inventory, for example when it is dropped or moved
-  into the vault, it is no longer in use, and the bonus is removed.
+  into the vault, it is no longer in use, and the bonus is removed. This also
+  happens when the item was removed from the configuration in the meantime.
+* Using an item which is already in use keeps its bonus, so the current
+  health, mana and so on stay as they are.
 * Like in the original game, the state is stored in the durability of the
   item: 254 means in use, 255 means not in use. A new item starts with 255
   when it is added to the inventory. The item definitions have a durability
@@ -40,7 +43,9 @@ be changed in the admin panel.
 
 The *Items used inside the inventory* feature plugin defines which items can
 be used inside the inventory. By default, these are the items 13/128 to
-13/134. When the plugin is deactivated, no item can be used this way.
+13/134. It also defines the durability values of an item which is in use
+(254) and not in use (255). They have to match the game client. When the
+plugin is deactivated, no item can be used this way.
 
 ## Update of existing databases
 
