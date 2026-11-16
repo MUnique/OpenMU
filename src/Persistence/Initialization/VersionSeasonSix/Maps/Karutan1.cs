@@ -100,7 +100,7 @@ internal class Karutan1 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(143, this.NpcDictionary[570], 198, 063); // Bone Scorpion
         yield return this.CreateMonsterSpawn(144, this.NpcDictionary[570], 188, 063); // Bone Scorpion
         yield return this.CreateMonsterSpawn(145, this.NpcDictionary[570], 184, 114); // Bone Scorpion
-        yield return this.CreateMonsterSpawn(146, this.NpcDictionary[570], 204, 204, 104, 114); // Bone Scorpion
+        yield return this.CreateMonsterSpawn(146, this.NpcDictionary[570], 204, 104); // Bone Scorpion
         yield return this.CreateMonsterSpawn(147, this.NpcDictionary[570], 201, 094); // Bone Scorpion
         yield return this.CreateMonsterSpawn(148, this.NpcDictionary[570], 226, 111); // Bone Scorpion
         yield return this.CreateMonsterSpawn(149, this.NpcDictionary[570], 183, 162); // Bone Scorpion
@@ -163,7 +163,7 @@ internal class Karutan1 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(206, this.NpcDictionary[573], 042, 105); // Crypta
         yield return this.CreateMonsterSpawn(207, this.NpcDictionary[573], 038, 132); // Crypta
         yield return this.CreateMonsterSpawn(208, this.NpcDictionary[573], 044, 148); // Crypta
-        yield return this.CreateMonsterSpawn(209, this.NpcDictionary[573], 058, 178); // Crypta
+        yield return this.CreateMonsterSpawn(209, this.NpcDictionary[573], 057, 178); // Crypta
         yield return this.CreateMonsterSpawn(210, this.NpcDictionary[574], 040, 074); // Crypos
         yield return this.CreateMonsterSpawn(211, this.NpcDictionary[574], 049, 058); // Crypos
         yield return this.CreateMonsterSpawn(212, this.NpcDictionary[574], 036, 085); // Crypos
@@ -190,7 +190,7 @@ internal class Karutan1 : BaseMapInitializer
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
-            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(900 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
@@ -221,7 +221,7 @@ internal class Karutan1 : BaseMapInitializer
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
-            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(900 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
@@ -232,9 +232,9 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.MaximumHealth, 60000 },
                 { Stats.MinimumPhysBaseDmg, 595 },
                 { Stats.MaximumPhysBaseDmg, 635 },
-                { Stats.DefenseBase, 283 },
+                { Stats.DefenseBase, 485 },
                 { Stats.AttackRatePvm, 915 },
-                { Stats.DefenseRatePvm, 363 },
+                { Stats.DefenseRatePvm, 283 },
                 { Stats.PoisonResistance, 254f / 255 },
                 { Stats.IceResistance, 100f / 255 },
                 { Stats.FireResistance, 200f / 255 },
@@ -252,8 +252,8 @@ internal class Karutan1 : BaseMapInitializer
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
-            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1800 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -283,8 +283,8 @@ internal class Karutan1 : BaseMapInitializer
             monster.MoveRange = 6;
             monster.AttackRange = 1;
             monster.ViewRange = 10;
-            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(800 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -314,8 +314,8 @@ internal class Karutan1 : BaseMapInitializer
             monster.MoveRange = 6;
             monster.AttackRange = 2;
             monster.ViewRange = 10;
-            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(800 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -326,7 +326,7 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.MinimumPhysBaseDmg, 720 },
                 { Stats.MaximumPhysBaseDmg, 770 },
                 { Stats.DefenseBase, 575 },
-                { Stats.AttackRatePvm, 11400 },
+                { Stats.AttackRatePvm, 1140 },
                 { Stats.DefenseRatePvm, 375 },
                 { Stats.PoisonResistance, 254f / 255 },
                 { Stats.IceResistance, 150f / 255 },

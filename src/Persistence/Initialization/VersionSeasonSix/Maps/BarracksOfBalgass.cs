@@ -86,14 +86,13 @@ internal class BarracksOfBalgass : BaseMapInitializer
         yield return this.CreateMonsterSpawn(209, this.NpcDictionary[410], 121, 118); // Death Spirit (Trainee Soldier)
 
         yield return this.CreateMonsterSpawn(300, this.NpcDictionary[411], 127, 127); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(301, this.NpcDictionary[411], 126, 166, 164, 164); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(301, this.NpcDictionary[411], 126, 164); // Soram (Trainee Soldier)
         yield return this.CreateMonsterSpawn(302, this.NpcDictionary[411], 123, 160); // Soram (Trainee Soldier)
         yield return this.CreateMonsterSpawn(303, this.NpcDictionary[411], 132, 156); // Soram (Trainee Soldier)
         yield return this.CreateMonsterSpawn(304, this.NpcDictionary[411], 132, 136); // Soram (Trainee Soldier)
         yield return this.CreateMonsterSpawn(305, this.NpcDictionary[411], 116, 103); // Soram (Trainee Soldier)
         yield return this.CreateMonsterSpawn(306, this.NpcDictionary[411], 129, 146); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(307, this.NpcDictionary[411], 117, 098); // Soram (Trainee Soldier)
-        yield return this.CreateMonsterSpawn(308, this.NpcDictionary[411], 113, 109); // Soram (Trainee Soldier)
+        yield return this.CreateMonsterSpawn(309, this.NpcDictionary[409], 071, 101); // Balram (Trainee Soldier)
     }
 
     /// <inheritdoc/>
@@ -108,7 +107,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             monster.AttackRange = 4;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -140,13 +139,13 @@ internal class BarracksOfBalgass : BaseMapInitializer
             monster.AttackRange = 4;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 119 },
+                { Stats.Level, 118 },
                 { Stats.MaximumHealth, 85000 },
                 { Stats.MinimumPhysBaseDmg, 580 },
                 { Stats.MaximumPhysBaseDmg, 680 },
@@ -172,7 +171,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             monster.AttackRange = 2;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;

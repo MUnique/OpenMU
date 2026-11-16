@@ -9,8 +9,9 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 
 /// <summary>
-/// Tests the Season 6 monster spawn layout of Devias, Noria and Elvenland, and the
-/// <see cref="FieldMonsterSpawnsUpdatePlugInBase"/> variants, which also remove the duplicate spawns of Dungeon and Lost Tower.
+/// Tests the Season 6 monster spawns of the field maps - the layout of Devias, Noria and Elvenland and the
+/// corrections of the other field maps - and the <see cref="FieldMonsterSpawnsUpdatePlugInBase"/> variants,
+/// which also remove the duplicate spawns of Dungeon and Lost Tower.
 /// </summary>
 [TestFixture]
 internal class FieldMonsterSpawnsUpdateTest
@@ -20,6 +21,8 @@ internal class FieldMonsterSpawnsUpdateTest
     private const short GoblinNumber = 26;
 
     private const short GolemNumber = 7;
+
+    private const short SpiderNumber = 3;
 
     private const short MarlonNumber = 229;
 
@@ -31,7 +34,7 @@ internal class FieldMonsterSpawnsUpdateTest
 
     private static readonly (byte MapNumber, IReadOnlyList<FieldMonsterSpawn> Layout)[] Layouts =
     [
-        (Devias.Number, Devias.MonsterSpawnLayout),
+        (Devias.Number, Version075.Maps.Devias.MonsterSpawnLayout),
         (Noria.Number, Noria.MonsterSpawnLayout),
         (Elvenland.Number, Elvenland.MonsterSpawnLayout),
     ];
@@ -60,7 +63,7 @@ internal class FieldMonsterSpawnsUpdateTest
         var devias = gameConfiguration.Maps.Single(m => m.Number == Devias.Number);
         var noria = gameConfiguration.Maps.Single(m => m.Number == Noria.Number);
         RemoveLayout(noria, Noria.MonsterSpawnLayout);
-        RemoveLayout(devias, Devias.MonsterSpawnLayout);
+        RemoveLayout(devias, Version075.Maps.Devias.MonsterSpawnLayout);
 
         // The state of a database which was initialized before: monsters spread over quarters of the map.
         var oldEliteYeti = AddSpawn(context, gameConfiguration, devias, 103, EliteYetiNumber, 0, 128, 128, 245, 200);
@@ -100,21 +103,117 @@ internal class FieldMonsterSpawnsUpdateTest
     }
 
     /// <summary>
-    /// Tests that the 0.95d data keeps the monster spawns of version 0.75 on Devias and Noria.
+    /// Tests that new databases of 0.75 and 0.95d contain the layout of Devias and Noria, without the spiders of Season 6.
     /// </summary>
-    [Test]
-    public async Task Version095dKeepsItsSpawnsAsync()
+    /// <param name="version">The game version.</param>
+    [TestCase("0.75")]
+    [TestCase("0.95d")]
+    public async Task OlderVersionsHaveLayoutWithoutSpidersAsync(string version)
     {
-        var (context, gameConfiguration) = await TestGameConfiguration.Create095dAsync().ConfigureAwait(false);
+        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
         using var _ = context;
 
-        foreach (var (mapNumber, layout) in Layouts.Where(l => l.MapNumber != Elvenland.Number))
+        AssertLayout(gameConfiguration, Devias.Number, Version075.Maps.Devias.MonsterSpawnLayout);
+        AssertLayout(gameConfiguration, Noria.Number, Version075.Maps.Noria.MonsterSpawnLayout);
+        var noria = gameConfiguration.Maps.Single(m => m.Number == Noria.Number);
+        Assert.That(noria.MonsterSpawns.Any(s => s.MonsterDefinition?.Number == SpiderNumber), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the update of 0.75 and 0.95d replaces the spawns of Devias and Noria of an existing database
+    /// with the layout, without adding the spiders of Season 6.
+    /// </summary>
+    /// <param name="version">The game version.</param>
+    [TestCase("0.75")]
+    [TestCase("0.95d")]
+    public async Task UpdateOfOlderVersionsReplacesSpawnsAsync(string version)
+    {
+        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
+        using var _ = context;
+        var devias = gameConfiguration.Maps.Single(m => m.Number == Devias.Number);
+        var noria = gameConfiguration.Maps.Single(m => m.Number == Noria.Number);
+        RemoveLayout(devias, Version075.Maps.Devias.MonsterSpawnLayout);
+        RemoveLayout(noria, Version075.Maps.Noria.MonsterSpawnLayout);
+
+        // The state of a database which was initialized before: monsters spread over quarters of the map.
+        var oldEliteYeti = AddSpawn(context, gameConfiguration, devias, 103, EliteYetiNumber, 0, 251, 128, 245, 200);
+        var oldGoblin = AddSpawn(context, gameConfiguration, noria, 21, GoblinNumber, 128, 251, 0, 128, 155);
+
+        await CreateUpdate(version).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        AssertLayout(gameConfiguration, Devias.Number, Version075.Maps.Devias.MonsterSpawnLayout);
+        AssertLayout(gameConfiguration, Noria.Number, Version075.Maps.Noria.MonsterSpawnLayout);
+        Assert.That(devias.MonsterSpawns, Does.Not.Contain(oldEliteYeti));
+        Assert.That(noria.MonsterSpawns, Does.Not.Contain(oldGoblin));
+        Assert.That(noria.MonsterSpawns.Any(s => s.MonsterDefinition?.Number == SpiderNumber), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the update of each version changes nothing on a new database, i.e. that its data equals the
+    /// data of the map initializers.
+    /// </summary>
+    /// <param name="version">The game version.</param>
+    [TestCase("0.75")]
+    [TestCase("0.95d")]
+    [TestCase("Season 6")]
+    public async Task UpdateChangesNothingOnNewDatabaseAsync(string version)
+    {
+        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
+        using var _ = context;
+        var expected = Snapshot(gameConfiguration);
+
+        await CreateUpdate(version).ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(Snapshot(gameConfiguration), Is.EquivalentTo(expected));
+    }
+
+    /// <summary>
+    /// Tests that the update of each version brings the corrected maps of an existing database, which lacks the
+    /// added spawns, has the removed ones and the old values of the corrected ones, to the data of a new database,
+    /// and that applying it twice doesn't change anything.
+    /// </summary>
+    /// <param name="version">The game version.</param>
+    [TestCase("0.75")]
+    [TestCase("0.95d")]
+    [TestCase("Season 6")]
+    public async Task UpdateRepairsCorrectedMapsAsync(string version)
+    {
+        var (context, gameConfiguration) = await CreateAsync(version).ConfigureAwait(false);
+        using var _ = context;
+        var expected = Snapshot(gameConfiguration);
+        var update = CreateUpdate(version);
+        Assert.That(update.SpawnCorrections, Is.Not.Empty);
+
+        // The state of a database which was initialized before.
+        foreach (var correction in update.SpawnCorrections)
         {
-            var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber);
-            var layoutIds = layout.Select(spawn => GuidHelper.CreateGuid<MonsterSpawnArea>(mapNumber, spawn.Number)).ToHashSet();
-            Assert.That(map.MonsterSpawns.Any(s => layoutIds.Contains(s.GetId())), Is.False, $"map {mapNumber}");
-            Assert.That(map.MonsterSpawns.Any(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster), Is.True, $"map {mapNumber}");
+            var map = gameConfiguration.Maps.Single(m => m.Number == correction.MapNumber);
+            var any = map.MonsterSpawns.First(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster);
+            foreach (var number in correction.RemovedSpawnNumbers)
+            {
+                AddSpawn(context, gameConfiguration, map, number, any.MonsterDefinition!.Number, any.X1, any.X2, any.Y1, any.Y2, 1);
+            }
+
+            for (var i = 0; i < correction.Spawns.Count; i++)
+            {
+                var id = GuidHelper.CreateGuid<MonsterSpawnArea>(map.Number, correction.Spawns[i].Number);
+                var spawn = map.MonsterSpawns.Single(s => s.GetId() == id);
+                if (i % 2 == 0)
+                {
+                    map.MonsterSpawns.Remove(spawn);
+                }
+                else
+                {
+                    spawn.X2 = (byte)(spawn.X2 + 1);
+                    spawn.Quantity = 3;
+                }
+            }
         }
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(Snapshot(gameConfiguration), Is.EquivalentTo(expected));
     }
 
     /// <summary>
@@ -160,12 +259,7 @@ internal class FieldMonsterSpawnsUpdateTest
         var lostTowerCount = lostTower.MonsterSpawns.Count;
         var trapCount = lostTower.MonsterSpawns.Count(s => s.MonsterDefinition?.Number == MeteoriteTrapNumber);
 
-        FieldMonsterSpawnsUpdatePlugInBase update = version switch
-        {
-            "0.75" => new FieldMonsterSpawnsUpdatePlugIn075(),
-            "0.95d" => new FieldMonsterSpawnsUpdatePlugIn095D(),
-            _ => new FieldMonsterSpawnsUpdatePlugInSeason6(),
-        };
+        var update = CreateUpdate(version);
         for (var i = 0; i < 2; i++)
         {
             await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -187,6 +281,27 @@ internal class FieldMonsterSpawnsUpdateTest
         };
     }
 
+    private static FieldMonsterSpawnsUpdatePlugInBase CreateUpdate(string version)
+    {
+        return version switch
+        {
+            "0.75" => new FieldMonsterSpawnsUpdatePlugIn075(),
+            "0.95d" => new FieldMonsterSpawnsUpdatePlugIn095D(),
+            _ => new FieldMonsterSpawnsUpdatePlugInSeason6(),
+        };
+    }
+
+    /// <summary>
+    /// Gets the automatic monster spawns of all maps with their values, to compare two states of the configuration.
+    /// </summary>
+    private static List<(Guid Id, byte Map, short Monster, byte X1, byte X2, byte Y1, byte Y2, short Quantity)> Snapshot(GameConfiguration gameConfiguration)
+    {
+        return gameConfiguration.Maps
+            .SelectMany(m => m.MonsterSpawns.Where(s => s.SpawnTrigger == SpawnTrigger.Automatic)
+                .Select(s => (s.GetId(), (byte)m.Number, s.MonsterDefinition!.Number, s.X1, s.X2, s.Y1, s.Y2, s.Quantity)))
+            .ToList();
+    }
+
     private static void AssertNoDuplicateSpawns(GameConfiguration gameConfiguration)
     {
         foreach (var mapNumber in new[] { Version075.Maps.Dungeon.Number, Version075.Maps.LostTower.Number })
@@ -204,14 +319,19 @@ internal class FieldMonsterSpawnsUpdateTest
     {
         foreach (var (mapNumber, layout) in Layouts)
         {
-            var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber);
-            var layoutMonsters = layout.Select(spawn => spawn.MonsterNumber).ToHashSet();
-            var expected = layout.Select(spawn => (GuidHelper.CreateGuid<MonsterSpawnArea>(mapNumber, spawn.Number), spawn.MonsterNumber, spawn.X1, spawn.X2, spawn.Y1, spawn.Y2, spawn.Quantity));
-            var actual = map.MonsterSpawns
-                .Where(s => s.SpawnTrigger == SpawnTrigger.Automatic && layoutMonsters.Contains(s.MonsterDefinition!.Number))
-                .Select(s => (s.GetId(), s.MonsterDefinition!.Number, s.X1, s.X2, s.Y1, s.Y2, s.Quantity));
-            Assert.That(actual, Is.EquivalentTo(expected), $"map {mapNumber}");
+            AssertLayout(gameConfiguration, mapNumber, layout);
         }
+    }
+
+    private static void AssertLayout(GameConfiguration gameConfiguration, byte mapNumber, IReadOnlyList<FieldMonsterSpawn> layout)
+    {
+        var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber);
+        var layoutMonsters = layout.Select(spawn => spawn.MonsterNumber).ToHashSet();
+        var expected = layout.Select(spawn => (GuidHelper.CreateGuid<MonsterSpawnArea>(mapNumber, spawn.Number), spawn.MonsterNumber, spawn.X1, spawn.X2, spawn.Y1, spawn.Y2, spawn.Quantity));
+        var actual = map.MonsterSpawns
+            .Where(s => s.SpawnTrigger == SpawnTrigger.Automatic && layoutMonsters.Contains(s.MonsterDefinition!.Number))
+            .Select(s => (s.GetId(), s.MonsterDefinition!.Number, s.X1, s.X2, s.Y1, s.Y2, s.Quantity));
+        Assert.That(actual, Is.EquivalentTo(expected), $"map {mapNumber}");
     }
 
     private static void RemoveLayout(GameMapDefinition map, IReadOnlyList<FieldMonsterSpawn> layout)
