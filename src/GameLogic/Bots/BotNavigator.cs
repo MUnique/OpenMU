@@ -2857,8 +2857,10 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Select the identity tier before applying access requirements. Otherwise an exact entry
         // which is too high-level could incorrectly fall through to an easier same-number entry.
+        // The warp's own requirements (e.g. a minimum master level) are checked by WarpAction, too.
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
+        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel
+                                   && !w.Requirements.TryGetRequirementError(this._player, out _));
     }
 
     /// <summary>

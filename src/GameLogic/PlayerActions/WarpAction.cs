@@ -68,7 +68,8 @@ public class WarpAction
             return false;
         }
 
-        if (warpInfo.Gate.Map.TryGetRequirementError(player, out var message))
+        if (warpInfo.Gate.Map.TryGetRequirementError(player, out var message)
+            || warpInfo.Requirements.TryGetRequirementError(player, out message))
         {
             errorMessage = message;
             return false;

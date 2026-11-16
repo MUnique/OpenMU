@@ -6,8 +6,10 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Globalization;
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Properties;
@@ -201,9 +203,54 @@ public class WarpListTests
             expected ? Times.Once() : Times.Never());
     }
 
-    private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs)
+    /// <summary>
+    /// Tests that a player who fulfills the requirements of a warp can use it: the costs are paid,
+    /// and no message is shown.
+    /// </summary>
+    [Test]
+    public async Task PlayerWhoFulfillsTheWarpRequirementsCanWarpAsync()
     {
-        return new WarpInfo
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        player.Attributes![Stats.MasterLevel] = 50;
+        player.Attributes[Stats.Resets] = 3;
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000, (Stats.MasterLevel, 50), (Stats.Resets, 3));
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
+        Assert.That(player.Money, Is.EqualTo(90000));
+    }
+
+    /// <summary>
+    /// Tests that a player who misses a required attribute of a warp can't use it: it's refused with the
+    /// message of a missing map requirement, and the costs aren't paid.
+    /// </summary>
+    /// <param name="attributeName">The name of the property of <see cref="Stats"/> which the player misses.</param>
+    [TestCase(nameof(Stats.MasterLevel))]
+    [TestCase(nameof(Stats.Resets))]
+    public async Task PlayerWhoMissesAWarpRequirementCantWarpAsync(string attributeName)
+    {
+        var missing = (AttributeDefinition)typeof(Stats).GetProperty(attributeName)!.GetValue(null)!;
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        player.Attributes![Stats.MasterLevel] = 50;
+        player.Attributes[Stats.Resets] = 3;
+        player.Attributes[missing] -= 1;
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000, (Stats.MasterLevel, 50), (Stats.Resets, 3));
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var message = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, missing.Description);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
+        Assert.That(player.Money, Is.EqualTo(100000));
+    }
+
+    private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs, params (AttributeDefinition Attribute, int MinimumValue)[] requirements)
+    {
+        var warp = new Persistence.BasicModel.WarpInfo
         {
             Index = index,
             Name = name,
@@ -211,5 +258,11 @@ public class WarpListTests
             Costs = costs,
             Gate = new ExitGate { Map = new Persistence.BasicModel.GameMapDefinition { Number = mapNumber } },
         };
+        foreach (var (attribute, minimumValue) in requirements)
+        {
+            warp.Requirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = attribute, MinimumValue = minimumValue });
+        }
+
+        return warp;
     }
 }

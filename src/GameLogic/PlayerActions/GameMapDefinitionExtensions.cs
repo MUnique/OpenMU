@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using System.Diagnostics.CodeAnalysis;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// Extension methods for <see cref="GameMapDefinition"/>.
@@ -28,12 +29,26 @@ public static class GameMapDefinitionExtensions
             return true;
         }
 
-        if (gameMapDefinition.MapRequirements is null || !gameMapDefinition.MapRequirements.Any())
+        return gameMapDefinition.MapRequirements.TryGetRequirementError(player, out errorMessage);
+    }
+
+    /// <summary>
+    /// Checks the attribute requirements of a map or of a warp to it for the specified player,
+    /// e.g. <see cref="GameMapDefinition.MapRequirements"/> or <see cref="WarpInfo.Requirements"/>.
+    /// </summary>
+    /// <param name="requirements">The requirements. <c>null</c> stands for no requirements.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="errorMessage">The error message, which is available when this method returns <c>true</c>.</param>
+    /// <returns><c>False</c>, if the requirements are fulfilled; Otherwise, <c>true</c>.</returns>
+    public static bool TryGetRequirementError(this IEnumerable<AttributeRequirement>? requirements, Player player, [MaybeNullWhen(false)] out string errorMessage)
+    {
+        errorMessage = null;
+        if (requirements is null)
         {
             return false;
         }
 
-        foreach (var requirement in gameMapDefinition.MapRequirements)
+        foreach (var requirement in requirements)
         {
             if (player.Attributes is null || player.Attributes[requirement.Attribute] < requirement.MinimumValue)
             {
