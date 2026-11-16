@@ -7,22 +7,6 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 
 /// <summary>
-/// The events on map.
-/// </summary>
-public enum MapEventType
-{
-    /// <summary>
-    /// Red Dragons start flying.
-    /// </summary>
-    RedDragonInvasion,
-
-    /// <summary>
-    /// Golden Dragons start flying.
-    /// </summary>
-    GoldenDragonInvasion,
-}
-
-/// <summary>
 /// Interface of a view whose implementation informs about the status of a map event.
 /// </summary>
 public interface IMapEventStateUpdatePlugIn : IViewPlugIn

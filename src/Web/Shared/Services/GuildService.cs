@@ -47,7 +47,10 @@ public class GuildService : IGuildService, ISupportDataChangedNotification, IDis
     /// </summary>
     public string SearchFilter
     {
-        get => this._searchFilter;
+        get
+        {
+            return this._searchFilter;
+        }
         set
         {
             var newValue = value ?? string.Empty;

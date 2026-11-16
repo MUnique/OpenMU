@@ -16,7 +16,7 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class LookupFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService) => this.BuildGenericField(model, typeof(LookupField<>), builder, propertyInfo, currentIndex, notificationService);
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService) => this.BuildGenericField(model, typeof(LookupField<>), treeBuilder, propertyInfo, currentIndex, notificationService);
 
     /// <inheritdoc/>
     public bool CanBuildComponent(PropertyInfo propertyInfo) =>

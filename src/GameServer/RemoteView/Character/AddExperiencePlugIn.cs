@@ -28,21 +28,21 @@ public class AddExperiencePlugIn : IAddExperiencePlugIn
     public AddExperiencePlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AddExperienceAsync(int exp, IAttackable? obj, ExperienceType experienceType)
+    public async ValueTask AddExperienceAsync(int gainedExperience, IAttackable? killedObject, ExperienceType experienceType)
     {
-        var remainingExperience = exp;
+        var remainingExperience = gainedExperience;
         ushort damage = 0;
-        if (obj is not null && obj.Id != obj.LastDeath?.KillerId)
+        if (killedObject is not null && killedObject.Id != killedObject.LastDeath?.KillerId)
         {
-            damage = (ushort)Math.Min(obj.LastDeath?.FinalHit.HealthDamage ?? 0, ushort.MaxValue);
+            damage = (ushort)Math.Min(killedObject.LastDeath?.FinalHit.HealthDamage ?? 0, ushort.MaxValue);
         }
 
-        var id = (ushort)(obj.GetId(this._player) | 0x8000);
+        var id = (ushort)(killedObject.GetId(this._player) | 0x8000);
         while (remainingExperience > 0)
         {
-            // We send multiple exp packets if the value is bigger than ushort.MaxValue, because that's all what the packet can carry.
-            // On a normal exp server this should never be an issue, but with higher settings, it fixes the problem that the exp bar
-            // shows less exp than the player actually gained.
+            // We send multiple gainedExperience packets if the value is bigger than ushort.MaxValue, because that's all what the packet can carry.
+            // On a normal gainedExperience server this should never be an issue, but with higher settings, it fixes the problem that the gainedExperience bar
+            // shows less gainedExperience than the player actually gained.
             ushort sendExp = remainingExperience > ushort.MaxValue ? ushort.MaxValue : (ushort)remainingExperience;
             await this._player.Connection.SendExperienceGainedAsync(id, sendExp, damage).ConfigureAwait(false);
             damage = 0; // don't send damage again

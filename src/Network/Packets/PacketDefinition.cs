@@ -77,7 +77,10 @@ public class PacketDefinition
     /// </value>
     public string? HeaderType
     {
-        get => this.headerType;
+        get
+        {
+            return this.headerType;
+        }
         set
         {
             this.headerType = value;

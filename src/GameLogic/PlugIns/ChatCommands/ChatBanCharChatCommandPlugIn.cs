@@ -26,36 +26,36 @@ public class ChatBanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatBanCharCha
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, ChatBanCharChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, ChatBanCharChatCommandArgs arguments)
     {
         if (string.IsNullOrEmpty(arguments.CharacterName))
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
             return;
         }
 
         if (arguments.DurationMinutes == 0)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DurationMustBeLongerThan0)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.DurationMustBeLongerThan0)).ConfigureAwait(false);
             return;
         }
 
-        var player = gameMaster.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
-        if (player == null)
+        var targetPlayer = player.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
+        if (targetPlayer == null)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
             return;
         }
 
-        if (!await this.ChangeAccountChatBanUntilAsync(player, DateTime.UtcNow.AddMinutes(arguments.DurationMinutes)).ConfigureAwait(false))
+        if (!await this.ChangeAccountChatBanUntilAsync(targetPlayer, DateTime.UtcNow.AddMinutes(arguments.DurationMinutes)).ConfigureAwait(false))
         {
             return;
         }
 
         // Send ban notice to Game Master
-        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountChatBannedResult), this.Key, arguments.CharacterName, arguments.DurationMinutes).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountChatBannedResult), this.Key, arguments.CharacterName, arguments.DurationMinutes).ConfigureAwait(false);
 
         // Send ban notice to character
-        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouAreChatBanned), arguments.DurationMinutes).ConfigureAwait(false);
+        await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouAreChatBanned), arguments.DurationMinutes).ConfigureAwait(false);
     }
 }

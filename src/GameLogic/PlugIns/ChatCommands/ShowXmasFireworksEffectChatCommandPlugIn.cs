@@ -28,9 +28,9 @@ public class ShowXmasFireworksEffectChatCommandPlugIn : ChatCommandPlugInBase<Co
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CoordinatesCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, CoordinatesCommandArgs arguments)
     {
-        var coordinates = arguments.X == 0 ? gameMaster.Position : new Point(arguments.X, arguments.Y);
-        await gameMaster.ForEachWorldObserverAsync<IShowItemDropEffectPlugIn>(p => p.ShowEffectAsync(ItemDropEffect.ChristmasFireworks, coordinates), true).ConfigureAwait(false);
+        var coordinates = arguments.X == 0 ? player.Position : new Point(arguments.X, arguments.Y);
+        await player.ForEachWorldObserverAsync<IShowItemDropEffectPlugIn>(p => p.ShowEffectAsync(ItemDropEffect.ChristmasFireworks, coordinates), true).ConfigureAwait(false);
     }
 }

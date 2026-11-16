@@ -118,7 +118,10 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     public ServerState ServerState
     {
-        get => this._serverState;
+        get
+        {
+            return this._serverState;
+        }
         private set
         {
             if (this._serverState != value)

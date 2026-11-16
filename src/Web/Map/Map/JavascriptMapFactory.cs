@@ -32,15 +32,15 @@ public sealed class JavascriptMapFactory : IMapFactory
     }
 
     /// <inheritdoc />
-    public async ValueTask<IMapController> CreateMapAsync(IObservableGameServer gameServer, Guid mapId)
+    public async ValueTask<IMapController> CreateMapAsync(IObservableGameServer server, Guid mapId)
     {
         MapController? mapController = null;
         try
         {
-            var appId = this.GenerateMapAppIdentifier(gameServer.Id, mapId);
-            await this._jsRuntime.InvokeVoidAsync("CreateMap", gameServer.Id, mapId, this.GetMapContainerIdentifier(gameServer.Id, mapId), appId).ConfigureAwait(false);
-            mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, gameServer, mapId, this._circuitState);
-            await gameServer.RegisterMapObserverAsync(mapId, mapController).ConfigureAwait(false);
+            var appId = this.GenerateMapAppIdentifier(server.Id, mapId);
+            await this._jsRuntime.InvokeVoidAsync("CreateMap", server.Id, mapId, this.GetMapContainerIdentifier(server.Id, mapId), appId).ConfigureAwait(false);
+            mapController = new MapController(this._jsRuntime, this._loggerFactory, appId, server, mapId, this._circuitState);
+            await server.RegisterMapObserverAsync(mapId, mapController).ConfigureAwait(false);
         }
         catch
         {

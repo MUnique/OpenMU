@@ -14,10 +14,10 @@ using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.GameLogic.AccountLinking;
 using MUnique.OpenMU.Interfaces;
 
-/// <summary>
+/// <content>
 /// The part of the <see cref="DiscordBot"/> with the commands for game masters, the direct messages
 /// and the scheduled events.
-/// </summary>
+/// </content>
 public sealed partial class DiscordBot
 {
     /// <summary>

@@ -16,6 +16,8 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 /// The leaderboards are built from the saved <see cref="DataModel.Statistics.MiniGameRankingEntry"/>s,
 /// which are only saved for mini games with <see cref="MiniGameDefinition.SaveRankingStatistics"/>.
 /// </remarks>
+/// <param name="persistence">The persistence context provider.</param>
+/// <param name="configurations">The configuration data source.</param>
 public sealed class MiniGameReadOperations(IPersistenceContextProvider persistence, IDataSource<GameConfiguration> configurations)
 {
     /// <summary>

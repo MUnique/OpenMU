@@ -27,9 +27,9 @@ internal class GuildKickPlayerHandlerPlugIn : IPacketHandlerPlugIn
     public byte Key => GuildKickPlayerRequest.Code;
 
     /// <inheritdoc/>
-    public async ValueTask HandlePacketAsync(Player guildMaster, Memory<byte> packet)
+    public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
         GuildKickPlayerRequest request = packet;
-        await this._kickAction.KickPlayerAsync(guildMaster, request.PlayerName, request.SecurityCode).ConfigureAwait(false);
+        await this._kickAction.KickPlayerAsync(player, request.PlayerName, request.SecurityCode).ConfigureAwait(false);
     }
 }

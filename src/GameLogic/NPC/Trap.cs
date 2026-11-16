@@ -65,10 +65,10 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        base.Dispose(managed);
-        if (managed)
+        base.Dispose(disposing);
+        if (disposing)
         {
             (this._intelligence as IDisposable)?.Dispose();
         }

@@ -383,9 +383,13 @@ Text a player can see is localized. Don't put English strings in the code.
 The project uses [StyleCop.Analyzers](https://www.nuget.org/packages/StyleCop.Analyzers/)
 and the Visual Studio threading analyzers, configured in
 [`src/Directory.Build.props`](../src/Directory.Build.props) and
-[`src/.editorconfig`](../src/.editorconfig). **A change should not add warnings.**
-Fix the finding rather than suppressing it; if a suppression is genuinely right,
-explain why in a comment.
+[`src/.editorconfig`](../src/.editorconfig). **A change must not introduce any
+new build warnings — including analyzer warnings (SA, CA, CS, VSTHRD, etc.).**
+Build the solution (`dotnet build src/MUnique.OpenMU.sln`) after your change and
+verify the warning count did not increase. Fix every finding rather than
+suppressing it; if a suppression is genuinely right, explain why in a comment.
+Do not ignore, defer, or `#pragma warning disable` a warning without
+justification.
 
 StyleCop already enforces the copyright file header, the `using` directives
 after the file-scoped namespace, the `this.` prefix, XML documentation on exposed

@@ -34,7 +34,10 @@ public partial class CultureSelector
     /// </summary>
     public string SelectedCultureCode
     {
-        get => CultureInfo.CurrentUICulture.Name;
+        get
+        {
+            return CultureInfo.CurrentUICulture.Name;
+        }
         set
         {
             if (CultureInfo.CurrentUICulture.Name == value)

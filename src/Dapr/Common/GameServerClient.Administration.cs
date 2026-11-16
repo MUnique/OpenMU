@@ -8,7 +8,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using MUnique.OpenMU.Interfaces;
 
-/// <summary>The confirmed live administration part of the remote game server client.</summary>
+/// <content>The confirmed live administration part of the remote game server client.</content>
 public sealed partial class GameServerClient : IGameServerAdministration
 {
     /// <summary>Gets the unique Dapr app identifier used for confirmed live administration.</summary>

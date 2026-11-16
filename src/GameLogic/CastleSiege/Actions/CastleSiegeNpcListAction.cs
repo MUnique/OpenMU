@@ -24,9 +24,10 @@ public static class CastleSiegeNpcListAction
         CastleSiegeContext? context,
         short monsterNumber)
     {
-        IReadOnlyList<CastleSiegeNpcInfo> npcs = context is { Configuration.Enabled: true }
-            && await CastleSiegeNpcAuthorization.IsOwnerOfficerAsync(player, context).ConfigureAwait(false)
-            ? await context.NpcController.GetDefenseStructureSnapshotAsync(monsterNumber).ConfigureAwait(false)
+        var isAuthorized = context is { Configuration.Enabled: true }
+            && await CastleSiegeNpcAuthorization.IsOwnerOfficerAsync(player, context).ConfigureAwait(false);
+        IReadOnlyList<CastleSiegeNpcInfo> npcs = isAuthorized
+            ? await context!.NpcController.GetDefenseStructureSnapshotAsync(monsterNumber).ConfigureAwait(false)
             : [];
         await player.InvokeViewPlugInAsync<ICastleSiegeNpcListPlugIn>(
                 view => view.ShowNpcListAsync(npcs))

@@ -927,10 +927,22 @@ public class BotChatConfiguration
         SetGesture(configuration.FriendLines, BotChatGesture.Greeting);
         foreach (var reply in configuration.WhisperReplies)
         {
-            reply.Gesture = reply.Keywords.StartsWith("hi,", StringComparison.Ordinal) ? BotChatGesture.Greeting
-                : reply.Keywords.StartsWith("bye,", StringComparison.Ordinal) ? BotChatGesture.Goodbye
-                : reply.Keywords.StartsWith("thanks,", StringComparison.Ordinal) ? BotChatGesture.Smile
-                : BotChatGesture.None;
+            if (reply.Keywords.StartsWith("hi,", StringComparison.Ordinal))
+            {
+                reply.Gesture = BotChatGesture.Greeting;
+            }
+            else if (reply.Keywords.StartsWith("bye,", StringComparison.Ordinal))
+            {
+                reply.Gesture = BotChatGesture.Goodbye;
+            }
+            else if (reply.Keywords.StartsWith("thanks,", StringComparison.Ordinal))
+            {
+                reply.Gesture = BotChatGesture.Smile;
+            }
+            else
+            {
+                reply.Gesture = BotChatGesture.None;
+            }
         }
 
         return configuration;

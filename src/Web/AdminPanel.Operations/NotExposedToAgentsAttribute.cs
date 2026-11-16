@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>Documents why an operation has no agent equivalent.</summary>
+/// <param name="reason">The reason for excluding this operation.</param>
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class NotExposedToAgentsAttribute(string reason) : Attribute
 {

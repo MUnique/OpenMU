@@ -25,7 +25,7 @@ public static class AdminToolGroups
             var pattern = part.Trim();
             var stem = pattern.EndsWith("_*", StringComparison.Ordinal) ? pattern[..^1] : pattern;
             return stem.Length >= 3 && stem.Contains('_', StringComparison.Ordinal) && stem[0] is >= 'a' and <= 'z'
-                && stem.All(c => c is >= 'a' and <= 'z' or '_');
+                && stem.All(c => c is (>= 'a' and <= 'z') or '_');
         });
     }
 
@@ -40,7 +40,9 @@ public static class AdminToolGroups
             return true;
         }
 
-        return IsValid(value) && value.Split(',', StringSplitOptions.TrimEntries).Any(pattern => pattern.EndsWith("_*", StringComparison.Ordinal)
-            ? tool.StartsWith(pattern[..^1], StringComparison.Ordinal) : tool.Equals(pattern, StringComparison.Ordinal));
+        return IsValid(value) && value.Split(',', StringSplitOptions.TrimEntries).Any(pattern =>
+            pattern.EndsWith("_*", StringComparison.Ordinal)
+                ? tool.StartsWith(pattern[..^1], StringComparison.Ordinal)
+                : tool.Equals(pattern, StringComparison.Ordinal));
     }
 }

@@ -47,7 +47,8 @@ public sealed partial class GameServerAdministration(IGameContext context) : IGa
     /// <inheritdoc />
     public async ValueTask<LivePlayerInfo?> GetPlayerAsync(string characterName, CancellationToken cancellationToken)
         => context.GetPlayerByCharacterName(characterName) is { } player
-            ? await this.ReadPlayerAsync(player, cancellationToken).ConfigureAwait(false) : null;
+            ? await this.ReadPlayerAsync(player, cancellationToken).ConfigureAwait(false)
+            : null;
 
     /// <inheritdoc />
     public ValueTask<GameServerAdminResult> TeleportAsync(string characterName, Guid characterId, ushort mapNumber, byte x, byte y, CancellationToken cancellationToken)

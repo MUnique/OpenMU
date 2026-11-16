@@ -136,10 +136,20 @@ internal sealed class SocketGuildServer : IDiscordServer
     /// </summary>
     private static OverwritePermissions Merge(OverwritePermissions? existing, DiscordPermissionOverwrite overwrite)
     {
-        PermValue? GetValue(DiscordChannelAccess access) =>
-            overwrite.Allow.HasFlag(access) ? PermValue.Allow
-            : overwrite.Deny.HasFlag(access) ? PermValue.Deny
-            : null;
+        PermValue? GetValue(DiscordChannelAccess access)
+        {
+            if (overwrite.Allow.HasFlag(access))
+            {
+                return PermValue.Allow;
+            }
+
+            if (overwrite.Deny.HasFlag(access))
+            {
+                return PermValue.Deny;
+            }
+
+            return null;
+        }
 
         return (existing ?? OverwritePermissions.InheritAll).Modify(
             viewChannel: GetValue(DiscordChannelAccess.View),

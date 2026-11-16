@@ -27,8 +27,8 @@ public class TeleportChatCommandPlugIn : ChatCommandPlugInBase<CoordinatesComman
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CoordinatesCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, CoordinatesCommandArgs arguments)
     {
-        await GameMasterActions.MoveAsync(gameMaster, arguments.Coordinates).ConfigureAwait(false);
+        await GameMasterActions.MoveAsync(player, arguments.Coordinates).ConfigureAwait(false);
     }
 }

@@ -77,7 +77,10 @@ public sealed class ChatServer : IChatServer, IDisposable, IConnectionSource
     /// <inheritdoc/>
     public ServerState ServerState
     {
-        get => this._serverState;
+        get
+        {
+            return this._serverState;
+        }
         private set
         {
             if (value != this._serverState)

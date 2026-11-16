@@ -41,13 +41,13 @@ public class ShowGuildRelationshipChangeResultPlugIn : IGuildRelationshipChangeR
     public async ValueTask ShowResultAsync(
         GameLogic.Views.Guild.GuildRelationshipType relationshipType,
         GameLogic.Views.Guild.GuildRelationshipRequestType requestType,
-        GameLogic.Views.Guild.GuildRelationshipChangeResultType result,
+        GameLogic.Views.Guild.GuildRelationshipChangeResultType resultType,
         ushort? guildMasterId)
     {
         await this._player.Connection.SendGuildRelationshipChangeResultAsync(
             relationshipType.Convert(),
             requestType.Convert(),
-            result.Convert(),
+            resultType.Convert(),
             guildMasterId ?? 0).ConfigureAwait(false);
     }
 }

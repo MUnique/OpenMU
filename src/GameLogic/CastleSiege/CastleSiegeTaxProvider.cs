@@ -94,10 +94,13 @@ public sealed class CastleSiegeTaxProvider
     /// <returns>The persistent identifier of the alliance master guild, or <see langword="null"/>.</returns>
     internal static ValueTask<Guid?> GetPersistentAllianceMasterGuildIdAsync(Player player)
     {
-        return player.GuildStatus is { } guildStatus
-               && player.GameContext is IGameServerContext gameServerContext
-            ? gameServerContext.GuildServer.GetPersistentAllianceMasterGuildIdAsync(guildStatus.GuildId)
-            : new ValueTask<Guid?>((Guid?)null);
+        if (player.GuildStatus is { } guildStatus
+            && player.GameContext is IGameServerContext gameServerContext)
+        {
+            return gameServerContext.GuildServer.GetPersistentAllianceMasterGuildIdAsync(guildStatus.GuildId);
+        }
+
+        return new ValueTask<Guid?>((Guid?)null);
     }
 
     /// <summary>
@@ -107,10 +110,13 @@ public sealed class CastleSiegeTaxProvider
     /// <returns>The persistent guild identifier, or <see langword="null"/>.</returns>
     internal static ValueTask<Guid?> GetPersistentGuildMasterIdAsync(Player player)
     {
-        return player.GuildStatus is { Position: GuildPosition.GuildMaster } guildStatus
-               && player.GameContext is IGameServerContext gameServerContext
-            ? gameServerContext.GuildServer.GetPersistentGuildIdAsync(guildStatus.GuildId)
-            : new ValueTask<Guid?>((Guid?)null);
+        if (player.GuildStatus is { Position: GuildPosition.GuildMaster } guildStatus
+            && player.GameContext is IGameServerContext gameServerContext)
+        {
+            return gameServerContext.GuildServer.GetPersistentGuildIdAsync(guildStatus.GuildId);
+        }
+
+        return new ValueTask<Guid?>((Guid?)null);
     }
 
     /// <summary>
