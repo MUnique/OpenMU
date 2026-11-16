@@ -15,12 +15,14 @@ right click stops the use.
 | Goat Figurine            | 13/129 | +10 excellent damage           |
 | Oak Charm                | 13/130 | +50 maximum health             |
 | Maple Charm              | 13/131 | +50 maximum mana               |
-| Golden Oak Charm         | 13/132 | +150 health, +50 shield        |
+| Golden Oak Charm         | 13/132 | +100 health, +500 shield       |
 | Golden Maple Charm       | 13/133 | +150 mana, +50 ability (AG)    |
 
-The values are the ones which the game client shows in the item tooltip. They
-are stored as power-ups of the item definitions, so they can be changed in the
-admin panel.
+The values are the ones which the game client shows in the item tooltip. For
+the Golden Oak Charm, the Season 6 Episode 3 client shows +100 health and +500
+shield, which matches its `ItemAddOption.bmd`; older clients showed +150 and
++50. The values are stored as power-ups of the item definitions, so they can
+be changed in the admin panel.
 
 ## Rules
 

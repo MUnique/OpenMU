@@ -89,8 +89,8 @@ internal class FigurinesAndCharmsDataTest
         Assert.That(PowerUp(items, 129, Stats.ExcellentDamageBonus), Is.EqualTo(10));
         Assert.That(PowerUp(items, 130, Stats.MaximumHealth), Is.EqualTo(50));
         Assert.That(PowerUp(items, 131, Stats.MaximumMana), Is.EqualTo(50));
-        Assert.That(PowerUp(items, 132, Stats.MaximumHealth), Is.EqualTo(150));
-        Assert.That(PowerUp(items, 132, Stats.MaximumShield), Is.EqualTo(50));
+        Assert.That(PowerUp(items, 132, Stats.MaximumHealth), Is.EqualTo(100));
+        Assert.That(PowerUp(items, 132, Stats.MaximumShield), Is.EqualTo(500));
         Assert.That(PowerUp(items, 133, Stats.MaximumMana), Is.EqualTo(150));
         Assert.That(PowerUp(items, 133, Stats.MaximumAbility), Is.EqualTo(50));
     }
