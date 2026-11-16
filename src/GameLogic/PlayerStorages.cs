@@ -74,8 +74,16 @@ internal sealed class PlayerStorages
 
             if (this.BackupInventory is { } backupInventory)
             {
-                await this.RestoreBackupInventoryAsync(inventory, backupInventory).ConfigureAwait(false);
-                return;
+                if (this.IsBackupInventoryRequired())
+                {
+                    await this.RestoreBackupInventoryAsync(inventory, backupInventory).ConfigureAwait(false);
+                    return;
+                }
+
+                // The backup is a leftover of a dialog which was closed without notice. Restoring it would
+                // bring back items which were sold or dropped in the meantime, and remove everything
+                // which was picked up or bought since then.
+                this.BackupInventory = null;
             }
 
             if (this.TemporaryStorage is not { ItemStorage.Items.Count: > 0 } temporaryStorage)
@@ -206,6 +214,18 @@ internal sealed class PlayerStorages
         account.Vault ??= this._player.PersistenceContext.CreateNew<ItemStorage>();
         var size = account.IsVaultExtended ? InventoryConstants.WarehouseSize * 2 : InventoryConstants.WarehouseSize;
         return new Storage(size, account.Vault);
+    }
+
+    /// <summary>
+    /// Determines whether the <see cref="BackupInventory"/> still belongs to an unfinished
+    /// crafting or trade, which means that items are waiting in the temporary storage
+    /// or a trade is still in progress.
+    /// </summary>
+    /// <returns><c>true</c>, if the inventory has to be restored from the backup; otherwise, <c>false</c>.</returns>
+    private bool IsBackupInventoryRequired()
+    {
+        return this.TemporaryStorage is { ItemStorage.Items.Count: > 0 }
+               || this._player.TradingPartner is not null;
     }
 
     private async ValueTask RestoreBackupInventoryAsync(IInventoryStorage inventory, BackupItemStorage backupInventory)
