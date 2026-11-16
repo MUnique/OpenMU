@@ -7822,6 +7822,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
 
+        /// <summary>
         ///   Looks up a localized string similar to Gladiator's Honor consume handler.
         /// </summary>
         public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
@@ -7839,6 +7840,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
             }
         }
         
+        /// <summary>
         ///   Looks up a localized string similar to Applies the effect of the Gladiator's Honor, which can only be used in Vulcanus..
         /// </summary>
         public static string GladiatorsHonorConsumeHandlerPlugIn_Description {

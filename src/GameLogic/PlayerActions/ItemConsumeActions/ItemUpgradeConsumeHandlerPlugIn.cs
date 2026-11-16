@@ -62,6 +62,9 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
         set => this._configuration = this.NormalizeConfiguration(value);
     }
 
+    /// <inheritdoc />
+    public object CreateDefaultConfig() => this._defaultConfiguration.Clone();
+
     /// <inheritdoc/>
     protected override bool ModifyItem(Item item, IContext persistenceContext)
     {
@@ -123,9 +126,6 @@ public abstract class ItemUpgradeConsumeHandlerPlugIn : ItemModifyConsumeHandler
 
         return true;
     }
-
-    /// <inheritdoc />
-    public object CreateDefaultConfig() => this._defaultConfiguration.Clone();
 
     private ItemUpgradeConfiguration NormalizeConfiguration(ItemUpgradeConfiguration? configuration)
     {

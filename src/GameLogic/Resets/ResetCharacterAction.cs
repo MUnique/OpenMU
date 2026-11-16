@@ -100,19 +100,6 @@ public class ResetCharacterAction
         }
     }
 
-    private async ValueTask ShowMessageAsync(string messageKey, params object?[] args)
-    {
-        var message = this._player.GetLocalizedMessage(messageKey, args);
-
-        if (this._npc is null)
-        {
-            await this._player.ShowBlueMessageAsync(message).ConfigureAwait(false);
-            return;
-        }
-
-        await this._player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, this._npc)).ConfigureAwait(false);
-    }
-
     /// <summary>
     /// Gets the total experience a character has when it reaches the given level.
     /// A reset which starts above level 1 has to start with this amount; otherwise the
@@ -131,6 +118,19 @@ public class ResetCharacterAction
         }
 
         return experienceTable[Math.Min(level, experienceTable.Length - 1)];
+    }
+
+    private async ValueTask ShowMessageAsync(string messageKey, params object?[] args)
+    {
+        var message = this._player.GetLocalizedMessage(messageKey, args);
+
+        if (this._npc is null)
+        {
+            await this._player.ShowBlueMessageAsync(message).ConfigureAwait(false);
+            return;
+        }
+
+        await this._player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, this._npc)).ConfigureAwait(false);
     }
 
     private int GetResetCount()

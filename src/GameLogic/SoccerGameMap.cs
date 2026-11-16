@@ -22,11 +22,6 @@ using MUnique.OpenMU.Pathfinding;
 /// </remarks>
 public class SoccerGameMap : GameMap
 {
-    /// <summary>
-    /// The points a guild gets for a goal.
-    /// </summary>
-    public static byte PointsPerGoal => 20;
-
     private GuildWarScore? _score;
     private SoccerBall? _ball;
     private CancellationTokenSource? _clockCts;
@@ -42,6 +37,11 @@ public class SoccerGameMap : GameMap
     {
         this.ObjectAdded += this.OnObjectAddedAsync;
     }
+
+    /// <summary>
+    /// Gets the points awarded to a guild for a goal.
+    /// </summary>
+    public static byte PointsPerGoal => 20;
 
     /// <summary>
     /// Gets a value indicating whether a battle in ongoing at this instance.

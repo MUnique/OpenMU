@@ -478,7 +478,7 @@ public class MoveItemAction
             Storages.PersonalStore => state == PlayerState.EnteredWorld && !(player.ShopStorage?.StoreOpen ?? true),
             Storages.Vault => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.VaultStorage,
             Storages.Trade => state == PlayerState.TradeOpened,
-            Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ChaosMachine,
+            Storages.ChaosMachine => state == PlayerState.NpcDialogOpened && (openedWindow == NpcWindow.ChaosMachine || openedWindow == NpcWindow.CastleSeniorNPC),
             Storages.PetTrainer => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.PetTrainer,
             Storages.Refinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.ElphisRefinery,
             Storages.Smelting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.RefineStoneMaking,
@@ -489,8 +489,9 @@ public class MoveItemAction
             Storages.SeedSphereCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedMaster,
             Storages.SeedMountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
             Storages.SeedUnmountCrafting => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.SeedResearcher,
-            Storages.LuckyItemTrade => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
-            Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
+
+            // These IDs select dialog operations over one temporary grid; crafting requests select recipes.
+            Storages.LuckyItemTrade or Storages.LuckyItemRefinery => state == PlayerState.NpcDialogOpened && openedWindow == NpcWindow.CombineLuckyItem,
             _ => false,
         };
     }
