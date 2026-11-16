@@ -207,4 +207,13 @@
   <data name="EquipmentWithSkillWithoutValue" xml:space="preserve">
     <value>技能不增加价格的装备</value>
   </data>
+  <data name="RentalItems" xml:space="preserve">
+    <value>租赁物品</value>
+  </data>
+  <data name="SkeletonRentalItems" xml:space="preserve">
+    <value>租赁物品（骷髅）</value>
+  </data>
+  <data name="SmallWingsAndCapes" xml:space="preserve">
+    <value>小翅膀和披风</value>
+  </data>
 </root>

@@ -550,6 +550,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rental items.
+        /// </summary>
+        public static string RentalItems {
+            get {
+                return ResourceManager.GetString("RentalItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scroll of Archangel.
         /// </summary>
         public static string ScrollOfArchangel {
@@ -577,6 +586,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rental items (Skeleton).
+        /// </summary>
+        public static string SkeletonRentalItems {
+            get {
+                return ResourceManager.GetString("SkeletonRentalItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Small Complex Potion.
         /// </summary>
         public static string SmallComplexPotion {
@@ -591,6 +609,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string SmallShieldPotion {
             get {
                 return ResourceManager.GetString("SmallShieldPotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Small wings and capes.
+        /// </summary>
+        public static string SmallWingsAndCapes {
+            get {
+                return ResourceManager.GetString("SmallWingsAndCapes", resourceCulture);
             }
         }
         

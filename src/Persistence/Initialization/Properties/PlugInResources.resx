@@ -466,4 +466,10 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Gladiator's Honor, which increases the experience in Vulcanus by 20 % for 30 minutes.</value>
   </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the rules of rented items</value>
+  </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update lets the items which are rented in the cash shop be sold to an NPC once they expired, for the small fixed price which the client shows.</value>
+  </data>
 </root>

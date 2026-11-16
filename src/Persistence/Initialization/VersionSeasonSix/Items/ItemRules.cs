@@ -10,8 +10,8 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// <summary>
 /// Sets the item rules (<see cref="ItemDefinition.IsTradable"/>, <see cref="ItemDefinition.IsDroppable"/>,
 /// <see cref="ItemDefinition.IsStorable"/>, <see cref="ItemDefinition.IsSellableToNpc"/>,
-/// <see cref="ItemDefinition.IsPersonalStoreSellable"/> and <see cref="ItemDefinition.IsRepairable"/>)
-/// of the Season 6 items.
+/// <see cref="ItemDefinition.IsPersonalStoreSellable"/>, <see cref="ItemDefinition.IsRepairable"/> and
+/// <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/>) of the Season 6 items.
 /// </summary>
 /// <remarks>
 /// The values are the ones of the MuMain client item data (src/bin/Data/Items), so the client and the
@@ -367,6 +367,39 @@ public class ItemRules : InitializerBase
         Rule(15, 36, Blocked.Repair), // Increase Block Parchment
     };
 
+    /// <summary>
+    /// Gets the items which can be sold to an NPC once they expired (<see cref="ItemDefinition.IsSellableToNpcWhenExpired"/>),
+    /// like the client's <c>sellableWhenRentalExpired</c>: the items which are rented in the cash shop.
+    /// </summary>
+    public static IReadOnlyList<(byte Group, short Number)> SellableWhenExpired { get; } = new (byte Group, short Number)[]
+    {
+        (12, 130), // Small Cape of Lord
+        (12, 131), // Small Wing of Curse
+        (12, 132), // Small Wings of Elf
+        (12, 133), // Small Wings of Heaven
+        (12, 134), // Small Wings of Satan
+        (12, 135), // Little Warrior's Cloak
+        (13, 64), // Demon
+        (13, 65), // Spirit of Guardian
+        (13, 76), // Panda Ring
+        (13, 80), // Pet Panda
+        (13, 106), // Pet Unicorn
+        (13, 107), // Lethal Wizard's Ring
+        (13, 109), // Sapphire Ring
+        (13, 110), // Ruby Ring
+        (13, 111), // Topaz Ring
+        (13, 112), // Amethyst Ring
+        (13, 113), // Ruby Necklace
+        (13, 114), // Emerald Necklace
+        (13, 115), // Sapphire Necklace
+        (13, 122), // Skeleton Transformation Ring
+        (13, 123), // Pet Skeleton
+        (14, 112), // Silver Key
+        (14, 113), // Gold Key
+        (14, 123), // Golden Box
+        (14, 124), // Silver Box
+    };
+
     /// <inheritdoc />
     public override void Initialize()
     {
@@ -385,12 +418,28 @@ public class ItemRules : InitializerBase
     }
 
     /// <summary>
-    /// Applies the <see cref="Rules"/> to the given items. Items which are not listed are skipped.
+    /// Sets <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/> on the items of <see cref="SellableWhenExpired"/>.
+    /// The other items are skipped.
+    /// </summary>
+    /// <param name="items">The items.</param>
+    internal static void ApplySellableWhenExpired(IEnumerable<ItemDefinition> items)
+    {
+        var sellableWhenExpired = SellableWhenExpired.ToHashSet();
+        foreach (var item in items.Where(item => sellableWhenExpired.Contains((item.Group, item.Number))))
+        {
+            item.IsSellableToNpcWhenExpired = true;
+        }
+    }
+
+    /// <summary>
+    /// Applies the <see cref="Rules"/> and <see cref="SellableWhenExpired"/> to the given items. Items which are not listed are skipped.
     /// </summary>
     /// <param name="items">The items.</param>
     internal static void Apply(IEnumerable<ItemDefinition> items)
     {
         var rules = Rules.ToDictionary(rule => (rule.Group, rule.Number), rule => rule.BlockedActions);
+        items = items.ToList();
+        ApplySellableWhenExpired(items);
         foreach (var item in items)
         {
             if (!rules.TryGetValue((item.Group, item.Number), out var blocked))

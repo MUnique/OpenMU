@@ -990,4 +990,10 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt die Ehre des Gladiators hinzu, welche die Erfahrung in Vulcanus 30 Minuten lang um 20 % erhöht.</value>
   </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Regeln für gemietete Gegenstände hinzufügen</value>
+  </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update erlaubt es, die im Cash Shop gemieteten Gegenstände nach ihrem Ablauf an einen NPC zu verkaufen, für den kleinen festen Preis, den der Client anzeigt.</value>
+  </data>
 </root>

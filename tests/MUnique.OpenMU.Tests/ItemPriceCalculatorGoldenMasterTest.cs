@@ -35,6 +35,15 @@ public class ItemPriceCalculatorGoldenMasterTest
     private static readonly byte[] OptionLevels = [1, 2, 3, 4];
 
     /// <summary>
+    /// The price definitions which were added on purpose after the price rules became configuration data, so the
+    /// prices of their items differ from the <see cref="LegacyItemPriceCalculator"/>, which mustn't be changed: the items
+    /// which are rented in the cash shop got the small fixed prices which the client shows, for which they are sold once
+    /// they expired. Before, they were priced like accessories. The <c>ItemFormulasEqualTodayTest</c> of the
+    /// initialization tests covers their prices.
+    /// </summary>
+    private static readonly HashSet<string> ChangedOnPurpose = ["Rental items", "Rental items (Skeleton)", "Small wings and capes"];
+
+    /// <summary>
     /// Tests that all prices of all items of the specified version are the same as before.
     /// </summary>
     /// <param name="version">The version of the data initialization.</param>
@@ -117,6 +126,11 @@ public class ItemPriceCalculatorGoldenMasterTest
         var comparedItems = 0;
         foreach (var definition in gameConfiguration.Items.OrderBy(d => d.Group).ThenBy(d => d.Number))
         {
+            if (definition.PriceDefinition?.Name.ValueInNeutralLanguage is { } priceName && ChangedOnPurpose.Contains(priceName))
+            {
+                continue;
+            }
+
             foreach (var item in CreateItems(definition))
             {
                 comparedItems++;

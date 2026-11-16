@@ -997,6 +997,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This update lets the items which are rented in the cash shop be sold to an NPC once they expired, for the small fixed price which the client shows..
+        /// </summary>
+        public static string AddRentalItemRulesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddRentalItemRulesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the rules of rented items.
+        /// </summary>
+        public static string AddRentalItemRulesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddRentalItemRulesUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update adds the reset fruits of strength, agility, vitality, energy and command, which take back invested points of a stat and return them as level up points. The packages of the in-game shop which contain them are put on sale..
         /// </summary>
         public static string AddResetFruitsUpdatePlugIn_Description {
