@@ -140,23 +140,26 @@ public class TradeButtonAction : BaseTradeAction
                 return (FinishOutcome.Unconfirmed, TradeResult.Cancelled);
             }
 
+            // A trader whose death or forced placement is already reserved at this point doesn't exchange; the trade is
+            // rolled back. A death reserved later is applied after this finish, which owns both state exclusions.
+            var traderAvailable = IsAvailable(trader);
+            var partnerAvailable = IsAvailable(tradingPartner);
             if (!traderAllowed || !partnerAllowed
                 || traderState.CurrentState != PlayerState.TradeButtonPressed
                 || partnerState.CurrentState != PlayerState.TradeButtonPressed
-                || !IsAvailable(trader)
-                || !IsAvailable(tradingPartner))
+                || !traderAvailable
+                || !partnerAvailable)
             {
-                // A trader which is about to die or to be placed elsewhere doesn't exchange; the trade is rolled back.
                 (trader as Player)?.Logger.LogDebug(
                     "Unexpected player states. {Trader}:{TraderState} (allowed: {TraderAllowed}, available: {TraderAvailable}), {Partner}:{PartnerState} (allowed: {PartnerAllowed}, available: {PartnerAvailable})",
                     trader.Name,
                     traderState.CurrentState,
                     traderAllowed,
-                    IsAvailable(trader),
+                    traderAvailable,
                     tradingPartner.Name,
                     partnerState.CurrentState,
                     partnerAllowed,
-                    IsAvailable(tradingPartner));
+                    partnerAvailable);
                 result = TradeResult.Cancelled;
             }
             else

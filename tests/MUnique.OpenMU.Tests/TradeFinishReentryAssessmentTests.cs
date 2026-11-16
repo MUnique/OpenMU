@@ -461,6 +461,7 @@ public class TradeFinishReentryAssessmentTests
     /// <param name="lethal">Whether the paused hit is lethal.</param>
     /// <param name="finisherDies">Whether the hit trader is the finisher (otherwise its already confirmed partner).</param>
     [TestCase(false, false)]
+    [TestCase(false, true)]
     [TestCase(true, false)]
     [TestCase(true, true)]
     public async Task ReservedDeathPreventsTradeExchangeAsync(bool lethal, bool finisherDies)
