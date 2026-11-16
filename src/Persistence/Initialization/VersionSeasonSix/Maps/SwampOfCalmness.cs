@@ -272,7 +272,7 @@ internal class SwampOfCalmness : BaseMapInitializer
         yield return this.CreateMonsterSpawn(411, this.NpcDictionary[443], 058, 020); // Sapi-Tres
         yield return this.CreateMonsterSpawn(412, this.NpcDictionary[443], 068, 015); // Sapi-Tres
         yield return this.CreateMonsterSpawn(413, this.NpcDictionary[443], 069, 023); // Sapi-Tres
-        yield return this.CreateMonsterSpawn(414, this.NpcDictionary[443], 039, 093, 020, 020); // Sapi-Tres
+        yield return this.CreateMonsterSpawn(414, this.NpcDictionary[443], 039, 020); // Sapi-Tres
         yield return this.CreateMonsterSpawn(415, this.NpcDictionary[443], 041, 026); // Sapi-Tres
         yield return this.CreateMonsterSpawn(416, this.NpcDictionary[445], 027, 053); // Shadow Knight
         yield return this.CreateMonsterSpawn(417, this.NpcDictionary[445], 032, 053); // Shadow Knight

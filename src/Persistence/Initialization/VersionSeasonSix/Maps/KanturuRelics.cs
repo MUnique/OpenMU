@@ -144,6 +144,7 @@ internal class KanturuRelics : BaseMapInitializer
         yield return this.CreateMonsterSpawn(609, this.NpcDictionary[106], 144, 171); // Laser Trap
         yield return this.CreateMonsterSpawn(610, this.NpcDictionary[106], 144, 177); // Laser Trap
         yield return this.CreateMonsterSpawn(611, this.NpcDictionary[106], 144, 183); // Laser Trap
+        yield return this.CreateMonsterSpawn(612, this.NpcDictionary[106], 141, 155); // Laser Trap
     }
 
     /// <inheritdoc/>

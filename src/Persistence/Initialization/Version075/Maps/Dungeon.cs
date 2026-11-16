@@ -45,16 +45,11 @@ internal class Dungeon : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[8], 42, 122);
         yield return this.CreateMonsterSpawn(102, this.NpcDictionary[8], 4, 73);
         yield return this.CreateMonsterSpawn(103, this.NpcDictionary[8], 12, 56);
         yield return this.CreateMonsterSpawn(104, this.NpcDictionary[8], 2, 78);
         yield return this.CreateMonsterSpawn(105, this.NpcDictionary[16], 108, 9);
         yield return this.CreateMonsterSpawn(106, this.NpcDictionary[14], 120, 232);
-        yield return this.CreateMonsterSpawn(107, this.NpcDictionary[14], 98, 221);
-        yield return this.CreateMonsterSpawn(108, this.NpcDictionary[14], 100, 220);
-        yield return this.CreateMonsterSpawn(109, this.NpcDictionary[14], 100, 225);
-        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[14], 108, 232);
         yield return this.CreateMonsterSpawn(111, this.NpcDictionary[14], 107, 230);
         yield return this.CreateMonsterSpawn(112, this.NpcDictionary[12], 65, 205);
         yield return this.CreateMonsterSpawn(113, this.NpcDictionary[14], 84, 244);
@@ -363,6 +358,8 @@ internal class Dungeon : BaseMapInitializer
         yield return this.CreateMonsterSpawn(766, this.NpcDictionary[100], 227, 61, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(767, this.NpcDictionary[100], 229, 93, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(768, this.NpcDictionary[100], 232, 93, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(769, this.NpcDictionary[8], 30, 122);
+        yield return this.CreateMonsterSpawn(770, this.NpcDictionary[8], 40, 98);
     }
 
     /// <inheritdoc/>

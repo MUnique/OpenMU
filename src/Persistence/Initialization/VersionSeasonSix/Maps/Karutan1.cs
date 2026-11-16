@@ -100,7 +100,7 @@ internal class Karutan1 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(143, this.NpcDictionary[570], 198, 063); // Bone Scorpion
         yield return this.CreateMonsterSpawn(144, this.NpcDictionary[570], 188, 063); // Bone Scorpion
         yield return this.CreateMonsterSpawn(145, this.NpcDictionary[570], 184, 114); // Bone Scorpion
-        yield return this.CreateMonsterSpawn(146, this.NpcDictionary[570], 204, 204, 104, 114); // Bone Scorpion
+        yield return this.CreateMonsterSpawn(146, this.NpcDictionary[570], 204, 104); // Bone Scorpion
         yield return this.CreateMonsterSpawn(147, this.NpcDictionary[570], 201, 094); // Bone Scorpion
         yield return this.CreateMonsterSpawn(148, this.NpcDictionary[570], 226, 111); // Bone Scorpion
         yield return this.CreateMonsterSpawn(149, this.NpcDictionary[570], 183, 162); // Bone Scorpion
@@ -163,7 +163,7 @@ internal class Karutan1 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(206, this.NpcDictionary[573], 042, 105); // Crypta
         yield return this.CreateMonsterSpawn(207, this.NpcDictionary[573], 038, 132); // Crypta
         yield return this.CreateMonsterSpawn(208, this.NpcDictionary[573], 044, 148); // Crypta
-        yield return this.CreateMonsterSpawn(209, this.NpcDictionary[573], 058, 178); // Crypta
+        yield return this.CreateMonsterSpawn(209, this.NpcDictionary[573], 057, 178); // Crypta
         yield return this.CreateMonsterSpawn(210, this.NpcDictionary[574], 040, 074); // Crypos
         yield return this.CreateMonsterSpawn(211, this.NpcDictionary[574], 049, 058); // Crypos
         yield return this.CreateMonsterSpawn(212, this.NpcDictionary[574], 036, 085); // Crypos

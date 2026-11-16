@@ -106,6 +106,12 @@ internal class Kalima7 : KalimaBase
         yield return this.CreateMonsterSpawn(158, this.NpcDictionary[337], 053, 093); // Schriker 7
         yield return this.CreateMonsterSpawn(159, this.NpcDictionary[337], 035, 087); // Schriker 7
         yield return this.CreateMonsterSpawn(160, this.NpcDictionary[275], 026, 076); // Illusion of Kundun 7
+        yield return this.CreateMonsterSpawn(161, this.NpcDictionary[337], 032, 077); // Schriker 7
+        yield return this.CreateMonsterSpawn(162, this.NpcDictionary[337], 041, 078); // Schriker 7
+        yield return this.CreateMonsterSpawn(163, this.NpcDictionary[337], 037, 067); // Schriker 7
+        yield return this.CreateMonsterSpawn(164, this.NpcDictionary[337], 046, 086); // Schriker 7
+        yield return this.CreateMonsterSpawn(165, this.NpcDictionary[337], 023, 085); // Schriker 7
+        yield return this.CreateMonsterSpawn(166, this.NpcDictionary[337], 023, 070); // Schriker 7
     }
 
     /// <inheritdoc/>
