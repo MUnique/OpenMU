@@ -118,7 +118,7 @@ internal sealed class SocketGuildServer : IDiscordServer
         {
             if (overwrite.IsRole)
             {
-                var role = (this._guild.GetRole(overwrite.TargetId) as IRole ?? this._createdRoles.GetValueOrDefault(overwrite.TargetId)) ?? throw new InvalidOperationException($"The role {overwrite.TargetId} wasn't found.");
+                var role = (await this._guild.GetRoleAsync(overwrite.TargetId).ConfigureAwait(false) as IRole ?? this._createdRoles.GetValueOrDefault(overwrite.TargetId)) ?? throw new InvalidOperationException($"The role {overwrite.TargetId} wasn't found.");
                 var permissions = Merge(channel.GetPermissionOverwrite(role), overwrite);
                 await channel.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
             }
