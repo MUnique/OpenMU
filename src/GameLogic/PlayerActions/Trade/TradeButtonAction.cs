@@ -150,7 +150,7 @@ public class TradeButtonAction : BaseTradeAction
                 || !traderAvailable
                 || !partnerAvailable)
             {
-                (trader as Player)?.Logger.LogDebug(
+                trader.Logger.LogDebug(
                     "Unexpected player states. {Trader}:{TraderState} (allowed: {TraderAllowed}, available: {TraderAvailable}), {Partner}:{PartnerState} (allowed: {PartnerAllowed}, available: {PartnerAvailable})",
                     trader.Name,
                     traderState.CurrentState,
