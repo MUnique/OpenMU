@@ -81,7 +81,7 @@ internal class RageSkillAttackTargetTest
     }
 
     /// <summary>
-    /// Tests that an explicit target within the +2 range tolerance is still accepted.
+    /// Tests that an explicit target within the range tolerance is still accepted.
     /// </summary>
     [Test]
     public async ValueTask WithinToleranceExplicitTargetIsAttackedAsync()

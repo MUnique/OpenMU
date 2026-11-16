@@ -18,6 +18,14 @@ public class RageSkillAttackAction
     /// </summary>
     public const int MaximumTargetsPerAttack = 5;
 
+    /// <summary>
+    /// The number of tiles the explicit target may be farther away than the skill range.
+    /// The client decides the range on its own view of the positions, which can lag a tile
+    /// or two behind the server (moving monsters, walking player). It is an empirical margin
+    /// for that drift, not a value taken from the original game.
+    /// </summary>
+    public const byte RangeTolerance = 2;
+
     private const int HitsPerTarget = 2;
 
     /// <summary>
@@ -71,7 +79,7 @@ public class RageSkillAttackAction
             explicitTarget = null;
         }
 
-        if (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range + 2))
+        if (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range + RangeTolerance))
         {
             if (explicitTarget is not ISupportWalk { IsWalking: true })
             {

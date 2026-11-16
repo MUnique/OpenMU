@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.MessageHandler;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network.Packets.ClientToServer;
@@ -36,7 +37,7 @@ internal class RageSkillAttackHandlerPlugIn : IPacketHandlerPlugIn
 
         var target = player.GetObject(targetId) as IAttackable;
         if (player.SkillList is null || player.SkillList.GetSkill(message.SkillId) is not { } skill
-                                     || target is null || !target.IsInRange(player.Position, skill.Skill!.Range + 2))
+                                     || target is null || !target.IsInRange(player.Position, skill.Skill!.Range + RageSkillAttackAction.RangeTolerance))
         {
             return;
         }
