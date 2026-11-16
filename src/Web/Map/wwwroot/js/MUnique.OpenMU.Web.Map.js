@@ -371,7 +371,7 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
 });
 System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
     "use strict";
-    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, getDisplayName, Attackable, attackableAlphaMapTexture;
+    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, MAP_OFFSET, getDisplayName, Attackable, attackableAlphaMapTexture;
     var __moduleName = context_6 && context_6.id;
     return {
         setters: [
@@ -389,6 +389,7 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
             NAME_LABEL_Z_POSITION = 200;
             NAME_INDEX = 0;
             NAME_SEPARATOR = " - Id:";
+            MAP_OFFSET = 128;
             exports_6("getDisplayName", getDisplayName = function (data) { return data.name.split(NAME_SEPARATOR)[NAME_INDEX]; });
             Attackable = (function (_super) {
                 __extends(Attackable, _super);
@@ -449,38 +450,17 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                     this.setRotation(this.data.direction);
                 };
                 Attackable.prototype.moveTo = function (newX, newY, moveType, walkDelay, steps) {
-                    var _this = this;
-                    var state = { x: this.data.x, y: this.data.y };
-                    this.data = Object.assign({}, this.data, { x: newX, y: newY });
                     this.stopMoveTweens();
+                    var state = this.getCurrentMapPosition();
+                    this.data = Object.assign({}, this.data, { x: newX, y: newY });
                     var isWalking = moveType !== "Instant" && moveType !== 1
                         && steps !== undefined && steps !== null && steps.length > 0;
-                    if (!isWalking) {
-                        var moveDurationMs = 300;
-                        var moveTween = new tween_2.default.Tween(state)
-                            .to({ x: newX, y: newY }, moveDurationMs)
-                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); })
-                            .easing(tween_2.default.Easing.Elastic.Out);
-                        this.moveTweens.push(moveTween);
-                        moveTween.start();
-                        return;
+                    if (isWalking) {
+                        this.walkAlong(state, steps, walkDelay);
                     }
-                    var previousTween = null;
-                    var _loop_1 = function (step) {
-                        var stepTween = new tween_2.default.Tween(state)
-                            .to({ x: step.x, y: step.y }, walkDelay)
-                            .onStart(function () { return _this.rotateTo(step.direction); })
-                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); });
-                        previousTween === null || previousTween === void 0 ? void 0 : previousTween.chain(stepTween);
-                        previousTween = stepTween;
-                        this_1.moveTweens.push(stepTween);
-                    };
-                    var this_1 = this;
-                    for (var _i = 0, steps_1 = steps; _i < steps_1.length; _i++) {
-                        var step = steps_1[_i];
-                        _loop_1(step);
+                    else {
+                        this.slideTo(state, newX, newY);
                     }
-                    this.moveTweens[0].start();
                 };
                 Attackable.prototype.rotateTo = function (rotation) {
                     var _this = this;
@@ -517,15 +497,53 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                     }
                     this.moveTweens = [];
                 };
+                Attackable.prototype.slideTo = function (state, newX, newY) {
+                    var _this = this;
+                    var moveDurationMs = 300;
+                    var moveTween = new tween_2.default.Tween(state)
+                        .to({ x: newX, y: newY }, moveDurationMs)
+                        .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); })
+                        .easing(tween_2.default.Easing.Quadratic.Out);
+                    this.moveTweens.push(moveTween);
+                    moveTween.start();
+                };
+                Attackable.prototype.walkAlong = function (state, steps, walkDelay) {
+                    var _this = this;
+                    var maxSlideDistance = 2;
+                    var firstStep = steps[0];
+                    if (Math.max(Math.abs(state.x - firstStep.x), Math.abs(state.y - firstStep.y)) > maxSlideDistance) {
+                        state.x = firstStep.x;
+                        state.y = firstStep.y;
+                        this.setObjectPositionOnMap(state.x, state.y);
+                    }
+                    var previousTween = null;
+                    var _loop_1 = function (step) {
+                        var stepTween = new tween_2.default.Tween(state)
+                            .to({ x: step.x, y: step.y }, walkDelay)
+                            .onStart(function () { return _this.rotateTo(step.direction); })
+                            .onUpdate(function () { return _this.setObjectPositionOnMap(state.x, state.y); });
+                        previousTween === null || previousTween === void 0 ? void 0 : previousTween.chain(stepTween);
+                        previousTween = stepTween;
+                        this_1.moveTweens.push(stepTween);
+                    };
+                    var this_1 = this;
+                    for (var _i = 0, steps_1 = steps; _i < steps_1.length; _i++) {
+                        var step = steps_1[_i];
+                        _loop_1(step);
+                    }
+                    this.moveTweens[0].start();
+                };
                 Attackable.prototype.setRotation = function (value) {
                     var degreesOfOneTurn = 360;
                     var numberOfDirectionValues = 8;
                     this.rotation.z = THREE.Math.degToRad((value * degreesOfOneTurn) / numberOfDirectionValues);
                 };
+                Attackable.prototype.getCurrentMapPosition = function () {
+                    return { x: MAP_OFFSET - this.position.y, y: this.position.x + MAP_OFFSET };
+                };
                 Attackable.prototype.setObjectPositionOnMap = function (newX, newY) {
-                    var offset = 128;
-                    this.position.y = offset - newX;
-                    this.position.x = newY - offset;
+                    this.position.y = MAP_OFFSET - newX;
+                    this.position.x = newY - MAP_OFFSET;
                 };
                 return Attackable;
             }(THREE.Mesh));

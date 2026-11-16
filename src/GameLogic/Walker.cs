@@ -24,7 +24,7 @@ public sealed class Walker : IDisposable
     private readonly Queue<WalkingStep> _nextSteps = new(5);
 
     /// <summary>
-    /// This array keeps all steps of the current walk.
+    /// This array keeps all steps of the current walk, in the order in which they are walked.
     /// </summary>
     private readonly WalkingStep[] _currentWalkSteps = new WalkingStep[MaximumStepCount];
 
@@ -102,12 +102,10 @@ public sealed class Walker : IDisposable
         {
             this._currentWalkStepCount = steps.Length;
             this._nextSteps.Clear();
-            int i = steps.Length - 1;
+            steps.Span.CopyTo(this._currentWalkSteps);
             foreach (var step in steps.Span)
             {
                 this._nextSteps.Enqueue(step);
-                this._currentWalkSteps[i] = step;
-                i--;
             }
         }
 
@@ -161,39 +159,26 @@ public sealed class Walker : IDisposable
     }
 
     /// <summary>
-    /// Gets the directions of the steps which are about to happen next by writing them into the given span.
+    /// Gets the directions of all steps of the current walk, in walking order,
+    /// by writing them into the given span.
     /// </summary>
     /// <param name="directions">The directions.</param>
     /// <returns>The number of written directions.</returns>
     public async ValueTask<int> GetDirectionsAsync(Memory<Direction> directions)
     {
-        var count = 0;
         using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
-        foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount].Select(step => step.Direction))
-        {
-            directions.Span[count] = direction;
-            count++;
-        }
-
-        return count;
+        return this.CopyCurrentWalkDirections(directions.Span);
     }
 
     /// <summary>
-    /// Gets the steps which are about to happen next by writing them into the given span.
+    /// Gets all steps of the current walk, in walking order, by writing them into the given span.
     /// </summary>
     /// <param name="steps">The steps.</param>
     /// <returns>The number of written steps.</returns>
     public async ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps)
     {
-        var count = 0;
         using var readerLock = await this._walkLock.ReaderLockAsync().ConfigureAwait(false);
-        foreach (var direction in this._currentWalkSteps[..this._currentWalkStepCount])
-        {
-            steps.Span[count] = direction;
-            count++;
-        }
-
-        return count;
+        return this.CopyCurrentWalkSteps(steps.Span);
     }
 
     /// <summary>
@@ -273,6 +258,34 @@ public sealed class Walker : IDisposable
         }
 
         await this.StopCurrentWalkAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Copies the steps of the current walk, in walking order, into the target. The caller must hold a lock.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <returns>The number of written steps.</returns>
+    private int CopyCurrentWalkSteps(Span<WalkingStep> target)
+    {
+        var currentSteps = this._currentWalkSteps.AsSpan(0, this._currentWalkStepCount);
+        currentSteps.CopyTo(target);
+        return currentSteps.Length;
+    }
+
+    /// <summary>
+    /// Copies the directions of the current walk, in walking order, into the target. The caller must hold a lock.
+    /// </summary>
+    /// <param name="target">The target.</param>
+    /// <returns>The number of written directions.</returns>
+    private int CopyCurrentWalkDirections(Span<Direction> target)
+    {
+        var currentSteps = this._currentWalkSteps.AsSpan(0, this._currentWalkStepCount);
+        for (var index = 0; index < currentSteps.Length; index++)
+        {
+            target[index] = currentSteps[index].Direction;
+        }
+
+        return currentSteps.Length;
     }
 
     /// <summary>
