@@ -184,6 +184,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Web.AdminPan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Web.AdminPanel.Mcp", "Web\AdminPanel.Mcp\MUnique.OpenMU.Web.AdminPanel.Mcp.csproj", "{D3D4BF38-434B-4651-952B-8AF745351B5A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.Web.PlayerPortal.Api", "Web\PlayerPortal.Api\MUnique.OpenMU.Web.PlayerPortal.Api.csproj", "{EAA887F1-E6BD-45EC-A278-D7C4F5B50ACF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MUnique.OpenMU.PlayerPortal.Host", "Dapr\PlayerPortal.Host\MUnique.OpenMU.PlayerPortal.Host.csproj", "{99FB20BF-7E09-4082-98C5-5604CD6AE447}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -428,6 +432,14 @@ Global
 		{D3D4BF38-434B-4651-952B-8AF745351B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3D4BF38-434B-4651-952B-8AF745351B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3D4BF38-434B-4651-952B-8AF745351B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAA887F1-E6BD-45EC-A278-D7C4F5B50ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAA887F1-E6BD-45EC-A278-D7C4F5B50ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAA887F1-E6BD-45EC-A278-D7C4F5B50ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAA887F1-E6BD-45EC-A278-D7C4F5B50ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99FB20BF-7E09-4082-98C5-5604CD6AE447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99FB20BF-7E09-4082-98C5-5604CD6AE447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99FB20BF-7E09-4082-98C5-5604CD6AE447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99FB20BF-7E09-4082-98C5-5604CD6AE447}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

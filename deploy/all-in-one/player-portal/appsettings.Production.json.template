@@ -1,0 +1,5 @@
+{
+  "PlayerPortalApi": {
+    "WorkerToken": "REPLACE_LOCALLY_WITH_RANDOM_SECRET_AT_LEAST_32_UTF8_BYTES"
+  }
+}

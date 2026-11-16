@@ -220,6 +220,39 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<AccountOverview?> GetAccountOverviewAsync(
+        Guid accountId,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        var account = accounts.FirstOrDefault(candidate => candidate.Id == accountId);
+        if (account is null)
+        {
+            return null;
+        }
+
+        var characters = account.State == DataModel.Entities.AccountState.Normal
+            ? account.Characters.OrderBy(character => character.CharacterSlot)
+                .Select(character => new AccountCharacterOverview(
+                    character.Name,
+                    character.CharacterSlot,
+                    character.CharacterClass?.GetId(),
+                    GetAttributeValue(character, levelAttributeId),
+                    GetAttributeValue(character, masterLevelAttributeId)))
+                .ToArray()
+            : Array.Empty<AccountCharacterOverview>();
+
+        return new AccountOverview(account.LoginName, account.State, characters);
+    }
+
+    private static float GetAttributeValue(DataModel.Entities.Character character, Guid definitionId)
+        => character.Attributes.FirstOrDefault(attribute => attribute.Definition?.Id == definitionId)?.Value ?? 0;
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.CharacterStatus?> GetCharacterStatusAsync(string characterName, CancellationToken cancellationToken = default)
     {
         var characters = await this.Provider.GetRepository<Character>()

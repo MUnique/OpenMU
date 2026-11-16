@@ -1,0 +1,4 @@
+dapr-api-token.env
+secrets.json
+appsettings.Production.json
+compose.env

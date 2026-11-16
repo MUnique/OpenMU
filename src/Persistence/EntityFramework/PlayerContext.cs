@@ -354,6 +354,51 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<AccountOverview?> GetAccountOverviewAsync(
+        Guid accountId,
+        Guid levelAttributeId,
+        Guid masterLevelAttributeId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var account = await this.Context.Set<Account>()
+                .Where(candidate => candidate.Id == accountId)
+                .Select(candidate => new { candidate.LoginName, candidate.State })
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (account is null)
+            {
+                return null;
+            }
+
+            if (account.State != DataModel.Entities.AccountState.Normal)
+            {
+                return new AccountOverview(account.LoginName, account.State, Array.Empty<AccountCharacterOverview>());
+            }
+
+            var characters = await this.Context.Set<Account>()
+                .Where(candidate => candidate.Id == accountId)
+                .SelectMany(candidate => candidate.RawCharacters)
+                .OrderBy(character => character.CharacterSlot)
+                .Select(character => new AccountCharacterOverview(
+                    character.Name,
+                    character.CharacterSlot,
+                    character.CharacterClassId,
+                    character.RawAttributes.Where(attribute => attribute.DefinitionId == levelAttributeId).Select(attribute => attribute.Value).FirstOrDefault(),
+                    character.RawAttributes.Where(attribute => attribute.DefinitionId == masterLevelAttributeId).Select(attribute => attribute.Value).FirstOrDefault()))
+                .AsNoTracking()
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return new AccountOverview(account.LoginName, account.State, characters);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.CharacterStatus?> GetCharacterStatusAsync(string characterName, CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);

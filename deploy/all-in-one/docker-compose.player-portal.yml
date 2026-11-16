@@ -1,0 +1,100 @@
+services:
+  player-portal-api:
+    build:
+      context: ../../src
+      dockerfile: Dapr/PlayerPortal.Host/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      PLAYER_PORTAL_BIND_URL: http://0.0.0.0:8080
+      DAPR_HTTP_ENDPOINT: http://player-portal-dapr:3500
+      DAPR_GRPC_ENDPOINT: http://player-portal-dapr:50001
+    env_file:
+      - ./player-portal/dapr-api-token.env
+    user: "${PLAYER_PORTAL_UID:?Set PLAYER_PORTAL_UID to the owner of local secret files}:${PLAYER_PORTAL_GID:?Set PLAYER_PORTAL_GID to the owner group of local secret files}"
+    volumes:
+      - ./player-portal/appsettings.Production.json:/app/appsettings.Production.json:ro
+    networks:
+      - player-portal-private
+    depends_on:
+      player-portal-dapr:
+        condition: service_started
+      player-portal-db-relay:
+        condition: service_started
+    restart: unless-stopped
+
+  player-portal-host-proxy:
+    image: nginx:alpine
+    ports:
+      - 127.0.0.1:18080:80
+    volumes:
+      - ./player-portal/host-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - player-portal-private
+      - player-portal-host
+    depends_on:
+      player-portal-api:
+        condition: service_started
+    restart: unless-stopped
+
+  player-portal-dapr:
+    image: daprio/daprd:1.18.10
+    user: "${PLAYER_PORTAL_UID:?Set PLAYER_PORTAL_UID to the owner of local secret files}:${PLAYER_PORTAL_GID:?Set PLAYER_PORTAL_GID to the owner group of local secret files}"
+    command:
+      - ./daprd
+      - --mode
+      - standalone
+      - --app-id
+      - player-portal-api
+      - --app-port
+      - "8080"
+      - --app-protocol
+      - http
+      - --app-channel-address
+      - player-portal-api
+      - --dapr-http-port
+      - "3500"
+      - --dapr-grpc-port
+      - "50001"
+      - --dapr-internal-grpc-port
+      - "50002"
+      - --dapr-listen-addresses
+      - 0.0.0.0
+      - --dapr-internal-grpc-listen-address
+      - 0.0.0.0
+      - --enable-metrics=false
+      - --resources-path
+      - /components
+      - --placement-host-address
+      - ""
+      - --scheduler-host-address
+      - ""
+    env_file:
+      - ./player-portal/dapr-api-token.env
+    volumes:
+      - ./player-portal/dapr-components:/components:ro
+      - ./player-portal/secrets.json:/run/secrets/player-portal-secrets.json:ro
+    networks:
+      - player-portal-private
+    restart: unless-stopped
+
+  player-portal-db-relay:
+    image: haproxy:3.2.26-alpine
+    volumes:
+      - ./player-portal/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - default
+      - player-portal-private
+    depends_on:
+      database:
+        condition: service_started
+    restart: unless-stopped
+
+networks:
+  default:
+    external: true
+    name: all-in-one_default
+  player-portal-private:
+    driver: bridge
+    internal: true
+  player-portal-host:
+    driver: bridge
