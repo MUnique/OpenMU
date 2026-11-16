@@ -20,13 +20,16 @@ using MUnique.OpenMU.GameLogic.Views.Trade;
 /// partner still holds its half of the old trade or request. The old half must neither move items or money of the
 /// new trade nor break the new pair; two players which request each other at the same time don't end in a pair which
 /// neither of them was shown.
+/// This exercises action ordering with an already-resolved target and a response from the requesting peer;
+/// it does not assert the normal client UI sequence.
 /// </summary>
 [TestFixture]
 public class StaleTradePairTests
 {
     /// <summary>
     /// The old partner of an opened trade presses its trade button after the owner opened a new trade, offered an
-    /// item and money and pressed its own button. Every item exists exactly once, at its owner after the new trade,
+    /// item and money and pressed its own button. The old trade is a late invitation: it reaches the owner while its
+    /// logout is at the map removal, after the logout closed the trades of the owner. Every item exists exactly once, at its owner after the new trade,
     /// and the money of the new trade goes to the new partner only.
     /// </summary>
     [Test]
@@ -41,6 +44,18 @@ public class StaleTradePairTests
             newPeer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
             var (p, d) = (oldPeer, newPeer);
             var character = PrepareOwner(owner);
+            var removalRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var removalEntered = HoldAtMapRemoval(owner, removalRelease);
+            var logout = Task.CompletedTask;
+            var oldAnswer = Task.CompletedTask;
+            var oldTradeShown = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            Mock.Get(p.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!)
+                .Setup(v => v.ShowTradeRequestAnswerAsync(true))
+                .Returns(() =>
+                {
+                    oldTradeShown.TrySetResult();
+                    return ValueTask.CompletedTask;
+                });
             owner.Money = 200;
             p.Money = 100;
             d.Money = 300;
@@ -49,12 +64,27 @@ public class StaleTradePairTests
             var z = await AddItemAsync(d).ConfigureAwait(false);
             try
             {
-                // The old trade: opened, the old peer offers its item, then the owner logs out and selects its character again.
-                Assert.That(await RunAsync(owner, () => new TradeRequestAction().RequestTradeAsync(owner, p)).ConfigureAwait(false), Is.True);
-                await RunAsync(p, () => new TradeAcceptAction().HandleTradeAcceptAsync(p, true)).ConfigureAwait(false);
-                Assert.That(p.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+                // The old trade: the old peer requests and opens it while the owner's logout is at its map removal (the
+                // owner is still selected and alive there), offers its item after the logout, and the owner selects its
+                // character again. The old peer uses its own packet funnel; the owner's funnel is held by the logout.
+                logout = RunAsync(owner, () => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection));
+                Assert.That(await Task.WhenAny(removalEntered, logout).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.SameAs(removalEntered), "setup: the logout reaches its map removal");
+                Assert.That(await RunAsync(p, () => new TradeRequestAction().RequestTradeAsync(p, owner)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.True, "the late invitation is accepted");
+                oldAnswer = RunAsync(p, () => new TradeAcceptAction().HandleTradeAcceptAsync(p, true));
+                Assert.That(await Task.WhenAny(oldTradeShown.Task, oldAnswer).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.SameAs(oldTradeShown.Task), "setup: the old trade opens for the old peer during the logout");
+                removalRelease.TrySetResult();
+                await logout.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                await oldAnswer.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Authenticated));
+                    Assert.That(p.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened), "the opened half survives the logout");
+                    Assert.That(p.TradingPartner, Is.SameAs(owner));
+                    Assert.That(p.BackupInventory, Is.Not.Null);
+                });
                 await RunAsync(p, () => new MoveItemAction().MoveItemAsync(p, 20, Storages.Inventory, 0, Storages.Trade)).ConfigureAwait(false);
-                await LogoutAndReselectAsync(owner, character).ConfigureAwait(false);
+                Assert.That(p.TemporaryStorage!.Items, Does.Contain(x), "the old peer offers its item in its half");
+                await ReselectAsync(owner, character).ConfigureAwait(false);
                 Assert.That(p.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened), "The old peer keeps its half of the old trade.");
 
                 // The new trade: opened, both offer, only the owner presses its button.
@@ -79,6 +109,8 @@ public class StaleTradePairTests
             }
             finally
             {
+                removalRelease.TrySetResult();
+                await WhenEndedAsync(logout, oldAnswer).ConfigureAwait(false);
                 await EndTradesAsync(d, p, owner).ConfigureAwait(false);
             }
 
@@ -113,6 +145,8 @@ public class StaleTradePairTests
     /// <summary>
     /// The old partner of a pending request answers it after the owner logged out, selected its character again and
     /// has a new pending request with another player. The answer ends only the old half; the new pair stays usable.
+    /// The old request is a late invitation of the old partner, which reaches the owner while its logout is at the
+    /// map removal, after the logout closed the trades of the owner.
     /// </summary>
     /// <param name="accept">Whether the old partner accepts rather than declines.</param>
     [TestCase(true)]
@@ -128,14 +162,27 @@ public class StaleTradePairTests
             newPeer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
             var (p, c) = (oldPeer, newPeer);
             var character = PrepareOwner(owner);
+            var removalRelease = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var removalEntered = HoldAtMapRemoval(owner, removalRelease);
+            var logout = Task.CompletedTask;
             owner.Money = 200;
             p.Money = 100;
             c.Money = 300;
             var y = await AddItemAsync(owner).ConfigureAwait(false);
             try
             {
-                Assert.That(await RunAsync(owner, () => new TradeRequestAction().RequestTradeAsync(owner, p)).ConfigureAwait(false), Is.True);
-                await LogoutAndReselectAsync(owner, character).ConfigureAwait(false);
+                logout = RunAsync(owner, () => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection));
+                Assert.That(await Task.WhenAny(removalEntered, logout).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.SameAs(removalEntered), "setup: the logout reaches its map removal");
+                Assert.That(await RunAsync(p, () => new TradeRequestAction().RequestTradeAsync(p, owner)).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false), Is.True, "the late invitation is accepted");
+                removalRelease.TrySetResult();
+                await logout.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Authenticated));
+                    Assert.That(p.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeRequested), "the requested half survives the logout");
+                    Assert.That(p.TradingPartner, Is.SameAs(owner));
+                });
+                await ReselectAsync(owner, character).ConfigureAwait(false);
                 Assert.That(p.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeRequested), "The old peer keeps its half of the old request.");
                 Assert.That(await RunAsync(owner, () => new TradeRequestAction().RequestTradeAsync(owner, c)).ConfigureAwait(false), Is.True);
 
@@ -166,6 +213,8 @@ public class StaleTradePairTests
             }
             finally
             {
+                removalRelease.TrySetResult();
+                await WhenEndedAsync(logout).ConfigureAwait(false);
                 await EndTradesAsync(c, p, owner).ConfigureAwait(false);
             }
 
@@ -266,14 +315,35 @@ public class StaleTradePairTests
         return character;
     }
 
-    private static async Task LogoutAndReselectAsync(Player owner, Character character)
+    /// <summary>
+    /// Holds the removal of the owner from its map, which a logout does after it closed the trades of the owner and
+    /// before it restores the inventory; the owner is still selected and alive there.
+    /// </summary>
+    private static Task HoldAtMapRemoval(Player owner, TaskCompletionSource release)
     {
-        await RunAsync(owner, () => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection)).ConfigureAwait(false);
-        Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Authenticated));
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        owner.CurrentMap!.ObjectRemoved += async removal =>
+        {
+            if (ReferenceEquals(removal.Object, owner))
+            {
+                entered.TrySetResult();
+                await release.Task.ConfigureAwait(false);
+            }
+        };
+
+        return entered.Task;
+    }
+
+    private static async Task ReselectAsync(Player owner, Character character)
+    {
         await RunAsync(owner, () => new RequestCharacterListAction().RequestCharacterListAsync(owner)).ConfigureAwait(false);
         await RunAsync(owner, () => new SelectCharacterAction().SelectCharacterAsync(owner, character.Name)).ConfigureAwait(false);
         Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
     }
+
+    /// <summary>Waits bounded for the given actions, whatever their outcome, so that cleanup doesn't overlap them.</summary>
+    private static Task WhenEndedAsync(params Task[] tasks)
+        => Task.WhenAll(tasks.Select(t => t.ContinueWith(_ => { }, TaskScheduler.Default))).WaitAsync(TimeSpan.FromSeconds(5));
 
     /// <summary>
     /// Ends every trade state through the ordinary cancel of each player, so that a failed assertion doesn't leave a

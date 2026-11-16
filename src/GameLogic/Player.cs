@@ -1445,6 +1445,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
     {
+        // A trade can't continue without this character; the partner gets its items back as with a cancel.
+        await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+
         if (this.Party is { } party)
         {
             await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
