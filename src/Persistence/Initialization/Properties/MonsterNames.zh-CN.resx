@@ -139,7 +139,7 @@
   <data name="RogueCenturion6" xml:space="preserve"><value>武士 6</value></data>
   <data name="Necron6" xml:space="preserve"><value>暗黑巫师 6</value></data>
   <data name="Schriker6" xml:space="preserve"><value>暗黑傀儡 6</value></data>
-  <data name="IllusionOfKundun7" xml:space="preserve"><value>昆顿幻影 7</value></data>
+  <data name="Kundun" xml:space="preserve"><value>昆顿</value></data>
   <data name="CastleGate1" xml:space="preserve"><value>城门1</value></data>
   <data name="LifeStone" xml:space="preserve"><value>生命之石</value></data>
   <data name="GuardianStatue" xml:space="preserve"><value>守护石像</value></data>

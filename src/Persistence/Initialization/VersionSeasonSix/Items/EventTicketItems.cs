@@ -35,10 +35,11 @@ internal class EventTicketItems : InitializerBase
         // Chaos Castle:
         this.CreateEventItem(29, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ArmorOfGuardsman), false);
 
-        // Illusion Temple:
+        // Illusion Temple: the Old Scroll and the Illusion Sorcerer Covenant drop from monsters, and the chaos goblin
+        // combines them into the Scroll of Blood, which is the ticket.
         this.CreateEventItem(49, 13, 1, 1, LocalizedString.FromResource(() => ItemNames.OldScroll), false, 6, 66, 72, 78, 84, 90, 96);
-        this.CreateEventItem(51, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
-        this.CreateEventItem(50, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
+        this.CreateEventItem(50, 13, 1, 2, LocalizedString.FromResource(() => ItemNames.IllusionSorcererCovenant), false, 6, 70, 76, 82, 88, 94, 100);
+        this.CreateEventItem(51, 13, 2, 2, LocalizedString.FromResource(() => ItemNames.ScrollOfBlood), false, 6);
 
         // Kalima:
         this.CreateKalimaTicket();
