@@ -377,6 +377,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private GameConfiguration? _warpFloorConfiguration;
     private CharacterClass? _warpFloorClass;
     private int _minWarpLevel = FallbackMinWarpLevel;
+
+    /// <summary>
+    /// The warps with requirements, which count for the warp floor only while the bot fulfills them;
+    /// cached with <see cref="_minWarpLevel"/>.
+    /// </summary>
+    private WarpInfo[] _warpsWithRequirements = [];
     private Guid _leaderMapId;
     private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
     private DateTimeOffset _nextEvaluationUtc = DateTimeOffset.MinValue;
@@ -1207,7 +1213,8 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Lowest level at which this bot warps on its own: its lowest
     /// class-reduced warp requirement, so special classes keep their edge.
     /// Warps with requirements (e.g. a minimum master level) count only while the bot fulfills them.
-    /// The floor of the other warps is cached per configuration and class; both change rarely.
+    /// The floor of the other warps and the warps with requirements are cached per configuration and class;
+    /// both change rarely. Without such warps (as in the default configuration) nothing is evaluated per call.
     /// </summary>
     internal int GetMinWarpLevel()
     {
@@ -1223,13 +1230,21 @@ internal sealed class BotNavigator : AsyncDisposable
                 .Select(this.GetEffectiveLevelRequirement)
                 .DefaultIfEmpty(FallbackMinWarpLevel)
                 .Min();
+            this._warpsWithRequirements = configuration.WarpList
+                .Where(warp => warp.Requirements is { Count: > 0 })
+                .ToArray();
         }
 
-        return configuration.WarpList
-            .Where(warp => warp.Requirements is { Count: > 0 } && warp.GetMissingRequirement(this._player) is null)
-            .Select(this.GetEffectiveLevelRequirement)
-            .Append(this._minWarpLevel)
-            .Min();
+        var minWarpLevel = this._minWarpLevel;
+        foreach (var warp in this._warpsWithRequirements)
+        {
+            if (warp.GetMissingRequirement(this._player) is null)
+            {
+                minWarpLevel = Math.Min(minWarpLevel, this.GetEffectiveLevelRequirement(warp));
+            }
+        }
+
+        return minWarpLevel;
     }
 
     /// <inheritdoc />
