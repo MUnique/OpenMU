@@ -204,6 +204,59 @@ public class WarpListTests
     }
 
     /// <summary>
+    /// Tests that the minimum master level and resets of the warps which require them are sent right after
+    /// the warp list, and that of several requirements of the same attribute the highest one is sent.
+    /// Requirements of other attributes aren't sent.
+    /// </summary>
+    [Test]
+    public async Task WarpRequirementsAreWrittenAfterTheWarpListAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new ShowWarpListExtendedPlugIn(player);
+        var masterAndResets = CreateWarp(3, "Master and resets", 2, 10, 2000, (Stats.MasterLevel, 50), (Stats.MasterLevel, 80), (Stats.Resets, 2));
+        var withoutRequirements = CreateWarp(5, "Without requirements", 4, 10, 2000);
+        var resetsAndStrength = CreateWarp(300, "Resets and strength", 6, 10, 2000, (Stats.Resets, 70000), (Stats.TotalStrength, 1000));
+
+        await view.ShowWarpListAsync([masterAndResets, withoutRequirements, resetsAndStrength]).ConfigureAwait(false);
+
+        var data = output.ToArray();
+        var listSize = WarpListExtendedRef.GetRequiredSize(3);
+        var packet = new WarpRequirementsExtendedRef(data.AsSpan(listSize));
+        Assert.That(data.Length, Is.EqualTo(listSize + WarpRequirementsExtendedRef.GetRequiredSize(2)));
+        Assert.That(packet.Header.Type, Is.EqualTo(0xC2));
+        Assert.That(packet.Header.Length, Is.EqualTo(data.Length - listSize));
+        Assert.That(packet.Header.Code, Is.EqualTo(0xF5));
+        Assert.That(packet.Header.SubCode, Is.EqualTo(0x0B));
+        Assert.That(packet.Count, Is.EqualTo(2));
+        Assert.That((packet[0].Index, packet[0].MasterLevel, packet[0].Resets), Is.EqualTo(((ushort)3, (ushort)80, 2u)));
+        Assert.That((packet[1].Index, packet[1].MasterLevel, packet[1].Resets), Is.EqualTo(((ushort)300, (ushort)0, 70000u)));
+        Assert.That(
+            data.AsSpan(listSize + 6).ToArray(),
+            Is.EqualTo(new byte[] { 3, 0, 80, 0, 2, 0, 0, 0, 0x2C, 0x01, 0, 0, 0x70, 0x11, 0x01, 0 }),
+            "the entries are little endian: index (2 bytes), master level (2 bytes), resets (4 bytes)");
+    }
+
+    /// <summary>
+    /// Tests that no requirements message is sent when no warp requires a master level or resets,
+    /// even if a warp has requirements of other attributes.
+    /// </summary>
+    [Test]
+    public async Task NoWarpRequirementsAreWrittenWithoutMasterLevelOrResetsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new ShowWarpListExtendedPlugIn(player);
+        WarpInfo[] warps =
+        [
+            CreateWarp(1, "Lorencia", 0, 10, 2000),
+            CreateWarp(2, "Strength", 1, 10, 2000, (Stats.TotalStrength, 1000)),
+        ];
+
+        await view.ShowWarpListAsync(warps).ConfigureAwait(false);
+
+        Assert.That(output.ToArray().Length, Is.EqualTo(WarpListExtendedRef.GetRequiredSize(2)));
+    }
+
+    /// <summary>
     /// Tests that a player who fulfills the requirements of a warp can use it: the costs are paid,
     /// and no message is shown.
     /// </summary>

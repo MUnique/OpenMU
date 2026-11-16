@@ -7,7 +7,10 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -17,6 +20,10 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The extended implementation of the <see cref="IShowWarpListPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
+/// <remarks>
+/// It sends the <see cref="WarpListExtended"/> and, right after it, the <see cref="WarpRequirementsExtended"/>
+/// with the minimum master level and resets of the warps which require them.
+/// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ShowWarpListExtendedPlugIn_Name), Description = nameof(PlugInResources.ShowWarpListExtendedPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("D679BFFC-2096-40B8-8BD9-1DA7771B9152")]
@@ -71,6 +78,22 @@ public class ShowWarpListExtendedPlugIn : IShowWarpListPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+        await this.SendRequirementsAsync(connection, entries).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the minimum value of the requirements of an attribute; if there are several, the highest one.
+    /// </summary>
+    /// <param name="requirements">The requirements.</param>
+    /// <param name="attribute">The attribute.</param>
+    /// <returns>The minimum value, or 0 if the attribute isn't required.</returns>
+    internal static int GetMinimumValue(IEnumerable<AttributeRequirement>? requirements, AttributeDefinition attribute)
+    {
+        return requirements?
+            .Where(requirement => requirement.Attribute == attribute)
+            .Select(requirement => requirement.MinimumValue)
+            .DefaultIfEmpty(0)
+            .Max() ?? 0;
     }
 
     /// <summary>
@@ -101,5 +124,44 @@ public class ShowWarpListExtendedPlugIn : IShowWarpListPlugIn
         }
 
         return result.ToString();
+    }
+
+    private async ValueTask SendRequirementsAsync(IConnection connection, IReadOnlyList<WarpInfo> warps)
+    {
+        // The message has fields for the master level and the resets only. Requirements of other
+        // attributes are checked by the server alone, when the character asks for the warp.
+        var requirements = warps
+            .Select(warp => (
+                warp.Index,
+                MasterLevel: GetMinimumValue(warp.Requirements, Stats.MasterLevel),
+                Resets: GetMinimumValue(warp.Requirements, Stats.Resets)))
+            .Where(entry => entry.MasterLevel > 0 || entry.Resets > 0)
+            .ToList();
+        if (requirements.Count == 0)
+        {
+            return;
+        }
+
+        int Write()
+        {
+            var size = WarpRequirementsExtendedRef.GetRequiredSize(requirements.Count);
+            var packet = new WarpRequirementsExtendedRef(connection.Output.GetSpan(size)[..size])
+            {
+                Count = (byte)requirements.Count,
+            };
+
+            for (var i = 0; i < requirements.Count; i++)
+            {
+                var (index, masterLevel, resets) = requirements[i];
+                var entry = packet[i];
+                entry.Index = (ushort)index;
+                entry.MasterLevel = (ushort)Math.Clamp(masterLevel, 0, ushort.MaxValue);
+                entry.Resets = (uint)resets;
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
     }
 }
