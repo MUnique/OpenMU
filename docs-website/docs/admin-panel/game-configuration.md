@@ -260,8 +260,8 @@ configured under [System](#system).
 
 Route `edit-config-grid/…WarpInfo/`
 
-The entries of the in-game warp list: index, name, target gate, level requirement
-and cost.
+The entries of the in-game warp list: index, name, target gate, level requirement,
+cost and requirements.
 
 The [open source client](https://github.com/sven-n/MuMain) gets this list when a
 character enters the game and shows it in its warp window, so changes show up
@@ -276,6 +276,17 @@ doesn't offer in its warp window: Crywolf (reached by walking), Loren Market
 (reached through an NPC) and the second LaCleon warp. For an existing
 configuration, the optional update *Restrict warps outside of the original warp
 window* does the same.
+
+*Requirements* are attribute requirements on top of the level requirement, like
+the *Map Requirements* of a map: e.g. a minimum *Master Level* or a minimum
+number of *Resets*. A player who doesn't meet one of them can't use the warp and
+gets the same message as for a missing map requirement; the costs are only paid
+when all requirements are met. They apply to the move chat command, too, and bots
+don't pick such warps. The open source client learns the minimum master level
+and resets of each warp (in the `WarpRequirementsExtended` message, right after
+the warp list) and greys out the warps whose minimum the character doesn't reach
+yet. Requirements of other attributes are only checked by the server. A new
+season 6 configuration has no warp requirements.
 
 ## Jewel mixes
 
