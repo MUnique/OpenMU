@@ -8,8 +8,10 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 
 /// <summary>
-/// Extension methods for <see cref="WarpInfo"/>: who may use a warp. The <see cref="WarpAction"/>,
-/// the bots and the summon skill decide it the same way.
+/// Extension methods for <see cref="WarpInfo"/>: who may use a warp. The <see cref="WarpAction"/>
+/// and the bots decide it the same way. The summon party skill checks the requirements with
+/// <see cref="GetMissingRequirement"/>, but keeps its own level rule (the total level against the
+/// level requirement, without the class reduction).
 /// </summary>
 public static class WarpInfoExtensions
 {
