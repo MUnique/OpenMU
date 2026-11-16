@@ -35,18 +35,6 @@ public class FixCrywolfGateTerrainUpdatePlugIn : UpdatePlugInBase
     /// </summary>
     private const int TerrainSize = 256;
 
-    /// <summary>
-    /// Gets the tiles of the south entry of the Crywolf gate, which are walkable in the client's terrain outside of
-    /// the siege (<c>EncTerrain31.att</c>).
-    /// </summary>
-    internal static IReadOnlyList<(byte X, byte Y)> SouthEntryTiles { get; } =
-    [
-        (161, 40),
-        (161, 41), (162, 41), (163, 41), (164, 41),
-        (161, 42), (162, 42), (163, 42), (164, 42),
-        (161, 43), (162, 43), (163, 43), (164, 43),
-    ];
-
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
@@ -61,6 +49,18 @@ public class FixCrywolfGateTerrainUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 14, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <summary>
+    /// Gets the tiles of the south entry of the Crywolf gate, which are walkable in the client's terrain outside of
+    /// the siege (<c>EncTerrain31.att</c>).
+    /// </summary>
+    internal static IReadOnlyList<(byte X, byte Y)> SouthEntryTiles { get; } =
+    [
+        (161, 40),
+        (161, 41), (162, 41), (163, 41), (164, 41),
+        (161, 42), (162, 42), (163, 42), (164, 42),
+        (161, 43), (162, 43), (163, 43), (164, 43),
+    ];
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

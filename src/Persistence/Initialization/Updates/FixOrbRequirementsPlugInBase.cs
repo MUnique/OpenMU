@@ -27,13 +27,6 @@ public abstract class FixOrbRequirementsPlugInBase : UpdatePlugInBase
     /// </summary>
     internal const string PlugInDescription = "Fixes the energy, strength and agility requirements of orbs, crystals and scrolls which are used to learn skills. E.g. the Orbs of Healing, Greater Defense and Greater Damage required 100 energy instead of 52, 72 and 92.";
 
-    private static readonly IReadOnlyDictionary<AttributeDefinition, AttributeDefinition> RequirementValueStats = new Dictionary<AttributeDefinition, AttributeDefinition>
-    {
-        { Stats.TotalEnergy, Stats.TotalEnergyRequirementValue },
-        { Stats.TotalStrength, Stats.TotalStrengthRequirementValue },
-        { Stats.TotalAgility, Stats.TotalAgilityRequirementValue },
-    };
-
     /// <summary>
     /// The corrected requirements of the orbs of the fairy elf, which exist in all versions.
     /// </summary>
@@ -43,6 +36,13 @@ public abstract class FixOrbRequirementsPlugInBase : UpdatePlugInBase
         (12, 9, 72, 0, 0), // Orb of Greater Defense
         (12, 10, 92, 0, 0), // Orb of Greater Damage
     ];
+
+    private static readonly IReadOnlyDictionary<AttributeDefinition, AttributeDefinition> RequirementValueStats = new Dictionary<AttributeDefinition, AttributeDefinition>
+    {
+        { Stats.TotalEnergy, Stats.TotalEnergyRequirementValue },
+        { Stats.TotalStrength, Stats.TotalStrengthRequirementValue },
+        { Stats.TotalAgility, Stats.TotalAgilityRequirementValue },
+    };
 
     /// <inheritdoc />
     public override string Name => PlugInName;

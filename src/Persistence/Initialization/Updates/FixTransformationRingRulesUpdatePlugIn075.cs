@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 /// Updates the transformation ring rules in version 0.75 configurations.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(PlugInResources.FixTransformationRingRulesUpdatePlugIn_Name), Description = nameof(PlugInResources.FixTransformationRingRulesUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))][Guid("0F9B05C4-E1DC-498E-9EFB-E314D520A010")]
+[Display(Name = nameof(PlugInResources.FixTransformationRingRulesUpdatePlugIn_Name), Description = nameof(PlugInResources.FixTransformationRingRulesUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
+[Guid("0F9B05C4-E1DC-498E-9EFB-E314D520A010")]
 public class FixTransformationRingRulesUpdatePlugIn075 : FixTransformationRingRulesUpdatePlugInBase
 {
     /// <inheritdoc />

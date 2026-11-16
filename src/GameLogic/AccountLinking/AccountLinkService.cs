@@ -241,6 +241,22 @@ public sealed class AccountLinkService
         return this.SetNotificationAsync(context => context.GetAccountExternalLinkByUserAsync(provider, externalUserId), type, enabled);
     }
 
+    /// <summary>
+    /// Normalizes an entered code, so that it doesn't matter if it's entered in lower case or with separators.
+    /// </summary>
+    private static string NormalizeCode(string code)
+    {
+        return new string(code.Where(char.IsLetterOrDigit).Select(char.ToUpperInvariant).ToArray());
+    }
+
+    /// <summary>
+    /// Hashes a code, so that the stored codes can't be used by someone who can read the database.
+    /// </summary>
+    private static string HashCode(string code)
+    {
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(code)));
+    }
+
     private async ValueTask<AccountNotificationTypes?> SetNotificationAsync(Func<IPlayerContext, ValueTask<AccountExternalLink?>> getLink, AccountNotificationTypes type, bool? enabled)
     {
         using var context = this._createContext();
@@ -257,21 +273,5 @@ public sealed class AccountLinkService
         }
 
         return link.Notifications;
-    }
-
-    /// <summary>
-    /// Normalizes an entered code, so that it doesn't matter if it's entered in lower case or with separators.
-    /// </summary>
-    private static string NormalizeCode(string code)
-    {
-        return new string(code.Where(char.IsLetterOrDigit).Select(char.ToUpperInvariant).ToArray());
-    }
-
-    /// <summary>
-    /// Hashes a code, so that the stored codes can't be used by someone who can read the database.
-    /// </summary>
-    private static string HashCode(string code)
-    {
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(code)));
     }
 }

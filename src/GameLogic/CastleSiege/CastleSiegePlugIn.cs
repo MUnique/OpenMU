@@ -97,6 +97,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             context,
             player,
             this._timeProvider.GetUtcNow().UtcDateTime);
+
         // See PlayerStateChangedAsync for why this doesn't take the ExecutionLock.
         context.NpcController.ClearMachineOperator(player);
         await context.ClearPlayerJoinSideAsync(player).ConfigureAwait(false);
