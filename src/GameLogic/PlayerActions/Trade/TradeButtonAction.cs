@@ -147,6 +147,16 @@ public class TradeButtonAction : BaseTradeAction
                 || !IsAvailable(tradingPartner))
             {
                 // A trader which is about to die or to be placed elsewhere doesn't exchange; the trade is rolled back.
+                (trader as Player)?.Logger.LogDebug(
+                    "Unexpected player states. {Trader}:{TraderState} (allowed: {TraderAllowed}, available: {TraderAvailable}), {Partner}:{PartnerState} (allowed: {PartnerAllowed}, available: {PartnerAvailable})",
+                    trader.Name,
+                    traderState.CurrentState,
+                    traderAllowed,
+                    IsAvailable(trader),
+                    tradingPartner.Name,
+                    partnerState.CurrentState,
+                    partnerAllowed,
+                    IsAvailable(tradingPartner));
                 result = TradeResult.Cancelled;
             }
             else
