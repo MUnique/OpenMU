@@ -2787,7 +2787,7 @@
     <value>Show warp list (extended)</value>
   </data>
   <data name="ShowWarpListExtendedPlugIn_Description" xml:space="preserve">
-    <value>Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files.</value>
+    <value>Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files, followed by the minimum master level and resets of the warps which require them.</value>
   </data>
   <data name="LuckyCoinViewPlugIn_Name" xml:space="preserve">
     <value>Lucky coin view</value>

@@ -82,21 +82,6 @@ public class ShowWarpListExtendedPlugIn : IShowWarpListPlugIn
     }
 
     /// <summary>
-    /// Gets the minimum value of the requirements of an attribute; if there are several, the highest one.
-    /// </summary>
-    /// <param name="requirements">The requirements.</param>
-    /// <param name="attribute">The attribute.</param>
-    /// <returns>The minimum value, or 0 if the attribute isn't required.</returns>
-    internal static int GetMinimumValue(IEnumerable<AttributeRequirement>? requirements, AttributeDefinition attribute)
-    {
-        return requirements?
-            .Where(requirement => requirement.Attribute == attribute)
-            .Select(requirement => requirement.MinimumValue)
-            .DefaultIfEmpty(0)
-            .Max() ?? 0;
-    }
-
-    /// <summary>
     /// Shortens the name to the whole characters which fit into the name field as UTF-8.
     /// </summary>
     /// <param name="name">The name.</param>
@@ -124,6 +109,21 @@ public class ShowWarpListExtendedPlugIn : IShowWarpListPlugIn
         }
 
         return result.ToString();
+    }
+
+    /// <summary>
+    /// Gets the minimum value of the requirements of an attribute; if there are several, the highest one.
+    /// </summary>
+    /// <param name="requirements">The requirements.</param>
+    /// <param name="attribute">The attribute.</param>
+    /// <returns>The minimum value, or 0 if the attribute isn't required.</returns>
+    private static int GetMinimumValue(IEnumerable<AttributeRequirement>? requirements, AttributeDefinition attribute)
+    {
+        return requirements?
+            .Where(requirement => requirement.Attribute == attribute)
+            .Select(requirement => requirement.MinimumValue)
+            .DefaultIfEmpty(0)
+            .Max() ?? 0;
     }
 
     private async ValueTask SendRequirementsAsync(IConnection connection, IReadOnlyList<WarpInfo> warps)

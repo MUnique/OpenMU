@@ -2818,8 +2818,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Gets the gate through which the bot may legally warp to the given map, exactly like a player
     /// using the in-game warp window: the map must have an entry in the server's warp list whose level
     /// requirement (class-reduced, see <see cref="CharacterExtensions.GetEffectiveMoveLevelRequirement"/>)
-    /// is met by the bot's PLAIN character level. The reset-aware effective level intentionally plays
-    /// no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
+    /// is met by the bot's PLAIN character level, and whose own requirements (e.g. a minimum master level,
+    /// see <see cref="WarpInfo.Requirements"/>) the bot fulfills. The reset-aware effective level intentionally
+    /// plays no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
     /// </summary>
     /// <param name="mapDefinition">The target map.</param>
     /// <param name="warp">The warp info, if a legal entry exists.</param>
