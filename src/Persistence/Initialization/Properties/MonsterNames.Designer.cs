@@ -1008,10 +1008,10 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
-        /// <summary>Gets IllusionOfKundun7 from the configuration name resources.</summary>
-        public static string IllusionOfKundun7 {
+        /// <summary>Gets Kundun from the configuration name resources.</summary>
+        public static string Kundun {
             get {
-                return ResourceManager.GetString("IllusionOfKundun7", resourceCulture);
+                return ResourceManager.GetString("Kundun", resourceCulture);
             }
         }
 

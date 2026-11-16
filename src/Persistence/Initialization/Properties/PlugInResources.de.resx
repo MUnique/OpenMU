@@ -964,7 +964,7 @@
     <value>Season-6-Monsterwerte</value>
   </data>
   <data name="MonsterStatsUpdatePlugInBase_Description" xml:space="preserve">
-    <value>Setzt Level, Leben, Schaden, Verteidigung, Angriffs- und Verteidigungsrate, Reichweiten, Verzögerungen und Respawn-Zeiten der Monster auf die Season-6-Daten, die auch diese Version verwendet. Korrigiert Feldmonster, Invasionsmonster und Wachen sowie in Season 6 Chaos Castle 4 und 7 sowie Devil Square 7. Angepasste Werte dieser Attribute werden überschrieben.</value>
+    <value>Setzt Level, Leben, Schaden, Verteidigung, Angriffs- und Verteidigungsrate, Reichweiten, Verzögerungen und Respawn-Zeiten der Monster auf die Season-6-Daten, die auch diese Version verwendet. Korrigiert Feldmonster, Invasionsmonster und Wachen sowie in Season 6 Chaos Castle 4 und 7 sowie Devil Square 7. Angepasste Werte dieser Attribute werden überschrieben. Benennt in Season 6 das Monster 275 von Kalima 7 von „Illusion of Kundun 7“ in „Kundun“ um.</value>
   </data>
   <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
     <value>Schutztalismane hinzufügen</value>

@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// Sets the stats of the monsters to the Season 6 data, which all versions use.
@@ -17,6 +19,8 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// The older versions use the same values, because no better data of these versions is known and it keeps the monster
 /// levels consistent across the versions. Monsters which the game configuration doesn't have are skipped.
 /// The monsters of Blood Castle are corrected by <see cref="FixBloodCastleMonsterAttributesUpdatePlugIn"/>.
+/// The update also renames the monster 275 of Kalima 7 from "Illusion of Kundun 7" to "Kundun": it's Kundun himself,
+/// as in the Season 6 server data and the client. A name which was changed in the configuration is kept.
 /// </remarks>
 public abstract class MonsterStatsUpdatePlugInBase : UpdatePlugInBase
 {
@@ -28,7 +32,17 @@ public abstract class MonsterStatsUpdatePlugInBase : UpdatePlugInBase
     /// <summary>
     /// The plug-in description.
     /// </summary>
-    internal const string PlugInDescription = "Sets level, health, damage, defense, attack and defense rate, ranges, delays and respawn times of the monsters to the Season 6 data, which this version uses as well. It corrects field monsters, invasion monsters and guards and, in Season 6, Chaos Castle 4 and 7 and Devil Square 7. Customized values of these stats are overwritten.";
+    internal const string PlugInDescription = "Sets level, health, damage, defense, attack and defense rate, ranges, delays and respawn times of the monsters to the Season 6 data, which this version uses as well. It corrects field monsters, invasion monsters and guards and, in Season 6, Chaos Castle 4 and 7 and Devil Square 7. Customized values of these stats are overwritten. In Season 6, renames the monster 275 of Kalima 7 from \"Illusion of Kundun 7\" to \"Kundun\".";
+
+    /// <summary>
+    /// The number of Kundun, the boss of Kalima 7.
+    /// </summary>
+    internal const short KundunNumber = 275;
+
+    /// <summary>
+    /// The previous name of Kundun, which the update replaces.
+    /// </summary>
+    internal const string PreviousKundunName = "Illusion of Kundun 7";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -80,7 +94,7 @@ public abstract class MonsterStatsUpdatePlugInBase : UpdatePlugInBase
         new(249) { MoveRange = 5, AttackRange = 5, ViewRange = 5, RespawnDelaySeconds = 10 }, // Berdysh Guard
         new(261) { Defense = 430 }, // Death Centurion 5
         new(265) { AttackRate = 645 }, // Necron 5
-        new(275) { Level = 147, MaximumHealth = 5000000, MinimumPhysicalDamage = 2000, MaximumPhysicalDamage = 2500, Defense = 1500, AttackRate = 2000, DefenseRate = 1000, AttackRange = 15, ViewRange = 10, AttackDelayMilliseconds = 2000, RespawnDelaySeconds = 43200 }, // Illusion Of Kundun 7
+        new(275) { Level = 147, MaximumHealth = 5000000, MinimumPhysicalDamage = 2000, MaximumPhysicalDamage = 2500, Defense = 1500, AttackRate = 2000, DefenseRate = 1000, AttackRange = 15, ViewRange = 10, AttackDelayMilliseconds = 2000, RespawnDelaySeconds = 43200 }, // Kundun
         new(294) { MoveDelayMilliseconds = 400, AttackDelayMilliseconds = 1400 }, // Axe Warrior
         new(355) { AttackRange = 4, ViewRange = 5 }, // Kentauros
         new(360) { DefenseRate = 905 }, // Dreadfear
@@ -122,6 +136,12 @@ public abstract class MonsterStatsUpdatePlugInBase : UpdatePlugInBase
         foreach (var correction in Corrections)
         {
             correction.ApplyTo(context, gameConfiguration);
+        }
+
+        if (gameConfiguration.Monsters.FirstOrDefault(m => m.Number == KundunNumber) is { } kundun
+            && kundun.Designation.ValueInNeutralLanguage == PreviousKundunName)
+        {
+            kundun.Designation = LocalizedString.FromResource(() => MonsterNames.Kundun);
         }
 
         return ValueTask.CompletedTask;

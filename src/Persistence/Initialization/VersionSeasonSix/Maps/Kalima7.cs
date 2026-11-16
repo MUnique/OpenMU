@@ -105,7 +105,7 @@ internal class Kalima7 : KalimaBase
         yield return this.CreateMonsterSpawn(157, this.NpcDictionary[337], 047, 107); // Schriker 7
         yield return this.CreateMonsterSpawn(158, this.NpcDictionary[337], 053, 093); // Schriker 7
         yield return this.CreateMonsterSpawn(159, this.NpcDictionary[337], 035, 087); // Schriker 7
-        yield return this.CreateMonsterSpawn(160, this.NpcDictionary[275], 026, 076); // Illusion of Kundun 7
+        yield return this.CreateMonsterSpawn(160, this.NpcDictionary[275], 026, 076); // Kundun
         yield return this.CreateMonsterSpawn(161, this.NpcDictionary[337], 032, 077); // Schriker 7
         yield return this.CreateMonsterSpawn(162, this.NpcDictionary[337], 041, 078); // Schriker 7
         yield return this.CreateMonsterSpawn(163, this.NpcDictionary[337], 037, 067); // Schriker 7
@@ -352,7 +352,7 @@ internal class Kalima7 : KalimaBase
             var monster = this.Context.CreateNew<MonsterDefinition>();
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 275;
-            monster.Designation = LocalizedString.FromResource(() => MonsterNames.IllusionOfKundun7);
+            monster.Designation = LocalizedString.FromResource(() => MonsterNames.Kundun);
             monster.MoveRange = 3;
             monster.AttackRange = 15;
             monster.ViewRange = 10;

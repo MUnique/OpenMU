@@ -73,6 +73,44 @@ internal class MonsterStatsUpdateTest
         AssertStats(gameConfiguration, corrections);
     }
 
+    /// <summary>
+    /// Tests that a new Season 6 database names the boss of Kalima 7 Kundun.
+    /// </summary>
+    [Test]
+    public async Task NewDatabaseNamesKundunAsync()
+    {
+        var (context, gameConfiguration) = await TestGameConfiguration.CreateSeason6Async().ConfigureAwait(false);
+        using var _ = context;
+
+        var kundun = gameConfiguration.Monsters.Single(m => m.Number == MonsterStatsUpdatePlugInBase.KundunNumber);
+
+        Assert.That(kundun.Designation.ValueInNeutralLanguage, Is.EqualTo("Kundun"));
+    }
+
+    /// <summary>
+    /// Tests that the update renames the boss of Kalima 7 from its previous name to Kundun,
+    /// and keeps a name which was changed in the configuration.
+    /// </summary>
+    /// <param name="previousName">The name of the monster before the update.</param>
+    /// <param name="expectedName">The expected name after the update.</param>
+    [TestCase(MonsterStatsUpdatePlugInBase.PreviousKundunName, "Kundun")]
+    [TestCase("Custom Kundun", "Custom Kundun")]
+    public async Task UpdateRenamesKundunAsync(string previousName, string expectedName)
+    {
+        var (context, gameConfiguration) = await TestGameConfiguration.CreateSeason6Async().ConfigureAwait(false);
+        using var _ = context;
+        var kundun = gameConfiguration.Monsters.Single(m => m.Number == MonsterStatsUpdatePlugInBase.KundunNumber);
+        kundun.Designation = previousName;
+
+        await new MonsterStatsUpdatePlugInSeason6().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(kundun.Designation.ValueInNeutralLanguage, Is.EqualTo(expectedName));
+        if (previousName == MonsterStatsUpdatePlugInBase.PreviousKundunName)
+        {
+            Assert.That(kundun.Designation.SourceKey, Is.EqualTo("MonsterNames/Kundun"));
+        }
+    }
+
     private static IReadOnlyList<MonsterStatsCorrection> GetCorrections(string version)
     {
         return version == "Season 6"
