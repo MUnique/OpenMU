@@ -176,15 +176,29 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
     /// <inheritdoc />
     /// <remarks>
+    /// Warps which aren't through the configured gates, e.g. by the Talisman of Mobility, must not bypass the siege:
+    /// During the battle, they can't lead onto the siege map, e.g. to a place saved behind the castle gates.
     /// The Land of Trials is entered through its guard, which only lets the alliance of the castle owner
-    /// or, while the hunt zone is public, everyone else in. Other ways to warp there, e.g. the Talisman of Mobility,
-    /// must not bypass that.
+    /// or, while the hunt zone is public, everyone else in.
     /// </remarks>
     public async ValueTask WarpGateEnteringAsync(Player player, ExitGate targetGate, CancelEventArgs eventArgs)
     {
         if (this.GetContext(player.GameContext) is not { Configuration.Enabled: true } context
-            || context.Configuration.LandOfTrialsMapDefinition is not { } landOfTrials
-            || targetGate.Map?.Number != landOfTrials.Number)
+            || targetGate.Map is not { } targetMap)
+        {
+            return;
+        }
+
+        if (context.IsEventRunning
+            && targetMap.Number == context.Configuration.CastleSiegeMapDefinition?.Number
+            && !targetMap.ExitGates.Any(gate => ReferenceEquals(gate, targetGate)))
+        {
+            eventArgs.Cancel = true;
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CastleSiegeWarpNotPossible)).ConfigureAwait(false);
+            return;
+        }
+
+        if (targetMap.Number != context.Configuration.LandOfTrialsMapDefinition?.Number)
         {
             return;
         }

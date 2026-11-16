@@ -1210,4 +1210,7 @@ Inventory Extensions: {18}</value>
   <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
     <value>The way back to the saved place is blocked by a closed gate.</value>
   </data>
+  <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
+    <value>You can't warp onto the siege map while the battle is running.</value>
+  </data>
 </root>

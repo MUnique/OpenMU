@@ -3306,5 +3306,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MobilityTalismanReturnBlocked", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t warp onto the siege map while the battle is running..
+        /// </summary>
+        public static string CastleSiegeWarpNotPossible {
+            get {
+                return ResourceManager.GetString("CastleSiegeWarpNotPossible", resourceCulture);
+            }
+        }
     }
 }
