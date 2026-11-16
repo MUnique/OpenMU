@@ -272,8 +272,8 @@ public abstract class MonsterResistancesUpdatePlugInBase : UpdatePlugInBase
             .Where(a => ResistanceAttributes.Any(r => r.Id == a.AttributeDefinition?.Id))
             .ToList();
 
-        // A value with a fraction can only be one of the former scale. Whole numbers, including 1, are already converted;
-        // checking for fractions keeps the update idempotent.
+        // Only the former scale has values with a fraction. Whole numbers, including 1, were already converted,
+        // so checking for fractions keeps the update idempotent.
         if (!resistances.Any(a => a.Value != MathF.Round(a.Value)))
         {
             return;

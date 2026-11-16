@@ -166,7 +166,7 @@ internal class MonsterResistancesUpdateTest
     private static void SetResistance(IContext context, GameConfiguration gameConfiguration, MonsterDefinition monster, AttributeDefinition attributeDefinition, float value)
     {
         var attribute = monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == attributeDefinition.Id);
-        if (value == 0)
+        if (value <= 0)
         {
             if (attribute is not null)
             {
@@ -185,11 +185,20 @@ internal class MonsterResistancesUpdateTest
 
     private static (int Ice, int Poison, int Lightning, int Fire, int Water, int Wind) GetResistances(MonsterDefinition monster)
     {
-        int Get(AttributeDefinition definition) => monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == definition.Id) is { } attribute
+        return (
+            GetResistance(monster, Stats.IceResistance),
+            GetResistance(monster, Stats.PoisonResistance),
+            GetResistance(monster, Stats.LightningResistance),
+            GetResistance(monster, Stats.FireResistance),
+            GetResistance(monster, Stats.WaterResistance),
+            GetResistance(monster, Stats.WindResistance));
+    }
+
+    private static int GetResistance(MonsterDefinition monster, AttributeDefinition definition)
+    {
+        return monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == definition.Id) is { } attribute
             ? (int)MathF.Round(attribute.Value)
             : 0;
-
-        return (Get(Stats.IceResistance), Get(Stats.PoisonResistance), Get(Stats.LightningResistance), Get(Stats.FireResistance), Get(Stats.WaterResistance), Get(Stats.WindResistance));
     }
 
     private static bool IsResistance(MonsterAttribute attribute)
