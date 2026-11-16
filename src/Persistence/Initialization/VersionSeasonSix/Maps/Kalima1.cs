@@ -116,7 +116,7 @@ internal class Kalima1 : KalimaBase
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 144;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.DeathAngel1);
-            monster.MoveRange = 2;
+            monster.MoveRange = 3;
             monster.AttackRange = 6;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
@@ -183,7 +183,7 @@ internal class Kalima1 : KalimaBase
             monster.Number = 146;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.BloodSoldier1);
             monster.MoveRange = 3;
-            monster.AttackRange = 2;
+            monster.AttackRange = 6;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);

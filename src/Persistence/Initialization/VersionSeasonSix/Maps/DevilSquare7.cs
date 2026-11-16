@@ -87,13 +87,13 @@ internal class DevilSquare7 : BaseMapInitializer
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 98 },
-                { Stats.MaximumHealth, 43000 },
-                { Stats.MinimumPhysBaseDmg, 546 },
-                { Stats.MaximumPhysBaseDmg, 581 },
-                { Stats.DefenseBase, 430 },
+                { Stats.Level, 105 },
+                { Stats.MaximumHealth, 30000 },
+                { Stats.MinimumPhysBaseDmg, 475 },
+                { Stats.MaximumPhysBaseDmg, 510 },
+                { Stats.DefenseBase, 360 },
                 { Stats.AttackRatePvm, 715 },
-                { Stats.DefenseRatePvm, 250 },
+                { Stats.DefenseRatePvm, 270 },
                 { Stats.WindResistance, 0f / 255 },
                 { Stats.PoisonResistance, 25f / 255 },
                 { Stats.IceResistance, 25f / 255 },
@@ -119,13 +119,13 @@ internal class DevilSquare7 : BaseMapInitializer
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 100 },
-                { Stats.MaximumHealth, 70000 },
-                { Stats.MinimumPhysBaseDmg, 408 },
-                { Stats.MaximumPhysBaseDmg, 543 },
-                { Stats.DefenseBase, 430 },
-                { Stats.AttackRatePvm, 1000 },
-                { Stats.DefenseRatePvm, 360 },
+                { Stats.Level, 106 },
+                { Stats.MaximumHealth, 33000 },
+                { Stats.MinimumPhysBaseDmg, 500 },
+                { Stats.MaximumPhysBaseDmg, 540 },
+                { Stats.DefenseBase, 410 },
+                { Stats.AttackRatePvm, 750 },
+                { Stats.DefenseRatePvm, 280 },
                 { Stats.WindResistance, 0f / 255 },
                 { Stats.PoisonResistance, 50f / 255 },
                 { Stats.IceResistance, 50f / 255 },
@@ -142,22 +142,22 @@ internal class DevilSquare7 : BaseMapInitializer
             monster.Number = 436;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.BalramTrainee);
             monster.MoveRange = 6;
-            monster.AttackRange = 7;
+            monster.AttackRange = 4;
             monster.ViewRange = 7;
-            monster.MoveDelay = new TimeSpan(700 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 134 },
-                { Stats.MaximumHealth, 90000 },
-                { Stats.MinimumPhysBaseDmg, 600 },
-                { Stats.MaximumPhysBaseDmg, 700 },
-                { Stats.DefenseBase, 500 },
-                { Stats.AttackRatePvm, 1500 },
-                { Stats.DefenseRatePvm, 370 },
+                { Stats.Level, 117 },
+                { Stats.MaximumHealth, 37000 },
+                { Stats.MinimumPhysBaseDmg, 560 },
+                { Stats.MaximumPhysBaseDmg, 600 },
+                { Stats.DefenseBase, 460 },
+                { Stats.AttackRatePvm, 800 },
+                { Stats.DefenseRatePvm, 320 },
                 { Stats.WindResistance, 0f / 255 },
                 { Stats.PoisonResistance, 23f / 255 },
                 { Stats.IceResistance, 23f / 255 },
@@ -174,22 +174,22 @@ internal class DevilSquare7 : BaseMapInitializer
             monster.Number = 437;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.SoramTrainee);
             monster.MoveRange = 6;
-            monster.AttackRange = 4;
+            monster.AttackRange = 2;
             monster.ViewRange = 7;
-            monster.MoveDelay = new TimeSpan(700 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 134 },
-                { Stats.MaximumHealth, 100000 },
-                { Stats.MinimumPhysBaseDmg, 600 },
-                { Stats.MaximumPhysBaseDmg, 700 },
-                { Stats.DefenseBase, 500 },
-                { Stats.AttackRatePvm, 1500 },
-                { Stats.DefenseRatePvm, 397 },
+                { Stats.Level, 119 },
+                { Stats.MaximumHealth, 40000 },
+                { Stats.MinimumPhysBaseDmg, 610 },
+                { Stats.MaximumPhysBaseDmg, 650 },
+                { Stats.DefenseBase, 510 },
+                { Stats.AttackRatePvm, 835 },
+                { Stats.DefenseRatePvm, 330 },
                 { Stats.WindResistance, 0f / 255 },
                 { Stats.PoisonResistance, 25f / 255 },
                 { Stats.IceResistance, 25f / 255 },
@@ -215,13 +215,13 @@ internal class DevilSquare7 : BaseMapInitializer
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 118 },
-                { Stats.MaximumHealth, 68000 },
-                { Stats.MinimumPhysBaseDmg, 1168 },
-                { Stats.MaximumPhysBaseDmg, 1213 },
-                { Stats.DefenseBase, 615 },
-                { Stats.AttackRatePvm, 1190 },
-                { Stats.DefenseRatePvm, 485 },
+                { Stats.Level, 121 },
+                { Stats.MaximumHealth, 50000 },
+                { Stats.MinimumPhysBaseDmg, 640 },
+                { Stats.MaximumPhysBaseDmg, 680 },
+                { Stats.DefenseBase, 560 },
+                { Stats.AttackRatePvm, 935 },
+                { Stats.DefenseRatePvm, 370 },
                 { Stats.WindResistance, 0f / 255 },
                 { Stats.PoisonResistance, 29f / 255 },
                 { Stats.IceResistance, 29f / 255 },
@@ -247,13 +247,13 @@ internal class DevilSquare7 : BaseMapInitializer
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 119 },
-                { Stats.MaximumHealth, 94000 },
-                { Stats.MinimumPhysBaseDmg, 946 },
-                { Stats.MaximumPhysBaseDmg, 996 },
-                { Stats.DefenseBase, 783 },
+                { Stats.Level, 123 },
+                { Stats.MaximumHealth, 55000 },
+                { Stats.MinimumPhysBaseDmg, 700 },
+                { Stats.MaximumPhysBaseDmg, 740 },
+                { Stats.DefenseBase, 610 },
                 { Stats.AttackRatePvm, 1015 },
-                { Stats.DefenseRatePvm, 905 },
+                { Stats.DefenseRatePvm, 380 },
                 { Stats.WindResistance, 0f / 255 },
                 { Stats.PoisonResistance, 27f / 255 },
                 { Stats.IceResistance, 27f / 255 },
@@ -280,12 +280,12 @@ internal class DevilSquare7 : BaseMapInitializer
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 135 },
-                { Stats.MaximumHealth, 1000000 },
-                { Stats.MinimumPhysBaseDmg, 800 },
-                { Stats.MaximumPhysBaseDmg, 800 },
-                { Stats.DefenseBase, 650 },
-                { Stats.AttackRatePvm, 1500 },
-                { Stats.DefenseRatePvm, 370 },
+                { Stats.MaximumHealth, 75000 },
+                { Stats.MinimumPhysBaseDmg, 850 },
+                { Stats.MaximumPhysBaseDmg, 900 },
+                { Stats.DefenseBase, 690 },
+                { Stats.AttackRatePvm, 1300 },
+                { Stats.DefenseRatePvm, 430 },
                 { Stats.WindResistance, 23f / 255 },
                 { Stats.PoisonResistance, 23f / 255 },
                 { Stats.IceResistance, 23f / 255 },

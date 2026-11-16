@@ -329,7 +329,7 @@ Official references:
 | 272 | Rogue Centurion 6 | 武士 6 | [Derived: official guide][source-12] |
 | 273 | Necron 6 | 暗黑巫师 6 | [Derived: official guide][source-12] |
 | 274 | Schriker 6 | 暗黑傀儡 6 | [Derived: official guide][source-12] |
-| 275 | Illusion of Kundun 7 | 昆顿幻影 7 | [Derived: official guide][source-12] |
+| 275 | Kundun | 昆顿 | [Derived: official guide][source-12] |
 | 277 | Castle Gate1 | 城门1 | [Derived: official guide][source-31] |
 | 278 | Life Stone | 生命之石 | [Official guide][source-31] |
 | 283 | Guardian Statue | 守护石像 | [Official guide][source-31] |

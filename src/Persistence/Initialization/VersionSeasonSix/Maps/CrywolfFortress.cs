@@ -229,7 +229,7 @@ internal class CrywolfFortress : BaseMapInitializer
         yield return this.CreateMonsterSpawn(405, this.NpcDictionary[313], 076, 145); // Werewolf
         yield return this.CreateMonsterSpawn(406, this.NpcDictionary[313], 082, 107); // Werewolf
         yield return this.CreateMonsterSpawn(407, this.NpcDictionary[313], 082, 130); // Werewolf
-        yield return this.CreateMonsterSpawn(408, this.NpcDictionary[313], 088, 188, 144, 144); // Werewolf
+        yield return this.CreateMonsterSpawn(408, this.NpcDictionary[313], 088, 144); // Werewolf
         yield return this.CreateMonsterSpawn(409, this.NpcDictionary[313], 119, 108); // Werewolf
         yield return this.CreateMonsterSpawn(410, this.NpcDictionary[313], 123, 130); // Werewolf
         yield return this.CreateMonsterSpawn(411, this.NpcDictionary[313], 123, 145); // Werewolf
@@ -312,6 +312,7 @@ internal class CrywolfFortress : BaseMapInitializer
         yield return this.CreateMonsterSpawn(813, this.NpcDictionary[317], 233, 169); // Soram
         yield return this.CreateMonsterSpawn(814, this.NpcDictionary[317], 115, 221); // Soram
         yield return this.CreateMonsterSpawn(815, this.NpcDictionary[317], 103, 206); // Soram
+        yield return this.CreateMonsterSpawn(816, this.NpcDictionary[313], 204, 130); // Werewolf
     }
 
     /// <inheritdoc/>

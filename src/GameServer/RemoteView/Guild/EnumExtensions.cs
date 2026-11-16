@@ -204,7 +204,9 @@ public static class EnumExtensions
     }
 
     /// <summary>
-    /// Converts the specified result type.
+    /// Converts the specified result type. <see cref="GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildNotFound"/>
+    /// becomes <see cref="Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.Failed"/>,
+    /// because the client shows the castle siege text for the value the packet has for it.
     /// </summary>
     /// <param name="result">The <see cref="GameLogic.Views.Guild.GuildRelationshipChangeResultType"/> which should be converted.</param>
     /// <returns>The converted <see cref="Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType"/>.</returns>
@@ -214,7 +216,9 @@ public static class EnumExtensions
         {
             GameLogic.Views.Guild.GuildRelationshipChangeResultType.Failed => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.Failed,
             GameLogic.Views.Guild.GuildRelationshipChangeResultType.Success => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.Success,
-            GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildNotFound => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.GuildNotFound,
+            // The client reads 0x10 (GuildNotFound) of this packet as FailedDuringCastleSiege, which shares the value,
+            // so a missing guild is sent as the generic failure.
+            GameLogic.Views.Guild.GuildRelationshipChangeResultType.GuildNotFound => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.Failed,
             GameLogic.Views.Guild.GuildRelationshipChangeResultType.NoAuthorization => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.NoAuthorization,
             GameLogic.Views.Guild.GuildRelationshipChangeResultType.AlreadyInAlliance => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.AlreadyInAlliance,
             GameLogic.Views.Guild.GuildRelationshipChangeResultType.FailedDuringCastleSiege => Network.Packets.ServerToClient.GuildRelationshipChangeResult.GuildRelationshipChangeResultType.FailedDuringCastleSiege,

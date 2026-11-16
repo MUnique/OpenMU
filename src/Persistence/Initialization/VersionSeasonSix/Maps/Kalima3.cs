@@ -104,7 +104,7 @@ internal class Kalima3 : KalimaBase
         yield return this.CreateMonsterSpawn(156, this.NpcDictionary[188], 037, 109); // Schriker 3
         yield return this.CreateMonsterSpawn(157, this.NpcDictionary[188], 047, 107); // Schriker 3
         yield return this.CreateMonsterSpawn(158, this.NpcDictionary[188], 053, 093); // Schriker 3
-        yield return this.CreateMonsterSpawn(159, this.NpcDictionary[187], 035, 087); // Schriker 3
+        yield return this.CreateMonsterSpawn(159, this.NpcDictionary[188], 035, 087); // Schriker 3
         yield return this.CreateMonsterSpawn(160, this.NpcDictionary[189], 026, 076); // Illusion of Kundun 3
     }
 
@@ -199,7 +199,7 @@ internal class Kalima3 : KalimaBase
                 { Stats.MaximumPhysBaseDmg, 170 },
                 { Stats.DefenseBase, 90 },
                 { Stats.AttackRatePvm, 250 },
-                { Stats.DefenseRatePvm, 600 },
+                { Stats.DefenseRatePvm, 60 },
                 { Stats.PoisonResistance, 16f / 255 },
                 { Stats.IceResistance, 16f / 255 },
                 { Stats.LightningResistance, 16f / 255 },

@@ -570,6 +570,44 @@ public class BotChatTest
     }
 
     /// <summary>
+    /// The default answers of a merchant point a player who asks what it sells to its store - and leave any
+    /// other whisper, like a question about its level, to the usual replies.
+    /// </summary>
+    /// <param name="message">The whispered message.</param>
+    /// <param name="asksForGoods">Whether the message asks what the bot sells.</param>
+    [TestCase("what are you selling?", true)]
+    [TestCase("how much for the ring?", true)]
+    [TestCase("co sprzedajesz?", true)]
+    [TestCase("za ile ten miecz?", true)]
+    [TestCase("masz coś ciekawego?", true)]
+    [TestCase("wtb ring", true)]
+    [TestCase("ile masz lvl?", false)]
+    [TestCase("hi, how are you?", false)]
+    public void DefaultMerchantRepliesPointToTheStore(string message, bool asksForGoods)
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+
+        var reply = BotChatComposer.PickWhisperReply(configuration.MerchantWhisperReplies, message, _ => 0, requireKeyword: true);
+
+        Assert.That(reply is not null, Is.EqualTo(asksForGoods), message);
+        Assert.That(configuration.MerchantWhisperReplies.Select(r => r.Text.GetTranslation(CultureInfo.GetCultureInfo("pl"))), Has.All.Not.Empty);
+    }
+
+    /// <summary>
+    /// A merchant never answers like a bot without goods: every trade keyword of the usual replies is a
+    /// keyword of the merchant replies too.
+    /// </summary>
+    [Test]
+    public void DefaultMerchantRepliesCoverTheTradeKeywords()
+    {
+        var configuration = BotChatConfiguration.CreateDefault();
+        static IEnumerable<string> Keywords(string? list) => (list ?? string.Empty).Split(',').Select(k => k.Trim()).Where(k => k.Length > 0);
+        var tradeKeywords = configuration.WhisperReplies.First(r => Keywords(r.Keywords).Contains("trade")).Keywords;
+
+        Assert.That(Keywords(configuration.MerchantWhisperReplies.First().Keywords), Is.SupersetOf(Keywords(tradeKeywords)));
+    }
+
+    /// <summary>
     /// The default lines come with a Polish translation: a Polish player who whispers in Polish gets
     /// a fitting answer in Polish, also when typing without diacritics.
     /// </summary>

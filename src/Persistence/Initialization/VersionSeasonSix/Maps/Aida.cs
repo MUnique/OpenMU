@@ -306,6 +306,11 @@ internal class Aida : BaseMapInitializer
         yield return this.CreateMonsterSpawn(916, this.NpcDictionary[552], 037, 077); // Bloody Witch Queen
         yield return this.CreateMonsterSpawn(917, this.NpcDictionary[552], 046, 054); // Bloody Witch Queen
         yield return this.CreateMonsterSpawn(918, this.NpcDictionary[552], 031, 053); // Bloody Witch Queen
+        yield return this.CreateMonsterSpawn(919, this.NpcDictionary[305], 094, 158); // Blue Golem
+        yield return this.CreateMonsterSpawn(920, this.NpcDictionary[306], 126, 156); // Death Rider
+        yield return this.CreateMonsterSpawn(921, this.NpcDictionary[550], 104, 203); // Bloody Death Rider
+        yield return this.CreateMonsterSpawn(922, this.NpcDictionary[550], 099, 203); // Bloody Death Rider
+        yield return this.CreateMonsterSpawn(923, this.NpcDictionary[550], 075, 228); // Bloody Death Rider
     }
 
     /// <inheritdoc/>
