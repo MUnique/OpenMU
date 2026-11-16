@@ -156,7 +156,7 @@ public class ShowWarpListExtendedPlugIn : IShowWarpListPlugIn
                 var entry = packet[i];
                 entry.Index = (ushort)index;
                 entry.MasterLevel = (ushort)Math.Clamp(masterLevel, 0, ushort.MaxValue);
-                entry.Resets = (uint)resets;
+                entry.Resets = (uint)Math.Max(resets, 0);
             }
 
             return size;
