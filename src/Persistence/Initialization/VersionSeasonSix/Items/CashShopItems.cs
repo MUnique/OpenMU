@@ -23,6 +23,12 @@ using MUnique.OpenMU.Persistence.Initialization.Properties;
 internal class CashShopItems : InitializerBase
 {
     /// <summary>
+    /// The bonus item drop rate of the worn horseshoe (13/134), which is added to the item drop rate multiplier of 1.0.
+    /// The game client shows it as an item drop rate increase of 20 %.
+    /// </summary>
+    internal const float WornHorseshoeItemDropRateBonus = 0.2f;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CashShopItems"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -41,6 +47,7 @@ internal class CashShopItems : InitializerBase
         this.CreateItem(14, 169, LocalizedString.FromResource(() => ItemNames.RageFighterCharacterCard));
         this.CreateResetFruits();
         this.CreateFigurinesAndCharms();
+        this.CreateWornHorseshoe();
         this.CreateTalismanOfResurrection();
     }
 
@@ -85,28 +92,18 @@ internal class CashShopItems : InitializerBase
     /// with a right click, see <see cref="GameLogic.PlayerActions.Items.UseInventoryItemAction"/>.
     /// Their durability is 1, so that they're not stackable; the game logic sets the durability of an item
     /// to 255 when it's added to the inventory, which tells the client that it's not in use.
-    /// Their bonuses are the ones which the client shows. The worn horseshoe (13/134) increases the item drop rate, for which there's no attribute yet.
+    /// Their bonuses are the ones which the client shows. The worn horseshoe (13/134) is created by <see cref="CreateWornHorseshoe"/>.
     /// </summary>
     /// <returns>The created items.</returns>
     internal IReadOnlyList<ItemDefinition> CreateFigurinesAndCharms()
     {
-        const byte group = 13;
         var items = new List<ItemDefinition>();
         void Create(short number, LocalizedString name, byte height, params (AttributeDefinition Attribute, float Value)[] bonuses)
         {
-            if (this.CreateItem(group, number, name) is not { } item)
+            if (this.CreateInventoryUsedItem(number, name, height, bonuses) is { } item)
             {
-                return;
+                items.Add(item);
             }
-
-            item.Height = height;
-            item.Durability = 1;
-            foreach (var (attribute, value) in bonuses)
-            {
-                item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(attribute, value, AggregateType.AddRaw));
-            }
-
-            items.Add(item);
         }
 
         Create(128, LocalizedString.FromResource(() => ItemNames.HawkFigurine), 1, (Stats.CriticalDamageChance, 0.1f));
@@ -116,6 +113,35 @@ internal class CashShopItems : InitializerBase
         Create(132, LocalizedString.FromResource(() => ItemNames.GoldenOakCharm), 2, (Stats.MaximumHealth, 100), (Stats.MaximumShield, 500));
         Create(133, LocalizedString.FromResource(() => ItemNames.GoldenMapleCharm), 2, (Stats.MaximumMana, 150), (Stats.MaximumAbility, 50));
         return items;
+    }
+
+    /// <summary>
+    /// Creates the worn horseshoe (13/134), if it doesn't exist yet. Like the figurines and charms,
+    /// it's used inside the inventory (see <see cref="CreateFigurinesAndCharms"/>), and adds
+    /// <see cref="WornHorseshoeItemDropRateBonus"/> to the <see cref="Stats.BonusItemDropRate"/> while it's in use.
+    /// </summary>
+    /// <returns>The created item, or <c>null</c>, if it already exists.</returns>
+    internal ItemDefinition? CreateWornHorseshoe()
+    {
+        return this.CreateInventoryUsedItem(134, LocalizedString.FromResource(() => ItemNames.WornHorseshoe), 1, (Stats.BonusItemDropRate, WornHorseshoeItemDropRateBonus));
+    }
+
+    private ItemDefinition? CreateInventoryUsedItem(short number, LocalizedString name, byte height, params (AttributeDefinition Attribute, float Value)[] bonuses)
+    {
+        const byte group = 13;
+        if (this.CreateItem(group, number, name) is not { } item)
+        {
+            return null;
+        }
+
+        item.Height = height;
+        item.Durability = 1;
+        foreach (var (attribute, value) in bonuses)
+        {
+            item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(attribute, value, AggregateType.AddRaw));
+        }
+
+        return item;
     }
 
     private ItemDefinition? CreateItem(byte group, short number, LocalizedString name)

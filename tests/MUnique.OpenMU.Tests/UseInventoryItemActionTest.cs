@@ -322,6 +322,27 @@ public class UseInventoryItemActionTest
         Assert.That(temporaryItem.Durability, Is.EqualTo(NotInUse));
     }
 
+    /// <summary>
+    /// The worn horseshoe (13/134) adds its bonus to the item drop rate while it's in use.
+    /// </summary>
+    [Test]
+    public async Task WornHorseshoeIncreasesItemDropRateWhileInUseAsync()
+    {
+        const float dropRateBonus = 0.2f;
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var dropRate = player.Attributes![Stats.BonusItemDropRate];
+        var definition = new BasicModel.ItemDefinition { Group = 13, Number = 134, Width = 1, Height = 1, Durability = 1 };
+        definition.BasePowerUpAttributes.Add(new BasicModel.ItemBasePowerUpDefinition { TargetAttribute = Stats.BonusItemDropRate, BaseValue = dropRateBonus, AggregateType = AggregateType.AddRaw });
+        var horseshoe = await AddCharmAsync(player, definition).ConfigureAwait(false);
+
+        await this._action.SetItemInUseAsync(player, horseshoe.ItemSlot, InUse).ConfigureAwait(false);
+        Assert.That(horseshoe.Durability, Is.EqualTo(InUse));
+        Assert.That(player.Attributes[Stats.BonusItemDropRate], Is.EqualTo(dropRate + dropRateBonus).Within(0.0001f));
+
+        await this._action.SetItemInUseAsync(player, horseshoe.ItemSlot, NotInUse).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.BonusItemDropRate], Is.EqualTo(dropRate).Within(0.0001f));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
