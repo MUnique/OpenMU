@@ -20,9 +20,9 @@ The damage is shown at the object which received the hit.
 | 3 << 5 | 1 bit | Boolean |  | IsRageFighterStreakFinalHit |
 | 3 << 6 | 1 bit | Boolean |  | IsDoubleDamage |
 | 3 << 7 | 1 bit | Boolean |  | IsTripleDamage |
-| 4 | 2 | ShortLittleEndian |  | ObjectId |
-| 6 | 1 | Byte |  | HealthStatus; Gets or sets the status of the remaining health in fractions of 1/250. |
-| 7 | 1 | Byte |  | ShieldStatus; Gets or sets the status of the remaining shield in fractions of 1/250. |
+| 4 | 2 | ShortLittleEndian |  | ObjectId; The object ID; its most significant bit indicates whether the target receives a hit shock. |
+| 6 | 1 | Byte |  | HealthStatus; The status of the remaining health in fractions of 1/250. |
+| 7 | 1 | Byte |  | ShieldStatus; The status of the remaining shield in fractions of 1/250. |
 | 8 | 4 | IntegerLittleEndian |  | HealthDamage |
 | 12 | 4 | IntegerLittleEndian |  | ShieldDamage |
 

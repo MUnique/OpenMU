@@ -26,4 +26,4 @@ Defines the effect which is shown for the player.
 |-------|------|-------------|
 | 3 | ShieldPotion | The player gained shield by drinking a potion. |
 | 16 | LevelUp | A level up effect is shown for the player. |
-| 17 | ShieldLost | The players shield depleted. |
+| 17 | ShieldBurst | The player's shield depleted with significant damage to health. |
