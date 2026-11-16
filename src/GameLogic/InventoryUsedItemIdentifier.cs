@@ -19,6 +19,14 @@ public class InventoryUsedItemIdentifier
     /// </summary>
     public short Number { get; set; }
 
+    /// <summary>
+    /// Gets or sets the exclusive group of the item definition.
+    /// Only one item of the same exclusive group can be in use at the same time,
+    /// e.g. either the Hawk or the Goat Figurine. With 0, the item belongs to no group,
+    /// so only another item of the same definition is excluded.
+    /// </summary>
+    public byte ExclusiveGroup { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

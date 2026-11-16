@@ -263,6 +263,48 @@ public class UseInventoryItemActionTest
         Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health + CharmBonus));
     }
 
+    /// <summary>
+    /// Only one item of the same exclusive group can be in use, e.g. either the Oak or the Golden Oak Charm.
+    /// Items of other groups can be used at the same time.
+    /// </summary>
+    [Test]
+    public async Task ItemOfSameExclusiveGroupCanOnlyBeInUseOnceAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var health = player.Attributes![Stats.MaximumHealth];
+        var oakCharm = await AddCharmAsync(player).ConfigureAwait(false);
+        var goldenOakCharm = await AddCharmAsync(player, CreateCharmDefinition(132)).ConfigureAwait(false);
+        var mapleCharm = await AddCharmAsync(player, CreateCharmDefinition(131)).ConfigureAwait(false);
+
+        await this._action.SetItemInUseAsync(player, oakCharm.ItemSlot, InUse).ConfigureAwait(false);
+        await this._action.SetItemInUseAsync(player, goldenOakCharm.ItemSlot, InUse).ConfigureAwait(false);
+        await this._action.SetItemInUseAsync(player, mapleCharm.ItemSlot, InUse).ConfigureAwait(false);
+
+        Assert.That(oakCharm.Durability, Is.EqualTo(InUse));
+        Assert.That(goldenOakCharm.Durability, Is.EqualTo(NotInUse));
+        Assert.That(mapleCharm.Durability, Is.EqualTo(InUse));
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health + (2 * CharmBonus)));
+    }
+
+    /// <summary>
+    /// An added item which is in use stops being in use, when an item of the same exclusive group is already in use.
+    /// </summary>
+    [Test]
+    public async Task AddedItemOfSameExclusiveGroupIsNotInUseAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var hawkFigurine = await AddCharmAsync(player, CreateCharmDefinition(128)).ConfigureAwait(false);
+        await this._action.SetItemInUseAsync(player, hawkFigurine.ItemSlot, InUse).ConfigureAwait(false);
+
+        var goatFigurine = player.PersistenceContext.CreateNew<Item>();
+        goatFigurine.Definition = CreateCharmDefinition(129);
+        goatFigurine.Durability = InUse;
+        Assert.That(await player.Inventory!.AddItemAsync(goatFigurine).ConfigureAwait(false), Is.True);
+
+        Assert.That(hawkFigurine.Durability, Is.EqualTo(InUse));
+        Assert.That(goatFigurine.Durability, Is.EqualTo(NotInUse));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
@@ -272,16 +314,19 @@ public class UseInventoryItemActionTest
 
     private static async ValueTask<Item> AddCharmAsync(Player player, ItemDefinition? definition = null)
     {
-        if (definition is null)
-        {
-            definition = new BasicModel.ItemDefinition { Group = 13, Number = 130, Width = 1, Height = 1, Durability = 1 };
-            definition.BasePowerUpAttributes.Add(new BasicModel.ItemBasePowerUpDefinition { TargetAttribute = Stats.MaximumHealth, BaseValue = CharmBonus, AggregateType = AggregateType.AddRaw });
-        }
+        definition ??= CreateCharmDefinition(130);
 
         var item = player.PersistenceContext.CreateNew<Item>();
         item.Definition = definition;
         item.Durability = definition.Durability;
         Assert.That(await player.Inventory!.AddItemAsync(item).ConfigureAwait(false), Is.True);
         return item;
+    }
+
+    private static ItemDefinition CreateCharmDefinition(short number)
+    {
+        var definition = new BasicModel.ItemDefinition { Group = 13, Number = number, Width = 1, Height = 1, Durability = 1 };
+        definition.BasePowerUpAttributes.Add(new BasicModel.ItemBasePowerUpDefinition { TargetAttribute = Stats.MaximumHealth, BaseValue = CharmBonus, AggregateType = AggregateType.AddRaw });
+        return definition;
     }
 }

@@ -257,9 +257,9 @@ public class InventoryStorage : Storage, IInventoryStorage
         }
 
         if ((int)item.Durability != configuration.InUseDurability
-            || this.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory(this._gameContext)))
+            || this.Items.Any(other => other != item && other.Definition is { } otherDefinition && configuration.AreExclusive(item.Definition!, otherDefinition) && other.IsInUseInsideInventory(this._gameContext)))
         {
-            // A new item starts without being used, and only one item of the same kind can be used at the same time.
+            // A new item starts without being used, and only one item of the same kind or exclusive group can be used at the same time.
             item.Durability = configuration.NotInUseDurability;
         }
 

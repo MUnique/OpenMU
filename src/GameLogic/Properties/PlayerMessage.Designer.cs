@@ -3272,7 +3272,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to The same item is already in use. Stop using it first, and then try again..
+        ///   Looks up a localized string similar to An item of the same kind is already in use. Stop using it first, and then try again..
         /// </summary>
         public static string SameItemAlreadyInUse {
             get {

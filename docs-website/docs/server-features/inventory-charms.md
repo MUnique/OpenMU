@@ -27,7 +27,9 @@ be changed in the admin panel.
 ## Rules
 
 * Only one item of the same kind can be in use at the same time. Using a
-  second one is refused with a message.
+  second one is refused with a message. The Hawk and Goat Figurines, the Oak
+  and Golden Oak Charms, and the Maple and Golden Maple Charms count as the
+  same kind: they form an exclusive group in the configuration.
 * The item keeps its state when it is moved inside the inventory.
 * When the item leaves the inventory, for example when it is dropped or moved
   into the vault, it is no longer in use, and the bonus is removed. This also
@@ -43,7 +45,9 @@ be changed in the admin panel.
 
 The *Items used inside the inventory* feature plugin defines which items can
 be used inside the inventory. By default, these are the items 13/128 to
-13/134. It also defines the durability values of an item which is in use
+13/134. Each item can have an exclusive group: only one item of a group can
+be in use at the same time. By default, the figurines are group 1, the oak
+charms group 2 and the maple charms group 3. It also defines the durability values of an item which is in use
 (254) and not in use (255). They have to match the game client. When the
 plugin is deactivated, no item can be used this way.
 

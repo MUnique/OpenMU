@@ -39,7 +39,7 @@ public class UseInventoryItemAction
         }
 
         if (requestedDurability == configuration.InUseDurability
-            && player.Inventory.Items.Any(other => other != item && other.Definition == item.Definition && other.IsInUseInsideInventory(player.GameContext)))
+            && player.Inventory.Items.Any(other => other != item && other.Definition is { } otherDefinition && configuration.AreExclusive(item.Definition!, otherDefinition) && other.IsInUseInsideInventory(player.GameContext)))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SameItemAlreadyInUse)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IInventoryItemUseChangedPlugIn>(p => p.InventoryItemUseChangedAsync(item)).ConfigureAwait(false);

@@ -27,6 +27,8 @@ public class InventoryItemUseConfiguration
     /// <remarks>
     /// By default, these are the figurines (group 13, number 128 and 129), the charms (130 to 133)
     /// and the worn horseshoe (134), which the game client requests to use with a right click in the inventory.
+    /// The figurines, the oak charms and the maple charms each form an exclusive group,
+    /// see <see cref="InventoryUsedItemIdentifier.ExclusiveGroup"/>.
     /// </remarks>
     public IList<InventoryUsedItemIdentifier> Items { get; set; } = CreateDefaultItems();
 
@@ -58,10 +60,48 @@ public class InventoryItemUseConfiguration
         return this.Items.Any(id => id.Group == definition.Group && id.Number == definition.Number);
     }
 
+    /// <summary>
+    /// Determines whether items of the two definitions exclude each other, so that only one of them can be in use
+    /// at the same time. That's the case for the same definition, and for definitions of the same exclusive group.
+    /// </summary>
+    /// <param name="definition">The item definition.</param>
+    /// <param name="otherDefinition">The other item definition.</param>
+    /// <returns><c>true</c>, if only one of the items can be in use at the same time; otherwise, <c>false</c>.</returns>
+    public bool AreExclusive(ItemDefinition definition, ItemDefinition otherDefinition)
+    {
+        if (definition == otherDefinition)
+        {
+            return true;
+        }
+
+        var group = this.GetExclusiveGroup(definition);
+        return group != 0 && group == this.GetExclusiveGroup(otherDefinition);
+    }
+
     private static IList<InventoryUsedItemIdentifier> CreateDefaultItems()
     {
-        return Enumerable.Range(128, 7)
-            .Select(number => new InventoryUsedItemIdentifier { Group = 13, Number = (short)number })
-            .ToList();
+        const byte figurines = 1;
+        const byte oakCharms = 2;
+        const byte mapleCharms = 3;
+        return
+        [
+            CreateItem(128, figurines), // Hawk Figurine
+            CreateItem(129, figurines), // Goat Figurine
+            CreateItem(130, oakCharms), // Oak Charm
+            CreateItem(131, mapleCharms), // Maple Charm
+            CreateItem(132, oakCharms), // Golden Oak Charm
+            CreateItem(133, mapleCharms), // Golden Maple Charm
+            CreateItem(134, 0), // Worn Horseshoe
+        ];
+
+        static InventoryUsedItemIdentifier CreateItem(short number, byte exclusiveGroup)
+        {
+            return new InventoryUsedItemIdentifier { Group = 13, Number = number, ExclusiveGroup = exclusiveGroup };
+        }
+    }
+
+    private byte GetExclusiveGroup(ItemDefinition definition)
+    {
+        return this.Items.FirstOrDefault(id => id.Group == definition.Group && id.Number == definition.Number)?.ExclusiveGroup ?? 0;
     }
 }

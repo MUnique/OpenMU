@@ -1199,6 +1199,6 @@ Inventory Extensions: {18}</value>
     <value>Can't delete a character while items wait for it whose item type doesn't exist anymore. Please ask an admin.</value>
   </data>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
-    <value>The same item is already in use. Stop using it first, and then try again.</value>
+    <value>An item of the same kind is already in use. Stop using it first, and then try again.</value>
   </data>
 </root>
