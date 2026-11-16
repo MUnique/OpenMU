@@ -108,7 +108,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             monster.AttackRange = 4;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -140,13 +140,13 @@ internal class BarracksOfBalgass : BaseMapInitializer
             monster.AttackRange = 4;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 119 },
+                { Stats.Level, 118 },
                 { Stats.MaximumHealth, 85000 },
                 { Stats.MinimumPhysBaseDmg, 580 },
                 { Stats.MaximumPhysBaseDmg, 680 },
@@ -172,7 +172,7 @@ internal class BarracksOfBalgass : BaseMapInitializer
             monster.AttackRange = 2;
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1700 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;

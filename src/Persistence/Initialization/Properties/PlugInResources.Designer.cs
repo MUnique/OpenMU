@@ -1096,6 +1096,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInBase_Description text.</summary>
         public static string FieldMonsterSpawnsUpdatePlugInBase_Description => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterStatsUpdatePlugInBase_Name text.</summary>
+        public static string MonsterStatsUpdatePlugInBase_Name => ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterStatsUpdatePlugInBase_Description text.</summary>
+        public static string MonsterStatsUpdatePlugInBase_Description => ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Description", resourceCulture)!;
         
         /// <summary>Gets the localized AddProtectionTalismansUpdatePlugIn_Name text.</summary>
         public static string AddProtectionTalismansUpdatePlugIn_Name => ResourceManager.GetString("AddProtectionTalismansUpdatePlugIn_Name", resourceCulture)!;

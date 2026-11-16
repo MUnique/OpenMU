@@ -199,7 +199,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -231,7 +231,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(30 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
@@ -297,7 +297,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -329,7 +329,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(30 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
@@ -395,7 +395,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(15 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(150 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);

@@ -250,9 +250,9 @@ internal class Elvenland : BaseMapInitializer
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.StrangeRabbit);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
-            monster.ViewRange = 5;
+            monster.ViewRange = 4;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -263,7 +263,7 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.MinimumPhysBaseDmg, 10 },
                 { Stats.MaximumPhysBaseDmg, 13 },
                 { Stats.DefenseBase, 3 },
-                { Stats.AttackRatePvm, 10 },
+                { Stats.AttackRatePvm, 18 },
                 { Stats.DefenseRatePvm, 3 },
             };
 
@@ -278,21 +278,21 @@ internal class Elvenland : BaseMapInitializer
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.PollutedButterfly);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
-            monster.ViewRange = 5;
+            monster.ViewRange = 4;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 13 },
-                { Stats.MaximumHealth, 230 },
-                { Stats.MinimumPhysBaseDmg, 37 },
-                { Stats.MaximumPhysBaseDmg, 42 },
-                { Stats.DefenseBase, 13 },
-                { Stats.AttackRatePvm, 10 },
-                { Stats.DefenseRatePvm, 13 },
+                { Stats.Level, 19 },
+                { Stats.MaximumHealth, 520 },
+                { Stats.MinimumPhysBaseDmg, 68 },
+                { Stats.MaximumPhysBaseDmg, 72 },
+                { Stats.DefenseBase, 22 },
+                { Stats.AttackRatePvm, 93 },
+                { Stats.DefenseRatePvm, 22 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -308,19 +308,19 @@ internal class Elvenland : BaseMapInitializer
             monster.AttackRange = 1;
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1800 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 19 },
-                { Stats.MaximumHealth, 520 },
-                { Stats.MinimumPhysBaseDmg, 68 },
-                { Stats.MaximumPhysBaseDmg, 72 },
-                { Stats.DefenseBase, 22 },
-                { Stats.AttackRatePvm, 10 },
-                { Stats.DefenseRatePvm, 22 },
+                { Stats.Level, 24 },
+                { Stats.MaximumHealth, 720 },
+                { Stats.MinimumPhysBaseDmg, 85 },
+                { Stats.MaximumPhysBaseDmg, 90 },
+                { Stats.DefenseBase, 30 },
+                { Stats.AttackRatePvm, 120 },
+                { Stats.DefenseRatePvm, 30 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -332,23 +332,23 @@ internal class Elvenland : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 421;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.Werewolf421);
-            monster.MoveRange = 2;
+            monster.MoveRange = 3;
             monster.AttackRange = 1;
-            monster.ViewRange = 5;
+            monster.ViewRange = 4;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 24 },
-                { Stats.MaximumHealth, 720 },
-                { Stats.MinimumPhysBaseDmg, 85 },
-                { Stats.MaximumPhysBaseDmg, 90 },
-                { Stats.DefenseBase, 30 },
-                { Stats.AttackRatePvm, 10 },
-                { Stats.DefenseRatePvm, 30 },
+                { Stats.Level, 13 },
+                { Stats.MaximumHealth, 230 },
+                { Stats.MinimumPhysBaseDmg, 37 },
+                { Stats.MaximumPhysBaseDmg, 42 },
+                { Stats.DefenseBase, 13 },
+                { Stats.AttackRatePvm, 58 },
+                { Stats.DefenseRatePvm, 13 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -361,10 +361,10 @@ internal class Elvenland : BaseMapInitializer
             monster.Number = 422;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.CursedLich);
             monster.MoveRange = 3;
-            monster.AttackRange = 1;
-            monster.ViewRange = 5;
+            monster.AttackRange = 4;
+            monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -376,8 +376,8 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.MinimumPhysBaseDmg, 105 },
                 { Stats.MaximumPhysBaseDmg, 110 },
                 { Stats.DefenseBase, 33 },
-                { Stats.AttackRatePvm, 10 },
-                { Stats.DefenseRatePvm, 33 },
+                { Stats.AttackRatePvm, 150 },
+                { Stats.DefenseRatePvm, 36 },
                 { Stats.PoisonResistance, 4f / 255 },
                 { Stats.IceResistance, 4f / 255 },
                 { Stats.WaterResistance, 4f / 255 },
@@ -395,9 +395,9 @@ internal class Elvenland : BaseMapInitializer
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.TotemGolem);
             monster.MoveRange = 3;
             monster.AttackRange = 1;
-            monster.ViewRange = 5;
+            monster.ViewRange = 6;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -408,8 +408,8 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.MinimumPhysBaseDmg, 120 },
                 { Stats.MaximumPhysBaseDmg, 125 },
                 { Stats.DefenseBase, 50 },
-                { Stats.AttackRatePvm, 10 },
-                { Stats.DefenseRatePvm, 50 },
+                { Stats.AttackRatePvm, 180 },
+                { Stats.DefenseRatePvm, 43 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -422,11 +422,11 @@ internal class Elvenland : BaseMapInitializer
             monster.Number = 424;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.Grizzly);
             monster.MoveRange = 2;
-            monster.AttackRange = 1;
-            monster.ViewRange = 5;
+            monster.AttackRange = 2;
+            monster.ViewRange = 6;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
+            monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
+            monster.RespawnDelay = new TimeSpan(8 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.EnergyBall);
@@ -435,10 +435,10 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.Level, 43 },
                 { Stats.MaximumHealth, 2400 },
                 { Stats.MinimumPhysBaseDmg, 130 },
-                { Stats.MaximumPhysBaseDmg, 145 },
+                { Stats.MaximumPhysBaseDmg, 140 },
                 { Stats.DefenseBase, 65 },
-                { Stats.AttackRatePvm, 10 },
-                { Stats.DefenseRatePvm, 65 },
+                { Stats.AttackRatePvm, 215 },
+                { Stats.DefenseRatePvm, 52 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -450,11 +450,11 @@ internal class Elvenland : BaseMapInitializer
             this.GameConfiguration.Monsters.Add(monster);
             monster.Number = 425;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.CaptainGrizzly);
-            monster.MoveRange = 2;
+            monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
@@ -465,7 +465,7 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.MinimumPhysBaseDmg, 150 },
                 { Stats.MaximumPhysBaseDmg, 155 },
                 { Stats.DefenseBase, 80 },
-                { Stats.AttackRatePvm, 10 },
+                { Stats.AttackRatePvm, 240 },
                 { Stats.DefenseRatePvm, 70 },
             };
 

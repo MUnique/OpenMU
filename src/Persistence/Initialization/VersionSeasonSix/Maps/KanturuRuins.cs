@@ -436,8 +436,8 @@ internal class KanturuRuins : BaseMapInitializer
             monster.Number = 355;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.Kentauros);
             monster.MoveRange = 3;
-            monster.AttackRange = 1;
-            monster.ViewRange = 7;
+            monster.AttackRange = 4;
+            monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);

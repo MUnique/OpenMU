@@ -267,10 +267,10 @@
     <value>Diese Aktualisierung fügt Daten für die Duellkonfiguration hinzu</value>
   </data>
   <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Name" xml:space="preserve">
-    <value>Korrektur der Monsterattribute von Blutburg 7/8</value>
+    <value>Season-6-Monsterattribute der Blutburg</value>
   </data>
   <data name="FixBloodCastleMonsterAttributesUpdatePlugIn_Description" xml:space="preserve">
-    <value>Tauscht die Attributwerte zwischen BC7 (Monster 138-143) und BC8 (Monster 428-433), damit die Progression stimmt: BC6 → BC7 → BC8.</value>
+    <value>Setzt Level, Leben, Schaden, Verteidigung, Angriffs- und Verteidigungsrate, Reichweiten und Verzögerungen der Monster von Blutburg 1 bis 8 auf die Season-6-Daten, damit die Schwierigkeit von Stufe zu Stufe steigt. Angepasste Werte dieser Attribute werden überschrieben.</value>
   </data>
   <data name="AddDoppelgangerDataUpdatePlugIn_Name" xml:space="preserve">
     <value>Doppelgänger-Daten hinzufügen</value>
@@ -959,6 +959,12 @@
   </data>
   <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve">
     <value>Entfernt die doppelt definierten Monster-Spawns: 254 im Dungeon, der deshalb doppelt so viele Monster wie vorgesehen hatte, und 2 im Lost Tower. Andere Spawns bleiben erhalten.</value>
+  </data>
+  <data name="MonsterStatsUpdatePlugInBase_Name" xml:space="preserve">
+    <value>Season-6-Monsterwerte</value>
+  </data>
+  <data name="MonsterStatsUpdatePlugInBase_Description" xml:space="preserve">
+    <value>Setzt Level, Leben, Schaden, Verteidigung, Angriffs- und Verteidigungsrate, Reichweiten, Verzögerungen und Respawn-Zeiten der Monster auf die Season-6-Daten, die auch diese Version verwendet. Korrigiert Feldmonster, Invasionsmonster und Wachen sowie in Season 6 Chaos Castle 4 und 7 sowie Devil Square 7. Angepasste Werte dieser Attribute werden überschrieben.</value>
   </data>
   <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
     <value>Schutztalismane hinzufügen</value>

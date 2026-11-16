@@ -241,7 +241,7 @@ internal class Karutan2 : BaseMapInitializer
                 { Stats.MaximumPhysBaseDmg, 790 },
                 { Stats.DefenseBase, 610 },
                 { Stats.AttackRatePvm, 1200 },
-                { Stats.DefenseRatePvm, 406 },
+                { Stats.DefenseRatePvm, 405 },
                 { Stats.PoisonResistance, 255f / 255 },
                 { Stats.IceResistance, 150f / 255 },
                 { Stats.LightningResistance, 255f / 255 },

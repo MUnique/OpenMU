@@ -199,7 +199,7 @@ internal class Kalima3 : KalimaBase
                 { Stats.MaximumPhysBaseDmg, 170 },
                 { Stats.DefenseBase, 90 },
                 { Stats.AttackRatePvm, 250 },
-                { Stats.DefenseRatePvm, 600 },
+                { Stats.DefenseRatePvm, 60 },
                 { Stats.PoisonResistance, 16f / 255 },
                 { Stats.IceResistance, 16f / 255 },
                 { Stats.LightningResistance, 16f / 255 },

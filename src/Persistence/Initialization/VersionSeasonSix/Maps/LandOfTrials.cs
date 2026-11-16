@@ -392,8 +392,8 @@ internal class LandOfTrials : BaseMapInitializer
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
-            monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;

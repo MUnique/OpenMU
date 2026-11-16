@@ -354,7 +354,7 @@ internal class Vulcanus : BaseMapInitializer
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.Level, 120 },
-                { Stats.MaximumHealth, 5000000 },
+                { Stats.MaximumHealth, 500000 },
                 { Stats.MinimumPhysBaseDmg, 850 },
                 { Stats.MaximumPhysBaseDmg, 950 },
                 { Stats.DefenseBase, 210 },

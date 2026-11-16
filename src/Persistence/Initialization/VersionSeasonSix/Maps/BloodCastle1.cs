@@ -154,13 +154,13 @@ internal class BloodCastle1 : BloodCastleBase
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 56 },
-                { Stats.MaximumHealth, 5000 },
-                { Stats.MinimumPhysBaseDmg, 160 },
-                { Stats.MaximumPhysBaseDmg, 180 },
-                { Stats.DefenseBase, 110 },
-                { Stats.AttackRatePvm, 300 },
-                { Stats.DefenseRatePvm, 85 },
+                { Stats.Level, 33 },
+                { Stats.MaximumHealth, 1100 },
+                { Stats.MinimumPhysBaseDmg, 100 },
+                { Stats.MaximumPhysBaseDmg, 120 },
+                { Stats.DefenseBase, 55 },
+                { Stats.AttackRatePvm, 190 },
+                { Stats.DefenseRatePvm, 45 },
                 { Stats.PoisonResistance, 2f / 255 },
                 { Stats.IceResistance, 2f / 255 },
                 { Stats.FireResistance, 2f / 255 },
@@ -186,13 +186,13 @@ internal class BloodCastle1 : BloodCastleBase
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 61 },
-                { Stats.MaximumHealth, 6500 },
-                { Stats.MinimumPhysBaseDmg, 180 },
-                { Stats.MaximumPhysBaseDmg, 200 },
-                { Stats.DefenseBase, 120 },
-                { Stats.AttackRatePvm, 330 },
-                { Stats.DefenseRatePvm, 93 },
+                { Stats.Level, 37 },
+                { Stats.MaximumHealth, 1400 },
+                { Stats.MinimumPhysBaseDmg, 110 },
+                { Stats.MaximumPhysBaseDmg, 130 },
+                { Stats.DefenseBase, 65 },
+                { Stats.AttackRatePvm, 210 },
+                { Stats.DefenseRatePvm, 49 },
                 { Stats.PoisonResistance, 2f / 255 },
                 { Stats.IceResistance, 2f / 255 },
                 { Stats.FireResistance, 2f / 255 },
@@ -209,7 +209,7 @@ internal class BloodCastle1 : BloodCastleBase
             monster.Number = 86;
             monster.Designation = LocalizedString.FromResource(() => MonsterNames.DarkSkullSoldier1);
             monster.MoveRange = 3;
-            monster.AttackRange = 4;
+            monster.AttackRange = 1;
             monster.ViewRange = 3;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
@@ -218,13 +218,13 @@ internal class BloodCastle1 : BloodCastleBase
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 66 },
-                { Stats.MaximumHealth, 8000 },
-                { Stats.MinimumPhysBaseDmg, 190 },
-                { Stats.MaximumPhysBaseDmg, 220 },
-                { Stats.DefenseBase, 160 },
-                { Stats.AttackRatePvm, 360 },
-                { Stats.DefenseRatePvm, 98 },
+                { Stats.Level, 41 },
+                { Stats.MaximumHealth, 1700 },
+                { Stats.MinimumPhysBaseDmg, 120 },
+                { Stats.MaximumPhysBaseDmg, 140 },
+                { Stats.DefenseBase, 75 },
+                { Stats.AttackRatePvm, 230 },
+                { Stats.DefenseRatePvm, 61 },
                 { Stats.PoisonResistance, 2f / 255 },
                 { Stats.IceResistance, 2f / 255 },
                 { Stats.FireResistance, 2f / 255 },
@@ -251,13 +251,13 @@ internal class BloodCastle1 : BloodCastleBase
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.EnergyBall);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 70 },
-                { Stats.MaximumHealth, 9500 },
-                { Stats.MinimumPhysBaseDmg, 210 },
-                { Stats.MaximumPhysBaseDmg, 240 },
-                { Stats.DefenseBase, 180 },
-                { Stats.AttackRatePvm, 400 },
-                { Stats.DefenseRatePvm, 115 },
+                { Stats.Level, 44 },
+                { Stats.MaximumHealth, 2100 },
+                { Stats.MinimumPhysBaseDmg, 130 },
+                { Stats.MaximumPhysBaseDmg, 150 },
+                { Stats.DefenseBase, 85 },
+                { Stats.AttackRatePvm, 250 },
+                { Stats.DefenseRatePvm, 73 },
                 { Stats.PoisonResistance, 2f / 255 },
                 { Stats.IceResistance, 2f / 255 },
                 { Stats.FireResistance, 2f / 255 },
@@ -283,13 +283,13 @@ internal class BloodCastle1 : BloodCastleBase
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 74 },
-                { Stats.MaximumHealth, 12000 },
-                { Stats.MinimumPhysBaseDmg, 220 },
-                { Stats.MaximumPhysBaseDmg, 260 },
-                { Stats.DefenseBase, 190 },
-                { Stats.AttackRatePvm, 440 },
-                { Stats.DefenseRatePvm, 130 },
+                { Stats.Level, 47 },
+                { Stats.MaximumHealth, 2800 },
+                { Stats.MinimumPhysBaseDmg, 140 },
+                { Stats.MaximumPhysBaseDmg, 160 },
+                { Stats.DefenseBase, 95 },
+                { Stats.AttackRatePvm, 270 },
+                { Stats.DefenseRatePvm, 77 },
                 { Stats.PoisonResistance, 2f / 255 },
                 { Stats.IceResistance, 2f / 255 },
                 { Stats.FireResistance, 2f / 255 },
@@ -309,20 +309,20 @@ internal class BloodCastle1 : BloodCastleBase
             monster.AttackRange = 4;
             monster.ViewRange = 6;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(1800 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
             var attributes = new Dictionary<AttributeDefinition, float>
             {
-                { Stats.Level, 79 },
-                { Stats.MaximumHealth, 15000 },
-                { Stats.MinimumPhysBaseDmg, 230 },
-                { Stats.MaximumPhysBaseDmg, 280 },
-                { Stats.DefenseBase, 240 },
-                { Stats.AttackRatePvm, 500 },
-                { Stats.DefenseRatePvm, 180 },
+                { Stats.Level, 51 },
+                { Stats.MaximumHealth, 3700 },
+                { Stats.MinimumPhysBaseDmg, 150 },
+                { Stats.MaximumPhysBaseDmg, 180 },
+                { Stats.DefenseBase, 115 },
+                { Stats.AttackRatePvm, 300 },
+                { Stats.DefenseRatePvm, 88 },
                 { Stats.PoisonResistance, 5f / 255 },
                 { Stats.IceResistance, 5f / 255 },
                 { Stats.FireResistance, 5f / 255 },
