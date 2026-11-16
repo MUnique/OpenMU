@@ -280,7 +280,8 @@ window* does the same.
 *Requirements* are attribute requirements on top of the level requirement, like
 the *Map Requirements* of a map: e.g. a minimum *Master Level* or a minimum
 number of *Resets*. A player who doesn't meet one of them can't use the warp and
-gets the same message as for a missing map requirement; the costs are only paid
+is told which requirement is missing, e.g. "Missing requirement for this warp:
+Master Level 50"; the costs are only paid
 when all requirements are met. They apply to the move chat command, too, and bots
 don't pick such warps. The open source client learns the minimum master level
 and resets of each warp (in the `WarpRequirementsExtended` message, right after
