@@ -11,8 +11,8 @@ right click stops the use.
 
 | Item                     | Number | Bonus                          |
 | ------------------------ | ------ | ------------------------------ |
-| Hawk Figurine            | 13/128 | +10 critical damage            |
-| Goat Figurine            | 13/129 | +10 excellent damage           |
+| Hawk Figurine            | 13/128 | +10% critical damage chance    |
+| Goat Figurine            | 13/129 | +10% excellent damage chance   |
 | Oak Charm                | 13/130 | +50 maximum health             |
 | Maple Charm              | 13/131 | +50 maximum mana               |
 | Golden Oak Charm         | 13/132 | +100 health, +500 shield       |

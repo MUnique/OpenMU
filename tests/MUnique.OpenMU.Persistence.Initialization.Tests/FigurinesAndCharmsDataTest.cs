@@ -85,8 +85,8 @@ internal class FigurinesAndCharmsDataTest
             && item.ItemSlot is null
             && item.Name.ValueInNeutralLanguage.Length > 0));
 
-        Assert.That(PowerUp(items, 128, Stats.CriticalDamageBonus), Is.EqualTo(10));
-        Assert.That(PowerUp(items, 129, Stats.ExcellentDamageBonus), Is.EqualTo(10));
+        Assert.That(PowerUp(items, 128, Stats.CriticalDamageChance), Is.EqualTo(0.1f));
+        Assert.That(PowerUp(items, 129, Stats.ExcellentDamageChance), Is.EqualTo(0.1f));
         Assert.That(PowerUp(items, 130, Stats.MaximumHealth), Is.EqualTo(50));
         Assert.That(PowerUp(items, 131, Stats.MaximumMana), Is.EqualTo(50));
         Assert.That(PowerUp(items, 132, Stats.MaximumHealth), Is.EqualTo(100));

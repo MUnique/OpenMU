@@ -109,8 +109,8 @@ internal class CashShopItems : InitializerBase
             items.Add(item);
         }
 
-        Create(128, LocalizedString.FromResource(() => ItemNames.HawkFigurine), 1, (Stats.CriticalDamageBonus, 10));
-        Create(129, LocalizedString.FromResource(() => ItemNames.GoatFigurine), 1, (Stats.ExcellentDamageBonus, 10));
+        Create(128, LocalizedString.FromResource(() => ItemNames.HawkFigurine), 1, (Stats.CriticalDamageChance, 0.1f));
+        Create(129, LocalizedString.FromResource(() => ItemNames.GoatFigurine), 1, (Stats.ExcellentDamageChance, 0.1f));
         Create(130, LocalizedString.FromResource(() => ItemNames.OakCharm), 1, (Stats.MaximumHealth, 50));
         Create(131, LocalizedString.FromResource(() => ItemNames.MapleCharm), 1, (Stats.MaximumMana, 50));
         Create(132, LocalizedString.FromResource(() => ItemNames.GoldenOakCharm), 2, (Stats.MaximumHealth, 100), (Stats.MaximumShield, 500));
