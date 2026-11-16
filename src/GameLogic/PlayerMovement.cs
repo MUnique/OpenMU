@@ -436,10 +436,10 @@ internal sealed class PlayerMovement : IDisposable
         }
 
         var offset = stopPoint.EuclideanDistanceTo(this._player.Position);
-        var maxOffset = this.GetMaxAllowedLagOffset();
+        var maxOffset = Math.Max(this.GetMaxAllowedLagOffset(), this.GetMaxAllowedWalkStartOffset());
         if (offset > maxOffset)
         {
-            this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which is {1:F1} tiles away from the server position, exceeding the allowed offset of {2:F1}. Keeping the walk.", stopPoint, offset, maxOffset);
+            this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which is {1:F1} tiles away from the server position, exceeding the allowed offset of {2:F1}. Not taking it over.", stopPoint, offset, maxOffset);
             return false;
         }
 
@@ -503,9 +503,12 @@ internal sealed class PlayerMovement : IDisposable
         var isOnCurrentWalk = this.IsWalking
             && await this._walker.IsPointOfCurrentWalkAsync(clientPosition).ConfigureAwait(false);
 
-        // A diagonal neighbour tile is always ~1.41 tiles away, e.g. when the client turns. The lag bound
-        // is lower than that right after a step, so the rounding tolerance is the lower limit.
-        var maxOffset = Math.Max(NextTileDistance, isOnCurrentWalk ? this.GetMaxAllowedLagOffset() : this.GetMaxAllowedWalkStartOffset());
+        // A client sends the next part of a long walk before it reaches the end of the current one, so it
+        // legitimately reports a start which is a few tiles ahead of the server, while the lag bound is only
+        // ~1 tile right after a step. The configured walk start offset is therefore the lower limit, with or
+        // without a running walk. A diagonal neighbour tile (~1.41 tiles, e.g. when the client turns) is
+        // always accepted, even if the configured offset is smaller.
+        var maxOffset = Math.Max(NextTileDistance, Math.Max(isOnCurrentWalk ? this.GetMaxAllowedLagOffset() : 0.0, this.GetMaxAllowedWalkStartOffset()));
         if (offset > maxOffset)
         {
             this._player.Logger.LogWarning(

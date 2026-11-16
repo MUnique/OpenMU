@@ -147,14 +147,20 @@ internal sealed class WalkSpeedCheck
     /// <summary>
     /// Scores a large difference between the client-reported walk start and the server position.
     /// The caller must hold <see cref="SpeedHackState.Lock"/>.
-    /// PlayerMovement bounds the offset independently; the severity contributes to the warning and
-    /// punishment history.
+    /// PlayerMovement bounds the offset independently and rejects the walk. A difference of position
+    /// alone is no proof of a faster walk (lag, a walk which was stopped by the server), so a single
+    /// mismatch only adds to the score. It is reported as a violation, which warns the player, only
+    /// when the mismatches add up to a hard rejection. The pace of the walk itself is checked by
+    /// <see cref="Evaluate"/>.
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="config">The configuration.</param>
     /// <param name="state">The state of the player.</param>
     /// <param name="offset">The distance between client and server position.</param>
-    /// <returns>The violation severity, or <see cref="SpeedHackViolationSeverity.None"/> when only observed.</returns>
+    /// <returns>
+    /// <see cref="SpeedHackViolationSeverity.Reject"/>, when the score reached the rejection threshold;
+    /// Otherwise, <see cref="SpeedHackViolationSeverity.None"/>.
+    /// </returns>
     public SpeedHackViolationSeverity PenalizePositionMismatch(
         Player player,
         SpeedHackDetectConfiguration config,
@@ -169,7 +175,7 @@ internal sealed class WalkSpeedCheck
 
         state.ViolationScore += ViolationPolicy.WeighViolation(offset - maxOffset, maxOffset);
         player.Logger.LogWarning(
-            "Speedhack detected on walk for player {0}: client position is {1:F1} tiles away from the server position, exceeding the allowed offset of {2}. Score: {3:F2}.",
+            "Walk start position mismatch for player {0}: client position is {1:F1} tiles away from the server position, exceeding the allowed offset of {2}. Score: {3:F2}.",
             player.Name,
             offset,
             maxOffset,
@@ -179,7 +185,10 @@ internal sealed class WalkSpeedCheck
             return SpeedHackViolationSeverity.None;
         }
 
-        return GetSeverity(config, state);
+        double rejectThreshold = ViolationPolicy.ResolveRejectThreshold(config.ViolationScoreRejectThreshold);
+        return ViolationPolicy.ShouldEscalate(state.ViolationScore, rejectThreshold)
+            ? SpeedHackViolationSeverity.Reject
+            : SpeedHackViolationSeverity.None;
     }
 
     private static double GetToleranceMs(SpeedHackDetectConfiguration config, double stepDelayMs)
