@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -20,6 +22,7 @@ using MUnique.OpenMU.PlugIns;
 /// It can't be used in mini games and duels, because these have their own maps and spawn places.
 /// The character returns only if it still fulfills the requirements of the saved map, e.g. wings for Icarus;
 /// otherwise the talisman isn't used up and the place stays saved.
+/// The same applies when an <see cref="IWarpGateEnteringPlugIn"/> denies the return, e.g. while an event map is closed.
 /// </remarks>
 [Guid("23071045-4323-4B5F-B26B-5283EEB130C1")]
 [PlugIn]
@@ -71,6 +74,17 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
         }
 
         var gate = await GetSavedGateAsync(player, character, savedMap).ConfigureAwait(false);
+        if (player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
+        {
+            // The plugin shows the reason to the player; the talisman and the saved place are kept.
+            var eventArgs = new CancelEventArgs();
+            await plugInPoint.WarpGateEnteringAsync(player, gate, eventArgs).ConfigureAwait(false);
+            if (eventArgs.Cancel)
+            {
+                return false;
+            }
+        }
+
         SetValue(player, character, Stats.MobilityTalismanMap, 0);
         await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
         await player.WarpToAsync(gate).ConfigureAwait(false);
