@@ -420,6 +420,30 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
         return false;
     }
 
+    private static Type? GetCollectionInterface(Type type)
+    {
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>))
+        {
+            return type;
+        }
+
+        return type.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>));
+    }
+
+    private static bool IsSharedConfiguration(object member)
+    {
+        for (Type? type = member.GetType(); type is not null; type = type.BaseType)
+        {
+            if (SharedConfigurationTypes.Contains(type))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private async ValueTask<bool> SaveChangesCoreAsync(CancellationToken cancellationToken)
     {
         using var l = await this._lock.LockAsync(cancellationToken).ConfigureAwait(false);
@@ -623,30 +647,6 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
 
         action(member);
         this.ForEachAggregate(member, action, stopAtSharedConfiguration, false, handledMembers);
-    }
-
-    private static Type? GetCollectionInterface(Type type)
-    {
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>))
-        {
-            return type;
-        }
-
-        return type.GetInterfaces()
-            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>));
-    }
-
-    private static bool IsSharedConfiguration(object member)
-    {
-        for (Type? type = member.GetType(); type is not null; type = type.BaseType)
-        {
-            if (SharedConfigurationTypes.Contains(type))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

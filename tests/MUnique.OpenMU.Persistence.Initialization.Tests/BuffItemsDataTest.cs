@@ -130,6 +130,7 @@ internal class BuffItemsDataTest
         AssertBuffItems(gameConfiguration);
     }
   
+    /// <summary>
     /// Tests that the update adds the protection talismans and the attributes of their effects to a database
     /// which was created before they existed, and that applying it twice doesn't add anything twice.
     /// </summary>

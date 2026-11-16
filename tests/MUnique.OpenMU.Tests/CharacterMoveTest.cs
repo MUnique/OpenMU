@@ -48,7 +48,6 @@ public class CharacterMoveTest
         Assert.That(count, Is.EqualTo(4));
 
         steps = steps.Slice(0, count);
-        steps.Span.Reverse();
         Assert.That(steps.Span[0].From, Is.EqualTo(StartPoint));
         Assert.That(steps.Span[steps.Length - 1].To, Is.EqualTo(EndPoint));
         for (var index = 0; index < steps.Span.Length; index++)
@@ -56,6 +55,22 @@ public class CharacterMoveTest
             var direction = steps.Span[index];
             Assert.That(direction.From, Is.Not.EqualTo(direction.To));
         }
+    }
+
+    /// <summary>
+    /// Tests if the walk directions are returned in the order in which they are walked.
+    /// </summary>
+    [Test]
+    public async ValueTask TestWalkDirectionsAreInWalkingOrderAsync()
+    {
+        var player = await this.DoTheWalkAsync().ConfigureAwait(false);
+
+        Memory<Direction> directions = new Direction[16];
+        var count = await player.GetDirectionsAsync(directions).ConfigureAwait(false);
+
+        Assert.That(
+            directions[..count].ToArray(),
+            Is.EqualTo(new[] { Direction.SouthEast, Direction.SouthEast, Direction.East, Direction.East }));
     }
 
     /// <summary>
@@ -308,7 +323,6 @@ public class CharacterMoveTest
         Memory<WalkingStep> steps = new WalkingStep[16];
         var count = await player.GetStepsAsync(steps).ConfigureAwait(false);
         steps = steps[..count];
-        steps.Span.Reverse();
 
         var points = new List<Point> { steps.Span[0].From };
         foreach (var step in steps.Span)

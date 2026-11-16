@@ -35,14 +35,14 @@ public interface ISupportWalk : ILocateable
     Point WalkTarget { get; }
 
     /// <summary>
-    /// Gets the steps which are about to happen next by writing them into the given span.
+    /// Gets all steps of the current walk, in walking order, by writing them into the given span.
     /// </summary>
     /// <param name="steps">The steps.</param>
     /// <returns>The number of written steps.</returns>
     ValueTask<int> GetStepsAsync(Memory<WalkingStep> steps);
 
     /// <summary>
-    /// Gets the directions of the steps which are about to happen next by writing them into the given span.
+    /// Gets the directions of all steps of the current walk, in walking order, by writing them into the given span.
     /// </summary>
     /// <param name="directions">The directions.</param>
     /// <returns>The number of written directions.</returns>

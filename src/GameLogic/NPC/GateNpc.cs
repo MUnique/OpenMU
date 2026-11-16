@@ -67,7 +67,9 @@ public class GateNpc : NonPlayerCharacter, ISummonable
             // Closed from outside (e.g. map shutdown): stop the warp task and wait for it.
             // The CancellationTokenSource is disposed later in Dispose(bool).
             await this._cts.CancelAsync().ConfigureAwait(false);
+#pragma warning disable VSTHRD003 // The task is started by this class itself (Task.Run in the constructor) and never completes by waiting on this context, so no deadlock is possible.
             await this._warpTask.ConfigureAwait(false);
+#pragma warning restore VSTHRD003
         }
 
         // When the warp task closes the gate itself (lifespan over, summoner dead, gate full),

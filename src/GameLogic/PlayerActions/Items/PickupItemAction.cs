@@ -42,14 +42,12 @@ public class PickupItemAction
                 {
                     var inRange = CanPickup(player, droppedMoney);
                     var moneyLimitReached = inRange && MoneyDistribution.IsInventoryMoneyLimitReached(player, droppedMoney.Amount);
-                    LogRefusal(
-                        player,
-                        droppedMoney,
-                        !inRange
-                            ? GetDistanceOrDeathReason(player)
-                            : moneyLimitReached
-                                ? $"inventory money limit reached ({player.Money} of {player.GameContext?.Configuration?.MaximumInventoryMoney})"
-                                : "nobody could take the money (no eligible party member)");
+                    var refusalReason = !inRange
+                        ? GetDistanceOrDeathReason(player)
+                        : moneyLimitReached
+                            ? $"inventory money limit reached ({player.Money} of {player.GameContext?.Configuration?.MaximumInventoryMoney})"
+                            : "nobody could take the money (no eligible party member)";
+                    LogRefusal(player, droppedMoney, refusalReason);
 
                     // The client shows "carrying too much zen" for this reason, instead of the generic "can't pick that up".
                     var reason = moneyLimitReached ? ItemPickFailReason.MaximumInventoryMoneyReached : ItemPickFailReason.General;
@@ -84,6 +82,35 @@ public class PickupItemAction
                 player.Logger.Log(GetLogLevel(player), "Pickup refused: {Player} at {Map} ({Position}) requested drop {DropId}, which doesn't exist (anymore).", player, player.CurrentMap?.Definition.Name, player.Position, dropId);
                 await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Server-side bots and offline levelers retry far away drops several times per second, which
+    /// would flood the log; their refusals are only of interest when debugging them.
+    /// A connected client can also send an unlimited amount of pick up requests, e.g. with ids of
+    /// drops which don't exist, so a player gets at most one refusal per <see cref="RefusalLogInterval"/>
+    /// logged as information; the others are logged for debugging.
+    /// </summary>
+    /// <param name="player">The player for whom a refusal is about to be logged.</param>
+    internal static LogLevel GetLogLevel(Player player)
+    {
+        if (player is OfflinePlayer)
+        {
+            return LogLevel.Debug;
+        }
+
+        var now = Environment.TickCount64;
+        var lastLogged = LastRefusalLogs.GetValue(player, _ => new StrongBox<long>(now - (long)RefusalLogInterval.TotalMilliseconds));
+        lock (lastLogged)
+        {
+            if (now - lastLogged.Value < RefusalLogInterval.TotalMilliseconds)
+            {
+                return LogLevel.Debug;
+            }
+
+            lastLogged.Value = now;
+            return LogLevel.Information;
         }
     }
 
@@ -126,34 +153,6 @@ public class PickupItemAction
             drop,
             (int)player.GetDistanceTo(drop),
             reason);
-    }
-
-    /// <summary>
-    /// Server-side bots and offline levelers retry far away drops several times per second, which
-    /// would flood the log; their refusals are only of interest when debugging them.
-    /// A connected client can also send an unlimited amount of pick up requests, e.g. with ids of
-    /// drops which don't exist, so a player gets at most one refusal per <see cref="RefusalLogInterval"/>
-    /// logged as information; the others are logged for debugging.
-    /// </summary>
-    internal static LogLevel GetLogLevel(Player player)
-    {
-        if (player is OfflinePlayer)
-        {
-            return LogLevel.Debug;
-        }
-
-        var now = Environment.TickCount64;
-        var lastLogged = LastRefusalLogs.GetValue(player, _ => new StrongBox<long>(now - (long)RefusalLogInterval.TotalMilliseconds));
-        lock (lastLogged)
-        {
-            if (now - lastLogged.Value < RefusalLogInterval.TotalMilliseconds)
-            {
-                return LogLevel.Debug;
-            }
-
-            lastLogged.Value = now;
-            return LogLevel.Information;
-        }
     }
 
     private static string GetDistanceOrDeathReason(Player player)

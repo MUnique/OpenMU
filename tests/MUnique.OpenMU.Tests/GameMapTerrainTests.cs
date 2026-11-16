@@ -60,12 +60,6 @@ public class GameMapTerrainTests
     }
 
     /// <summary>
-    /// Creates fully blocked terrain data with at most one safezone and one ordinary walkable tile.
-    /// </summary>
-    /// <param name="safezoneAt">The coordinate to mark as safezone, if any.</param>
-    /// <param name="walkableAt">The coordinate to mark as walkable but outside the safezone, if any.</param>
-    /// <returns>The terrain data, including its three byte header.</returns>
-    /// <summary>
     /// Tests that loading other terrain data replaces the whole terrain, e.g. to switch to the terrain of an event state
     /// and back, and that the grids stay the same instances, which are referenced e.g. by the path finder.
     /// </summary>
@@ -95,6 +89,12 @@ public class GameMapTerrainTests
         Assert.That(actual.AIgrid, Is.EqualTo(expected.AIgrid));
     }
 
+    /// <summary>
+    /// Creates fully blocked terrain data with at most one safezone and one ordinary walkable tile.
+    /// </summary>
+    /// <param name="safezoneAt">The coordinate to mark as safezone, if any.</param>
+    /// <param name="walkableAt">The coordinate to mark as walkable but outside the safezone, if any.</param>
+    /// <returns>The terrain data, including its three byte header.</returns>
     private static byte[] CreateTerrainData((byte X, byte Y)? safezoneAt, (byte X, byte Y)? walkableAt)
     {
         var data = new byte[ushort.MaxValue + 3];

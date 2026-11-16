@@ -17,7 +17,7 @@ public sealed class SkippableDelay
     private readonly ILogger _logger;
     private readonly object _owner;
     private readonly object _lock = new();
-    private TaskCompletionSource? _activeWait;
+    private CancellationTokenSource? _activeWait;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SkippableDelay"/> class.
@@ -53,13 +53,27 @@ public sealed class SkippableDelay
     /// <returns><c>true</c> if a running wait has been woken; <c>false</c> if no wait is currently running.</returns>
     public bool TrySkip()
     {
-        TaskCompletionSource? activeWait;
+        CancellationTokenSource? activeWait;
         lock (this._lock)
         {
             activeWait = this._activeWait;
         }
 
-        return activeWait?.TrySetResult() is true;
+        if (activeWait is null || activeWait.IsCancellationRequested)
+        {
+            return false;
+        }
+
+        try
+        {
+            activeWait.Cancel();
+            return true;
+        }
+        catch (ObjectDisposedException)
+        {
+            // The wait finished right before we tried to skip it.
+            return false;
+        }
     }
 
     /// <summary>
@@ -76,7 +90,7 @@ public sealed class SkippableDelay
             return false;
         }
 
-        TaskCompletionSource skip;
+        using var skip = new CancellationTokenSource();
         lock (this._lock)
         {
             if (this._activeWait is not null)
@@ -84,33 +98,22 @@ public sealed class SkippableDelay
                 this._logger.LogWarning("{context}: A wait is started while another wait is still active; the previous wait becomes unskippable.", this._owner);
             }
 
-            skip = this._activeWait = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            this._activeWait = skip;
         }
 
         try
         {
-            using var delayCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            var delayTask = Task.Delay(duration, delayCts.Token);
-            if (await Task.WhenAny(delayTask, skip.Task).ConfigureAwait(false) == skip.Task)
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, skip.Token);
+            try
             {
-                await delayCts.CancelAsync().ConfigureAwait(false);
-                try
-                {
-                    // Observe the cancelled delay, so it never surfaces as unobserved.
-                    await delayTask.ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Expected: we just cancelled it because the wait was skipped.
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
+                await Task.Delay(duration, linked.Token).ConfigureAwait(false);
+                return false;
+            }
+            catch (OperationCanceledException) when (skip.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+            {
                 this._logger.LogInformation("{context}: Wait of {duration} skipped.", this._owner, duration);
                 return true;
             }
-
-            await delayTask.ConfigureAwait(false);
-            return false;
         }
         finally
         {
