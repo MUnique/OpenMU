@@ -123,10 +123,10 @@ internal class SkillsInitializer : SkillsInitializerBase
             { Stats.DefenseBase, 100 },
             { Stats.AttackRatePvm, 260 },
             { Stats.DefenseRatePvm, 75 },
-            { Stats.PoisonResistance, 6f / 255 },
-            { Stats.IceResistance, 6f / 255 },
-            { Stats.WaterResistance, 6f / 255 },
-            { Stats.FireResistance, 6f / 255 },
+            { Stats.IceResistance, 6 },
+            { Stats.PoisonResistance, 6 },
+            { Stats.LightningResistance, 6 },
+            { Stats.FireResistance, 6 },
         };
 
         bali.AddAttributes(attributes, this.Context, this.GameConfiguration);

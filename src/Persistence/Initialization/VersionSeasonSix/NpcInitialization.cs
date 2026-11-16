@@ -882,6 +882,10 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.MaximumHealth, 5000000 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             def.SetGuid(def.Number);
@@ -897,6 +901,10 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.MaximumHealth, 5000000 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             def.SetGuid(def.Number);
@@ -919,6 +927,10 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.MaximumHealth, 5000000 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             def.SetGuid(def.Number);
@@ -933,6 +945,10 @@ internal partial class NpcInitialization : Version095d.NpcInitialization
             var attributes = new Dictionary<AttributeDefinition, float>
             {
                 { Stats.MaximumHealth, 5000000 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             def.AddAttributes(attributes, this.Context, this.GameConfiguration);
             def.SetGuid(def.Number);

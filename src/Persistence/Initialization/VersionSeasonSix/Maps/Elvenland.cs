@@ -378,10 +378,7 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.DefenseBase, 33 },
                 { Stats.AttackRatePvm, 150 },
                 { Stats.DefenseRatePvm, 36 },
-                { Stats.PoisonResistance, 4f / 255 },
-                { Stats.IceResistance, 4f / 255 },
-                { Stats.WaterResistance, 4f / 255 },
-                { Stats.FireResistance, 4f / 255 },
+                { Stats.PoisonResistance, 2 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -439,6 +436,7 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.DefenseBase, 65 },
                 { Stats.AttackRatePvm, 215 },
                 { Stats.DefenseRatePvm, 52 },
+                { Stats.PoisonResistance, 3 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -467,6 +465,10 @@ internal class Elvenland : BaseMapInitializer
                 { Stats.DefenseBase, 80 },
                 { Stats.AttackRatePvm, 240 },
                 { Stats.DefenseRatePvm, 70 },
+                { Stats.IceResistance, 3 },
+                { Stats.PoisonResistance, 3 },
+                { Stats.LightningResistance, 3 },
+                { Stats.FireResistance, 5 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
