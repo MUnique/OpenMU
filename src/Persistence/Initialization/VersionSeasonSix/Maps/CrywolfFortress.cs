@@ -114,12 +114,12 @@ internal class CrywolfFortress : BaseMapInitializer
     {
         yield return this.CreateMonsterSpawn(1, this.NpcDictionary[406], 228, 048, Direction.SouthWest); // Apostle Devin
         yield return this.CreateMonsterSpawn(2, this.NpcDictionary[407], 062, 239, Direction.SouthWest); // Werewolf Quarel
-        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[226], 135, 047, Direction.SouthWest); // Treiner
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[226], 135, 047, Direction.South); // Treiner
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[248], 099, 040, Direction.SouthEast, SpawnTrigger.Wandering); // Wandering Merchant
-        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[256], 096, 025, Direction.SouthEast); // Lahap
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[256], 096, 025, Direction.South); // Lahap
         yield return this.CreateMonsterSpawn(6, this.NpcDictionary[251], 145, 014, Direction.SouthEast); // Hanzo the Blacksmith
-        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[240], 113, 056, Direction.SouthWest); // Baz The Vault Keeper
-        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[224], 118, 011, Direction.SouthEast); // Guardsman
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[240], 113, 056, Direction.South); // Baz The Vault Keeper
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[224], 118, 011, Direction.East); // Guardsman
 
         yield return this.CreateMonsterSpawn(9, this.NpcDictionary[204], 121, 031, Direction.South); // Wolf Status
         yield return this.CreateMonsterSpawn(10, this.NpcDictionary[205], 125, 027, Direction.South); // Wolf Altar1
