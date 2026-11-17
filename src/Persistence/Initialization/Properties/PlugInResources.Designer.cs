@@ -997,7 +997,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This update lets the items which are rented in the cash shop be sold to an NPC once they expired, for the small fixed price which the client shows..
+        ///   Looks up a localized string similar to This update puts the time-limited pets, rings, necklaces and small wings of the cash shop on sale, which are delivered as items which expire, and lets them be sold to an NPC once they expired, for the small fixed price which the client shows..
         /// </summary>
         public static string AddRentalItemRulesUpdatePlugIn_Description {
             get {
@@ -1006,7 +1006,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Add the rules of rented items.
+        ///   Looks up a localized string similar to Sell the rented items of the cash shop.
         /// </summary>
         public static string AddRentalItemRulesUpdatePlugIn_Name {
             get {

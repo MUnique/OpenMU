@@ -2036,7 +2036,7 @@
     <value>Product {0} has no item.</value>
   </data>
   <data name="CashShopIssueTimeLimited" xml:space="preserve">
-    <value>Product {0} is time-limited, which isn't supported yet.</value>
+    <value>Product {0} is time-limited, but its item can't expire: only an item which is equipped, isn't consumed, and can be dropped or sold to an NPC once it expired.</value>
   </data>
   <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
     <value>The bundle price is negative.</value>

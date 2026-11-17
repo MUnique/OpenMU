@@ -2030,7 +2030,7 @@
     <value>O produto {0} não possui nenhum item.</value>
   </data>
   <data name="CashShopIssueTimeLimited" xml:space="preserve">
-    <value>O produto {0} é limitado no tempo e ainda não é compatível.</value>
+    <value>O produto {0} é limitado no tempo, mas seu item não pode expirar: apenas um item que é equipado, não é consumido e pode ser descartado ou vendido a um NPC após expirar.</value>
   </data>
   <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
     <value>O preço do pacote é negativo.</value>

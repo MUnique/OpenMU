@@ -94,6 +94,52 @@ internal class RentalItemRulesDataTest
         Assert.That(panda.PriceDefinition, Is.SameAs(custom));
     }
 
+    /// <summary>
+    /// Tests that a new database has the packages of the time-limited pets, rings and wings for sale, and that the
+    /// update puts them on sale in a database which was created when they couldn't be delivered.
+    /// The consumable seals with a duration stay not for sale, and so do the bundles which contain them.
+    /// </summary>
+    [Test]
+    public async Task TimeLimitedPackagesAreForSaleAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var packages = gameConfiguration.CashShopConfiguration!.Packages;
+        var rentalPackages = packages
+            .Where(package => package.Products.Any(product => product.Duration > TimeSpan.Zero && product.ItemDefinition?.ItemSlot is not null)
+                              && package.Products.All(product => product.ItemDefinition is { } item && (product.Duration == TimeSpan.Zero || (item.ItemSlot is not null && item.ConsumeEffect is null))))
+            .ToList();
+        Assert.That(rentalPackages.Select(package => package.PackageSequence), Is.SupersetOf(new[] { 10, 28, 30, 32, 34, 36, 100, 102 }));
+        Assert.That(rentalPackages, Has.All.Matches<CashShopPackage>(package => package.IsForSale));
+        Assert.That(packages.Single(package => package.PackageSequence == 122).IsForSale, Is.False, "the Seal of Ascension is consumed");
+        Assert.That(packages.Single(package => package.PackageSequence == 162).IsForSale, Is.False, "the Gladiator Package contains time-limited scrolls");
+
+        rentalPackages.ForEach(package => package.IsForSale = false);
+        await new AddRentalItemRulesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(rentalPackages, Has.All.Matches<CashShopPackage>(package => package.IsForSale));
+        Assert.That(packages.Single(package => package.PackageSequence == 122).IsForSale, Is.False);
+    }
+
+    /// <summary>
+    /// Tests that the update doesn't change the packages of a custom cash shop script, because their sequences
+    /// may identify other products.
+    /// </summary>
+    [Test]
+    public async Task UpdateDoesNotChangeCustomScriptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var configuration = gameConfiguration.CashShopConfiguration!;
+        configuration.ScriptYearId++;
+        var panda = configuration.Packages.Single(package => package.PackageSequence == 30);
+        panda.IsForSale = false;
+
+        await new AddRentalItemRulesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(panda.IsForSale, Is.False);
+    }
+
     private static void AssertRulesAndPrices(IContext context, GameConfiguration gameConfiguration)
     {
         Assert.That(

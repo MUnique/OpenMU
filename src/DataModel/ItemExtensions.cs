@@ -124,6 +124,7 @@ public static class ItemExtensions
 
     /// <summary>
     /// Determines whether this item can be completely stacked on the specified other item.
+    /// Items with different expirations (<see cref="Item.ExpiresAt"/>) can't be stacked.
     /// After stacking, this item is destroyed.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -131,10 +132,11 @@ public static class ItemExtensions
     /// <returns>
     ///   <c>true</c> if this item can be completely stacked on the specified other item; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && (item.Durability + otherItem.Durability) <= item.Definition?.Durability;
+    public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && item.ExpiresAt == otherItem.ExpiresAt && (item.Durability + otherItem.Durability) <= item.Definition?.Durability;
 
     /// <summary>
     /// Determines whether this item can be partially stacked on the specified other item.
+    /// Items with different expirations (<see cref="Item.ExpiresAt"/>) can't be stacked.
     /// After stacking, this item is left with the rest of its durability.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -142,7 +144,7 @@ public static class ItemExtensions
     /// <returns>
     ///   <c>true</c> if this item can be partially stacked on the specified other item; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && otherItem.Durability < otherItem.Definition?.Durability;
+    public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && item.ExpiresAt == otherItem.ExpiresAt && otherItem.Durability < otherItem.Definition?.Durability;
 
     /// <summary>
     /// Determines whether this item is of the same type as the specified other item.

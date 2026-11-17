@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
@@ -16,6 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// it sets <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/> (see <see cref="ItemRules.SellableWhenExpired"/>),
 /// and assigns the small fixed prices for which the client sells them once they expired
 /// (see <see cref="ItemPriceDefinitions.AssignRentalPrices"/>).
+/// It also puts the packages of the cash shop on sale which couldn't be sold before only because their
+/// products are time-limited, see <see cref="CashShopProductExtensions.CanBeTimeLimited"/>.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddRentalItemRulesUpdatePlugIn_Name), Description = nameof(PlugInResources.AddRentalItemRulesUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -43,6 +47,7 @@ public class AddRentalItemRulesUpdatePlugIn : UpdatePlugInBase
     /// </remarks>
     public override IEnumerable<UpdateDependency> DependsOn =>
     [
+        typeof(AddCashShopUpdatePlugIn).GUID,
         typeof(AddItemRuleFlagsPlugIn).GUID,
         typeof(AddItemPriceDefinitionsPlugInSeason6).GUID,
         typeof(AddCashShopJeweleryUpdatePlugIn).GUID,
@@ -54,6 +59,30 @@ public class AddRentalItemRulesUpdatePlugIn : UpdatePlugInBase
     {
         ItemRules.ApplySellableWhenExpired(gameConfiguration.Items);
         new ItemPriceDefinitions(context, gameConfiguration).AssignRentalPrices();
+        PutTimeLimitedPackagesOnSale(gameConfiguration);
         return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Puts the packages on sale, which have a time-limited product that can be delivered now, and whose
+    /// products can all be delivered. Only the catalog of the client's script is changed: the initialization
+    /// created all of these packages for sale, but not for sale because of the time-limited products.
+    /// </summary>
+    private static void PutTimeLimitedPackagesOnSale(GameConfiguration gameConfiguration)
+    {
+        if (gameConfiguration.CashShopConfiguration is not { } configuration
+            || !CashShopInitializer.UsesClientScript(configuration))
+        {
+            return;
+        }
+
+        foreach (var package in configuration.Packages.Where(package => !package.IsForSale))
+        {
+            if (package.Products.Any(product => product.Duration > TimeSpan.Zero && product.ItemDefinition?.CanBeTimeLimited() == true)
+                && package.Products.All(product => product.CanBeDelivered()))
+            {
+                package.IsForSale = true;
+            }
+        }
     }
 }

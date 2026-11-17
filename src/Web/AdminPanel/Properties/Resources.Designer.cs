@@ -1390,7 +1390,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product {0} is time-limited, which isn&apos;t supported yet..
+        ///   Looks up a localized string similar to Product {0} is time-limited, but its item can&apos;t expire: only an item which is equipped, isn&apos;t consumed, and can be dropped or sold to an NPC once it expired..
         /// </summary>
         public static string CashShopIssueTimeLimited {
             get {

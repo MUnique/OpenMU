@@ -227,6 +227,29 @@ public class CashShopCatalogPageTests
         }
     }
 
+    /// <summary>
+    /// A time-limited product can be sold if its item can expire: it's worn, and it can be dropped or sold once it
+    /// expired. Otherwise, the check reports it.
+    /// </summary>
+    [Test]
+    public void TimeLimitedProductNeedsAnItemWhichCanExpire()
+    {
+        var configuration = new BasicModel.CashShopConfiguration();
+        var petSlot = new BasicModel.ItemSlotType();
+        petSlot.ItemSlots.Add(8);
+        var pet = new ItemDefinition { ItemSlot = petSlot, IsDroppable = false, IsSellableToNpc = false, IsSellableToNpcWhenExpired = true };
+        var stuckPet = new ItemDefinition { ItemSlot = petSlot, IsDroppable = false, IsSellableToNpc = false, IsSellableToNpcWhenExpired = false };
+        var rental = CreatePackage(1, "Rental", isForSale: true, pet, TimeSpan.FromDays(1));
+        var stuck = CreatePackage(3, "Stuck", isForSale: true, stuckPet, TimeSpan.FromDays(1));
+        configuration.Packages.Add(rental);
+        configuration.Packages.Add(stuck);
+
+        Assert.That(CashShopCatalogCheck.IsSellable(rental), Is.True);
+        Assert.That(CashShopCatalogCheck.GetIssues(configuration, rental), Is.Empty);
+        Assert.That(CashShopCatalogCheck.IsSellable(stuck), Is.False);
+        Assert.That(CashShopCatalogCheck.GetIssues(configuration, stuck), Is.EqualTo(new[] { string.Format(Resources.CashShopIssueTimeLimited, 4) }));
+    }
+
     private static CashShopPackage CreatePackage(int sequence, string name, bool isForSale, ItemDefinition? item, TimeSpan duration)
     {
         // The ids are set like the persistence context does, because the page lists the packages by them.
