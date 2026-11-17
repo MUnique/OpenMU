@@ -3391,6 +3391,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applies the effect of the Gladiator&apos;s Honor, which can only be used in Vulcanus..
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gladiator&apos;s Honor consume handler.
+        /// </summary>
+        public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gives players Goblin Points of the cash shop for their play time..
         /// </summary>
         public static string GoblinPointsForPlayTimePlugIn_Description {
@@ -4332,6 +4350,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string LowerRefineStoneConsumeHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("LowerRefineStoneConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Players can register lucky coins at the NPC Delgado, or exchange 10, 20 or 30 of them for an item. The rewards of the exchange are configured here..
+        /// </summary>
+        public static string LuckyCoinFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky coin event.
+        /// </summary>
+        public static string LuckyCoinFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Name", resourceCulture);
             }
         }
         
@@ -7118,6 +7154,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Respawns a dead player at the place of its death, when it carries a Talisman of Resurrection, which is used up. It doesn&apos;t apply in mini games, duels and guild wars..
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Talisman of Resurrection.
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption {
+            get {
+                return ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Default (catch-all) handler for targeted skills.
         /// </summary>
         public static string TargetedSkillDefaultPlugin_Description {
@@ -7604,6 +7676,123 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator&apos;s Honor..
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Description {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vulcanus experience bonus.
+        /// </summary>
+        public static string VulcanusExperiencePlugIn_Name {
+            get {
+                return ResourceManager.GetString("VulcanusExperiencePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map number.
+        /// </summary>
+        public static string VulcanusMapConfiguration_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("VulcanusMapConfiguration_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/waiting&apos;. Lists the items which wait for space in the inventory..
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items chat command.
+        /// </summary>
+        public static string WaitingItemsChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message..
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsCommandConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it&apos;s deactivated, the items keep waiting..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting items delivery.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How often the waiting items are put into the inventories, as far as they fit there..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check interval.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault..
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named items.
+        /// </summary>
+        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name {
+            get {
+                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/walkmonster &lt;id&gt; &lt;x&gt; &lt;y&gt;&apos;. Walks a previously created monster which can be remote controlled by the GM..
         /// </summary>
         public static string WalkMonsterChatCommand_Description {
@@ -7703,174 +7892,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Handles the chat command &apos;/waiting&apos;. Lists the items which wait for space in the inventory..
-        /// </summary>
-        public static string WaitingItemsChatCommandPlugIn_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Waiting items chat command.
-        /// </summary>
-        public static string WaitingItemsChatCommandPlugIn_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Check interval.
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to How often the waiting items are put into the inventories, as far as they fit there..
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_CheckInterval_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Named items.
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The number of waiting items which are named, one per message, when the player is told about them when entering the game or opening the vault..
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugInConfiguration_ItemsNamed_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Named items.
-        /// </summary>
-        public static string WaitingItemsCommandConfiguration_ItemsNamed_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The number of waiting items which are named, one per message..
-        /// </summary>
-        public static string WaitingItemsCommandConfiguration_ItemsNamed_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsCommandConfiguration_ItemsNamed_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Puts the items which wait for space in the inventory of a character into it as soon as they fit there: when the character enters the game or opens the vault, and then periodically. When it&apos;s deactivated, the items keep waiting..
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugIn_Description {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Waiting items delivery.
-        /// </summary>
-        public static string WaitingItemsDeliveryPlugIn_Name {
-            get {
-                return ResourceManager.GetString("WaitingItemsDeliveryPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to World chat command.
         /// </summary>
         public static string WorldChatChatCommandPlugIn_Name {
             get {
                 return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Name text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugIn_Name => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugIn_Description text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugIn_Description => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemGroup_Caption", resourceCulture)!;
-
-        /// <summary>Gets the localized TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption text.</summary>
-        public static string TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption => ResourceManager.GetString("TalismanOfResurrectionSpawnGatePlugInConfiguration_ItemNumber_Caption", resourceCulture)!;
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Lucky coin event.
-        /// </summary>
-        public static string LuckyCoinFeaturePlugIn_Name {
-            get {
-                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Name", resourceCulture);
-            }
-        }
-
-        ///   Looks up a localized string similar to Gladiator's Honor consume handler.
-        /// </summary>
-        public static string GladiatorsHonorConsumeHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Players can register lucky coins at the NPC Delgado, or exchange 10, 20 or 30 of them for an item. The rewards of the exchange are configured here..
-        /// </summary>
-        public static string LuckyCoinFeaturePlugIn_Description {
-            get {
-                return ResourceManager.GetString("LuckyCoinFeaturePlugIn_Description", resourceCulture);
-            }
-        }
-        
-        ///   Looks up a localized string similar to Applies the effect of the Gladiator's Honor, which can only be used in Vulcanus..
-        /// </summary>
-        public static string GladiatorsHonorConsumeHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("GladiatorsHonorConsumeHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Vulcanus experience bonus.
-        /// </summary>
-        public static string VulcanusExperiencePlugIn_Name {
-            get {
-                return ResourceManager.GetString("VulcanusExperiencePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Increases the experience of players in Vulcanus by their Vulcanus experience rate, e.g. of the Gladiator's Honor..
-        /// </summary>
-        public static string VulcanusExperiencePlugIn_Description {
-            get {
-                return ResourceManager.GetString("VulcanusExperiencePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Map number.
-        /// </summary>
-        public static string VulcanusMapConfiguration_MapNumber_Name {
-            get {
-                return ResourceManager.GetString("VulcanusMapConfiguration_MapNumber_Name", resourceCulture);
             }
         }
     }
