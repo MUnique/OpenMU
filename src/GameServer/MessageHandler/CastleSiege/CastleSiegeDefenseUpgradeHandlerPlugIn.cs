@@ -39,8 +39,9 @@ internal sealed class CastleSiegeDefenseUpgradeHandlerPlugIn : ISubPacketHandler
         }
 
         var request = new CastleSiegeDefenseUpgradeRequest(packet);
-        var type = request.NpcUpgradeType <= byte.MaxValue
-                   && Enum.IsDefined((CastleSiegeUpgradeType)(byte)request.NpcUpgradeType)
+        var isValidType = request.NpcUpgradeType <= byte.MaxValue
+                          && Enum.IsDefined((CastleSiegeUpgradeType)(byte)request.NpcUpgradeType);
+        var type = isValidType
             ? (CastleSiegeUpgradeType)(byte)request.NpcUpgradeType
             : (CastleSiegeUpgradeType)byte.MaxValue;
         var requestedLevel = request.NpcUpgradeValue <= byte.MaxValue

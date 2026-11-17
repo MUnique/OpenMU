@@ -34,9 +34,9 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
     public NewPlayersInScopePlugIn075(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newPlayers, bool isSpawned = true)
+    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newObjects, bool isSpawned = true)
     {
-        if (!newPlayers.Any())
+        if (!newObjects.Any())
         {
             return;
         }
@@ -48,7 +48,7 @@ public class NewPlayersInScopePlugIn075 : INewPlayersInScopePlugIn
         }
 
         List<Player>? guildPlayers = null;
-        var playerList = newPlayers.ToList();
+        var playerList = newObjects.ToList();
         foreach (var newPlayer in playerList)
         {
             if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)

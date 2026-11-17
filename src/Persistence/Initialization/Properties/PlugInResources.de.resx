@@ -1002,4 +1002,10 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt die Ehre des Gladiators hinzu, welche die Erfahrung in Vulcanus 30 Minuten lang um 20 % erhöht.</value>
   </data>
+  <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve">
+    <value>Season-6-NPC-Spawns</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve">
+    <value>Bringt die NPCs auf ihre Season-6-Positionen und Blickrichtungen (Lorencia, Devias, Noria, Arena, Atlans, Elfenland, Aida, Crywolf-Festung, Tal von Loren, Karutan, Kanturu und Illusionstempel), ergänzt den fehlenden Elfensoldaten von Devias, die zwei fehlenden Elfensoldaten von Noria sowie den Goldenen Bogenschützen von Devias und entfernt die NPCs, die es in Season 6 nicht gibt: aus den älteren Versionen die Trankverkäuferinnen von Noria und Verlorener Turm, die Sicherheitswächter von Verlorener Turm, Arena und Atlans, die Wache bei 114/125 und den Goldenen Bogenschützen von Lorencia; Lugard, Priester Devin und Mirage in Devias, die Season 6 nur in Elfenland und in der Crywolf-Festung hat; sowie die zweite Krone im Tal von Loren. Angepasste Positionen und Blickrichtungen dieser NPCs werden überschrieben.</value>
+  </data>
 </root>

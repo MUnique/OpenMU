@@ -9,6 +9,9 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 
 /// <summary>Adapts the panel's existing search cache and dashboard data for read operations.</summary>
+/// <param name="search">The configuration search index cache.</param>
+/// <param name="history">The online player history.</param>
+/// <param name="updates">The data update service.</param>
 public sealed class AdminReadModel(ConfigurationSearchIndexCache search, OnlinePlayerHistory history, DataUpdateService updates) : IAdminReadModel
 {
     /// <inheritdoc />

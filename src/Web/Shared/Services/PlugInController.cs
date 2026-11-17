@@ -57,7 +57,10 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     public string NameFilter
     {
-        get => this._nameFilter;
+        get
+        {
+            return this._nameFilter;
+        }
         set
         {
             this._nameFilter = value;
@@ -70,7 +73,10 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     public string TypeFilter
     {
-        get => this._typeFilter;
+        get
+        {
+            return this._typeFilter;
+        }
         set
         {
             this._typeFilter = value;
@@ -83,7 +89,10 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     public Guid PointFilter
     {
-        get => this._pointFilter;
+        get
+        {
+            return this._pointFilter;
+        }
         set
         {
             this._pointFilter = value;
@@ -96,7 +105,10 @@ public class PlugInController : IDataService<PlugInConfigurationViewItem>, ISupp
     /// </summary>
     public PlugInActiveFilter ActiveFilter
     {
-        get => this._activeFilter;
+        get
+        {
+            return this._activeFilter;
+        }
         set
         {
             this._activeFilter = value;

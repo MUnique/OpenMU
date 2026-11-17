@@ -23,7 +23,10 @@ public class MonsterAttributeScalerConfiguration
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.MonsterAttributeScalerConfiguration_ScaleAllPercentage_Caption), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
     public float ScaleAllPercentage
     {
-        get => this._scaleAllPercentage;
+        get
+        {
+            return this._scaleAllPercentage;
+        }
         set
         {
             this._scaleAllPercentage = value;

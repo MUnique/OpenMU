@@ -107,9 +107,9 @@ public class DefaultDropGenerator : IDropGenerator
     }
 
     /// <inheritdoc/>
-    public Item? GenerateItemDrop(DropItemGroup selectedGroup)
+    public Item? GenerateItemDrop(DropItemGroup group)
     {
-        return this.GenerateItemDrop(selectedGroup, selectedGroup.PossibleItems);
+        return this.GenerateItemDrop(group, group.PossibleItems);
     }
 
     /// <inheritdoc/>

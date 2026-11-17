@@ -24,7 +24,10 @@ public class ServerHostSettings : INotifyPropertyChanged
     /// </summary>
     public string? Description
     {
-        get => this._description;
+        get
+        {
+            return this._description;
+        }
         set
         {
             if (value == this._description)
@@ -42,7 +45,10 @@ public class ServerHostSettings : INotifyPropertyChanged
     /// </summary>
     public string? Address
     {
-        get => this._address;
+        get
+        {
+            return this._address;
+        }
         set
         {
             if (value == this._address)
@@ -60,7 +66,10 @@ public class ServerHostSettings : INotifyPropertyChanged
     /// </summary>
     public int Port
     {
-        get => this._port;
+        get
+        {
+            return this._port;
+        }
         set
         {
             if (value == this._port)

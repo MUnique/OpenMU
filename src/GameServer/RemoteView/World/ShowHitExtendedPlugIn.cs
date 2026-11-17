@@ -41,16 +41,16 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
     /// and to make it somehow visible that the damage exceeds 65k, we send more than one packet, if the 16bits are not enough.
     /// </remarks>
     /// <inheritdoc/>
-    public async ValueTask ShowHitAsync(IAttackable target, HitInfo hitInfo)
+    public async ValueTask ShowHitAsync(IAttackable hitReceiver, HitInfo hitInfo)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        var healthStatus = this.CalcStatStatus(target, Stats.CurrentHealth, Stats.MaximumHealth);
-        var shieldStatus = this.CalcStatStatus(target, Stats.CurrentShield, Stats.MaximumShield);
-        var targetId = target.GetId(this._player);
+        var healthStatus = this.CalcStatStatus(hitReceiver, Stats.CurrentHealth, Stats.MaximumHealth);
+        var shieldStatus = this.CalcStatStatus(hitReceiver, Stats.CurrentShield, Stats.MaximumShield);
+        var targetId = hitReceiver.GetId(this._player);
         if (hitInfo.TriggersHitShock == true)
         {
             targetId |= 0x8000;
@@ -69,10 +69,10 @@ public class ShowHitExtendedPlugIn : IShowHitPlugIn
             hitInfo.ShieldDamage).ConfigureAwait(false);
     }
 
-    private byte CalcStatStatus(IAttackable target, AttributeDefinition currentStat, AttributeDefinition maximumStat)
+    private byte CalcStatStatus(IAttackable hitReceiver, AttributeDefinition currentStat, AttributeDefinition maximumStat)
     {
-        var current = target.Attributes[currentStat];
-        var maximum = target.Attributes[maximumStat];
+        var current = hitReceiver.Attributes[currentStat];
+        var maximum = hitReceiver.Attributes[maximumStat];
 
         if (maximum == 0 || float.IsNaN(maximum))
         {

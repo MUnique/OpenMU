@@ -31,7 +31,10 @@ public class SkillEntry : INotifyPropertyChanged
     /// </summary>
     public int Level
     {
-        get => this.level;
+        get
+        {
+            return this.level;
+        }
 
         set
         {

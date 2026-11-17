@@ -24,9 +24,9 @@ public class Xor3Encryptor : ISpanEncryptor
     }
 
     /// <inheritdoc/>
-    public void Encrypt(Span<byte> data)
+    public void Encrypt(Span<byte> packet)
     {
-        this.InternalEncrypt(data.Slice(this._startOffset));
+        this.InternalEncrypt(packet.Slice(this._startOffset));
     }
 
     /// <summary>

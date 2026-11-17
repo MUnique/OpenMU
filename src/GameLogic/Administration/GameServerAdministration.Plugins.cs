@@ -11,7 +11,7 @@ using System.Threading;
 using MUnique.OpenMU.Interfaces;
 using Nito.AsyncEx;
 
-/// <summary>The plugin contribution channel of live game server administration.</summary>
+/// <content>The plugin contribution channel of live game server administration.</content>
 public sealed partial class GameServerAdministration
 {
     private static readonly ConditionalWeakTable<IGameContext, AsyncLock> PluginGates = new();
@@ -88,14 +88,15 @@ public sealed partial class GameServerAdministration
     }
 
     private static JsonObject CheckSize(JsonObject result)
-        => result.ToJsonString().Length <= 16384 ? result
+        => result.ToJsonString().Length <= 16384
+            ? result
             : throw new InvalidOperationException("The plugin result exceeds 16 KiB; inspect state before retrying a write.");
 
     private static bool IsValidOperation(IAdminOperationPlugIn plugin)
     {
         var info = plugin.Operation;
         return info.PlugInId == plugin.GetType().GUID && info.PlugInId != Guid.Empty && info.Name == plugin.Key
-            && info.Name.Length is >= 3 and <= 100 && info.Name.All(c => c is >= 'a' and <= 'z' or '_')
+            && info.Name.Length is >= 3 and <= 100 && info.Name.All(c => c is (>= 'a' and <= 'z') or '_')
             && info.Description.Length is > 0 and <= 2000 && info.InputSchema.ToJsonString().Length <= 16384
             && info.InputSchema["type"]?.ToString() == "object"
             && info.MinimumRole is "Viewer" or "Operator" or "Administrator"

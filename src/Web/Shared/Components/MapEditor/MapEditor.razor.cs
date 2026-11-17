@@ -122,7 +122,10 @@ public partial class MapEditor : IAsyncDisposable
     /// </summary>
     private GameMapDefinition SelectedMap
     {
-        get => this._selectedMap ?? throw new InvalidOperationException($"{nameof(this.SelectedMap)} is not initialized.");
+        get
+        {
+            return this._selectedMap ?? throw new InvalidOperationException($"{nameof(this.SelectedMap)} is not initialized.");
+        }
         set
         {
             this._selectedMap = value;

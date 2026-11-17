@@ -275,6 +275,15 @@ internal sealed class PlayerMovement : IDisposable
         var walkTarget = this.WalkTarget;
         await this._walker.StopAsync().ConfigureAwait(false);
         var position = this._player.Position;
+        if (stopPoint.EuclideanDistanceTo(position) <= this.GetTolerableStopOffset())
+        {
+            // The client is only a few tiles apart, which is plausible with some lag. The walk ends at our
+            // position and only the others in view are told, so the player isn't pulled back.
+            this._player.Logger.LogDebug("StopWalkAtAsync: Player reported it stopped walking at {0}, which can't be taken (walk to {1}). Ended the walk at {2}; the difference is tolerated.", stopPoint, walkTarget, position);
+            await this.MoveOnMapAsync(currentMap, position, MoveType.Instant, notifyMovedObject: false).ConfigureAwait(false);
+            return;
+        }
+
         this._player.Logger.LogWarning("StopWalkAtAsync: Player reported it stopped walking at {0}, which can't be taken (walk to {1}). Ended the walk at {2} and resynchronized the client.", stopPoint, walkTarget, position);
         await this.MoveOnMapAsync(currentMap, position, MoveType.Instant).ConfigureAwait(false);
     }
@@ -468,7 +477,7 @@ internal sealed class PlayerMovement : IDisposable
     private async ValueTask ResynchronizeIfApartAsync(GameMap map, Point reportedPoint)
     {
         var position = this._player.Position;
-        if (reportedPoint.EuclideanDistanceTo(position) <= NextTileDistance)
+        if (reportedPoint.EuclideanDistanceTo(position) <= this.GetTolerableStopOffset())
         {
             return;
         }
@@ -572,6 +581,17 @@ internal sealed class PlayerMovement : IDisposable
     {
         var config = this._player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration;
         return config?.MaxAllowedWalkStartOffset ?? DefaultMaxAllowedWalkStartOffset;
+    }
+
+    /// <summary>
+    /// Gets the distance a reported stop position may be away from the server position without
+    /// correcting the client. It's the walk start offset, because a client which is that far from us
+    /// when it starts a walk is accepted as well, but at least the next tile.
+    /// </summary>
+    /// <returns>The maximum tolerated offset in tiles.</returns>
+    private double GetTolerableStopOffset()
+    {
+        return Math.Max(NextTileDistance, this.GetMaxAllowedWalkStartOffset());
     }
 
     /// <summary>

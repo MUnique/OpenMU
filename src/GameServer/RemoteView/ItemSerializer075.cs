@@ -63,7 +63,7 @@ public class ItemSerializer075 : IItemSerializer
     }
 
     /// <inheritdoc />
-    public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
+    public Item DeserializeItem(Span<byte> source, GameConfiguration gameConfiguration, IContext persistenceContext)
     {
         throw new NotImplementedException();
     }

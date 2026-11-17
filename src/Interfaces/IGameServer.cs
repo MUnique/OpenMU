@@ -5,63 +5,6 @@
 namespace MUnique.OpenMU.Interfaces;
 
 /// <summary>
-/// The state of the server.
-/// </summary>
-public enum ServerState
-{
-    /// <summary>
-    /// The server has finished stopping.
-    /// </summary>
-    Stopped,
-
-    /// <summary>
-    /// The server is currently starting, but has not yet finished initialization.
-    /// </summary>
-    Starting,
-
-    /// <summary>
-    /// The server started and is available.
-    /// </summary>
-    Started,
-
-    /// <summary>
-    /// The server is not available anymore and is stopping it's services.
-    /// </summary>
-    Stopping,
-
-    /// <summary>
-    /// The server state is unknown, because of a timeout.
-    /// </summary>
-    Timeout,
-}
-
-/// <summary>
-/// Types of messages.
-/// </summary>
-public enum MessageType
-{
-    /// <summary>
-    /// The message is shown as centered golden message in the client.
-    /// </summary>
-    GoldenCenter = 0,
-
-    /// <summary>
-    /// The message is shown as blue entry.
-    /// </summary>
-    BlueNormal = 1,
-
-    /// <summary>
-    /// The message is a guild notice (green center).
-    /// </summary>
-    GuildNotice = 2,
-
-    /// <summary>
-    /// The message scrolls in bold across the top of the screen (slide notice).
-    /// </summary>
-    SlideNotice = 3,
-}
-
-/// <summary>
 /// Interface for the inter-server communication.
 /// </summary>
 public interface IGameServer : IManageableServer, IFriendSystemSubscriber

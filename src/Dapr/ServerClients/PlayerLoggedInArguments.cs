@@ -9,4 +9,6 @@ using MUnique.OpenMU.Interfaces;
 /// <summary>
 /// Arguments for <see cref="IGameServer.PlayerAlreadyLoggedInAsync"/>.
 /// </summary>
+/// <param name="ServerId">The server identifier.</param>
+/// <param name="LoginName">The login name.</param>
 public record PlayerLoggedInArguments(byte ServerId, string LoginName);

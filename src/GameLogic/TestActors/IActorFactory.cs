@@ -18,22 +18,3 @@ public interface IActorFactory
     /// <returns>The actor, or <c>null</c> when it could not enter the world.</returns>
     ValueTask<ScriptedPlayer?> CreateAsync(IGameServerContext context, string loginName, byte? characterSlot);
 }
-
-/// <summary>
-/// Creates real actors which load their account from the database, like a bot does.
-/// </summary>
-public sealed class ActorFactory : IActorFactory
-{
-    /// <inheritdoc />
-    public async ValueTask<ScriptedPlayer?> CreateAsync(IGameServerContext context, string loginName, byte? characterSlot)
-    {
-        var actor = new ScriptedPlayer(context);
-        if (await actor.InitializeAsync(loginName, characterSlot).ConfigureAwait(false))
-        {
-            return actor;
-        }
-
-        await actor.DisposeAsync().ConfigureAwait(false);
-        return null;
-    }
-}

@@ -118,7 +118,10 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
     /// <inheritdoc />
     public ServerState ServerState
     {
-        get => this._serverState;
+        get
+        {
+            return this._serverState;
+        }
         private set
         {
             if (this._serverState != value)
@@ -730,8 +733,7 @@ public sealed partial class DiscordBot : IManageableServer, IDiscordMessenger, I
             return null;
         }
 
-        return client.GetChannel(channelId) as IMessageChannel
-               ?? await client.GetChannelAsync(channelId).ConfigureAwait(false) as IMessageChannel;
+        return await client.GetChannelAsync(channelId).ConfigureAwait(false) as IMessageChannel;
     }
 
     private Task OnLogAsync(LogMessage message)

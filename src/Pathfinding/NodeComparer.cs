@@ -13,5 +13,5 @@ public class NodeComparer : IComparer<Node>
 {
     /// <inheritdoc/>
     [SuppressMessage("ReSharper", "PossibleNullReferenceException", Justification = "We are sure that these parameters are never null. A check would reduce performance.")]
-    public int Compare(Node? a, Node? b) => a!.PredictedTotalCost - b!.PredictedTotalCost;
+    public int Compare(Node? x, Node? y) => x!.PredictedTotalCost - y!.PredictedTotalCost;
 }

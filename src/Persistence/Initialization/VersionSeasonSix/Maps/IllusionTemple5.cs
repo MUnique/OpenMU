@@ -67,16 +67,16 @@ internal class IllusionTemple5 : BaseMapInitializer
         // Pool of Stone Statue (380) positions - only one of them is active at a time, randomly picked
         // from these two by the game logic. Positions confirmed against a working Season 6 Episode 3
         // server's spawn list.
-        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[380], 207, 047, Direction.Undefined, SpawnTrigger.ManuallyForEvent);
-        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[380], 134, 121, Direction.Undefined, SpawnTrigger.ManuallyForEvent);
+        yield return this.CreateMonsterSpawn(100, this.NpcDictionary[380], 207, 047, Direction.South, SpawnTrigger.ManuallyForEvent);
+        yield return this.CreateMonsterSpawn(101, this.NpcDictionary[380], 134, 121, Direction.South, SpawnTrigger.ManuallyForEvent);
 
         // Team guardians (decorative).
-        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[381], 139, 046, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // MU Allies General
-        yield return this.CreateMonsterSpawn(111, this.NpcDictionary[382], 194, 123, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Illusion Elder
+        yield return this.CreateMonsterSpawn(110, this.NpcDictionary[381], 139, 046, Direction.SouthEast, SpawnTrigger.AutomaticDuringEvent); // MU Allies General
+        yield return this.CreateMonsterSpawn(111, this.NpcDictionary[382], 194, 123, Direction.SouthEast, SpawnTrigger.AutomaticDuringEvent); // Illusion Elder
 
         // Relic delivery targets - the team which carries the relic here scores a point.
-        yield return this.CreateMonsterSpawn(112, this.NpcDictionary[383], 141, 059, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Alliance Item Storage
-        yield return this.CreateMonsterSpawn(113, this.NpcDictionary[384], 194, 113, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent); // Illusion Item Storage
+        yield return this.CreateMonsterSpawn(112, this.NpcDictionary[383], 141, 059, Direction.South, SpawnTrigger.AutomaticDuringEvent); // Alliance Item Storage
+        yield return this.CreateMonsterSpawn(113, this.NpcDictionary[384], 194, 113, Direction.South, SpawnTrigger.AutomaticDuringEvent); // Illusion Item Storage
 
         // Roaming "Illusion Sorc. Spirit" monsters (398-399) - killing them grants skill points for the
         // event's special skills.

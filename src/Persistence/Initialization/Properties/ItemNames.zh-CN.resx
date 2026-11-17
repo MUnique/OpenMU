@@ -1330,7 +1330,7 @@
     <value>生命之光之石</value>
   </data>
   <data name="JewelOfChaos" xml:space="preserve">
-    <value>玛雅宝石</value>
+    <value>玛雅之石</value>
   </data>
   <data name="OrbOfFireSlash" xml:space="preserve">
     <value>玄月斩之石</value>
@@ -1558,7 +1558,7 @@
     <value>再生宝石组合</value>
   </data>
   <data name="PackedJewelOfChaos" xml:space="preserve">
-    <value>玛雅宝石组合</value>
+    <value>玛雅之石组合</value>
   </data>
   <data name="PackedLowerRefineStone" xml:space="preserve">
     <value>低级进化宝石组合</value>

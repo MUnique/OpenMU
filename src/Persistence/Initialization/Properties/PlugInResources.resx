@@ -470,4 +470,6 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Gladiator's Honor, which increases the experience in Vulcanus by 20 % for 30 minutes.</value>
   </data>
+  <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>Season 6 NPC spawns</value></data>
+  <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn't have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golden Archer of Lorencia; Lugard, Priest Devin and Mirage of Devias, which Season 6 has only in Elvenland and Crywolf Fortress; and the second Crown of Valley of Loren. Customized positions and directions of these NPCs are overwritten.</value></data>
 </root>

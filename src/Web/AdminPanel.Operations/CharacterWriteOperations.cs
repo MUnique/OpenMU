@@ -164,7 +164,8 @@ public sealed class CharacterWriteOperations(IPersistenceContextProvider persist
                 // when the storage is loaded in the game, so it takes no place here.
                 var detached = new PreviewStorage(storage);
                 Func<Item, bool> ignoreItemWithoutPlace = _ => false;
-                var grid = vault ? new Storage(InventoryConstants.WarehouseSize, 0, 0, detached, ignoreItemWithoutPlace)
+                var grid = vault
+                    ? new Storage(InventoryConstants.WarehouseSize, 0, 0, detached, ignoreItemWithoutPlace)
                     : new Storage(
                         InventoryConstants.GetInventorySize(0),
                         InventoryConstants.EquippableSlotsCount,

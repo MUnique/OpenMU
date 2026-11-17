@@ -15,14 +15,14 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class ShortFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
     {
         if (propertyInfo.PropertyType == typeof(short))
         {
-            return this.BuildField<short, ShortField>(model, propertyInfo, builder, currentIndex, notificationService);
+            return this.BuildField<short, ShortField>(model, propertyInfo, treeBuilder, currentIndex, notificationService);
         }
 
-        return this.BuildField<short?, NullableShortField>(model, propertyInfo, builder, currentIndex, notificationService);
+        return this.BuildField<short?, NullableShortField>(model, propertyInfo, treeBuilder, currentIndex, notificationService);
     }
 
     /// <inheritdoc/>

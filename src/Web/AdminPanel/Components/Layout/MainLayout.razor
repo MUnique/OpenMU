@@ -15,10 +15,8 @@
 
     private bool _isTwoFactorSetupPending;
 
-    private bool IsDarkTheme => string.Equals(
-        this.HttpContext?.Request.Cookies[ThemeController.CookieName],
-        "dark",
-        StringComparison.OrdinalIgnoreCase);
+    private string Theme => ThemeController.NormalizeTheme(
+        this.HttpContext?.Request.Cookies[ThemeController.CookieName]);
 
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
@@ -68,7 +66,7 @@
                         <ConfigurationSearch />
                     </div>
                     <div class="header-actions ms-3 d-flex align-items-center">
-                        <ThemeSelector IsDark="@this.IsDarkTheme" />
+                        <ThemeSelector Theme="@this.Theme" />
                         <div class="ms-3"><LoginDisplay /></div>
                     </div>
                 </div>

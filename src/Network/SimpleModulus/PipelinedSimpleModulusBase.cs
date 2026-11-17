@@ -138,7 +138,7 @@ public abstract class PipelinedSimpleModulusBase : PacketPipeReaderBase
     /// <param name="resultIndex">Index of the <see cref="EncryptionResult"/>.</param>
     /// <returns>The the bit mask of the first byte (at the index of <see cref="GetByteOffset(int)"/>) in the encrypted block buffer based on the index of <see cref="EncryptionResult"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static int GetRemainderBitMask(int resultIndex) => (0xFF << (6 - GetBitOffset(resultIndex)) & 0xFF) - ((0xFF << (8 - GetBitOffset(resultIndex))) & 0xFF);
+    protected static int GetRemainderBitMask(int resultIndex) => ((0xFF << (6 - GetBitOffset(resultIndex))) & 0xFF) - ((0xFF << (8 - GetBitOffset(resultIndex))) & 0xFF);
 
     /// <summary>
     /// Copies the data of the packet into the target writer, without flushing it yet.

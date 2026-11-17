@@ -118,7 +118,7 @@ internal sealed class SocketGuildServer : IDiscordServer
         {
             if (overwrite.IsRole)
             {
-                var role = (this._guild.GetRole(overwrite.TargetId) as IRole ?? this._createdRoles.GetValueOrDefault(overwrite.TargetId)) ?? throw new InvalidOperationException($"The role {overwrite.TargetId} wasn't found.");
+                var role = (await this._guild.GetRoleAsync(overwrite.TargetId).ConfigureAwait(false) as IRole ?? this._createdRoles.GetValueOrDefault(overwrite.TargetId)) ?? throw new InvalidOperationException($"The role {overwrite.TargetId} wasn't found.");
                 var permissions = Merge(channel.GetPermissionOverwrite(role), overwrite);
                 await channel.AddPermissionOverwriteAsync(role, permissions).ConfigureAwait(false);
             }
@@ -136,10 +136,20 @@ internal sealed class SocketGuildServer : IDiscordServer
     /// </summary>
     private static OverwritePermissions Merge(OverwritePermissions? existing, DiscordPermissionOverwrite overwrite)
     {
-        PermValue? GetValue(DiscordChannelAccess access) =>
-            overwrite.Allow.HasFlag(access) ? PermValue.Allow
-            : overwrite.Deny.HasFlag(access) ? PermValue.Deny
-            : null;
+        PermValue? GetValue(DiscordChannelAccess access)
+        {
+            if (overwrite.Allow.HasFlag(access))
+            {
+                return PermValue.Allow;
+            }
+
+            if (overwrite.Deny.HasFlag(access))
+            {
+                return PermValue.Deny;
+            }
+
+            return null;
+        }
 
         return (existing ?? OverwritePermissions.InheritAll).Modify(
             viewChannel: GetValue(DiscordChannelAccess.View),

@@ -31,7 +31,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
     public StatIncreaseResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, ushort addedPoints)
+    public async ValueTask StatIncreaseResultAsync(AttributeDefinition statType, ushort addedPoints)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -44,10 +44,10 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
 #pragma warning disable SA1118 // Parameter should not span multiple lines
             await connection.SendCharacterStatIncreaseResponseAsync(
                 addedPoints > 0,
-                attribute.GetStatType(),
-                attribute == Stats.BaseEnergy
+                statType.GetStatType(),
+                statType == Stats.BaseEnergy
                     ? this._player.Attributes![Stats.MaximumMana].ToUInt16Clamped()
-                    : attribute == Stats.BaseVitality
+                    : statType == Stats.BaseVitality
                         ? this._player.Attributes![Stats.MaximumHealth].ToUInt16Clamped()
                         : default,
                 this._player.Attributes![Stats.MaximumShield].ToUInt16Clamped(),

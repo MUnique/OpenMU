@@ -240,11 +240,14 @@ public static class CastleSiegeCrownMechanics
         }
 
         var crownSide = context.GetPlayerJoinSide(crownUser);
-        return IsAttackingSide(crownSide)
-               && context.GetPlayerJoinSide(firstSwitchUser) == crownSide
-               && context.GetPlayerJoinSide(secondSwitchUser) == crownSide
-            ? crownSide
-            : null;
+        if (IsAttackingSide(crownSide)
+            && context.GetPlayerJoinSide(firstSwitchUser) == crownSide
+            && context.GetPlayerJoinSide(secondSwitchUser) == crownSide)
+        {
+            return crownSide;
+        }
+
+        return null;
     }
 
     private static bool IsAttackingSide(CastleSiegeJoinSide side)

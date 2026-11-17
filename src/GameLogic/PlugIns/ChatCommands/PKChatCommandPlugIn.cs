@@ -29,21 +29,21 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, PkChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, PkChatCommandArgs arguments)
     {
         if (arguments.Level < MinPkLevel || arguments.Level > MaxPkLevel)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerKillLevelRangeError), MinPkLevel, MaxPkLevel).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerKillLevelRangeError), MinPkLevel, MaxPkLevel).ConfigureAwait(false);
             return;
         }
 
         if (arguments.Count <= 0)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerKillCountMustBePositive)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.PlayerKillCountMustBePositive)).ConfigureAwait(false);
             return;
         }
 
-        var targetPlayer = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(player, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
         var character = targetPlayer?.SelectedCharacter;
         if (character is null)
         {
@@ -56,7 +56,7 @@ public class PkChatCommandPlugIn : ChatCommandPlugInBase<PkChatCommandArgs>
         character.PlayerKillCount = arguments.Count;
         await targetPlayer!.ForEachWorldObserverAsync<IUpdateCharacterHeroStatePlugIn>(p => p.UpdateCharacterHeroStateAsync(targetPlayer!), true).ConfigureAwait(false);
 
-        await gameMaster.ShowLocalizedBlueMessageAsync(
+        await player.ShowLocalizedBlueMessageAsync(
             nameof(PlayerMessage.PlayerKillStateChangeResult),
             this.Key,
             character.Name,

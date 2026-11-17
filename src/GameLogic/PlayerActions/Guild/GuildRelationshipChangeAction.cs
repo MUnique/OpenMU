@@ -102,6 +102,13 @@ public class GuildRelationshipChangeAction
             }
         }
 
+        if (targetPlayer.PendingAllianceRequest != default)
+        {
+            // The target is still deciding about another request. Overwriting it would lose that request.
+            await player.InvokeViewPlugInAsync<IGuildRelationshipChangeResultPlugIn>(p => p.ShowResultAsync(relationshipType, requestType, GuildRelationshipChangeResultType.RequestCancelled, targetPlayerId)).ConfigureAwait(false);
+            return;
+        }
+
         if (player.GameContext.PlugInManager.GetPlugInPoint<IGuildRelationshipChangingPlugIn>() is { } plugInPoint)
         {
             var eventArgs = new CancelEventArgs();

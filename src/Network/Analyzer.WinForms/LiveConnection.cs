@@ -78,7 +78,10 @@ public class LiveConnection : INotifyPropertyChanged, ICapturedConnection
     /// </summary>
     public string Name
     {
-        get => this._name;
+        get
+        {
+            return this._name;
+        }
 
         set
         {

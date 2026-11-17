@@ -182,7 +182,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
 
         public byte Group
         {
-            get => (byte)((this._data[0] >> 4) & 0xF);
+            get
+            {
+                return (byte)((this._data[0] >> 4) & 0xF);
+            }
             set
             {
                 value <<= 4;
@@ -193,7 +196,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
 
         public ushort Number
         {
-            get => (ushort)(((this._data[0] & 0xF) << 8) + this._data[1]);
+            get
+            {
+                return (ushort)(((this._data[0] & 0xF) << 8) + this._data[1]);
+            }
             set
             {
                 // Higher 4 bits of the first byte for the higher bits of the value
@@ -209,7 +215,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
         /// </summary>
         public byte GlowLevel
         {
-            get => (byte)((this._data[2] & 0xF0) >> 4);
+            get
+            {
+                return (byte)((this._data[2] & 0xF0) >> 4);
+            }
             set
             {
                 value = (byte)((value & 0xF) << 4);
@@ -220,7 +229,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
 
         public bool IsExcellent
         {
-            get => (this._data[2] & 0x08) != 0;
+            get
+            {
+                return (this._data[2] & 0x08) != 0;
+            }
             set
             {
                 if (value)
@@ -236,7 +248,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
 
         public bool IsAncient
         {
-            get => (this._data[2] & 0x04) != 0;
+            get
+            {
+                return (this._data[2] & 0x04) != 0;
+            }
             set
             {
                 if (value)
@@ -262,7 +277,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
 
         public byte Group
         {
-            get => (byte)((this._data[0] >> 4) & 0xF);
+            get
+            {
+                return (byte)((this._data[0] >> 4) & 0xF);
+            }
             set
             {
                 value <<= 4;
@@ -273,7 +291,10 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
 
         public ushort Number
         {
-            get => (ushort)(((this._data[0] & 0xF) << 8) + this._data[1]);
+            get
+            {
+                return (ushort)(((this._data[0] & 0xF) << 8) + this._data[1]);
+            }
             set
             {
                 this._data[1] = (byte)(value & 0xFF);

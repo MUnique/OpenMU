@@ -1139,5 +1139,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddGladiatorsHonorUpdatePlugIn_Description text.</summary>
         public static string AddGladiatorsHonorUpdatePlugIn_Description => ResourceManager.GetString("AddGladiatorsHonorUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugInSeason6_Name text.</summary>
+        public static string NpcSpawnsUpdatePlugInSeason6_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugInSeason6_Description text.</summary>
+        public static string NpcSpawnsUpdatePlugInSeason6_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Description", resourceCulture)!;
+
     }
 }

@@ -13,9 +13,9 @@ using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Discord.ChatBridge;
 using MUnique.OpenMU.Discord.Provisioning;
 
-/// <summary>
+/// <content>
 /// The part of the <see cref="DiscordBot"/> which the admin panel uses to show its state and to set up a Discord server.
-/// </summary>
+/// </content>
 public sealed partial class DiscordBot
 {
     /// <summary>
@@ -52,7 +52,10 @@ public sealed partial class DiscordBot
     /// </summary>
     public DiscordBotProblem Problem
     {
-        get => this._problem;
+        get
+        {
+            return this._problem;
+        }
         private set
         {
             if (this._problem != value)
