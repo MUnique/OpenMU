@@ -399,9 +399,14 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
 
         var change = new JsonObject
         {
-            ["kind"] = mode, ["type"] = type.Name, ["id"] = id.ToString(),
-            ["parentType"] = parentType, ["parentId"] = parentId?.ToString(), ["collection"] = collection,
-            ["beforeFingerprint"] = Fingerprint(before, item, type), ["afterFingerprint"] = Fingerprint(after, item, type),
+            ["kind"] = mode,
+            ["type"] = type.Name,
+            ["id"] = id.ToString(),
+            ["parentType"] = parentType,
+            ["parentId"] = parentId?.ToString(),
+            ["collection"] = collection,
+            ["beforeFingerprint"] = Fingerprint(before, item, type),
+            ["afterFingerprint"] = Fingerprint(after, item, type),
             ["before"] = mode == "update" ? SelectFields(before!, values.Keys) : before,
             ["after"] = mode == "update" ? SelectFields(after!, values.Keys) : after,
         };

@@ -157,7 +157,16 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         }
     }
 
-#pragma warning disable SA1600, CS1591 // Elements should be documented.
+    /// <summary>
+    /// Creates an item option definition for the specified attribute.
+    /// The level dependent options (level 2 to 4) are multiples of the base value.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="attributeDefinition">The attribute which is increased by the option.</param>
+    /// <param name="number">The number of the option, which is also used to create its id.</param>
+    /// <param name="baseValue">The value of the option at level 1.</param>
+    /// <returns>The created item option definition.</returns>
     protected ItemOptionDefinition CreateOptionDefinition(IContext context, GameConfiguration gameConfiguration, AttributeDefinition attributeDefinition, short number, byte baseValue)
     {
         var definition = context.CreateNew<ItemOptionDefinition>();
@@ -191,6 +200,10 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         return definition;
     }
 
+    /// <summary>
+    /// Changes the attack speed base power-up of the weapons to the attack speed by weapon attribute.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void FixWeaponsAttackSpeedStat(GameConfiguration gameConfiguration)
     {
         var attackSpeedByWeapon = Stats.AttackSpeedByWeapon.GetPersistent(gameConfiguration);
@@ -204,6 +217,10 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Changes the attack speed option of the Dinorant to target the attribute which is applying to any attack speed.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void ChangeDinorantAttackSpeedOption(GameConfiguration gameConfiguration)
     {
         var dinorantOption = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0080-0000-0000-000000000000"));
@@ -216,6 +233,10 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Updates the excellent attack options of physical, wizardry and curse damage, so that they target the attribute which is applying to any attack speed and the base damage attributes.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void UpdateExcellentAttackSpeedAndBaseDmgOptions(GameConfiguration gameConfiguration)
     {
         var excPhysAttackOpts = gameConfiguration.ItemOptions.FirstOrDefault(io => io.GetId() == new Guid("00000083-0013-0000-0000-000000000000"));
@@ -255,5 +276,4 @@ public abstract class FixItemOptionsAndAttackSpeedPlugInBase : UpdatePlugInBase
             maxCurseBaseDmg.PowerUpDefinition!.TargetAttribute = wizardryBaseDmg; // Yes, wizardry. This should not be in use, but just in case.
         }
     }
-#pragma warning restore SA1600, CS1591 // Elements should be documented.
 }

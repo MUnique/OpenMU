@@ -117,7 +117,7 @@ public class GuildWarAnswerAction
         // PropertyChanged requires a void handler. The handler catches and logs all exceptions, so none get lost.
 #pragma warning disable VSTHRD100 // Avoid async void methods
         async void OnScorePropertyChanged(object? sender, PropertyChangedEventArgs args)
-#pragma warning restore VSTHRD100 // Avoid async void methods
+#pragma warning restore VSTHRD100
         {
             try
             {

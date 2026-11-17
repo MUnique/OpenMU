@@ -44,9 +44,7 @@ public class AddKalimaPlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2024, 06, 09, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         this.CreateLostMap(context, gameConfiguration);
         this.CreateSymbolOfKundun(context, gameConfiguration);

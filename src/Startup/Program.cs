@@ -106,9 +106,9 @@ internal sealed class Program : IDisposable
         {
             if (_confirmExit)
             {
-#pragma warning disable VSTHRD103 // Call async methods when in an async method
+#pragma warning disable VSTHRD103 // The CancelKeyPress handler is synchronous and can't await CancelAsync.
                 exitCts.Cancel();
-#pragma warning restore VSTHRD103 // Call async methods when in an async method
+#pragma warning restore VSTHRD103
                 Console.CancelKeyPress -= OnCancelKeyPress;
                 Console.WriteLine("\nBye! Press enter to finish");
             }
@@ -125,9 +125,9 @@ internal sealed class Program : IDisposable
         {
             if (!exitToken.IsCancellationRequested)
             {
-#pragma warning disable VSTHRD103 // Call async methods when in an async method
+#pragma warning disable VSTHRD103 // The ProcessExit handler is synchronous. The cancellation must be requested before it returns, because the process is already exiting.
                 exitCts.Cancel();
-#pragma warning restore VSTHRD103 // Call async methods when in an async method
+#pragma warning restore VSTHRD103
                 Debug.WriteLine("KILL");
             }
         };

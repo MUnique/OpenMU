@@ -84,14 +84,25 @@ public static class ModelExtensions
     /// <returns>The column name of the declared primary key.</returns>
     internal static string GetDeclaredPrimaryKeyColumnName(this IEntityType entityType)
     {
-#pragma warning disable EF1001 // Internal EF Core API usage.
-        if (entityType.FindDeclaredPrimaryKey() is not { } primaryKey)
-#pragma warning restore EF1001 // Internal EF Core API usage.
+        if (entityType.FindPrimaryKeyIfDeclared() is not { } primaryKey)
         {
             throw new ArgumentException($"Entity type {entityType} has no declared primary key.");
         }
 
         return primaryKey.GetColumnName();
+    }
+
+    /// <summary>
+    /// Finds the primary key which is declared by the entity type itself.
+    /// A primary key is only declared by the root type of an inheritance hierarchy,
+    /// derived types inherit it from their base type.
+    /// This is the public API equivalent of the internal <c>EntityTypeExtensions.FindDeclaredPrimaryKey</c> of EF Core.
+    /// </summary>
+    /// <param name="entityType">The entity type.</param>
+    /// <returns>The declared primary key, or <c>null</c> if the entity type doesn't declare one.</returns>
+    internal static IKey? FindPrimaryKeyIfDeclared(this IEntityType entityType)
+    {
+        return entityType.BaseType is null ? entityType.FindPrimaryKey() : null;
     }
 
     /// <summary>
@@ -159,9 +170,10 @@ public static class ModelExtensions
     /// <returns>The column name for a property.</returns>
     internal static string GetColumnName(this IReadOnlyProperty property)
     {
-        if (StoreObjectIdentifier.Create(property.DeclaringEntityType, StoreObjectType.Table) is not { } keyIdentifier)
+        var declaringEntityType = (IReadOnlyEntityType)property.DeclaringType;
+        if (StoreObjectIdentifier.Create(declaringEntityType, StoreObjectType.Table) is not { } keyIdentifier)
         {
-            throw new InvalidOperationException($"Couldn't create a {nameof(StoreObjectIdentifier)} for declaring entity type {property.DeclaringEntityType} of property {property}.");
+            throw new InvalidOperationException($"Couldn't create a {nameof(StoreObjectIdentifier)} for declaring entity type {declaringEntityType} of property {property}.");
         }
 
         if (property.GetDefaultColumnName(keyIdentifier) is not { } columnName)

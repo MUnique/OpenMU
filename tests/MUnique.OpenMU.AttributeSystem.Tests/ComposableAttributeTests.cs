@@ -339,7 +339,7 @@ public class ComposableAttributeTests
 
         public ReentrantElement(Action onFirstRead) => this._onFirstRead = onFirstRead;
 
-#pragma warning disable CS0067 // required by IElement; this test element never raises it
+#pragma warning disable CS0067 // Required by IElement, this test element never raises it.
         public event EventHandler? ValueChanged;
 #pragma warning restore CS0067
 

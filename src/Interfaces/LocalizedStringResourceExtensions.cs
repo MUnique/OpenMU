@@ -20,9 +20,6 @@ public static class LocalizedStringResourceExtensions
 
     private static readonly Lazy<IReadOnlyList<CultureInfo>> CultureCandidates = new(FindCultureCandidates);
 
-    // StyleCop doesn't recognize the C# 14 extension receiver as a parameter yet, so it can't be prefixed with 'this'.
-#pragma warning disable SA1101
-
     /// <summary>
     /// Extensions for <see cref="ResourceManager"/>.
     /// </summary>
@@ -114,7 +111,6 @@ public static class LocalizedStringResourceExtensions
             return resourceManager.GetLocalizedString(resourceKey);
         }
     }
-#pragma warning restore SA1101
 
     private static IReadOnlyList<CultureInfo> FindAvailableCultures(ResourceManager resourceManager)
     {

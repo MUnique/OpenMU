@@ -47,7 +47,10 @@ public abstract class FixCharStatsForceWavePlugInBase : UpdatePlugInBase
         }
     }
 
-#pragma warning disable SA1600, CS1591 // Elements should be documented.
+    /// <summary>
+    /// Sets the base value of the energy stat of the Magic Gladiator character classes (class numbers 12 and 13) to 26.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void UpdateMagicGladiatorClassesStats(GameConfiguration gameConfiguration)
     {
         var magicGladiatorClasses = gameConfiguration.CharacterClasses.Where(charClass => charClass.Number == 12 || charClass.Number == 13);
@@ -56,5 +59,4 @@ public abstract class FixCharStatsForceWavePlugInBase : UpdatePlugInBase
             magicGladiatorClass.StatAttributes.First(attr => attr.Attribute == Stats.BaseEnergy).BaseValue = 26;
         }
     }
-#pragma warning restore SA1600, CS1591 // Elements should be documented.
 }

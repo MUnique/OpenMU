@@ -41,18 +41,23 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
 
         if (addedPoints <= 1)
         {
-#pragma warning disable SA1118 // Parameter should not span multiple lines
+            var attributes = this._player.Attributes!;
+            ushort maximumHealthOrMana = 0;
+            if (statType == Stats.BaseEnergy)
+            {
+                maximumHealthOrMana = attributes[Stats.MaximumMana].ToUInt16Clamped();
+            }
+            else if (statType == Stats.BaseVitality)
+            {
+                maximumHealthOrMana = attributes[Stats.MaximumHealth].ToUInt16Clamped();
+            }
+
             await connection.SendCharacterStatIncreaseResponseAsync(
                 addedPoints > 0,
                 statType.GetStatType(),
-                statType == Stats.BaseEnergy
-                    ? this._player.Attributes![Stats.MaximumMana].ToUInt16Clamped()
-                    : statType == Stats.BaseVitality
-                        ? this._player.Attributes![Stats.MaximumHealth].ToUInt16Clamped()
-                        : default,
-                this._player.Attributes![Stats.MaximumShield].ToUInt16Clamped(),
-                this._player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
-#pragma warning restore SA1118 // Parameter should not span multiple lines
+                maximumHealthOrMana,
+                attributes[Stats.MaximumShield].ToUInt16Clamped(),
+                attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
             return;
         }
 
