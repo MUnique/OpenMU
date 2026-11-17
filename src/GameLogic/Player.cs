@@ -761,6 +761,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             this.DuelRoom = null;
 
+            // A request to this player can't be answered anymore once the character left the world.
+            this.PendingAllianceRequest = default;
+
             this._selectedCharacter = null;
         }
         else
