@@ -20,4 +20,4 @@
     apply();
     darkQuery.addEventListener("change", apply);
     window.addEventListener("openmu-theme-changed", apply);
-})();
+}());
