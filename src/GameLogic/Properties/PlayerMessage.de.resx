@@ -1045,4 +1045,7 @@ Inventarerweiterungen: {18}</value>
   <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
     <value>Ein Charakter, für den Gegenstände warten, deren Gegenstandsart es nicht mehr gibt, kann nicht gelöscht werden. Bitte wenden Sie sich an einen Admin.</value>
   </data>
+  <data name="ItemHasExpired" xml:space="preserve">
+    <value>{0} ist abgelaufen.</value>
+  </data>
 </root>

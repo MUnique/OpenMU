@@ -1364,6 +1364,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} has expired..
+        /// </summary>
+        public static string ItemHasExpired {
+            get {
+                return ResourceManager.GetString("ItemHasExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This item is bound to the inventory of this character..
         /// </summary>
         public static string ItemIsBoundToInventoryOfCharacter {

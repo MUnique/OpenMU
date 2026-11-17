@@ -3850,6 +3850,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tells the players when one of their time-limited items expired, e.g. a pet rented in the cash shop, removes its effect and shows it as expired in the client. An expired item stays in the inventory..
+        /// </summary>
+        public static string ItemExpirationPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemExpirationPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expiration of time-limited items.
+        /// </summary>
+        public static string ItemExpirationPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemExpirationPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configure item registration rules for different NPCs..
         /// </summary>
         public static string ItemRegistrationConfiguration_Rules_Description {

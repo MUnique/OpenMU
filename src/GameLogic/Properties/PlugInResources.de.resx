@@ -2079,4 +2079,10 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>Die Anzahl der wartenden Gegenstände, die genannt werden, einer pro Nachricht.</value>
   </data>
+  <data name="ItemExpirationPlugIn_Name" xml:space="preserve">
+    <value>Ablauf zeitlich begrenzter Gegenstände</value>
+  </data>
+  <data name="ItemExpirationPlugIn_Description" xml:space="preserve">
+    <value>Teilt den Spielern mit, wenn einer ihrer zeitlich begrenzten Gegenstände abgelaufen ist, z. B. ein im Cash Shop gemieteter Begleiter, entfernt seine Wirkung und zeigt ihn im Client als abgelaufen an. Ein abgelaufener Gegenstand bleibt im Inventar.</value>
+  </data>
 </root>
