@@ -150,12 +150,16 @@ public class SpeedHackAntiCheatTests
     /// <summary>
     /// Tests that the next part of a running walk, which a client sends before it reaches the end of the
     /// current part, is accepted up to the configured walk start offset, and refused beyond it.
+    /// The running walk performs its first step on its own thread, so the server position is already
+    /// one tile ahead of the start point at an unpredictable moment. The refused case therefore keeps
+    /// a margin, so it can't flip to accepted when this step is done before the next part arrives.
+    /// The exact bound is tested in <see cref="TestWalkStartWithinAllowedOffsetIsAcceptedAsync"/>.
     /// </summary>
     /// <param name="offset">The distance between the reported start and the server position.</param>
     /// <param name="isAccepted">A value indicating whether the reported start is taken over.</param>
     [TestCase(4, true)]
     [TestCase(5, true)]
-    [TestCase(6, false)]
+    [TestCase(8, false)]
     public async Task TestNextWalkPartAheadOfRunningWalkIsBoundedByWalkStartOffsetAsync(int offset, bool isAccepted)
     {
         var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
