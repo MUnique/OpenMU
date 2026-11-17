@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -31,6 +32,41 @@ internal class RentalItemRulesDataTest
         { (13, 113), 1000 }, { (13, 114), 1000 }, { (13, 115), 1000 },
         { (13, 122), 2000 }, { (13, 123), 2000 },
     };
+
+    /// <summary>
+    /// The items which the client doesn't let drop while they are rented, expired or not (<c>droppableWhileRented: false</c>
+    /// in its item data). The server doesn't know this flag, so dropping isn't a way out for them.
+    /// </summary>
+    private static readonly HashSet<(byte Group, short Number)> NotDroppableWhileRented =
+    [
+        (13, 64), (13, 65), (13, 76), (13, 80), (13, 122), (13, 123), (14, 54), (14, 96),
+    ];
+
+    /// <summary>
+    /// Tests that the player can get rid of every item which a new season 6 database sells as time-limited, once it
+    /// expired: by dropping it or by selling it to an NPC. An item which the client doesn't let drop while it's
+    /// rented needs the sale.
+    /// </summary>
+    [Test]
+    public async Task EveryTimeLimitedItemForSaleHasAWayOutAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+
+        var timeLimitedItems = gameConfiguration.CashShopConfiguration!.Packages
+            .Where(package => package.IsForSale)
+            .SelectMany(package => package.Products)
+            .Where(product => product.Duration > TimeSpan.Zero)
+            .Select(product => product.ItemDefinition!)
+            .Distinct()
+            .ToList();
+
+        Assert.That(timeLimitedItems, Is.Not.Empty);
+        Assert.That(timeLimitedItems, Has.All.Matches<ItemDefinition>(item => item.CanBeTimeLimited()));
+        Assert.That(
+            timeLimitedItems.Where(item => NotDroppableWhileRented.Contains((item.Group, item.Number))),
+            Has.All.Matches<ItemDefinition>(item => item.IsSellableToNpcWhenExpired || item.IsSellableToNpc));
+    }
 
     /// <summary>
     /// Tests that a new season 6 database has the flag and the prices.

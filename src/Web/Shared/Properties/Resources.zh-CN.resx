@@ -638,4 +638,13 @@
   <data name="ZoomOut" xml:space="preserve">
     <value>缩小</value>
   </data>
+  <data name="ItemEdit_IsTimeLimited" xml:space="preserve">
+    <value>限时</value>
+  </data>
+  <data name="ItemEdit_ExpiresAt" xml:space="preserve">
+    <value>过期时间（UTC）</value>
+  </data>
+  <data name="ItemEdit_CannotBeTimeLimited" xml:space="preserve">
+    <value>此物品不能限时：只有可装备、不会被消耗、且过期后可丢弃或出售给 NPC 的物品才能限时。</value>
+  </data>
 </root>

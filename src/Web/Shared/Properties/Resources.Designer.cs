@@ -692,6 +692,15 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be time-limited: only an item which is worn, isn&apos;t consumed, and can be dropped or sold to an NPC once it expired..
+        /// </summary>
+        public static string ItemEdit_CannotBeTimeLimited {
+            get {
+                return ResourceManager.GetString("ItemEdit_CannotBeTimeLimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Definition.
         /// </summary>
         public static string ItemEdit_Definition {
@@ -715,6 +724,15 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         public static string ItemEdit_ExcellentOptions {
             get {
                 return ResourceManager.GetString("ItemEdit_ExcellentOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expires at (UTC).
+        /// </summary>
+        public static string ItemEdit_ExpiresAt {
+            get {
+                return ResourceManager.GetString("ItemEdit_ExpiresAt", resourceCulture);
             }
         }
         
@@ -769,6 +787,15 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         public static string ItemEdit_HasSkill {
             get {
                 return ResourceManager.GetString("ItemEdit_HasSkill", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time-limited.
+        /// </summary>
+        public static string ItemEdit_IsTimeLimited {
+            get {
+                return ResourceManager.GetString("ItemEdit_IsTimeLimited", resourceCulture);
             }
         }
         
