@@ -173,7 +173,7 @@ public static class ModelExtensions
         var declaringEntityType = (IReadOnlyEntityType)property.DeclaringType;
         if (StoreObjectIdentifier.Create(declaringEntityType, StoreObjectType.Table) is not { } keyIdentifier)
         {
-            throw new InvalidOperationException($"Couldn't create a {nameof(StoreObjectIdentifier)} for declaring entity type {declaringEntityType} of property {property}.");
+            throw new InvalidOperationException($"Couldn't create a {nameof(StoreObjectIdentifier)} for declaring entity type {declaringEntityType} of {nameof(property)} {property}.");
         }
 
         if (property.GetDefaultColumnName(keyIdentifier) is not { } columnName)

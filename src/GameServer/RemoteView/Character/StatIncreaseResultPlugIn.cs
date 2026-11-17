@@ -51,6 +51,10 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
             {
                 maximumHealthOrMana = attributes[Stats.MaximumHealth].ToUInt16Clamped();
             }
+            else
+            {
+                // Other stats don't change the maximum health or mana, so it stays 0.
+            }
 
             await connection.SendCharacterStatIncreaseResponseAsync(
                 addedPoints > 0,
