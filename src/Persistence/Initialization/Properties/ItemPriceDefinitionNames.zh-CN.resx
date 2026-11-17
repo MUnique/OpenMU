@@ -25,7 +25,7 @@
     <value>灵魂宝石</value>
   </data>
   <data name="JewelOfChaos" xml:space="preserve">
-    <value>玛雅宝石</value>
+    <value>玛雅之石</value>
   </data>
   <data name="JewelOfLife" xml:space="preserve">
     <value>生命宝石</value>
@@ -46,7 +46,7 @@
     <value>灵魂宝石组合</value>
   </data>
   <data name="PackedJewelOfChaos" xml:space="preserve">
-    <value>玛雅宝石组合</value>
+    <value>玛雅之石组合</value>
   </data>
   <data name="PackedJewelOfLife" xml:space="preserve">
     <value>生命宝石组合</value>
