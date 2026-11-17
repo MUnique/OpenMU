@@ -60,7 +60,27 @@ public class ItemSerializerTests : ItemSerializerTests<ItemSerializer>
 /// Unit tests for the <see cref="ItemSerializerExtended"/>.
 /// </summary>
 [TestFixture]
-public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExtended>;
+public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExtended>
+{
+    /// <summary>
+    /// Tests that a time-limited item has the flag 0x40 in the level byte, and an expired one also 0x80, like the
+    /// open source client reads them. The level stays in the lower 6 bits, and the deserialization ignores the flags.
+    /// </summary>
+    /// <param name="hoursUntilExpiration">The hours until the expiration; <c>null</c> for a permanent item.</param>
+    /// <param name="expectedFlags">The expected flags of the level byte.</param>
+    [TestCase(null, 0)]
+    [TestCase(24, 0x40)]
+    [TestCase(-1, 0xC0)]
+    public void PeriodItemFlags(int? hoursUntilExpiration, int expectedFlags)
+    {
+        var (item, data, deserialized) = this.SerializePetPanda(hoursUntilExpiration is { } hours ? DateTime.UtcNow.AddHours(hours) : null);
+
+        Assert.That(data[2] & 0xC0, Is.EqualTo(expectedFlags));
+        Assert.That(data[2] & 0x3F, Is.EqualTo(item.Level));
+        Assert.That(deserialized.Level, Is.EqualTo(item.Level));
+        Assert.That(deserialized.ExpiresAt, Is.Null);
+    }
+}
 
 /// <summary>
 /// Generic unit tests for the <see cref="IItemSerializer"/>s.

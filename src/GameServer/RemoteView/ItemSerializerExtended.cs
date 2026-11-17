@@ -52,6 +52,8 @@ public class ItemSerializerExtended : IItemSerializer
         targetStruct.Group = (byte)item.Definition.Group;
         targetStruct.Number = (ushort)item.Definition.Number;
         targetStruct.Level = item.IsTrainablePet() ? (byte)0 : (byte)item.Level;
+        targetStruct.IsTimeLimited = item.IsTimeLimited();
+        targetStruct.IsExpired = item.IsExpired(DateTime.UtcNow);
         targetStruct.Durability = item.Durability();
         targetStruct.Options = this.GetOptionFlags(item);
 
@@ -221,7 +223,9 @@ public class ItemSerializerExtended : IItemSerializer
     /// Layout:
     ///   Group:  4 bit
     ///   Number: 12 bit
-    ///   Level:  8 bit
+    ///   Level:  6 bit
+    ///   TimeLimited: 1 bit (0x40 of the level byte), a period item of the client
+    ///   Expired: 1 bit (0x80 of the level byte), an expired period item
     ///   Dura:   8 bit
     ///   OptFlags: 8 bit
     ///     HasOpt
@@ -247,6 +251,10 @@ public class ItemSerializerExtended : IItemSerializer
     /// </summary>
     private readonly ref struct ItemStruct(Span<byte> data)
     {
+        private const byte LevelMask = 0x3F;
+        private const byte TimeLimitedFlag = 0x40;
+        private const byte ExpiredFlag = 0x80;
+
         private readonly Span<byte> _data = data;
 
         public byte Group
@@ -273,10 +281,31 @@ public class ItemSerializerExtended : IItemSerializer
             }
         }
 
+        /// <summary>
+        /// Gets or sets the item level. Setting it clears the flags of the level byte, so they're set afterwards.
+        /// </summary>
         public byte Level
         {
-            get => this._data[2];
-            set => this._data[2] = value;
+            get => (byte)(this._data[2] & LevelMask);
+            set => this._data[2] = (byte)(value & LevelMask);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the item is time-limited.
+        /// </summary>
+        public bool IsTimeLimited
+        {
+            get => (this._data[2] & TimeLimitedFlag) != 0;
+            set => this._data[2] = value ? (byte)(this._data[2] | TimeLimitedFlag) : (byte)(this._data[2] & ~TimeLimitedFlag);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the time-limited item is expired.
+        /// </summary>
+        public bool IsExpired
+        {
+            get => (this._data[2] & ExpiredFlag) != 0;
+            set => this._data[2] = value ? (byte)(this._data[2] | ExpiredFlag) : (byte)(this._data[2] & ~ExpiredFlag);
         }
 
         public byte Durability
