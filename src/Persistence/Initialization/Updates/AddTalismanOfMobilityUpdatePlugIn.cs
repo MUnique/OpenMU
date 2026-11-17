@@ -5,9 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
@@ -54,30 +52,10 @@ public class AddTalismanOfMobilityUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        AddAttributes(context, gameConfiguration);
-        if (new CashShopItems(context, gameConfiguration).CreateTalismanOfMobility() is { } talisman)
-        {
-            ItemRules.Apply([talisman]);
-        }
-
+        // Adds the attributes, too, and gives the talisman its item rules.
+        new CashShopItems(context, gameConfiguration).CreateTalismanOfMobility();
         AssignCashShopProducts(gameConfiguration);
         return ValueTask.CompletedTask;
-    }
-
-    /// <summary>
-    /// Adds the attributes in which a character keeps the place which it saved with the talisman.
-    /// </summary>
-    /// <param name="context">The context.</param>
-    /// <param name="gameConfiguration">The game configuration.</param>
-    private static void AddAttributes(IContext context, GameConfiguration gameConfiguration)
-    {
-        foreach (var attribute in new[] { Stats.MobilityTalismanMap, Stats.MobilityTalismanX, Stats.MobilityTalismanY })
-        {
-            if (gameConfiguration.Attributes.All(a => a.Id != attribute.Id))
-            {
-                gameConfiguration.Attributes.Add(context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description));
-            }
-        }
     }
 
     /// <summary>

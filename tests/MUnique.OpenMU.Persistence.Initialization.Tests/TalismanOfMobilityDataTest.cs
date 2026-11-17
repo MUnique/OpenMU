@@ -105,6 +105,28 @@ internal class TalismanOfMobilityDataTest
         Assert.That(gameConfiguration.Attributes.Count(attributes.Contains), Is.EqualTo(3));
     }
 
+    /// <summary>
+    /// Tests that the update of the cash shop, which creates the talisman as well, adds its attributes and
+    /// item rules, too. So it's complete when the talisman update is deselected, or applied after it.
+    /// </summary>
+    [Test]
+    public async Task CashShopUpdateCreatesCompleteTalismanAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var attributes = new[] { Stats.MobilityTalismanMap, Stats.MobilityTalismanX, Stats.MobilityTalismanY };
+        gameConfiguration.Attributes.Where(attributes.Contains).ToList().ForEach(a => gameConfiguration.Attributes.Remove(a));
+        gameConfiguration.Items.Where(IsTalisman).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
+
+        await new AddCashShopUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddTalismanOfMobilityUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Attributes.Count(attributes.Contains), Is.EqualTo(3));
+        Assert.That(
+            gameConfiguration.Items.Where(IsTalisman),
+            Has.Exactly(1).Matches<ItemDefinition>(item => !item.IsTradable && !item.IsDroppable && !item.IsSellableToNpc && !item.IsPersonalStoreSellable && !item.IsRepairable));
+    }
+
     private static bool IsTalisman(ItemDefinition item) => item.Group == 13 && TalismanNumbers.Contains(item.Number);
 
     private static void AssertTalismanData(GameConfiguration gameConfiguration)
