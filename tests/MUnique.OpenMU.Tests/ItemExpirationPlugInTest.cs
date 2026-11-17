@@ -89,6 +89,25 @@ public class ItemExpirationPlugInTest
         Mock.Get(player.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()!).Verify(v => v.ItemUpgradedAsync(pet), Times.Once);
     }
 
+    /// <summary>
+    /// Tests that each game context has its own check interval. One plugin instance serves all game servers of a
+    /// process, so the check of one game server mustn't take the check of another.
+    /// </summary>
+    [Test]
+    public async Task EachGameContextIsCheckedAsync()
+    {
+        var firstPlayer = await CreatePlayerAsync().ConfigureAwait(false);
+        var secondPlayer = await CreatePlayerAsync().ConfigureAwait(false);
+        Assert.That(secondPlayer.GameContext, Is.Not.SameAs(firstPlayer.GameContext));
+        var secondPet = await EquipPetAsync(secondPlayer, DateTime.UtcNow.AddSeconds(-1)).ConfigureAwait(false);
+        var plugIn = new ItemExpirationPlugIn { Configuration = new ItemExpirationConfiguration { CheckInterval = TimeSpan.FromHours(1) } };
+
+        await plugIn.ExecuteTaskAsync((GameContext)firstPlayer.GameContext).ConfigureAwait(false);
+        await plugIn.ExecuteTaskAsync((GameContext)secondPlayer.GameContext).ConfigureAwait(false);
+
+        Mock.Get(secondPlayer.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()!).Verify(v => v.ItemUpgradedAsync(secondPet), Times.Once);
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

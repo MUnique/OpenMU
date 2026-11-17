@@ -27,7 +27,11 @@ public class ItemExpirationPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigura
 {
     private readonly ConditionalWeakTable<Player, HashSet<Item>> _handledItems = new();
 
-    private DateTime _nextRunUtc = DateTime.MinValue;
+    /// <summary>
+    /// The next check per game context. One plugin instance serves all game servers of a process, so each of them
+    /// needs its own; otherwise the game server which comes first would take the check of the others.
+    /// </summary>
+    private readonly ConditionalWeakTable<GameContext, StrongBox<DateTime>> _nextRunUtc = new();
 
     /// <inheritdoc />
     public ItemExpirationConfiguration? Configuration { get; set; }
@@ -36,13 +40,14 @@ public class ItemExpirationPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigura
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var now = DateTime.UtcNow;
-        if (now < this._nextRunUtc)
+        var nextRunUtc = this._nextRunUtc.GetValue(gameContext, _ => new StrongBox<DateTime>(DateTime.MinValue));
+        if (now < nextRunUtc.Value)
         {
             return;
         }
 
         var configuration = this.Configuration ??= new ItemExpirationConfiguration();
-        this._nextRunUtc = now + configuration.CheckInterval;
+        nextRunUtc.Value = now + configuration.CheckInterval;
         foreach (var player in await gameContext.GetPlayersAsync().ConfigureAwait(false))
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld || player.Inventory is not { } inventory)
@@ -62,7 +67,7 @@ public class ItemExpirationPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigura
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.MinValue;
+        this._nextRunUtc.Clear();
     }
 
     /// <inheritdoc />
