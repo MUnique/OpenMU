@@ -112,6 +112,51 @@ also define which monsters are bosses, by their monster numbers (e.g. 275 for
 Kundun), and which levels and master levels are milestones (by default, level
 400).
 
+## Game event webhook
+
+The *Game Event Webhook* plugin forwards the events of the *Game Event
+Publisher* (which has to be active, too) as JSON to a URL of your choice, for
+example to a news feed on the server's website. It's disabled by default.
+
+In its configuration you set:
+
+* the **URL**, e.g. `https://example.com/api/realm-events`. Use HTTPS when the
+  receiver runs on another machine.
+* the **secret**, which the receiver knows too. Nothing is sent without one.
+* which kinds of events are forwarded: boss kills, level milestones, item drops,
+  mini game results (and, off by default, their openings and starts),
+  invasions, castle siege state changes and global notices.
+* for item drops, the item names to forward (all, when the list is empty) and
+  the minimum item level.
+
+Chat messages, letters, logins and account links are never forwarded.
+
+Each event is posted on its own:
+
+```
+POST <URL>
+Content-Type: application/json
+X-OpenMU-Timestamp: 1763380800
+X-OpenMU-Signature: sha256=<hex>
+
+{"id":"<guid>","event":{"$type":"BossKilledEvent","killerName":"…","monsterName":"…","mapName":"…","serverId":0,"timestampUtc":"…"}}
+```
+
+The signature is the HMAC-SHA256, with the secret as key, of the timestamp, a
+dot and the body. The receiver should compute it the same way, compare it in
+constant time, and refuse requests whose timestamp is more than a few minutes
+off. The `id` stays the same when a post is retried, so the receiver can drop
+duplicates.
+
+The game never waits for the receiver: events wait in a queue of up to 1000,
+and when it's full the oldest one is dropped. A failed post is retried up to
+five times, with a doubling delay from 2 seconds; a refusal (a 4xx answer other
+than 408 or 429) is not retried.
+
+The plugin runs where the game events are received: in the all-in-one server,
+or in the host of the Discord integration in the distributed deployment, which
+has to run for it, even without a Discord bot.
+
 ## Discord integration of the client
 
 The feature plugin *Discord integration of the client* tells game clients which
