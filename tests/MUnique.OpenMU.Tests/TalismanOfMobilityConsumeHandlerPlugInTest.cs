@@ -138,6 +138,31 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
         blockingPlugIn.Verify(p => p.CheckTeleport(player, SavedPosition, It.IsAny<CancelEventArgs>()), Times.Once);
     }
 
+    /// <summary>
+    /// When no game server hosts the saved map at the moment, e.g. because it's stopped or the map got deactivated,
+    /// the character isn't warped and keeps the talisman and the saved place, instead of ending at its home map.
+    /// </summary>
+    [Test]
+    public async Task UnavailableSavedMapKeepsTalismanAsync()
+    {
+        const short unavailableMapNumber = 77;
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var talisman = CreateTalisman();
+        var handler = new TalismanOfMobilityConsumeHandlerPlugIn();
+        player.Position = SavedPosition;
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+
+        player.GameContext.Configuration.Maps.Add(new BasicModel.GameMapDefinition { Number = unavailableMapNumber, IsActive = false });
+        var savedMap = player.SelectedCharacter!.Attributes.Single(a => a.Definition == Stats.MobilityTalismanMap);
+        savedMap.Value = unavailableMapNumber + 1;
+        player.Position = new Point(30, 40);
+
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
+        Assert.That(talisman.Durability, Is.EqualTo(1));
+        Assert.That(savedMap.Value, Is.EqualTo(unavailableMapNumber + 1));
+        Assert.That(player.Position, Is.EqualTo(new Point(30, 40)));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

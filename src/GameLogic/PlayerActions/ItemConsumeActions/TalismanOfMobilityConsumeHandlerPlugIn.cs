@@ -75,7 +75,13 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             return false;
         }
 
-        var gate = await GetSavedGateAsync(player, character, savedMap).ConfigureAwait(false);
+        if (await GetSavedGateAsync(player, character, savedMap).ConfigureAwait(false) is not { } gate)
+        {
+            // E.g. the game server which hosts the map is stopped; without this, the warp would end at the home map.
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapIsNotActive)).ConfigureAwait(false);
+            return false;
+        }
+
         if (player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
         {
             // The plugin shows the reason to the player; the talisman and the saved place are kept.
@@ -114,16 +120,28 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             : player.GameContext.Configuration.Maps.FirstOrDefault(map => map.Number == mapNumber);
     }
 
-    private static async ValueTask<ExitGate> GetSavedGateAsync(Player player, Character character, GameMapDefinition mapDefinition)
+    private static async ValueTask<ExitGate?> GetSavedGateAsync(Player player, Character character, GameMapDefinition mapDefinition)
     {
         var x = (byte)GetValue(character, Stats.MobilityTalismanX);
         var y = (byte)GetValue(character, Stats.MobilityTalismanY);
 
         // The map may be hosted by another game server; the warp then moves the player to it.
-        var map = await player.GameContext.GetMapAsync((ushort)mapDefinition.Number).ConfigureAwait(false);
+        var mapNumber = (ushort)mapDefinition.Number;
+        var map = await player.GameContext.GetMapAsync(mapNumber).ConfigureAwait(false);
+        if (map is null
+            && player.GameContext is IGameServerContext { MapHostLocator: { } locator } serverContext)
+        {
+            map = (await locator.LocateAsync(serverContext, mapNumber).ConfigureAwait(false))?.Map;
+        }
+
+        if (map is null)
+        {
+            return null;
+        }
+
         return new ExitGate
         {
-            Map = map?.Definition ?? mapDefinition,
+            Map = map.Definition,
             X1 = x,
             X2 = x,
             Y1 = y,
