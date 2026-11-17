@@ -89,7 +89,7 @@ unaligned offsets.
 | 0A | `CashShopDeleteStorageItemRequest` | — | never sent by the client |
 | 0B | `CashShopStorageItemConsumeRequest` | `CashShopStorageItemConsumeResult` | done |
 | 0C | — | `CashShopScriptVersion` | done |
-| 11/12 | — | period item count / expire time | not implemented |
+| 11/12 | — | `PeriodItemListCount`, `PeriodItemInfo` (slot, expiration in Unix seconds) | done, see [Time-limited items](#time-limited-items) |
 | 13/14 | `CashShopEventItemListRequest` | event item count / list | not implemented |
 | 15 | — | `CashShopBannerVersion` | done |
 
@@ -194,7 +194,8 @@ refused delivery loses nothing.
    It isn't a plugin and can't be deactivated.
 
 The selected delivery's `CanDeliver(product)` must agree as well; all delivery
-plugins refuse time-limited products. A plugin's `DeliverAsync` runs under the
+plugins refuse time-limited products, `InventoryProductDelivery` accepts them if
+their item can expire (see [Time-limited items](#time-limited-items)). A plugin's `DeliverAsync` runs under the
 persistence lock before the storage item is removed, and changes nothing unless
 it succeeds. `DeliveredAsync` runs after the lock, for messages and view updates.
 
@@ -287,7 +288,9 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 62 packages for sale: jewel bundles, Kundun boxes, Cherry Blossom
+That leaves 104 packages for sale: the time-limited pets, transformation rings,
+rings, necklaces and small wings and capes (also in bundles without other
+time-limited items), jewel bundles, Kundun boxes, Cherry Blossom
 items and the Talisman of Luck 10% for Goblin Points, and the character cards,
 the Magic Backpack, the Vault Expansion Certificate, the free tickets of Devil
 Square, Blood Castle and Illusion Temple, the Kalima tickets, the reset fruits,
@@ -339,8 +342,8 @@ packages on sale.
 * **One delivery decision:** `CashShopProductDelivery.CanDeliver` decides for
   purchases and use. Initialization and the catalog editor don't know the plugins
   of a game server and use `CashShopProductExtensions.CanBeDelivered` (item
-  defined, not time-limited) as approximation. Time-limited products aren't
-  delivered, because items can't expire yet.
+  defined, and for a time-limited product an item which can expire) as
+  approximation.
 * **Sequence numbers must match the client script** of the configured version.
 
 ## Decisions
@@ -356,10 +359,57 @@ packages on sale.
 | A known but inactive delivery plugin blocks its products | they'd be useless items in the inventory |
 | A delivery is refused only on use, not on purchase | a gift recipient's account isn't loaded; the product stays in the storage |
 
+### Time-limited items
+
+A time-limited product delivers items with `Item.ExpiresAt` (UTC) = the moment
+of the *use* from the storage + the product's duration, so a purchase or gift
+waiting in the storage doesn't lose time. Every purchase delivers new items;
+items with different expirations don't stack.
+
+* **Which items:** `CashShopProductExtensions.CanBeTimeLimited`: worn
+  (`ItemSlot`), not consumed (`ConsumeEffect`), and a way out once expired
+  (`ItemExtensions.CanBeDisposedOfWhenExpired`: `IsDroppable`, `IsSellableToNpc`
+  or `IsSellableToNpcWhenExpired`). Otherwise the product isn't delivered, the
+  catalog check reports it, and the item editor of the admin panel refuses it.
+* **Effect:** `Item.HasEffect(now)` (durability left, not expired) decides every
+  effect of an equipped item: power-ups and set bonuses (`ItemPowerUpFactory`),
+  item skills (`SkillList`), the offline pet and Fenrir checks and the Crywolf
+  mount check.
+* **Expiry:** an expired item stays in the inventory and in its slot, without
+  effect. `ItemExpirationPlugIn` (`IPeriodicTaskPlugIn`, `CheckInterval`, one
+  minute by default) recreates the power-ups of an equipped item which expired,
+  resends the item (with the expired flag) and tells the player. One check for
+  all players instead of a timer per player, which would need updates on every
+  inventory change. Items which expired while the player was offline have no
+  effect from the start and are reported at the first check.
+* **Rules:** a time-limited item never leaves the inventory of its owner: no
+  vault, trade, personal store or crafting window (`MoveItemAction`, checked
+  again by the trade and the personal store purchase), no repair, no time-based
+  wear. A valid one can't be dropped or sold; an expired one can be dropped if
+  `IsDroppable`, and sold to an NPC if `IsSellableToNpcWhenExpired` or
+  `IsSellableToNpc`. It can't be equipped.
+* **Prices:** the client shows a small fixed selling price for the rented items
+  (1000 zen, 2000 for the Skeleton pet and ring, 80 for the small wings and
+  capes). The price definitions "Rental items", "Rental items (Skeleton)" and
+  "Small wings and capes" give the same (a third of the buying price, rounded to
+  tens, without durability reduction).
+* **Protocol:** byte 5 of the item gets `0x02` (time-limited) and `0x04`
+  (expired) for the original client; the extended item format of the open source
+  client has them as `0x40`/`0x80` of the level byte (the level is the low 6
+  bits). `IItemExpirationViewPlugIn` (season 6 clients and newer) sends `D2 11` and
+  one `D2 12` per item after the inventory list, and `D2 12` after every packet
+  which creates the item again in the client (appear, move within the inventory,
+  update, failed move): the client takes the date for the item in the slot.
+* **Existing databases:** the mandatory update *Sell the rented items of the cash
+  shop* sets `IsSellableToNpcWhenExpired`, assigns the rental prices to items which
+  still have the accessories price, and puts the packages on sale.
+
 ## Roadmap
 
-1. **Items which expire:** expiry on `Item`, the period packets `D2 11/12`, then
-   selling time-limited products. This unlocks most of the catalog.
+1. **Items which expire:** done for worn items, see
+   [Time-limited items](#time-limited-items). Time-limited consumables (seals,
+   scrolls, auras, whose effect would have to last as long as the product) stay
+   not for sale.
 2. **Missing cash shop items:** item definitions for seals, scrolls, talismans,
    tickets etc., with their effects.
 3. **Event item list:** `D2 13/14`.
@@ -403,9 +453,9 @@ the catalog or the plugin settings in the admin panel. Loading the catalog from
 PostgreSQL needs `IntervalAsTimeSpanJsonConverter`, because PostgreSQL writes a
 product duration of a day or more as e.g. `"7 days"` into the JSON.
 
-What can be bought: 21 of 205 packages (see
+What can be bought: 104 of 205 packages (see
 [Catalog initialization](#catalog-initialization)). The others have items OpenMU
-doesn't define, or are time-limited.
+doesn't define, or time-limited consumables.
 
 ## Working on it
 
