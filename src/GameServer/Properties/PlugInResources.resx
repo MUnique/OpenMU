@@ -537,6 +537,12 @@
   <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for login packets.</value>
   </data>
+  <data name="LoginWithTicketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Login with ticket</value>
+  </data>
+  <data name="LoginWithTicketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for the login with a ticket instead of a password, e.g. after signing in on a website.</value>
+  </data>
   <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
     <value>Logout handler</value>
   </data>

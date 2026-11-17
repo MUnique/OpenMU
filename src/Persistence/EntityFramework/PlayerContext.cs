@@ -491,6 +491,73 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<(string LoginName, DataModel.Entities.AccountState State)?> GetAccountLoginStateAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        var account = await this.Context.Set<Account>()
+            .AsNoTracking()
+            .Where(a => a.Id == accountId)
+            .Select(a => new { a.LoginName, a.State })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return account is null ? null : (account.LoginName, account.State);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.LoginTicket?> GetLoginTicketByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        return await this.Context.Set<LoginTicket>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ticket => ticket.TokenHash == tokenHash, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryUseLoginTicketAsync(
+        Guid ticketId,
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+
+        // A single conditional update, so the database lets only one of concurrent redeemers win.
+        var used = await this.Context.Set<LoginTicket>()
+            .Where(ticket => ticket.Id == ticketId && ticket.UsedAt == null && ticket.ExpiresAt > nowUtc)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(ticket => ticket.UsedAt, nowUtc), cancellationToken)
+            .ConfigureAwait(false);
+        return used == 1;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<int> CountUnexpiredLoginTicketsAsync(
+        Guid accountId,
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        return await this.Context.Set<LoginTicket>()
+            .CountAsync(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > nowUtc, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DeleteExpiredLoginTicketsAsync(
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        await this.Context.Set<LoginTicket>()
+            .Where(ticket => ticket.ExpiresAt <= nowUtc)
+            .ExecuteDeleteAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)

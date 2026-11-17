@@ -173,6 +173,7 @@
   * [C3 F1 02 - LogOut (by client)](C3-F1-02-LogOut_by-client.md)
   * [C3 F1 03 - LogOutByCheatDetection (by client)](C3-F1-03-LogOutByCheatDetection_by-client.md)
   * [C1 F1 06 - GameServerChannelRequest (by client)](C1-F1-06-GameServerChannelRequest_by-client.md)
+  * [C3 F1 10 - LoginWithTicket (by client)](C3-F1-10-LoginWithTicket_by-client.md)
   * [C1 F2 00 - ResetCharacterPointRequest (by client)](C1-F2-00-ResetCharacterPointRequest_by-client.md)
   * [C1 F3 00 - RequestCharacterList (by client)](C1-F3-00-RequestCharacterList_by-client.md)
   * [C1 F3 01 - CreateCharacter (by client)](C1-F3-01-CreateCharacter_by-client.md)

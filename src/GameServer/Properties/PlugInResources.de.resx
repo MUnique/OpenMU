@@ -537,6 +537,12 @@
   <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
     <value>Paket-Handler für Anmeldepakete.</value>
   </data>
+  <data name="LoginWithTicketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Anmeldung mit Ticket</value>
+  </data>
+  <data name="LoginWithTicketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für die Anmeldung mit einem Ticket statt eines Passworts, z.B. nach der Anmeldung auf einer Website.</value>
+  </data>
   <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
     <value>Handler für die Abmeldung</value>
   </data>

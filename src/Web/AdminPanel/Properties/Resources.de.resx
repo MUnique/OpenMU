@@ -1791,6 +1791,9 @@
   <data name="RoleCashShop" xml:space="preserve">
     <value>Nur Cash-Shop-Münzen</value>
   </data>
+  <data name="RoleLoginTicket" xml:space="preserve">
+    <value>Nur Anmelde-Tickets</value>
+  </data>
   <data name="SelectAll" xml:space="preserve">
     <value>Alle auswählen</value>
   </data>

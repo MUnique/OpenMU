@@ -743,6 +743,117 @@ public readonly struct Login075
 
 
 /// <summary>
+/// Is sent by the client when: The player tries to log into the game with a login ticket instead of a password, e.g. after signing in on a website.
+/// Causes reaction on server side: The server redeems the ticket. A ticket can be redeemed once, and only until it expires. If it's valid, the login proceeds like with a password and the server answers with a LoginResponse; if not, the result is AccountInvalid.
+/// </summary>
+public readonly struct LoginWithTicket
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginWithTicket"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LoginWithTicket(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoginWithTicket"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LoginWithTicket(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC3;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF1;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x10;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 72;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C3HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the token of the ticket: 256 random bits, encoded as base64url without padding.
+    /// </summary>
+    public string Token
+    {
+        get => this._data.Span.ExtractString(4, 43, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 43).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the tick count.
+    /// </summary>
+    public uint TickCount
+    {
+        get => ReadUInt32BigEndian(this._data.Span[47..]);
+        set => WriteUInt32BigEndian(this._data.Span[47..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the client version.
+    /// </summary>
+    public Span<byte> ClientVersion
+    {
+        get => this._data.Slice(51, 5).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the client serial.
+    /// </summary>
+    public Span<byte> ClientSerial
+    {
+        get => this._data.Slice(56, 16).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LoginWithTicket"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LoginWithTicket(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LoginWithTicket"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LoginWithTicket packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the client when: When the client wants to leave the game in various ways.
 /// Causes reaction on server side: Depending on the LogOutType, the game server does several checks and sends a response back to the client. If the request was successful, the game client either closes the game, goes back to server or character selection.
 /// </summary>

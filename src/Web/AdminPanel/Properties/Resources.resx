@@ -1381,6 +1381,7 @@
   <data name="RoleOperator" xml:space="preserve"><value>Operator</value></data>
   <data name="RoleViewer" xml:space="preserve"><value>Read only</value></data>
   <data name="RoleCashShop" xml:space="preserve"><value>Cash shop coins only</value></data>
+  <data name="RoleLoginTicket" xml:space="preserve"><value>Login tickets only</value></data>
   <data name="Guilds" xml:space="preserve">
     <value>Guilds</value>
   </data>

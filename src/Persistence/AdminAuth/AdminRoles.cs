@@ -47,6 +47,16 @@ public static class AdminRoles
     public static string WebManager => "WebManager";
 
     /// <summary>
+    /// Gets the role which is allowed to issue login tickets, with which a game client logs into an account without its password.
+    /// </summary>
+    /// <remarks>
+    /// It's meant for the API key of a website which signs the players in, e.g. with Discord.
+    /// Like <see cref="CashShop"/>, it's given alone. Not even an <see cref="Administrator"/> has it implicitly,
+    /// because it allows to log into every account.
+    /// </remarks>
+    public static string LoginTicket => "LoginTicket";
+
+    /// <summary>
     /// Gets all defined roles which build up on each other, from the least to the most privileged one.
     /// </summary>
     public static IReadOnlyList<string> All { get; } = Enum.GetNames<AdminRole>();
@@ -71,6 +81,12 @@ public static class AdminRoles
         if (string.Equals(role, WebManager, StringComparison.OrdinalIgnoreCase))
         {
             yield return WebManager;
+            yield break;
+        }
+
+        if (string.Equals(role, LoginTicket, StringComparison.OrdinalIgnoreCase))
+        {
+            yield return LoginTicket;
             yield break;
         }
 

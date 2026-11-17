@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("d4262486-5716-4a98-8e25-27ec8df841bd"), entityTypeCount: 132)
+            : base(skipDetectChanges: false, modelId: new Guid("d4262486-5716-4a98-8e25-27ec8df841bd"), entityTypeCount: 133)
         {
         }
 
@@ -114,6 +114,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var letterBody = LetterBodyEntityType.Create(this);
             var letterHeader = LetterHeaderEntityType.Create(this);
             var levelBonus = LevelBonusEntityType.Create(this);
+            var loginTicket = LoginTicketEntityType.Create(this);
             var magicEffectDefinition = MagicEffectDefinitionEntityType.Create(this);
             var masterSkillDefinition = MasterSkillDefinitionEntityType.Create(this);
             var masterSkillDefinitionSkill = MasterSkillDefinitionSkillEntityType.Create(this);
@@ -336,6 +337,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             LetterBodyEntityType.CreateForeignKey2(letterBody, appearanceData);
             LetterHeaderEntityType.CreateForeignKey1(letterHeader, character);
             LevelBonusEntityType.CreateForeignKey1(levelBonus, itemLevelBonusTable);
+            LoginTicketEntityType.CreateForeignKey1(loginTicket, account);
             MagicEffectDefinitionEntityType.CreateForeignKey1(magicEffectDefinition, powerUpDefinitionValue);
             MagicEffectDefinitionEntityType.CreateForeignKey2(magicEffectDefinition, powerUpDefinitionValue);
             MagicEffectDefinitionEntityType.CreateForeignKey3(magicEffectDefinition, powerUpDefinitionValue);
@@ -510,6 +512,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             LetterBodyEntityType.CreateAnnotations(letterBody);
             LetterHeaderEntityType.CreateAnnotations(letterHeader);
             LevelBonusEntityType.CreateAnnotations(levelBonus);
+            LoginTicketEntityType.CreateAnnotations(loginTicket);
             MagicEffectDefinitionEntityType.CreateAnnotations(magicEffectDefinition);
             MasterSkillDefinitionEntityType.CreateAnnotations(masterSkillDefinition);
             MasterSkillDefinitionSkillEntityType.CreateAnnotations(masterSkillDefinitionSkill);

@@ -38,6 +38,9 @@ internal static class AdminPolicies
     /// <summary>Authenticated cash shop API callers.</summary>
     internal const string AuthenticatedCashShop = "Admin.AuthenticatedCashShop";
 
+    /// <summary>Authenticated API callers which issue login tickets.</summary>
+    internal const string AuthenticatedLoginTicket = "Admin.AuthenticatedLoginTicket";
+
     /// <summary>
     /// The policy of the website API, which needs an API key with the
     /// <see cref="MUnique.OpenMU.Persistence.AdminAuth.AdminRoles.WebManager"/> role.

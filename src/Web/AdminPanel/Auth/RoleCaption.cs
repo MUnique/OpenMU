@@ -19,6 +19,7 @@ public static class RoleCaption
         "Viewer" => Resources.RoleViewer,
         "CashShop" => Resources.RoleCashShop,
         "WebManager" => Resources.RoleWebManager,
+        "LoginTicket" => Resources.RoleLoginTicket,
         var other => other,
     }));
 }
