@@ -48,7 +48,7 @@ internal class Karutan1 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(2, this.NpcDictionary[578], 117, 126, Direction.SouthEast); // Weapons Merchant Bolo
         yield return this.CreateMonsterSpawn(3, this.NpcDictionary[240], 123, 132, Direction.South); // Safety Guardian
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[240], 122, 096, Direction.SouthEast); // Safety Guardian
-        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 158, 126, Direction.SouthWest); // Safety Guardian
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 157, 127, Direction.SouthWest); // Safety Guardian
     }
 
     /// <inheritdoc/>
