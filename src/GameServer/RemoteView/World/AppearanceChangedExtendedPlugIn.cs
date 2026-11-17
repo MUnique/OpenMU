@@ -43,7 +43,7 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
         await connection.SendAppearanceChangedExtendedAsync(
             changedPlayer.GetId(this._player),
             item.ItemSlot,
-            (byte)((isEquipped ? item.Definition?.Group : 0xFF) ?? 0xFF),
+            (byte)((isEquipped && item.IsShownInAppearance(DateTime.UtcNow) ? item.Definition?.Group : 0xFF) ?? 0xFF),
             (ushort)(item.Definition?.Number ?? 0xFFFF),
             item.Level,
             (byte)(ItemSerializerHelper.GetExcellentByte(item) | ItemSerializerHelper.GetFenrirByte(item)),

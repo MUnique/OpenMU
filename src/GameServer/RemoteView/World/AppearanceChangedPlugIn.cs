@@ -49,7 +49,7 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
                 ChangedPlayerId = changedPlayer.GetId(this._player),
             };
 
-            if (inventory!.EquippedItems.Contains(item))
+            if (inventory!.EquippedItems.Contains(item) && item.IsShownInAppearance(DateTime.UtcNow))
             {
                 itemSerializer.SerializeItem(packet.ItemData, item);
             }

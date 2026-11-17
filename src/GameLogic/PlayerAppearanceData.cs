@@ -44,7 +44,10 @@ internal sealed class PlayerAppearanceData : IAppearanceData
         {
             if (this._player.Inventory != null)
             {
-                return this._player.Inventory.EquippedItems.Select(item => item.GetAppearance());
+                var now = DateTime.UtcNow;
+                return this._player.Inventory.EquippedItems
+                    .Where(item => item.IsShownInAppearance(now))
+                    .Select(item => item.GetAppearance());
             }
 
             return Enumerable.Empty<ItemAppearance>();

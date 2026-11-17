@@ -39,6 +39,7 @@ public class ItemExpirationPlugInTest
 
         await plugIn.ExecuteTaskAsync((GameContext)player.GameContext).ConfigureAwait(false);
         Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(healthWithPet), "the pet is valid");
+        Assert.That(player.AppearanceData.EquippedItems.Select(appearance => appearance.ItemSlot), Does.Contain(InventoryConstants.PetSlot));
 
         pet.ExpiresAt = DateTime.UtcNow.AddSeconds(-1);
         await plugIn.ExecuteTaskAsync((GameContext)player.GameContext).ConfigureAwait(false);
@@ -46,6 +47,7 @@ public class ItemExpirationPlugInTest
 
         Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(healthWithPet - PetHealth));
         Assert.That(player.Inventory!.GetItem(InventoryConstants.PetSlot), Is.SameAs(pet), "an expired item stays");
+        Assert.That(player.AppearanceData.EquippedItems.Select(appearance => appearance.ItemSlot), Does.Not.Contain(InventoryConstants.PetSlot), "other players don't see an expired pet");
         Mock.Get(player.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()!).Verify(v => v.ItemUpgradedAsync(pet), Times.Once);
         Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!).Verify(v => v.ShowMessageAsync(It.Is<string>(m => m.Contains("Rented pet")), MessageType.BlueNormal), Times.Once);
     }
