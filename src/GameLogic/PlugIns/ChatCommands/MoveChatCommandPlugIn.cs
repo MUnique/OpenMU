@@ -27,15 +27,15 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player sender, MoveChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, MoveChatCommandArgs arguments)
     {
-        var senderIsGameMaster = sender.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster;
+        var senderIsGameMaster = player.SelectedCharacter?.CharacterStatus == CharacterStatus.GameMaster;
         var isGameMasterWarpingCharacter = senderIsGameMaster && !string.IsNullOrWhiteSpace(arguments.MapIdOrName);
 
         if (isGameMasterWarpingCharacter)
         {
-            var targetPlayer = await this.GetPlayerByCharacterNameAsync(sender, arguments.Target!).ConfigureAwait(false);
-            var exitGate = await this.GetExitGateAsync(sender, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
+            var targetPlayer = await this.GetPlayerByCharacterNameAsync(player, arguments.Target!).ConfigureAwait(false);
+            var exitGate = await this.GetExitGateAsync(player, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
             if (targetPlayer is null || exitGate is null)
             {
                 return;
@@ -43,18 +43,18 @@ public class MoveChatCommandPlugIn : ChatCommandPlugInBase<MoveChatCommandArgs>
 
             await targetPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 
-            if (!targetPlayer.Name.Equals(sender.Name))
+            if (!targetPlayer.Name.Equals(player.Name))
             {
                 await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
-                await sender.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name.GetTranslation(sender.Culture), targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, targetPlayer.Name, exitGate!.Map!.Name.GetTranslation(player.Culture), targetPlayer.Position.X, targetPlayer.Position.Y).ConfigureAwait(false);
             }
         }
         else
         {
-            var warpInfo = this.GetWarpInfo(sender, arguments.Target!);
+            var warpInfo = this.GetWarpInfo(player, arguments.Target!);
             if (warpInfo != null)
             {
-                await new WarpAction().WarpToAsync(sender, warpInfo).ConfigureAwait(false);
+                await new WarpAction().WarpToAsync(player, warpInfo).ConfigureAwait(false);
             }
         }
     }

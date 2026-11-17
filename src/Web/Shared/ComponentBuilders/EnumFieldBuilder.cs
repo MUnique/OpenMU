@@ -15,9 +15,9 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class EnumFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
     {
-        return this.BuildGenericField(model, typeof(EnumField<>), builder, propertyInfo, currentIndex, notificationService);
+        return this.BuildGenericField(model, typeof(EnumField<>), treeBuilder, propertyInfo, currentIndex, notificationService);
     }
 
     /// <inheritdoc/>

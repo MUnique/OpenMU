@@ -59,11 +59,11 @@ public class IdReferenceResolver : ReferenceResolver
     }
 
     /// <inheritdoc/>
-    public override void AddReference(string reference, object value)
+    public override void AddReference(string referenceId, object value)
     {
         if (value is IIdentifiable identifiable)
         {
-            var identity = new Guid(reference);
+            var identity = new Guid(referenceId);
             this._objects[identity] = identifiable;
         }
     }

@@ -760,10 +760,13 @@ public class BotChatPlugIn
 
             // A bot already on the map walks there without a warp - also on a map which has no entry in
             // the warp list at all.
-            return bot.CurrentMap?.Definition.Number == map.Number
-                   && BotNavigator.CanWalk(terrain.WalkMap, bot.Position, point, CancellationToken.None)
-                ? (null, target)
-                : null;
+            if (bot.CurrentMap?.Definition.Number == map.Number
+                && BotNavigator.CanWalk(terrain.WalkMap, bot.Position, point, CancellationToken.None))
+            {
+                return (null, target);
+            }
+
+            return null;
         }
 
         if (legalWarps.Count == 0)

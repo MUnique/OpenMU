@@ -142,7 +142,10 @@ public partial class DiscordSetup : IDisposable
 
     private string IntegrationMode
     {
-        get => this._useBot ? "bot" : "webhooks";
+        get
+        {
+            return this._useBot ? "bot" : "webhooks";
+        }
         set
         {
             this._useBot = value == "bot";
@@ -764,8 +767,8 @@ public partial class DiscordSetup : IDisposable
 
         if (this._serverCheck is { } check)
         {
-            return check.MissingPermissions.Count > 0 || check.LinkedRole != DiscordRoleState.Assignable
-                ? StepState.Problem : StepState.Verified;
+            var hasProblem = check.MissingPermissions.Count > 0 || check.LinkedRole != DiscordRoleState.Assignable;
+            return hasProblem ? StepState.Problem : StepState.Verified;
         }
 
         return this.Bot?.RoutingServerId is not null ? StepState.Configured : StepState.Open;
@@ -784,8 +787,8 @@ public partial class DiscordSetup : IDisposable
         }
 
         var enabled = Categories.Where(this.IsCategoryEnabled).ToList();
-        return enabled.Count > 0 && enabled.All(category => this._testResults.TryGetValue(category, out var result) && IsSent(result))
-            ? StepState.Verified : StepState.Configured;
+        var isVerified = enabled.Count > 0 && enabled.All(category => this._testResults.TryGetValue(category, out var result) && IsSent(result));
+        return isVerified ? StepState.Verified : StepState.Configured;
     }
 
     private bool IsCategoryEnabled(DiscordChannelCategory category) => this._settings is null || !this._settings.DisabledNotifications.Contains(category);
@@ -844,7 +847,8 @@ public partial class DiscordSetup : IDisposable
     }
 
     private MarkupString FieldError(string field) => this._validationErrors.TryGetValue(field, out var message)
-        ? new MarkupString($"<div class=\"invalid-feedback d-block\" role=\"alert\">{System.Net.WebUtility.HtmlEncode(message)}</div>") : default;
+        ? new MarkupString($"<div class=\"invalid-feedback d-block\" role=\"alert\">{System.Net.WebUtility.HtmlEncode(message)}</div>")
+        : default;
 
     private async Task RequestDiscardAsync()
     {

@@ -14,6 +14,9 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>Reads accounts and persisted character data without exposing credentials.</summary>
+/// <param name="persistence">The persistence context provider.</param>
+/// <param name="configurations">The configuration data source.</param>
+/// <param name="loginServer">The login server.</param>
 public sealed class AccountReadOperations(
     IPersistenceContextProvider persistence,
     IDataSource<GameConfiguration> configurations,

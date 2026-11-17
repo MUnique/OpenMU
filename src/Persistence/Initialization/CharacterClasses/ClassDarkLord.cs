@@ -10,9 +10,9 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 
-/// <summary>
+/// <content>
 /// Initialization of character classes data.
-/// </summary>
+/// </content>
 internal partial class CharacterClassInitialization
 {
     private CharacterClass CreateDarkLord(CharacterClassNumber number, LocalizedString name, bool isMaster, CharacterClass? nextGenerationClass, bool canGetCreated)

@@ -49,7 +49,10 @@ public class SocketViewModel
     /// </summary>
     public int Level
     {
-        get => this.OptionLink?.Level ?? 0;
+        get
+        {
+            return this.OptionLink?.Level ?? 0;
+        }
         set
         {
             if (this.OptionLink is { } optionLink)

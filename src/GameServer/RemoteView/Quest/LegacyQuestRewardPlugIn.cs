@@ -37,10 +37,10 @@ public class LegacyQuestRewardPlugIn : ILegacyQuestRewardPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask ShowAsync(Player receiver, QuestRewardType reward, int value, AttributeDefinition? attributeReward)
+    public async ValueTask ShowAsync(Player player, QuestRewardType rewardType, int value, AttributeDefinition? attributeReward)
     {
-        var receiverId = receiver.GetId(this._player);
-        switch (reward)
+        var receiverId = player.GetId(this._player);
+        switch (rewardType)
         {
             case QuestRewardType.LevelUpPoints:
                 await this._player.Connection.SendLegacyQuestRewardAsync(receiverId, LegacyQuestReward.QuestRewardType.LevelUpPoints, (byte)value).ConfigureAwait(false);
@@ -66,7 +66,7 @@ public class LegacyQuestRewardPlugIn : ILegacyQuestRewardPlugIn
 
                 break;
             default:
-                this._player.Logger.LogDebug("Unknown quest reward: {0}", reward);
+                this._player.Logger.LogDebug("Unknown quest rewardType: {0}", rewardType);
                 break;
         }
     }

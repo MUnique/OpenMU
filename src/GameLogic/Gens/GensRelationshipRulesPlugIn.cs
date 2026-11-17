@@ -59,10 +59,13 @@ public class GensRelationshipRulesPlugIn : IPartyRequestingPlugIn, IGuildJoinReq
 
         var requesterGens = (await requester.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
         var guildMasterGens = (await guildMaster.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
-        GuildRequestAnswerResult? result = guildMasterGens == GensType.None ? GuildRequestAnswerResult.GuildMasterNotInGens
-            : requesterGens == GensType.None ? GuildRequestAnswerResult.NotInGensOfGuildMaster
-            : requesterGens != guildMasterGens ? GuildRequestAnswerResult.GuildMasterInDifferentGens
-            : null;
+        GuildRequestAnswerResult? result = (guildMasterGens, requesterGens) switch
+        {
+            (GensType.None, _) => GuildRequestAnswerResult.GuildMasterNotInGens,
+            (_, GensType.None) => GuildRequestAnswerResult.NotInGensOfGuildMaster,
+            _ when requesterGens != guildMasterGens => GuildRequestAnswerResult.GuildMasterInDifferentGens,
+            _ => null,
+        };
         if (result is { } denied)
         {
             eventArgs.Cancel = true;
@@ -93,10 +96,13 @@ public class GensRelationshipRulesPlugIn : IPartyRequestingPlugIn, IGuildJoinReq
 
         var requesterGens = (await requester.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
         var targetGens = (await targetGuildMaster.GetGensMemberAsync().ConfigureAwait(false))?.Gens ?? GensType.None;
-        GuildRelationshipChangeResultType? result = requesterGens == GensType.None ? GuildRelationshipChangeResultType.AllianceMasterNotInGens
-            : targetGens == GensType.None ? GuildRelationshipChangeResultType.GuildMasterNotInGens
-            : requesterGens != targetGens ? GuildRelationshipChangeResultType.DifferentGens
-            : null;
+        GuildRelationshipChangeResultType? result = (requesterGens, targetGens) switch
+        {
+            (GensType.None, _) => GuildRelationshipChangeResultType.AllianceMasterNotInGens,
+            (_, GensType.None) => GuildRelationshipChangeResultType.GuildMasterNotInGens,
+            _ when requesterGens != targetGens => GuildRelationshipChangeResultType.DifferentGens,
+            _ => null,
+        };
         if (result is { } denied)
         {
             eventArgs.Cancel = true;

@@ -44,7 +44,10 @@ public sealed class ValueWrapper<TValue> : INotifyPropertyChanged
     [Display(Name = "")]
     public TValue Value
     {
-        get => this._value;
+        get
+        {
+            return this._value;
+        }
         set
         {
             if (EqualityComparer<TValue>.Default.Equals(value, this._value))

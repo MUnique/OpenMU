@@ -45,14 +45,14 @@ public abstract class CastleSiegeNpcBase : NonPlayerCharacter, ICastleSiegeNpc
     }
 
     /// <inheritdoc />
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this._intelligence.Pause();
             (this._intelligence as IDisposable)?.Dispose();
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 }

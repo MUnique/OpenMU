@@ -120,7 +120,10 @@ public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposa
     /// <inheritdoc/>
     public ServerState ServerState
     {
-        get => this._serverState;
+        get
+        {
+            return this._serverState;
+        }
         set
         {
             if (this._serverState != value)
@@ -441,11 +444,11 @@ public sealed partial class GameServer : IGameServer, IDisposable, IAsyncDisposa
     }
 
     /// <inheritdoc/>
-    public async ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo authenticationInfo, string creatorName)
+    public async ValueTask ChatRoomCreatedAsync(ChatServerAuthenticationInfo playerAuthenticationInfo, string friendName)
     {
-        if (this._gameContext.GetPlayerByCharacterName(authenticationInfo.ClientName) is { } player)
+        if (this._gameContext.GetPlayerByCharacterName(playerAuthenticationInfo.ClientName) is { } player)
         {
-            await player.InvokeViewPlugInAsync<IChatRoomCreatedPlugIn>(p => p.ChatRoomCreatedAsync(authenticationInfo, creatorName, true)).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IChatRoomCreatedPlugIn>(p => p.ChatRoomCreatedAsync(playerAuthenticationInfo, friendName, true)).ConfigureAwait(false);
         }
     }
 

@@ -15,8 +15,8 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class ObjectCollectionFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
-        => this.BuiltItemTableField(model, builder, propertyInfo, currentIndex, notificationService);
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
+        => this.BuiltItemTableField(model, treeBuilder, propertyInfo, currentIndex, notificationService);
 
     /// <inheritdoc/>
     public bool CanBuildComponent(PropertyInfo propertyInfo) =>
@@ -25,13 +25,13 @@ public class ObjectCollectionFieldBuilder : BaseComponentBuilder, IComponentBuil
         && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
         && !propertyInfo.PropertyType.GenericTypeArguments[0].IsValueType;
 
-    private int BuiltItemTableField(object model, RenderTreeBuilder builder, PropertyInfo propertyInfo, int i, IChangeNotificationService notificationService)
+    private int BuiltItemTableField(object model, RenderTreeBuilder treeBuilder, PropertyInfo propertyInfo, int i, IChangeNotificationService notificationService)
     {
         var method = this.GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
             .Where(m => m.Name == nameof(this.BuildField))
             .First(m => m.ContainsGenericParameters && m.GetGenericArguments().Length == 2)
             .MakeGenericMethod(propertyInfo.PropertyType, typeof(ItemTable<>).MakeGenericType(propertyInfo.PropertyType.GenericTypeArguments[0]));
-        var parameters = new[] { model, propertyInfo, builder, i, notificationService };
+        var parameters = new[] { model, propertyInfo, treeBuilder, i, notificationService };
         return (int)method.Invoke(this, parameters)!;
     }
 }

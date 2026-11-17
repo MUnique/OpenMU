@@ -55,7 +55,10 @@ public class CollectionToDictionaryAdapter<TKey, TClass, TPersistent, TJoin> : I
             throw new KeyNotFoundException($"No value found for key {key}.");
         }
 
-        set => this.Add(key, value);
+        set
+        {
+            this.Add(key, value);
+        }
     }
 
     /// <inheritdoc/>

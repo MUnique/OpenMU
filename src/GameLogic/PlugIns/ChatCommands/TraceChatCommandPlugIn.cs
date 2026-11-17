@@ -26,10 +26,10 @@ public class TraceChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, TraceChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, TraceChatCommandArgs arguments)
     {
-        var player = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
-        var character = player?.SelectedCharacter;
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(player, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
+        var character = targetPlayer?.SelectedCharacter;
 
         if (character is null)
         {
@@ -45,6 +45,6 @@ public class TraceChatCommandPlugIn : ChatCommandPlugInBase<TraceChatCommandArgs
             Y2 = (byte)(character.PositionY + 2),
         };
 
-        await gameMaster.WarpToAsync(characterLocation).ConfigureAwait(false);
+        await player.WarpToAsync(characterLocation).ConfigureAwait(false);
     }
 }

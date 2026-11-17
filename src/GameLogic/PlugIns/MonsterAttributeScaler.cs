@@ -33,7 +33,10 @@ public class MonsterAttributeScaler : IFeaturePlugIn, IObjectAddedToMapPlugIn, I
     /// <inheritdoc />
     public MonsterAttributeScalerConfiguration? Configuration
     {
-        get => this._configuration;
+        get
+        {
+            return this._configuration;
+        }
         set
         {
             this._configuration = value;

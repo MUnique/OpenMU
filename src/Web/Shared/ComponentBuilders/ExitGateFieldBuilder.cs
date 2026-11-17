@@ -17,9 +17,9 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class ExitGateFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
     {
-        return this.BuildField<ExitGate>(model, typeof(ExitGateField), propertyInfo, builder, currentIndex, notificationService);
+        return this.BuildField<ExitGate>(model, typeof(ExitGateField), propertyInfo, treeBuilder, currentIndex, notificationService);
     }
 
     /// <inheritdoc/>

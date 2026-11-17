@@ -89,14 +89,14 @@ public sealed class CastleSiegeMachine : CastleSiegeNpcBase
     }
 
     /// <inheritdoc />
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this.Operator = null;
             this.IsActive = false;
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 }

@@ -114,7 +114,10 @@ public sealed class DuelRoom : AsyncDisposable
     /// </summary>
     public byte ScoreRequester
     {
-        get => this._scoreRequester;
+        get
+        {
+            return this._scoreRequester;
+        }
         set
         {
             this._scoreRequester = value;
@@ -130,7 +133,10 @@ public sealed class DuelRoom : AsyncDisposable
     /// </summary>
     public byte ScoreOpponent
     {
-        get => this._scoreOpponent;
+        get
+        {
+            return this._scoreOpponent;
+        }
         set
         {
             this._scoreOpponent = value;

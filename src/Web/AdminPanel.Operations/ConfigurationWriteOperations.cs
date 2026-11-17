@@ -354,8 +354,14 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
             throw new AdminOperationException("The deleted object's identifier already exists. Revert refused.");
         }
 
-        var item = mode == "create" ? null : type == typeof(GameServerDefinition)
-            ? await context.GetByIdAsync<GameServerDefinition>(id, cancellationToken).ConfigureAwait(false) : Find(config, type, id);
+        object? item = null;
+        if (mode != "create")
+        {
+            item = type == typeof(GameServerDefinition)
+                ? await context.GetByIdAsync<GameServerDefinition>(id, cancellationToken).ConfigureAwait(false)
+                : Find(config, type, id);
+        }
+
         if ((mode != "create" && item is null) || (item is GameServerDefinition server && server.GameConfiguration?.GetId() != configId))
         {
             throw new AdminOperationException("The object is not part of the active game configuration.", AdminOperationErrorKind.InvalidInput);

@@ -44,7 +44,10 @@ public partial class LevelBonus
     /// </summary>
     public float AdditionalValue
     {
-        get => this._additionalValue;
+        get
+        {
+            return this._additionalValue;
+        }
         set
         {
             this._additionalValue = value;

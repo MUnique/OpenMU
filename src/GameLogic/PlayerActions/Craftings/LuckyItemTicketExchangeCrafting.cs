@@ -34,9 +34,9 @@ public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
     }
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
     {
-        if (base.TryGetRequiredItems(player, out items, out successRate) is { } error)
+        if (base.TryGetRequiredItems(player, out items, out successRateByItems) is { } error)
         {
             return error;
         }

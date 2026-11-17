@@ -59,7 +59,10 @@ public class MonsterAttributeHolder : IAttributeSystem
     /// <inheritdoc/>
     public float this[AttributeDefinition attributeDefinition]
     {
-        get => this.GetValueOfAttribute(attributeDefinition);
+        get
+        {
+            return this.GetValueOfAttribute(attributeDefinition);
+        }
 
         set
         {
@@ -159,7 +162,7 @@ public class MonsterAttributeHolder : IAttributeSystem
     }
 
     /// <inheritdoc/>
-    public void AddAttributeRelationship(AttributeRelationship combination, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
+    public void AddAttributeRelationship(AttributeRelationship relationship, IAttributeSystem sourceAttributeHolder, AggregateType aggregateType)
     {
         throw new NotImplementedException();
     }
