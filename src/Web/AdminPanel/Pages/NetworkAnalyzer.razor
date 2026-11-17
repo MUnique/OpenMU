@@ -67,7 +67,7 @@ else
                 {
                   <strong>@capture.ConnectionInfo.DisplayName</strong>
                   <span class="badge text-bg-secondary">@capture.ConnectionInfo.RemoteEndPoint</span>
-                  <span class="badge text-bg-light">@capture.ConnectionInfo.ClientVersion</span>
+                  <span class="badge bg-body-tertiary text-body border">@capture.ConnectionInfo.ClientVersion</span>
                   @if (capture.ConnectionInfo.AccountName is not null)
                   {
                     <button type="button" title="@Resources.ObserveAccountHint"
@@ -84,7 +84,7 @@ else
                   {
                     <span class="badge text-bg-secondary">@string.Join(", ", session.Metadata.CharacterNames)</span>
                   }
-                  <span class="badge text-bg-light">@session.Metadata.ClientVersion</span>
+                  <span class="badge bg-body-tertiary text-body border">@session.Metadata.ClientVersion</span>
                   <span class="badge text-bg-info">@Resources.ArchivedSession</span>
                   @if (session.IsRunning)
                   {
