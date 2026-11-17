@@ -94,6 +94,34 @@ public class SpeedHackAntiCheatTests
     }
 
     /// <summary>
+    /// Tests that the tolerated distance of a position reported by a standing player follows the
+    /// configured walk start offset, but is never smaller than the next tile.
+    /// </summary>
+    /// <param name="configuredOffset">The configured maximum walk start offset.</param>
+    /// <param name="reportedOffset">The distance of the reported position from the server position.</param>
+    /// <param name="isTolerated"><c>true</c> if the client isn't corrected.</param>
+    [TestCase(5, 5, true)]
+    [TestCase(5, 6, false)]
+    [TestCase(2, 2, true)]
+    [TestCase(2, 3, false)]
+    [TestCase(0, 1, true)]
+    [TestCase(0, 2, false)]
+    public async Task TestStoppedPositionToleranceFollowsWalkStartOffsetAsync(int configuredOffset, int reportedOffset, bool isTolerated)
+    {
+        var player = await CreatePlayerWithSpeedAttributesAsync().ConfigureAwait(false);
+        player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()!.Configuration!.MaxAllowedWalkStartOffset = configuredOffset;
+        player.Position = StartPoint;
+
+        var reported = new Point((byte)(StartPoint.X + reportedOffset), StartPoint.Y);
+        var packet = new byte[] { 0xC1, 0x06, (byte)MUnique.OpenMU.GameServer.PacketType.Walk, reported.X, reported.Y, 0x40 };
+        await new CharacterWalkHandlerPlugIn().HandlePacketAsync(player, packet).ConfigureAwait(false);
+
+        var objectMovedPlugIn = player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>();
+        Mock.Get<IObjectMovedPlugIn>(objectMovedPlugIn!).Verify(m => m.ObjectMovedAsync(player, MoveType.Instant), isTolerated ? Times.Never() : Times.Once());
+        Assert.That(player.Position, Is.EqualTo(StartPoint));
+    }
+
+    /// <summary>
     /// Tests that repeated walk start offsets beyond the bound add up to a rejection which warns the player.
     /// </summary>
     [Test]
