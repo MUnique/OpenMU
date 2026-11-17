@@ -509,4 +509,6 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加角斗士的荣耀，在 30 分钟内使囚禁之岛的经验增加 20%。</value>
   </data>
+  <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>第六季NPC刷新点</value></data>
+  <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>将NPC调整为第六季的位置和朝向（勇者大陆、冰风谷、仙踪林、竞技场、亚特兰蒂斯、幻术园、幽暗森林、狼魂要塞、罗兰峡谷、卡伦特、坎特鲁和幻影寺院），补充冰风谷缺少的1名幻影导师、仙踪林缺少的2名幻影导师以及冰风谷的黄金弓箭手，并移除第六季没有的NPC：旧版本中仙踪林和失落之塔的药水少女（253）、失落之塔、竞技场和亚特兰蒂斯的安全守卫（240）、勇者大陆114/125处的守卫（247）以及勇者大陆的黄金弓箭手；冰风谷的陆迦德、弟子黛彬和弥拉邱（第六季中只在幻术园和狼魂要塞）；以及罗兰峡谷的第二个王座（216）。会覆盖这些NPC自定义的位置和朝向。</value></data>
 </root>

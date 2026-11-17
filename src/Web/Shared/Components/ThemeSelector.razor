@@ -1,20 +1,43 @@
 @*
-    A simple toggle that switches the UI between the "light" and "dark" themes.
-    Persists the selection by calling the ThemeController (cookie-based, same pattern as CultureSelector).
+    A dropdown which switches the UI between the light, the dark and the automatic theme,
+    which follows the color scheme of the operating system.
+    The selection is applied immediately and persisted in a cookie, without reloading the page.
 *@
 @using MUnique.OpenMU.Web.Shared.Properties
+@using MUnique.OpenMU.Web.Shared.Services
 
-<button type="button"
-        class="theme-selector btn btn-link p-0"
-        title="@(this.EffectiveIsDark ? Resources.SwitchToLightMode : Resources.SwitchToDarkMode)"
-        aria-label="@Resources.ToggleTheme"
-        @onclick="this.Toggle">
-    @if (this.EffectiveIsDark)
+<div class="theme-selector dropdown" @onkeydown="this.OnKeyDown">
+    <button type="button"
+            class="theme-selector__toggle btn btn-link p-0"
+            title="@($"{Resources.Theme}: {GetCaption(this.EffectiveTheme)}")"
+            aria-label="@Resources.ToggleTheme"
+            aria-haspopup="true"
+            aria-expanded="@(this._isOpen ? "true" : "false")"
+            @onclick="this.ToggleMenu">
+        <span class="oi @GetIcon(this.EffectiveTheme) theme-selector__icon" aria-hidden="true"></span>
+    </button>
+    @if (this._isOpen)
     {
-        <span class="oi oi-sun theme-selector__icon" aria-hidden="true"></span>
+        <div class="theme-selector__backdrop" @onclick="this.CloseMenu"></div>
+        <ul class="dropdown-menu show theme-selector__menu" role="menu">
+            @foreach (var theme in Themes)
+            {
+                var isActive = theme == this.EffectiveTheme;
+                <li>
+                    <button type="button"
+                            class="dropdown-item d-flex align-items-center@(isActive ? " active" : string.Empty)"
+                            role="menuitemradio"
+                            aria-checked="@(isActive ? "true" : "false")"
+                            @onclick="() => this.SelectAsync(theme)">
+                        <span class="oi @GetIcon(theme) theme-selector__item-icon" aria-hidden="true"></span>
+                        @GetCaption(theme)
+                        @if (isActive)
+                        {
+                            <span class="oi oi-check ms-auto ps-3" aria-hidden="true"></span>
+                        }
+                    </button>
+                </li>
+            }
+        </ul>
     }
-    else
-    {
-        <span class="oi oi-moon theme-selector__icon" aria-hidden="true"></span>
-    }
-</button>
+</div>

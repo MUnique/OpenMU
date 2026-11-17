@@ -217,17 +217,17 @@ internal class Elvenland : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[256], 37, 242, Direction.SouthWest); // Lahap
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[256], 37, 241, Direction.SouthWest); // Lahap
         yield return this.CreateMonsterSpawn(2, this.NpcDictionary[415], 44, 229, Direction.SouthWest); // Silvia
-        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[416], 29, 237, Direction.South); // Rhea
-        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[417], 37, 218, Direction.SouthWest); // Marce
-        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[257], 44, 189, Direction.SouthEast); // Shadow Phantom Soldier
-        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[257], 57, 231, Direction.SouthWest); // Shadow Phantom Soldier
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[416], 29, 236, Direction.South); // Rhea
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[417], 36, 219, Direction.South); // Marce
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[257], 43, 191, Direction.SouthEast); // Shadow Phantom Soldier
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[257], 57, 232, Direction.SouthEast); // Shadow Phantom Soldier
         yield return this.CreateMonsterSpawn(7, this.NpcDictionary[257], 74, 74, 219, 220, 1, Direction.SouthWest); // Shadow Phantom Soldier
-        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[240], 51, 229, Direction.SouthWest); // Safety Guardian
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[240], 50, 229, Direction.SouthWest); // Safety Guardian
         yield return this.CreateMonsterSpawn(9, this.NpcDictionary[385], 55, 243, Direction.SouthWest); // Mirage
-        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[452], 45, 243, Direction.SouthWest); // Seed Master
-        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[453], 49, 243, Direction.SouthWest); // Seed Researcher
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[452], 46, 243, Direction.SouthWest); // Seed Master
+        yield return this.CreateMonsterSpawn(11, this.NpcDictionary[453], 50, 243, Direction.SouthWest); // Seed Researcher
         yield return this.CreateMonsterSpawn(12, this.NpcDictionary[540], 49, 216, Direction.South); // Lugard
         yield return this.CreateMonsterSpawn(13, this.NpcDictionary[492], 22, 225, Direction.South); // Moss
         yield return this.CreateMonsterSpawn(14, this.NpcDictionary[579], 20, 214, Direction.SouthEast); // David
