@@ -1,4 +1,8 @@
 .theme-selector {
+    position: relative;
+}
+
+.theme-selector__toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -10,13 +14,31 @@
     border-radius: 999px;
 }
 
-.theme-selector:hover,
-.theme-selector:focus {
-    background-color: rgba(0, 0, 0, 0.06);
+.theme-selector__toggle:hover,
+.theme-selector__toggle:focus {
+    background-color: var(--bs-tertiary-bg);
     text-decoration: none;
     color: inherit;
 }
 
 .theme-selector__icon {
     font-size: 1.1rem;
+}
+
+.theme-selector__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.theme-selector__menu {
+    top: 100%;
+    right: 0;
+    left: auto;
+    margin-top: 0.25rem;
+    z-index: 1001;
+}
+
+.theme-selector__item-icon {
+    width: 1.5rem;
 }
