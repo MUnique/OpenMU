@@ -234,5 +234,5 @@ public static class ItemExtensions
     /// <param name="definition">The item definition.</param>
     /// <returns><c>true</c>, if an expired item of this kind can be dropped or sold; otherwise, <c>false</c>.</returns>
     public static bool CanBeDisposedOfWhenExpired(this ItemDefinition definition)
-        => definition.IsDroppable || definition.IsSellableToNpc || definition.IsSellableToNpcWhenExpired;
+        => definition.IsDroppable || definition.IsSellableToNpc || definition.IsSellableWhenExpired;
 }

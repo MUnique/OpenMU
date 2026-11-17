@@ -369,7 +369,7 @@ items with different expirations don't stack.
 * **Which items:** `CashShopProductExtensions.CanBeTimeLimited`: worn
   (`ItemSlot`), not consumed (`ConsumeEffect`), and a way out once expired
   (`ItemExtensions.CanBeDisposedOfWhenExpired`: `IsDroppable`, `IsSellableToNpc`
-  or `IsSellableToNpcWhenExpired`). Otherwise the product isn't delivered, the
+  or `IsSellableWhenExpired`). Otherwise the product isn't delivered, the
   catalog check reports it, and the item editor of the admin panel refuses it.
 * **Effect:** `Item.HasEffect(now)` (durability left, not expired) decides every
   effect of an equipped item: power-ups and set bonuses (`ItemPowerUpFactory`),
@@ -386,7 +386,7 @@ items with different expirations don't stack.
   vault, trade, personal store or crafting window (`MoveItemAction`, checked
   again by the trade and the personal store purchase), no repair, no time-based
   wear. A valid one can't be dropped or sold; an expired one can be dropped if
-  `IsDroppable`, and sold to an NPC if `IsSellableToNpcWhenExpired` or
+  `IsDroppable`, and sold to an NPC if `IsSellableWhenExpired` or
   `IsSellableToNpc`. It can't be equipped.
 * **Prices:** the client shows a small fixed selling price for the rented items
   (1000 zen, 2000 for the Skeleton pet and ring, 80 for the small wings and
@@ -401,7 +401,7 @@ items with different expirations don't stack.
   which creates the item again in the client (appear, move within the inventory,
   update, failed move): the client takes the date for the item in the slot.
 * **Existing databases:** the mandatory update *Sell the rented items of the cash
-  shop* sets `IsSellableToNpcWhenExpired`, assigns the rental prices to items which
+  shop* sets `IsSellableWhenExpired`, assigns the rental prices to items which
   still have the accessories price, and puts the packages on sale.
 
 ## Roadmap

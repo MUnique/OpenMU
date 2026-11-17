@@ -128,7 +128,7 @@ public partial class ItemDefinition
     /// expired. Together with <see cref="IsDroppable"/> and <see cref="IsSellableToNpc"/> it decides
     /// whether the player can get rid of such an item.
     /// </remarks>
-    public bool IsSellableToNpcWhenExpired { get; set; }
+    public bool IsSellableWhenExpired { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the item.

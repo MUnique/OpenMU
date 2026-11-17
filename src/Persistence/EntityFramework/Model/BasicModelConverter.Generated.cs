@@ -1982,7 +1982,7 @@ internal sealed class BasicModelConverter
         target.IsSellableToNpc = source.IsSellableToNpc;
         target.IsPersonalStoreSellable = source.IsPersonalStoreSellable;
         target.IsRepairable = source.IsRepairable;
-        target.IsSellableToNpcWhenExpired = source.IsSellableToNpcWhenExpired;
+        target.IsSellableWhenExpired = source.IsSellableWhenExpired;
         target.Name = source.Name;
         target.IsActive = source.IsActive;
         target.IntroducedIn = source.IntroducedIn;

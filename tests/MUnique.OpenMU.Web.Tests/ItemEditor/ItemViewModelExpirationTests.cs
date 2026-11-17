@@ -66,7 +66,7 @@ public class ItemViewModelExpirationTests
             Durability = 255,
             IsDroppable = isDroppable,
             IsSellableToNpc = false,
-            IsSellableToNpcWhenExpired = false,
+            IsSellableWhenExpired = false,
         };
         return new BasicModel.Item { Definition = definition, Durability = 255 };
     }

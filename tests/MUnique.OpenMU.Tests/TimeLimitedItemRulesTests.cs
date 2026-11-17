@@ -121,7 +121,7 @@ public class TimeLimitedItemRulesTests
         var item = CreateItem(isExpired ? DateTime.UtcNow.AddSeconds(-1) : DateTime.UtcNow.AddDays(1), definition =>
         {
             definition.IsSellableToNpc = isSellable;
-            definition.IsSellableToNpcWhenExpired = isSellableWhenExpired;
+            definition.IsSellableWhenExpired = isSellableWhenExpired;
         });
         await player.Inventory!.AddItemAsync(InventorySlot, item).ConfigureAwait(false);
 

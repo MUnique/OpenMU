@@ -11,7 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 /// Sets the item rules (<see cref="ItemDefinition.IsTradable"/>, <see cref="ItemDefinition.IsDroppable"/>,
 /// <see cref="ItemDefinition.IsStorable"/>, <see cref="ItemDefinition.IsSellableToNpc"/>,
 /// <see cref="ItemDefinition.IsPersonalStoreSellable"/>, <see cref="ItemDefinition.IsRepairable"/> and
-/// <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/>) of the Season 6 items.
+/// <see cref="ItemDefinition.IsSellableWhenExpired"/>) of the Season 6 items.
 /// </summary>
 /// <remarks>
 /// The values are the ones of the MuMain client item data (src/bin/Data/Items), so the client and the
@@ -368,7 +368,7 @@ public class ItemRules : InitializerBase
     };
 
     /// <summary>
-    /// Gets the items which can be sold to an NPC once they expired (<see cref="ItemDefinition.IsSellableToNpcWhenExpired"/>),
+    /// Gets the items which can be sold to an NPC once they expired (<see cref="ItemDefinition.IsSellableWhenExpired"/>),
     /// like the client's <c>sellableWhenRentalExpired</c>: the items which are rented in the cash shop.
     /// </summary>
     public static IReadOnlyList<(byte Group, short Number)> SellableWhenExpired { get; } = new (byte Group, short Number)[]
@@ -418,7 +418,7 @@ public class ItemRules : InitializerBase
     }
 
     /// <summary>
-    /// Sets <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/> on the items of <see cref="SellableWhenExpired"/>.
+    /// Sets <see cref="ItemDefinition.IsSellableWhenExpired"/> on the items of <see cref="SellableWhenExpired"/>.
     /// The other items are skipped.
     /// </summary>
     /// <param name="items">The items.</param>
@@ -427,7 +427,7 @@ public class ItemRules : InitializerBase
         var sellableWhenExpired = SellableWhenExpired.ToHashSet();
         foreach (var item in items.Where(item => sellableWhenExpired.Contains((item.Group, item.Number))))
         {
-            item.IsSellableToNpcWhenExpired = true;
+            item.IsSellableWhenExpired = true;
         }
     }
 

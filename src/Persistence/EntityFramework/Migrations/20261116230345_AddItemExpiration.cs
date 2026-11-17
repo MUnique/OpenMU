@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "IsSellableToNpcWhenExpired",
+                name: "IsSellableWhenExpired",
                 schema: "config",
                 table: "ItemDefinition",
                 type: "boolean",
@@ -31,7 +31,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "IsSellableToNpcWhenExpired",
+                name: "IsSellableWhenExpired",
                 schema: "config",
                 table: "ItemDefinition");
 

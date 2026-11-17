@@ -15,7 +15,7 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// This update prepares the items which are rented in the cash shop for their expiration:
-/// it sets <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/> (see <see cref="ItemRules.SellableWhenExpired"/>),
+/// it sets <see cref="ItemDefinition.IsSellableWhenExpired"/> (see <see cref="ItemRules.SellableWhenExpired"/>),
 /// and assigns the small fixed prices for which the client sells them once they expired
 /// (see <see cref="ItemPriceDefinitions.AssignRentalPrices"/>).
 /// It also puts the packages of the cash shop on sale which couldn't be sold before only because their

@@ -83,7 +83,7 @@ public class SellItemToNpcAction
 
         if (item.IsTimeLimited())
         {
-            return item.IsExpired(DateTime.UtcNow) && (definition.IsSellableToNpcWhenExpired || definition.IsSellableToNpc);
+            return item.IsExpired(DateTime.UtcNow) && (definition.IsSellableWhenExpired || definition.IsSellableToNpc);
         }
 
         return definition.IsSellableToNpc;

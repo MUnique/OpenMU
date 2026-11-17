@@ -16,7 +16,7 @@ using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
 /// Tests the data which the items rented in the cash shop need for their expiration:
-/// <see cref="ItemDefinition.IsSellableToNpcWhenExpired"/> and the small fixed selling prices which the client shows.
+/// <see cref="ItemDefinition.IsSellableWhenExpired"/> and the small fixed selling prices which the client shows.
 /// </summary>
 [TestFixture]
 internal class RentalItemRulesDataTest
@@ -65,7 +65,7 @@ internal class RentalItemRulesDataTest
         Assert.That(timeLimitedItems, Has.All.Matches<ItemDefinition>(item => item.CanBeTimeLimited()));
         Assert.That(
             timeLimitedItems.Where(item => NotDroppableWhileRented.Contains((item.Group, item.Number))),
-            Has.All.Matches<ItemDefinition>(item => item.IsSellableToNpcWhenExpired || item.IsSellableToNpc));
+            Has.All.Matches<ItemDefinition>(item => item.IsSellableWhenExpired || item.IsSellableToNpc));
     }
 
     /// <summary>
@@ -90,9 +90,9 @@ internal class RentalItemRulesDataTest
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
         var accessories = gameConfiguration.ItemPriceDefinitions.Single(definition => definition.Name.ValueInNeutralLanguage == "Accessories");
-        foreach (var item in gameConfiguration.Items.Where(item => ClientSellingPrices.ContainsKey((item.Group, item.Number)) || item.IsSellableToNpcWhenExpired))
+        foreach (var item in gameConfiguration.Items.Where(item => ClientSellingPrices.ContainsKey((item.Group, item.Number)) || item.IsSellableWhenExpired))
         {
-            item.IsSellableToNpcWhenExpired = false;
+            item.IsSellableWhenExpired = false;
             if (ClientSellingPrices.ContainsKey((item.Group, item.Number)))
             {
                 item.PriceDefinition = accessories;
@@ -179,7 +179,7 @@ internal class RentalItemRulesDataTest
     private static void AssertRulesAndPrices(IContext context, GameConfiguration gameConfiguration)
     {
         Assert.That(
-            gameConfiguration.Items.Where(item => item.IsSellableToNpcWhenExpired).Select(item => (item.Group, item.Number)),
+            gameConfiguration.Items.Where(item => item.IsSellableWhenExpired).Select(item => (item.Group, item.Number)),
             Is.EquivalentTo(ItemRules.SellableWhenExpired));
 
         var calculator = new ItemPriceCalculator();

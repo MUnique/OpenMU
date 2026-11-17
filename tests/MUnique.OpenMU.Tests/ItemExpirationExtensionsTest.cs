@@ -85,7 +85,7 @@ public class ItemExpirationExtensionsTest
         {
             IsDroppable = droppable,
             IsSellableToNpc = sellable,
-            IsSellableToNpcWhenExpired = sellableWhenExpired,
+            IsSellableWhenExpired = sellableWhenExpired,
         };
 
         Assert.That(definition.CanBeDisposedOfWhenExpired(), Is.EqualTo(expected));

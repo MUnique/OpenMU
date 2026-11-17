@@ -2602,7 +2602,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<bool>("IsSellableToNpc")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsSellableToNpcWhenExpired")
+                    b.Property<bool>("IsSellableWhenExpired")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsStorable")

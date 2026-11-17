@@ -237,8 +237,8 @@ public class CashShopCatalogPageTests
         var configuration = new BasicModel.CashShopConfiguration();
         var petSlot = new BasicModel.ItemSlotType();
         petSlot.ItemSlots.Add(8);
-        var pet = new ItemDefinition { ItemSlot = petSlot, IsDroppable = false, IsSellableToNpc = false, IsSellableToNpcWhenExpired = true };
-        var stuckPet = new ItemDefinition { ItemSlot = petSlot, IsDroppable = false, IsSellableToNpc = false, IsSellableToNpcWhenExpired = false };
+        var pet = new ItemDefinition { ItemSlot = petSlot, IsDroppable = false, IsSellableToNpc = false, IsSellableWhenExpired = true };
+        var stuckPet = new ItemDefinition { ItemSlot = petSlot, IsDroppable = false, IsSellableToNpc = false, IsSellableWhenExpired = false };
         var rental = CreatePackage(1, "Rental", isForSale: true, pet, TimeSpan.FromDays(1));
         var stuck = CreatePackage(3, "Stuck", isForSale: true, stuckPet, TimeSpan.FromDays(1));
         configuration.Packages.Add(rental);

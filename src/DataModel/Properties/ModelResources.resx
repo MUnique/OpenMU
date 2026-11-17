@@ -2737,10 +2737,10 @@
   <data name="ItemDefinition_IsRepairable_Description" xml:space="preserve">
     <value>Whether this item can be repaired by an NPC or through the inventory repair function. Special durability restoration methods are not affected.</value>
   </data>
-  <data name="ItemDefinition_IsSellableToNpcWhenExpired_Caption" xml:space="preserve">
-    <value>Sellable to NPC when Expired</value>
+  <data name="ItemDefinition_IsSellableWhenExpired_Caption" xml:space="preserve">
+    <value>Sellable when Expired</value>
   </data>
-  <data name="ItemDefinition_IsSellableToNpcWhenExpired_Description" xml:space="preserve">
+  <data name="ItemDefinition_IsSellableWhenExpired_Description" xml:space="preserve">
     <value>Whether an expired time-limited item of this kind can be sold to an NPC merchant, even if it isn't sellable otherwise, like the items which are rented in the cash shop.</value>
   </data>
   <data name="ItemDefinition_Name_Caption" xml:space="preserve">

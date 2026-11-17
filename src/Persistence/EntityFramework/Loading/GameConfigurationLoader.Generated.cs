@@ -44,7 +44,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"IsVisible\", \"Name\" from config.\"ItemOptionType\"",
         "select \"Id\", \"BasePriceFormula\", \"CraftingReferencePrice\", \"GameConfigurationId\", \"Modifiers\", \"Name\", \"QuantityScaling\", \"SellingPriceRounding\" from config.\"ItemPriceDefinition\"",
         "select \"Id\", \"ItemPriceDefinitionId\", \"Level\", \"Price\" from config.\"ItemLevelPrice\"",
-        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsSellableToNpcWhenExpired\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
+        "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsSellableWhenExpired\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ExcellentOptionsAddChance\", \"ExcellentOptionsMaximumOptionsPerItem\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
         "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"GameServerDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
@@ -908,7 +908,7 @@ internal sealed partial class GameConfigurationLoader
             entity.IsQuestItem = reader.GetBoolean(16);
             entity.IsRepairable = reader.GetBoolean(17);
             entity.IsSellableToNpc = reader.GetBoolean(18);
-            entity.IsSellableToNpcWhenExpired = reader.GetBoolean(19);
+            entity.IsSellableWhenExpired = reader.GetBoolean(19);
             entity.IsStorable = reader.GetBoolean(20);
             entity.IsTradable = reader.GetBoolean(21);
             if (!reader.IsDBNull(22)) { entity.ItemSlotId = reader.GetGuid(22); }

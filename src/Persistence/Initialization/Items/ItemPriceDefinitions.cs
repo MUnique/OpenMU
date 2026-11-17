@@ -110,7 +110,7 @@ internal class ItemPriceDefinitions : InitializerBase
 
     /// <summary>
     /// The prices of the items which are rented in the cash shop. They can only be sold to an NPC once they
-    /// expired (<see cref="ItemDefinition.IsSellableToNpcWhenExpired"/>), for the small fixed price the client shows:
+    /// expired (<see cref="ItemDefinition.IsSellableWhenExpired"/>), for the small fixed price the client shows:
     /// a third of the buying price, rounded to tens, without a reduction by the durability.
     /// </summary>
     /// <remarks>
