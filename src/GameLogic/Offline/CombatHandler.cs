@@ -901,10 +901,10 @@ public sealed class CombatHandler
     /// </summary>
     private bool RidesFenrir()
         => this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is
-        {
-            Durability: > 0.0,
-            Definition: { Group: FenrirItemGroup, Number: FenrirItemNumber },
-        };
+           {
+               Definition: { Group: FenrirItemGroup, Number: FenrirItemNumber },
+           } fenrir
+           && fenrir.HasEffect(DateTime.UtcNow);
 
     /// <summary>
     /// Evaluates whether the skill in the given slot should fire this tick.

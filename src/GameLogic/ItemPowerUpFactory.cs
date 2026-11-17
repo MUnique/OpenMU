@@ -52,7 +52,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield break;
         }
 
-        if (item.Durability <= 0 || item.IsExpired(DateTime.UtcNow))
+        if (!item.HasEffect(DateTime.UtcNow))
         {
             // An item without durability or an expired time-limited item has no effect.
             yield break;
@@ -114,7 +114,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     {
         var now = DateTime.UtcNow;
         var activeItems = equippedItems
-            .Where(i => i.Durability > 0 && !i.IsExpired(now))
+            .Where(i => i.HasEffect(now))
             .ToList();
         var itemGroups = activeItems
             .SelectMany(i => i.ItemSetGroups)

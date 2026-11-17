@@ -43,6 +43,18 @@ public class ItemExpirationExtensionsTest
     }
 
     /// <summary>
+    /// Tests that an item has an effect while it has durability and isn't expired.
+    /// </summary>
+    [Test]
+    public void HasEffect()
+    {
+        Assert.That(new Item { Durability = 1 }.HasEffect(Now), Is.True);
+        Assert.That(new Item { Durability = 0 }.HasEffect(Now), Is.False);
+        Assert.That(new Item { Durability = 1, ExpiresAt = Now.AddSeconds(1) }.HasEffect(Now), Is.True);
+        Assert.That(new Item { Durability = 1, ExpiresAt = Now }.HasEffect(Now), Is.False);
+    }
+
+    /// <summary>
     /// Tests that an item definition allows to get rid of an expired item when it allows one of the ways.
     /// </summary>
     /// <param name="droppable">If set to <c>true</c>, the item is droppable.</param>

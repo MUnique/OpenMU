@@ -215,6 +215,15 @@ public static class ItemExtensions
     public static bool IsExpired(this Item item, DateTime utcNow) => item.ExpiresAt is { } expiresAt && expiresAt <= utcNow;
 
     /// <summary>
+    /// Determines whether the item has an effect when it's equipped: it has durability left, and it isn't an
+    /// expired time-limited item. Every effect of an equipped item (power-ups, skills, a mount, a pet) depends on it.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="utcNow">The current timestamp (UTC).</param>
+    /// <returns><c>true</c>, if the item has an effect; otherwise, <c>false</c>.</returns>
+    public static bool HasEffect(this Item item, DateTime utcNow) => item.Durability > 0 && !item.IsExpired(utcNow);
+
+    /// <summary>
     /// Determines whether a player can get rid of an expired time-limited item of this kind: by dropping it
     /// or by selling it to an NPC merchant.
     /// </summary>
