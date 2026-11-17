@@ -16,7 +16,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Maps;
 internal class NpcSpawnsUpdateTest
 {
     /// <summary>
-    /// The NPC spawns of 0.75 and 0.95d which Season 6 doesn't have, as an older Season 6 database still has them.
+    /// The NPC spawns which Season 6 doesn't have, as an older Season 6 database still has them.
     /// </summary>
     private static readonly (byte MapNumber, short SpawnNumber, short NpcNumber, byte X, byte Y, Direction Direction)[] OldSpawns =
     [
@@ -27,11 +27,16 @@ internal class NpcSpawnsUpdateTest
         (LostTower.Number, 1, 253, 207, 76, Direction.SouthWest),
         (LostTower.Number, 2, 240, 201, 76, Direction.SouthEast),
         (Arena.Number, 1, 240, 58, 140, Direction.SouthWest),
+        (Atlans.Number, 1, 240, 23, 17, Direction.SouthWest),
+        (Devias.Number, 30, 540, 233, 66, Direction.SouthWest),
+        (Devias.Number, 31, 406, 181, 35, Direction.SouthEast),
+        (Devias.Number, 32, 385, 197, 53, Direction.SouthWest),
+        (ValleyOfLoren.Number, 2, 216, 176, 212, Direction.SouthWest),
     ];
 
     /// <summary>
     /// Tests that a new Season 6 database contains the NPCs at their Season 6 positions and directions,
-    /// without the NPCs of 0.75 and 0.95d which Season 6 doesn't have.
+    /// without the NPCs which Season 6 doesn't have.
     /// </summary>
     [Test]
     public async Task NewDatabaseContainsSeasonSixNpcSpawnsAsync()
@@ -67,7 +72,7 @@ internal class NpcSpawnsUpdateTest
         var expected = Snapshot(gameConfiguration);
 
         // The state of a database which was initialized before: other positions and directions,
-        // without the added NPCs and with the NPCs of 0.75 and 0.95d.
+        // without the added NPCs and with the NPCs which Season 6 doesn't have.
         foreach (var correction in NpcSpawnsUpdatePlugInSeason6.Corrections)
         {
             var spawn = FindSpawn(gameConfiguration, correction.MapNumber, correction.SpawnNumber)!;

@@ -32,9 +32,6 @@ internal class Devias : Version095d.Maps.Devias
             yield return npc;
         }
 
-        yield return this.CreateMonsterSpawn(30, this.NpcDictionary[540], 233, 66, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(31, this.NpcDictionary[406], 181, 35, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(32, this.NpcDictionary[385], 197, 53, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(33, this.NpcDictionary[478], 191, 17, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(34, this.NpcDictionary[256], 193, 13, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(35, this.NpcDictionary[522], 229, 221, Direction.SouthWest);

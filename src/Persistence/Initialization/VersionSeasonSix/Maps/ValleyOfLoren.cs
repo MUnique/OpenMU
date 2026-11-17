@@ -43,7 +43,6 @@ internal class ValleyOfLoren : BaseMapInitializer
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
         yield return this.CreateMonsterSpawn(1, this.NpcDictionary[216], 176, 212, Direction.SouthWest); // Crown
-        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[216], 176, 212, Direction.SouthWest); // Crown
         yield return this.CreateMonsterSpawn(3, this.NpcDictionary[217], 167, 195, Direction.NorthWest); // Crown Switch1
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[218], 184, 195, Direction.NorthWest); // Crown Switch2
         yield return this.CreateMonsterSpawn(10, this.NpcDictionary[220], 139, 101, Direction.SouthEast); // Guard

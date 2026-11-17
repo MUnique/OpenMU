@@ -14,8 +14,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// The NPCs of several maps stood a few fields away from their Season 6 position or looked into another direction,
-/// some NPCs of the event maps had no direction at all, and some NPCs of 0.75 and 0.95d were taken over by Season 6
-/// although Season 6 doesn't have them there.
+/// some NPCs of the event maps had no direction at all, some NPCs of 0.75 and 0.95d were taken over by Season 6
+/// although Season 6 doesn't have them there, and some NPCs had a second spawn which Season 6 doesn't have.
 /// Spawns are identified by their number, like in the map initializers, which define the same values.
 /// The update is optional, because it overwrites the positions and directions of these NPCs, which a server owner
 /// may have customized. A surplus NPC is only removed when its spawn still has the expected NPC, so a spawn
@@ -35,7 +35,7 @@ public class NpcSpawnsUpdatePlugInSeason6 : UpdatePlugInBase
     /// <summary>
     /// The plug-in description.
     /// </summary>
-    internal const string PlugInDescription = "Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs of the older versions which Season 6 doesn't have: the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower and Arena, the guard at 114/125 and the Golden Archer of Lorencia. Customized positions and directions of these NPCs are overwritten.";
+    internal const string PlugInDescription = "Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn't have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golden Archer of Lorencia; Lugard, Priest Devin and Mirage of Devias, which Season 6 has only in Elvenland and Crywolf Fortress; and the second Crown of Valley of Loren. Customized positions and directions of these NPCs are overwritten.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -61,6 +61,7 @@ public class NpcSpawnsUpdatePlugInSeason6 : UpdatePlugInBase
         new(Aida.Number, 2, 370, 86, 13, Direction.SouthWest), // Jerridon
         new(Arena.Number, 2, 200, 63, 160, Direction.SouthWest), // Soccer Ball
         new(Arena.Number, 3, 239, 72, 164, Direction.SouthWest), // Arena Guard
+        new(Atlans.Number, 10, 229, 17, 25, Direction.South), // Marlon
         new(CrywolfFortress.Number, 3, 226, 135, 47, Direction.South), // Pet Trainer
         new(CrywolfFortress.Number, 5, 256, 96, 25, Direction.South), // Lahap
         new(CrywolfFortress.Number, 7, 240, 113, 56, Direction.South), // Safety Guardian
@@ -130,7 +131,8 @@ public class NpcSpawnsUpdatePlugInSeason6 : UpdatePlugInBase
     ];
 
     /// <summary>
-    /// Gets the NPC spawns of 0.75 and 0.95d which Season 6 doesn't have.
+    /// Gets the NPC spawns which Season 6 doesn't have: those of 0.75 and 0.95d, and second spawns of NPCs
+    /// which Season 6 has only on another map or only once.
     /// </summary>
     internal static IReadOnlyList<(byte MapNumber, short SpawnNumber, short NpcNumber)> RemovedSpawns { get; } =
     [
@@ -141,6 +143,11 @@ public class NpcSpawnsUpdatePlugInSeason6 : UpdatePlugInBase
         (LostTower.Number, 1, 253), // Potion Girl
         (LostTower.Number, 2, 240), // Safety Guardian
         (Arena.Number, 1, 240), // Safety Guardian
+        (Atlans.Number, 1, 240), // Safety Guardian
+        (Devias.Number, 30, 540), // Lugard, which Season 6 has in Elvenland
+        (Devias.Number, 31, 406), // Priest Devin, which Season 6 has in Crywolf Fortress
+        (Devias.Number, 32, 385), // Mirage, which Season 6 has in Elvenland
+        (ValleyOfLoren.Number, 2, 216), // second Crown on the spot of the first
     ];
 
     /// <inheritdoc />
