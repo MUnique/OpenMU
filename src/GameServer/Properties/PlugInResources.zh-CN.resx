@@ -2556,4 +2556,10 @@
   <data name="LuckyCoinExchangeRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>处理在NPC德尔加多处用幸运币兑换物品的请求。</value>
   </data>
+  <data name="ItemExpirationViewPlugIn_Name" xml:space="preserve">
+    <value>物品过期视图</value>
+  </data>
+  <data name="ItemExpirationViewPlugIn_Description" xml:space="preserve">
+    <value>将限时物品的过期日期发送给客户端（D2 11 和 D2 12），客户端会显示剩余时间。</value>
+  </data>
 </root>

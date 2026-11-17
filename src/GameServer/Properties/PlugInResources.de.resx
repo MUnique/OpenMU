@@ -2697,4 +2697,10 @@
   <data name="LuckyCoinExchangeRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handler für die Anfrage, Glücksmünzen beim NPC Delgado gegen einen Gegenstand zu tauschen.</value>
   </data>
+  <data name="ItemExpirationViewPlugIn_Name" xml:space="preserve">
+    <value>Ansicht des Ablaufs von Gegenständen</value>
+  </data>
+  <data name="ItemExpirationViewPlugIn_Description" xml:space="preserve">
+    <value>Sendet die Ablaufdaten der zeitlich begrenzten Gegenstände an den Client (D2 11 und D2 12), der die verbleibende Zeit anzeigt.</value>
+  </data>
 </root>

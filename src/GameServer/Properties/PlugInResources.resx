@@ -2807,4 +2807,10 @@
   <data name="InventoryRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles inventory refresh requests (0xF3, 0x10) by returning the current inventory, with configurable per-player throttling.</value>
   </data>
+  <data name="ItemExpirationViewPlugIn_Name" xml:space="preserve">
+    <value>Item expiration view</value>
+  </data>
+  <data name="ItemExpirationViewPlugIn_Description" xml:space="preserve">
+    <value>Sends the expiration dates of the time-limited items to the client (D2 11 and D2 12), which shows the time left.</value>
+  </data>
 </root>

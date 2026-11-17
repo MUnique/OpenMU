@@ -3697,6 +3697,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends the expiration dates of the time-limited items to the client (D2 11 and D2 12), which shows the time left..
+        /// </summary>
+        public static string ItemExpirationViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemExpirationViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item expiration view.
+        /// </summary>
+        public static string ItemExpirationViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemExpirationViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IItemMovedPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ItemMovedPlugIn_Description {
