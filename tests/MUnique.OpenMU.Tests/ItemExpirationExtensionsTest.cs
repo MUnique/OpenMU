@@ -55,6 +55,20 @@ public class ItemExpirationExtensionsTest
     }
 
     /// <summary>
+    /// Tests that an expired item isn't shown in the appearance, in any slot, while a valid or permanent one is.
+    /// </summary>
+    /// <param name="slot">The equipment slot.</param>
+    [TestCase(8)] // pet
+    [TestCase(7)] // wings
+    [TestCase(3)] // armor
+    public void ExpiredItemIsNotShownInAppearance(byte slot)
+    {
+        Assert.That(GameLogic.ItemExtensions.IsShownInAppearance(new Item { ItemSlot = slot }, Now), Is.True);
+        Assert.That(GameLogic.ItemExtensions.IsShownInAppearance(new Item { ItemSlot = slot, ExpiresAt = Now.AddSeconds(1) }, Now), Is.True);
+        Assert.That(GameLogic.ItemExtensions.IsShownInAppearance(new Item { ItemSlot = slot, ExpiresAt = Now }, Now), Is.False);
+    }
+
+    /// <summary>
     /// Tests that an item definition allows to get rid of an expired item when it allows one of the ways.
     /// </summary>
     /// <param name="droppable">If set to <c>true</c>, the item is droppable.</param>
