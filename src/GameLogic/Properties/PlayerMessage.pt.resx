@@ -1201,4 +1201,7 @@ Extensões de inventário: {18}</value>
   <data name="ItemHasExpired" xml:space="preserve">
     <value>{0} expirou.</value>
   </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>Um item com tempo limitado não pode ser usado aqui.</value>
+  </data>
 </root>

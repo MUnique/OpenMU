@@ -1201,4 +1201,7 @@ Inventory Extensions: {18}</value>
   <data name="ItemHasExpired" xml:space="preserve">
     <value>{0} has expired.</value>
   </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>A time-limited item can't be used here.</value>
+  </data>
 </root>

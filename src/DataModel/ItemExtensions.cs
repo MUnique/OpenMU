@@ -105,13 +105,13 @@ public static class ItemExtensions
     /// inventory): it must be wearable, and its definition must allow it (<see cref="ItemDefinition.IsRepairable"/>).
     /// The durability of an item which can't be worn is its number of pieces, so repairing it would reduce a
     /// stack to one piece. Other ways to restore the durability, like a Jewel of Bless on a Horn of Fenrir,
-    /// don't use this check.
+    /// don't use this check. A time-limited item can't be repaired, like in the client.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
     ///   <c>true</c> if the specified item can be repaired; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanBeRepaired(this Item item) => item.IsWearable() && item.Definition!.IsRepairable;
+    public static bool CanBeRepaired(this Item item) => item.IsWearable() && item.Definition!.IsRepairable && !item.IsTimeLimited();
 
     /// <summary>
     /// Determines whether this item is stackable.

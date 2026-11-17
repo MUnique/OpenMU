@@ -131,12 +131,27 @@ public class MoveItemAction
     /// Gets the message to show when the item rules of the item definition don't allow
     /// moving it into the target storage, or <c>null</c> when they do.
     /// </summary>
+    /// <remarks>
+    /// A time-limited item, valid or expired, stays in the inventory of its owner: its remaining time must not
+    /// pass to another player, and it's no crafting ingredient (some crafting rates depend on the item price).
+    /// </remarks>
     private static string? GetRuleBlockingMove(Item item, Storages toStorage)
     {
         var definition = item.Definition;
         if (definition is null)
         {
             return null;
+        }
+
+        if (item.IsTimeLimited() && toStorage != Storages.Inventory)
+        {
+            return toStorage switch
+            {
+                Storages.Trade => nameof(PlayerMessage.ItemCannotBeTraded),
+                Storages.Vault => nameof(PlayerMessage.ItemCannotBeStored),
+                Storages.PersonalStore => nameof(PlayerMessage.ItemCannotBeSoldInPersonalStore),
+                _ => nameof(PlayerMessage.TimeLimitedItemCannotBeMixed),
+            };
         }
 
         return toStorage switch
@@ -326,6 +341,13 @@ public class MoveItemAction
             var itemDefinition = item.Definition;
             if (storage.GetItem(toSlot) != null || itemDefinition?.ItemSlot is null)
             {
+                return Movement.None;
+            }
+
+            if (item.IsExpired(DateTime.UtcNow))
+            {
+                // Like the client, which refuses to equip an expired item.
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouCantWearThisItem)).ConfigureAwait(false);
                 return Movement.None;
             }
 

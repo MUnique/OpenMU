@@ -38,7 +38,8 @@ public class DropItemAction
             return;
         }
 
-        if (item.Definition is { IsDroppable: false })
+        // A valid time-limited item stays with its owner, so its remaining time can't pass to another player.
+        if (item.Definition is { IsDroppable: false } || (item.IsTimeLimited() && !item.IsExpired(DateTime.UtcNow)))
         {
             player.Logger.LogWarning(
                 "Player {0} tried to drop {1}, which its item definition doesn't allow. The client item data may differ from the server.",

@@ -1048,4 +1048,7 @@ Inventarerweiterungen: {18}</value>
   <data name="ItemHasExpired" xml:space="preserve">
     <value>{0} ist abgelaufen.</value>
   </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>Ein zeitlich begrenzter Gegenstand kann hier nicht verwendet werden.</value>
+  </data>
 </root>

@@ -3110,6 +3110,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A time-limited item can&apos;t be used here..
+        /// </summary>
+        public static string TimeLimitedItemCannotBeMixed {
+            get {
+                return ResourceManager.GetString("TimeLimitedItemCannotBeMixed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Trade partner not found..
         /// </summary>
         public static string TradePartnerNotFound {
