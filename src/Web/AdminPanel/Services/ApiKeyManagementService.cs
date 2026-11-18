@@ -271,6 +271,7 @@ public class ApiKeyManagementService
             (WebsitePermissions.Status, p => p.Status, p => p.Status = true),
             (WebsitePermissions.Register, p => p.Register, p => p.Register = true),
             (WebsitePermissions.Ranking, p => p.Ranking, p => p.Ranking = true),
+            (WebsitePermissions.MiniGameRanking, p => p.MiniGameRanking, p => p.MiniGameRanking = true),
         ];
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionStatus))]
@@ -281,6 +282,9 @@ public class ApiKeyManagementService
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionRanking))]
         public bool Ranking { get; set; }
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionMiniGameRanking))]
+        public bool MiniGameRanking { get; set; }
 
         /// <summary>
         /// Creates the check boxes for the functions of an allowlist.

@@ -8,6 +8,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 
@@ -61,4 +62,15 @@ public sealed class WebsiteController(WebsiteOperations operations) : Controller
     [HttpGet("ranking")]
     public ValueTask<IReadOnlyList<WebsiteRankingEntry>> GetRankingAsync([FromQuery] int count = 10, [FromQuery(Name = "class")] byte? characterClass = null, CancellationToken cancellationToken = default)
         => operations.RankingAsync(count, characterClass, cancellationToken);
+
+    /// <summary>
+    /// Gets the leaderboard of a mini game type, like Blood Castle, Devil Square or Chaos Castle.
+    /// </summary>
+    /// <param name="type">The invariant name of the mini game type, e.g. <c>BloodCastle</c>; empty for the first one which has a leaderboard.</param>
+    /// <param name="days">The number of past days of which finished games are counted; empty for all time.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The leaderboard, and the mini game types which have one.</returns>
+    [HttpGet("minigames/ranking")]
+    public ValueTask<WebsiteMiniGameRanking> GetMiniGameRankingAsync([FromQuery] MiniGameType? type = null, [FromQuery] int? days = null, CancellationToken cancellationToken = default)
+        => operations.MiniGameRankingAsync(type, days, cancellationToken);
 }

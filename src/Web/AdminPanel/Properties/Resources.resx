@@ -2771,4 +2771,7 @@
   <data name="WebsitePermissionRanking" xml:space="preserve">
     <value>Character ranking</value>
   </data>
+  <data name="WebsitePermissionMiniGameRanking" xml:space="preserve">
+    <value>Mini game rankings</value>
+  </data>
 </root>

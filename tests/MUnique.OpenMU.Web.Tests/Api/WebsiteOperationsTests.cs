@@ -225,6 +225,22 @@ public class WebsiteOperationsTests
         Assert.That(loads, Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// The mini game ranking is the leaderboard of the admin panel; invalid arguments are the caller's fault.
+    /// </summary>
+    [Test]
+    public async Task MiniGameRankingUsesLeaderboardAsync()
+    {
+        var operations = CreateOperations(WebManager(WebsitePermissions.MiniGameRanking), new InMemoryPersistenceContextProvider(), new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration());
+
+        var ranking = await operations.MiniGameRankingAsync(null, 7, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(ranking.MiniGameType, Is.Null);
+        Assert.That(ranking.AvailableTypes, Is.Empty);
+        Assert.That(ranking.Days, Is.EqualTo(7));
+        Assert.That(Assert.ThrowsAsync<AdminOperationException>(async () => await operations.MiniGameRankingAsync(null, 0, CancellationToken.None).ConfigureAwait(false))!.Kind, Is.EqualTo(AdminOperationErrorKind.InvalidInput));
+    }
+
     private static CharacterClass AddClass(IContext context, GameConfiguration gameConfiguration, byte number, string name)
     {
         var characterClass = context.CreateNew<CharacterClass>();
@@ -279,6 +295,7 @@ public class WebsiteOperationsTests
         configurations.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(gameConfiguration);
         var executor = AdminOperationTestServices.CreateExecutor("api", actor: () => actor);
         var accounts = new AccountWriteOperations(persistence, configurations.Object, Mock.Of<ILoginServer>(), executor);
-        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, executor);
+        var miniGames = new MiniGameReadOperations(persistence, configurations.Object);
+        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, executor);
     }
 }

@@ -25,6 +25,9 @@ public static class WebsitePermissions
     /// <summary>Gets the function which shows the ranking of the characters.</summary>
     public static string Ranking => "website_ranking";
 
+    /// <summary>Gets the function which shows the leaderboards of the mini games, like Blood Castle, Devil Square and Chaos Castle.</summary>
+    public static string MiniGameRanking => "website_minigame_ranking";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
@@ -33,5 +36,6 @@ public static class WebsitePermissions
         Status,
         Register,
         Ranking,
+        MiniGameRanking,
     ];
 }

@@ -2647,4 +2647,7 @@
   <data name="WebsitePermissionRanking" xml:space="preserve">
     <value>Charakter-Rangliste</value>
   </data>
+  <data name="WebsitePermissionMiniGameRanking" xml:space="preserve">
+    <value>Minispiel-Ranglisten</value>
+  </data>
 </root>

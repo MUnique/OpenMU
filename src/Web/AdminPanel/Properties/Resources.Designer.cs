@@ -8269,6 +8269,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Mini game rankings.
+        /// </summary>
+        public static string WebsitePermissionMiniGameRanking {
+            get {
+                return ResourceManager.GetString("WebsitePermissionMiniGameRanking", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Character ranking.
         /// </summary>
         public static string WebsitePermissionRanking {

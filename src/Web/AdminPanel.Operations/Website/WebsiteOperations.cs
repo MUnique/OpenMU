@@ -26,6 +26,7 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 /// <param name="configurations">The configuration data source.</param>
 /// <param name="accounts">The account operations, which the registration shares with the admin panel.</param>
 /// <param name="rankingCache">The cache of the rankings.</param>
+/// <param name="miniGames">The mini game operations, which provide the leaderboards of the admin panel.</param>
 /// <param name="executor">The authorization and audit service.</param>
 public sealed class WebsiteOperations(
     IServerProvider servers,
@@ -33,6 +34,7 @@ public sealed class WebsiteOperations(
     IDataSource<GameConfiguration> configurations,
     AccountWriteOperations accounts,
     WebsiteRankingCache rankingCache,
+    MiniGameReadOperations miniGames,
     AdminOperationExecutor executor)
 {
     /// <summary>
@@ -124,6 +126,42 @@ public sealed class WebsiteOperations(
             DateTime.UtcNow,
             cancellationToken).ConfigureAwait(false);
         return ranking.Take(count).ToList();
+    }
+
+    /// <summary>Reads the leaderboard of a mini game type, with all its levels combined.</summary>
+    /// <param name="miniGameType">The type of the mini game; <c>null</c> for the first one which has a leaderboard.</param>
+    /// <param name="days">The number of past days of which finished games are counted; <c>null</c> for all time.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The leaderboard, and the mini game types which have one.</returns>
+    /// <remarks>
+    /// It's the leaderboard of the admin panel, which is only kept for the mini games which save their ranking statistics.
+    /// A mini game which starts to save them later shows up here without a change of the website API.
+    /// </remarks>
+    [AdminOperation("WebManager")]
+    [NotExposedToAgents("Public projection for websites; agents use minigames_leaderboard.")]
+    public async ValueTask<WebsiteMiniGameRanking> MiniGameRankingAsync(MiniGameType? miniGameType, int? days, CancellationToken cancellationToken)
+    {
+        await executor.RequireOperationAsync(AdminRoles.WebManager, WebsitePermissions.MiniGameRanking, cancellationToken).ConfigureAwait(false);
+        MiniGameLeaderboard leaderboard;
+        try
+        {
+            leaderboard = await miniGames.LeaderboardAsync(miniGameType, days, cancellationToken).ConfigureAwait(false);
+        }
+        catch (ArgumentException error)
+        {
+            throw new AdminOperationException(error.Message, AdminOperationErrorKind.InvalidInput);
+        }
+
+        // The leaderboard of the admin panel names the classes in the culture of the process; the website gets them in english.
+        var gameConfiguration = await configurations.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false);
+        var englishClassNames = gameConfiguration.CharacterClasses
+            .GroupBy(characterClass => characterClass.Name.ToString() ?? string.Empty)
+            .ToDictionary(group => group.Key, group => group.First().Name.ValueInNeutralLanguage);
+        return new WebsiteMiniGameRanking(
+            leaderboard.MiniGameType?.ToString(),
+            leaderboard.AvailableTypes.Select(type => type.ToString()).ToList(),
+            leaderboard.Days,
+            leaderboard.Entries.Select(entry => entry with { ClassName = englishClassNames.GetValueOrDefault(entry.ClassName, entry.ClassName) }).ToList());
     }
 
     /// <summary>
