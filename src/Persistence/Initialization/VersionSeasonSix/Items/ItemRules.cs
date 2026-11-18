@@ -418,20 +418,6 @@ public class ItemRules : InitializerBase
     }
 
     /// <summary>
-    /// Sets <see cref="ItemDefinition.IsSellableWhenExpired"/> on the items of <see cref="SellableWhenExpired"/>.
-    /// The other items are skipped.
-    /// </summary>
-    /// <param name="items">The items.</param>
-    internal static void ApplySellableWhenExpired(IEnumerable<ItemDefinition> items)
-    {
-        var sellableWhenExpired = SellableWhenExpired.ToHashSet();
-        foreach (var item in items.Where(item => sellableWhenExpired.Contains((item.Group, item.Number))))
-        {
-            item.IsSellableWhenExpired = true;
-        }
-    }
-
-    /// <summary>
     /// Applies the <see cref="Rules"/> and <see cref="SellableWhenExpired"/> to the given items. Items which are not listed are skipped.
     /// </summary>
     /// <param name="items">The items.</param>
@@ -453,6 +439,20 @@ public class ItemRules : InitializerBase
             item.IsSellableToNpc = !blocked.Contains(Blocked.SellToNpc);
             item.IsPersonalStoreSellable = !blocked.Contains(Blocked.PersonalStore);
             item.IsRepairable = !blocked.Contains(Blocked.Repair);
+        }
+    }
+
+    /// <summary>
+    /// Sets <see cref="ItemDefinition.IsSellableWhenExpired"/> on the items of <see cref="SellableWhenExpired"/>.
+    /// The other items are skipped.
+    /// </summary>
+    /// <param name="items">The items.</param>
+    internal static void ApplySellableWhenExpired(IEnumerable<ItemDefinition> items)
+    {
+        var sellableWhenExpired = SellableWhenExpired.ToHashSet();
+        foreach (var item in items.Where(item => sellableWhenExpired.Contains((item.Group, item.Number))))
+        {
+            item.IsSellableWhenExpired = true;
         }
     }
 

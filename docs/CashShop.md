@@ -195,9 +195,10 @@ refused delivery loses nothing.
 
 The selected delivery's `CanDeliver(product)` must agree as well; all delivery
 plugins refuse time-limited products, `InventoryProductDelivery` accepts them if
-their item can expire (see [Time-limited items](#time-limited-items)). A plugin's `DeliverAsync` runs under the
-persistence lock before the storage item is removed, and changes nothing unless
-it succeeds. `DeliveredAsync` runs after the lock, for messages and view updates.
+their item can expire (see [Time-limited items](#time-limited-items)). A
+plugin's `DeliverAsync` runs under the persistence lock before the storage item
+is removed, and changes nothing unless it succeeds. `DeliveredAsync` runs after
+the lock, for messages and view updates.
 
 Built-in delivery plugins, active by default:
 
@@ -396,13 +397,14 @@ items with different expirations don't stack.
 * **Protocol:** byte 5 of the item gets `0x02` (time-limited) and `0x04`
   (expired) for the original client; the extended item format of the open source
   client has them as `0x40`/`0x80` of the level byte (the level is the low 6
-  bits). `IItemExpirationViewPlugIn` (season 6 clients and newer) sends `D2 11` and
-  one `D2 12` per item after the inventory list, and `D2 12` after every packet
-  which creates the item again in the client (appear, move within the inventory,
-  update, failed move): the client takes the date for the item in the slot.
-* **Existing databases:** the mandatory update *Sell the rented items of the cash
-  shop* sets `IsSellableWhenExpired`, assigns the rental prices to items which
-  still have the accessories price, and puts the packages on sale.
+  bits). `IItemExpirationViewPlugIn` (season 6 clients and newer) sends `D2 11`
+  and one `D2 12` per item after the inventory list, and `D2 12` after every
+  packet which creates the item again in the client (appear, move within the
+  inventory, update, failed move): the client takes the date for the item in the
+  slot.
+* **Existing databases:** the mandatory update *Sell the rented items of the
+  cash shop* sets `IsSellableWhenExpired`, assigns the rental prices to items
+  which still have the accessories price, and puts the packages on sale.
 
 ## Roadmap
 

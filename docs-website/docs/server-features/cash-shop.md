@@ -13,7 +13,8 @@ balance of these three coins, and a storage which holds the bought and the
 gifted items until the player uses them.
 
 :::note
-Not implemented yet: the event item list, and time-limited consumables like seals and scrolls.
+Not implemented yet: the event item list, and time-limited consumables like
+seals and scrolls.
 :::
 
 ## Settings
@@ -138,8 +139,8 @@ window, dropped, sold or repaired, and it doesn't wear out with time.
 
 When it expires, the player gets a message. The item stays in the inventory,
 shown as expired, and has no effect anymore, also if it's equipped. It can't be
-equipped again. The player gets rid of it by selling it to an NPC, which pays the
-small amount the client shows (for example 1000 zen for a Pet Panda), or by
+equipped again. The player gets rid of it by selling it to an NPC, which pays
+the small amount the client shows (for example 1000 zen for a Pet Panda), or by
 dropping it, as far as the item allows it.
 
 Only items which are worn can be time-limited, and only if they can be dropped
@@ -378,8 +379,8 @@ with the configuration update *Add the protection talismans*.
 The items and their packages exist in a new Season 6 database. Existing
 databases get the items with the configuration update *Add buff items*. Their
 packages in the cash shop are time-limited, and a time-limited consumable isn't
-supported yet, so they can't be sold. An administrator can still give the items to players, for example
-in a merchant store.
+supported yet, so they can't be sold. An administrator can still give the items
+to players, for example in a merchant store.
 
 ### Kalima Ticket
 
