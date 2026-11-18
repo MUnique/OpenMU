@@ -383,6 +383,7 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         int count,
+        IReadOnlyCollection<Guid>? characterClassIds = null,
         CancellationToken cancellationToken = default)
     {
         var accounts = await this.Provider.GetRepository<Account>()
@@ -393,6 +394,7 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .Where(account => !account.IsBot && !account.IsTemplate)
             .SelectMany(account => account.Characters)
             .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal)
+            .Where(character => characterClassIds is null || (character.CharacterClass is { } characterClass && characterClassIds.Contains(characterClass.GetId())))
             .OrderByDescending(character => GetValue(character, resetsAttributeId))
             .ThenByDescending(character => GetValue(character, masterLevelAttributeId))
             .ThenByDescending(character => GetValue(character, levelAttributeId))

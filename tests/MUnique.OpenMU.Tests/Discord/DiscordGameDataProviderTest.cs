@@ -156,7 +156,7 @@ public class DiscordGameDataProviderTest
         var unknownClassId = Guid.NewGuid();
         var playerContext = new Mock<IPlayerContext>();
         playerContext
-            .Setup(c => c.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, 10, It.IsAny<CancellationToken>()))
+            .Setup(c => c.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, 10, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { new CharacterSummary("Hero", string.Empty, 400, 0, 0, this._classId), new CharacterSummary("Stranger", "Unknown", 1, 0, 0, unknownClassId) });
         playerContext
             .Setup(c => c.GetCharacterSummaryAsync("Hero", Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, It.IsAny<CancellationToken>()))

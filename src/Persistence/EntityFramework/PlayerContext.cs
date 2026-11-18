@@ -510,12 +510,13 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         int count,
+        IReadOnlyCollection<Guid>? characterClassIds = null,
         CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
         using (this.RepositoryProvider.ContextStack.UseContext(this))
         {
-            var entries = await CreateCharacterRankingQuery(this.Context.Set<Account>(), levelAttributeId, masterLevelAttributeId, resetsAttributeId, count)
+            var entries = await CreateCharacterRankingQuery(this.Context.Set<Account>(), levelAttributeId, masterLevelAttributeId, resetsAttributeId, count, characterClassIds)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -629,19 +630,27 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
     /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
     /// <param name="count">The maximum number of entries.</param>
+    /// <param name="characterClassIds">The identifiers of the character classes which are ranked; <c>null</c> for all classes.</param>
     /// <returns>The query.</returns>
     internal static IQueryable<CharacterRankingRow> CreateCharacterRankingQuery(
         IQueryable<Account> accounts,
         Guid levelAttributeId,
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
-        int count)
+        int count,
+        IReadOnlyCollection<Guid>? characterClassIds = null)
     {
         // EF can't order by the members of the projected record, so the ordering happens before the projection.
         var characters = accounts
             .Where(account => !account.IsBot && !account.IsTemplate)
             .SelectMany(account => account.RawCharacters)
-            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal)
+            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal);
+        if (characterClassIds is not null)
+        {
+            characters = characters.Where(character => character.CharacterClassId != null && characterClassIds.Contains(character.CharacterClassId.Value));
+        }
+
+        characters = characters
             .OrderByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == resetsAttributeId).Select(a => a.Value).FirstOrDefault())
             .ThenByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == masterLevelAttributeId).Select(a => a.Value).FirstOrDefault())
             .ThenByDescending(character => character.RawAttributes.Where(a => a.DefinitionId == levelAttributeId).Select(a => a.Value).FirstOrDefault())

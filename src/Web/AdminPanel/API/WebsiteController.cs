@@ -50,4 +50,15 @@ public sealed class WebsiteController(WebsiteOperations operations) : Controller
         var created = await operations.RegisterAsync(registration.LoginName, registration.Password, registration.EMail, cancellationToken).ConfigureAwait(false);
         return created ? this.StatusCode(StatusCodes.Status201Created) : this.Conflict();
     }
+
+    /// <summary>
+    /// Gets the best characters, ranked by resets, master level and level.
+    /// </summary>
+    /// <param name="count">The number of characters, up to 100.</param>
+    /// <param name="characterClass">The number of a character class, to rank only its line; empty for all classes.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The ranked characters.</returns>
+    [HttpGet("ranking")]
+    public ValueTask<IReadOnlyList<WebsiteRankingEntry>> GetRankingAsync([FromQuery] int count = 10, [FromQuery(Name = "class")] byte? characterClass = null, CancellationToken cancellationToken = default)
+        => operations.RankingAsync(count, characterClass, cancellationToken);
 }

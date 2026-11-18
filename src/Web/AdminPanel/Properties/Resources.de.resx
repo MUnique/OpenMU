@@ -2644,4 +2644,7 @@
   <data name="WebsitePermissionRegister" xml:space="preserve">
     <value>Konten registrieren</value>
   </data>
+  <data name="WebsitePermissionRanking" xml:space="preserve">
+    <value>Charakter-Rangliste</value>
+  </data>
 </root>

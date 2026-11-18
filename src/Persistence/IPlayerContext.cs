@@ -351,6 +351,7 @@ public interface IPlayerContext : IContext
     /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
     /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
     /// <param name="count">The maximum number of entries.</param>
+    /// <param name="characterClassIds">The identifiers of the character classes which are ranked; <see langword="null"/> for all classes.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The best characters.</returns>
     ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
@@ -358,6 +359,7 @@ public interface IPlayerContext : IContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         int count,
+        IReadOnlyCollection<Guid>? characterClassIds = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>

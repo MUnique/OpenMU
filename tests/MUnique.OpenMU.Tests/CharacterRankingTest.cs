@@ -70,6 +70,45 @@ public class CharacterRankingTest
     }
 
     /// <summary>
+    /// Tests that the query with a class filter of the entity framework implementation can be translated to SQL.
+    /// </summary>
+    [Test]
+    public void EntityFrameworkClassFilterIsTranslatable()
+    {
+        using var context = new AccountContext();
+
+        var sql = PlayerContext.CreateCharacterRankingQuery(context.Set<Persistence.EntityFramework.Model.Account>(), Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, 10, [Guid.NewGuid()]).ToQueryString();
+
+        Assert.That(sql, Does.Contain("CharacterClassId"));
+    }
+
+    /// <summary>
+    /// Tests that only the characters of the requested classes are ranked.
+    /// </summary>
+    [Test]
+    public async Task RankingIsFilteredByClassAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        Guid knightId;
+        using (var context = contextProvider.CreateNewPlayerContext(new GameConfiguration()))
+        {
+            var knight = context.CreateNew<CharacterClass>();
+            knight.Name = "Dark Knight";
+            var wizard = context.CreateNew<CharacterClass>();
+            wizard.Name = "Dark Wizard";
+            knightId = knight.GetId();
+            AddAccount(context, knight, isBot: false, ("Knight", 300, 0, 0, CharacterStatus.Normal));
+            AddAccount(context, wizard, isBot: false, ("Wizard", 400, 0, 0, CharacterStatus.Normal));
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        using var queryContext = contextProvider.CreateNewPlayerContext(new GameConfiguration());
+        var ranking = await queryContext.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, 10, [knightId]).ConfigureAwait(false);
+
+        Assert.That(ranking.Select(entry => entry.Name), Is.EqualTo(new[] { "Knight" }));
+    }
+
+    /// <summary>
     /// Tests that the summary of a character is found by its name.
     /// </summary>
     [Test]

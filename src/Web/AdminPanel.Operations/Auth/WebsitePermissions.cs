@@ -22,6 +22,9 @@ public static class WebsitePermissions
     /// <summary>Gets the function which registers new game accounts.</summary>
     public static string Register => "website_register";
 
+    /// <summary>Gets the function which shows the ranking of the characters.</summary>
+    public static string Ranking => "website_ranking";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
@@ -29,5 +32,6 @@ public static class WebsitePermissions
     [
         Status,
         Register,
+        Ranking,
     ];
 }

@@ -2768,4 +2768,7 @@
   <data name="WebsitePermissionRegister" xml:space="preserve">
     <value>Register accounts</value>
   </data>
+  <data name="WebsitePermissionRanking" xml:space="preserve">
+    <value>Character ranking</value>
+  </data>
 </root>

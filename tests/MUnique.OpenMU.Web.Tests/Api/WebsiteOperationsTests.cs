@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Web.Tests.Api;
 using System.Threading;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
@@ -84,6 +86,171 @@ public class WebsiteOperationsTests
         Assert.That(status.Servers.Select(s => (s.Id, s.Name, s.IsOnline, s.Players)), Is.EqualTo(new[] { (0, "Server 0", false, 0), (1, "Server 1", true, 12) }));
     }
 
+    /// <summary>
+    /// The ranking can be limited to the line of a class, which includes its next generations, but no other class.
+    /// Each entry names the guild of the character.
+    /// </summary>
+    [Test]
+    public async Task RankingIsLimitedToClassLineAsync()
+    {
+        var persistence = new InMemoryPersistenceContextProvider();
+        // The basic model initializes its collections, unlike the abstract data model.
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var wizard = AddClass(context, gameConfiguration, 0, "Dark Wizard");
+            var soulMaster = AddClass(context, gameConfiguration, 1, "Soul Master");
+            wizard.NextGenerationClass = soulMaster;
+            var knight = AddClass(context, gameConfiguration, 16, "Dark Knight");
+            var account = context.CreateNew<Account>();
+            account.LoginName = "ranked";
+            foreach (var (name, characterClass, level) in new[] { ("Wizard", wizard, 200), ("Master", soulMaster, 400), ("Knight", knight, 380) })
+            {
+                var character = context.CreateNew<Character>();
+                character.Name = name;
+                character.CharacterClass = characterClass;
+                character.Attributes.Add(new MUnique.OpenMU.Persistence.BasicModel.StatAttribute(Stats.Level, level));
+                account.Characters.Add(character);
+            }
+
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        await AddToGuildAsync(persistence, gameConfiguration, "Heroes", "Master", "Knight").ConfigureAwait(false);
+        var operations = CreateOperations(WebManager(WebsitePermissions.Ranking), persistence, gameConfiguration);
+
+        var all = await operations.RankingAsync(10, null, CancellationToken.None).ConfigureAwait(false);
+        var wizards = await operations.RankingAsync(10, 1, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(all.Select(e => (e.Rank, e.Name, e.GuildName)), Is.EqualTo(new (int, string, string?)[] { (1, "Master", "Heroes"), (2, "Knight", "Heroes"), (3, "Wizard", null) }));
+        Assert.That(wizards.Select(e => e.Name), Is.EqualTo(new[] { "Master", "Wizard" }));
+        Assert.That(Assert.ThrowsAsync<AdminOperationException>(async () => await operations.RankingAsync(101, null, CancellationToken.None).ConfigureAwait(false))!.Kind, Is.EqualTo(AdminOperationErrorKind.InvalidInput));
+        Assert.That(Assert.ThrowsAsync<AdminOperationException>(async () => await operations.RankingAsync(10, 99, CancellationToken.None).ConfigureAwait(false))!.Kind, Is.EqualTo(AdminOperationErrorKind.InvalidInput));
+    }
+
+    /// <summary>
+    /// The ranking is cached like the one of the Discord bot: further requests within the cache duration, also of other
+    /// requests and for fewer entries, don't query the database again. The ranking of a class line is cached separately.
+    /// </summary>
+    [Test]
+    public async Task RankingIsCachedPerClassLineAsync()
+    {
+        var persistence = new InMemoryPersistenceContextProvider();
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var wizard = AddClass(context, gameConfiguration, 0, "Dark Wizard");
+            var knight = AddClass(context, gameConfiguration, 16, "Dark Knight");
+            var account = context.CreateNew<Account>();
+            account.LoginName = "ranked";
+            foreach (var (name, characterClass, level) in new[] { ("Wizard", wizard, 200), ("Knight", knight, 380) })
+            {
+                var character = context.CreateNew<Character>();
+                character.Name = name;
+                character.CharacterClass = characterClass;
+                character.Attributes.Add(new MUnique.OpenMU.Persistence.BasicModel.StatAttribute(Stats.Level, level));
+                account.Characters.Add(character);
+            }
+
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var countingPersistence = new Mock<IPersistenceContextProvider>();
+        countingPersistence.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Returns((GameConfiguration configuration) => persistence.CreateNewPlayerContext(configuration));
+        countingPersistence.Setup(p => p.CreateNewGuildContext()).Returns(() => persistence.CreateNewGuildContext());
+        var cache = new WebsiteRankingCache();
+        var operations = CreateOperations(WebManager(WebsitePermissions.Ranking), countingPersistence.Object, gameConfiguration, cache);
+        var nextRequest = CreateOperations(WebManager(WebsitePermissions.Ranking), countingPersistence.Object, gameConfiguration, cache);
+
+        var all = await operations.RankingAsync(10, null, CancellationToken.None).ConfigureAwait(false);
+        var best = await operations.RankingAsync(1, null, CancellationToken.None).ConfigureAwait(false);
+        var allAgain = await nextRequest.RankingAsync(10, null, CancellationToken.None).ConfigureAwait(false);
+        var knights = await nextRequest.RankingAsync(10, 16, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(all.Select(e => (e.Rank, e.Name)), Is.EqualTo(new[] { (1, "Knight"), (2, "Wizard") }));
+        Assert.That(best, Is.EqualTo(all.Take(1)));
+        Assert.That(allAgain, Is.EqualTo(all));
+        Assert.That(knights.Select(e => (e.Rank, e.Name)), Is.EqualTo(new[] { (1, "Knight") }));
+        countingPersistence.Verify(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>()), Times.Exactly(2));
+    }
+
+    /// <summary>
+    /// A cached ranking is loaded again after the cache duration; the rankings of all classes and of a class line don't mix.
+    /// </summary>
+    [Test]
+    public async Task RankingCacheExpiresAsync()
+    {
+        var cache = new WebsiteRankingCache();
+        var now = new DateTime(2026, 11, 19, 12, 0, 0, DateTimeKind.Utc);
+        var loads = 0;
+        ValueTask<IReadOnlyList<WebsiteRankingEntry>> LoadAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            loads++;
+            return ValueTask.FromResult<IReadOnlyList<WebsiteRankingEntry>>([new WebsiteRankingEntry(1, $"Load {loads}", "Dark Knight", 400, 0, 0, null)]);
+        }
+
+        var first = await cache.GetOrLoadAsync(null, LoadAsync, now, CancellationToken.None).ConfigureAwait(false);
+        var cached = await cache.GetOrLoadAsync(null, LoadAsync, now + WebsiteRankingCache.Duration - TimeSpan.FromSeconds(1), CancellationToken.None).ConfigureAwait(false);
+        var classLine = await cache.GetOrLoadAsync(0, LoadAsync, now, CancellationToken.None).ConfigureAwait(false);
+        var expired = await cache.GetOrLoadAsync(null, LoadAsync, now + WebsiteRankingCache.Duration, CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(first[0].Name, Is.EqualTo("Load 1"));
+        Assert.That(cached[0].Name, Is.EqualTo("Load 1"));
+        Assert.That(classLine[0].Name, Is.EqualTo("Load 2"));
+        Assert.That(expired[0].Name, Is.EqualTo("Load 3"));
+    }
+
+    /// <summary>
+    /// Parallel requests of a ranking which isn't cached load it only once.
+    /// </summary>
+    [Test]
+    public async Task ParallelRankingRequestsLoadOnceAsync()
+    {
+        var cache = new WebsiteRankingCache();
+        var now = new DateTime(2026, 11, 19, 12, 0, 0, DateTimeKind.Utc);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var loads = 0;
+        async ValueTask<IReadOnlyList<WebsiteRankingEntry>> LoadAsync(CancellationToken cancellationToken)
+        {
+            Interlocked.Increment(ref loads);
+            await release.Task.WaitAsync(cancellationToken).ConfigureAwait(false);
+            return [];
+        }
+
+        var requests = Enumerable.Range(0, 10).Select(_ => cache.GetOrLoadAsync(null, LoadAsync, now, CancellationToken.None).AsTask()).ToList();
+        release.SetResult();
+        await Task.WhenAll(requests).ConfigureAwait(false);
+
+        Assert.That(loads, Is.EqualTo(1));
+    }
+
+    private static CharacterClass AddClass(IContext context, GameConfiguration gameConfiguration, byte number, string name)
+    {
+        var characterClass = context.CreateNew<CharacterClass>();
+        characterClass.Number = number;
+        characterClass.Name = name;
+        gameConfiguration.CharacterClasses.Add(characterClass);
+        return characterClass;
+    }
+
+    private static async Task AddToGuildAsync(IPersistenceContextProvider persistence, GameConfiguration gameConfiguration, string guildName, params string[] characterNames)
+    {
+        using var playerContext = persistence.CreateNewPlayerContext(gameConfiguration);
+        using var guildContext = persistence.CreateNewGuildContext();
+        var guild = guildContext.CreateNew<DataModel.Entities.Guild>();
+        guild.Name = guildName;
+        foreach (var characterName in characterNames)
+        {
+            var account = await playerContext.GetAccountByCharacterNameAsync(characterName).ConfigureAwait(false);
+            var member = guildContext.CreateNew<GuildMember>(account!.Characters.Single(c => c.Name == characterName).GetId());
+            member.GuildId = guild.GetId();
+            guild.Members.Add(member);
+        }
+
+        await guildContext.SaveChangesAsync().ConfigureAwait(false);
+    }
+
     private static AdminActor WebManager(string allowedFunctions)
         => new("website-key", "website", "api", [AdminRoles.WebManager]) { AllowedToolGroups = allowedFunctions };
 
@@ -99,13 +266,19 @@ public class WebsiteOperationsTests
     }
 
     private static WebsiteOperations CreateOperations(AdminActor actor, params IManageableServer[] servers)
+        => CreateOperations(actor, new InMemoryPersistenceContextProvider(), new GameConfiguration(), servers);
+
+    private static WebsiteOperations CreateOperations(AdminActor actor, IPersistenceContextProvider persistence, GameConfiguration gameConfiguration, params IManageableServer[] servers)
+        => CreateOperations(actor, persistence, gameConfiguration, new WebsiteRankingCache(), servers);
+
+    private static WebsiteOperations CreateOperations(AdminActor actor, IPersistenceContextProvider persistence, GameConfiguration gameConfiguration, WebsiteRankingCache rankingCache, params IManageableServer[] servers)
     {
         var serverProvider = new Mock<IServerProvider>();
         serverProvider.Setup(p => p.Servers).Returns(servers.ToList());
         var configurations = new Mock<IDataSource<GameConfiguration>>();
-        configurations.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(new GameConfiguration());
+        configurations.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(gameConfiguration);
         var executor = AdminOperationTestServices.CreateExecutor("api", actor: () => actor);
-        var accounts = new AccountWriteOperations(new InMemoryPersistenceContextProvider(), configurations.Object, Mock.Of<ILoginServer>(), executor);
-        return new WebsiteOperations(serverProvider.Object, accounts, executor);
+        var accounts = new AccountWriteOperations(persistence, configurations.Object, Mock.Of<ILoginServer>(), executor);
+        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, executor);
     }
 }
