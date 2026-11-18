@@ -24,6 +24,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<ConfigurationWriteOperations>();
         services.AddScoped<PluginWriteOperations>();
         services.AddScoped<ContentActivationOperations>();
+        services.AddScoped<EffectTimeOperations>();
         services.AddScoped<ConfigurationTaskOperations>();
         services.AddScoped<CharacterWriteOperations>();
         services.AddScoped<AccountReadOperations>();
@@ -34,6 +35,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<MiniGameReadOperations>();
         services.AddScoped<ItemExchangeOperations>();
         services.TryAddScoped<IAdminOperationContext, UnconfiguredAdminOperationContext>();
+        services.TryAddScoped<IEffectTimeDefaultsSource, UnconfiguredEffectTimeDefaultsSource>();
         services.TryAddSingleton<IAdminAuditRepository, UnconfiguredAdminAuditRepository>();
         services.TryAddSingleton<AdminWriteSettings>();
         services.TryAddSingleton<AdminAuditSettings>();

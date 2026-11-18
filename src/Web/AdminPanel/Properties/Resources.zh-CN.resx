@@ -2807,4 +2807,43 @@
   <data name="ShopImportFailed" xml:space="preserve">
     <value>导入失败。商店可能已被部分修改；请使用“放弃更改”撤销未保存的更改。</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>效果时间</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>选择哪些魔法效果向客户端发送剩余时间，以便玩家看到其持续多久。玩家是否知道这一点属于游戏设计。第6季数据会为消耗品的效果发送时间，因为原版游戏不显示技能效果的时间。开源客户端显示每个发送时间的效果的时间；原版客户端只会收到改变攻击速度、伤害、防御、最大生命或最大魔法的消耗品的时间。为这类物品关闭后，其时间在 MuMain 中仍会显示：它会改为显示其自身物品数据中的持续时间。</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>发送时间</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>全部开启</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>全部关闭</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>适用于所有显示的效果。保存后更改才会生效。</value>
+  </data>
+  <data name="DefaultsFormat" xml:space="preserve">
+    <value>{0}默认值</value>
+  </data>
+  <data name="DefaultsHintFormat" xml:space="preserve">
+    <value>将每个显示的效果设置为{0}数据中的值；{0}中没有的效果保持不变。保存后更改才会生效。</value>
+  </data>
+  <data name="DefaultsLoading" xml:space="preserve">
+    <value>正在加载默认值...</value>
+  </data>
+  <data name="DefaultsNotAvailable" xml:space="preserve">
+    <value>无法获取创建此配置所用数据的默认值；原因请查看启动后首次尝试时的日志。</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{1} 个效果中有 {0} 个发送其时间。</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>以下 {0} 个效果将发送其时间：{1}。以下 {2} 个效果将不发送：{3}。继续吗？</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>哪些魔法效果向玩家显示剩余时间：</value>
+  </data>
 </root>

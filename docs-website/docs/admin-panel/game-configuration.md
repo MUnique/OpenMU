@@ -336,6 +336,45 @@ the custom gameplay plugins. Deactivate them on the [Plugins](plugins.md) page
 if they don't fit the season of your server.
 :::
 
+Which magic effects show players their remaining time is set on the
+[Effect times](#effect-times) page; the page links to it.
+
+## Effect times
+
+Route `effect-times`
+
+Whether players see how long a buff or debuff lasts is game design: knowing it
+changes their decisions. So each magic effect has a switch, *Send Duration*,
+which decides whether the server sends its remaining time to the client. The
+Season 6 data switches it on only for the effects of consumed items: the
+original game shows no time for skill effects, also in later seasons. The open
+source client (MuMain) shows a time bar for every effect which sends it. The
+original clients only get the time of consumed items which change the attack
+speed, damage, defense, maximum health or maximum mana. Switching it off for
+such an item doesn't hide its time in MuMain: it gets 0 seconds and then shows
+the duration from its own item data instead.
+
+The page lists all magic effects with this switch and, in the last column, the
+value of the data which the configuration was created from, e.g. Season 6 or
+0.75, for comparison. Several effects can have the same number and name, e.g.
+each ice skill has its own *Iced* effect with its own duration, so the list also
+shows the skills which cause each effect. The list can be narrowed down by a
+search text, which also finds the skills. **All on**
+and **All off** switch all shown effects, and the defaults button (e.g.
+**Season 6 defaults**) sets each shown effect as in that data (effects which it
+doesn't know stay unchanged). The changes are only stored after **Save changes**
+and the confirmation, which names the changed effects; **Discard changes** drops
+them.
+
+The first time the page is opened, that data is created in memory to read its
+defaults, which takes a few seconds; the column fills in afterwards. The list of
+the agents shows these defaults, too. The change is recorded in the
+[audit history](mcp.md#operational-safety-and-audit-history), and agents use the
+same operation through the [MCP tools](mcp.md#configuration-and-offline-character-changes)
+`effect_times_list` and `effect_times_set`. It requires the *Administrator*
+role. The switch is also available as *Send Duration* on the edit page of each
+magic effect.
+
 ## Plugins, chat commands, map editor
 
 The lower part of the drop-down leads to [Content activation](#content-activation),

@@ -292,6 +292,105 @@
     </Packet>
     <Packet>
       <HeaderType>C1Header</HeaderType>
+      <Code>07</Code>
+      <Name>MagicEffectStatusExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A magic effect was added to the own player, or its time or values changed (a recast or a shortened duration).</SentWhen>
+      <CausedReaction>The user interface shows the effect as icon at the top of the interface, with the time left and the values of the effect. The first fields are the same as of MagicEffectStatus, so a client which only knows that one reads it as such.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>3</Index>
+          <Type>Boolean</Type>
+          <Name>IsActive</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>EffectId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>RemainingSeconds</Name>
+          <Description>The seconds until the effect ends, rounded up; 0 if the effect's definition doesn't send its duration (SendDuration), so the client shows no time.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>ValueCount</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Structure[]</Type>
+          <TypeName>EffectValue</TypeName>
+          <Name>Values</Name>
+          <ItemCountField>ValueCount</ItemCountField>
+          <Description>The finished value of the effect for each attribute it changes, one per attribute; their order has no meaning. It's the effect's own value: the server combines the power-ups of the effect for one attribute as the attribute system does, as if the effect were the attribute's only source, and limits it to the attribute's maximum (e.g. Greater Damage: the energy bonus times the factor of its master skills; Soul Barrier at most 0.7). Other sources of the attribute, like other effects, items or stats, aren't part of it. Only the power-ups which the effect has are counted, e.g. a stun has no value for its stun chance, poison and bleeding only their first.</Description>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>EffectValue</Name>
+          <Description>The finished value of a magic effect for one attribute.</Description>
+          <Length>21</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>Binary</Type>
+              <Name>AttributeId</Name>
+              <Description>The id of the attribute which the value applies to (the Id of its AttributeDefinition), as the 16 bytes of the Guid in the order of its text form (big endian).</Description>
+              <Length>16</Length>
+            </Field>
+            <Field>
+              <Index>16</Index>
+              <Type>Enum</Type>
+              <TypeName>MagicEffectStatusExtended.ValueKind</TypeName>
+              <Name>Kind</Name>
+            </Field>
+            <Field>
+              <Index>17</Index>
+              <Type>Float</Type>
+              <Name>Value</Name>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+      <Enums>
+        <Enum>
+          <Name>ValueKind</Name>
+          <Description>Defines how a value changes its attribute (the aggregate type of the attribute system). When the effect has several kinds for one attribute, they are combined into one value: AddRaw if the effect adds a value before the factors or has a maximum, else AddFinal. Its factors are then part of the value and only count for its own values, e.g. a factor with only a finally added value gives that value.</Description>
+          <Values>
+            <EnumValue>
+              <Name>AddRaw</Name>
+              <Description>The value is added to the attribute, before the factors apply.</Description>
+              <Value>0</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Multiplicate</Name>
+              <Description>The value is a factor of the attribute, e.g. 1.1 for +10 %. Only when the effect has nothing but factors for this attribute.</Description>
+              <Value>1</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>AddFinal</Name>
+              <Description>The value is added to the attribute, after the factors apply.</Description>
+              <Value>2</Value>
+            </EnumValue>
+            <EnumValue>
+              <Name>Maximum</Name>
+              <Description>Only the highest value of this kind counts for the attribute (e.g. jewelry element resistance).</Description>
+              <Value>3</Value>
+            </EnumValue>
+          </Values>
+        </Enum>
+      </Enums>
+    </Packet>
+    <Packet>
+      <HeaderType>C1Header</HeaderType>
       <Code>0F</Code>
       <Name>WeatherStatusUpdate</Name>
       <Length>4</Length>

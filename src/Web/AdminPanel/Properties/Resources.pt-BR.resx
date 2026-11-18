@@ -2750,4 +2750,43 @@
   <data name="ShopImportFailed" xml:space="preserve">
     <value>A importação falhou. A loja pode ter sido alterada parcialmente; use "Descartar alterações" para desfazer as alterações não salvas.</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>Tempos de efeito</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>Escolha quais efeitos mágicos enviam o tempo restante ao cliente, para que os jogadores vejam quanto tempo duram. Se os jogadores sabem disso é design de jogo. Os dados da Season 6 o enviam para os efeitos de itens consumidos, pois o jogo original não mostra o tempo dos efeitos de habilidades. O cliente de código aberto mostra o tempo de cada efeito que o envia; os clientes originais só o recebem para itens consumidos que alteram a velocidade de ataque, o dano, a defesa, a vida máxima ou a mana máxima. Desativá-lo para um desses itens não oculta o tempo no MuMain: ele mostra então a duração dos seus próprios dados de itens.</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>Enviar tempo</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>Todos ligados</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>Todos desligados</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>Aplica-se a todos os efeitos exibidos. As alterações são armazenadas após salvar.</value>
+  </data>
+  <data name="DefaultsFormat" xml:space="preserve">
+    <value>Padrões de {0}</value>
+  </data>
+  <data name="DefaultsHintFormat" xml:space="preserve">
+    <value>Define cada efeito exibido como nos dados de {0}; efeitos que {0} não conhece permanecem inalterados. As alterações são armazenadas após salvar.</value>
+  </data>
+  <data name="DefaultsLoading" xml:space="preserve">
+    <value>Os padrões estão sendo carregados...</value>
+  </data>
+  <data name="DefaultsNotAvailable" xml:space="preserve">
+    <value>Os padrões dos dados a partir dos quais a configuração foi criada não estão disponíveis; o log informa o motivo na primeira tentativa após o início.</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{0} de {1} efeitos enviam o tempo.</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>Estes {0} efeitos enviarão o tempo: {1}. Estes {2} efeitos não: {3}. Continuar?</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>Quais efeitos mágicos mostram aos jogadores o tempo restante:</value>
+  </data>
 </root>

@@ -175,6 +175,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to {0} defaults.
+        /// </summary>
+        public static string DefaultsFormat {
+            get {
+                return ResourceManager.GetString("DefaultsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets each shown effect as in the {0} data; effects which {0} doesn&apos;t know stay unchanged. The changes are stored after saving..
+        /// </summary>
+        public static string DefaultsHintFormat {
+            get {
+                return ResourceManager.GetString("DefaultsHintFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The defaults are being loaded....
+        /// </summary>
+        public static string DefaultsLoading {
+            get {
+                return ResourceManager.GetString("DefaultsLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The defaults of the data which the configuration was created from aren&apos;t available; the log tells why at the first attempt after the start..
+        /// </summary>
+        public static string DefaultsNotAvailable {
+            get {
+                return ResourceManager.GetString("DefaultsNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Inactive.
         /// </summary>
         public static string Inactive {
@@ -328,6 +364,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to All off.
+        /// </summary>
+        public static string AllOff {
+            get {
+                return ResourceManager.GetString("AllOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All on.
+        /// </summary>
+        public static string AllOn {
+            get {
+                return ResourceManager.GetString("AllOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allowed MCP tools (comma separated; empty allows all tools for the role).
         /// </summary>
         public static string AllowedMcpTools {
@@ -336,6 +390,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Applies to all shown effects. The changes are stored after saving..
+        /// </summary>
+        public static string AllShownEffectsHint {
+            get {
+                return ResourceManager.GetString("AllShownEffectsHint", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Analyze the network traffic.
         /// </summary>
@@ -5065,6 +5128,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Effect times.
+        /// </summary>
+        public static string EffectTimes {
+            get {
+                return ResourceManager.GetString("EffectTimes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These {0} effects will send their time: {1}. These {2} effects won't: {3}. Continue?.
+        /// </summary>
+        public static string EffectTimesConfirmFormat {
+            get {
+                return ResourceManager.GetString("EffectTimesConfirmFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose which magic effects send their remaining time to the client, so that players see how long they last. Whether players know this is game design. The Season 6 data sends it for the effects of consumed items, as the original game shows no time for skill effects. The open source client shows the time of every effect which sends it; the original clients only get it for consumed items which change the attack speed, damage, defense, maximum health or maximum mana. Switching it off for such an item doesn&apos;t hide its time in MuMain: it then shows the duration from its own item data..
+        /// </summary>
+        public static string EffectTimesDescription {
+            get {
+                return ResourceManager.GetString("EffectTimesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which magic effects show players their remaining time:.
+        /// </summary>
+        public static string EffectTimesHint {
+            get {
+                return ResourceManager.GetString("EffectTimesHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to —.
         /// </summary>
         public static string EmptyValue {
@@ -7611,6 +7710,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to {0} of {1} effects send their time..
+        /// </summary>
+        public static string SendingCountFormat {
+            get {
+                return ResourceManager.GetString("SendingCountFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send time.
+        /// </summary>
+        public static string SendsTime {
+            get {
+                return ResourceManager.GetString("SendsTime", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Server control.
         /// </summary>

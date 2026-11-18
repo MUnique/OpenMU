@@ -924,6 +924,12 @@
   <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve">
     <value>Tauscht die Namen der Rüstungssets Phantom (47) und Zerstörer (48) und ihrer Set-Boni, die mit dem Namen des jeweils anderen Sets initialisiert wurden, und korrigiert die Schreibweise „Destory“.</value>
   </data>
+  <data name="HideSkillEffectTimesPlugIn_Name" xml:space="preserve">
+    <value>Zeiten von Fertigkeitseffekten ausblenden</value>
+  </data>
+  <data name="HideSkillEffectTimesPlugIn_Description" xml:space="preserve">
+    <value>Schaltet das Senden der Dauer der Fertigkeitseffekte aus, für die die Season-6-Daten sie gesendet haben: Infinite Arrow und die Verteidigungsverringerungen von Fire Slash und Beast Uppercut. Das Originalspiel zeigt für Fertigkeitseffekte keine Zeit. Es überschreibt die aktuelle Einstellung, auch eine auf der Seite Effektzeiten gemachte.</value>
+  </data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
   </data>

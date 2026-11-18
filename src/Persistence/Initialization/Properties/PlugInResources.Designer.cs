@@ -1055,6 +1055,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixDestroyPhantomArmorNamesPlugIn_Description text.</summary>
         public static string FixDestroyPhantomArmorNamesPlugIn_Description => ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized HideSkillEffectTimesPlugIn_Name text.</summary>
+        public static string HideSkillEffectTimesPlugIn_Name => ResourceManager.GetString("HideSkillEffectTimesPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized HideSkillEffectTimesPlugIn_Description text.</summary>
+        public static string HideSkillEffectTimesPlugIn_Description => ResourceManager.GetString("HideSkillEffectTimesPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSantaVillageInvitationUpdatePlugIn_Name text.</summary>
         public static string AddSantaVillageInvitationUpdatePlugIn_Name => ResourceManager.GetString("AddSantaVillageInvitationUpdatePlugIn_Name", resourceCulture)!;
 
