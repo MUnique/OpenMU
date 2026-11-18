@@ -890,11 +890,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
         => this.ApplyDamageAsync(reflector, damage, DamageAttributes.Reflected);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
         => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Poison);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
         => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Bleed);
 
