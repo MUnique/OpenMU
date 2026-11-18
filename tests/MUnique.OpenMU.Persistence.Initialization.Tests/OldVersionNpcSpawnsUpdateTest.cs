@@ -9,7 +9,7 @@ using MUnique.OpenMU.Persistence.Initialization.Updates;
 
 /// <summary>
 /// Tests the NPC spawns of 0.75 and 0.95d and the <see cref="NpcSpawnsUpdatePlugIn075"/> and
-/// <see cref="NpcSpawnsUpdatePlugIn095d"/>, which bring them to existing databases.
+/// <see cref="NpcSpawnsUpdatePlugIn095D"/>, which bring them to existing databases.
 /// </summary>
 [TestFixture]
 internal class OldVersionNpcSpawnsUpdateTest
@@ -55,7 +55,7 @@ internal class OldVersionNpcSpawnsUpdateTest
     {
         var (context, gameConfiguration) = await TestGameConfiguration.Create095dAsync().ConfigureAwait(false);
         using var _ = context;
-        await AssertUpdateAsync(context, gameConfiguration, new NpcSpawnsUpdatePlugIn095d(), [.. OldSpawns075, OldGoldenArcher095d]).ConfigureAwait(false);
+        await AssertUpdateAsync(context, gameConfiguration, new NpcSpawnsUpdatePlugIn095D(), [.. OldSpawns075, OldGoldenArcher095d]).ConfigureAwait(false);
     }
 
     /// <summary>

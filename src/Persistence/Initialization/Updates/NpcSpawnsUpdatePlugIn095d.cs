@@ -16,7 +16,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.NpcSpawnsUpdatePlugIn095d_Name), Description = nameof(PlugInResources.NpcSpawnsUpdatePlugIn095d_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("B5403DEE-E1F6-46F2-A32A-4327EA7160FF")]
-public class NpcSpawnsUpdatePlugIn095d : NpcSpawnsUpdatePlugInBase
+public class NpcSpawnsUpdatePlugIn095D : NpcSpawnsUpdatePlugInBase
 {
     /// <inheritdoc />
     public override string Name => PlugInResources.NpcSpawnsUpdatePlugIn095d_Name;
