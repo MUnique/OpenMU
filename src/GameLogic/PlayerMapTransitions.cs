@@ -64,7 +64,6 @@ internal sealed class PlayerMapTransitions
             await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
 
             var previous = player.Position;
-            player.Position = target;
 
             await player.ForEachWorldObserverAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(player, player, teleportSkill, true), true).ConfigureAwait(false);
 
@@ -76,6 +75,9 @@ internal sealed class PlayerMapTransitions
 
             if (player.IsAlive)
             {
+                // The position is only changed at the end; the view sends it to the client.
+                player.Position = target;
+
                 await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
 
                 // We need to restore the previous position to make the Moving on the map data structure work correctly.
