@@ -154,6 +154,12 @@ public class InventoryStorage : Storage, IInventoryStorage
             else
             {
                 this.OnItemAddedToInventory(convertedItem ?? item);
+                if (convertedItem is not null)
+                {
+                    // The hook may change the durability, e.g. of an item which is used inside the inventory.
+                    // The temporary item is sent to the client when it's picked up, so it has to tell the same.
+                    item.Durability = convertedItem.Durability;
+                }
             }
         }
 

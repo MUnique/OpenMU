@@ -305,6 +305,23 @@ public class UseInventoryItemActionTest
         Assert.That(goatFigurine.Durability, Is.EqualTo(NotInUse));
     }
 
+    /// <summary>
+    /// A picked up item, which is temporary until it's added to the inventory, tells the same durability
+    /// as the added item, because it's the one which is sent to the client.
+    /// </summary>
+    [Test]
+    public async Task PickedUpTemporaryItemHasDurabilityOfAddedItemAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var temporaryItem = new TemporaryItem { Definition = CreateCharmDefinition(130), Durability = 1 };
+        var slot = player.Inventory!.CheckInvSpace(temporaryItem)!.Value;
+
+        Assert.That(await player.Inventory.AddItemAsync(slot, temporaryItem).ConfigureAwait(false), Is.True);
+
+        Assert.That(player.Inventory.GetItem(slot)!.Durability, Is.EqualTo(NotInUse));
+        Assert.That(temporaryItem.Durability, Is.EqualTo(NotInUse));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
