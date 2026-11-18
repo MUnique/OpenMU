@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.LoginTickets;
 
-using System.Buffers.Text;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -22,7 +21,7 @@ public sealed class LoginTicketService : ILoginTicketService
     /// <summary>
     /// The length of a token: 256 random bits as base64url without padding.
     /// </summary>
-    public const int TokenLength = 43;
+    public static int TokenLength { get; } = 43;
 
     private const int TokenBytes = 32;
 
@@ -66,7 +65,7 @@ public sealed class LoginTicketService : ILoginTicketService
     public async ValueTask<IssuedLoginTicket?> IssueAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         var now = this._timeProvider.GetUtcNow().UtcDateTime;
-        using var context = this._createContext();
+        using var context = this._createContext.Invoke();
 
         // Cleaned up while issuing, so the table only holds the tickets of the last lifetime.
         await context.DeleteExpiredLoginTicketsAsync(now, cancellationToken).ConfigureAwait(false);
@@ -75,7 +74,7 @@ public sealed class LoginTicketService : ILoginTicketService
             return null;
         }
 
-        var token = Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(TokenBytes));
+        var token = System.Buffers.Text.Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(TokenBytes));
         var ticket = context.CreateNew<LoginTicket>();
         ticket.AccountId = accountId;
         ticket.TokenHash = HashToken(token);
@@ -98,7 +97,7 @@ public sealed class LoginTicketService : ILoginTicketService
         }
 
         var now = this._timeProvider.GetUtcNow().UtcDateTime;
-        using var context = this._createContext();
+        using var context = this._createContext.Invoke();
         if (await context.GetLoginTicketByHashAsync(HashToken(token), cancellationToken).ConfigureAwait(false) is not { } ticket)
         {
             return new LoginTicketRedemption(LoginTicketRedeemStatus.Unknown, Guid.Empty);
@@ -125,7 +124,7 @@ public sealed class LoginTicketService : ILoginTicketService
 
     private static bool IsWellFormed(string token)
     {
-        return token.Length == TokenLength && Base64Url.IsValid(token);
+        return token.Length == TokenLength && System.Buffers.Text.Base64Url.IsValid(token);
     }
 
     private static string HashToken(string token)
