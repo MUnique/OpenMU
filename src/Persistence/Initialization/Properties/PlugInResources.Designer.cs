@@ -1538,6 +1538,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.
+        /// </summary>
+        public static string AddWornHorseshoeUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the worn horseshoe.
+        /// </summary>
+        public static string AddWornHorseshoeUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects..
         /// </summary>
         public static string AdjustIceArrowFreezeDurationUpdatePlugIn_Description {
@@ -1624,24 +1642,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string ConfigureNpcTalkPlugInsPlugIn_Name {
             get {
                 return ResourceManager.GetString("ConfigureNpcTalkPlugInsPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.
-        /// </summary>
-        public static string AddWornHorseshoeUpdatePlugIn_Description {
-            get {
-                return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add the worn horseshoe.
-        /// </summary>
-        public static string AddWornHorseshoeUpdatePlugIn_Name {
-            get {
-                return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Name", resourceCulture);
             }
         }
         

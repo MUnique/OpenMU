@@ -73,6 +73,25 @@ internal class WornHorseshoeDataTest
         Assert.That(packages, Has.None.Matches<CashShopPackage>(package => package.IsForSale));
     }
 
+    /// <summary>
+    /// Tests that the older cash shop update, which creates the item as well, works on a database
+    /// without the item drop rate attribute, which the update of the seals adds otherwise.
+    /// </summary>
+    [Test]
+    public async Task CashShopUpdateAddsMissingDropRateAttributeAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        gameConfiguration.Items.Remove(gameConfiguration.Items.Single(IsWornHorseshoe));
+        gameConfiguration.Attributes.Remove(gameConfiguration.Attributes.Single(a => a.Id == Stats.BonusItemDropRate.Id));
+
+        await new AddCashShopUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var dropRate = gameConfiguration.Attributes.Single(a => a.Id == Stats.BonusItemDropRate.Id);
+        var horseshoe = gameConfiguration.Items.Single(IsWornHorseshoe);
+        Assert.That(horseshoe.BasePowerUpAttributes.Select(p => p.TargetAttribute), Has.Member(dropRate));
+    }
+
     private static bool IsWornHorseshoe(ItemDefinition item) => item is { Group: 13, Number: 134 };
 
     private static void AssertItemData(GameConfiguration gameConfiguration)

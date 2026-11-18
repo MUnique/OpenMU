@@ -120,9 +120,19 @@ internal class CashShopItems : InitializerBase
     /// it's used inside the inventory (see <see cref="CreateFigurinesAndCharms"/>), and adds
     /// <see cref="WornHorseshoeItemDropRateBonus"/> to the <see cref="Stats.BonusItemDropRate"/> while it's in use.
     /// </summary>
+    /// <remarks>
+    /// The <see cref="Stats.BonusItemDropRate"/> is added to the configuration when it's missing, because older
+    /// configurations got it only with the update of the seals, which may not have been applied yet.
+    /// </remarks>
     /// <returns>The created item, or <c>null</c>, if it already exists.</returns>
     internal ItemDefinition? CreateWornHorseshoe()
     {
+        if (this.GameConfiguration.Attributes.All(a => a.Id != Stats.BonusItemDropRate.Id))
+        {
+            var dropRate = Stats.BonusItemDropRate;
+            this.GameConfiguration.Attributes.Add(this.Context.CreateNew<AttributeDefinition>(dropRate.Id, dropRate.Designation, dropRate.Description));
+        }
+
         return this.CreateInventoryUsedItem(134, LocalizedString.FromResource(() => ItemNames.WornHorseshoe), 1, (Stats.BonusItemDropRate, WornHorseshoeItemDropRateBonus));
     }
 
