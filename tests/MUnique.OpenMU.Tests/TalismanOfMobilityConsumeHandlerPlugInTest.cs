@@ -81,6 +81,8 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
         Assert.That(await handler.ConsumeItemAsync(player, halfUsedTalisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
         Assert.That((player.SelectedCharacter!.PositionX, player.SelectedCharacter.PositionY), Is.EqualTo((SavedPosition.X, SavedPosition.Y)));
 
+        await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
+
         // The used up talisman is removed by the consume action; here it stays with a durability of 0.
         Assert.That(await handler.ConsumeItemAsync(player, unusedTalisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
         Assert.That(unusedTalisman.Durability, Is.EqualTo(1));
@@ -189,6 +191,37 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
         Assert.That(talisman.Durability, Is.EqualTo(1));
         Assert.That(savedMap.Value, Is.EqualTo(unavailableMapNumber + 1));
         Assert.That(player.Position, Is.EqualTo(new Point(30, 40)));
+    }
+
+    /// <summary>
+    /// Deactivating an already initialized map rejects the return without losing the charge or bookmark.
+    /// Reactivating the map allows the same talisman to return to the original place.
+    /// </summary>
+    [Test]
+    public async Task InactiveCachedSavedMapKeepsTalismanAndBookmarkAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var talisman = CreateTalisman();
+        var handler = new TalismanOfMobilityConsumeHandlerPlugIn();
+        player.Position = SavedPosition;
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+
+        var map = player.CurrentMap!;
+        map.Definition.IsActive = false;
+        Assert.That(await player.GameContext.GetMapAsync(map.MapId).ConfigureAwait(false), Is.SameAs(map));
+        player.Position = new Point(30, 40);
+        var bookmark = player.SelectedCharacter!.Attributes.Single(a => a.Definition == Stats.MobilityTalismanMap);
+
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
+        Assert.That(talisman.Durability, Is.EqualTo(1));
+        Assert.That(bookmark.Value, Is.EqualTo(map.MapId + 1));
+        Assert.That(player.Position, Is.EqualTo(new Point(30, 40)));
+
+        map.Definition.IsActive = true;
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+        Assert.That(talisman.Durability, Is.Zero);
+        Assert.That(bookmark.Value, Is.Zero);
+        Assert.That((player.SelectedCharacter.PositionX, player.SelectedCharacter.PositionY), Is.EqualTo((SavedPosition.X, SavedPosition.Y)));
     }
 
     private static async ValueTask<Player> CreatePlayerAsync()

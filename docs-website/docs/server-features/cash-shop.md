@@ -260,7 +260,8 @@ talisman up. The place is kept when the character leaves the game; saving
 another place replaces it. The talisman can't be used in mini games and duels.
 If the character doesn't fulfill the requirements of the saved map anymore,
 e.g. it saved a place in Icarus and lost its wings, it gets a message and
-keeps the talisman and the saved place.
+keeps the talisman and the saved place. The same applies while the saved map
+is deactivated or unavailable; the return can be retried when it is available again.
 The plugin *Talisman of Mobility Consume Handler* can be deactivated on the
 **Plugins** page.
 
