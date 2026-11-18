@@ -47,9 +47,10 @@ The *Items used inside the inventory* feature plugin defines which items can
 be used inside the inventory. By default, these are the items 13/128 to
 13/134. Each item can have an exclusive group: only one item of a group can
 be in use at the same time. By default, the figurines are group 1, the oak
-charms group 2 and the maple charms group 3. It also defines the durability values of an item which is in use
-(254) and not in use (255). They have to match the game client. When the
-plugin is deactivated, no item can be used this way.
+charms group 2 and the maple charms group 3. It also defines the
+durability values of an item which is in use (254) and not in use (255).
+They have to match the game client. When the plugin is deactivated, no item
+can be used this way.
 
 ## Update of existing databases
 
