@@ -282,11 +282,17 @@
   <data name="ToggleTheme" xml:space="preserve">
     <value>Toggle theme</value>
   </data>
-  <data name="SwitchToDarkMode" xml:space="preserve">
-    <value>Switch to dark mode</value>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
   </data>
-  <data name="SwitchToLightMode" xml:space="preserve">
-    <value>Switch to light mode</value>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="ThemeAuto" xml:space="preserve">
+    <value>Auto (system)</value>
   </data>
   <data name="MapEditorShortcutPan" xml:space="preserve">
     <value>Click on empty space and drag to pan the map</value>

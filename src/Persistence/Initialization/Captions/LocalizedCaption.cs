@@ -25,15 +25,6 @@ internal sealed record LocalizedCaption(object Owner, Guid OwnerId, PropertyInfo
     public (Guid OwnerId, string PropertyName) Key => (this.OwnerId, this.Property.Name);
 
     /// <summary>
-    /// Sets a new value to the property of the owner.
-    /// </summary>
-    /// <param name="value">The new value.</param>
-    public void SetValue(LocalizedString value)
-    {
-        this.Property.SetValue(this.Owner, value);
-    }
-
-    /// <summary>
     /// Finds all localized captions which are reachable from the game configuration.
     /// </summary>
     /// <param name="gameConfiguration">The game configuration.</param>
@@ -95,6 +86,15 @@ internal sealed record LocalizedCaption(object Owner, Guid OwnerId, PropertyInfo
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Sets a new value to the property of the owner.
+    /// </summary>
+    /// <param name="value">The new value.</param>
+    public void SetValue(LocalizedString value)
+    {
+        this.Property.SetValue(this.Owner, value);
     }
 
     private static bool IsDataModelObject(object value)

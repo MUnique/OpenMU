@@ -26,30 +26,30 @@ public class ChatUnbanCharChatCommandPlugIn : ChatCommandPlugInBase<ChatUnbanCha
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, ChatUnbanCharChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, ChatUnbanCharChatCommandArgs arguments)
     {
         if (string.IsNullOrEmpty(arguments.CharacterName))
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNameIsRequired)).ConfigureAwait(false);
             return;
         }
 
-        var player = gameMaster.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
-        if (player == null)
+        var targetPlayer = player.GameContext.GetPlayerByCharacterName(arguments.CharacterName);
+        if (targetPlayer == null)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterNotFound), arguments.CharacterName).ConfigureAwait(false);
             return;
         }
 
-        if (!await this.ChangeAccountChatBanUntilAsync(player, null).ConfigureAwait(false))
+        if (!await this.ChangeAccountChatBanUntilAsync(targetPlayer, null).ConfigureAwait(false))
         {
             return;
         }
 
         // Send unban notice to Game Master
-        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanRemoved), this.Key, arguments.CharacterName).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChatBanRemoved), this.Key, arguments.CharacterName).ConfigureAwait(false);
 
         // Send unban notice to character
-        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YourChatBanRemovedByGameMaster)).ConfigureAwait(false);
+        await targetPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YourChatBanRemovedByGameMaster)).ConfigureAwait(false);
     }
 }

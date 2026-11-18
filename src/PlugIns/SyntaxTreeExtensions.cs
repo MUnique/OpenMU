@@ -35,10 +35,8 @@ public static class SyntaxTreeExtensions
                 .Where(a => !a.IsDynamic)
                 .Select(a => a.Location)
                 .ToImmutableHashSet();
-            var separator = (Environment.OSVersion.Platform == PlatformID.MacOSX ||
-                             Environment.OSVersion.Platform == PlatformID.Unix)
-                ? ':'
-                : ';';
+            var isUnixOrMac = Environment.OSVersion.Platform is PlatformID.MacOSX or PlatformID.Unix;
+            var separator = isUnixOrMac ? ':' : ';';
 
             _assemblyReferences = (AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string)
                 ?.Split(separator)

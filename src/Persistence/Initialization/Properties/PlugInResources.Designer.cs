@@ -1483,7 +1483,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Removes the monster spawns which are defined twice: 254 in Dungeon, which therefore had twice the intended monsters, and 2 in Lost Tower. Other spawns are kept..
+        ///   Looks up a localized string similar to Brings the monster spawns of the field maps to the Season 6 data, which this version uses as well: Devias and Noria get the layout of smaller areas and single spots instead of quarters of the map, without the spiders of Season 6. Missing spawns of Dungeon, Lost Tower and Icarus are added and surplus ones removed. Also removes the duplicate monster spawns of Dungeon (254) and Lost Tower (2). Customized spawns of the field monsters of Devias and Noria are overwritten..
         /// </summary>
         public static string FieldMonsterSpawnsUpdatePlugInBase_Description {
             get {
@@ -1492,7 +1492,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Remove duplicate monster spawns of Dungeon and Lost Tower.
+        ///   Looks up a localized string similar to Season 6 monster spawns of the field maps.
         /// </summary>
         public static string FieldMonsterSpawnsUpdatePlugInBase_Name {
             get {
@@ -1501,7 +1501,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Replaces the monster spawns of Devias, Noria and Elvenland, which are spread over quarters of the map, with the Season 6 layout of smaller areas and single spots. It adds the spiders to Noria and Elvenland. Customized spawns of the field monsters of these maps are overwritten. Also removes the duplicate monster spawns of Dungeon (254) and Lost Tower (2)..
+        ///   Looks up a localized string similar to Brings the monster spawns of the field maps to the Season 6 data: Devias, Noria and Elvenland get the layout of smaller areas and single spots instead of quarters of the map, with the spiders of Noria and Elvenland. Missing spawns of Dungeon, Lost Tower, Icarus, Kalima 3, 6 and 7, Land of Trials, Aida, Crywolf Fortress, Kanturu Relics and Barracks of Balgass are added and surplus ones removed, spawns with wrong coordinates in Crywolf Fortress, Barracks of Balgass, Swamp of Calmness, Vulcanus and Karutan cor [rest of string was truncated]&quot;;.
         /// </summary>
         public static string FieldMonsterSpawnsUpdatePlugInSeason6_Description {
             get {
@@ -1510,7 +1510,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Season 6 monster spawns of Devias, Noria and Elvenland.
+        ///   Looks up a localized string similar to Season 6 monster spawns of the field maps.
         /// </summary>
         public static string FieldMonsterSpawnsUpdatePlugInSeason6_Name {
             get {
@@ -1681,7 +1681,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Swaps attribute values between BC7 (monsters 138-143) and BC8 (monsters 428-433) so progression is correct: BC6 → BC7 → BC8..
+        ///   Looks up a localized string similar to Sets level, health, damage, defense, attack and defense rate, ranges and delays of the monsters of Blood Castle 1 to 8 to the Season 6 data, so the difficulty rises from level to level. Customized values of these stats are overwritten..
         /// </summary>
         public static string FixBloodCastleMonsterAttributesUpdatePlugIn_Description {
             get {
@@ -1690,7 +1690,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Fix Blood Castle 7/8 Monster Attributes.
+        ///   Looks up a localized string similar to Season 6 Blood Castle monster attributes.
         /// </summary>
         public static string FixBloodCastleMonsterAttributesUpdatePlugIn_Name {
             get {
@@ -2509,6 +2509,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets level, health, damage, defense, attack and defense rate, ranges, delays and respawn times of the monsters to the Season 6 data, which this version uses as well. It corrects field monsters, invasion monsters and guards and, in Season 6, Chaos Castle 4 and 7 and Devil Square 7. Customized values of these stats are overwritten. In Season 6, renames the monster 275 of Kalima 7 from &quot;Illusion of Kundun 7&quot; to &quot;Kundun&quot;..
+        /// </summary>
+        public static string MonsterStatsUpdatePlugInBase_Description {
+            get {
+                return ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season 6 monster stats.
+        /// </summary>
+        public static string MonsterStatsUpdatePlugInBase_Name {
+            get {
+                return ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly..
         /// </summary>
         public static string MoveServerPortsOutOfDynamicRangePlugInBase_Description {
@@ -2523,6 +2541,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string MoveServerPortsOutOfDynamicRangePlugInBase_Name {
             get {
                 return ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn&apos;t have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golde [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string NpcSpawnsUpdatePlugInSeason6_Description {
+            get {
+                return ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season 6 NPC spawns.
+        /// </summary>
+        public static string NpcSpawnsUpdatePlugInSeason6_Name {
+            get {
+                return ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Name", resourceCulture);
             }
         }
         

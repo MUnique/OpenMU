@@ -20,34 +20,34 @@ using static MUnique.OpenMU.GameLogic.PlugIns.IItemDropPlugIn;
 public sealed class ItemBoxDroppedPlugIn : IItemDropPlugIn
 {
     /// <inheritdoc />
-    public async ValueTask HandleItemDropAsync(Player player, Item sourceItem, Point target, ItemDropArguments cancelArgs)
+    public async ValueTask HandleItemDropAsync(Player player, Item item, Point target, ItemDropArguments dropArgs)
     {
-        if (sourceItem.Definition!.DropItems.Count <= 0
-            || sourceItem.Definition!.DropItems.Where(di => di.SourceItemLevel == sourceItem.Level) is not { } itemDropGroups)
+        if (item.Definition!.DropItems.Count <= 0
+            || item.Definition!.DropItems.Where(di => di.SourceItemLevel == item.Level) is not { } itemDropGroups)
         {
             return;
         }
 
-        cancelArgs.WasHandled = true;
+        dropArgs.WasHandled = true;
         if (itemDropGroups.Any(g => g.RequiredCharacterLevel > player.Level))
         {
-            cancelArgs.Success = false;
+            dropArgs.Success = false;
             var requiredLevel = itemDropGroups.Max(g => g.RequiredCharacterLevel);
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemBoxRequiresLevel), requiredLevel).ConfigureAwait(false);
             return;
         }
 
-        cancelArgs.Success = true;
-        var (item, droppedMoneyAmount, dropEffect) = player.GameContext.DropGenerator.GenerateItemDrop(itemDropGroups);
+        dropArgs.Success = true;
+        var (generatedItem, droppedMoneyAmount, dropEffect) = player.GameContext.DropGenerator.GenerateItemDrop(itemDropGroups);
         if (droppedMoneyAmount is not null)
         {
             var droppedMoney = new DroppedMoney(droppedMoneyAmount.Value, player.Position, player.CurrentMap!);
             await player.CurrentMap!.AddAsync(droppedMoney).ConfigureAwait(false);
         }
 
-        if (item is not null)
+        if (generatedItem is not null)
         {
-            var droppedItem = new DroppedItem(item, player.Position, player.CurrentMap!, player);
+            var droppedItem = new DroppedItem(generatedItem, player.Position, player.CurrentMap!, player);
             await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
         }
 

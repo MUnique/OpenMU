@@ -149,11 +149,18 @@ public sealed class CombatHandler
         this._player = player;
         this._config = config;
         this._movementHandler = movementHandler;
-        this._conditionalSkillSlots = config is null ? [] :
-        [
-            new ConditionalSkillSlot(config.ActivationSkill1Id, config.Skill1UseTimer, config.DelayMinSkill1, config.Skill1UseCondition, config.Skill1ConditionAttacking, config.Skill1SubCondition),
-            new ConditionalSkillSlot(config.ActivationSkill2Id, config.Skill2UseTimer, config.DelayMinSkill2, config.Skill2UseCondition, config.Skill2ConditionAttacking, config.Skill2SubCondition),
-        ];
+        if (config is null)
+        {
+            this._conditionalSkillSlots = [];
+        }
+        else
+        {
+            this._conditionalSkillSlots =
+            [
+                new ConditionalSkillSlot(config.ActivationSkill1Id, config.Skill1UseTimer, config.DelayMinSkill1, config.Skill1UseCondition, config.Skill1ConditionAttacking, config.Skill1SubCondition),
+                new ConditionalSkillSlot(config.ActivationSkill2Id, config.Skill2UseTimer, config.DelayMinSkill2, config.Skill2UseCondition, config.Skill2ConditionAttacking, config.Skill2SubCondition),
+            ];
+        }
     }
 
     /// <summary>

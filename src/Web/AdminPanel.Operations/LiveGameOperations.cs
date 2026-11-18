@@ -172,8 +172,12 @@ public sealed class LiveGameOperations(IServerProvider servers, IPersistenceCont
         }
 
         var requested = JsonSerializer.SerializeToNode(request)!.AsObject();
-        int? previousLevel = operation == "players_set_level"
-            ? requested["master"]?.GetValue<bool>() == true ? player.MasterLevel : player.Level : null;
+        int? previousLevel = null;
+        if (operation == "players_set_level")
+        {
+            previousLevel = requested["master"]?.GetValue<bool>() == true ? player.MasterLevel : player.Level;
+        }
+
         ushort? previousMap = operation == "players_teleport" ? player.Map : null;
 
         // Bind relevant before-values and identity while allowing ordinary walking between calls.
@@ -186,8 +190,15 @@ public sealed class LiveGameOperations(IServerProvider servers, IPersistenceCont
     }
 
     private IGameServer ResolveServer(int id)
-        => servers.Servers.OfType<IGameServer>().SingleOrDefault(s => s.Id == id) is { ServerState: ServerState.Started } server && server is IGameServerAdministration
-            ? server : throw new AdminOperationException("The owning game server or its live administration channel is unavailable. Check server_overview.", AdminOperationErrorKind.Unavailable);
+    {
+        if (servers.Servers.OfType<IGameServer>().SingleOrDefault(s => s.Id == id) is { ServerState: ServerState.Started } server
+            && server is IGameServerAdministration)
+        {
+            return server;
+        }
+
+        throw new AdminOperationException("The owning game server or its live administration channel is unavailable. Check server_overview.", AdminOperationErrorKind.Unavailable);
+    }
 
     private async ValueTask<(IGameServer Server, LivePlayerInfo Player)> ResolvePlayerAsync(string name, CancellationToken cancellationToken)
     {

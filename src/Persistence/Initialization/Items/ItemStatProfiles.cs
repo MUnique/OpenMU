@@ -311,10 +311,10 @@ internal static class ItemStatProfiles
         return (item.Group, item.Number) switch
         {
             ((byte)ItemGroups.Orbs, >= 130 and <= 135) => BuiltInItemStatProfiles.SmallWing,
-            ((byte)ItemGroups.Orbs, >= 0 and <= 2 or 41) => BuiltInItemStatProfiles.FirstTierWing,
+            ((byte)ItemGroups.Orbs, (>= 0 and <= 2) or 41) => BuiltInItemStatProfiles.FirstTierWing,
             ((byte)ItemGroups.Orbs, 49) or ((byte)ItemGroups.Misc1, 30) => BuiltInItemStatProfiles.SecondTierCape,
-            ((byte)ItemGroups.Orbs, >= 3 and <= 6 or 42) => BuiltInItemStatProfiles.SecondTierWing,
-            ((byte)ItemGroups.Orbs, >= 36 and <= 40 or 43 or 50) => BuiltInItemStatProfiles.ThirdTierWing,
+            ((byte)ItemGroups.Orbs, (>= 3 and <= 6) or 42) => BuiltInItemStatProfiles.SecondTierWing,
+            ((byte)ItemGroups.Orbs, (>= 36 and <= 40) or 43 or 50) => BuiltInItemStatProfiles.ThirdTierWing,
             _ => ItemStatProfile.DefaultName,
         };
     }

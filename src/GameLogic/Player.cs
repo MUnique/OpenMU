@@ -237,7 +237,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public int Money
     {
-        get => this.SelectedCharacter?.Inventory?.Money ?? 0;
+        get
+        {
+            return this.SelectedCharacter?.Inventory?.Money ?? 0;
+        }
 
         set
         {
@@ -295,7 +298,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public CharacterPose Pose
     {
-        get => this._selectedCharacter?.Pose ?? default;
+        get
+        {
+            return this._selectedCharacter?.Pose ?? default;
+        }
 
         set
         {
@@ -314,7 +320,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public Account? Account
     {
-        get => this._account;
+        get
+        {
+            return this._account;
+        }
         set
         {
             if (this._account != value)
@@ -364,7 +373,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public GameMap? CurrentMap
     {
-        get => this._currentMap;
+        get
+        {
+            return this._currentMap;
+        }
 
         internal set
         {
@@ -463,7 +475,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public Point Position
     {
-        get => new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        get
+        {
+            return new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        }
 
         set
         {
@@ -745,6 +760,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             this.DuelRoom = null;
+
+            // A request to this player can't be answered anymore once the character left the world.
+            this.PendingAllianceRequest = default;
 
             this._selectedCharacter = null;
         }
@@ -1442,6 +1460,53 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         => this._persistence.RunExclusiveAsync(operation, cancellationToken);
 
     /// <summary>
+    /// Applies a class change of the selected character, which happened while it's in the game (quest
+    /// evolution), to the running attribute system. The system is built with the class of the moment of
+    /// entering the game, so without this a fresh master class would have no Master Level stat and no
+    /// master points per level up until the next login: the master level-ups would be lost silently.
+    /// Only the stat attributes and the base values are applied; the attribute combinations of the new
+    /// class follow with the next login.
+    /// </summary>
+    /// <param name="previousClass">The character class before the change.</param>
+    public void ApplyCharacterClassChange(CharacterClass previousClass)
+    {
+        if (this.SelectedCharacter is not { CharacterClass: { } newClass } character
+            || this.Attributes is not { } attributes
+            || ReferenceEquals(previousClass, newClass))
+        {
+            return;
+        }
+
+        this.AddMissingStatAttributes();
+        foreach (var statAttribute in character.Attributes)
+        {
+            attributes.TryAddStatAttribute(statAttribute);
+        }
+
+        foreach (var oldValue in previousClass.BaseAttributeValues
+                     .Where(o => !newClass.BaseAttributeValues.Any(n => n.Definition == o.Definition && n.Value == o.Value))
+                     .ToList())
+        {
+            attributes.RemoveElement(oldValue, oldValue.Definition);
+        }
+
+        foreach (var newValue in newClass.BaseAttributeValues
+                     .Where(n => !previousClass.BaseAttributeValues.Any(o => o.Definition == n.Definition && o.Value == n.Value))
+                     .ToList())
+        {
+            attributes.AddElement(newValue, newValue.Definition);
+        }
+
+        this.Logger.LogInformation(
+            "Character {Name} changed class in the game from {Previous} to {New}; master level {MasterLevel}, master points per level up {Points}.",
+            character.Name,
+            previousClass.Name,
+            newClass.Name,
+            attributes[Stats.MasterLevel],
+            attributes[Stats.MasterPointsPerLevelUp]);
+    }
+
+    /// <summary>
     /// Is called after the player killed a <see cref="Player"/>.
     /// Increment PK Level.
     /// </summary>
@@ -2033,53 +2098,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         (this.SkillList as IDisposable)?.Dispose();
         this.SkillList = null;
-    }
-
-    /// <summary>
-    /// Applies a class change of the selected character, which happened while it's in the game (quest
-    /// evolution), to the running attribute system. The system is built with the class of the moment of
-    /// entering the game, so without this a fresh master class would have no Master Level stat and no
-    /// master points per level up until the next login: the master level-ups would be lost silently.
-    /// Only the stat attributes and the base values are applied; the attribute combinations of the new
-    /// class follow with the next login.
-    /// </summary>
-    /// <param name="previousClass">The character class before the change.</param>
-    public void ApplyCharacterClassChange(CharacterClass previousClass)
-    {
-        if (this.SelectedCharacter is not { CharacterClass: { } newClass } character
-            || this.Attributes is not { } attributes
-            || ReferenceEquals(previousClass, newClass))
-        {
-            return;
-        }
-
-        this.AddMissingStatAttributes();
-        foreach (var statAttribute in character.Attributes)
-        {
-            attributes.TryAddStatAttribute(statAttribute);
-        }
-
-        foreach (var oldValue in previousClass.BaseAttributeValues
-                     .Where(o => !newClass.BaseAttributeValues.Any(n => n.Definition == o.Definition && n.Value == o.Value))
-                     .ToList())
-        {
-            attributes.RemoveElement(oldValue, oldValue.Definition);
-        }
-
-        foreach (var newValue in newClass.BaseAttributeValues
-                     .Where(n => !previousClass.BaseAttributeValues.Any(o => o.Definition == n.Definition && o.Value == n.Value))
-                     .ToList())
-        {
-            attributes.AddElement(newValue, newValue.Definition);
-        }
-
-        this.Logger.LogInformation(
-            "Character {Name} changed class in the game from {Previous} to {New}; master level {MasterLevel}, master points per level up {Points}.",
-            character.Name,
-            previousClass.Name,
-            newClass.Name,
-            attributes[Stats.MasterLevel],
-            attributes[Stats.MasterPointsPerLevelUp]);
     }
 
     /// <summary>

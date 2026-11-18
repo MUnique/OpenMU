@@ -44,7 +44,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     }
 
     /// <inheritdoc/>
-    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeHolder)
+    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem)
     {
         if (item.Definition is null)
         {
@@ -89,18 +89,18 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 }
             }
 
-            foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeHolder, attribute, targetAttribute))
+            foreach (var powerUp in this.GetBasePowerUpWrappers(item, attributeSystem, attribute, targetAttribute))
             {
                 yield return powerUp;
             }
         }
 
-        foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeHolder))
+        foreach (var powerUp in this.GetPowerUpsOfItemOptions(item, attributeSystem))
         {
             yield return powerUp;
         }
 
-        if (this.GetPetLevel(item, attributeHolder) is { } petLevel)
+        if (this.GetPetLevel(item, attributeSystem) is { } petLevel)
         {
             yield return petLevel;
         }
@@ -109,7 +109,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     /// <inheritdoc/>
     public IEnumerable<PowerUpWrapper> GetSetPowerUps(
         IEnumerable<Item> equippedItems,
-        AttributeSystem attributeHolder,
+        AttributeSystem attributeSystem,
         GameConfiguration gameConfiguration)
     {
         var now = DateTime.UtcNow;
@@ -166,7 +166,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
 
         result = result.Concat(this.GetOptionCombinationBonus(activeItems, gameConfiguration));
 
-        return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefinition(p, attributeHolder));
+        return result.SelectMany(p => PowerUpWrapper.CreateByPowerUpDefinition(p, attributeSystem));
     }
 
     /// <summary>
@@ -331,9 +331,11 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
                 }
             }
 
-            var durabilityFactor = option.OptionType == ItemOptionTypes.AncientBonus ||
-                    (option.OptionType == ItemOptionTypes.Option && powerUp.TargetAttribute != Stats.HealthRecoveryMultiplier && !item.IsJewelry())
-                ? item.GetCurrentDurabilityFactor() : 1.0f;
+            var hasDurabilityFactor = option.OptionType == ItemOptionTypes.AncientBonus ||
+                    (option.OptionType == ItemOptionTypes.Option && powerUp.TargetAttribute != Stats.HealthRecoveryMultiplier && !item.IsJewelry());
+            var durabilityFactor = hasDurabilityFactor
+                ? item.GetCurrentDurabilityFactor()
+                : 1.0f;
             foreach (var wrapper in PowerUpWrapper.CreateByPowerUpDefinition(powerUp, attributeHolder, aggregateType, durabilityFactor))
             {
                 yield return wrapper;
@@ -396,10 +398,19 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             // The sums are long, so that parts which are limited to the range of int don't wrap when they're added up.
             var value = (long)baseValue * factor;
             var excellentPart = profile.GetExcellentPart(attribute);
-            int? excellent = baseDropLevel <= 0 ? null
-                : fixedExcellentBonus > 0 ? fixedExcellentBonus
-                : excellentPart.HasValues ? excellentPart.Compute(value, baseDropLevel)
-                : null;
+            int? excellent = null;
+            if (baseDropLevel > 0)
+            {
+                if (fixedExcellentBonus > 0)
+                {
+                    excellent = fixedExcellentBonus;
+                }
+                else if (excellentPart.HasValues)
+                {
+                    excellent = excellentPart.Compute(value, baseDropLevel);
+                }
+            }
+
             AddPart(excellent, factor, target, secondTarget);
 
             if (itemIsAncient && profile.GetAncientPart(attribute) is { HasValues: true } ancientPart)

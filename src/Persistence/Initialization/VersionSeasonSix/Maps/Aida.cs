@@ -44,8 +44,8 @@ internal class Aida : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[369], 078, 013, Direction.SouthEast); // Osbourne
-        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[370], 086, 014, Direction.SouthWest); // Jerridon
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[369], 078, 013, Direction.South); // Osbourne
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[370], 086, 013, Direction.SouthWest); // Jerridon
     }
 
     /// <inheritdoc/>
@@ -306,6 +306,11 @@ internal class Aida : BaseMapInitializer
         yield return this.CreateMonsterSpawn(916, this.NpcDictionary[552], 037, 077); // Bloody Witch Queen
         yield return this.CreateMonsterSpawn(917, this.NpcDictionary[552], 046, 054); // Bloody Witch Queen
         yield return this.CreateMonsterSpawn(918, this.NpcDictionary[552], 031, 053); // Bloody Witch Queen
+        yield return this.CreateMonsterSpawn(919, this.NpcDictionary[305], 094, 158); // Blue Golem
+        yield return this.CreateMonsterSpawn(920, this.NpcDictionary[306], 126, 156); // Death Rider
+        yield return this.CreateMonsterSpawn(921, this.NpcDictionary[550], 104, 203); // Bloody Death Rider
+        yield return this.CreateMonsterSpawn(922, this.NpcDictionary[550], 099, 203); // Bloody Death Rider
+        yield return this.CreateMonsterSpawn(923, this.NpcDictionary[550], 075, 228); // Bloody Death Rider
     }
 
     /// <inheritdoc/>

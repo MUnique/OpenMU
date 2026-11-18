@@ -9,10 +9,12 @@ namespace MUnique.OpenMU.Web.Shared.Components.Modal;
 /// </summary>
 public class ModalReference : IModalReference
 {
-    private readonly TaskCompletionSource<ModalResult> _tcs = new();
+    private readonly TaskCompletionSource<ModalResult> _tcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     /// <inheritdoc />
+#pragma warning disable VSTHRD003 // The task completion source belongs to this instance.
     public Task<ModalResult> Result => this._tcs.Task;
+#pragma warning restore VSTHRD003
 
     /// <summary>
     /// Tries to set the result of the modal.

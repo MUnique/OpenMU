@@ -137,53 +137,53 @@ public class ItemSerializer : IItemSerializer
     }
 
     /// <inheritdoc />
-    public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
+    public Item DeserializeItem(Span<byte> source, GameConfiguration gameConfiguration, IContext persistenceContext)
     {
-        var itemNumber = array[0] + ((array[0] & 0x80) << 1);
-        var itemGroup = (array[5] & 0xF0) >> 4;
+        var itemNumber = source[0] + ((source[0] & 0x80) << 1);
+        var itemGroup = (source[5] & 0xF0) >> 4;
         var definition = gameConfiguration.Items.FirstOrDefault(def => def.Number == itemNumber && def.Group == itemGroup)
-                         ?? throw new ArgumentException($"Couldn't find the item definition for the given byte array. Extracted item number and group: {itemNumber}, {itemGroup}");
+                         ?? throw new ArgumentException($"Couldn't find the item definition for the given byte source. Extracted item number and group: {itemNumber}, {itemGroup}");
 
         var item = persistenceContext.CreateNew<Item>();
         item.Definition = definition;
-        item.Level = (byte)((array[1] & LevelMask) >> 3);
-        item.Durability = array[2];
+        item.Level = (byte)((source[1] & LevelMask) >> 3);
+        item.Durability = source[2];
 
         if (item.Definition.PossibleItemOptions.Any(o =>
                 o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Excellent)))
         {
-            ReadExcellentOption(array[3], persistenceContext, item);
+            ReadExcellentOption(source[3], persistenceContext, item);
         }
         else if (item.Definition.PossibleItemOptions.Any(o =>
                      o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing)))
         {
-            ReadWingOption(array[3], persistenceContext, item);
+            ReadWingOption(source[3], persistenceContext, item);
         }
         else
         {
             // set nothing.
         }
 
-        ReadSkillFlag(array[1], item);
-        ReadLuckOption(array[1], persistenceContext, item);
-        ReadNormalOption(array, persistenceContext, item);
-        ReadAncientOption(array[4], persistenceContext, item);
-        ReadLevel380Option(array[5], persistenceContext, item);
+        ReadSkillFlag(source[1], item);
+        ReadLuckOption(source[1], persistenceContext, item);
+        ReadNormalOption(source, persistenceContext, item);
+        ReadAncientOption(source[4], persistenceContext, item);
+        ReadLevel380Option(source[5], persistenceContext, item);
         if (item.Definition.PossibleItemOptions.Any(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.BlackFenrir)))
         {
-            ReadFenrirOptions(array[3], persistenceContext, item);
+            ReadFenrirOptions(source[3], persistenceContext, item);
         }
 
         if (item.Definition.MaximumSockets == 0)
         {
-            AddHarmonyOption(array[6], persistenceContext, item);
+            AddHarmonyOption(source[6], persistenceContext, item);
         }
         else
         {
-            ReadSocketBonus(array[6], persistenceContext, item);
+            ReadSocketBonus(source[6], persistenceContext, item);
         }
 
-        ReadSockets(array.Slice(7), persistenceContext, item);
+        ReadSockets(source.Slice(7), persistenceContext, item);
         return item;
     }
 
@@ -224,16 +224,16 @@ public class ItemSerializer : IItemSerializer
         ReadExcellentOptionBits(excellentBits, persistenceContext, item);
     }
 
-    private static void ReadNormalOption(Span<byte> array, IContext persistenceContext, Item item)
+    private static void ReadNormalOption(Span<byte> source, IContext persistenceContext, Item item)
     {
-        var optionLevel = (array[1] & 3) + ((array[3] >> 4) & 4);
+        var optionLevel = (source[1] & 3) + ((source[3] >> 4) & 4);
         if (optionLevel == 0)
         {
             return;
         }
 
         var itemIsWing = item.Definition!.PossibleItemOptions.Any(o => o.PossibleOptions.Any(i => i.OptionType == ItemOptionTypes.Wing));
-        var optionNumber = itemIsWing ? (array[3] >> 4) & 0b11 : 0;
+        var optionNumber = itemIsWing ? (source[3] >> 4) & 0b11 : 0;
 
         AddNormalOption(optionNumber, optionLevel, persistenceContext, item);
     }

@@ -135,10 +135,13 @@ public static class KanturuTowerEntry
     private static MiniGameContext? GetLiveGame(Player player, MiniGameDefinition definition)
     {
         var game = player.GameContext.MiniGames.TryGetRunningMiniGame(definition, null);
-        return game is { IsDisposed: false, IsDisposing: false }
-            && game.State is not (MiniGameState.Ended or MiniGameState.Disposed)
-            ? game
-            : null;
+        if (game is { IsDisposed: false, IsDisposing: false }
+            && game.State is not (MiniGameState.Ended or MiniGameState.Disposed))
+        {
+            return game;
+        }
+
+        return null;
     }
 
     /// <summary>

@@ -111,8 +111,12 @@ public static class AdminMcpExtensions
                 }
                 catch (McpException ex) when (ex.InnerException is AdminOperationException or ArgumentException or ConfigurationReadConflictException)
                 {
-                    var kind = ex.InnerException is AdminOperationException operationError ? operationError.Kind
-                        : ex.InnerException is ConfigurationReadConflictException ? AdminOperationErrorKind.Conflict : AdminOperationErrorKind.InvalidInput;
+                    var kind = ex.InnerException switch
+                    {
+                        AdminOperationException operationError => operationError.Kind,
+                        ConfigurationReadConflictException => AdminOperationErrorKind.Conflict,
+                        _ => AdminOperationErrorKind.InvalidInput,
+                    };
                     return new CallToolResult
                     {
                         IsError = true,

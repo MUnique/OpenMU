@@ -68,6 +68,7 @@ internal class BuffItems : InitializerBase
     /// </summary>
     private const byte ItemProtectionTalismanSubType = 78;
 
+    /// <summary>
     /// The sub type of the effect of the Gladiator's Honor.
     /// </summary>
     private const byte GladiatorsHonorSubType = 79;

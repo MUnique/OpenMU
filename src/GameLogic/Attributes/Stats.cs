@@ -178,7 +178,7 @@ public class Stats
     /// of a killed monster which drop items, e.g. by 0.5 for 50 % more item drops.
     /// </summary>
     public static AttributeDefinition BonusItemDropRate { get; } = new(new Guid("EEDAFF4A-E9AA-4D28-B07C-A9120434DF97"), "Bonus Item Drop Rate", "The bonus which is added to the item drop rate multiplier of 1.0, e.g. 0.5 for 50 % more item drops. It's increased by seals.");
-  
+
     /// <summary>
     /// Gets the death penalty protection attribute definition. If it's greater than 0, the player keeps its
     /// experience and money when it's killed by a monster, e.g. by the Talisman of Guardian.

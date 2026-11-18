@@ -27,10 +27,10 @@ public class AddToLetterListPlugIn : IAddToLetterListPlugIn
     public AddToLetterListPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AddToLetterListAsync(LetterHeader letter, ushort newLetterIndex, bool newLetter)
+    public async ValueTask AddToLetterListAsync(LetterHeader letter, ushort index, bool newLetter)
     {
         await this._player.Connection.SendAddLetterAsync(
-            newLetterIndex,
+            index,
             letter.SenderName ?? string.Empty,
             letter.LetterDate.ToUniversalTime().AddHours(this._player.Account?.TimeZone ?? 0).ToString("yyyy-MM-dd HH:mm:ss"),
             letter.Subject ?? string.Empty,

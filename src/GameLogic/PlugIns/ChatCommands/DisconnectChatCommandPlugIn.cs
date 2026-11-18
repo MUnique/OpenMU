@@ -26,19 +26,19 @@ public class DisconnectChatCommandPlugIn : ChatCommandPlugInBase<DisconnectChatC
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, DisconnectChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, DisconnectChatCommandArgs arguments)
     {
-        var player = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
-        if (player is null)
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(player, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
+        if (targetPlayer is null)
         {
             return;
         }
 
-        await player.DisconnectAsync().ConfigureAwait(false);
+        await targetPlayer.DisconnectAsync().ConfigureAwait(false);
 
-        if (!player.Name.Equals(gameMaster.Name))
+        if (!targetPlayer.Name.Equals(player.Name))
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandResultPlayerDisconnected), this.Key, player.Name).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CommandResultPlayerDisconnected), this.Key, targetPlayer.Name).ConfigureAwait(false);
         }
     }
 }

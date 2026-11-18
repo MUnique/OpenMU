@@ -82,26 +82,11 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
         return await CreateGuildMembershipQuery(this.Context, characterName).FirstOrDefaultAsync().ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Creates the query for the guild membership of a character.
-    /// </summary>
-    /// <param name="context">The context.</param>
-    /// <param name="characterName">The name of the character.</param>
-    /// <returns>The query.</returns>
-    internal static IQueryable<GuildMembership> CreateGuildMembershipQuery(DbContext context, string characterName)
-    {
-        return from member in context.Set<GuildMember>()
-               join character in context.Set<CharacterName>() on member.Id equals character.Id
-               join guild in context.Set<Guild>() on member.GuildId equals guild.Id
-               where character.Name == characterName
-               select new GuildMembership(member.Id, member.GuildId, member.Status, guild.AllianceGuildId);
-    }
-
     /// <inheritdoc/>
-    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid allianceMasterId)
+    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId)
     {
         return await this.Context.Set<Guild>()
-            .Where(g => g.AllianceGuildId == allianceMasterId)
+            .Where(g => g.AllianceGuildId == guildId)
             .Include(g => g.RawMembers)
             .ToListAsync().ConfigureAwait(false);
     }
@@ -174,5 +159,20 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
             .CountAsync(cancellationToken)
             .ConfigureAwait(false);
         return new GuildStatistics(guildCount, allianceCount);
+    }
+
+    /// <summary>
+    /// Creates the query for the guild membership of a character.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<GuildMembership> CreateGuildMembershipQuery(DbContext context, string characterName)
+    {
+        return from member in context.Set<GuildMember>()
+               join character in context.Set<CharacterName>() on member.Id equals character.Id
+               join guild in context.Set<Guild>() on member.GuildId equals guild.Id
+               where character.Name == characterName
+               select new GuildMembership(member.Id, member.GuildId, member.Status, guild.AllianceGuildId);
     }
 }

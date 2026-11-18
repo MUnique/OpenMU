@@ -25,13 +25,11 @@ internal class Atlans : Version075.Maps.Atlans
     protected override string TerrainVersionPrefix => string.Empty;
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Season 6 has no Safety Guardian in Atlans, unlike 0.75.
+    /// </remarks>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        foreach (var npc in base.CreateNpcSpawns())
-        {
-            yield return npc;
-        }
-
-        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[229], 17, 35, Direction.SouthEast, SpawnTrigger.Wandering); // Marlon
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[229], 17, 25, Direction.South, SpawnTrigger.Wandering); // Marlon
     }
 }

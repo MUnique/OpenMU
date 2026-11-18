@@ -32,7 +32,7 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
     public AppearanceChangedExtendedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item, bool isEquipped)
+    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item changedItem, bool isEquipped)
     {
         var connection = this._player.Connection;
         if (connection is null || changedPlayer.Inventory is null)
@@ -42,12 +42,12 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
 
         await connection.SendAppearanceChangedExtendedAsync(
             changedPlayer.GetId(this._player),
-            item.ItemSlot,
-            (byte)((isEquipped && item.IsShownInAppearance(DateTime.UtcNow) ? item.Definition?.Group : 0xFF) ?? 0xFF),
-            (ushort)(item.Definition?.Number ?? 0xFFFF),
-            item.Level,
-            (byte)(ItemSerializerHelper.GetExcellentByte(item) | ItemSerializerHelper.GetFenrirByte(item)),
-            (byte)(item.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0)?.AncientSetDiscriminator ?? 0),
+            changedItem.ItemSlot,
+            (byte)((isEquipped && changedItem.IsShownInAppearance(DateTime.UtcNow) ? changedItem.Definition?.Group : 0xFF) ?? 0xFF),
+            (ushort)(changedItem.Definition?.Number ?? 0xFFFF),
+            changedItem.Level,
+            (byte)(ItemSerializerHelper.GetExcellentByte(changedItem) | ItemSerializerHelper.GetFenrirByte(changedItem)),
+            (byte)(changedItem.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0)?.AncientSetDiscriminator ?? 0),
             changedPlayer.SelectedCharacter?.HasFullAncientSetEquipped() is true)
             .ConfigureAwait(false);
     }

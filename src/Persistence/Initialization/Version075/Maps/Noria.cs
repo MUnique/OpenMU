@@ -35,6 +35,39 @@ internal class Noria : BaseMapInitializer
     /// </summary>
     internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.Noria);
 
+    /// <summary>
+    /// Gets the automatic monster spawns of Noria.
+    /// </summary>
+    /// <remarks>
+    /// This is the layout of Season 6 without the spiders, which Season 6 added for its first hunting quest.
+    /// It places the monsters in smaller areas instead of spreading them over quarters of the map like the
+    /// former data of version 0.75. All versions use it, because no better data of the older versions is known
+    /// and it keeps the monster levels of the field maps consistent across the versions.
+    /// It's shared with <see cref="Updates.FieldMonsterSpawnsUpdatePlugInBase"/>, which brings this layout to existing databases.
+    /// </remarks>
+    internal static IReadOnlyList<FieldMonsterSpawn> MonsterSpawnLayout { get; } =
+    [
+        new(201, 26, 109, 154, 46, 181, 10), // Goblin
+        new(202, 26, 136, 247, 156, 204, 10), // Goblin
+        new(203, 26, 135, 247, 42, 73, 10), // Goblin
+        new(204, 27, 109, 154, 46, 181, 20), // Chain Scorpion
+        new(205, 27, 135, 247, 42, 73, 20), // Chain Scorpion
+        new(206, 27, 136, 247, 156, 204, 20), // Chain Scorpion
+        new(207, 33, 106, 247, 3, 40, 20), // Elite Goblin
+        new(208, 33, 59, 128, 6, 106, 20), // Elite Goblin
+        new(209, 28, 106, 247, 3, 40, 20), // Beetle Monster
+        new(210, 28, 59, 128, 6, 106, 20), // Beetle Monster
+        new(211, 29, 106, 247, 3, 40, 20), // Hunter
+        new(212, 29, 59, 128, 6, 106, 20), // Hunter
+        new(213, 30, 7, 63, 4, 176, 10), // Forest Monster
+        new(214, 30, 41, 107, 107, 181, 10), // Forest Monster
+        new(215, 30, 105, 247, 184, 246, 10), // Forest Monster
+        new(216, 31, 7, 63, 4, 176, 20), // Agon
+        new(217, 31, 41, 107, 107, 181, 20), // Agon
+        new(218, 31, 105, 247, 184, 246, 20), // Agon
+        new(219, 32, 4, 115, 168, 248, 40), // Stone Golem
+    ];
+
     /// <inheritdoc/>
     protected override byte MapNumber => Number;
 
@@ -55,14 +88,7 @@ internal class Noria : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
-        yield return this.CreateMonsterSpawn(21, this.NpcDictionary[26], 128, 251, 0, 128, 155);
-        yield return this.CreateMonsterSpawn(22, this.NpcDictionary[27], 128, 251, 0, 128, 125);
-        yield return this.CreateMonsterSpawn(23, this.NpcDictionary[28], 0, 128, 0, 128, 125);
-        yield return this.CreateMonsterSpawn(24, this.NpcDictionary[29], 0, 128, 0, 128, 125);
-        yield return this.CreateMonsterSpawn(25, this.NpcDictionary[30], 0, 251, 128, 245, 125);
-        yield return this.CreateMonsterSpawn(26, this.NpcDictionary[31], 0, 251, 128, 245, 125);
-        yield return this.CreateMonsterSpawn(27, this.NpcDictionary[32], 128, 251, 128, 245, 100);
-        yield return this.CreateMonsterSpawn(28, this.NpcDictionary[33], 0, 128, 128, 245, 125);
+        return MonsterSpawnLayout.Select(spawn => this.CreateMonsterSpawn(spawn.Number, this.NpcDictionary[spawn.MonsterNumber], spawn.X1, spawn.X2, spawn.Y1, spawn.Y2, spawn.Quantity));
     }
 
     /// <inheritdoc/>

@@ -140,7 +140,10 @@ public partial class Updates
 
         public bool Selected
         {
-            get => this._selected;
+            get
+            {
+                return this._selected;
+            }
             set
             {
                 if (this._selected == value)
@@ -158,7 +161,10 @@ public partial class Updates
 
         public UpdateState State
         {
-            get => this._state;
+            get
+            {
+                return this._state;
+            }
             set
             {
                 if (this.State == value)

@@ -264,11 +264,17 @@
   <data name="ToggleTheme" xml:space="preserve">
     <value>Design wechseln</value>
   </data>
-  <data name="SwitchToDarkMode" xml:space="preserve">
-    <value>Zum dunklen Modus wechseln</value>
+  <data name="Theme" xml:space="preserve">
+    <value>Design</value>
   </data>
-  <data name="SwitchToLightMode" xml:space="preserve">
-    <value>Zum hellen Modus wechseln</value>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Hell</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="ThemeAuto" xml:space="preserve">
+    <value>Automatisch (System)</value>
   </data>
   <data name="MapEditorShortcutPan" xml:space="preserve">
     <value>Auf eine freie Fläche klicken und ziehen, um die Karte zu verschieben</value>

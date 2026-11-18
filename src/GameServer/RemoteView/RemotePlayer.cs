@@ -58,7 +58,10 @@ public class RemotePlayer : Player, IClientVersionProvider, IHasIpAddress
     /// <inheritdoc />
     public ClientVersion ClientVersion
     {
-        get => this._clientVersion;
+        get
+        {
+            return this._clientVersion;
+        }
 
         set
         {

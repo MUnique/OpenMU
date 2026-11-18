@@ -48,7 +48,7 @@ public interface IConfigurationUpdatePlugIn : IStrategyPlugIn<Guid>
     /// It determines the order in which independent pending updates are applied.
     /// By default, it's the creation date.
     /// </summary>
-    DateTime UpdatedAt => CreatedAt;
+    DateTime UpdatedAt => this.CreatedAt;
 
     /// <summary>
     /// Gets a value indicating whether the update is applied when a new database is initialized.

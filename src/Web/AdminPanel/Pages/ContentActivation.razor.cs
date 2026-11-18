@@ -107,7 +107,10 @@ public partial class ContentActivation : ComponentBase, IAsyncDisposable
 
     private ContentActivationType SelectedContentType
     {
-        get => this._selectedContentType;
+        get
+        {
+            return this._selectedContentType;
+        }
         set
         {
             this._selectedContentType = value;

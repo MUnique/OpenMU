@@ -45,8 +45,3 @@ public interface IFriendSystemSubscriber
     /// <param name="initializationData">The initialization data.</param>
     ValueTask InitializeMessengerAsync(MessengerInitializationData initializationData);
 }
-
-/// <summary>
-/// The data of a messenger initialization for <see cref="IFriendSystemSubscriber.InitializeMessengerAsync"/>.
-/// </summary>
-public record MessengerInitializationData(string PlayerName, IImmutableList<string> Friends, IImmutableList<string> OpenFriendRequests);

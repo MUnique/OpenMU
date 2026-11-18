@@ -57,9 +57,7 @@ internal class Icarus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(100, this.NpcDictionary[70], 66, 68);
         yield return this.CreateMonsterSpawn(101, this.NpcDictionary[70], 85, 88);
         yield return this.CreateMonsterSpawn(102, this.NpcDictionary[70], 80, 76);
-        yield return this.CreateMonsterSpawn(103, this.NpcDictionary[73], 70, 78);
         yield return this.CreateMonsterSpawn(104, this.NpcDictionary[73], 45, 72);
-        yield return this.CreateMonsterSpawn(105, this.NpcDictionary[70], 60, 84);
         yield return this.CreateMonsterSpawn(106, this.NpcDictionary[72], 41, 113);
         yield return this.CreateMonsterSpawn(107, this.NpcDictionary[72], 42, 135);
         yield return this.CreateMonsterSpawn(108, this.NpcDictionary[74], 29, 104);
@@ -73,7 +71,6 @@ internal class Icarus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(116, this.NpcDictionary[72], 51, 126);
         yield return this.CreateMonsterSpawn(117, this.NpcDictionary[71], 88, 70);
         yield return this.CreateMonsterSpawn(118, this.NpcDictionary[72], 53, 138);
-        yield return this.CreateMonsterSpawn(119, this.NpcDictionary[73], 55, 73);
         yield return this.CreateMonsterSpawn(120, this.NpcDictionary[72], 44, 148);
         yield return this.CreateMonsterSpawn(121, this.NpcDictionary[72], 33, 119);
         yield return this.CreateMonsterSpawn(122, this.NpcDictionary[74], 33, 111);
@@ -86,7 +83,6 @@ internal class Icarus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(129, this.NpcDictionary[71], 53, 27);
         yield return this.CreateMonsterSpawn(130, this.NpcDictionary[70], 91, 59);
         yield return this.CreateMonsterSpawn(131, this.NpcDictionary[72], 41, 157);
-        yield return this.CreateMonsterSpawn(132, this.NpcDictionary[69], 21, 39);
         yield return this.CreateMonsterSpawn(133, this.NpcDictionary[69], 44, 27);
         yield return this.CreateMonsterSpawn(134, this.NpcDictionary[69], 12, 27);
         yield return this.CreateMonsterSpawn(135, this.NpcDictionary[69], 13, 38);
@@ -108,7 +104,7 @@ internal class Icarus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(151, this.NpcDictionary[69], 66, 37);
         yield return this.CreateMonsterSpawn(152, this.NpcDictionary[69], 80, 41);
         yield return this.CreateMonsterSpawn(153, this.NpcDictionary[75], 43, 238);
-        yield return this.CreateMonsterSpawn(154, this.NpcDictionary[75], 30, 231);
+        yield return this.CreateMonsterSpawn(154, this.NpcDictionary[75], 32, 231);
         yield return this.CreateMonsterSpawn(155, this.NpcDictionary[72], 44, 221);
         yield return this.CreateMonsterSpawn(156, this.NpcDictionary[69], 40, 34);
         yield return this.CreateMonsterSpawn(157, this.NpcDictionary[69], 31, 37);
@@ -118,6 +114,26 @@ internal class Icarus : BaseMapInitializer
         yield return this.CreateMonsterSpawn(161, this.NpcDictionary[72], 36, 226);
         yield return this.CreateMonsterSpawn(162, this.NpcDictionary[75], 48, 228);
         yield return this.CreateMonsterSpawn(163, this.NpcDictionary[77], 34, 238);
+        yield return this.CreateMonsterSpawn(164, this.NpcDictionary[70], 84, 36);
+        yield return this.CreateMonsterSpawn(165, this.NpcDictionary[70], 90, 48);
+        yield return this.CreateMonsterSpawn(166, this.NpcDictionary[70], 95, 56);
+        yield return this.CreateMonsterSpawn(167, this.NpcDictionary[70], 74, 84);
+        yield return this.CreateMonsterSpawn(168, this.NpcDictionary[70], 74, 72);
+        yield return this.CreateMonsterSpawn(169, this.NpcDictionary[70], 57, 71);
+        yield return this.CreateMonsterSpawn(170, this.NpcDictionary[73], 28, 67);
+        yield return this.CreateMonsterSpawn(171, this.NpcDictionary[71], 50, 33);
+        yield return this.CreateMonsterSpawn(172, this.NpcDictionary[71], 59, 27);
+        yield return this.CreateMonsterSpawn(173, this.NpcDictionary[71], 74, 38);
+        yield return this.CreateMonsterSpawn(174, this.NpcDictionary[69], 36, 29);
+        yield return this.CreateMonsterSpawn(175, this.NpcDictionary[69], 37, 41);
+        yield return this.CreateMonsterSpawn(176, this.NpcDictionary[69], 26, 41);
+        yield return this.CreateMonsterSpawn(177, this.NpcDictionary[69], 21, 24);
+        yield return this.CreateMonsterSpawn(178, this.NpcDictionary[75], 45, 173);
+        yield return this.CreateMonsterSpawn(179, this.NpcDictionary[75], 59, 163);
+        yield return this.CreateMonsterSpawn(180, this.NpcDictionary[75], 52, 168);
+        yield return this.CreateMonsterSpawn(181, this.NpcDictionary[69], 21, 36);
+        yield return this.CreateMonsterSpawn(182, this.NpcDictionary[70], 64, 84);
+        yield return this.CreateMonsterSpawn(183, this.NpcDictionary[70], 69, 77);
     }
 
     /// <inheritdoc/>
@@ -199,7 +215,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -231,7 +247,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(30 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
@@ -297,7 +313,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             var attributes = new Dictionary<AttributeDefinition, float>
@@ -329,7 +345,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 5;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(30 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);
@@ -395,7 +411,7 @@ internal class Icarus : BaseMapInitializer
             monster.ViewRange = 7;
             monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             monster.AttackDelay = new TimeSpan(1500 * TimeSpan.TicksPerMillisecond);
-            monster.RespawnDelay = new TimeSpan(15 * TimeSpan.TicksPerSecond);
+            monster.RespawnDelay = new TimeSpan(150 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;
             monster.AttackSkill = this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.MonsterSkill);

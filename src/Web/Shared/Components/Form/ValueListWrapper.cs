@@ -31,7 +31,10 @@ public class ValueListWrapper<TValue> : List<ValueWrapper<TValue>>, IList<TValue
     /// <inheritdoc />
     TValue IList<TValue>.this[int index]
     {
-        get => this._innerList[index];
+        get
+        {
+            return this._innerList[index];
+        }
         set
         {
             this._innerList[index] = value;

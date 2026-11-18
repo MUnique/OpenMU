@@ -1395,24 +1395,6 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Switch to dark mode.
-        /// </summary>
-        public static string SwitchToDarkMode {
-            get {
-                return ResourceManager.GetString("SwitchToDarkMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Switch to light mode.
-        /// </summary>
-        public static string SwitchToLightMode {
-            get {
-                return ResourceManager.GetString("SwitchToLightMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Target.
         /// </summary>
         public static string Target {
@@ -1625,6 +1607,42 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         public static string TerrainWalkable {
             get {
                 return ResourceManager.GetString("TerrainWalkable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Theme.
+        /// </summary>
+        public static string Theme {
+            get {
+                return ResourceManager.GetString("Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto (system).
+        /// </summary>
+        public static string ThemeAuto {
+            get {
+                return ResourceManager.GetString("ThemeAuto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark.
+        /// </summary>
+        public static string ThemeDark {
+            get {
+                return ResourceManager.GetString("ThemeDark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light.
+        /// </summary>
+        public static string ThemeLight {
+            get {
+                return ResourceManager.GetString("ThemeLight", resourceCulture);
             }
         }
         

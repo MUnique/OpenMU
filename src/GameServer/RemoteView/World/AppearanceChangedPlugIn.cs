@@ -31,7 +31,7 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
     public AppearanceChangedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item item, bool isEquipped)
+    public async ValueTask AppearanceChangedAsync(Player changedPlayer, Item changedItem, bool isEquipped)
     {
         var connection = this._player.Connection;
         if (connection is null || changedPlayer.Inventory is not { } inventory)
@@ -49,23 +49,23 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
                 ChangedPlayerId = changedPlayer.GetId(this._player),
             };
 
-            if (inventory!.EquippedItems.Contains(item) && item.IsShownInAppearance(DateTime.UtcNow))
+            if (inventory!.EquippedItems.Contains(changedItem) && changedItem.IsShownInAppearance(DateTime.UtcNow))
             {
-                itemSerializer.SerializeItem(packet.ItemData, item);
+                itemSerializer.SerializeItem(packet.ItemData, changedItem);
             }
             else
             {
                 packet.ItemData.Fill(0xFF);
             }
 
-            // The byte with index 1 usually now holds the item level and one part of the item option level.
+            // The byte with index 1 usually now holds the changedItem level and one part of the changedItem option level.
             // This full information is irrelevant. For this message, we just need the "glow" level, which means the one of the appearance serializer.
-            // In the available space, the item position is serialized.
-            // To summarize: The 4 higher bits hold the item position, the 4 lower bits hold the "glow" level
-            packet.ItemData[1] = (byte)(item.ItemSlot << 4);
-            packet.ItemData[1] |= item.GetGlowLevel();
+            // In the available space, the changedItem position is serialized.
+            // To summarize: The 4 higher bits hold the changedItem position, the 4 lower bits hold the "glow" level
+            packet.ItemData[1] = (byte)(changedItem.ItemSlot << 4);
+            packet.ItemData[1] |= changedItem.GetGlowLevel();
 
-            // We could also continue to dumb down information here as this packet reveals all of the options of an item to
+            // We could also continue to dumb down information here as this packet reveals all of the options of an changedItem to
             // other players - something that is probably not in the interest of the players.
             // However, for now we keep this logic close to the original server, which doesn't do a thing about it.
 

@@ -181,41 +181,6 @@ internal partial class {className} : {fullName}, IIdentifiable
         });
     }
 
-    private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
-    {
-        var standaloneCollectionProperties = ModelGeneratorHelper.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
-        foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
-        {
-            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
-            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
-
-            var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, joinTypeName)}
-
-namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
-
-using System.ComponentModel.DataAnnotations.Schema;
-using MUnique.OpenMU.Persistence;
-using MUnique.OpenMU.Persistence.EntityFramework;
-
-[Table(nameof({joinTypeName}), Schema = {(ModelGeneratorHelper.IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
-internal partial class {joinTypeName}
-{{
-    public Guid {propertyInfo.ReflectedType.Name}Id {{ get; set; }}
-    public {propertyInfo.ReflectedType.Name} {propertyInfo.ReflectedType.Name} {{ get; set; }}
-
-    public Guid {elementType.Name}Id {{ get; set; }}
-    public {elementType.Name} {elementType.Name} {{ get; set; }}
-}}
-
-internal partial class {propertyInfo.ReflectedType.Name}
-{{
-    public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
-}}
-";
-            yield return (joinTypeName, source);
-        }
-    }
-
     /// <summary>
     /// Generates the converter, which converts the objects of this model to the objects of the basic model.
     /// </summary>
@@ -395,6 +360,41 @@ internal sealed class BasicModelConverter
             : type.FullName!.Replace('+', '.');
     }
 
+    private IEnumerable<(string Name, string Source)> GenerateJoinEntities()
+    {
+        var standaloneCollectionProperties = ModelGeneratorHelper.CustomTypes.SelectMany(this.GetStandaloneCollectionProperties).ToList();
+        foreach (PropertyInfo propertyInfo in standaloneCollectionProperties)
+        {
+            var elementType = propertyInfo.PropertyType.GenericTypeArguments[0];
+            var joinTypeName = propertyInfo.ReflectedType!.Name + elementType.Name;
+
+            var source = $@"{string.Format(ModelGeneratorHelper.FileHeaderTemplate, joinTypeName)}
+
+namespace MUnique.OpenMU.Persistence.EntityFramework.Model;
+
+using System.ComponentModel.DataAnnotations.Schema;
+using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.EntityFramework;
+
+[Table(nameof({joinTypeName}), Schema = {(ModelGeneratorHelper.IsConfigurationType(propertyInfo.ReflectedType) ? "SchemaNames.Configuration" : "SchemaNames.AccountData")})]
+internal partial class {joinTypeName}
+{{
+    public Guid {propertyInfo.ReflectedType.Name}Id {{ get; set; }}
+    public {propertyInfo.ReflectedType.Name} {propertyInfo.ReflectedType.Name} {{ get; set; }}
+
+    public Guid {elementType.Name}Id {{ get; set; }}
+    public {elementType.Name} {elementType.Name} {{ get; set; }}
+}}
+
+internal partial class {propertyInfo.ReflectedType.Name}
+{{
+    public ICollection<{joinTypeName}> Joined{propertyInfo.Name} {{ get; }} = new EntityFramework.List<{joinTypeName}>();
+}}
+";
+            yield return (joinTypeName, source);
+        }
+    }
+
     private string GenerateDbContext()
     {
         var ignores = new StringBuilder();
@@ -543,6 +543,16 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     {
         var propertyTypeName = property.PropertyType.Name.Split('.').Last();
         var propertyType = property.PropertyType;
+        string setter = null;
+        if (property.GetSetMethod(true) is not null)
+        {
+            var visibility = property.GetSetMethod() is null ? "protected " : null;
+            setter = $@"{visibility}set
+        {{
+            base.{property.Name} = value;
+            this.{property.Name}Id = this.Raw{property.Name}?.Id;
+        }}";
+        }
 
         return $@"
     /// <summary>
@@ -564,11 +574,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     [NotMapped]
     public override {propertyType.FullName} {property.Name}
     {{
-        get => base.{property.Name};{(property.GetSetMethod(true) is { } ? $@"{(property.GetSetMethod() is null ? "protected " : null)}set
-        {{
-            base.{property.Name} = value;
-            this.{property.Name}Id = this.Raw{property.Name}?.Id;
-        }}" : null)}
+        get => base.{property.Name};{setter}
     }}";
     }
 
@@ -642,12 +648,15 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
 
     private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
     {
-        return type.FullName != GameConfigurationFullName ?
-            type.GetProperties().Where(p => p.PropertyType.IsGenericType
-                                            && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-                                            && !IsMemberOfAggregate(p)
-                                            && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList() :
-            Enumerable.Empty<PropertyInfo>();
+        if (type.FullName == GameConfigurationFullName)
+        {
+            return Enumerable.Empty<PropertyInfo>();
+        }
+
+        return type.GetProperties().Where(p => p.PropertyType.IsGenericType
+                                        && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                                        && !IsMemberOfAggregate(p)
+                                        && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList();
     }
 
     private string CreateConstructors(Type type, bool requiresJoinCollections)

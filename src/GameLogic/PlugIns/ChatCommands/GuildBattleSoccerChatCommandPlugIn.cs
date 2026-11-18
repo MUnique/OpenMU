@@ -29,8 +29,8 @@ public class GuildBattleSoccerChatCommandPlugIn : ChatCommandPlugInBase<GuildWar
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.Normal;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player guildMaster, GuildWarChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, GuildWarChatCommandArgs arguments)
     {
-        await this._action.RequestBattleSoccerAsync(guildMaster, arguments.GuildName).ConfigureAwait(false);
+        await this._action.RequestBattleSoccerAsync(player, arguments.GuildName).ConfigureAwait(false);
     }
 }

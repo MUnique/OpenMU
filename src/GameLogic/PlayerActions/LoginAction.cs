@@ -114,6 +114,15 @@ public class LoginAction
         return (false, null);
     }
 
+    /// <summary>
+    /// Notifies the game servers and external systems, that somebody tried to log into an account which is already logged in.
+    /// </summary>
+    private static async ValueTask NotifyAlreadyLoggedInAsync(IGameServerContext gameServerContext, string username)
+    {
+        await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
+        await gameServerContext.EventPublisher.GameEventAsync(new AccountLoginBlockedEvent(gameServerContext.Id, DateTime.UtcNow, username)).ConfigureAwait(false);
+    }
+
     private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
     {
         try
@@ -347,15 +356,6 @@ public class LoginAction
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return null;
         }
-    }
-
-    /// <summary>
-    /// Notifies the game servers and external systems, that somebody tried to log into an account which is already logged in.
-    /// </summary>
-    private static async ValueTask NotifyAlreadyLoggedInAsync(IGameServerContext gameServerContext, string username)
-    {
-        await gameServerContext.EventPublisher.PlayerAlreadyLoggedInAsync(gameServerContext.Id, username).ConfigureAwait(false);
-        await gameServerContext.EventPublisher.GameEventAsync(new AccountLoginBlockedEvent(gameServerContext.Id, DateTime.UtcNow, username)).ConfigureAwait(false);
     }
 
     private async ValueTask HandleAlreadyConnectedAsync(Player player, string username)

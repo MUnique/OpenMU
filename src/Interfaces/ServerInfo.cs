@@ -7,6 +7,10 @@ namespace MUnique.OpenMU.Interfaces;
 /// <summary>
 /// The state info about a server.
 /// </summary>
+/// <param name="Id">The server identifier.</param>
+/// <param name="Description">The server description.</param>
+/// <param name="CurrentConnections">The count of current connections.</param>
+/// <param name="MaximumConnections">The maximum count of connections.</param>
 public record ServerInfo(ushort Id, string Description, int CurrentConnections, int MaximumConnections)
 {
     /// <summary>

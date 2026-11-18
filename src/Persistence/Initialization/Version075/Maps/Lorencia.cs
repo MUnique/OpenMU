@@ -88,7 +88,7 @@ internal class Lorencia : BaseMapInitializer
             bullFighter.ViewRange = 5;
             bullFighter.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             bullFighter.AttackDelay = new TimeSpan(1600 * TimeSpan.TicksPerMillisecond);
-            bullFighter.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            bullFighter.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             bullFighter.Attribute = 2;
             bullFighter.NumberOfMaximumItemDrops = 1;
             var bullFighterAttributes = new Dictionary<AttributeDefinition, float>
@@ -151,7 +151,7 @@ internal class Lorencia : BaseMapInitializer
             budgeDragon.ViewRange = 4;
             budgeDragon.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
             budgeDragon.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
-            budgeDragon.RespawnDelay = new TimeSpan(3 * TimeSpan.TicksPerSecond);
+            budgeDragon.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             budgeDragon.Attribute = 2;
             budgeDragon.NumberOfMaximumItemDrops = 1;
         }

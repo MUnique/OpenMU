@@ -28,11 +28,11 @@ public class ReferenceResolvingConverterFactory : JsonConverterFactory
     public Type[] IgnoredTypes { get; set; } = [];
 
     /// <inheritdoc />
-    public override bool CanConvert(Type objectType) =>
-        !objectType.IsEnum
-        && !objectType.IsGenericType
-        && objectType.IsAssignableTo(typeof(IIdentifiable))
-        && (objectType.Namespace?.StartsWith("MUnique.OpenMU.", StringComparison.InvariantCulture) ?? false);
+    public override bool CanConvert(Type typeToConvert) =>
+        !typeToConvert.IsEnum
+        && !typeToConvert.IsGenericType
+        && typeToConvert.IsAssignableTo(typeof(IIdentifiable))
+        && (typeToConvert.Namespace?.StartsWith("MUnique.OpenMU.", StringComparison.InvariantCulture) ?? false);
 
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)

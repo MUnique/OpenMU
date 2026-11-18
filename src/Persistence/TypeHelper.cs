@@ -165,10 +165,16 @@ public static class TypeHelper
     {
         return Registries.GetOrAdd(
             origin,
-            static assembly => assembly.GetCustomAttribute<PersistentTypeRegistryAttribute>() is { } attribute
-                               && Activator.CreateInstance(attribute.RegistryType) is IPersistentTypeRegistry registry
-                ? new RegistryLookup(registry)
-                : null);
+            static assembly =>
+            {
+                if (assembly.GetCustomAttribute<PersistentTypeRegistryAttribute>() is { } attribute
+                    && Activator.CreateInstance(attribute.RegistryType) is IPersistentTypeRegistry registry)
+                {
+                    return new RegistryLookup(registry);
+                }
+
+                return null;
+            });
     }
 
     /// <summary>

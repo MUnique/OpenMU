@@ -10,6 +10,7 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>Reads plugin metadata without exposing custom configuration or source.</summary>
+/// <param name="plugins">The plugin manager.</param>
 public sealed class PluginReadOperations(PlugInManager plugins)
 {
     /// <summary>Lists known plugins with their active state and extension points.</summary>

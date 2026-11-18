@@ -36,10 +36,13 @@ internal static class BotEventMeetingPlanner
 
         if (entryNpcWindow is not { } window)
         {
-            return type == MiniGameType.ChaosCastle
-                   && bot.SelectedCharacter?.CharacterClass?.HomeMap is { } homeMap
-                ? new BotEventMeeting(homeMap, null, untilUtc)
-                : null;
+            if (type == MiniGameType.ChaosCastle
+                && bot.SelectedCharacter?.CharacterClass?.HomeMap is { } homeMap)
+            {
+                return new BotEventMeeting(homeMap, null, untilUtc);
+            }
+
+            return null;
         }
 
         var currentMapNumber = bot.CurrentMap?.Definition.Number;

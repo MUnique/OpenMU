@@ -30,7 +30,7 @@ public class StatIncreaseResultExtendedPlugIn : IStatIncreaseResultPlugIn
     public StatIncreaseResultExtendedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, ushort addedPoints)
+    public async ValueTask StatIncreaseResultAsync(AttributeDefinition statType, ushort addedPoints)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -39,7 +39,7 @@ public class StatIncreaseResultExtendedPlugIn : IStatIncreaseResultPlugIn
         }
 
         await connection.SendCharacterStatIncreaseResponseExtendedAsync(
-            attribute.GetStatType(),
+            statType.GetStatType(),
             addedPoints,
             (uint)this._player.Attributes![Stats.MaximumHealth],
             (uint)this._player.Attributes![Stats.MaximumMana],

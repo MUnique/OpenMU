@@ -101,7 +101,7 @@ public class PipelinedSimpleModulusEncryptor : PipelinedSimpleModulusBase, IPipe
         var bitOffset = GetBitOffset(resultIndex);
         var firstMask = GetFirstBitMask(resultIndex);
         var swapped = ReverseEndianness(result);
-        target[byteOffset++] |= (byte)(swapped >> (24 + bitOffset) & firstMask);
+        target[byteOffset++] |= (byte)((swapped >> (24 + bitOffset)) & firstMask);
         target[byteOffset++] = (byte)(swapped >> (16 + bitOffset));
         target[byteOffset] = (byte)((swapped >> (8 + bitOffset)) & (0xFF << (8 - bitOffset)));
         var remainderMask = GetRemainderBitMask(resultIndex);

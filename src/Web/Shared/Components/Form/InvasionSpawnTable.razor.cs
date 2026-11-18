@@ -163,7 +163,10 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
         /// </summary>
         public IList<GameMapDefinition> Maps
         {
-            get => this._cachedMaps;
+            get
+            {
+                return this._cachedMaps;
+            }
             set
             {
                 this._cachedMaps = new SyncedMapList(value, this);
@@ -263,7 +266,10 @@ public partial class InvasionSpawnTable : InputBase<IList<InvasionSpawnConfigura
             /// <inheritdoc />
             public GameMapDefinition this[int index]
             {
-                get => this._inner[index];
+                get
+                {
+                    return this._inner[index];
+                }
                 set
                 {
                     this._inner[index] = value;

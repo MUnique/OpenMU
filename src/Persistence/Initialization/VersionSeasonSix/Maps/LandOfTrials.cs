@@ -249,6 +249,9 @@ internal class LandOfTrials : BaseMapInitializer
         yield return this.CreateMonsterSpawn(546, this.NpcDictionary[294], 073, 069); // Ax Warrior
 
         yield return this.CreateMonsterSpawn(600, this.NpcDictionary[295], 220, 211); // Erohim
+        yield return this.CreateMonsterSpawn(601, this.NpcDictionary[293], 192, 127); // Poison Golem
+        yield return this.CreateMonsterSpawn(602, this.NpcDictionary[293], 180, 117); // Poison Golem
+        yield return this.CreateMonsterSpawn(603, this.NpcDictionary[293], 191, 112); // Poison Golem
     }
 
     /// <inheritdoc/>
@@ -392,8 +395,8 @@ internal class LandOfTrials : BaseMapInitializer
             monster.MoveRange = 3;
             monster.AttackRange = 1;
             monster.ViewRange = 5;
-            monster.MoveDelay = new TimeSpan(500 * TimeSpan.TicksPerMillisecond);
-            monster.AttackDelay = new TimeSpan(2000 * TimeSpan.TicksPerMillisecond);
+            monster.MoveDelay = new TimeSpan(400 * TimeSpan.TicksPerMillisecond);
+            monster.AttackDelay = new TimeSpan(1400 * TimeSpan.TicksPerMillisecond);
             monster.RespawnDelay = new TimeSpan(10 * TimeSpan.TicksPerSecond);
             monster.Attribute = 2;
             monster.NumberOfMaximumItemDrops = 1;

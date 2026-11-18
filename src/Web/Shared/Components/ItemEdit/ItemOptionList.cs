@@ -68,10 +68,10 @@ public class ItemOptionList : IList<IncreasableItemOption>
     }
 
     /// <inheritdoc />
-    public void Add(IncreasableItemOption option)
+    public void Add(IncreasableItemOption item)
     {
         var optionLink = this._persistenceContext.CreateNew<ItemOptionLink>();
-        optionLink.ItemOption = option;
+        optionLink.ItemOption = item;
         this._item.ItemOptions.Add(optionLink);
         this.ListChanged?.Invoke(this, EventArgs.Empty);
     }

@@ -22,53 +22,41 @@ internal class Noria : Version095d.Maps.Noria
     }
 
     /// <summary>
-    /// Gets the automatic monster spawns of the Season 6 layout of Noria.
+    /// Gets the automatic monster spawns of Noria.
     /// </summary>
     /// <remarks>
-    /// The layout places the monsters in smaller areas instead of spreading them over quarters of the map
-    /// like the data of version 0.75. It includes the spiders, which the first hunting quest of Season 6 needs.
+    /// The layout of <see cref="Version075.Maps.Noria.MonsterSpawnLayout"/> plus the spiders, which Season 6
+    /// added for its first hunting quest.
     /// It's shared with <see cref="Updates.FieldMonsterSpawnsUpdatePlugInSeason6"/>, which brings this layout to existing databases.
     /// </remarks>
-    internal static IReadOnlyList<FieldMonsterSpawn> MonsterSpawnLayout { get; } =
+    internal static new IReadOnlyList<FieldMonsterSpawn> MonsterSpawnLayout { get; } =
     [
         new(200, 3, 139, 247, 63, 164, 60), // Spider
-        new(201, 26, 109, 154, 46, 181, 10), // Goblin
-        new(202, 26, 136, 247, 156, 204, 10), // Goblin
-        new(203, 26, 135, 247, 42, 73, 10), // Goblin
-        new(204, 27, 109, 154, 46, 181, 20), // Chain Scorpion
-        new(205, 27, 135, 247, 42, 73, 20), // Chain Scorpion
-        new(206, 27, 136, 247, 156, 204, 20), // Chain Scorpion
-        new(207, 33, 106, 247, 3, 40, 20), // Elite Goblin
-        new(208, 33, 59, 128, 6, 106, 20), // Elite Goblin
-        new(209, 28, 106, 247, 3, 40, 20), // Beetle Monster
-        new(210, 28, 59, 128, 6, 106, 20), // Beetle Monster
-        new(211, 29, 106, 247, 3, 40, 20), // Hunter
-        new(212, 29, 59, 128, 6, 106, 20), // Hunter
-        new(213, 30, 7, 63, 4, 176, 10), // Forest Monster
-        new(214, 30, 41, 107, 107, 181, 10), // Forest Monster
-        new(215, 30, 105, 247, 184, 246, 10), // Forest Monster
-        new(216, 31, 7, 63, 4, 176, 20), // Agon
-        new(217, 31, 41, 107, 107, 181, 20), // Agon
-        new(218, 31, 105, 247, 184, 246, 20), // Agon
-        new(219, 32, 4, 115, 168, 248, 40), // Stone Golem
+        .. Version075.Maps.Noria.MonsterSpawnLayout,
     ];
 
     /// <inheritdoc/>
     protected override string TerrainVersionPrefix => string.Empty;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Doesn't take the NPCs of the older versions as they are: Season 6 has no Potion Girls in Noria
+    /// (spawns 1 and 2 of 0.75), so the other NPCs of the older versions are listed here with their numbers.
+    /// </remarks>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        foreach (var npc in base.CreateNpcSpawns())
-        {
-            yield return npc;
-        }
-
-        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[544], 187, 125, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[242], 173, 125, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(4, this.NpcDictionary[243], 195, 124, Direction.South);
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 172, 96, Direction.SouthEast);
+        yield return this.CreateMonsterSpawn(6, this.NpcDictionary[238], 180, 103, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[237], 171, 105, Direction.SouthEast); // Charon (Devil Square)
+        yield return this.CreateMonsterSpawn(10, this.NpcDictionary[544], 167, 100, Direction.South);
         yield return this.CreateMonsterSpawn(11, this.NpcDictionary[257], 167, 118, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(12, this.NpcDictionary[450], 179, 126, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(13, this.NpcDictionary[451], 179, 129, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(14, this.NpcDictionary[229], 169, 88, Direction.SouthEast, SpawnTrigger.Wandering); // Marlon
+        yield return this.CreateMonsterSpawn(15, this.NpcDictionary[257], 166, 85, Direction.South);
+        yield return this.CreateMonsterSpawn(16, this.NpcDictionary[257], 201, 129, Direction.South);
     }
 
     /// <inheritdoc/>

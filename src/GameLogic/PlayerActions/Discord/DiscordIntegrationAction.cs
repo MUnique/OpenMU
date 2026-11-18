@@ -43,6 +43,23 @@ public class DiscordIntegrationAction
     public static TimeSpan LinkCodeCooldown { get; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
+    /// Removes the link of the account of the player to a Discord user.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if a link was removed.</returns>
+    public static async ValueTask<bool> UnlinkAsync(Player player)
+    {
+        if (player.Account is not { } account)
+        {
+            return false;
+        }
+
+        // With the published event, the Discord bot removes the roles of the user.
+        var gameServerContext = player.GameContext as IGameServerContext;
+        return await CreateLinkService(player).UnlinkAccountAsync(account.GetId(), AccountLinkService.DiscordProvider, gameServerContext?.EventPublisher, gameServerContext?.Id ?? 0).ConfigureAwait(false) is not null;
+    }
+
+    /// <summary>
     /// Shows the player how the game server is connected to Discord.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -85,23 +102,6 @@ public class DiscordIntegrationAction
     {
         await UnlinkAsync(player).ConfigureAwait(false);
         await this.ShowIntegrationInfoAsync(player).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Removes the link of the account of the player to a Discord user.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <returns><c>true</c>, if a link was removed.</returns>
-    public static async ValueTask<bool> UnlinkAsync(Player player)
-    {
-        if (player.Account is not { } account)
-        {
-            return false;
-        }
-
-        // With the published event, the Discord bot removes the roles of the user.
-        var gameServerContext = player.GameContext as IGameServerContext;
-        return await CreateLinkService(player).UnlinkAccountAsync(account.GetId(), AccountLinkService.DiscordProvider, gameServerContext?.EventPublisher, gameServerContext?.Id ?? 0).ConfigureAwait(false) is not null;
     }
 
     /// <summary>

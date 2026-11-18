@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -43,10 +44,10 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected virtual byte MaximumSuccessRate => 100;
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> itemLinks, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
     {
-        successRate = 0;
-        itemLinks = new List<CraftingRequiredItemLink>(3);
+        successRateByItems = 0;
+        items = new List<CraftingRequiredItemLink>(3);
 
         var item1 = player.TemporaryStorage!.Items.FirstOrDefault(item => item.Definition?.Name.ValueInNeutralLanguage == this._requiredEventItemName1);
         var item2 = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition?.Name.ValueInNeutralLanguage == this._requiredEventItemName2);
@@ -56,7 +57,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
             return this.IncorrectMixItemsResult;
         }
 
-        itemLinks.Add(new CraftingRequiredItemLink(
+        items.Add(new CraftingRequiredItemLink(
             item1.GetAsEnumerable(),
             new TransientItemCraftingRequiredItem
             {
@@ -64,7 +65,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
                 MaximumAmount = 1,
                 MinimumAmount = 1,
             }));
-        itemLinks.Add(new CraftingRequiredItemLink(
+        items.Add(new CraftingRequiredItemLink(
             item2.GetAsEnumerable(),
             new TransientItemCraftingRequiredItem
             {
@@ -72,7 +73,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
                 MaximumAmount = 1,
                 MinimumAmount = 1,
             }));
-        itemLinks.Add(new CraftingRequiredItemLink(
+        items.Add(new CraftingRequiredItemLink(
             chaos.GetAsEnumerable(),
             new TransientItemCraftingRequiredItem
             {
@@ -82,7 +83,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
             }));
 
         var crywolfBenefit = CrywolfPlugIn.GetContext(player.GameContext)?.ChaosRateBenefit ?? 0;
-        successRate = (byte)Math.Min(this.GetSuccessRate(item1.Level) + crywolfBenefit, this.MaximumSuccessRate);
+        successRateByItems = (byte)Math.Min(this.GetSuccessRate(item1.Level) + crywolfBenefit, this.MaximumSuccessRate);
         return default;
     }
 
@@ -107,11 +108,11 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected abstract byte GetSuccessRate(int eventLevel);
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex, byte successRate)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         var item = player.PersistenceContext.CreateNew<Item>();
-        item.Definition = player.GameContext.Configuration.Items.First(i => i.Name.ValueInNeutralLanguage == this._resultItemName);
         item.Level = this.GetEventLevel(requiredItems);
+        item.Definition = this.GetResultItemDefinition(player, item.Level);
         item.Durability = 1;
         if (player.TemporaryStorage is { } temporaryStorage)
         {
@@ -119,6 +120,17 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
         }
 
         return new List<Item> { item };
+    }
+
+    /// <summary>
+    /// Gets the item definition of the ticket which the crafting creates.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="eventLevel">The event level, which is the item level of the ticket.</param>
+    /// <returns>The item definition with the name of the result item.</returns>
+    protected virtual ItemDefinition GetResultItemDefinition(Player player, byte eventLevel)
+    {
+        return player.GameContext.Configuration.Items.First(i => i.Name.ValueInNeutralLanguage == this._resultItemName);
     }
 
     private byte GetEventLevel(IList<CraftingRequiredItemLink> requiredItems)

@@ -27,36 +27,36 @@ internal class CreateMonsterChatCommand : ChatCommandPlugInBase<CreateMonsterCha
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CreateMonsterChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, CreateMonsterChatCommandArgs arguments)
     {
-        var monsterDef = gameMaster.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == arguments.MonsterNumber);
+        var monsterDef = player.GameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == arguments.MonsterNumber);
         if (monsterDef is null)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundByNumber), arguments.MonsterNumber).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundByNumber), arguments.MonsterNumber).ConfigureAwait(false);
             return;
         }
 
-        var gameMap = gameMaster.CurrentMap;
+        var gameMap = player.CurrentMap;
         var area = new MonsterSpawnArea
         {
             GameMap = gameMap!.Definition,
             MonsterDefinition = monsterDef,
             SpawnTrigger = SpawnTrigger.OnceAtEventStart,
             Quantity = 1,
-            X1 = (byte)Math.Max(gameMaster.Position.X - 3, byte.MinValue),
-            X2 = (byte)Math.Min(gameMaster.Position.X + 3, byte.MaxValue),
-            Y1 = (byte)Math.Max(gameMaster.Position.Y - 3, byte.MinValue),
-            Y2 = (byte)Math.Min(gameMaster.Position.Y + 3, byte.MaxValue),
+            X1 = (byte)Math.Max(player.Position.X - 3, byte.MinValue),
+            X2 = (byte)Math.Min(player.Position.X + 3, byte.MaxValue),
+            Y1 = (byte)Math.Max(player.Position.Y - 3, byte.MinValue),
+            Y2 = (byte)Math.Min(player.Position.Y + 3, byte.MaxValue),
         };
 
         INpcIntelligence intelligence = arguments.IsIntelligent ? new BasicMonsterIntelligence() : new NullMonsterIntelligence();
-        var monster = new Monster(area, monsterDef, gameMap, gameMaster.GameContext.DropGenerator, intelligence, gameMaster.GameContext.PlugInManager, gameMaster.GameContext.PathFinderPool);
+        var monster = new Monster(area, monsterDef, gameMap, player.GameContext.DropGenerator, intelligence, player.GameContext.PlugInManager, player.GameContext.PathFinderPool);
         intelligence.Npc = monster;
 
         monster.Initialize();
         await gameMap.AddAsync(monster).ConfigureAwait(false);
         monster.OnSpawn();
 
-        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterCreatedByGameMaster), arguments.MonsterNumber, monster.Id).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterCreatedByGameMaster), arguments.MonsterNumber, monster.Id).ConfigureAwait(false);
     }
 }

@@ -23,4 +23,13 @@ internal class LostTower : Version075.Maps.LostTower
 
     /// <inheritdoc />
     protected override string TerrainVersionPrefix => string.Empty;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Season 6 has no NPCs in Lost Tower, unlike 0.75 with its Potion Girl and Safety Guardian.
+    /// </remarks>
+    protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
+    {
+        yield break;
+    }
 }

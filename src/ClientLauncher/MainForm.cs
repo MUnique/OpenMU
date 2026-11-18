@@ -34,7 +34,10 @@ public partial class MainForm : Form
 
     private BindingList<ServerHostSettings> Hosts
     {
-        get => this._hostsBindingList;
+        get
+        {
+            return this._hostsBindingList;
+        }
         set
         {
             this._hostsBindingList = value;

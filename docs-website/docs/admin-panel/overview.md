@@ -78,7 +78,10 @@ example the [server-side AI bots](../server-features/bots.md).
   configuration; the breadcrumb is how you get back out.
 * **Configuration search** — a search box which finds configuration objects by
   name and jumps directly to their edit page.
-* **Theme selector** — light and dark theme.
+* **Theme selector** — light, dark or automatic theme. The automatic theme
+  follows the color scheme of the operating system and is the default. The
+  choice is applied immediately, without reloading the page, and is remembered
+  in a cookie.
 * **Language selector** — the panel's texts come from resource files. English is
   included; further languages can be added as satellite resource files and appear
   in this selector automatically.

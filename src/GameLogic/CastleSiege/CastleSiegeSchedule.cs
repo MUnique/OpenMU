@@ -141,11 +141,6 @@ internal sealed class CastleSiegeSchedule
     }
 
     /// <summary>
-    /// Gets the state after <paramref name="state"/>.
-    /// </summary>
-    /// <param name="state">The current state.</param>
-    /// <returns>The next configured state.</returns>
-    /// <summary>
     /// Gets the next period of a state which starts now or later, e.g. the next battle.
     /// </summary>
     /// <param name="state">The state.</param>
@@ -171,6 +166,11 @@ internal sealed class CastleSiegeSchedule
         return this.CreatePeriod(state, startUtc);
     }
 
+    /// <summary>
+    /// Gets the state after <paramref name="state"/>.
+    /// </summary>
+    /// <param name="state">The current state.</param>
+    /// <returns>The next configured state.</returns>
     public CastleSiegeState GetNextState(CastleSiegeState state)
     {
         var index = this.GetStateIndex(state);

@@ -79,6 +79,13 @@ public class BootstrapAdminUserProvider
     public AdminUser? User { get; }
 
     /// <summary>
+    /// Determines whether the specified user is the bootstrap user.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <returns><c>true</c>, if the specified user is the bootstrap user; otherwise, <c>false</c>.</returns>
+    public static bool IsBootstrapUser(AdminUser user) => user.Id == BootstrapUserId;
+
+    /// <summary>
     /// Stores the time step of an accepted authenticator code of the bootstrap user, if it is newer
     /// than the last accepted one.
     /// </summary>
@@ -103,11 +110,4 @@ public class BootstrapAdminUserProvider
             return true;
         }
     }
-
-    /// <summary>
-    /// Determines whether the specified user is the bootstrap user.
-    /// </summary>
-    /// <param name="user">The user.</param>
-    /// <returns><c>true</c>, if the specified user is the bootstrap user; otherwise, <c>false</c>.</returns>
-    public static bool IsBootstrapUser(AdminUser user) => user.Id == BootstrapUserId;
 }

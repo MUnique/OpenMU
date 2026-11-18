@@ -66,7 +66,10 @@ public class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public ServerState ServerState
     {
-        get => this._serverState;
+        get
+        {
+            return this._serverState;
+        }
         set
         {
             if (this._serverState == value)
@@ -82,7 +85,10 @@ public class ManageableServerClient : IManageableServer
     /// <inheritdoc/>
     public int CurrentConnections
     {
-        get => this._currentConnections;
+        get
+        {
+            return this._currentConnections;
+        }
         set
         {
             if (this._currentConnections == value)

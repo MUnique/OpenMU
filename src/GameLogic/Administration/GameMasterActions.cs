@@ -77,7 +77,8 @@ public static class GameMasterActions
         }
 
         return player.SelectedCharacter?.CurrentMap == map.Definition && player.Position == new Point(x, y)
-            ? GameServerAdminResult.Success : new(false, "The map transition was refused. Refresh the live character before retrying.");
+            ? GameServerAdminResult.Success
+            : new(false, "The map transition was refused. Refresh the live character before retrying.");
     }
 
     /// <summary>Inserts one validated item into the live inventory and notifies the client.</summary>

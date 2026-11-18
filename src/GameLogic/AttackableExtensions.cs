@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -34,6 +35,7 @@ public static class AttackableExtensions
         /// <summary>
         /// Gets a value indicating whether this instance is a summoned monster.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1101:PrefixLocalCallsWithThis", Justification = "The receiver of an extension block can't be prefixed with 'this'.")]
         public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
     }
 
@@ -209,8 +211,12 @@ public static class AttackableExtensions
 
         dmg -= (int)(dmg * defender.Attributes[Stats.ArmorDamageDecrease]);
 
-        var attackerLevel = attacker is Player ? attacker.Attributes[Stats.TotalLevel] :
-            attacker is AttackerSurrogate ? attackerPlayer!.Attributes![Stats.Level] : attacker.Attributes[Stats.Level];
+        var attackerLevel = attacker switch
+        {
+            Player => attacker.Attributes[Stats.TotalLevel],
+            AttackerSurrogate => attackerPlayer!.Attributes![Stats.Level],
+            _ => attacker.Attributes[Stats.Level],
+        };
         var minLevelDmg = Math.Max(1, (int)attackerLevel / 10);
         if (dmg < minLevelDmg)
         {
