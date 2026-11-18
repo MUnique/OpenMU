@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Web.Map;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.Web.Map.Map;
 
 /// <summary>
 /// Adapter which takes an <see cref="IGameServerContext"/> and adapts it to a <see cref="IObservableGameServer"/>.
@@ -23,6 +24,9 @@ public class ObservableGameServerAdapter : Disposable, IObservableGameServer
     public ObservableGameServerAdapter(IGameServerContext gameContext)
     {
         this._gameContext = gameContext;
+
+        // The live map shows the damage of the hits, which it gets from this plugin.
+        MapHitNotificationPlugIn.EnsureRegistered(gameContext.PlugInManager);
     }
 
     /// <inheritdoc />

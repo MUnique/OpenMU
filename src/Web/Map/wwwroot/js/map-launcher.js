@@ -130,3 +130,13 @@ function GetMapMonsterFilterMatches(serverId, mapId) {
     }
     return [];
 }
+
+// Resets the zoom and panning of the map view, so that the whole map is visible again.
+function ResetMapView(serverId, mapId) {
+    var app = window.mapApps && window.mapApps[serverId] && window.mapApps[serverId][mapId];
+    if (app && app.resetView) {
+        app.resetView();
+        return true;
+    }
+    return false;
+}

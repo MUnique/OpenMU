@@ -118,7 +118,7 @@ System.register("Queue", [], function (exports_1, context_1) {
 });
 System.register("Types", [], function (exports_2, context_2) {
     "use strict";
-    var Direction, MonsterFilterMode;
+    var Direction, DamageAttributes, MonsterFilterMode;
     var __moduleName = context_2 && context_2.id;
     return {
         setters: [],
@@ -134,6 +134,19 @@ System.register("Types", [], function (exports_2, context_2) {
                 Direction[Direction["North"] = 7] = "North";
                 Direction[Direction["NorthWest"] = 8] = "NorthWest";
             })(Direction || (exports_2("Direction", Direction = {})));
+            (function (DamageAttributes) {
+                DamageAttributes[DamageAttributes["Undefined"] = 0] = "Undefined";
+                DamageAttributes[DamageAttributes["Critical"] = 1] = "Critical";
+                DamageAttributes[DamageAttributes["Excellent"] = 2] = "Excellent";
+                DamageAttributes[DamageAttributes["IgnoreDefense"] = 4] = "IgnoreDefense";
+                DamageAttributes[DamageAttributes["Poison"] = 8] = "Poison";
+                DamageAttributes[DamageAttributes["Double"] = 16] = "Double";
+                DamageAttributes[DamageAttributes["Triple"] = 32] = "Triple";
+                DamageAttributes[DamageAttributes["Reflected"] = 64] = "Reflected";
+                DamageAttributes[DamageAttributes["Combo"] = 128] = "Combo";
+                DamageAttributes[DamageAttributes["RageFighterStreakHit"] = 256] = "RageFighterStreakHit";
+                DamageAttributes[DamageAttributes["RageFighterStreakFinalHit"] = 512] = "RageFighterStreakFinalHit";
+            })(DamageAttributes || (exports_2("DamageAttributes", DamageAttributes = {})));
             (function (MonsterFilterMode) {
                 MonsterFilterMode[MonsterFilterMode["Contains"] = 0] = "Contains";
                 MonsterFilterMode[MonsterFilterMode["StartsWith"] = 1] = "StartsWith";
@@ -272,11 +285,18 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                     _this.context = null;
                     _this.texture = null;
                     _this.labelMaterial = null;
+                    _this.zoom = 1;
+                    _this.unscaledWidth = LABEL_SCALE_X;
+                    _this.unscaledHeight = LABEL_SCALE_Y;
                     _this.scale.set(LABEL_SCALE_X, LABEL_SCALE_Y, LABEL_SCALE_Z);
                     _this.visible = false;
                     return _this;
                 }
                 NameLabel.prototype.raycast = function () {
+                };
+                NameLabel.prototype.setZoom = function (zoom) {
+                    this.zoom = zoom;
+                    this.applyScale();
                 };
                 NameLabel.prototype.show = function (name) {
                     this.createCanvasIfRequired();
@@ -335,7 +355,9 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                     canvas.width = this.nextPowerOfTwo(labelWidth + padding * 2);
                     canvas.height = labelHeight + padding * 2;
                     ctx.font = "bold 28px Consolas, monospace";
-                    this.scale.set((canvas.width / canvas.height) * SCALE_MULTIPLIER, SCALE_MULTIPLIER, LABEL_SCALE_Z);
+                    this.unscaledWidth = (canvas.width / canvas.height) * SCALE_MULTIPLIER;
+                    this.unscaledHeight = SCALE_MULTIPLIER;
+                    this.applyScale();
                     ctx.clearRect(CLEAR_X, CLEAR_Y, canvas.width, canvas.height);
                     var x = (canvas.width - labelWidth) / 2;
                     var y = (canvas.height - labelHeight) / 2;
@@ -359,6 +381,9 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
                     ctx.fillText(name, canvas.width / 2, canvas.height / 2);
                     texture.needsUpdate = true;
                 };
+                NameLabel.prototype.applyScale = function () {
+                    this.scale.set(this.unscaledWidth / this.zoom, this.unscaledHeight / this.zoom, LABEL_SCALE_Z);
+                };
                 NameLabel.prototype.nextPowerOfTwo = function (value) {
                     return Math.pow(2, Math.ceil(Math.log2(value)));
                 };
@@ -371,7 +396,7 @@ System.register("NameLabel", ["three"], function (exports_5, context_5) {
 });
 System.register("Attackable", ["three", "tween", "NameLabel"], function (exports_6, context_6) {
     "use strict";
-    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, MAP_OFFSET, getDisplayName, Attackable, attackableAlphaMapTexture;
+    var THREE, tween_2, NameLabel_1, NAME_LABEL_Z_POSITION, NAME_INDEX, NAME_SEPARATOR, MAP_OFFSET, getDisplayName, Attackable, attackableAlphaMapTexture, attackableAlphaTest;
     var __moduleName = context_6 && context_6.id;
     return {
         setters: [
@@ -410,6 +435,9 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                 };
                 Attackable.prototype.hideLabel = function () {
                     this.nameLabel.hide();
+                };
+                Attackable.prototype.setZoom = function (zoom) {
+                    this.nameLabel.setZoom(zoom);
                 };
                 Attackable.prototype.dispose = function () {
                     this.stopTweens();
@@ -548,19 +576,219 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
                 return Attackable;
             }(THREE.Mesh));
             exports_6("Attackable", Attackable);
+            exports_6("attackableAlphaTest", attackableAlphaTest = 0.05);
             new THREE.TextureLoader().load("_content/MUnique.OpenMU.Web.Map/img/attackable_alphamap.png", function (t) {
                 exports_6("attackableAlphaMapTexture", attackableAlphaMapTexture = t);
             });
         }
     };
 });
-System.register("Debug", [], function (exports_7, context_7) {
+System.register("DamageNumbers", ["three", "tween"], function (exports_7, context_7) {
     "use strict";
+    var THREE, tween_3, CANVAS_HEIGHT, DAMAGE_SCALE_Y, DAMAGE_Z_POSITION, FONT, LIFETIME_MS, MIN_CANVAS_WIDTH, PADDING, RISE_DISTANCE, RANDOM_OFFSET, DamageNumbers, DamageNumber;
     var __moduleName = context_7 && context_7.id;
+    return {
+        setters: [
+            function (THREE_4) {
+                THREE = THREE_4;
+            },
+            function (tween_3_1) {
+                tween_3 = tween_3_1;
+            }
+        ],
+        execute: function () {
+            CANVAS_HEIGHT = 64;
+            DAMAGE_SCALE_Y = 8;
+            DAMAGE_Z_POSITION = 300;
+            FONT = "bold 40px Consolas, monospace";
+            LIFETIME_MS = 900;
+            MIN_CANVAS_WIDTH = 64;
+            PADDING = 12;
+            RISE_DISTANCE = 10;
+            RANDOM_OFFSET = 6;
+            DamageNumbers = (function (_super) {
+                __extends(DamageNumbers, _super);
+                function DamageNumbers() {
+                    var _this = _super.call(this) || this;
+                    _this.numbers = [];
+                    _this.nextIndex = 0;
+                    _this.zoom = 1;
+                    for (var i = 0; i < DamageNumbers.poolSize; i++) {
+                        var number = new DamageNumber();
+                        _this.numbers.push(number);
+                        _this.add(number);
+                    }
+                    return _this;
+                }
+                DamageNumbers.prototype.setZoom = function (zoom) {
+                    this.zoom = zoom;
+                    for (var _i = 0, _a = this.numbers; _i < _a.length; _i++) {
+                        var number = _a[_i];
+                        number.setZoom(zoom);
+                    }
+                };
+                DamageNumbers.prototype.show = function (x, y, damage, color) {
+                    var number = this.numbers[this.nextIndex];
+                    this.nextIndex = (this.nextIndex + 1) % this.numbers.length;
+                    var offset = (Math.random() - 0.5) * RANDOM_OFFSET / this.zoom;
+                    number.show(x + offset, y, damage.toString(), color, this.zoom);
+                };
+                DamageNumbers.prototype.dispose = function () {
+                    for (var _i = 0, _a = this.numbers; _i < _a.length; _i++) {
+                        var number = _a[_i];
+                        this.remove(number);
+                        number.dispose();
+                    }
+                    this.numbers.length = 0;
+                };
+                DamageNumbers.poolSize = 64;
+                return DamageNumbers;
+            }(THREE.Object3D));
+            exports_7("DamageNumbers", DamageNumbers);
+            DamageNumber = (function (_super) {
+                __extends(DamageNumber, _super);
+                function DamageNumber() {
+                    var _this = _super.call(this, DamageNumber.hiddenMaterial) || this;
+                    _this.canvas = null;
+                    _this.context = null;
+                    _this.texture = null;
+                    _this.labelMaterial = null;
+                    _this.zoom = 1;
+                    _this.unscaledWidth = 0;
+                    _this.unscaledHeight = 0;
+                    _this.tween = null;
+                    _this.position.z = DAMAGE_Z_POSITION;
+                    _this.renderOrder = 3;
+                    _this.visible = false;
+                    return _this;
+                }
+                DamageNumber.prototype.raycast = function () {
+                };
+                DamageNumber.prototype.setZoom = function (zoom) {
+                    this.zoom = zoom;
+                    this.applyScale();
+                };
+                DamageNumber.prototype.show = function (x, y, text, color, zoom) {
+                    var _this = this;
+                    var _a;
+                    this.zoom = zoom;
+                    this.createCanvasIfRequired();
+                    this.render(text, color);
+                    (_a = this.tween) === null || _a === void 0 ? void 0 : _a.stop();
+                    this.position.x = x;
+                    this.position.y = y;
+                    this.setOpacity(1);
+                    this.visible = true;
+                    this.applyScale();
+                    var state = { y: this.position.y, opacity: 1 };
+                    this.tween = new tween_3.default.Tween(state)
+                        .to({ y: this.position.y + (RISE_DISTANCE / zoom), opacity: 0 }, LIFETIME_MS)
+                        .easing(tween_3.default.Easing.Quadratic.Out)
+                        .onUpdate(function () {
+                        _this.position.y = state.y;
+                        _this.setOpacity(state.opacity);
+                    })
+                        .onComplete(function () {
+                        _this.visible = false;
+                    })
+                        .start();
+                };
+                DamageNumber.prototype.dispose = function () {
+                    var _a;
+                    (_a = this.tween) === null || _a === void 0 ? void 0 : _a.stop();
+                    this.tween = null;
+                    this.visible = false;
+                    this.material = DamageNumber.hiddenMaterial;
+                    if (this.labelMaterial !== null) {
+                        this.labelMaterial.dispose();
+                        this.labelMaterial = null;
+                    }
+                    if (this.texture !== null) {
+                        this.texture.dispose();
+                        this.texture = null;
+                    }
+                    if (this.canvas !== null) {
+                        this.canvas.width = 0;
+                        this.canvas.height = 0;
+                        this.canvas = null;
+                    }
+                    this.context = null;
+                };
+                DamageNumber.prototype.createCanvasIfRequired = function () {
+                    if (this.canvas !== null) {
+                        return;
+                    }
+                    var canvas = document.createElement("canvas");
+                    canvas.height = CANVAS_HEIGHT;
+                    var context = canvas.getContext("2d");
+                    if (!context) {
+                        throw new Error("Failed to get 2D context");
+                    }
+                    this.canvas = canvas;
+                    this.context = context;
+                    this.texture = new THREE.CanvasTexture(canvas);
+                    this.labelMaterial = new THREE.SpriteMaterial({
+                        depthTest: false,
+                        depthWrite: false,
+                        map: this.texture,
+                        transparent: true,
+                    });
+                    this.material = this.labelMaterial;
+                };
+                DamageNumber.prototype.setOpacity = function (opacity) {
+                    if (this.labelMaterial !== null) {
+                        this.labelMaterial.opacity = opacity;
+                    }
+                };
+                DamageNumber.prototype.applyScale = function () {
+                    if (this.unscaledWidth === 0 || this.unscaledHeight === 0) {
+                        return;
+                    }
+                    this.scale.set(this.unscaledWidth / this.zoom, this.unscaledHeight / this.zoom, 1);
+                };
+                DamageNumber.prototype.render = function (text, color) {
+                    var ctx = this.context;
+                    var canvas = this.canvas;
+                    var texture = this.texture;
+                    if (ctx === null || canvas === null || texture === null) {
+                        return;
+                    }
+                    ctx.font = FONT;
+                    var textWidth = ctx.measureText(text).width;
+                    var width = Math.max(MIN_CANVAS_WIDTH, this.nextPowerOfTwo(textWidth + PADDING * 2));
+                    canvas.width = width;
+                    canvas.height = CANVAS_HEIGHT;
+                    ctx.font = FONT;
+                    var centerX = canvas.width / 2;
+                    var centerY = canvas.height / 2;
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.lineJoin = "round";
+                    ctx.lineWidth = 6;
+                    ctx.strokeStyle = "rgba(0, 0, 0, 0.9)";
+                    ctx.strokeText(text, centerX, centerY);
+                    ctx.fillStyle = color;
+                    ctx.fillText(text, centerX, centerY);
+                    this.unscaledWidth = (canvas.width / canvas.height) * DAMAGE_SCALE_Y;
+                    this.unscaledHeight = DAMAGE_SCALE_Y;
+                    texture.needsUpdate = true;
+                };
+                DamageNumber.prototype.nextPowerOfTwo = function (value) {
+                    return Math.pow(2, Math.ceil(Math.log2(value)));
+                };
+                DamageNumber.hiddenMaterial = new THREE.SpriteMaterial();
+                return DamageNumber;
+            }(THREE.Sprite));
+        }
+    };
+});
+System.register("Debug", [], function (exports_8, context_8) {
+    "use strict";
+    var __moduleName = context_8 && context_8.id;
     function isDebugLoggingEnabled() {
         return window.liveMapDebugLogging === true;
     }
-    exports_7("isDebugLoggingEnabled", isDebugLoggingEnabled);
+    exports_8("isDebugLoggingEnabled", isDebugLoggingEnabled);
     function logDebug(message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -570,17 +798,17 @@ System.register("Debug", [], function (exports_7, context_7) {
             console.debug.apply(console, __spreadArray([message], parameters, false));
         }
     }
-    exports_7("logDebug", logDebug);
+    exports_8("logDebug", logDebug);
     return {
         setters: [],
         execute: function () {
         }
     };
 });
-System.register("TerrainShader", ["three"], function (exports_8, context_8) {
+System.register("TerrainShader", ["three"], function (exports_9, context_9) {
     "use strict";
     var THREE, fragmentShader, vertexShader;
-    var __moduleName = context_8 && context_8.id;
+    var __moduleName = context_9 && context_9.id;
     function createTerrainShader() {
         return {
             fragmentShader: fragmentShader,
@@ -592,11 +820,11 @@ System.register("TerrainShader", ["three"], function (exports_8, context_8) {
             vertexShader: vertexShader,
         };
     }
-    exports_8("createTerrainShader", createTerrainShader);
+    exports_9("createTerrainShader", createTerrainShader);
     return {
         setters: [
-            function (THREE_4) {
-                THREE = THREE_4;
+            function (THREE_5) {
+                THREE = THREE_5;
             }
         ],
         execute: function () {
@@ -627,14 +855,14 @@ System.register("TerrainShader", ["three"], function (exports_8, context_8) {
         }
     };
 });
-System.register("Player", ["three", "Attackable"], function (exports_9, context_9) {
+System.register("Player", ["three", "Attackable"], function (exports_10, context_10) {
     "use strict";
     var THREE, Attackable_1, Player;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_10 && context_10.id;
     return {
         setters: [
-            function (THREE_5) {
-                THREE = THREE_5;
+            function (THREE_6) {
+                THREE = THREE_6;
             },
             function (Attackable_1_1) {
                 Attackable_1 = Attackable_1_1;
@@ -646,6 +874,7 @@ System.register("Player", ["three", "Attackable"], function (exports_9, context_
                 function Player(data) {
                     var _this = _super.call(this, data, Player.defaultGeometry, new THREE.MeshBasicMaterial({
                         alphaMap: Attackable_1.attackableAlphaMapTexture,
+                        alphaTest: Attackable_1.attackableAlphaTest,
                         color: Player.defaultColor,
                         transparent: true,
                     })) || this;
@@ -670,19 +899,19 @@ System.register("Player", ["three", "Attackable"], function (exports_9, context_
                 Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
                 return Player;
             }(Attackable_1.Attackable));
-            exports_9("Player", Player);
+            exports_10("Player", Player);
             ;
         }
     };
 });
-System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_10, context_10) {
+System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_11, context_11) {
     "use strict";
     var THREE, Attackable_2, NpcObjectKind, NpcColors, NonPlayerCharacter;
-    var __moduleName = context_10 && context_10.id;
+    var __moduleName = context_11 && context_11.id;
     return {
         setters: [
-            function (THREE_6) {
-                THREE = THREE_6;
+            function (THREE_7) {
+                THREE = THREE_7;
             },
             function (Attackable_2_1) {
                 Attackable_2 = Attackable_2_1;
@@ -708,7 +937,7 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 __extends(NonPlayerCharacter, _super);
                 function NonPlayerCharacter(data) {
                     var color = NonPlayerCharacter.getColorForObjectKind(data.npcObjectKind);
-                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: color, alphaMap: Attackable_2.attackableAlphaMapTexture, transparent: true })) || this;
+                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: color, alphaMap: Attackable_2.attackableAlphaMapTexture, alphaTest: Attackable_2.attackableAlphaTest, transparent: true })) || this;
                 }
                 NonPlayerCharacter.getColorForObjectKind = function (kind) {
                     switch (kind) {
@@ -728,22 +957,25 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
                 return NonPlayerCharacter;
             }(Attackable_2.Attackable));
-            exports_10("NonPlayerCharacter", NonPlayerCharacter);
+            exports_11("NonPlayerCharacter", NonPlayerCharacter);
             ;
         }
     };
 });
-System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter", "Debug"], function (exports_11, context_11) {
+System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter", "Debug"], function (exports_12, context_12) {
     "use strict";
-    var THREE, Attack_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, Debug_1, World;
-    var __moduleName = context_11 && context_11.id;
+    var THREE, Attack_1, DamageNumbers_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, Debug_1, World;
+    var __moduleName = context_12 && context_12.id;
     return {
         setters: [
-            function (THREE_7) {
-                THREE = THREE_7;
+            function (THREE_8) {
+                THREE = THREE_8;
             },
             function (Attack_1_1) {
                 Attack_1 = Attack_1_1;
+            },
+            function (DamageNumbers_1_1) {
+                DamageNumbers_1 = DamageNumbers_1_1;
             },
             function (TerrainShader_1_1) {
                 TerrainShader_1 = TerrainShader_1_1;
@@ -768,6 +1000,9 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var _this = _super.call(this) || this;
                     _this.terrainTexture = null;
                     _this.lastLabelObjectId = null;
+                    _this.selectedObjectId = null;
+                    _this.zoom = 1;
+                    _this.renderSize = 0;
                     _this.isDisposed = false;
                     _this.monsterFilterMode = 0;
                     _this.monsterFilterText = "";
@@ -776,6 +1011,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     _this.attacks = new Attack_1.Attacks();
                     _this.attacks.position.z = attacksZ;
                     _this.add(_this.attacks);
+                    _this.damageNumbers = new DamageNumbers_1.DamageNumbers();
+                    _this.add(_this.damageNumbers);
                     var segments = 1;
                     _this.terrainMaterial = new THREE.ShaderMaterial(TerrainShader_1.createTerrainShader());
                     _this.terrainMesh = new THREE.Mesh(new THREE.PlaneGeometry(World.sideLength, World.sideLength, segments, segments), _this.terrainMaterial);
@@ -899,6 +1136,30 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                         this.attacks.addAttack(animating, target);
                     }
                 };
+                World.prototype.showDamage = function (attackerId, targetId, healthDamage, shieldDamage, attributes) {
+                    if (this.isDisposed || this.selectedObjectId === null || this.selectedObjectId !== attackerId) {
+                        return;
+                    }
+                    var target = this.getObjectById(targetId);
+                    if (target === undefined || target === null || !target.visible) {
+                        return;
+                    }
+                    var damage = healthDamage + shieldDamage;
+                    if (damage <= 0) {
+                        return;
+                    }
+                    this.damageNumbers.show(target.position.x, target.position.y, damage, this.getDamageColor(healthDamage, shieldDamage, attributes));
+                };
+                World.prototype.setZoom = function (zoom) {
+                    this.zoom = zoom;
+                    this.updateTerrainPixelSize();
+                    this.damageNumbers.setZoom(zoom);
+                    for (var id in this.objects) {
+                        if (this.objects.hasOwnProperty(id)) {
+                            this.objects[id].setZoom(zoom);
+                        }
+                    }
+                };
                 World.prototype.dispose = function () {
                     var _a;
                     if (this.isDisposed) {
@@ -916,6 +1177,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     this.objects = {};
                     this.remove(this.attacks);
                     this.attacks.dispose();
+                    this.remove(this.damageNumbers);
+                    this.damageNumbers.dispose();
                     this.remove(this.terrainMesh);
                     this.terrainMesh.geometry.dispose();
                     this.terrainMaterial.dispose();
@@ -962,12 +1225,16 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var player = this.getObjectById(objectId);
                     if (player != null) {
                         player.data = __assign(__assign({}, player.data), { isHighlighted: true });
+                        this.selectedObjectId = objectId;
                     }
                 };
                 World.prototype.highlightOff = function (objectId) {
                     var player = this.getObjectById(objectId);
                     if (player != null) {
                         player.data = __assign(__assign({}, player.data), { isHighlighted: false });
+                        if (this.selectedObjectId === objectId) {
+                            this.selectedObjectId = null;
+                        }
                     }
                 };
                 World.prototype.showLabel = function (objectId) {
@@ -986,7 +1253,8 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     }
                 };
                 World.prototype.onSizeChanged = function (newSize) {
-                    this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / newSize;
+                    this.renderSize = newSize;
+                    this.updateTerrainPixelSize();
                 };
                 World.prototype.addNpc = function (data) {
                     if (this.isDisposed) {
@@ -995,6 +1263,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var npc = new NonPlayerCharacter_1.NonPlayerCharacter(data);
                     this.addObjectMesh(npc);
                     npc.respawn(data);
+                    npc.setZoom(this.zoom);
                     this.applyMonsterFilter(npc);
                 };
                 World.prototype.addPlayer = function (data) {
@@ -1004,6 +1273,7 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                     var player = new Player_1.Player(data);
                     this.addObjectMesh(player);
                     player.respawn(data);
+                    player.setZoom(this.zoom);
                 };
                 World.prototype.removeObject = function (objectId) {
                     var mesh = this.objects[objectId];
@@ -1017,6 +1287,9 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                         this.lastLabelObjectId = null;
                     }
                     mesh.dispose();
+                    if (this.selectedObjectId === objectId) {
+                        this.selectedObjectId = null;
+                    }
                 };
                 World.prototype.clear = function () {
                     this.hideLastLabel();
@@ -1048,6 +1321,29 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                             return lowerName.includes(this.monsterFilterText);
                     }
                 };
+                World.prototype.getDamageColor = function (healthDamage, shieldDamage, attributes) {
+                    if ((attributes & 4) !== 0) {
+                        return "#00FFFF";
+                    }
+                    if ((attributes & 2) !== 0) {
+                        return "#90EE90";
+                    }
+                    if ((attributes & 1) !== 0) {
+                        return "#0000FF";
+                    }
+                    if ((attributes & 64) !== 0) {
+                        return "#FFB6C1";
+                    }
+                    if ((attributes & 8) !== 0) {
+                        return "#006400";
+                    }
+                    return "#FF0000";
+                };
+                World.prototype.updateTerrainPixelSize = function () {
+                    if (this.renderSize > 0) {
+                        this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / (this.renderSize * this.zoom);
+                    }
+                };
                 World.prototype.addObjectMesh = function (mesh) {
                     this.add(mesh);
                     this.objects[mesh.data.id] = mesh;
@@ -1056,18 +1352,18 @@ System.register("World", ["three", "Attack", "TerrainShader", "Player", "Attacka
                 World.rotationAnimationId = 122;
                 return World;
             }(THREE.Object3D));
-            exports_11("World", World);
+            exports_12("World", World);
         }
     };
 });
-System.register("WorldObjectPicker", ["three"], function (exports_12, context_12) {
+System.register("WorldObjectPicker", ["three"], function (exports_13, context_13) {
     "use strict";
     var THREE, isGameObject, WorldObjectPicker;
-    var __moduleName = context_12 && context_12.id;
+    var __moduleName = context_13 && context_13.id;
     return {
         setters: [
-            function (THREE_8) {
-                THREE = THREE_8;
+            function (THREE_9) {
+                THREE = THREE_9;
             }
         ],
         execute: function () {
@@ -1154,21 +1450,21 @@ System.register("WorldObjectPicker", ["three"], function (exports_12, context_12
                 WorldObjectPicker.hoverThresholdSquared = 16;
                 return WorldObjectPicker;
             }());
-            exports_12("WorldObjectPicker", WorldObjectPicker);
+            exports_13("WorldObjectPicker", WorldObjectPicker);
         }
     };
 });
-System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_13, context_13) {
+System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_14, context_14) {
     "use strict";
-    var THREE, tween_3, WorldObjectPicker_1, World_1, MapApp;
-    var __moduleName = context_13 && context_13.id;
+    var THREE, tween_4, WorldObjectPicker_1, World_1, MapApp;
+    var __moduleName = context_14 && context_14.id;
     return {
         setters: [
-            function (THREE_9) {
-                THREE = THREE_9;
+            function (THREE_10) {
+                THREE = THREE_10;
             },
-            function (tween_3_1) {
-                tween_3 = tween_3_1;
+            function (tween_4_1) {
+                tween_4 = tween_4_1;
             },
             function (WorldObjectPicker_1_1) {
                 WorldObjectPicker_1 = WorldObjectPicker_1_1;
@@ -1184,6 +1480,9 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.lastHighlightedId = null;
                     this.isDisposing = false;
                     this.isDisposed = false;
+                    this.isPanning = false;
+                    this.lastPanX = 0;
+                    this.lastPanY = 0;
                     this.animationFrameId = null;
                     this.stats = stats;
                     this.container = mapContainer;
@@ -1198,6 +1497,16 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.onWindowResize();
                     this.resizeEventListener = function () { return _this.onWindowResize(); };
                     window.addEventListener("resize", this.resizeEventListener, false);
+                    this.wheelEventListener = function (e) { return _this.onWheel(e); };
+                    this.mouseDownEventListener = function (e) { return _this.onPanStart(e); };
+                    this.mouseMoveEventListener = function (e) { return _this.onPanMove(e); };
+                    this.mouseUpEventListener = function () { return _this.onPanEnd(); };
+                    this.contextMenuEventListener = function (e) { return e.preventDefault(); };
+                    this.renderer.domElement.addEventListener("wheel", this.wheelEventListener, { passive: false });
+                    this.renderer.domElement.addEventListener("mousedown", this.mouseDownEventListener, false);
+                    this.renderer.domElement.addEventListener("contextmenu", this.contextMenuEventListener, false);
+                    window.addEventListener("mousemove", this.mouseMoveEventListener, false);
+                    window.addEventListener("mouseup", this.mouseUpEventListener, false);
                     var hideInfo = function () {
                         var info = document.getElementById("selected_info");
                         if (info) {
@@ -1239,12 +1548,24 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.onPickObjectHandler(data);
                     return true;
                 };
+                MapApp.prototype.resetView = function () {
+                    this.camera.zoom = MapApp.minZoom;
+                    this.camera.position.x = 0;
+                    this.camera.position.y = 0;
+                    this.camera.updateProjectionMatrix();
+                    this.world.setZoom(this.camera.zoom);
+                };
                 MapApp.prototype.dispose = function () {
                     if (this.isDisposing || this.isDisposed) {
                         return;
                     }
                     this.isDisposing = true;
                     window.removeEventListener("resize", this.resizeEventListener);
+                    window.removeEventListener("mousemove", this.mouseMoveEventListener);
+                    window.removeEventListener("mouseup", this.mouseUpEventListener);
+                    this.renderer.domElement.removeEventListener("wheel", this.wheelEventListener);
+                    this.renderer.domElement.removeEventListener("mousedown", this.mouseDownEventListener);
+                    this.renderer.domElement.removeEventListener("contextmenu", this.contextMenuEventListener);
                     if (this.animationFrameId !== null) {
                         cancelAnimationFrame(this.animationFrameId);
                         this.animationFrameId = null;
@@ -1274,16 +1595,87 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     }
                     this.animationFrameId = requestAnimationFrame(function (frameTime) { return _this.animate(frameTime); });
                     (_a = this.stats) === null || _a === void 0 ? void 0 : _a.update();
-                    tween_3.default.update(time);
+                    tween_4.default.update(time);
                     this.world.update();
                     this.renderer.render(this.scene, this.camera);
                 };
                 MapApp.prototype.createCamera = function () {
-                    var MAP_SIZE = 256;
                     var NEAR = 0.1, FAR = 10000;
-                    var camera = new THREE.OrthographicCamera(MAP_SIZE / -2, MAP_SIZE / 2, MAP_SIZE / 2, MAP_SIZE / -2, NEAR, FAR);
+                    var camera = new THREE.OrthographicCamera(MapApp.mapSize / -2, MapApp.mapSize / 2, MapApp.mapSize / 2, MapApp.mapSize / -2, NEAR, FAR);
                     camera.position.z = 1000;
                     return camera;
+                };
+                MapApp.prototype.onWheel = function (event) {
+                    event.preventDefault();
+                    if (event.deltaY === 0) {
+                        return;
+                    }
+                    var factor = Math.exp(-this.getWheelDeltaInPixels(event) * MapApp.wheelZoomSpeed);
+                    var newZoom = THREE.Math.clamp(this.camera.zoom * factor, MapApp.minZoom, MapApp.maxZoom);
+                    if (newZoom === this.camera.zoom) {
+                        return;
+                    }
+                    var before = this.screenToMapPoint(event.offsetX, event.offsetY);
+                    this.camera.zoom = newZoom;
+                    this.camera.updateProjectionMatrix();
+                    var after = this.screenToMapPoint(event.offsetX, event.offsetY);
+                    this.camera.position.x += before.x - after.x;
+                    this.camera.position.y += before.y - after.y;
+                    this.clampCamera();
+                    this.world.setZoom(newZoom);
+                };
+                MapApp.prototype.onPanStart = function (event) {
+                    var isPanButton = event.button === 1 || event.button === 2;
+                    if (!isPanButton || this.camera.zoom <= MapApp.minZoom) {
+                        return;
+                    }
+                    event.preventDefault();
+                    this.isPanning = true;
+                    this.lastPanX = event.clientX;
+                    this.lastPanY = event.clientY;
+                };
+                MapApp.prototype.onPanMove = function (event) {
+                    if (!this.isPanning) {
+                        return;
+                    }
+                    var panButtons = 2 | 4;
+                    if ((event.buttons & panButtons) === 0) {
+                        this.isPanning = false;
+                        return;
+                    }
+                    var unitsPerPixel = (MapApp.mapSize / this.camera.zoom) / this.renderer.domElement.clientWidth;
+                    this.camera.position.x -= (event.clientX - this.lastPanX) * unitsPerPixel;
+                    this.camera.position.y += (event.clientY - this.lastPanY) * unitsPerPixel;
+                    this.lastPanX = event.clientX;
+                    this.lastPanY = event.clientY;
+                    this.clampCamera();
+                };
+                MapApp.prototype.getWheelDeltaInPixels = function (event) {
+                    var lineMode = 1;
+                    var pageMode = 2;
+                    var delta = event.deltaY;
+                    if (event.deltaMode === lineMode) {
+                        delta *= MapApp.pixelsPerWheelLine;
+                    }
+                    else if (event.deltaMode === pageMode) {
+                        delta *= MapApp.pixelsPerWheelPage;
+                    }
+                    return THREE.Math.clamp(delta, -MapApp.maxWheelDelta, MapApp.maxWheelDelta);
+                };
+                MapApp.prototype.onPanEnd = function () {
+                    this.isPanning = false;
+                };
+                MapApp.prototype.screenToMapPoint = function (offsetX, offsetY) {
+                    var canvas = this.renderer.domElement;
+                    var x = (offsetX / canvas.clientWidth) * 2 - 1;
+                    var y = -(offsetY / canvas.clientHeight) * 2 + 1;
+                    return new THREE.Vector3(x, y, 0).unproject(this.camera);
+                };
+                MapApp.prototype.clampCamera = function () {
+                    var halfVisibleSize = (MapApp.mapSize / 2) / this.camera.zoom;
+                    var maximumOffset = Math.max(0, (MapApp.mapSize / 2) - halfVisibleSize);
+                    this.camera.position.x = THREE.Math.clamp(this.camera.position.x, -maximumOffset, maximumOffset);
+                    this.camera.position.y = THREE.Math.clamp(this.camera.position.y, -maximumOffset, maximumOffset);
                 };
                 MapApp.prototype.onWindowResize = function () {
                     var margin = 50;
@@ -1311,9 +1703,16 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                         this.world.hideLastLabel();
                     }
                 };
+                MapApp.mapSize = 256;
+                MapApp.minZoom = 1;
+                MapApp.maxZoom = 8;
+                MapApp.wheelZoomSpeed = 0.0018;
+                MapApp.maxWheelDelta = 200;
+                MapApp.pixelsPerWheelLine = 33;
+                MapApp.pixelsPerWheelPage = 100;
                 return MapApp;
             }());
-            exports_13("MapApp", MapApp);
+            exports_14("MapApp", MapApp);
         }
     };
 });

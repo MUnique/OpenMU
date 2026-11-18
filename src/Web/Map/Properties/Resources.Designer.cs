@@ -329,5 +329,23 @@ namespace MUnique.OpenMU.Web.Map.Properties {
                 return ResourceManager.GetString("AnalyzeTraffic", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset view.
+        /// </summary>
+        public static string ResetView {
+            get {
+                return ResourceManager.GetString("ResetView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom with the mouse wheel, pan by dragging with the right mouse button.
+        /// </summary>
+        public static string ZoomHint {
+            get {
+                return ResourceManager.GetString("ZoomHint", resourceCulture);
+            }
+        }
     }
 }

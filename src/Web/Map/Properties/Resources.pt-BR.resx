@@ -207,4 +207,10 @@
   <data name="NoMatchingMonsters" xml:space="preserve">
     <value>Nenhum monstro correspondente neste mapa</value>
   </data>
+  <data name="ResetView" xml:space="preserve">
+    <value>Redefinir visualização</value>
+  </data>
+  <data name="ZoomHint" xml:space="preserve">
+    <value>Zoom com a roda do mouse, arraste com o botão direito para mover</value>
+  </data>
 </root>
