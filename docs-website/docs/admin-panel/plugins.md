@@ -133,7 +133,7 @@ Chat messages, letters, logins and account links are never forwarded.
 
 Each event is posted on its own:
 
-```
+```http
 POST <URL>
 Content-Type: application/json
 X-OpenMU-Timestamp: 1763380800

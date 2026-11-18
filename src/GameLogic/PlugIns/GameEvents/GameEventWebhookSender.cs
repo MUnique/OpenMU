@@ -26,12 +26,12 @@ public sealed class GameEventWebhookSender
     /// <summary>
     /// The name of the header with the signature, <c>sha256=</c> followed by the lowercase hex of the HMAC.
     /// </summary>
-    public const string SignatureHeader = "X-OpenMU-Signature";
+    public static string SignatureHeader { get; } = "X-OpenMU-Signature";
 
     /// <summary>
     /// The name of the header with the time of the request, in seconds since the Unix epoch, which is part of the signature.
     /// </summary>
-    public const string TimestampHeader = "X-OpenMU-Timestamp";
+    public static string TimestampHeader { get; } = "X-OpenMU-Timestamp";
 
     /// <summary>
     /// The maximum number of events which wait to be sent.
@@ -131,7 +131,7 @@ public sealed class GameEventWebhookSender
     {
         var body = Serialize(delivery.Id, delivery.Event);
         var delay = this._firstRetryDelay;
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 1; attempt <= MaximumAttempts; attempt++)
         {
             try
             {
@@ -153,15 +153,15 @@ public sealed class GameEventWebhookSender
                 this._logger.LogDebug(ex, "Attempt {attempt} to post the game event {id} failed.", attempt, delivery.Id);
             }
 
-            if (attempt >= MaximumAttempts)
+            if (attempt < MaximumAttempts)
             {
-                this._logger.LogWarning("The game event {id} couldn't be posted to the webhook after {attempts} attempts; it's dropped.", delivery.Id, attempt);
-                return false;
+                await Task.Delay(delay, this._timeProvider).ConfigureAwait(false);
+                delay *= 2;
             }
-
-            await Task.Delay(delay, this._timeProvider).ConfigureAwait(false);
-            delay *= 2;
         }
+
+        this._logger.LogWarning("The game event {id} couldn't be posted to the webhook after {attempts} attempts; it's dropped.", delivery.Id, MaximumAttempts);
+        return false;
     }
 
     private static bool IsTransient(HttpStatusCode status)

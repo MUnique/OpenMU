@@ -268,15 +268,9 @@ public class GameEventWebhookPlugInTest
 
     private sealed record RecordedRequest(Uri? Uri, string Body, Dictionary<string, string> Headers);
 
-    private sealed class RecordingHandler : HttpMessageHandler
+    private sealed class RecordingHandler(Func<RecordedRequest, HttpStatusCode> respond) : HttpMessageHandler
     {
-        private readonly Func<RecordedRequest, HttpStatusCode> _respond;
         private readonly List<RecordedRequest> _requests = new();
-
-        public RecordingHandler(Func<RecordedRequest, HttpStatusCode> respond)
-        {
-            this._respond = respond;
-        }
 
         public IReadOnlyList<RecordedRequest> Requests
         {
@@ -298,7 +292,7 @@ public class GameEventWebhookPlugInTest
                 this._requests.Add(recorded);
             }
 
-            return new HttpResponseMessage(this._respond(recorded));
+            return new HttpResponseMessage(respond(recorded));
         }
     }
 
