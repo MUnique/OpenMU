@@ -101,7 +101,10 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <remarks>Assignments preserve lethal ownership; only initialization establishes a fresh life.</remarks>
     public int Health
     {
-        get => Volatile.Read(ref this._health) & int.MaxValue;
+        get
+        {
+            return Volatile.Read(ref this._health) & int.MaxValue;
+        }
         set
         {
             var health = Math.Max(value, 0);
