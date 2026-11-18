@@ -22,28 +22,19 @@ using MUnique.OpenMU.PlugIns;
 /// migration (EF migration) can add as a column but not populate with the right value.
 /// </summary>
 [PlugIn]
-[Display(Name = PlugInName, Description = PlugInDescription)]
+[Display(Name = nameof(Properties.PlugInResources.IllusionTempleDataUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.IllusionTempleDataUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
 [Guid("032FECC5-932E-4161-A50A-DF7D07AF3866")]
 public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
 {
     /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Illusion Temple Data";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC. "
-                                              + "If the items 13/50 and 13/51 have swapped data (Scroll of Blood and Illusion Sorcerer Covenant), it gives them their original data back: "
-                                              + "names, sizes, durability, levels and drops, the drop item groups, the temple tickets and the merchant items of 13/51. "
-                                              + "If only one of the two has the swapped name, it changes neither. "
-                                              + "References to the two items which you added yourself (craftings, quests, item drops, plug-in settings) stay as they are: check them after the update.";
-
-    /// <summary>
     /// The number of the Mirage NPC, which opens the illusion temple dialog.
     /// </summary>
     private const short MirageNpcNumber = 385;
+
+    /// <summary>
+    /// The number of Lumen the Barmaid, the merchant who sells the Illusion Sorcerer Covenant.
+    /// </summary>
+    private const short LumenTheBarmaidNumber = 255;
 
     /// <summary>
     /// The number of the Stone Statue NPC, which holds the sacred relic during a match.
@@ -122,6 +113,21 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// The neutral name of the Scroll of Blood.
     /// </summary>
     private const string ScrollOfBloodName = "Scroll of Blood";
+
+    /// <summary>
+    /// The original width of the Scroll of Blood.
+    /// </summary>
+    private const byte ScrollOfBloodWidth = 2;
+
+    /// <summary>
+    /// The original width of the Illusion Sorcerer Covenant.
+    /// </summary>
+    private const byte CovenantWidth = 1;
+
+    /// <summary>
+    /// The original height of both items.
+    /// </summary>
+    private const byte ItemHeight = 2;
 
     /// <summary>
     /// The map numbers of the six illusion temples, and the arena monster NPC number range (base id and
@@ -209,28 +215,30 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => Properties.PlugInResources.IllusionTempleDataUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => Properties.PlugInResources.IllusionTempleDataUpdatePlugIn_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override int Version => 3;
+    public override int Version => 4;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 07, 29, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 8, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 17, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     /// <remarks>
     /// Version one swapped the numbers of the Illusion Sorcerer Covenant and the Scroll of Blood, believing the
     /// covenant was the ticket. It's the other way around, so version three leaves the original numbers as they
     /// are, and gives a database which got the swap the original item data back (see <see cref="RestoreTicketItems"/>).
+    /// Version four also restores the data when the server owner gave both items their original names already, so
+    /// it runs the restoration again on a database which has version three.
     /// The ticket binding repair of version two pointed the temples which reference 13/50 at 13/51, then named the
     /// covenant; the restoration still makes that move, as 13/51 becomes the Scroll of Blood.
     /// </remarks>
@@ -286,8 +294,11 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// Version one of this update swapped the numbers of the two item definitions, and the data initialization of
     /// the same time created them with swapped data. The game client knows the items by their numbers, so the
     /// numbers stay and the data is swapped back instead: an owned item which the client shows as the Scroll of
-    /// Blood stays the ticket, and the item 13/50 drops again. The swapped state is recognized by the names, so
-    /// nothing changes on a configuration which has the original data.
+    /// Blood stays the ticket, and the item 13/50 drops again. The swapped state is recognized by the names. When the
+    /// server owner gave both items their original names already, it's recognized by what's left of it: the swapped
+    /// sizes, Lumen the Barmaid selling 13/51 instead of 13/50, or a drop item group of the covenant with 13/51 instead
+    /// of 13/50. A 13/51 next to a 13/50 is an addition of the owner. On a configuration without these, nothing
+    /// changes, also when the owner changed the sizes or the temple tickets, or added the Scroll of Blood.
     /// </remarks>
     /// <param name="gameConfiguration">The game configuration.</param>
     private static void RestoreTicketItems(GameConfiguration gameConfiguration)
@@ -296,19 +307,73 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         // serialized value carries the translations and the resource metadata, so comparing it to a
         // plain string would never match on a database which has been localized.
         // The items are named by their numbers, which is what they are after the restoration.
-        var ticket = gameConfiguration.Items.FirstOrDefault(item => item.Group == TicketItemGroup && item.Number == ScrollOfBloodItemNumber && item.Name.ValueInNeutralLanguage == CovenantName);
-        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == TicketItemGroup && item.Number == CovenantItemNumber && item.Name.ValueInNeutralLanguage == ScrollOfBloodName);
+        var ticket = gameConfiguration.Items.FirstOrDefault(item => item.Group == TicketItemGroup && item.Number == ScrollOfBloodItemNumber);
+        var covenant = gameConfiguration.Items.FirstOrDefault(item => item.Group == TicketItemGroup && item.Number == CovenantItemNumber);
         if (ticket is null || covenant is null)
         {
-            // Not swapped, or the server owner changed one of the two: the data of one item alone can't be swapped,
-            // and the description of the update tells the owner to check the items.
             return;
         }
 
+        if (ticket.Name.ValueInNeutralLanguage == CovenantName && covenant.Name.ValueInNeutralLanguage == ScrollOfBloodName)
+        {
+            RestoreSwappedItems(gameConfiguration, ticket, covenant);
+        }
+        else if (ticket.Name.ValueInNeutralLanguage == ScrollOfBloodName && covenant.Name.ValueInNeutralLanguage == CovenantName
+                 && HasRemainsOfTheSwap(gameConfiguration, ticket, covenant))
+        {
+            // A server owner may have given both items their original names already, but not the rest of their data.
+            RestoreRenamedBackItems(gameConfiguration, ticket, covenant);
+        }
+        else
+        {
+            // Not swapped, or the server owner changed one of the two: the data of one item alone can't be swapped,
+            // and the description of the update tells the owner to check the items.
+        }
+    }
+
+    /// <summary>
+    /// Restores the items while their names are swapped: the names and the rest of the data follow the number.
+    /// The temples with the ticket 13/50 move to 13/51, and the store items of 13/51 to 13/50, as the owner chose
+    /// them by the swapped name; a temple of 13/51 or a store item of 13/50 is right already, so it stays. The drop
+    /// item groups swap the two items.
+    /// </summary>
+    private static void RestoreSwappedItems(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
         RepairTicketBindings(gameConfiguration, ticket, covenant);
-        RepairMerchantStoreItems(gameConfiguration, ticket, covenant);
+        RepairMerchantStoreItems(gameConfiguration.Monsters, ticket, covenant);
+        (ticket.Name, covenant.Name) = (covenant.Name, ticket.Name);
         SwapData(ticket, covenant);
+        SetOriginalSizes(ticket, covenant);
         SwapDropItemGroups(gameConfiguration, ticket, covenant);
+    }
+
+    /// <summary>
+    /// Determines whether a configuration in which both items have their original names has remains of the swap:
+    /// the swapped sizes, Lumen the Barmaid selling 13/51 instead of 13/50, or a drop item group of the covenant with
+    /// 13/51 instead of 13/50. None of these is in the original data; a 13/51 which the owner added next to the 13/50
+    /// isn't a remain.
+    /// </summary>
+    private static bool HasRemainsOfTheSwap(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
+        return (ticket is { Width: CovenantWidth, Height: ItemHeight } && covenant is { Width: ScrollOfBloodWidth, Height: ItemHeight })
+               || GetLumenSellingTicketInsteadOfCovenant(gameConfiguration, ticket, covenant).Any()
+               || GetCovenantGroupsWithTicketInsteadOfCovenant(gameConfiguration, ticket, covenant).Any();
+    }
+
+    /// <summary>
+    /// Restores the items when the server owner gave both their original names already. The owner may have fixed the
+    /// sizes, too, so the repairs only change what's still wrong.
+    /// A reference which the owner added to 13/51 may be meant for the Scroll of Blood, so only the references of the
+    /// original data move: the temple tickets, and the store items of Lumen the Barmaid and the drop item groups of the
+    /// covenant which have 13/51 instead of 13/50. The rest of the data, besides the sizes, is the same for both items
+    /// in the original data.
+    /// </summary>
+    private static void RestoreRenamedBackItems(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
+        RepairTicketBindings(gameConfiguration, ticket, covenant);
+        RepairMerchantStoreItems(GetLumenSellingTicketInsteadOfCovenant(gameConfiguration, ticket, covenant).ToList(), ticket, covenant);
+        SetOriginalSizes(ticket, covenant);
+        RepairCovenantDropItemGroups(gameConfiguration, ticket, covenant);
     }
 
     /// <summary>
@@ -328,35 +393,42 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <summary>
-    /// Points the items of the merchant stores which reference the ticket 13/51 at the item 13/50.
-    /// No merchant sells the ticket, but a merchant of the original data sells the Illusion Sorcerer Covenant,
-    /// whose item definition version one of this update renumbered to 51.
+    /// Points the items of the stores of the specified merchants which reference the ticket 13/51 at the item 13/50.
+    /// No merchant sells the ticket, but a merchant of the original data, Lumen the Barmaid, sells the Illusion
+    /// Sorcerer Covenant, whose item definition version one of this update renumbered to 51.
     /// </summary>
-    private static void RepairMerchantStoreItems(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    private static void RepairMerchantStoreItems(IEnumerable<MonsterDefinition> merchants, ItemDefinition ticket, ItemDefinition covenant)
     {
-        foreach (var item in gameConfiguration.Monsters
-                     .SelectMany(monster => monster.MerchantStore?.Items ?? Enumerable.Empty<Item>())
-                     .Where(item => ReferenceEquals(item.Definition, ticket)))
+        foreach (var item in GetStoreItems(merchants).Where(item => ReferenceEquals(item.Definition, ticket)))
         {
             item.Definition = covenant;
         }
     }
 
     /// <summary>
-    /// Swaps the data which the data initialization sets for each event item, except the number.
+    /// Swaps the data which the data initialization sets for each event item, except the number, the name and the size.
     /// The other data, like the item rules, the price definition and the game version, is set by the number,
     /// so it already fits.
     /// </summary>
     private static void SwapData(ItemDefinition first, ItemDefinition second)
     {
-        (first.Name, second.Name) = (second.Name, first.Name);
-        (first.Width, second.Width) = (second.Width, first.Width);
-        (first.Height, second.Height) = (second.Height, first.Height);
         (first.Durability, second.Durability) = (second.Durability, first.Durability);
         (first.MaximumItemLevel, second.MaximumItemLevel) = (second.MaximumItemLevel, first.MaximumItemLevel);
         (first.DropsFromMonsters, second.DropsFromMonsters) = (second.DropsFromMonsters, first.DropsFromMonsters);
         (first.DropLevel, second.DropLevel) = (second.DropLevel, first.DropLevel);
         (first.MaximumDropLevel, second.MaximumDropLevel) = (second.MaximumDropLevel, first.MaximumDropLevel);
+    }
+
+    /// <summary>
+    /// Sets the original sizes of the two items, which the game client knows by the number. They're set instead of
+    /// swapped, as a server owner may have fixed them already: the client shows overlapping items otherwise.
+    /// </summary>
+    private static void SetOriginalSizes(ItemDefinition ticket, ItemDefinition covenant)
+    {
+        ticket.Width = ScrollOfBloodWidth;
+        ticket.Height = ItemHeight;
+        covenant.Width = CovenantWidth;
+        covenant.Height = ItemHeight;
     }
 
     /// <summary>
@@ -376,6 +448,64 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
             group.PossibleItems.Remove(containsFirst ? first : second);
             group.PossibleItems.Add(containsFirst ? second : first);
         }
+    }
+
+    /// <summary>
+    /// Points the drop item groups of the Illusion Sorcerer Covenant, whose description the data initialization started
+    /// with its name (the item level follows the translations), from the ticket 13/51 at the item 13/50.
+    /// When the server owner gave the items their original names already, a drop item group of their own which
+    /// contains 13/51 may be meant for the Scroll of Blood, and a covenant group which contains 13/50 is right, also
+    /// when the owner added 13/51 to it, so these stay.
+    /// </summary>
+    private static void RepairCovenantDropItemGroups(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
+        foreach (var group in GetCovenantGroupsWithTicketInsteadOfCovenant(gameConfiguration, ticket, covenant).ToList())
+        {
+            group.PossibleItems.Remove(ticket);
+            group.PossibleItems.Add(covenant);
+        }
+    }
+
+    /// <summary>
+    /// Gets Lumen the Barmaid, the merchant of the original data who sells the Illusion Sorcerer Covenant, when she
+    /// sells the ticket 13/51 instead of the covenant 13/50. When she sells both, the owner added the Scroll of Blood.
+    /// The detection of the swap and the repair use it both, so they stay in step.
+    /// </summary>
+    private static IEnumerable<MonsterDefinition> GetLumenSellingTicketInsteadOfCovenant(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
+        return gameConfiguration.Monsters.Where(monster =>
+            monster.Number == LumenTheBarmaidNumber
+            && monster.MerchantStore?.Items is { } items
+            && items.Any(item => ReferenceEquals(item.Definition, ticket))
+            && !items.Any(item => ReferenceEquals(item.Definition, covenant)));
+    }
+
+    /// <summary>
+    /// Gets the items of the stores of the specified merchants.
+    /// </summary>
+    private static IEnumerable<Item> GetStoreItems(IEnumerable<MonsterDefinition> merchants)
+    {
+        return merchants.SelectMany(monster => monster.MerchantStore?.Items ?? Enumerable.Empty<Item>());
+    }
+
+    /// <summary>
+    /// Gets the drop item groups of the Illusion Sorcerer Covenant which contain the ticket 13/51 instead of the
+    /// covenant 13/50. One which contains both got the Scroll of Blood from the owner. The detection of the swap and
+    /// the repair use it both, so they stay in step.
+    /// </summary>
+    private static IEnumerable<DropItemGroup> GetCovenantGroupsWithTicketInsteadOfCovenant(GameConfiguration gameConfiguration, ItemDefinition ticket, ItemDefinition covenant)
+    {
+        return gameConfiguration.DropItemGroups.Where(group =>
+            IsCovenantGroup(group) && group.PossibleItems.Contains(ticket) && !group.PossibleItems.Contains(covenant));
+    }
+
+    /// <summary>
+    /// Determines whether the drop item group is one of the Illusion Sorcerer Covenant, whose description the data
+    /// initialization started with its name.
+    /// </summary>
+    private static bool IsCovenantGroup(DropItemGroup group)
+    {
+        return group.Description.ValueInNeutralLanguage.StartsWith(CovenantName, StringComparison.Ordinal);
     }
 
     /// <summary>

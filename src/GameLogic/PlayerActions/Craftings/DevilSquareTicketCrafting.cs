@@ -18,6 +18,9 @@ public class DevilSquareTicketCrafting : BaseEventTicketCrafting
     }
 
     /// <inheritdoc />
+    protected override MiniGameType? EventType => MiniGameType.DevilSquare;
+
+    /// <inheritdoc />
     protected override int GetPrice(int eventLevel)
     {
         return eventLevel switch
