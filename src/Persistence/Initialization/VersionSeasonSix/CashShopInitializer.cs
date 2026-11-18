@@ -32,6 +32,13 @@ internal sealed class CashShopInitializer : InitializerBase
     /// </summary>
     internal const int ResetFruitDurability = 100;
 
+    /// <summary>
+    /// The durability of a bought Talisman of Mobility: one usage saves the place, the other one returns to it.
+    /// The script of the client lists a quantity of one, but the quantity of a stackable item is delivered as its durability,
+    /// so with a quantity of one, a bought talisman would already be half used.
+    /// </summary>
+    internal const int TalismanOfMobilityDurability = 2;
+
     // The script and banner versions which come with the game client.
     private const short ScriptSaleZone = 512;
 
@@ -129,7 +136,7 @@ internal sealed class CashShopInitializer : InitializerBase
         this.AddPackage(configuration, 70, LocalizedString.FromResource(() => CashShopPackageNames.TalismanofResurrection), 50, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
             .AddProduct(40, 66, 50, 13, 69, 0, 1, 0);
         this.AddPackage(configuration, 68, LocalizedString.FromResource(() => CashShopPackageNames.TalismanofMobility), 40, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
-            .AddProduct(41, 67, 40, 13, 70, 0, 1, 0);
+            .AddProduct(41, 67, 40, 13, 70, 0, TalismanOfMobilityDurability, 0);
         this.AddPackage(configuration, 122, LocalizedString.FromResource(() => CashShopPackageNames.SealofWealth), 150, CashShopCoinType.WCoinC, isForSale: true, isGiftable: false, isBundle: false)
             .AddProduct(10, 13, 150, 13, 44, 0, 1, 86400)
             .AddProduct(10, 14, 350, 13, 44, 0, 1, 259200)
@@ -500,7 +507,7 @@ internal sealed class CashShopInitializer : InitializerBase
         this.AddPackage(configuration, 71, LocalizedString.FromResource(() => CashShopPackageNames.BracketedTalismanofResurrection), 50, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
             .AddProduct(40, 66, 50, 13, 69, 0, 1, 0);
         this.AddPackage(configuration, 69, LocalizedString.FromResource(() => CashShopPackageNames.BracketedTalismanofMobility), 40, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: false)
-            .AddProduct(41, 67, 40, 13, 70, 0, 1, 0);
+            .AddProduct(41, 67, 40, 13, 70, 0, TalismanOfMobilityDurability, 0);
         this.AddPackage(configuration, 440, LocalizedString.FromResource(() => CashShopPackageNames.BonusGPSealofWealth7Day), 700, CashShopCoinType.WCoinP, isForSale: true, isGiftable: true, isBundle: true)
             .AddProduct(511, 590, 0, 14, 120, 0, 1, 0)
             .AddProduct(518, 597, 700, 13, 44, 0, 1, 604800);

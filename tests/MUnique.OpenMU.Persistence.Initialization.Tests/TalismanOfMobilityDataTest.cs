@@ -38,7 +38,7 @@ internal class TalismanOfMobilityDataTest
 
     /// <summary>
     /// Tests that the update adds the talisman to a database which was created before it existed,
-    /// assigns it to the products of the in-game shop and puts its packages on sale.
+    /// assigns it to the products of the in-game shop with the quantity of both usages and puts its packages on sale.
     /// Applying it twice doesn't add the talisman twice.
     /// </summary>
     [Test]
@@ -49,7 +49,12 @@ internal class TalismanOfMobilityDataTest
         foreach (var package in gameConfiguration.CashShopConfiguration!.Packages.Where(p => TalismanPackages.Contains(p.PackageSequence)))
         {
             package.IsForSale = false;
-            package.Products.ToList().ForEach(product => product.ItemDefinition = null);
+            package.Products.ToList().ForEach(product =>
+            {
+                // Before the talisman existed, the products were created with the quantity of the client script.
+                product.ItemDefinition = null;
+                product.Quantity = 1;
+            });
         }
 
         gameConfiguration.Items.Where(IsTalisman).ToList().ForEach(item => gameConfiguration.Items.Remove(item));
@@ -139,6 +144,9 @@ internal class TalismanOfMobilityDataTest
         Assert.That(packages, Has.Count.EqualTo(TalismanPackages.Length));
         Assert.That(packages, Has.All.Matches<CashShopPackage>(p => p.IsForSale));
         Assert.That(packages.SelectMany(p => p.Products), Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is { } item && IsTalisman(item)));
+
+        // The quantity of a stackable item is delivered as its durability, so a bought talisman must have both usages.
+        Assert.That(packages.SelectMany(p => p.Products), Has.All.Matches<CashShopProduct>(product => product.Quantity == 2));
     }
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()

@@ -59,6 +59,34 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
     }
 
     /// <summary>
+    /// While another talisman in the inventory still has to return to the saved place, an unused talisman doesn't save
+    /// a new place, because the other talisman couldn't return anymore. After the other one returned, it can save again.
+    /// </summary>
+    [Test]
+    public async Task NoNewPlaceIsSavedWhileAnotherTalismanHasToReturnAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var halfUsedTalisman = CreateTalisman();
+        var unusedTalisman = new BasicModel.Item { Definition = halfUsedTalisman.Definition, Durability = 2 };
+        var handler = new TalismanOfMobilityConsumeHandlerPlugIn();
+        player.Position = SavedPosition;
+        Assert.That(await handler.ConsumeItemAsync(player, halfUsedTalisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+        Assert.That(await player.Inventory!.AddItemAsync(halfUsedTalisman).ConfigureAwait(false), Is.True);
+        Assert.That(await player.Inventory.AddItemAsync(unusedTalisman).ConfigureAwait(false), Is.True);
+
+        player.Position = new Point(30, 40);
+        Assert.That(await handler.ConsumeItemAsync(player, unusedTalisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
+        Assert.That(unusedTalisman.Durability, Is.EqualTo(2));
+
+        Assert.That(await handler.ConsumeItemAsync(player, halfUsedTalisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+        Assert.That((player.SelectedCharacter!.PositionX, player.SelectedCharacter.PositionY), Is.EqualTo((SavedPosition.X, SavedPosition.Y)));
+
+        // The used up talisman is removed by the consume action; here it stays with a durability of 0.
+        Assert.That(await handler.ConsumeItemAsync(player, unusedTalisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+        Assert.That(unusedTalisman.Durability, Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// A character which doesn't fulfill the requirements of the saved map anymore, e.g. because it lost its wings
     /// after saving a place in Icarus, isn't warped and keeps the talisman and the saved place.
     /// </summary>

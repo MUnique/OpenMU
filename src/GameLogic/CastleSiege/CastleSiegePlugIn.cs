@@ -33,6 +33,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     private static readonly TimeSpan MiniMapUpdateInterval = TimeSpan.FromSeconds(3);
 
     private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
+    private readonly CastleSiegeTaxProvider _taxProvider = new();
     private readonly TimeProvider _timeProvider;
 
     private int _forceRequestVersion;
@@ -179,7 +180,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     /// Warps which aren't through the configured gates, e.g. by the Talisman of Mobility, must not bypass the siege:
     /// During the battle, they can't lead onto the siege map, e.g. to a place saved behind the castle gates.
     /// The Land of Trials is entered through its guard, which only lets the alliance of the castle owner
-    /// or, while the hunt zone is public, everyone else in.
+    /// or, while the hunt zone is public, everyone else in who pays the hunt fee.
     /// </remarks>
     public async ValueTask WarpGateEnteringAsync(Player player, ExitGate targetGate, CancelEventArgs eventArgs)
     {
@@ -203,16 +204,20 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             return;
         }
 
-        if (context.SiegeData is { IsOccupied: true, OwnerGuildId: { } ownerGuildId })
+        // Like at the guard, everyone outside the owner alliance pays the hunt fee for each entrance.
+        if (await this._taxProvider.TryPayHuntEntryFeeAsync(player, context).ConfigureAwait(false))
         {
-            if (context.SiegeData.IsHuntZoneEnabled
-                || await CastleSiegeTaxProvider.GetPersistentAllianceMasterGuildIdAsync(player).ConfigureAwait(false) == ownerGuildId)
-            {
-                return;
-            }
+            return;
         }
 
         eventArgs.Cancel = true;
+        if (context.SiegeData.IsHuntZoneEnabled
+            && await this._taxProvider.GetHuntEntryFeeAsync(player, context).ConfigureAwait(false) > player.Money)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoneyToEnter), targetMap.Name.GetTranslation(player.Culture)).ConfigureAwait(false);
+            return;
+        }
+
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LandOfTrialsClosed)).ConfigureAwait(false);
     }
 

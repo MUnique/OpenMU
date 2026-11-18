@@ -3308,6 +3308,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Another Talisman of Mobility still has to return to the saved place. Use it first..
+        /// </summary>
+        public static string MobilityTalismanReturnPending {
+            get {
+                return ResourceManager.GetString("MobilityTalismanReturnPending", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to You can&apos;t warp onto the siege map while the battle is running..
         /// </summary>
         public static string CastleSiegeWarpNotPossible {

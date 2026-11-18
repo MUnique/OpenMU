@@ -23,6 +23,8 @@ using MUnique.OpenMU.PlugIns;
 /// It can't be used in mini games and duels, because these have their own maps and spawn places.
 /// The character returns only if it still fulfills the requirements of the saved map, e.g. wings for Icarus;
 /// otherwise the talisman isn't used up and the place stays saved.
+/// While another talisman in the inventory still has its return usage left, no new place can be saved,
+/// because the saved place is shared and the other talisman couldn't return anymore.
 /// The same applies when an <see cref="IWarpGateEnteringPlugIn"/> denies the return, e.g. while an event map is closed,
 /// or when an <see cref="IPlayerTeleportRestrictionPlugIn"/> blocks the way to a place on the same map, e.g. a closed castle gate.
 /// </remarks>
@@ -53,6 +55,13 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 
         if (item.Durability >= UnusedDurability)
         {
+            if (HasOtherHalfUsedTalisman(player, item))
+            {
+                // The place is saved at the character, so a new place would strand the return of the other talisman.
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MobilityTalismanReturnPending)).ConfigureAwait(false);
+                return false;
+            }
+
             var position = player.Position;
             SetValue(player, character, Stats.MobilityTalismanMap, currentMap.MapId + 1);
             SetValue(player, character, Stats.MobilityTalismanX, position.X);
@@ -110,6 +119,13 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
         await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
         await player.WarpToAsync(gate).ConfigureAwait(false);
         return true;
+    }
+
+    private static bool HasOtherHalfUsedTalisman(Player player, Item item)
+    {
+        return player.Inventory?.Items.Any(other => other != item
+                                                    && other.Definition == item.Definition
+                                                    && other.Durability is > 0 and < UnusedDurability) ?? false;
     }
 
     private static GameMapDefinition? GetSavedMap(Player player, Character character)

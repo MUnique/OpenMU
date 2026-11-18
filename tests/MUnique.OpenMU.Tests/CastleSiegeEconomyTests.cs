@@ -387,7 +387,7 @@ public class CastleSiegeEconomyTests
 
     /// <summary>
     /// Verifies that warping into the Land of Trials, e.g. by the Talisman of Mobility, follows the same access rules
-    /// as its guard: the owner alliance may always enter, everyone else only while the hunt zone is public.
+    /// as its guard: the owner alliance may always enter, everyone else only while the hunt zone is public and by paying the hunt fee.
     /// </summary>
     [Test]
     public async ValueTask WarpToLandOfTrialsHonorsHuntZoneAccessAsync()
@@ -414,6 +414,17 @@ public class CastleSiegeEconomyTests
 
         siegeData.IsHuntZoneEnabled = true;
         Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.False, "Public hunt zone");
+
+        // Like at the guard, a visitor pays the hunt fee for each entrance, the owner alliance doesn't.
+        siegeData.TaxHunt = 1_000;
+        fixture.Visitor.Money = 500;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.True, "Hunt fee not affordable");
+        Assert.That(fixture.Visitor.Money, Is.EqualTo(500));
+        fixture.Visitor.Money = 1_500;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.False, "Hunt fee paid");
+        Assert.That(fixture.Visitor.Money, Is.EqualTo(500));
+        fixture.Owner.Money = 0;
+        Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.False, "Owner pays no hunt fee");
 
         siegeData.IsOccupied = false;
         Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.True, "Unoccupied castle");

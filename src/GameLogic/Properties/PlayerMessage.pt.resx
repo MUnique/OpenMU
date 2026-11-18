@@ -1210,6 +1210,9 @@ Extensões de inventário: {18}</value>
   <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
     <value>O caminho de volta ao local salvo está bloqueado por um portão fechado.</value>
   </data>
+  <data name="MobilityTalismanReturnPending" xml:space="preserve">
+    <value>Outro Talismã da Mobilidade ainda precisa retornar ao local salvo. Use-o primeiro.</value>
+  </data>
   <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
     <value>Você não pode se teleportar para o mapa do cerco durante a batalha.</value>
   </data>

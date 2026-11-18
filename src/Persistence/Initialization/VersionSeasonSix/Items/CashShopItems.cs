@@ -57,7 +57,7 @@ internal class CashShopItems : InitializerBase
         var talisman = this.CreateItem(13, 70, LocalizedString.FromResource(() => ItemNames.TalismanOfMobility));
         if (talisman is not null)
         {
-            talisman.Durability = 2;
+            talisman.Durability = CashShopInitializer.TalismanOfMobilityDurability;
             ItemRules.Apply([talisman]);
         }
 

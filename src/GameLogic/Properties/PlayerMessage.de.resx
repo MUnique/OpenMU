@@ -1057,6 +1057,9 @@ Inventarerweiterungen: {18}</value>
   <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
     <value>Der Weg zurück zum gespeicherten Ort wird von einem geschlossenen Tor versperrt.</value>
   </data>
+  <data name="MobilityTalismanReturnPending" xml:space="preserve">
+    <value>Ein anderer Talisman der Mobilität muss noch zum gespeicherten Ort zurückkehren. Benutze zuerst diesen.</value>
+  </data>
   <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
     <value>Während der Schlacht kannst du nicht auf die Belagerungskarte teleportieren.</value>
   </data>

@@ -61,6 +61,7 @@ public class AddTalismanOfMobilityUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// Assigns the talisman to the products of the in-game shop, which were created without it.
     /// Their packages were initialized as not for sale then, so they're put on sale.
+    /// Their quantity is the durability of the talisman, so that a bought talisman isn't half used.
     /// The product sequence only identifies these products in the script which comes with the game client,
     /// so a configuration which uses a custom script stays untouched.
     /// </summary>
@@ -79,6 +80,7 @@ public class AddTalismanOfMobilityUpdatePlugIn : UpdatePlugInBase
             foreach (var product in package.Products.Where(p => p.ItemDefinition is null && p.ProductSequence == TalismanOfMobilityProductSequence))
             {
                 product.ItemDefinition = talisman;
+                product.Quantity = CashShopInitializer.TalismanOfMobilityDurability;
                 assigned = true;
             }
 
