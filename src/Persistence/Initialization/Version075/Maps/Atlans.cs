@@ -49,12 +49,6 @@ internal class Atlans : BaseMapInitializer
     }
 
     /// <inheritdoc/>
-    protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
-    {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[240], 23, 17, Direction.SouthWest); // Guard
-    }
-
-    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
         yield return this.CreateMonsterSpawn(100, this.NpcDictionary[48], 236, 177);

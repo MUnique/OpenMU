@@ -1139,5 +1139,17 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized NpcSpawnsUpdatePlugInSeason6_Description text.</summary>
         public static string NpcSpawnsUpdatePlugInSeason6_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn075_Name text.</summary>
+        public static string NpcSpawnsUpdatePlugIn075_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn075_Description text.</summary>
+        public static string NpcSpawnsUpdatePlugIn075_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn095d_Name text.</summary>
+        public static string NpcSpawnsUpdatePlugIn095d_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn095d_Description text.</summary>
+        public static string NpcSpawnsUpdatePlugIn095d_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Description", resourceCulture)!;
+
     }
 }

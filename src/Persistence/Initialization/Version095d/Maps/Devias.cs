@@ -33,5 +33,6 @@ internal class Devias : Version075.Maps.Devias
         }
 
         yield return this.CreateMonsterSpawn(20, this.NpcDictionary[235], 183, 32, Direction.SouthEast); // Priest Sevina
+        yield return this.CreateMonsterSpawn(44, this.NpcDictionary[236], 226, 66, Direction.SouthWest); // Golden Archer
     }
 }
