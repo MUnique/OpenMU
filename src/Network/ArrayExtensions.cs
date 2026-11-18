@@ -182,7 +182,7 @@ public static class ArrayExtensions
                 return packet[1];
             case 0xC2:
             case 0xC4:
-                return packet[1] << 8 | packet[2];
+                return (packet[1] << 8) | packet[2];
             default:
                 return 0;
         }

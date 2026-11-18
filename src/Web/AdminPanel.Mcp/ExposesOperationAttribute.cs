@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Mcp;
 
 /// <summary>Links a tool to an admin operation for parity and role checks.</summary>
+/// <param name="serviceType">The service type.</param>
+/// <param name="methodName">The method name.</param>
 [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 public sealed class ExposesOperationAttribute(Type serviceType, string methodName) : Attribute
 {

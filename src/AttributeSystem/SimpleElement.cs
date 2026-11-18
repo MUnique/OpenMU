@@ -36,7 +36,10 @@ public class SimpleElement : IElement
     /// <inheritdoc/>
     public virtual float Value
     {
-        get => this._value;
+        get
+        {
+            return this._value;
+        }
 
         set
         {
@@ -51,7 +54,10 @@ public class SimpleElement : IElement
     /// <inheritdoc/>
     public AggregateType AggregateType
     {
-        get => this._aggregateType;
+        get
+        {
+            return this._aggregateType;
+        }
 
         set
         {

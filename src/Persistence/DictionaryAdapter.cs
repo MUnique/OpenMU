@@ -53,7 +53,10 @@ public class DictionaryAdapter<TKey, TClass, TPersistent> : IDictionary<TKey, TC
             throw new KeyNotFoundException($"No value found for key {key}.");
         }
 
-        set => this.Add(key, value);
+        set
+        {
+            this.Add(key, value);
+        }
     }
 
     /// <inheritdoc/>

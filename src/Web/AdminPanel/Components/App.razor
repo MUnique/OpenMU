@@ -8,6 +8,8 @@
     private string CurrentTheme =>
         ThemeController.NormalizeTheme(this.HttpContext?.Request.Cookies[ThemeController.CookieName]);
 
+    private string CurrentBootstrapTheme => ThemeController.GetBootstrapTheme(this.CurrentTheme);
+
     /// <summary>
     /// Gets the base path of the panel, e.g. "/admin/" when it's hosted under a sub path behind a reverse proxy.
     /// </summary>
@@ -20,12 +22,14 @@
 }
 
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" data-bs-theme="@this.CurrentTheme">
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" data-bs-theme="@this.CurrentBootstrapTheme" data-theme-preference="@this.CurrentTheme">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@MUnique.OpenMU.Web.AdminPanel.Properties.Resources.OpenMUAdminPanel</title>
     <base href="@this.BaseHref" />
+    @* Loaded synchronously before the stylesheets, so that the automatic theme is resolved before the page is painted. *@
+    <script src="@Assets["_content/MUnique.OpenMU.Web.Shared/theme.js"]"></script>
     <ResourcePreloader />
     <link href="@Assets[this.HostStylesheet]" rel="stylesheet" />
     <link href="@Assets["_content/MUnique.OpenMU.Web.AdminPanel/MUnique.OpenMU.Web.AdminPanel.styles.css"]" rel="stylesheet" />

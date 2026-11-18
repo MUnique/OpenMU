@@ -40,7 +40,10 @@ public partial class CultureSelector
     /// </remarks>
     public string SelectedCultureCode
     {
-        get => this.GetDisplayedCultureCode();
+        get
+        {
+            return this.GetDisplayedCultureCode();
+        }
         set
         {
             if (this.GetDisplayedCultureCode() == value)

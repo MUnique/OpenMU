@@ -7,4 +7,7 @@ namespace MUnique.OpenMU.ServerClients;
 /// <summary>
 /// Arguments for a guild chat message.
 /// </summary>
+/// <param name="GuildId">The guild identifier.</param>
+/// <param name="Sender">The sender character name.</param>
+/// <param name="Message">The chat message.</param>
 public record GuildMessageArguments(uint GuildId, string Sender, string Message);

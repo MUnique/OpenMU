@@ -7,73 +7,6 @@ namespace MUnique.OpenMU.Interfaces;
 using System.Collections.Immutable;
 
 /// <summary>
-/// Describes the relationship between two guilds.
-/// </summary>
-public enum GuildRelationship
-{
-    /// <summary>
-    /// No special relationship.
-    /// </summary>
-    None = 0,
-
-    /// <summary>
-    /// Both guilds are in the same alliance.
-    /// </summary>
-    Union = 1,
-
-    /// <summary>
-    /// The guilds are rivals / hostile to each other.
-    /// </summary>
-    Rival = 2,
-}
-
-/// <summary>
-/// Defines the result of an alliance creation attempt.
-/// </summary>
-public enum AllianceCreationResult
-{
-    /// <summary>
-    /// The alliance creation failed for an unspecified reason.
-    /// </summary>
-    Failed,
-
-    /// <summary>
-    /// The alliance was created successfully.
-    /// </summary>
-    Success,
-
-    /// <summary>
-    /// The master guild could not be found.
-    /// </summary>
-    MasterGuildNotFound,
-
-    /// <summary>
-    /// The target guild could not be found.
-    /// </summary>
-    TargetGuildNotFound,
-
-    /// <summary>
-    /// The target guild is already a member of an alliance.
-    /// </summary>
-    TargetGuildAlreadyInAlliance,
-
-    /// <summary>
-    /// The maximum number of guilds allowed in an alliance has been reached.
-    /// </summary>
-    MaximumAllianceSizeReached,
-
-    /// <summary>
-    /// The guild could not be found in the target context.
-    /// </summary>
-    GuildNotFoundInTargetContext,
-
-    /// <summary>
-    /// An unexpected error occurred during alliance creation.
-    /// </summary>
-    Error,
-}
-
-/// <summary>
 /// Interface for the guild server.
 /// </summary>
 /// <remarks>
@@ -283,25 +216,4 @@ public interface IGuildServer
     /// <param name="guild2">The second guild identifier.</param>
     /// <returns>The relationship between the two guilds.</returns>
     ValueTask<GuildRelationship> GetGuildRelationshipAsync(uint guild1, uint guild2);
-}
-
-/// <summary>
-/// The guild list entry.
-/// </summary>
-public class GuildListEntry
-{
-    /// <summary>
-    /// Gets or sets the name of the player.
-    /// </summary>
-    public string? PlayerName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the server identifier on which the player is playing.
-    /// </summary>
-    public byte ServerId { get; set; }
-
-    /// <summary>
-    /// Gets or sets the players position in the guild.
-    /// </summary>
-    public GuildPosition PlayerPosition { get; set; }
 }

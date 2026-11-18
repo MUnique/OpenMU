@@ -543,6 +543,16 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     {
         var propertyTypeName = property.PropertyType.Name.Split('.').Last();
         var propertyType = property.PropertyType;
+        string setter = null;
+        if (property.GetSetMethod(true) is not null)
+        {
+            var visibility = property.GetSetMethod() is null ? "protected " : null;
+            setter = $@"{visibility}set
+        {{
+            base.{property.Name} = value;
+            this.{property.Name}Id = this.Raw{property.Name}?.Id;
+        }}";
+        }
 
         return $@"
     /// <summary>
@@ -564,11 +574,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
     [NotMapped]
     public override {propertyType.FullName} {property.Name}
     {{
-        get => base.{property.Name};{(property.GetSetMethod(true) is { } ? $@"{(property.GetSetMethod() is null ? "protected " : null)}set
-        {{
-            base.{property.Name} = value;
-            this.{property.Name}Id = this.Raw{property.Name}?.Id;
-        }}" : null)}
+        get => base.{property.Name};{setter}
     }}";
     }
 
@@ -642,12 +648,15 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
 
     private IEnumerable<PropertyInfo> GetStandaloneCollectionProperties(Type type)
     {
-        return type.FullName != GameConfigurationFullName ?
-            type.GetProperties().Where(p => p.PropertyType.IsGenericType
-                                            && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
-                                            && !IsMemberOfAggregate(p)
-                                            && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList() :
-            Enumerable.Empty<PropertyInfo>();
+        if (type.FullName == GameConfigurationFullName)
+        {
+            return Enumerable.Empty<PropertyInfo>();
+        }
+
+        return type.GetProperties().Where(p => p.PropertyType.IsGenericType
+                                        && p.PropertyType.GetGenericTypeDefinition() == typeof(ICollection<>)
+                                        && !IsMemberOfAggregate(p)
+                                        && IsStandaloneType(p.PropertyType.GenericTypeArguments[0].FullName, type)).ToList();
     }
 
     private string CreateConstructors(Type type, bool requiresJoinCollections)

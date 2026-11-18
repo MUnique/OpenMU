@@ -27,8 +27,8 @@ public class TradeItemDisappearPlugIn : ITradeItemDisappearPlugIn
     public TradeItemDisappearPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public ValueTask TradeItemDisappearAsync(byte slot, Item item)
+    public ValueTask TradeItemDisappearAsync(byte fromSlot, Item item)
     {
-        return this._player.Connection.SendTradeItemRemovedAsync(slot);
+        return this._player.Connection.SendTradeItemRemovedAsync(fromSlot);
     }
 }

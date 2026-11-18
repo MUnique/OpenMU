@@ -298,15 +298,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this._walker.Dispose();
             (this._intelligence as IDisposable)?.Dispose();
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 
     /// <inheritdoc />

@@ -26,10 +26,10 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildDisconnectChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, GuildDisconnectChatCommandArgs arguments)
     {
-        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
-        if (guildId is null || gameMaster.GameContext is not IGameServerContext gameServerContext)
+        var guildId = await this.GetGuildIdByNameAsync(player, arguments.GuildName!).ConfigureAwait(false);
+        if (guildId is null || player.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
@@ -38,9 +38,9 @@ public class GuildDisconnectChatCommandPlugIn : ChatCommandPlugInBase<GuildDisco
         {
             await guildPlayer.DisconnectAsync().ConfigureAwait(false);
 
-            if (!guildPlayer.Name.Equals(gameMaster.Name))
+            if (!guildPlayer.Name.Equals(player.Name))
             {
-                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GuildDisconnectResult), this.Key, guildPlayer.Name).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GuildDisconnectResult), this.Key, guildPlayer.Name).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }

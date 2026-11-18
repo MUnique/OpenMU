@@ -33,7 +33,7 @@ public class GameMapsInitializer : GameMapsInitializerBase
             yield return typeof(Noria);
             yield return typeof(LostTower);
             yield return typeof(Version075.Maps.Exile);
-            yield return typeof(Version075.Maps.Arena);
+            yield return typeof(Arena);
             yield return typeof(Atlans);
             yield return typeof(Version095d.Maps.Tarkan);
             yield return typeof(Icarus);

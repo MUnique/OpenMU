@@ -26,13 +26,13 @@ public class UnBanCharChatCommandPlugIn : ChatCommandPlugInBase<BanCharChatComma
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, BanCharChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, BanCharChatCommandArgs arguments)
     {
-        if (!await this.TryChangeAccountStateByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty, AccountState.Normal).ConfigureAwait(false))
+        if (!await this.TryChangeAccountStateByCharacterNameAsync(player, arguments.CharacterName ?? string.Empty, AccountState.Normal).ConfigureAwait(false))
         {
             return;
         }
 
-        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnbanAccountOfCharacterResult), this.Key, arguments.CharacterName).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.UnbanAccountOfCharacterResult), this.Key, arguments.CharacterName).ConfigureAwait(false);
     }
 }

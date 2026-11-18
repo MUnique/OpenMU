@@ -117,6 +117,51 @@ public record FrustumBasedTargetFilter
         return relativePosition >= sectionStart && relativePosition <= sectionEnd;
     }
 
+    private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)
+    {
+        var isOutOfRange = (((frustum.X.X - target.X) * (frustum.Y.W - target.Y)) - ((frustum.X.W - target.X) * (frustum.Y.X - target.Y))) < 0.0f
+                           || (((frustum.X.Y - target.X) * (frustum.Y.X - target.Y)) - ((frustum.X.X - target.X) * (frustum.Y.Y - target.Y))) < 0.0f
+                           || (((frustum.X.Z - target.X) * (frustum.Y.Y - target.Y)) - ((frustum.X.Y - target.X) * (frustum.Y.Z - target.Y))) < 0.0f
+                           || (((frustum.X.W - target.X) * (frustum.Y.Z - target.Y)) - ((frustum.X.Z - target.X) * (frustum.Y.W - target.Y))) < 0.0f;
+
+        return !isOutOfRange;
+    }
+
+    private static Vector2 VectorRotate(Vector3 angleVector, Matrix4x4 angleMatrix)
+    {
+        return new Vector2(
+            Vector3.Dot(angleVector, new Vector3(angleMatrix.M11, angleMatrix.M12, angleMatrix.M13)),
+            Vector3.Dot(angleVector, new Vector3(angleMatrix.M21, angleMatrix.M22, angleMatrix.M23)));
+    }
+
+    private static Matrix4x4 CreateAngleMatrix(double angleInDegrees)
+    {
+        var radian = angleInDegrees * (Math.PI / 180);
+
+        var sy = (float)Math.Sin(radian);
+        var cy = (float)Math.Cos(radian);
+
+        var sp = 0.0f;
+        var cp = 1.0f;
+
+        var sr = 0.0f;
+        var cr = 1.0f;
+
+        Matrix4x4 matrix = default;
+
+        matrix.M11 = cp * cy;
+        matrix.M21 = cp * sy;
+        matrix.M31 = -sp;
+        matrix.M12 = (sr * sp * cy) + (cr * -sy);
+        matrix.M22 = (sr * sp * sy) + (cr * cy);
+        matrix.M32 = sr * cp;
+        matrix.M13 = (cr * sp * cy) + (-sr * -sy);
+        matrix.M23 = (cr * sp * sy) + (-sr * cy);
+        matrix.M33 = cr * cp;
+
+        return matrix;
+    }
+
     private double GetOverlap(Point attackerPos, Point targetPos, int extraProjectiles = 0)
     {
         var distance = attackerPos.EuclideanDistanceTo(targetPos);
@@ -174,51 +219,6 @@ public record FrustumBasedTargetFilter
 
         var normalizedX = rotatedX / frustumWidthAtDistance;
         return Math.Clamp(normalizedX, -1.0, 1.0);
-    }
-
-    private static bool IsWithinFrustum((Vector4 X, Vector4 Y) frustum, Point target)
-    {
-        var isOutOfRange = (((frustum.X.X - target.X) * (frustum.Y.W - target.Y)) - ((frustum.X.W - target.X) * (frustum.Y.X - target.Y))) < 0.0f
-                           || (((frustum.X.Y - target.X) * (frustum.Y.X - target.Y)) - ((frustum.X.X - target.X) * (frustum.Y.Y - target.Y))) < 0.0f
-                           || (((frustum.X.Z - target.X) * (frustum.Y.Y - target.Y)) - ((frustum.X.Y - target.X) * (frustum.Y.Z - target.Y))) < 0.0f
-                           || (((frustum.X.W - target.X) * (frustum.Y.Z - target.Y)) - ((frustum.X.Z - target.X) * (frustum.Y.W - target.Y))) < 0.0f;
-
-        return !isOutOfRange;
-    }
-
-    private static Vector2 VectorRotate(Vector3 angleVector, Matrix4x4 angleMatrix)
-    {
-        return new Vector2(
-            Vector3.Dot(angleVector, new Vector3(angleMatrix.M11, angleMatrix.M12, angleMatrix.M13)),
-            Vector3.Dot(angleVector, new Vector3(angleMatrix.M21, angleMatrix.M22, angleMatrix.M23)));
-    }
-
-    private static Matrix4x4 CreateAngleMatrix(double angleInDegrees)
-    {
-        var radian = angleInDegrees * (Math.PI / 180);
-
-        var sy = (float)Math.Sin(radian);
-        var cy = (float)Math.Cos(radian);
-
-        var sp = 0.0f;
-        var cp = 1.0f;
-
-        var sr = 0.0f;
-        var cr = 1.0f;
-
-        Matrix4x4 matrix = default;
-
-        matrix.M11 = cp * cy;
-        matrix.M21 = cp * sy;
-        matrix.M31 = -sp;
-        matrix.M12 = (sr * sp * cy) + (cr * -sy);
-        matrix.M22 = (sr * sp * sy) + (cr * cy);
-        matrix.M32 = sr * cp;
-        matrix.M13 = (cr * sp * cy) + (-sr * -sy);
-        matrix.M23 = (cr * sp * sy) + (-sr * cy);
-        matrix.M33 = cr * cp;
-
-        return matrix;
     }
 
     private Vector2[][] CalculateRotationVectors()

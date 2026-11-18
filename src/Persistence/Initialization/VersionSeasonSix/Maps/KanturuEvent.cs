@@ -137,7 +137,7 @@ internal class KanturuEvent : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[ElpisNpcNumber], 77, 177, Direction.SouthWest); // Elpis NPC
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[ElpisNpcNumber], 77, 177, Direction.South); // Elpis NPC
     }
 
     /// <inheritdoc/>

@@ -16,6 +16,12 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>Reads server health, statistics and live players in either deployment.</summary>
+/// <param name="servers">The server provider.</param>
+/// <param name="loginServer">The login server.</param>
+/// <param name="persistence">The persistence context provider.</param>
+/// <param name="configurations">The configuration data source.</param>
+/// <param name="readModel">The admin read model.</param>
+/// <param name="guildServer">The guild server.</param>
 public sealed class ServerReadOperations(
     IServerProvider servers,
     ILoginServer loginServer,

@@ -30,7 +30,7 @@ public class ShowLetterExtendedPlugIn : IShowLetterPlugIn
     public ShowLetterExtendedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowLetterAsync(LetterBody letter)
+    public async ValueTask ShowLetterAsync(LetterBody letterBody)
     {
         var connection = this._player.Connection;
         if (connection is null || this._player.SelectedCharacter is null)
@@ -39,22 +39,22 @@ public class ShowLetterExtendedPlugIn : IShowLetterPlugIn
         }
 
         var appearanceSerializer = this._player.AppearanceSerializer;
-        var letterIndex = this._player.SelectedCharacter.Letters.IndexOf(letter.Header!);
+        var letterIndex = this._player.SelectedCharacter.Letters.IndexOf(letterBody.Header!);
         int Write()
         {
-            var size = OpenLetterExtendedRef.GetRequiredSize(letter.Message);
+            var size = OpenLetterExtendedRef.GetRequiredSize(letterBody.Message);
             var span = connection.Output.GetSpan(size)[..size];
             var result = new OpenLetterExtendedRef(span)
             {
                 LetterIndex = (ushort)letterIndex,
-                Animation = letter.Animation,
-                Rotation = letter.Rotation,
-                Message = letter.Message,
+                Animation = letterBody.Animation,
+                Rotation = letterBody.Rotation,
+                Message = letterBody.Message,
             };
 
-            if (letter.SenderAppearance is not null)
+            if (letterBody.SenderAppearance is not null)
             {
-                appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letter.SenderAppearance, false);
+                appearanceSerializer.WriteAppearanceData(result.SenderAppearance, letterBody.SenderAppearance, false);
             }
 
             return size;

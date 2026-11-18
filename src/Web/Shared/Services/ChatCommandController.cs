@@ -47,7 +47,10 @@ public class ChatCommandController : IDataService<ChatCommandViewItem>, ISupport
     /// </summary>
     public string CommandFilter
     {
-        get => this._commandFilter;
+        get
+        {
+            return this._commandFilter;
+        }
         set
         {
             this._commandFilter = value;
@@ -60,7 +63,10 @@ public class ChatCommandController : IDataService<ChatCommandViewItem>, ISupport
     /// </summary>
     public CharacterStatus? StatusFilter
     {
-        get => this._statusFilter;
+        get
+        {
+            return this._statusFilter;
+        }
         set
         {
             this._statusFilter = value;

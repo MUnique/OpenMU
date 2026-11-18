@@ -111,5 +111,6 @@ public sealed class GameServerAdministrationController(IGameServer server, Admin
 
     private IGameServerAdministration Resolve(GameServerAdministrationRequest request)
         => request.ServerId == server.Id && server is IGameServerAdministration administration
-            ? administration : throw new ArgumentException("The request does not address this game server.");
+            ? administration
+            : throw new ArgumentException("The request does not address this game server.");
 }

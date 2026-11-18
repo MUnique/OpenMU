@@ -5,48 +5,53 @@
 namespace MUnique.OpenMU.Web.Shared.Components;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using MUnique.OpenMU.Web.Shared.Properties;
+using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
-/// A toggle component which switches between the light and dark UI themes.
-/// Persists the selection by calling the <see cref="MUnique.OpenMU.Web.Shared.Services.ThemeController"/>
-/// (cookie-based, mirrors the <see cref="CultureSelector"/> approach).
+/// A dropdown component which switches between the light, the dark and the automatic UI theme.
+/// The automatic theme follows the color scheme of the operating system or browser.
+/// The selection is applied immediately and persisted in the cookie of the <see cref="ThemeController"/>.
 /// </summary>
 public partial class ThemeSelector : IAsyncDisposable
 {
     private static readonly string JsModulePath =
         $"./_content/{typeof(ThemeSelector).Assembly.GetName().Name}/Components/{nameof(ThemeSelector)}.razor.js";
 
+    private static readonly string[] Themes = [ThemeController.LightTheme, ThemeController.DarkTheme, ThemeController.AutoTheme];
+
     private IJSObjectReference? _jsModule;
 
-    private bool _isDarkInternal;
+    private string? _hydratedTheme;
 
-    private bool _hydrated;
+    private bool _isOpen;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the current dark-mode state as seen by the server-side renderer.
+    /// Gets or sets the normalized theme preference (light, dark or auto) as seen by the server-side renderer.
     /// </summary>
     /// <remarks>
     /// Only used until the first interactive render hydrates the value from the live DOM
     /// (the cascading HttpContext is null during interactive updates so this parameter
-    /// would otherwise flip back to false even when the cookie is "dark").
+    /// would otherwise flip back to the default even when the cookie has another value).
     /// </remarks>
     [Parameter]
-    public bool IsDark { get; set; }
+    public string Theme { get; set; } = ThemeController.DefaultTheme;
 
     /// <summary>
-    /// Gets or sets the navigation manager used for the post-toggle redirect.
+    /// Gets or sets the navigation manager used for the fallback when JavaScript is not available.
     /// </summary>
     [Inject]
     private NavigationManager NavigationManager { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the JS runtime used to load the theme reader module.
+    /// Gets or sets the JS runtime used to load the theme module.
     /// </summary>
     [Inject]
     private IJSRuntime JS { get; set; } = null!;
 
-    private bool EffectiveIsDark => this._hydrated ? this._isDarkInternal : this.IsDark;
+    private string EffectiveTheme => this._hydratedTheme ?? ThemeController.NormalizeTheme(this.Theme);
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
@@ -81,25 +86,88 @@ public partial class ThemeSelector : IAsyncDisposable
             var theme = await this._jsModule
                 .InvokeAsync<string?>("current")
                 .ConfigureAwait(true);
-            this._isDarkInternal = string.Equals(theme, "dark", StringComparison.OrdinalIgnoreCase);
-            this._hydrated = true;
-            this.StateHasChanged();
+            if (!string.IsNullOrEmpty(theme))
+            {
+                this._hydratedTheme = ThemeController.NormalizeTheme(theme);
+                this.StateHasChanged();
+            }
         }
-        catch
+        catch (JSException)
         {
-            // Fall back to the SSR parameter if JS is unavailable.
+            // Fall back to the SSR parameter if the module can't be loaded.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore: circuit already gone.
         }
     }
 
-    private void Toggle()
+    private static string GetIcon(string theme)
     {
-        var next = this.EffectiveIsDark ? "light" : "dark";
+        return theme switch
+        {
+            "dark" => "oi-moon",
+            "light" => "oi-sun",
+            _ => "oi-contrast",
+        };
+    }
+
+    private static string GetCaption(string theme)
+    {
+        return theme switch
+        {
+            "dark" => Resources.ThemeDark,
+            "light" => Resources.ThemeLight,
+            _ => Resources.ThemeAuto,
+        };
+    }
+
+    private void ToggleMenu()
+    {
+        this._isOpen = !this._isOpen;
+    }
+
+    private void CloseMenu()
+    {
+        this._isOpen = false;
+    }
+
+    private void OnKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Escape")
+        {
+            this.CloseMenu();
+        }
+    }
+
+    private async Task SelectAsync(string theme)
+    {
+        this._isOpen = false;
+        if (this._jsModule is null)
+        {
+            this.NavigateToThemeController(theme);
+            return;
+        }
+
+        try
+        {
+            await this._jsModule.InvokeVoidAsync("set", ThemeController.CookieName, theme).ConfigureAwait(true);
+            this._hydratedTheme = theme;
+        }
+        catch (JSException)
+        {
+            this.NavigateToThemeController(theme);
+        }
+    }
+
+    private void NavigateToThemeController(string theme)
+    {
         var uri = new Uri(this.NavigationManager.Uri)
             .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
-        var themeEscaped = Uri.EscapeDataString(next);
+        var themeEscaped = Uri.EscapeDataString(theme);
         var uriEscaped = Uri.EscapeDataString(uri);
 
-        var fullUri = $"/Theme/Set?theme={themeEscaped}&redirectUri={uriEscaped}";
+        var fullUri = $"Theme/Set?theme={themeEscaped}&redirectUri={uriEscaped}";
         this.NavigationManager.NavigateTo(fullUri, forceLoad: true);
     }
 }

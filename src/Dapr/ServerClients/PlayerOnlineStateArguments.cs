@@ -7,4 +7,8 @@ namespace MUnique.OpenMU.ServerClients;
 /// <summary>
 /// Arguments for the online state change of a player.
 /// </summary>
+/// <param name="CharacterId">The character identifier.</param>
+/// <param name="CharacterName">The character name.</param>
+/// <param name="ServerId">The server identifier.</param>
+/// <param name="GuildId">The guild identifier.</param>
 public record PlayerOnlineStateArguments(Guid CharacterId, string CharacterName, byte ServerId, uint GuildId = 0);

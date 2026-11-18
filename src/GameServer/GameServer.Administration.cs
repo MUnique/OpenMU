@@ -9,7 +9,7 @@ using System.Threading;
 using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.Interfaces;
 
-/// <summary>The live administration channel of a game server.</summary>
+/// <content>The live administration channel of a game server.</content>
 public sealed partial class GameServer : IGameServerAdministration
 {
     private GameServerAdministration Administration => new(this._gameContext);

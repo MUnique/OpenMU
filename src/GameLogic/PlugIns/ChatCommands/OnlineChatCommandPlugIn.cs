@@ -27,13 +27,13 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override async ValueTask DoHandleCommandAsync(Player gameMasterPlayer, EmptyChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, EmptyChatCommandArgs arguments)
     {
         var totalCharactersCount = 0;
         var totalGameMastersCount = 0;
-        await gameMasterPlayer.GameContext.ForEachPlayerAsync(player =>
+        await player.GameContext.ForEachPlayerAsync(otherPlayer =>
         {
-            switch (player.SelectedCharacter?.CharacterStatus)
+            switch (otherPlayer.SelectedCharacter?.CharacterStatus)
             {
                 case CharacterStatus.Normal:
                     Interlocked.Increment(ref totalCharactersCount);
@@ -46,6 +46,6 @@ public class OnlineChatCommandPlugIn : ChatCommandPlugInBase<EmptyChatCommandArg
             return Task.CompletedTask;
         }).ConfigureAwait(false);
 
-        await gameMasterPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OnlineCountInfo), this.Key, totalGameMastersCount, totalCharactersCount).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.OnlineCountInfo), this.Key, totalGameMastersCount, totalCharactersCount).ConfigureAwait(false);
     }
 }

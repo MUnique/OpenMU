@@ -32,7 +32,10 @@ public partial class ItemBasePowerUpDefinition
     /// </summary>
     public float BaseValue
     {
-        get => this._baseValue;
+        get
+        {
+            return this._baseValue;
+        }
         set
         {
             this._baseValue = value;
@@ -45,7 +48,10 @@ public partial class ItemBasePowerUpDefinition
     /// </summary>
     public AggregateType AggregateType
     {
-        get => this._aggregateType;
+        get
+        {
+            return this._aggregateType;
+        }
         set
         {
             this._aggregateType = value;

@@ -57,7 +57,7 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
         var initializer = new ChaosCastleInitializer(context, gameConfiguration);
         initializer.Initialize();
 
-        var chaosCastleMaps = gameConfiguration.Maps.Where(map => map.Number is >= 17 and <= 23 or 53);
+        var chaosCastleMaps = gameConfiguration.Maps.Where(map => map.Number is (>= 17 and <= 23) or 53);
         foreach (var chaosCastleMap in chaosCastleMaps)
         {
             chaosCastleMap.UpdateTerrainFromResources();

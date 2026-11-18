@@ -43,26 +43,26 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
     public bool SendWalkDirections { get; set; }
 
     /// <inheritdoc/>
-    public async ValueTask ObjectMovedAsync(ILocateable obj, MoveType type)
+    public async ValueTask ObjectMovedAsync(ILocateable movedObject, MoveType moveType)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        var objectId = obj.GetId(this._player);
-        switch (type)
+        var objectId = movedObject.GetId(this._player);
+        switch (moveType)
         {
             case MoveType.Instant:
-                await connection.SendObjectMovedAsync(this.GetInstantMoveCode(), objectId, obj.Position.X, obj.Position.Y).ConfigureAwait(false);
+                await connection.SendObjectMovedAsync(this.GetInstantMoveCode(), objectId, movedObject.Position.X, movedObject.Position.Y).ConfigureAwait(false);
                 break;
 
-            case MoveType.Teleport when obj is Player movedPlayer && movedPlayer != this._player:
+            case MoveType.Teleport when movedObject is Player movedPlayer && movedPlayer != this._player:
                 await this._player.InvokeViewPlugInAsync<INewPlayersInScopePlugIn>(p => p.NewPlayersInScopeAsync(movedPlayer.GetAsEnumerable(), false)).ConfigureAwait(false);
                 await this._player.InvokeViewPlugInAsync<IShowSkillAnimationPlugIn>(p => p.ShowSkillAnimationAsync(movedPlayer, movedPlayer, TeleportTargetNumber, true)).ConfigureAwait(false);
                 break;
 
-            case MoveType.Teleport when obj is NonPlayerCharacter movedNpc:
+            case MoveType.Teleport when movedObject is NonPlayerCharacter movedNpc:
                 await this._player.InvokeViewPlugInAsync<INewNpcsInScopePlugIn>(p => p.NewNpcsInScopeAsync(movedNpc.GetAsEnumerable(), false)).ConfigureAwait(false);
                 if (movedNpc is Monster monster)
                 {
@@ -76,7 +76,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
                 break;
 
             case MoveType.Walk:
-                await this.ObjectWalkedAsync(obj).ConfigureAwait(false);
+                await this.ObjectWalkedAsync(movedObject).ConfigureAwait(false);
                 break;
         }
     }
@@ -142,7 +142,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         }
     }
 
-    private async ValueTask ObjectWalkedAsync(ILocateable obj)
+    private async ValueTask ObjectWalkedAsync(ILocateable movedObject)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -150,7 +150,7 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             return;
         }
 
-        var objectId = obj.GetId(this._player);
+        var objectId = movedObject.GetId(this._player);
 
         using var rentArray = this.SendWalkDirections ? MemoryPool<Direction>.Shared.Rent(16) : null;
         var steps = rentArray?.Memory.Slice(0, 16) ?? Memory<Direction>.Empty;
@@ -158,12 +158,12 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         var stepsLength = 0;
         Point targetPoint;
         var rotation = Direction.Undefined;
-        if (obj is IRotatable rotatable)
+        if (movedObject is IRotatable rotatable)
         {
             rotation = rotatable.Rotation;
         }
 
-        if (obj is ISupportWalk supportWalk)
+        if (movedObject is ISupportWalk supportWalk)
         {
             if (this.SendWalkDirections)
             {
@@ -181,10 +181,10 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
         }
         else
         {
-            targetPoint = obj.Position;
+            targetPoint = movedObject.Position;
         }
 
-        await this.SendWalkAsync(connection, objectId, obj.Position, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
+        await this.SendWalkAsync(connection, objectId, movedObject.Position, targetPoint, steps, rotation, stepsLength).ConfigureAwait(false);
     }
 
     private void SetStepData(ObjectWalkedRef walkPacket, Span<Direction> steps, int stepsSize)
@@ -194,13 +194,13 @@ public class ObjectMovedPlugIn : IObjectMovedPlugIn
             return;
         }
 
-        walkPacket.StepData[0] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
+        walkPacket.StepData[0] = (byte)((steps[0].ToPacketByte() << 4) | stepsSize);
         for (int i = 0; i < stepsSize - 1; i += 2)
         {
             var index = 1 + (i / 2);
             var firstStep = steps[i].ToPacketByte();
             var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
-            walkPacket.StepData[index] = (byte)(firstStep << 4 | secondStep);
+            walkPacket.StepData[index] = (byte)((firstStep << 4) | secondStep);
         }
     }
 

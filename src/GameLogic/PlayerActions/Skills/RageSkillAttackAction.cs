@@ -18,6 +18,14 @@ public class RageSkillAttackAction
     /// </summary>
     public const int MaximumTargetsPerAttack = 5;
 
+    /// <summary>
+    /// The number of tiles the explicit target may be farther away than the skill range.
+    /// The client decides the range on its own view of the positions, which can lag a tile
+    /// or two behind the server (moving monsters, walking player). It is an empirical margin
+    /// for that drift, not a value taken from the original game.
+    /// </summary>
+    public const byte RangeTolerance = 2;
+
     private const int HitsPerTarget = 2;
 
     /// <summary>
@@ -61,10 +69,24 @@ public class RageSkillAttackAction
         }
 
         var explicitTarget = player.GetObject(explicitTargetId) as IAttackable;
-        if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { Skill: { } usedSkill } skill
-                                     || (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range)))
+        if (player.SkillList is null || player.SkillList.GetSkill(skillId) is not { Skill: { } usedSkill } skill)
         {
             return;
+        }
+
+        if (explicitTarget is not null && !explicitTarget.IsActive())
+        {
+            explicitTarget = null;
+        }
+
+        if (explicitTarget is not null && !explicitTarget.IsInRange(player.Position, usedSkill.Range + RangeTolerance))
+        {
+            if (explicitTarget is not ISupportWalk { IsWalking: true })
+            {
+                await player.InvokeViewPlugInAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(explicitTarget, MoveType.Instant)).ConfigureAwait(false);
+            }
+
+            explicitTarget = null;
         }
 
         // The additional targets are searched around the explicit target, so the skill also hits
@@ -74,7 +96,7 @@ public class RageSkillAttackAction
             player,
             explicitTarget,
             searchCenter,
-            map.GetAttackablesInRange(searchCenter, usedSkill.Range));
+            map.GetAttackablesInRange(searchCenter, usedSkill.Range).Where(t => t.IsActive()));
 
         await player.InvokeViewPlugInAsync<IShowRageAttackRangePlugIn>(p => p.ShowRageAttackRangeAsync(skillId, targets)).ConfigureAwait(false);
 

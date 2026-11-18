@@ -44,8 +44,8 @@ internal class Aida : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[369], 078, 013, Direction.SouthEast); // Osbourne
-        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[370], 086, 014, Direction.SouthWest); // Jerridon
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[369], 078, 013, Direction.South); // Osbourne
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[370], 086, 013, Direction.SouthWest); // Jerridon
     }
 
     /// <inheritdoc/>

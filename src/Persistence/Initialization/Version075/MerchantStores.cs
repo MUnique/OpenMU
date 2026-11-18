@@ -7,9 +7,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Version075;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 
-/// <summary>
+/// <content>
 /// The initialization of all NPCs, which are no monsters.
-/// </summary>
+/// </content>
 internal partial class NpcInitialization
 {
     /// <summary>

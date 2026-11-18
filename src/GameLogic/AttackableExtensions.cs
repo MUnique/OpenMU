@@ -20,15 +20,6 @@ using MUnique.OpenMU.Pathfinding;
 /// </summary>
 public static class AttackableExtensions
 {
-    extension(IAttackable attackable)
-    {
-        /// <summary>
-        /// Gets a value indicating whether this instance is a summoned monster.
-        /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1101:PrefixLocalCallsWithThis", Justification = "The receiver of an extension block can't be prefixed with 'this'.")]
-        public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
-    }
-
     private const short ExplosionMagicEffectNumber = 75;   // 0x4B
     private const short StunnedMagicEffectNumber = 61;     // 0x3D
 
@@ -38,6 +29,15 @@ public static class AttackableExtensions
             { Stats.CurrentMana, Stats.ManaUsageReduction },
             { Stats.CurrentAbility, Stats.AbilityUsageReduction },
         };
+
+    extension(IAttackable attackable)
+    {
+        /// <summary>
+        /// Gets a value indicating whether this instance is a summoned monster.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1101:PrefixLocalCallsWithThis", Justification = "The receiver of an extension block can't be prefixed with 'this'.")]
+        public bool IsSummonedMonster => attackable is Monster { SummonedBy: not null };
+    }
 
     /// <summary>
     /// Determines whether an attack is blocked because the target or the player attacker is in a safezone.
@@ -211,8 +211,12 @@ public static class AttackableExtensions
 
         dmg -= (int)(dmg * defender.Attributes[Stats.ArmorDamageDecrease]);
 
-        var attackerLevel = attacker is Player ? attacker.Attributes[Stats.TotalLevel] :
-            attacker is AttackerSurrogate ? attackerPlayer!.Attributes![Stats.Level] : attacker.Attributes[Stats.Level];
+        var attackerLevel = attacker switch
+        {
+            Player => attacker.Attributes[Stats.TotalLevel],
+            AttackerSurrogate => attackerPlayer!.Attributes![Stats.Level],
+            _ => attacker.Attributes[Stats.Level],
+        };
         var minLevelDmg = Math.Max(1, (int)attackerLevel / 10);
         if (dmg < minLevelDmg)
         {

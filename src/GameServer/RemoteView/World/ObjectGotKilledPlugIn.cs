@@ -30,20 +30,20 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
     public ObjectGotKilledPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ObjectGotKilledAsync(IAttackable killed, IAttacker? killer)
+    public async ValueTask ObjectGotKilledAsync(IAttackable killedObject, IAttacker? killerObject)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        var killedId = killed.GetId(this._player);
-        var killerId = killer.GetId(this._player);
-        var skillId = killed.LastDeath?.SkillNumber.ToUnsigned() ?? 0;
-        var isCombo = killed.LastDeath?.FinalHit.Attributes.HasFlag(DamageAttributes.Combo) ?? false;
+        var killedId = killedObject.GetId(this._player);
+        var killerId = killerObject.GetId(this._player);
+        var skillId = killedObject.LastDeath?.SkillNumber.ToUnsigned() ?? 0;
+        var isCombo = killedObject.LastDeath?.FinalHit.Attributes.HasFlag(DamageAttributes.Combo) ?? false;
         skillId = isCombo ? ShowSkillAnimationPlugIn.ComboSkillId : skillId;
         await connection.SendObjectGotKilledAsync(killedId, skillId, killerId).ConfigureAwait(false);
-        if (this._player == killed && killer is Player killerPlayer && this._player.DuelRoom is null)
+        if (this._player == killedObject && killerObject is Player killerPlayer && this._player.DuelRoom is null)
         {
             await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouGotKilledBy), killerPlayer.Name).ConfigureAwait(false);
         }

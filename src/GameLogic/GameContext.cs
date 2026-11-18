@@ -529,14 +529,14 @@ public class GameContext : AsyncDisposable, IGameContext
     }
 
     /// <inheritdoc/>
-    public async ValueTask ShowGlobalLocalizedMessageAsync(MessageType messageType, string messageKey, params object?[] formatArguments)
+    public async ValueTask ShowGlobalLocalizedMessageAsync(MessageType messageType, string messageKey, params object?[] arguments)
     {
         await this.ForEachPlayerGroupedByCultureAsync<string>(
             cultureInfo =>
             {
-                if (formatArguments.Length > 0)
+                if (arguments.Length > 0)
                 {
-                    return string.Format(PlayerMessage.ResourceManager.GetString(messageKey, cultureInfo) ?? string.Empty, formatArguments);
+                    return string.Format(PlayerMessage.ResourceManager.GetString(messageKey, cultureInfo) ?? string.Empty, arguments);
                 }
 
                 return PlayerMessage.ResourceManager.GetString(messageKey, cultureInfo) ?? string.Empty;

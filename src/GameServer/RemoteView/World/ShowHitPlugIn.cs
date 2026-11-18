@@ -41,7 +41,7 @@ public class ShowHitPlugIn : IShowHitPlugIn
     /// and to make it somehow visible that the damage exceeds 65k, we send more than one packet, if the 16bits are not enough.
     /// </remarks>
     /// <inheritdoc/>
-    public async ValueTask ShowHitAsync(IAttackable target, HitInfo hitInfo)
+    public async ValueTask ShowHitAsync(IAttackable hitReceiver, HitInfo hitInfo)
     {
         if (this._player.Connection is not { } connection)
         {
@@ -50,7 +50,7 @@ public class ShowHitPlugIn : IShowHitPlugIn
 
         var remainingHealthDamage = hitInfo.HealthDamage;
         var remainingShieldDamage = hitInfo.ShieldDamage;
-        var targetId = target.GetId(this._player);
+        var targetId = hitReceiver.GetId(this._player);
         if (hitInfo.TriggersHitShock == true)
         {
             targetId |= 0x8000;

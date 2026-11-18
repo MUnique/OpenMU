@@ -46,9 +46,9 @@ public class GensBattleZonePlugIn : IPlayerKillPenaltyExemptionPlugIn, IWarpGate
     }
 
     /// <inheritdoc />
-    public async ValueTask AttackableGotKilledAsync(IAttackable attackable, IAttacker? killer)
+    public async ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
     {
-        if (attackable is not Player victim
+        if (killed is not Player victim
             || (killer as Player ?? (killer as Monster)?.SummonedBy) is not { } killerPlayer
             || killerPlayer == victim
             || killerPlayer.DuelRoom is not null

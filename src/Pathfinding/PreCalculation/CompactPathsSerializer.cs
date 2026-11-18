@@ -25,11 +25,11 @@ internal class CompactPathsSerializer : IPathsSerializer
             byte startEndDiff = (byte)source.ReadByte();
             byte startNextStepDiff = (byte)source.ReadByte();
             var start = new Point(startX, startY);
-            byte xOffset = (byte)(startEndDiff >> 4 & 0x0F);
+            byte xOffset = (byte)((startEndDiff >> 4) & 0x0F);
             byte yOffset = (byte)(startEndDiff & 0x0F);
             var end = new Point((byte)(startX + xOffset), (byte)(startY + yOffset));
 
-            byte xOffsetNext = (byte)(startNextStepDiff >> 4 & 0x0F);
+            byte xOffsetNext = (byte)((startNextStepDiff >> 4) & 0x0F);
             byte yOffsetNext = (byte)(startNextStepDiff & 0x0F);
             var nextStep = new Point((byte)(startX + xOffsetNext), (byte)(startY + yOffsetNext));
             yield return new PathInfo(new PointCombination(start, end), nextStep);

@@ -13,7 +13,7 @@ internal interface IPacketHandler<in T>
     /// <summary>
     /// Handles the packet.
     /// </summary>
-    /// <param name="obj">The object.</param>
+    /// <param name="client">The client.</param>
     /// <param name="packet">The packet.</param>
-    ValueTask HandlePacketAsync(T obj, Memory<byte> packet);
+    ValueTask HandlePacketAsync(T client, Memory<byte> packet);
 }

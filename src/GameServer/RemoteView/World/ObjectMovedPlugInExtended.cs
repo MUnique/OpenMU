@@ -70,13 +70,13 @@ public class ObjectMovedPlugInExtended : ObjectMovedPlugIn
             return;
         }
 
-        walkPacket.StepData[0] = (byte)(steps[0].ToPacketByte() << 4 | stepsSize);
+        walkPacket.StepData[0] = (byte)((steps[0].ToPacketByte() << 4) | stepsSize);
         for (int i = 0; i < stepsSize - 1; i += 2)
         {
             var index = 1 + (i / 2);
             var firstStep = steps[i].ToPacketByte();
             var secondStep = steps.Length > i + 1 ? steps[i + 1].ToPacketByte() : 0;
-            walkPacket.StepData[index] = (byte)(firstStep << 4 | secondStep);
+            walkPacket.StepData[index] = (byte)((firstStep << 4) | secondStep);
         }
     }
 }

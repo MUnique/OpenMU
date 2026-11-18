@@ -187,8 +187,9 @@ public static class ConfigurationCaptions
     /// <returns>The owner type, neutral name and property, or <see langword="null"/> for other objects.</returns>
     internal static (string OwnerType, string NeutralText, string PropertyName)? GetNeutralNameKey(LocalizedCaption caption)
     {
-        return caption.Owner is ItemOptionDefinition or ItemLevelBonusTable or DropItemGroup or MiniGameChangeEvent
-            or MiniGameSpawnWave or WarpInfo or MagicEffectDefinition or MasterSkillRoot or SkillComboDefinition
+        var isSupportedOwner = caption.Owner is ItemOptionDefinition or ItemLevelBonusTable or DropItemGroup or MiniGameChangeEvent
+            or MiniGameSpawnWave or WarpInfo or MagicEffectDefinition or MasterSkillRoot or SkillComboDefinition;
+        return isSupportedOwner
             ? (GetTypeName(caption.Owner), caption.Value.ValueInNeutralLanguage, caption.Property.Name)
             : null;
     }

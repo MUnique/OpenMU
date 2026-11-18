@@ -30,37 +30,37 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, ItemChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, ItemChatCommandArgs arguments)
     {
-        if (gameMaster.CurrentMap != null)
+        if (player.CurrentMap != null)
         {
-            var (isValid, itemDefinition) = await TryParseArgumentsAsync(gameMaster, arguments).ConfigureAwait(false);
+            var (isValid, itemDefinition) = await TryParseArgumentsAsync(player, arguments).ConfigureAwait(false);
             if (!isValid)
             {
                 return;
             }
 
             var item = GameMasterItemFactory.CreateItem(itemDefinition!, new ItemSpecification(arguments.Group, arguments.Number, arguments.Level, arguments.Skill, arguments.Luck, arguments.Opt, arguments.ExcellentNumber, arguments.Ancient, arguments.AncientBonusLevel));
-            var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
-            var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
-            await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCreatedResult), this.Key, item).ConfigureAwait(false);
+            var dropCoordinates = player.CurrentMap.Terrain.GetRandomCoordinate(player.Position, 1);
+            var droppedItem = new DroppedItem(item, dropCoordinates, player.CurrentMap, player);
+            await player.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemCreatedResult), this.Key, item).ConfigureAwait(false);
         }
     }
 
-    private static async ValueTask<(bool Success, ItemDefinition? Definition)> TryParseArgumentsAsync(Player gameMaster, ItemChatCommandArgs arguments)
+    private static async ValueTask<(bool Success, ItemDefinition? Definition)> TryParseArgumentsAsync(Player player, ItemChatCommandArgs arguments)
     {
-        var itemDefinition = gameMaster.GameContext.Configuration.Items
+        var itemDefinition = player.GameContext.Configuration.Items
             .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number);
         if (itemDefinition is null)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemGroupNumberNotExists), arguments.Group, arguments.Number).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemGroupNumberNotExists), arguments.Group, arguments.Number).ConfigureAwait(false);
             return (false, null);
         }
 
         if (arguments.Level > itemDefinition.MaximumItemLevel)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemLevelExceeded), itemDefinition.MaximumItemLevel).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemLevelExceeded), itemDefinition.MaximumItemLevel).ConfigureAwait(false);
             return (false, null);
         }
 

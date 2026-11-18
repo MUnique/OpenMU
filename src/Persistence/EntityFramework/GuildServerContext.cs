@@ -83,10 +83,10 @@ internal class GuildServerContext : CachingEntityFrameworkContext, IGuildServerC
     }
 
     /// <inheritdoc/>
-    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid allianceMasterId)
+    public async ValueTask<IReadOnlyList<DataModel.Entities.Guild>> GetAlliancesAsync(Guid guildId)
     {
         return await this.Context.Set<Guild>()
-            .Where(g => g.AllianceGuildId == allianceMasterId)
+            .Where(g => g.AllianceGuildId == guildId)
             .Include(g => g.RawMembers)
             .ToListAsync().ConfigureAwait(false);
     }

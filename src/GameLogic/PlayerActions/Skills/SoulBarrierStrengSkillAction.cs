@@ -83,7 +83,7 @@ public class SoulBarrierStrengSkillAction : TargetedSkillDefaultPlugin
                 (Stats.SoulBarrierManaTollPerHit, new AttributeRelationshipElement(
                     [player.Attributes!.GetOrCreateAttribute(Stats.MaximumMana)],
                     new ConstantElement(strengSkillLevel!.Level * 0.001f), // extra 0.1% per streng skill level
-                    InputOperator.Multiply))
+                    InputOperator.Multiply)),
             ];
 
             skillEntry.PowerUpsPvp = skillEntry.PowerUps;
