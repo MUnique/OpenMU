@@ -4660,6 +4660,114 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The durability of an item which is in use. The game client tells by it whether the item is in use, so it has to match the client (default 254)..
+        /// </summary>
+        public static string InventoryItemUseConfiguration_InUseDurability_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemUseConfiguration_InUseDurability_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Durability in use.
+        /// </summary>
+        public static string InventoryItemUseConfiguration_InUseDurability_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemUseConfiguration_InUseDurability_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The items which are used inside the inventory instead of being equipped, e.g. the figurines and charms. Items of the same exclusive group can&apos;t be in use at the same time..
+        /// </summary>
+        public static string InventoryItemUseConfiguration_Items_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemUseConfiguration_Items_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        public static string InventoryItemUseConfiguration_Items_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemUseConfiguration_Items_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The durability of an item which isn&apos;t in use, and of a new item. It has to match the game client (default 255)..
+        /// </summary>
+        public static string InventoryItemUseConfiguration_NotInUseDurability_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemUseConfiguration_NotInUseDurability_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Durability not in use.
+        /// </summary>
+        public static string InventoryItemUseConfiguration_NotInUseDurability_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemUseConfiguration_NotInUseDurability_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only one item of the same exclusive group can be in use at the same time, e.g. either the Hawk or the Goat Figurine. With 0, only another item of the same definition is excluded..
+        /// </summary>
+        public static string InventoryUsedItemIdentifier_ExclusiveGroup_Description {
+            get {
+                return ResourceManager.GetString("InventoryUsedItemIdentifier_ExclusiveGroup_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exclusive group.
+        /// </summary>
+        public static string InventoryUsedItemIdentifier_ExclusiveGroup_Name {
+            get {
+                return ResourceManager.GetString("InventoryUsedItemIdentifier_ExclusiveGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The group of the item definition..
+        /// </summary>
+        public static string InventoryUsedItemIdentifier_Group_Description {
+            get {
+                return ResourceManager.GetString("InventoryUsedItemIdentifier_Group_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group.
+        /// </summary>
+        public static string InventoryUsedItemIdentifier_Group_Name {
+            get {
+                return ResourceManager.GetString("InventoryUsedItemIdentifier_Group_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of the item definition..
+        /// </summary>
+        public static string InventoryUsedItemIdentifier_Number_Description {
+            get {
+                return ResourceManager.GetString("InventoryUsedItemIdentifier_Number_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number.
+        /// </summary>
+        public static string InventoryUsedItemIdentifier_Number_Name {
+            get {
+                return ResourceManager.GetString("InventoryUsedItemIdentifier_Number_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This plugin handles the drop of an item box, e.g. box of kundun..
         /// </summary>
         public static string ItemBoxDroppedPlugIn_Description {

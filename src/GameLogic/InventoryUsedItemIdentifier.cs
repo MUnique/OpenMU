@@ -12,11 +12,13 @@ public class InventoryUsedItemIdentifier
     /// <summary>
     /// Gets or sets the group of the item definition.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.InventoryUsedItemIdentifier_Group_Name), Description = nameof(PlugInResources.InventoryUsedItemIdentifier_Group_Description))]
     public byte Group { get; set; }
 
     /// <summary>
     /// Gets or sets the number of the item definition.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.InventoryUsedItemIdentifier_Number_Name), Description = nameof(PlugInResources.InventoryUsedItemIdentifier_Number_Description))]
     public short Number { get; set; }
 
     /// <summary>
@@ -25,6 +27,7 @@ public class InventoryUsedItemIdentifier
     /// e.g. either the Hawk or the Goat Figurine. With 0, the item belongs to no group,
     /// so only another item of the same definition is excluded.
     /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.InventoryUsedItemIdentifier_ExclusiveGroup_Name), Description = nameof(PlugInResources.InventoryUsedItemIdentifier_ExclusiveGroup_Description))]
     public byte ExclusiveGroup { get; set; }
 
     /// <inheritdoc />

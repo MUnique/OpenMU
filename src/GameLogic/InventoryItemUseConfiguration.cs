@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.DataModel.Composition;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
@@ -30,7 +31,10 @@ public class InventoryItemUseConfiguration
     /// The figurines, the oak charms and the maple charms each form an exclusive group,
     /// see <see cref="InventoryUsedItemIdentifier.ExclusiveGroup"/>.
     /// </remarks>
-    public IList<InventoryUsedItemIdentifier> Items { get; set; } = CreateDefaultItems();
+    [MemberOfAggregate]
+    [ScaffoldColumn(true)]
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.InventoryItemUseConfiguration_Items_Name), Description = nameof(PlugInResources.InventoryItemUseConfiguration_Items_Description))]
+    public ICollection<InventoryUsedItemIdentifier> Items { get; set; } = CreateDefaultItems();
 
     /// <summary>
     /// Gets or sets the durability of an item which is in use.
@@ -39,6 +43,7 @@ public class InventoryItemUseConfiguration
     /// Like in the game client, the durability of such an item tells whether it's in use,
     /// so this value has to match the client.
     /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.InventoryItemUseConfiguration_InUseDurability_Name), Description = nameof(PlugInResources.InventoryItemUseConfiguration_InUseDurability_Description))]
     public byte InUseDurability { get; set; } = DefaultInUseDurability;
 
     /// <summary>
@@ -48,6 +53,7 @@ public class InventoryItemUseConfiguration
     /// Like in the game client, the durability of such an item tells whether it's in use,
     /// so this value has to match the client. A new item starts with it.
     /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.InventoryItemUseConfiguration_NotInUseDurability_Name), Description = nameof(PlugInResources.InventoryItemUseConfiguration_NotInUseDurability_Description))]
     public byte NotInUseDurability { get; set; } = DefaultNotInUseDurability;
 
     /// <summary>
@@ -78,7 +84,7 @@ public class InventoryItemUseConfiguration
         return group != 0 && group == this.GetExclusiveGroup(otherDefinition);
     }
 
-    private static IList<InventoryUsedItemIdentifier> CreateDefaultItems()
+    private static ICollection<InventoryUsedItemIdentifier> CreateDefaultItems()
     {
         const byte figurines = 1;
         const byte oakCharms = 2;
