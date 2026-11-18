@@ -887,16 +887,15 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
-        => this.ApplyDamageAsync(reflector, damage, DamageAttributes.Reflected);
-
-    /// <inheritdoc/>
     public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
-        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Poison);
+    {
+        if (initialAttacker is Player)
+        {
+            return this.HitAsync(new HitInfo(0, damage, DamageAttributes.Poison), initialAttacker, null);
+        }
 
-    /// <inheritdoc/>
-    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
-        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Bleed);
+        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
+    }
 
     /// <inheritdoc/>
     public ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes = DamageAttributes.Undefined)

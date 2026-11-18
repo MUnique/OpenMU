@@ -322,7 +322,7 @@ public static class AttackableExtensions
     /// <returns>The calculated hit info.</returns>
     public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null, uint petDamage = 0)
     {
-        var triggersHitShock = defender.GetsHitShocked(damage);
+        var triggersHitShock = !attributes.HasFlag(DamageAttributes.Bleed) && defender.GetsHitShocked(damage);
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
