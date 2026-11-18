@@ -55,9 +55,9 @@ public class WarpAction
     {
         errorMessage = null;
 
-        if (!warpInfo.IsLevelReachedBy(player, out var requirement))
+        if (!warpInfo.IsLevelReachedBy(player))
         {
-            errorMessage = $"You need to be level {requirement} in order to warp";
+            errorMessage = $"You need to be level {warpInfo.GetLevelRequirementFor(player)} in order to warp";
             return false;
         }
 

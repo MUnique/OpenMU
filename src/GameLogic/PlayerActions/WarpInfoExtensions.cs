@@ -16,18 +16,27 @@ using MUnique.OpenMU.GameLogic.Attributes;
 public static class WarpInfoExtensions
 {
     /// <summary>
-    /// Determines whether the player reaches the level requirement of the warp, which is reduced for some
-    /// classes (see <see cref="CharacterExtensions.GetEffectiveMoveLevelRequirement"/>). The plain
-    /// character level counts, not the master level.
+    /// Gets the level which the player needs for the warp: its level requirement, reduced for some
+    /// classes (see <see cref="CharacterExtensions.GetEffectiveMoveLevelRequirement"/>).
     /// </summary>
     /// <param name="warpInfo">The warp.</param>
     /// <param name="player">The player.</param>
-    /// <param name="levelRequirement">The level which the player needs.</param>
-    /// <returns><c>True</c>, if the player reaches the level.</returns>
-    public static bool IsLevelReachedBy(this WarpInfo warpInfo, Player player, out int levelRequirement)
+    /// <returns>The level which the player needs.</returns>
+    public static int GetLevelRequirementFor(this WarpInfo warpInfo, Player player)
     {
-        levelRequirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.LevelRequirement) ?? warpInfo.LevelRequirement;
-        return levelRequirement <= (player.Attributes?[Stats.Level] ?? 0);
+        return player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.LevelRequirement) ?? warpInfo.LevelRequirement;
+    }
+
+    /// <summary>
+    /// Determines whether the player reaches the level requirement of the warp (see <see cref="GetLevelRequirementFor"/>).
+    /// The plain character level counts, not the master level.
+    /// </summary>
+    /// <param name="warpInfo">The warp.</param>
+    /// <param name="player">The player.</param>
+    /// <returns><c>True</c>, if the player reaches the level.</returns>
+    public static bool IsLevelReachedBy(this WarpInfo warpInfo, Player player)
+    {
+        return warpInfo.GetLevelRequirementFor(player) <= (player.Attributes?[Stats.Level] ?? 0);
     }
 
     /// <summary>
@@ -50,6 +59,6 @@ public static class WarpInfoExtensions
     /// <returns><c>True</c>, if the player may use the warp.</returns>
     public static bool IsAllowedFor(this WarpInfo warpInfo, Player player)
     {
-        return warpInfo.IsLevelReachedBy(player, out _) && warpInfo.GetMissingRequirement(player) is null;
+        return warpInfo.IsLevelReachedBy(player) && warpInfo.GetMissingRequirement(player) is null;
     }
 }
