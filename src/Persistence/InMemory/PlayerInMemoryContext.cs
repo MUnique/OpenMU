@@ -425,6 +425,19 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.Character?> GetRankedCharacterAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return accounts
+            .Where(account => !account.IsBot && !account.IsTemplate)
+            .SelectMany(account => account.Characters)
+            .FirstOrDefault(character => character.Name == characterName && character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
         Guid killerId,
         Guid victimId,

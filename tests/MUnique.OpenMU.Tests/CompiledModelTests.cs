@@ -87,6 +87,7 @@ public class CompiledModelTests
                  {
                      (new GameConfigurationJsonQueryBuilder(), typeof(Persistence.EntityFramework.Model.GameConfiguration)),
                      (new JsonQueryBuilder(), typeof(Persistence.EntityFramework.Model.Account)),
+                     (new JsonQueryBuilder(), typeof(Persistence.EntityFramework.Model.Character)),
                  })
         {
             Assert.That(

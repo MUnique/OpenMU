@@ -6,7 +6,11 @@ namespace MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
@@ -208,6 +212,74 @@ public sealed class WebsiteOperations(
 
         return result;
     }
+
+    /// <summary>Reads the public profile of a character, with its equipped items.</summary>
+    /// <param name="characterName">The exact name of the character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The profile of the character.</returns>
+    /// <remarks>
+    /// Unlike characters_get of the administration, it doesn't contain the account, the inventory, the money or the position,
+    /// and it doesn't tell whether the player is online: that's only for the player, in the answer of the login.
+    /// The state is the saved one, so the items of an online character may have changed since its last save.
+    /// Characters of bots, of templates and of game masters are not found, as they are not ranked either.
+    /// Only the character is loaded, not the other characters and the vault of its account.
+    /// </remarks>
+    [AdminOperation("WebManager")]
+    [NotExposedToAgents("Public projection for websites; agents use characters_get.")]
+    public async ValueTask<WebsiteCharacter> CharacterAsync(string characterName, CancellationToken cancellationToken)
+    {
+        await executor.RequireOperationAsync(AdminRoles.WebManager, WebsitePermissions.Character, cancellationToken).ConfigureAwait(false);
+        var gameConfiguration = await configurations.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false);
+        Character? character;
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            character = await context.GetRankedCharacterAsync(characterName, cancellationToken).ConfigureAwait(false);
+        }
+
+        if (character is null)
+        {
+            throw new AdminResourceNotFoundException("Character not found.", nameof(characterName));
+        }
+
+        string? guildName = null;
+        using (var guildContext = persistence.CreateNewGuildContext())
+        {
+            if (await guildContext.GetGuildMembershipAsync(character.Name).ConfigureAwait(false) is { } membership
+                && await guildContext.GetByIdAsync<DataModel.Entities.Guild>(membership.GuildId, cancellationToken).ConfigureAwait(false) is { } guild)
+            {
+                guildName = guild.Name;
+            }
+        }
+
+        var equippedItems = (character.Inventory?.Items ?? [])
+            .Where(item => item.ItemSlot < InventoryConstants.EquippableSlotsCount && item.Definition is not null)
+            .OrderBy(item => item.ItemSlot)
+            .Select(item => new WebsiteItem(
+                item.ItemSlot,
+                item.Definition!.Group,
+                item.Definition.Number,
+                item.Definition.Name.ValueInNeutralLanguage,
+                item.Level,
+                item.IsExcellent(),
+                item.IsAncient(),
+                item.SocketCount,
+                WebsiteItemDetails.GetPictureName(item),
+                item.HasSkill,
+                WebsiteItemDetails.GetAncientSetName(item),
+                WebsiteItemDetails.GetOptions(item)))
+            .ToList();
+        return new WebsiteCharacter(
+            character.Name,
+            character.CharacterClass?.Name.ValueInNeutralLanguage ?? string.Empty,
+            (int)GetAttribute(character, Stats.Level),
+            (int)GetAttribute(character, Stats.MasterLevel),
+            (int)GetAttribute(character, Stats.Resets),
+            guildName,
+            equippedItems);
+    }
+
+    private static float GetAttribute(Character character, AttributeDefinition definition)
+        => character.Attributes.FirstOrDefault(a => a.Definition.Id == definition.Id)?.Value ?? 0;
 
     /// <summary>
     /// Gets the classes of the line of a character class, which are connected by their <see cref="CharacterClass.NextGenerationClass"/>.

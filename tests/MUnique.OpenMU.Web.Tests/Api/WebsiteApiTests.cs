@@ -7,9 +7,11 @@ namespace MUnique.OpenMU.Web.Tests.Api;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
@@ -115,6 +117,85 @@ public sealed class WebsiteApiTests : System.IDisposable
         Assert.That(audit, Is.Not.Empty);
         Assert.That(audit.Select(e => (e.Frontend, e.PrincipalName)), Has.All.EqualTo(("api", "test-website")));
         Assert.That(audit.Select(e => e.ArgumentsJson), Has.None.Contains("secret1"));
+    }
+
+    /// <summary>The profile of a character is public, but doesn't reveal its account, its secrets or its whereabouts.</summary>
+    [Test]
+    public async Task CharacterProfileHidesAccountAsync()
+    {
+        await this.UseWebsiteKeyAsync(WebsitePermissions.Character).ConfigureAwait(false);
+        await this.EquipItemAsync("tester", "Hero").ConfigureAwait(false);
+
+        using var found = await this._http.GetAsync("/api/website/characters/Hero").ConfigureAwait(false);
+        using var missing = await this._http.GetAsync("/api/website/characters/missing").ConfigureAwait(false);
+
+        Assert.That(found.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(missing.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        var body = await found.Content.ReadAsStringAsync().ConfigureAwait(false);
+        Assert.That(body, Does.Contain("Hero").And.Not.Contain("tester").And.Not.Contain("secret"));
+        using var json = JsonDocument.Parse(body);
+        Assert.That(json.RootElement.GetProperty("equippedItems").GetArrayLength(), Is.GreaterThan(0));
+        var hidden = new[] { "money", "position", "positionX", "positionY", "map", "isOnline", "loginName", "inventory" };
+        Assert.That(GetPropertyNames(json.RootElement).Where(name => hidden.Contains(name, StringComparer.OrdinalIgnoreCase)), Is.Empty);
+    }
+
+    /// <summary>Like in the ranking, the characters of game masters, bots and templates have no public profile.</summary>
+    [Test]
+    public async Task CharacterProfileHidesGameMastersBotsAndTemplatesAsync()
+    {
+        await this.UseWebsiteKeyAsync(WebsitePermissions.Character).ConfigureAwait(false);
+
+        await this.ChangeAccountAsync("tester", account => account.Characters.Single(c => c.Name == "Hero").CharacterStatus = CharacterStatus.GameMaster).ConfigureAwait(false);
+        using var gameMaster = await this._http.GetAsync("/api/website/characters/Hero").ConfigureAwait(false);
+        await this.ChangeAccountAsync("tester", account =>
+        {
+            account.Characters.Single(c => c.Name == "Hero").CharacterStatus = CharacterStatus.Normal;
+            account.IsBot = true;
+        }).ConfigureAwait(false);
+        using var bot = await this._http.GetAsync("/api/website/characters/Hero").ConfigureAwait(false);
+        await this.ChangeAccountAsync("tester", account =>
+        {
+            account.IsBot = false;
+            account.IsTemplate = true;
+        }).ConfigureAwait(false);
+        using var template = await this._http.GetAsync("/api/website/characters/Hero").ConfigureAwait(false);
+
+        Assert.That(gameMaster.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        Assert.That(bot.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        Assert.That(template.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
+    private static IEnumerable<string> GetPropertyNames(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.Object => element.EnumerateObject().SelectMany(property => GetPropertyNames(property.Value).Prepend(property.Name)),
+            JsonValueKind.Array => element.EnumerateArray().SelectMany(GetPropertyNames),
+            _ => [],
+        };
+    }
+
+    private async Task ChangeAccountAsync(string loginName, Action<Account> change)
+    {
+        var gameConfiguration = await this._host.App.Services.GetRequiredService<IDataSource<GameConfiguration>>().GetOwnerAsync().ConfigureAwait(false);
+        using var context = this._host.App.Services.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(gameConfiguration);
+        var account = await context.GetAccountByLoginNameAsync(loginName).ConfigureAwait(false);
+        change(account!);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private async Task EquipItemAsync(string loginName, string characterName)
+    {
+        var gameConfiguration = await this._host.App.Services.GetRequiredService<IDataSource<GameConfiguration>>().GetOwnerAsync().ConfigureAwait(false);
+        using var context = this._host.App.Services.GetRequiredService<IPersistenceContextProvider>().CreateNewPlayerContext(gameConfiguration);
+        var account = await context.GetAccountByLoginNameAsync(loginName).ConfigureAwait(false);
+        var character = account!.Characters.Single(c => c.Name == characterName);
+        character.Inventory ??= context.CreateNew<ItemStorage>();
+        var item = context.CreateNew<Item>();
+        item.Definition = gameConfiguration.Items.First();
+        item.ItemSlot = 0;
+        character.Inventory.Items.Add(item);
+        await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
     private async Task UseWebsiteKeyAsync(string allowedFunctions)

@@ -2653,4 +2653,7 @@
   <data name="WebsitePermissionEvents" xml:space="preserve">
     <value>Eventplan</value>
   </data>
+  <data name="WebsitePermissionCharacter" xml:space="preserve">
+    <value>Charakterprofile (ausgerüstete Gegenstände)</value>
+  </data>
 </root>

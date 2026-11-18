@@ -377,4 +377,17 @@ public interface IPlayerContext : IContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a character which can be ranked by <see cref="GetCharacterRankingAsync"/>, with its inventory, without loading its account.
+    /// </summary>
+    /// <remarks>
+    /// It's for a public profile of a character, which needs one character, but not the other characters and the vault of its account.
+    /// Like in the ranking, characters of bots, templates and game masters are not found.
+    /// The character isn't tracked by the context, so changes to it are not saved.
+    /// </remarks>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The character; or <see langword="null"/>, if it doesn't exist or can't be ranked.</returns>
+    ValueTask<Character?> GetRankedCharacterAsync(string characterName, CancellationToken cancellationToken = default);
 }

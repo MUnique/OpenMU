@@ -31,6 +31,9 @@ public static class WebsitePermissions
     /// <summary>Gets the function which shows the schedule of the events, like mini games, invasions and the happy hour.</summary>
     public static string Events => "website_events";
 
+    /// <summary>Gets the function which shows the public profile of a character, with its equipped items.</summary>
+    public static string Character => "website_character";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
@@ -41,5 +44,6 @@ public static class WebsitePermissions
         Ranking,
         MiniGameRanking,
         Events,
+        Character,
     ];
 }

@@ -8269,6 +8269,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Character profiles (equipped items).
+        /// </summary>
+        public static string WebsitePermissionCharacter {
+            get {
+                return ResourceManager.GetString("WebsitePermissionCharacter", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Event schedule.
         /// </summary>
         public static string WebsitePermissionEvents {

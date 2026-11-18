@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 
 /// <summary>
@@ -82,4 +83,23 @@ public sealed class WebsiteController(WebsiteOperations operations) : Controller
     [HttpGet("events")]
     public ValueTask<IReadOnlyList<WebsiteServerEvents>> GetEventsAsync(CancellationToken cancellationToken)
         => operations.EventsAsync(cancellationToken);
+
+    /// <summary>
+    /// Gets the public profile of a character, with its equipped items, e.g. for an armory.
+    /// </summary>
+    /// <param name="name">The exact name of the character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The profile; <c>404</c>, if the character doesn't exist.</returns>
+    [HttpGet("characters/{name}")]
+    public async Task<IActionResult> GetCharacterAsync(string name, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return this.Ok(await operations.CharacterAsync(name, cancellationToken).ConfigureAwait(false));
+        }
+        catch (AdminResourceNotFoundException)
+        {
+            return this.NotFound();
+        }
+    }
 }

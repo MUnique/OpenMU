@@ -546,6 +546,25 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.Character?> GetRankedCharacterAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            var characterId = await CreateRankedCharacterIdQuery(this.Context.Set<Account>(), characterName)
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+            if (characterId is { } id
+                && this.RepositoryProvider.GetRepository<Account, AccountRepository>() is { } accountRepository)
+            {
+                return await accountRepository.GetCharacterByIdAsync(id, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return null;
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
         Guid killerId,
         Guid victimId,
@@ -641,10 +660,7 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
         IReadOnlyCollection<Guid>? characterClassIds = null)
     {
         // EF can't order by the members of the projected record, so the ordering happens before the projection.
-        var characters = accounts
-            .Where(account => !account.IsBot && !account.IsTemplate)
-            .SelectMany(account => account.RawCharacters)
-            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal);
+        var characters = CreateRankedCharactersQuery(accounts);
         if (characterClassIds is not null)
         {
             characters = characters.Where(character => character.CharacterClassId != null && characterClassIds.Contains(character.CharacterClassId.Value));
@@ -659,6 +675,19 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
             .Take(count);
 
         return CreateCharacterSummaryQuery(characters, levelAttributeId, masterLevelAttributeId, resetsAttributeId);
+    }
+
+    /// <summary>
+    /// Creates the query of the identifier of a character which can be ranked, for <see cref="GetRankedCharacterAsync"/>.
+    /// </summary>
+    /// <param name="accounts">The accounts.</param>
+    /// <param name="characterName">The name of the character.</param>
+    /// <returns>The query.</returns>
+    internal static IQueryable<Guid?> CreateRankedCharacterIdQuery(IQueryable<Account> accounts, string characterName)
+    {
+        return CreateRankedCharactersQuery(accounts)
+            .Where(character => character.Name == characterName)
+            .Select(character => (Guid?)character.Id);
     }
 
     /// <summary>
@@ -681,5 +710,18 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
             character.RawAttributes.Where(a => a.DefinitionId == levelAttributeId).Select(a => a.Value).FirstOrDefault(),
             character.RawAttributes.Where(a => a.DefinitionId == masterLevelAttributeId).Select(a => a.Value).FirstOrDefault(),
             character.RawAttributes.Where(a => a.DefinitionId == resetsAttributeId).Select(a => a.Value).FirstOrDefault()));
+    }
+
+    /// <summary>
+    /// Creates the query of the characters which can be ranked: not of bots, templates and game masters.
+    /// </summary>
+    /// <param name="accounts">The accounts.</param>
+    /// <returns>The query.</returns>
+    private static IQueryable<Character> CreateRankedCharactersQuery(IQueryable<Account> accounts)
+    {
+        return accounts
+            .Where(account => !account.IsBot && !account.IsTemplate)
+            .SelectMany(account => account.RawCharacters)
+            .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal);
     }
 }

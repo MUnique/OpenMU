@@ -2777,4 +2777,7 @@
   <data name="WebsitePermissionEvents" xml:space="preserve">
     <value>Event schedule</value>
   </data>
+  <data name="WebsitePermissionCharacter" xml:space="preserve">
+    <value>Character profiles (equipped items)</value>
+  </data>
 </root>

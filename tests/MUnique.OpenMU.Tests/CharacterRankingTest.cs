@@ -144,7 +144,65 @@ public class CharacterRankingTest
         Assert.That(sql, Does.Contain("WHERE"));
     }
 
-    private static void AddAccount(IContext context, CharacterClass characterClass, bool isBot, params (string Name, int Level, int MasterLevel, int Resets, CharacterStatus Status)[] characters)
+    /// <summary>
+    /// Tests that a character which can be ranked is found, and that the characters of bots,
+    /// templates and game masters are not found.
+    /// </summary>
+    [Test]
+    public async Task RankedCharacterIsFoundAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        using (var context = contextProvider.CreateNewPlayerContext(new GameConfiguration()))
+        {
+            var characterClass = context.CreateNew<CharacterClass>();
+            characterClass.Name = "Dark Knight";
+            AddAccount(context, characterClass, isBot: false, ("Knight", 400, 0, 0, CharacterStatus.Normal), ("GameMaster", 400, 0, 0, CharacterStatus.GameMaster));
+            AddAccount(context, characterClass, isBot: true, ("Bot", 400, 0, 0, CharacterStatus.Normal));
+            AddAccount(context, characterClass, isBot: false, ("Template", 400, 0, 0, CharacterStatus.Normal)).IsTemplate = true;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        using var queryContext = contextProvider.CreateNewPlayerContext(new GameConfiguration());
+
+        var knight = await queryContext.GetRankedCharacterAsync("Knight").ConfigureAwait(false);
+        Assert.That(knight?.Name, Is.EqualTo("Knight"));
+        foreach (var name in new[] { "GameMaster", "Bot", "Template", "Unknown" })
+        {
+            Assert.That(await queryContext.GetRankedCharacterAsync(name).ConfigureAwait(false), Is.Null, name);
+        }
+    }
+
+    /// <summary>
+    /// Tests that the query of the identifier of a character which can be ranked can be translated to SQL,
+    /// with the same conditions as the ranking.
+    /// </summary>
+    [Test]
+    public void EntityFrameworkRankedCharacterIdQueryIsTranslatable()
+    {
+        using var context = new AccountContext();
+
+        var sql = PlayerContext.CreateRankedCharacterIdQuery(context.Set<Persistence.EntityFramework.Model.Account>(), "Knight").ToQueryString();
+
+        Assert.That(sql, Does.Contain("IsBot").And.Contain("IsTemplate").And.Contain("CharacterStatus").And.Contain("Name"));
+    }
+
+    /// <summary>
+    /// Tests that the json query, with which the entity framework implementation loads a ranked character,
+    /// loads the items of the character, but not its account with the other characters and the vault.
+    /// </summary>
+    [Test]
+    public void CharacterJsonQueryDoesNotLoadAccount()
+    {
+        using var context = new EntityDataContext();
+        var characterType = context.Model.FindEntityType(typeof(Persistence.EntityFramework.Model.Character))!;
+
+        var query = new Persistence.EntityFramework.Json.JsonQueryBuilder().BuildJsonQueryForEntity(characterType);
+
+        Assert.That(query, Does.Contain("\"ItemStorage\"").And.Contain("\"Item\""));
+        Assert.That(query, Does.Not.Contain("\"Account\""));
+    }
+
+    private static Account AddAccount(IContext context, CharacterClass characterClass, bool isBot, params (string Name, int Level, int MasterLevel, int Resets, CharacterStatus Status)[] characters)
     {
         var account = context.CreateNew<Account>();
         account.LoginName = Guid.NewGuid().ToString("N")[..10];
@@ -160,5 +218,7 @@ public class CharacterRankingTest
             character.Attributes.Add(new Persistence.BasicModel.StatAttribute(Stats.Resets, resets));
             account.Characters.Add(character);
         }
+
+        return account;
     }
 }
