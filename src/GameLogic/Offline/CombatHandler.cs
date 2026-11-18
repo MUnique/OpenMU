@@ -907,11 +907,10 @@ public sealed class CombatHandler
     /// <see cref="BotProgression.RequiresPet"/> need in order to be worth anything.
     /// </summary>
     private bool RidesFenrir()
-        => this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is
-           {
-               Definition: { Group: FenrirItemGroup, Number: FenrirItemNumber },
-           } fenrir
-           && fenrir.HasEffect(DateTime.UtcNow);
+    {
+        var pet = this._player.Inventory?.GetItem(InventoryConstants.PetSlot);
+        return pet?.Definition is { Group: FenrirItemGroup, Number: FenrirItemNumber } && pet.HasEffect(DateTime.UtcNow);
+    }
 
     /// <summary>
     /// Evaluates whether the skill in the given slot should fire this tick.

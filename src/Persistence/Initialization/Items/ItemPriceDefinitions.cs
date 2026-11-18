@@ -123,8 +123,6 @@ internal class ItemPriceDefinitions : InitializerBase
         new(nameof(ItemPriceDefinitionNames.SmallWingsAndCapes), "240", Rounding: ItemPriceRounding.Tens, Items: [(12, 130), (12, 131), (12, 132), (12, 133), (12, 134), (12, 135)]),
     ];
 
-    private static IEnumerable<SpecialPrice> AllPrices => SpecialPrices.Concat(GeneralPrices).Concat(RentalPrices);
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ItemPriceDefinitions"/> class.
     /// </summary>
@@ -134,6 +132,8 @@ internal class ItemPriceDefinitions : InitializerBase
         : base(context, gameConfiguration)
     {
     }
+
+    private static IEnumerable<SpecialPrice> AllPrices => SpecialPrices.Concat(GeneralPrices).Concat(RentalPrices);
 
     /// <summary>
     /// Creates all price definitions and assigns them to the items which don't have one yet.

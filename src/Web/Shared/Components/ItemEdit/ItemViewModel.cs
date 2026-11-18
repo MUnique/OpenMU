@@ -171,7 +171,11 @@ public class ItemViewModel : INotifyPropertyChanged, IValidatableObject
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_IsTimeLimited), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public bool IsTimeLimited
     {
-        get => this.Item.ExpiresAt is not null;
+        get
+        {
+            return this.Item.ExpiresAt is not null;
+        }
+
         set
         {
             if (this.IsTimeLimited == value)
@@ -191,7 +195,11 @@ public class ItemViewModel : INotifyPropertyChanged, IValidatableObject
     [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_ExpiresAt), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
     public DateTime ExpiresAt
     {
-        get => this.Item.ExpiresAt ?? DateTime.UtcNow;
+        get
+        {
+            return this.Item.ExpiresAt ?? DateTime.UtcNow;
+        }
+
         set
         {
             var utcValue = DateTime.SpecifyKind(value, DateTimeKind.Utc);
