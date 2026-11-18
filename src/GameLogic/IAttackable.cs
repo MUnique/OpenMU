@@ -68,21 +68,32 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// </summary>
     /// <param name="reflector">The reflector.</param>
     /// <param name="damage">The damage.</param>
-    ValueTask ReflectDamageAsync(IAttacker reflector, uint damage);
+    ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+         => this.ApplyDamageAsync(reflector, damage, DamageAttributes.Reflected);
 
     /// <summary>
     /// Applies the poison damage.
     /// </summary>
     /// <param name="initialAttacker">The initial attacker.</param>
     /// <param name="damage">The damage.</param>
-    ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+    ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
+        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Poison);
 
     /// <summary>
     /// Applies the bleeding damage.
     /// </summary>
     /// <param name="initialAttacker">The initial attacker.</param>
     /// <param name="damage">The damage.</param>
-    ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
+    ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Bleed);
+
+    /// <summary>
+    /// Applies damage to this instance.
+    /// </summary>
+    /// <param name="attacker">The initial attacker.</param>
+    /// <param name="damage">The damage.</param>
+    /// <param name="damageAttributes">The damage attributes.</param>
+    ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes = DamageAttributes.Undefined);
 
     /// <summary>
     /// Kills the attackable instantly.

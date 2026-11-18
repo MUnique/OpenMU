@@ -888,20 +888,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     /// <inheritdoc/>
     public ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
-    {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null);
-    }
+        => this.ApplyDamageAsync(reflector, damage, DamageAttributes.Reflected);
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
-    }
+        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Poison);
+
+    /// <inheritdoc />
+    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Bleed);
 
     /// <inheritdoc/>
-    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    public ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes = DamageAttributes.Undefined)
     {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null);
+        return this.HitAsync(this.GetHitInfo(damage, damageAttributes, attacker), attacker, null);
     }
 
     /// <summary>
@@ -1791,9 +1791,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.OnDeathAsync(attacker).ConfigureAwait(false);
         }
 
-        if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
+        if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison)
+            || hitInfo.Attributes.HasFlag(DamageAttributes.Bleed))
         {
-            // Poison Damage does not reflect to the attacker.
+            // Neither Poison nor Bleed damage reflect to the attacker.
             return;
         }
 

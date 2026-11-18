@@ -33,7 +33,7 @@ public class MonsterRespawnTest
         var killer = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         var monster = await CreateMonsterAsync(gameContext).ConfigureAwait(false);
 
-        await monster.ReflectDamageAsync(killer, 1_000_000).ConfigureAwait(false);
+        await monster.ApplyDamageAsync(killer, 1_000_000).ConfigureAwait(false);
         Assert.That(monster.IsAlive, Is.False);
 
         var deadline = DateTime.UtcNow.AddSeconds(10);
@@ -59,7 +59,7 @@ public class MonsterRespawnTest
         var map = monster.CurrentMap;
         var monsterId = monster.Id;
 
-        await monster.ReflectDamageAsync(killer, 1_000_000).ConfigureAwait(false);
+        await monster.ApplyDamageAsync(killer, 1_000_000).ConfigureAwait(false);
         await monster.DisposeAsync().ConfigureAwait(false);
 
         await Task.Delay(RespawnDelay * 5).ConfigureAwait(false);

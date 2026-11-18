@@ -133,6 +133,11 @@ public class ShowHitPlugIn : IShowHitPlugIn
             return DamageKind.PoisonDarkGreen;
         }
 
+        if (attributes.HasFlag(DamageAttributes.Bleed))
+        {
+            return DamageKind.BleedDarkPink;
+        }
+
         return DamageKind.NormalRed;
     }
 }
