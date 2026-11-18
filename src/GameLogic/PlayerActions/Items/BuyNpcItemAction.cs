@@ -110,8 +110,11 @@ public class BuyNpcItemAction
             var newItem = player.PersistenceContext.CreateNew<Item>();
             newItem.AssignValues(itemTemplate);
             newItem.ItemSlot = (byte)toSlot;
-            await player.InvokeViewPlugInAsync<INpcItemBoughtPlugIn>(p => p.NpcItemBoughtAsync(newItem)).ConfigureAwait(false);
+
+            // Added before it's sent to the client, because adding it may change its data,
+            // e.g. the state of an item which is used inside the inventory.
             await player.Inventory.AddItemAsync(newItem).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<INpcItemBoughtPlugIn>(p => p.NpcItemBoughtAsync(newItem)).ConfigureAwait(false);
             player.GameContext.PlugInManager.GetPlugInPoint<IItemBoughtFromMerchantPlugIn>()?.ItemBought(player, newItem, storeItem, merchant);
             if (purchasePlugIns is not null)
             {

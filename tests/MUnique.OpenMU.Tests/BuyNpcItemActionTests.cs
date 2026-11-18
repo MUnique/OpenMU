@@ -118,6 +118,42 @@ public class BuyNpcItemActionTests
     }
 
     /// <summary>
+    /// Verifies that a bought item which is used inside the inventory is sent to the client
+    /// with the state which it got in the inventory, i.e. not in use, instead of the durability of the store item.
+    /// </summary>
+    [Test]
+    public async ValueTask BoughtInventoryUseItemIsSentWithItsInventoryStateAsync()
+    {
+        const byte notInUse = 255;
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.GameContext.FeaturePlugIns.AddPlugIn(new InventoryItemUseFeaturePlugIn(), true);
+        player.Money = 1_000_000;
+        var charmDefinition = new ItemDefinition
+        {
+            Group = 13,
+            Number = 130,
+            Value = StorePrice,
+            PriceDefinition = new MUnique.OpenMU.Persistence.BasicModel.ItemPriceDefinition { BasePriceFormula = "value" },
+            Width = 1,
+            Height = 1,
+            Durability = 1,
+        };
+        var storeItem = CreateItem(charmDefinition, 1);
+        storeItem.ItemSlot = StoreSlot;
+        player.OpenedNpc = CreateMerchant(storeItem);
+        double? sentDurability = null;
+        Mock.Get(player.ViewPlugIns.GetPlugIn<INpcItemBoughtPlugIn>()!)
+            .Setup(p => p.NpcItemBoughtAsync(It.IsAny<Item>()))
+            .Callback<Item>(item => sentDurability = item.Durability)
+            .Returns(ValueTask.CompletedTask);
+
+        await new BuyNpcItemAction().BuyItemAsync(player, StoreSlot).ConfigureAwait(false);
+
+        Assert.That(player.Inventory!.Items.Single().Durability, Is.EqualTo(notInUse));
+        Assert.That(sentDurability, Is.EqualTo(notInUse));
+    }
+
+    /// <summary>
     /// Verifies that the price and the item chosen by the plug-in are used.
     /// </summary>
     [Test]
