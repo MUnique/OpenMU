@@ -141,8 +141,8 @@ public class CharacterMoveTest
 
     /// <summary>
     /// Tests if a reported stop position which the current walk doesn't pass through, and which
-    /// isn't next to our position, ends the walk where we are and tells the player, so it can't be used
-    /// to leave the path and the client doesn't stay apart from us.
+    /// is further away than a walk may start from us, ends the walk where we are and tells the player,
+    /// so it can't be used to leave the path and the client doesn't stay apart from us.
     /// </summary>
     [Test]
     public async ValueTask TestStopPositionOutsideOfTheWalkEndsTheWalkAndResynchronizesAsync()
@@ -150,7 +150,7 @@ public class CharacterMoveTest
         var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
         var walkPoints = await GetWalkPointsAsync(player).ConfigureAwait(false);
         var position = player.Position;
-        var offPathPoint = new Point(position.X, (byte)(position.Y - 2));
+        var offPathPoint = new Point(position.X, (byte)(position.Y - 6));
         Assert.That(walkPoints, Does.Not.Contain(offPathPoint), "The test needs a position the walk doesn't pass through.");
 
         await HandleStopPacketAsync(player, offPathPoint).ConfigureAwait(false);
@@ -162,6 +162,51 @@ public class CharacterMoveTest
         });
         Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!)
             .Verify(p => p.ObjectMovedAsync(player, MoveType.Instant), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests if a reported stop position which the current walk doesn't pass through, and which is
+    /// within the offset a walk may start from us, ends the walk where we are without pulling the
+    /// player back: the difference is plausible with some network lag, and everybody in view would see
+    /// the character slide.
+    /// </summary>
+    [Test]
+    public async ValueTask TestStopPositionOutsideOfTheWalkWithinTheStartOffsetIsToleratedAsync()
+    {
+        var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
+        var walkPoints = await GetWalkPointsAsync(player).ConfigureAwait(false);
+        var position = player.Position;
+        var offPathPoint = new Point(position.X, (byte)(position.Y - 3));
+        Assert.That(walkPoints, Does.Not.Contain(offPathPoint), "The test needs a position the walk doesn't pass through.");
+
+        await HandleStopPacketAsync(player, offPathPoint).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(player.IsWalking, Is.False);
+            Assert.That(player.Position, Is.EqualTo(position));
+        });
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!)
+            .Verify(p => p.ObjectMovedAsync(player, MoveType.Instant), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests if a player standing still isn't told anything when its client reports a position
+    /// up to the offset a walk may start from us: every swing reports the position, and a correction
+    /// would drop the attack animation.
+    /// </summary>
+    [Test]
+    public async ValueTask TestStandingPlayerReportingAPositionWithinTheStartOffsetIsLeftAloneAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Position = StartPoint;
+
+        await HandleStopPacketAsync(player, new Point((byte)(StartPoint.X + 3), StartPoint.Y)).ConfigureAwait(false);
+        await HandleStopPacketAsync(player, new Point((byte)(StartPoint.X + 5), StartPoint.Y)).ConfigureAwait(false);
+
+        Assert.That(player.Position, Is.EqualTo(StartPoint));
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!)
+            .Verify(p => p.ObjectMovedAsync(player, It.IsAny<MoveType>()), Times.Never);
     }
 
     /// <summary>
@@ -233,7 +278,7 @@ public class CharacterMoveTest
 
     /// <summary>
     /// Tests if a player standing still is told where we have it, when its client reports a
-    /// position further away than the next tile.
+    /// position further away than a walk may start from us.
     /// </summary>
     [Test]
     public async ValueTask TestStandingPlayerReportingAnotherPositionIsResynchronizedAsync()
@@ -241,7 +286,7 @@ public class CharacterMoveTest
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         player.Position = StartPoint;
 
-        await HandleStopPacketAsync(player, new Point((byte)(StartPoint.X + 3), StartPoint.Y)).ConfigureAwait(false);
+        await HandleStopPacketAsync(player, new Point((byte)(StartPoint.X + 6), StartPoint.Y)).ConfigureAwait(false);
 
         Assert.That(player.Position, Is.EqualTo(StartPoint));
         Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!)

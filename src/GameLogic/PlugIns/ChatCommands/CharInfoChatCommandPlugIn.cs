@@ -28,30 +28,30 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, CharInfoChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, CharInfoChatCommandArgs arguments)
     {
-        var player = await this.GetPlayerByCharacterNameAsync(gameMaster, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
+        var targetPlayer = await this.GetPlayerByCharacterNameAsync(player, arguments.CharacterName ?? string.Empty).ConfigureAwait(false);
 
-        if (player?.Account is not { } account
-            || player.SelectedCharacter is not { } character)
+        if (targetPlayer?.Account is not { } account
+            || targetPlayer.SelectedCharacter is not { } character)
         {
             return;
         }
 
-        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterInfoAccountNameFormat), account.LoginName).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterInfoAccountNameFormat), account.LoginName).ConfigureAwait(false);
 
-        await this.ShowAllLinesMessageToAsync(gameMaster, GetCharacterInfo(gameMaster, character)).ConfigureAwait(false);
+        await this.ShowAllLinesMessageToAsync(player, GetCharacterInfo(player, character)).ConfigureAwait(false);
 
-        await this.ShowAllLinesMessageToAsync(gameMaster, player.Attributes?.ToString()).ConfigureAwait(false);
+        await this.ShowAllLinesMessageToAsync(player, targetPlayer.Attributes?.ToString()).ConfigureAwait(false);
     }
 
-    private static string GetCharacterInfo(Player gameMaster, Character character)
+    private static string GetCharacterInfo(Player player, Character character)
     {
-        return gameMaster.GetLocalizedMessage(
+        return player.GetLocalizedMessage(
             nameof(PlayerMessage.CharacterInfoFormat),
             character.Id,
             character.Name,
-            character.CharacterClass?.Name.GetTranslation(gameMaster.Culture),
+            character.CharacterClass?.Name.GetTranslation(player.Culture),
             character.CharacterSlot,
             character.CreateDate,
             character.Experience,
@@ -70,7 +70,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
             character.InventoryExtensions);
     }
 
-    private async ValueTask ShowAllLinesMessageToAsync(Player gameMaster, string? message)
+    private async ValueTask ShowAllLinesMessageToAsync(Player player, string? message)
     {
         if (string.IsNullOrEmpty(message))
         {
@@ -87,7 +87,7 @@ public class CharInfoChatCommandPlugIn : ChatCommandPlugInBase<CharInfoChatComma
                 break;
             }
 
-            await gameMaster.ShowBlueMessageAsync(line).ConfigureAwait(false);
+            await player.ShowBlueMessageAsync(line).ConfigureAwait(false);
         }
     }
 }

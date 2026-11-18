@@ -193,10 +193,13 @@ public sealed class DiscordGameMasterCommands
         }
 
         using var context = this._createContext();
-        return await context.GetAccountIdByCharacterNameAsync(characterName).ConfigureAwait(false) == link.AccountId
-               && await context.GetCharacterStatusAsync(characterName).ConfigureAwait(false) == CharacterStatus.GameMaster
-            ? characterName
-            : null;
+        if (await context.GetAccountIdByCharacterNameAsync(characterName).ConfigureAwait(false) == link.AccountId
+            && await context.GetCharacterStatusAsync(characterName).ConfigureAwait(false) == CharacterStatus.GameMaster)
+        {
+            return characterName;
+        }
+
+        return null;
     }
 
     private DiscordEmbed Answer(string resourceKey, params object[] args)

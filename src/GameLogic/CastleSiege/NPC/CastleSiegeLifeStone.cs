@@ -226,14 +226,14 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase, IObserverDependent
     }
 
     /// <inheritdoc />
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this.Context.RemoveLifeStone(this);
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 
     private static void RestorePercentage(

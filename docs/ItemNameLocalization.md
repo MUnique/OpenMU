@@ -24,6 +24,9 @@ claim of comparison against every entry in a current Chinese client.
 
 Additional references include:
 
+- [Season 6 jewel combinations](https://mu.zhaouc.com/news/Update/214.html):
+  `Jewel of Chaos` is 玛雅之石, also used in its item and price-group
+  translations.
 - [Magic Gladiator skills](https://mu.zhaouc.com/Guide/GameIntro/01_character04.html):
   `Orb of Fire Slash` (12/16) is 玄月斩之石, not 天雷闪之石. The latter conflates
   the orb with the separate weapon skill 天雷闪.

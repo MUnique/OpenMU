@@ -118,11 +118,14 @@ internal static class BotMerchandise
                 : luck ? PriceClass.Cheap : PriceClass.None;
         }
 
-        return luck
-               && definition.DropLevel >= configuration.HighSetMinimumDropLevel
-               && item.Level >= configuration.MinimumNormalItemLevel
-            ? PriceClass.Cheap
-            : PriceClass.None;
+        if (luck
+            && definition.DropLevel >= configuration.HighSetMinimumDropLevel
+            && item.Level >= configuration.MinimumNormalItemLevel)
+        {
+            return PriceClass.Cheap;
+        }
+
+        return PriceClass.None;
     }
 
     /// <summary>

@@ -59,7 +59,7 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
             tables.Select(table => table.ToString()).ToArray());
 
         var manifestEntry = archive.CreateEntry(ManifestEntryName);
-        await using (var manifestStream = manifestEntry.Open())
+        await using (var manifestStream = await manifestEntry.OpenAsync(cancellationToken).ConfigureAwait(false))
         {
             await JsonSerializer.SerializeAsync(manifestStream, manifest, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
@@ -68,7 +68,7 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
         {
             cancellationToken.ThrowIfCancellationRequested();
             var entry = archive.CreateEntry($"{table}{TableEntryExtension}");
-            await using var entryStream = entry.Open();
+            await using var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
             await using var copyStream = await connection
                 .BeginRawBinaryCopyAsync($"COPY {table.ToQuotedString()} TO STDOUT (FORMAT BINARY)", cancellationToken)
                 .ConfigureAwait(false);
@@ -150,7 +150,7 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
             }
 
             var table = TableName.Parse(tableName);
-            await using var entryStream = entry.Open();
+            await using var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
             await using var copyStream = await connection
                 .BeginRawBinaryCopyAsync($"COPY {table.ToQuotedString()} FROM STDIN (FORMAT BINARY)", cancellationToken)
                 .ConfigureAwait(false);
@@ -282,7 +282,7 @@ public class DatabaseSnapshotService : IDatabaseSnapshotService
             return null;
         }
 
-        await using var stream = entry.Open();
+        await using var stream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
         return await JsonSerializer.DeserializeAsync<SnapshotManifest>(stream, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 

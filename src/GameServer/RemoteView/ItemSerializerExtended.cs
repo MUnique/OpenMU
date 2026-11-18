@@ -107,13 +107,13 @@ public class ItemSerializerExtended : IItemSerializer
     }
 
     /// <inheritdoc />
-    public Item DeserializeItem(Span<byte> array, GameConfiguration gameConfiguration, IContext persistenceContext)
+    public Item DeserializeItem(Span<byte> source, GameConfiguration gameConfiguration, IContext persistenceContext)
     {
-        var itemStruct = new ItemStruct(array);
+        var itemStruct = new ItemStruct(source);
         var itemGroup = itemStruct.Group;
         var itemNumber = itemStruct.Number;
         var definition = gameConfiguration.Items.FirstOrDefault(def => def.Number == itemNumber && def.Group == itemGroup)
-                         ?? throw new ArgumentException($"Couldn't find the item definition for the given byte array. Extracted item number and group: {itemNumber}, {itemGroup}");
+                         ?? throw new ArgumentException($"Couldn't find the item definition for the given byte source. Extracted item number and group: {itemNumber}, {itemGroup}");
 
         var item = persistenceContext.CreateNew<Item>();
         item.Definition = definition;
@@ -251,7 +251,10 @@ public class ItemSerializerExtended : IItemSerializer
 
         public byte Group
         {
-            get => (byte)((this._data[0] >> 4) & 0xF);
+            get
+            {
+                return (byte)((this._data[0] >> 4) & 0xF);
+            }
             set
             {
                 value <<= 4;
@@ -262,7 +265,10 @@ public class ItemSerializerExtended : IItemSerializer
 
         public ushort Number
         {
-            get => (ushort)(((this._data[0] & 0xF) << 8) + this._data[1]);
+            get
+            {
+                return (ushort)(((this._data[0] & 0xF) << 8) + this._data[1]);
+            }
             set
             {
                 // Higher 4 bits of the first byte for the higher bits of the value
@@ -305,7 +311,10 @@ public class ItemSerializerExtended : IItemSerializer
 
         public byte OptionType
         {
-            get => this.Options.HasFlag(OptionFlags.HasOption) ? (byte)((this._data[5] & 0xF0) >> 4) : default;
+            get
+            {
+                return this.Options.HasFlag(OptionFlags.HasOption) ? (byte)((this._data[5] & 0xF0) >> 4) : default;
+            }
             set
             {
                 value = (byte)((value & 0xF) << 4);
@@ -334,7 +343,10 @@ public class ItemSerializerExtended : IItemSerializer
 
         public byte AncientBonusLevel
         {
-            get => this.Options.HasFlag(OptionFlags.HasAncient) ? (byte)((this._data[this.AncientIndex] & 0xF0) >> 4) : default;
+            get
+            {
+                return this.Options.HasFlag(OptionFlags.HasAncient) ? (byte)((this._data[this.AncientIndex] & 0xF0) >> 4) : default;
+            }
             set
             {
                 value = (byte)((value & 0xF) << 4);
@@ -351,7 +363,10 @@ public class ItemSerializerExtended : IItemSerializer
 
         public byte SocketBonus
         {
-            get => this.Options.HasFlag(OptionFlags.HasSockets) ? (byte)((this._data[this.SocketStartIndex] & 0xF0) >> 4) : default;
+            get
+            {
+                return this.Options.HasFlag(OptionFlags.HasSockets) ? (byte)((this._data[this.SocketStartIndex] & 0xF0) >> 4) : default;
+            }
             set
             {
                 value = (byte)((value & 0xF) << 4);

@@ -7,4 +7,8 @@ namespace MUnique.OpenMU.ServerClients;
 /// <summary>
 /// Arguments for a friend online state change.
 /// </summary>
+/// <param name="CharacterId">The character identifier.</param>
+/// <param name="CharacterName">The character name.</param>
+/// <param name="ServerId">The server identifier.</param>
+/// <param name="IsVisible">A value indicating whether the character is visible.</param>
 public record PlayerFriendOnlineStateArguments(Guid CharacterId, string CharacterName, byte ServerId, bool IsVisible);

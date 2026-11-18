@@ -274,7 +274,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public int Money
     {
-        get => this.SelectedCharacter?.Inventory?.Money ?? 0;
+        get
+        {
+            return this.SelectedCharacter?.Inventory?.Money ?? 0;
+        }
 
         set
         {
@@ -332,7 +335,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public CharacterPose Pose
     {
-        get => this._selectedCharacter?.Pose ?? default;
+        get
+        {
+            return this._selectedCharacter?.Pose ?? default;
+        }
 
         set
         {
@@ -351,7 +357,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public Account? Account
     {
-        get => this._account;
+        get
+        {
+            return this._account;
+        }
         set
         {
             if (this._account != value)
@@ -401,7 +410,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public GameMap? CurrentMap
     {
-        get => this._currentMap;
+        get
+        {
+            return this._currentMap;
+        }
 
         internal set
         {
@@ -500,7 +512,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public Point Position
     {
-        get => new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        get
+        {
+            return new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        }
 
         set
         {
@@ -794,6 +809,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             this.DuelRoom = null;
+
+            // A request to this player can't be answered anymore once the character left the world.
+            this.PendingAllianceRequest = default;
 
             this._selectedCharacter = null;
         }

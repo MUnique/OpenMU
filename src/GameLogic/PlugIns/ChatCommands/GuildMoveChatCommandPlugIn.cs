@@ -26,16 +26,16 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, GuildMoveChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, GuildMoveChatCommandArgs arguments)
     {
-        var guildId = await this.GetGuildIdByNameAsync(gameMaster, arguments.GuildName!).ConfigureAwait(false);
+        var guildId = await this.GetGuildIdByNameAsync(player, arguments.GuildName!).ConfigureAwait(false);
 
-        if (guildId is null || gameMaster.GameContext is not IGameServerContext gameServerContext)
+        if (guildId is null || player.GameContext is not IGameServerContext gameServerContext)
         {
             return;
         }
 
-        var exitGate = await this.GetExitGateAsync(gameMaster, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
+        var exitGate = await this.GetExitGateAsync(player, arguments.MapIdOrName!, arguments.Coordinates).ConfigureAwait(false);
         if (exitGate is null)
         {
             return;
@@ -45,10 +45,10 @@ public class GuildMoveChatCommandPlugIn : ChatCommandPlugInBase<GuildMoveChatCom
         {
             await guildPlayer.WarpToAsync(exitGate).ConfigureAwait(false);
 
-            if (!guildPlayer.Name.Equals(gameMaster.Name))
+            if (!guildPlayer.Name.Equals(player.Name))
             {
                 await guildPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedByGameMaster)).ConfigureAwait(false);
-                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, guildPlayer.Name, exitGate!.Map!.Name.GetTranslation(gameMaster.Culture), guildPlayer.Position.X, guildPlayer.Position.Y).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MovedPlayerResult), this.Key, guildPlayer.Name, exitGate!.Map!.Name.GetTranslation(player.Culture), guildPlayer.Position.X, guildPlayer.Position.Y).ConfigureAwait(false);
             }
         }).ConfigureAwait(false);
     }

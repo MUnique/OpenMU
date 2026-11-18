@@ -178,7 +178,7 @@ public class MapInitializer : IMapInitializer
     /// <inheritdoc />
     public async ValueTask<NonPlayerCharacter?> InitializeSpawnAsync(
         int spawnIndex,
-        GameMap createdMap,
+        GameMap gameMap,
         MonsterSpawnArea spawnArea,
         IEventStateProvider? eventStateProvider = null,
         IDropGenerator? dropGenerator = null)
@@ -186,7 +186,7 @@ public class MapInitializer : IMapInitializer
         _ = this.PlugInManager ?? throw new InvalidOperationException("PlugInManager must be set first");
         _ = this.PathFinderPool ?? throw new InvalidOperationException("PathFinderPool must be set first");
 
-        if (createdMap.IsTornDown)
+        if (gameMap.IsTornDown)
         {
             // E.g. a spawn wave of a mini game which ended in the meantime.
             this._logger.LogDebug("Skipping spawn {spawn}, because its map is torn down.", spawnArea);
@@ -202,50 +202,50 @@ public class MapInitializer : IMapInitializer
 
         NonPlayerCharacter npc;
 
-        var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, createdMap);
+        var intelligence = this.TryCreateConfiguredNpcIntelligence(monsterDef, gameMap);
 
         if (monsterDef.ObjectKind == NpcObjectKind.Monster)
         {
             this._logger.LogDebug("Creating monster {spawn}", spawnArea);
-            npc = new Monster(spawnArea, monsterDef, createdMap, dropGenerator ?? this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool, eventStateProvider);
+            npc = new Monster(spawnArea, monsterDef, gameMap, dropGenerator ?? this._dropGenerator, intelligence ?? new BasicMonsterIntelligence(), this.PlugInManager, this.PathFinderPool, eventStateProvider);
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.Guard)
         {
             this._logger.LogDebug("Creating guard {spawn}", spawnArea);
-            npc = new Monster(spawnArea, monsterDef, createdMap, NullDropGenerator.Instance, intelligence ?? new GuardIntelligence(), this.PlugInManager, this.PathFinderPool, eventStateProvider);
+            npc = new Monster(spawnArea, monsterDef, gameMap, NullDropGenerator.Instance, intelligence ?? new GuardIntelligence(), this.PlugInManager, this.PathFinderPool, eventStateProvider);
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.Trap)
         {
             this._logger.LogDebug("Creating trap {spawn}", spawnArea);
-            npc = new Trap(spawnArea, monsterDef, createdMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(createdMap));
+            npc = new Trap(spawnArea, monsterDef, gameMap, intelligence ?? new RandomAttackInRangeTrapIntelligence(gameMap));
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.SoccerBall)
         {
             this._logger.LogDebug("Creating soccer ball {spawn}", spawnArea);
-            npc = new SoccerBall(spawnArea, monsterDef, createdMap);
+            npc = new SoccerBall(spawnArea, monsterDef, gameMap);
         }
         else if (monsterDef.ObjectKind == NpcObjectKind.Destructible)
         {
             this._logger.LogDebug("Creating destructible {spawn}", spawnArea);
-            npc = new Destructible(spawnArea, monsterDef, createdMap, eventStateProvider, dropGenerator ?? this._dropGenerator, this.PlugInManager!);
+            npc = new Destructible(spawnArea, monsterDef, gameMap, eventStateProvider, dropGenerator ?? this._dropGenerator, this.PlugInManager!);
         }
         else if (monsterDef.MerchantStore is not null)
         {
             this._logger.LogDebug("Creating merchant npc {spawn}", spawnArea);
-            npc = new MerchantNpc(spawnArea, monsterDef, createdMap);
+            npc = new MerchantNpc(spawnArea, monsterDef, gameMap);
         }
         else
         {
             this._logger.LogDebug("Creating npc {spawn}", spawnArea);
-            npc = new NonPlayerCharacter(spawnArea, monsterDef, createdMap);
+            npc = new NonPlayerCharacter(spawnArea, monsterDef, gameMap);
         }
 
         try
         {
             npc.SpawnIndex = spawnIndex;
             npc.Initialize();
-            await createdMap.AddAsync(npc).ConfigureAwait(false);
-            if (createdMap.IsTornDown)
+            await gameMap.AddAsync(npc).ConfigureAwait(false);
+            if (gameMap.IsTornDown)
             {
                 // The map got torn down while the NPC was created, so the teardown may have missed it.
                 await npc.DisposeAsync().ConfigureAwait(false);
@@ -255,7 +255,7 @@ public class MapInitializer : IMapInitializer
             npc.OnSpawn();
             if (spawnArea.SpawnTrigger is SpawnTrigger.Automatic or SpawnTrigger.Wandering)
             {
-                this.RegisterForConfigChanges(createdMap, spawnArea, npc);
+                this.RegisterForConfigChanges(gameMap, spawnArea, npc);
             }
 
             return npc;

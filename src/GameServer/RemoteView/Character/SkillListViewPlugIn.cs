@@ -188,9 +188,9 @@ public class SkillListViewPlugIn : ISkillListViewPlugIn
 
     private struct SkillEqualityComparer : IEqualityComparer<SkillEntry>
     {
-        public bool Equals(SkillEntry? left, SkillEntry? right)
+        public bool Equals(SkillEntry? x, SkillEntry? y)
         {
-            return Equals(left?.Skill, right?.Skill);
+            return Equals(x?.Skill, y?.Skill);
         }
 
         public int GetHashCode(SkillEntry obj)

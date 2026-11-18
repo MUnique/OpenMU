@@ -17,9 +17,9 @@ using MUnique.OpenMU.Discord.Properties;
 using MUnique.OpenMU.Discord.Provisioning;
 using MUnique.OpenMU.Interfaces;
 
-/// <summary>
+/// <content>
 /// The part of the <see cref="DiscordBot"/> which runs the chat bridge between the game and Discord.
-/// </summary>
+/// </content>
 public sealed partial class DiscordBot
 {
     /// <summary>
@@ -350,11 +350,14 @@ public sealed partial class DiscordBot
 
     private string GetBoundChannelMention(GuildChatTarget? target, GuildChatScope scope)
     {
-        return target is not null
-               && this._chatBridge.Store.Get(target.GuildId, scope) is { } binding
-               && ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var channelId)
-            ? MentionUtils.MentionChannel(channelId)
-            : "-";
+        if (target is not null
+            && this._chatBridge.Store.Get(target.GuildId, scope) is { } binding
+            && ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var channelId))
+        {
+            return MentionUtils.MentionChannel(channelId);
+        }
+
+        return "-";
     }
 
     private async ValueTask OnChatMessageAsync(ChatMessageEvent chatMessage)

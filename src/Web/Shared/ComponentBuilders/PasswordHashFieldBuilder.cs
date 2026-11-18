@@ -16,9 +16,9 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class PasswordHashFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
     {
-        return this.BuildField<string, PasswordHashField>(model, propertyInfo, builder, currentIndex, notificationService);
+        return this.BuildField<string, PasswordHashField>(model, propertyInfo, treeBuilder, currentIndex, notificationService);
     }
 
     /// <inheritdoc/>

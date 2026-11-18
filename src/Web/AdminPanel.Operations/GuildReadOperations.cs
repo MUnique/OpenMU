@@ -10,6 +10,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
 /// <summary>Reads guilds, membership and relationships without returning tracked entities.</summary>
+/// <param name="persistence">The persistence context provider.</param>
 public sealed class GuildReadOperations(IPersistenceContextProvider persistence)
 {
     /// <summary>Searches guild names.</summary>

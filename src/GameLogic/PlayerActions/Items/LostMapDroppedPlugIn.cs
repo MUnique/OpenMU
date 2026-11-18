@@ -20,14 +20,14 @@ using MUnique.OpenMU.PlugIns;
 public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
 {
     /// <inheritdoc />
-    public async ValueTask HandleItemDropAsync(Player player, Item item, Point target, IItemDropPlugIn.ItemDropArguments cancelArgs)
+    public async ValueTask HandleItemDropAsync(Player player, Item item, Point target, IItemDropPlugIn.ItemDropArguments dropArgs)
     {
         if (!item.IsLostMap())
         {
             return;
         }
 
-        cancelArgs.WasHandled = true;
+        dropArgs.WasHandled = true;
         if (player.CurrentMap is null)
         {
             return;
@@ -39,6 +39,6 @@ public sealed class LostMapDroppedPlugIn : IItemDropPlugIn
             return;
         }
 
-        cancelArgs.Success = await KalimaGate.TryOpenAsync(player, item.Level, target).ConfigureAwait(false);
+        dropArgs.Success = await KalimaGate.TryOpenAsync(player, item.Level, target).ConfigureAwait(false);
     }
 }

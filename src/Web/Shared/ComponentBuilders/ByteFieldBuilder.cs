@@ -15,14 +15,14 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class ByteFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
     {
         if (propertyInfo.PropertyType == typeof(byte))
         {
-            return this.BuildField<byte, ByteField>(model, propertyInfo, builder, currentIndex, notificationService);
+            return this.BuildField<byte, ByteField>(model, propertyInfo, treeBuilder, currentIndex, notificationService);
         }
 
-        return this.BuildField<byte?, NullableByteField>(model, propertyInfo, builder, currentIndex, notificationService);
+        return this.BuildField<byte?, NullableByteField>(model, propertyInfo, treeBuilder, currentIndex, notificationService);
     }
 
     /// <inheritdoc/>

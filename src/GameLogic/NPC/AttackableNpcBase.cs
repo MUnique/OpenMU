@@ -81,7 +81,10 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc/>
     public override Point Position
     {
-        get => base.Position;
+        get
+        {
+            return base.Position;
+        }
         set
         {
             if (base.Position != value)
@@ -213,15 +216,15 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this.Died = null;
             this.IsAlive = false;
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 
     /// <summary>

@@ -149,8 +149,15 @@ public sealed class PluginAdminOperations(IServerProvider servers, AdminOperatio
         && names.Contains(operation.Name, StringComparer.Ordinal);
 
     private IGameServerAdministration ResolveServer(int id)
-        => servers.Servers.OfType<IGameServer>().SingleOrDefault(s => s.Id == id) is { ServerState: ServerState.Started } server && server is IGameServerAdministration administration
-            ? administration : throw new AdminOperationException("The game server's live administration channel is unavailable.", AdminOperationErrorKind.Unavailable);
+    {
+        if (servers.Servers.OfType<IGameServer>().SingleOrDefault(s => s.Id == id) is { ServerState: ServerState.Started } server
+            && server is IGameServerAdministration administration)
+        {
+            return administration;
+        }
+
+        throw new AdminOperationException("The game server's live administration channel is unavailable.", AdminOperationErrorKind.Unavailable);
+    }
 
     private async ValueTask<AdminPluginOperationInfo> ResolveOperationAsync(IGameServerAdministration server, Guid id, string name, CancellationToken cancellationToken)
         => (await server.GetAdminOperationsAsync(cancellationToken).ConfigureAwait(false)).SingleOrDefault(o => o.PlugInId == id && o.Name == name && IsValid(o))

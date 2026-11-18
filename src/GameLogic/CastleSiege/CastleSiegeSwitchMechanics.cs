@@ -100,8 +100,7 @@ public static class CastleSiegeSwitchMechanics
         var side = occupant is null
             ? CastleSiegeJoinSide.None
             : context.GetPlayerJoinSide(occupant);
-        var guildName = occupant?.GuildStatus is { } guildStatus
-                        && context.GetFinalGuild(guildStatus.GuildId) is { } participant
+        var guildName = occupant?.GuildStatus is { } guildStatus && context.GetFinalGuild(guildStatus.GuildId) is { } participant
             ? participant.GuildName
             : string.Empty;
 

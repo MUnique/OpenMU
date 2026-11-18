@@ -55,10 +55,8 @@ public sealed class CastleSiegeLandOfTrialsGuardTalkPlugIn : NpcTalkPlugInBase
                     ? CastleSiegeHuntZoneAccessType.OwnerAllianceMember
                     : CastleSiegeHuntZoneAccessType.Guest;
         var configuredFee = Math.Clamp(context.SiegeData.TaxHunt, 0, CastleSiegeTaxProvider.MaximumHuntTax);
-        var fee = accessType is CastleSiegeHuntZoneAccessType.Guest
-            or CastleSiegeHuntZoneAccessType.OwnerGuildMaster
-            ? configuredFee
-            : 0;
+        var isFeeCharged = accessType is CastleSiegeHuntZoneAccessType.Guest or CastleSiegeHuntZoneAccessType.OwnerGuildMaster;
+        var fee = isFeeCharged ? configuredFee : 0;
         await player.InvokeViewPlugInAsync<ICastleSiegeHuntZoneGuardInfoPlugIn>(
                 view => view.ShowHuntZoneGuardInfoAsync(
                     accessType,

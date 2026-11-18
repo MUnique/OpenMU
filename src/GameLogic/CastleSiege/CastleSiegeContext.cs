@@ -669,10 +669,13 @@ public class CastleSiegeContext : IEventStateProvider
             return assignedSide;
         }
 
-        return player.GuildStatus is { } guildStatus
-               && this.GetFinalGuild(guildStatus.GuildId) is { } participatingGuild
-            ? participatingGuild.Side
-            : CastleSiegeJoinSide.None;
+        if (player.GuildStatus is { } guildStatus
+            && this.GetFinalGuild(guildStatus.GuildId) is { } participatingGuild)
+        {
+            return participatingGuild.Side;
+        }
+
+        return CastleSiegeJoinSide.None;
     }
 
     /// <summary>
