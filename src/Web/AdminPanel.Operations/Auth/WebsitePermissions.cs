@@ -19,11 +19,15 @@ public static class WebsitePermissions
     /// <summary>Gets the function which shows whether the server is online and how many players are online.</summary>
     public static string Status => "website_status";
 
+    /// <summary>Gets the function which registers new game accounts.</summary>
+    public static string Register => "website_register";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
     public static IReadOnlyList<string> All { get; } =
     [
         Status,
+        Register,
     ];
 }

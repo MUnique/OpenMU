@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.API;
 
 using System.Threading;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
@@ -33,4 +34,20 @@ public sealed class WebsiteController(WebsiteOperations operations) : Controller
     [HttpGet("status")]
     public ValueTask<WebsiteServerStatus> GetStatusAsync(CancellationToken cancellationToken)
         => operations.StatusAsync(cancellationToken);
+
+    /// <summary>
+    /// Registers a new account, which can log in right away.
+    /// </summary>
+    /// <param name="registration">The login name, password and e-mail address of the new account.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// <c>201</c> when the account was created, <c>400</c> when the registration is invalid,
+    /// and <c>409</c> when the login name is already taken.
+    /// </returns>
+    [HttpPost("accounts")]
+    public async Task<IActionResult> RegisterAsync([FromBody] AccountRegistration registration, CancellationToken cancellationToken)
+    {
+        var created = await operations.RegisterAsync(registration.LoginName, registration.Password, registration.EMail, cancellationToken).ConfigureAwait(false);
+        return created ? this.StatusCode(StatusCodes.Status201Created) : this.Conflict();
+    }
 }

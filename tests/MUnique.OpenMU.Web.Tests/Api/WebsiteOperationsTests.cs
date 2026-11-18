@@ -6,8 +6,11 @@ namespace MUnique.OpenMU.Web.Tests.Api;
 
 using System.Threading;
 using Moq;
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
@@ -99,6 +102,10 @@ public class WebsiteOperationsTests
     {
         var serverProvider = new Mock<IServerProvider>();
         serverProvider.Setup(p => p.Servers).Returns(servers.ToList());
-        return new WebsiteOperations(serverProvider.Object, AdminOperationTestServices.CreateExecutor("api", actor: () => actor));
+        var configurations = new Mock<IDataSource<GameConfiguration>>();
+        configurations.Setup(s => s.GetOwnerAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())).ReturnsAsync(new GameConfiguration());
+        var executor = AdminOperationTestServices.CreateExecutor("api", actor: () => actor);
+        var accounts = new AccountWriteOperations(new InMemoryPersistenceContextProvider(), configurations.Object, Mock.Of<ILoginServer>(), executor);
+        return new WebsiteOperations(serverProvider.Object, accounts, executor);
     }
 }

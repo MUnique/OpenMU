@@ -2641,4 +2641,7 @@
   <data name="WebsitePermissionStatus" xml:space="preserve">
     <value>Serverstatus</value>
   </data>
+  <data name="WebsitePermissionRegister" xml:space="preserve">
+    <value>Konten registrieren</value>
+  </data>
 </root>

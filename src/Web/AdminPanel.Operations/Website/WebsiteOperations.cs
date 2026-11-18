@@ -19,8 +19,9 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 /// a key which can read the admin views of accounts and characters.
 /// </remarks>
 /// <param name="servers">The server provider.</param>
+/// <param name="accounts">The account operations, which the registration shares with the admin panel.</param>
 /// <param name="executor">The authorization and audit service.</param>
-public sealed class WebsiteOperations(IServerProvider servers, AdminOperationExecutor executor)
+public sealed class WebsiteOperations(IServerProvider servers, AccountWriteOperations accounts, AdminOperationExecutor executor)
 {
     /// <summary>Reads the public state of the game servers.</summary>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -42,5 +43,28 @@ public sealed class WebsiteOperations(IServerProvider servers, AdminOperationExe
                 server.MaximumConnections))
             .ToList();
         return new WebsiteServerStatus(gameServers.Sum(server => server.Players), gameServers);
+    }
+
+    /// <summary>Registers a new account, which can log in right away.</summary>
+    /// <param name="loginName">The login name of the new account.</param>
+    /// <param name="password">The password of the new account; never recorded in the audit trail.</param>
+    /// <param name="email">The optional e-mail address.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the account was created; <c>false</c>, if the login name is already taken.</returns>
+    /// <remarks>
+    /// The account is created exactly like by the admin panel, and the registration is audited with the name of the key.
+    /// The website has to protect its form against abuse (a captcha, a limit per visitor): this server only sees the website.
+    /// </remarks>
+    [AdminOperation("WebManager", ReadOnly = false)]
+    [NotExposedToAgents("Registration form of websites; agents use accounts_create.")]
+    public async ValueTask<bool> RegisterAsync(string loginName, string password, string? email, CancellationToken cancellationToken)
+    {
+        var result = await executor.ExecuteAsync(
+            AdminRoles.WebManager,
+            WebsitePermissions.Register,
+            new { loginName, email },
+            _ => accounts.CreateAccountAsync(loginName, password, email, cancellationToken),
+            cancellationToken).ConfigureAwait(false);
+        return result["status"]?.GetValue<string>() == "created";
     }
 }

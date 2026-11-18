@@ -269,10 +269,14 @@ public class ApiKeyManagementService
         private static readonly (string Permission, Func<WebsitePermissionParameters, bool> IsSelected, Action<WebsitePermissionParameters> Select)[] Map =
         [
             (WebsitePermissions.Status, p => p.Status, p => p.Status = true),
+            (WebsitePermissions.Register, p => p.Register, p => p.Register = true),
         ];
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionStatus))]
         public bool Status { get; set; }
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionRegister))]
+        public bool Register { get; set; }
 
         /// <summary>
         /// Creates the check boxes for the functions of an allowlist.

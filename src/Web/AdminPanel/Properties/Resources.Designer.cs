@@ -8269,6 +8269,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Register accounts.
+        /// </summary>
+        public static string WebsitePermissionRegister {
+            get {
+                return ResourceManager.GetString("WebsitePermissionRegister", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Website functions.
         /// </summary>
         public static string WebsitePermissions {

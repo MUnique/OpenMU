@@ -33,45 +33,7 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
             AdminRoles.Operator,
             "accounts_create",
             new { loginName, email },
-            async _ =>
-            {
-                var registration = new AccountRegistration { LoginName = loginName, Password = password, EMail = email };
-                var validation = new List<ValidationResult>();
-                if (!Validator.TryValidateObject(registration, new ValidationContext(registration), validation, true))
-                {
-                    throw new AdminOperationException($"Use a printable ASCII login of 3-10 characters, a printable ASCII {nameof(password)} of 3-20 characters and a valid optional email address.", AdminOperationErrorKind.InvalidInput);
-                }
-
-                var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-                using var context = persistence.CreateNewPlayerContext(config);
-                if (await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null)
-                {
-                    return AdminReadResult.From(new { status = "already_exists", loginName });
-                }
-
-                var account = context.CreateNew<Account>();
-                account.LoginName = loginName;
-                account.EMail = email ?? string.Empty;
-                account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-                account.State = AccountState.Normal;
-                account.RegistrationDate = DateTime.UtcNow;
-                try
-                {
-                    await SaveAsync(context, cancellationToken).ConfigureAwait(false);
-                }
-                catch
-                {
-                    using var check = persistence.CreateNewPlayerContext(config);
-                    if (await check.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null)
-                    {
-                        return AdminReadResult.From(new { status = "already_exists", loginName });
-                    }
-
-                    throw;
-                }
-
-                return AdminReadResult.From(new { status = "created", loginName });
-            },
+            _ => this.CreateAccountAsync(loginName, password, email, cancellationToken),
             cancellationToken);
 
     /// <summary>Changes an offline account's state with a mandatory audit reason.</summary>
@@ -152,6 +114,56 @@ public sealed class AccountWriteOperations(IPersistenceContextProvider persisten
         {
             throw new AdminOperationException($"An audit {nameof(reason)} of 1-1000 characters is required.", AdminOperationErrorKind.InvalidInput);
         }
+    }
+
+    /// <summary>Creates a normal account, without checking the caller.</summary>
+    /// <param name="loginName">The new login name.</param>
+    /// <param name="password">The initial password.</param>
+    /// <param name="email">The optional email address.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Whether the account was created or already exists.</returns>
+    /// <remarks>
+    /// The callers run it through the <see cref="AdminOperationExecutor"/> with their own role and operation name,
+    /// e.g. the registration of a website.
+    /// </remarks>
+    internal async ValueTask<JsonObject> CreateAccountAsync(string loginName, string password, string? email, CancellationToken cancellationToken)
+    {
+        var registration = new AccountRegistration { LoginName = loginName, Password = password, EMail = email };
+        var validation = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(registration, new ValidationContext(registration), validation, true))
+        {
+            throw new AdminOperationException($"Use a printable ASCII login of 3-10 characters, a printable ASCII {nameof(password)} of 3-20 characters and a valid optional email address.", AdminOperationErrorKind.InvalidInput);
+        }
+
+        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        using var context = persistence.CreateNewPlayerContext(config);
+        if (await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null)
+        {
+            return AdminReadResult.From(new { status = "already_exists", loginName });
+        }
+
+        var account = context.CreateNew<Account>();
+        account.LoginName = loginName;
+        account.EMail = email ?? string.Empty;
+        account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+        account.State = AccountState.Normal;
+        account.RegistrationDate = DateTime.UtcNow;
+        try
+        {
+            await SaveAsync(context, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            using var check = persistence.CreateNewPlayerContext(config);
+            if (await check.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false) is not null)
+            {
+                return AdminReadResult.From(new { status = "already_exists", loginName });
+            }
+
+            throw;
+        }
+
+        return AdminReadResult.From(new { status = "created", loginName });
     }
 
     private static bool IsPrivileged(AccountState state) => state is not (AccountState.Normal or AccountState.Banned or AccountState.TemporarilyBanned);
