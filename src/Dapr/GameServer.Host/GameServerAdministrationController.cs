@@ -71,6 +71,14 @@ public sealed class GameServerAdministrationController(IGameServer server, Admin
     public ValueTask<IReadOnlyList<LiveEventInfo>> GetEventsAsync(GameServerAdministrationRequest request, CancellationToken cancellationToken)
         => this.Resolve(request).GetEventsAsync(cancellationToken);
 
+    /// <summary>Reads the next starts of the scheduled events.</summary>
+    /// <param name="request">The request arguments.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The bounded list of scheduled events.</returns>
+    [HttpPost(nameof(IGameServerAdministration.GetScheduledEventsAsync))]
+    public ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(GameServerAdministrationRequest request, CancellationToken cancellationToken)
+        => this.Resolve(request).GetScheduledEventsAsync(cancellationToken);
+
     /// <summary>Requests an event start with duplicate-delivery protection.</summary>
     /// <param name="request">The request arguments.</param>
     /// <returns>The confirmed result.</returns>

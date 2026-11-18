@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.Tests.Api;
 
 using System.Threading;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
@@ -241,6 +242,36 @@ public class WebsiteOperationsTests
         Assert.That(Assert.ThrowsAsync<AdminOperationException>(async () => await operations.MiniGameRankingAsync(null, 0, CancellationToken.None).ConfigureAwait(false))!.Kind, Is.EqualTo(AdminOperationErrorKind.InvalidInput));
     }
 
+    /// <summary>
+    /// The events are read from each started game server, which knows which events run on it.
+    /// A game server which doesn't answer is left out.
+    /// </summary>
+    [Test]
+    public async Task EventsAreReadPerStartedGameServerAsync()
+    {
+        var started = new Mock<IGameServer>();
+        started.Setup(s => s.Id).Returns(1);
+        started.Setup(s => s.Description).Returns("Server 1");
+        started.Setup(s => s.ServerState).Returns(ServerState.Started);
+        var golden = new ScheduledEventInfo(Guid.NewGuid(), "Golden Invasion", new DateTime(2026, 11, 18, 20, 0, 0, DateTimeKind.Utc));
+        started.As<IGameServerAdministration>().Setup(a => a.GetScheduledEventsAsync(It.IsAny<CancellationToken>())).ReturnsAsync([golden]);
+        var failing = new Mock<IGameServer>();
+        failing.Setup(s => s.Id).Returns(2);
+        failing.Setup(s => s.ServerState).Returns(ServerState.Started);
+        failing.As<IGameServerAdministration>().Setup(a => a.GetScheduledEventsAsync(It.IsAny<CancellationToken>())).ThrowsAsync(new TimeoutException());
+        var stopped = new Mock<IGameServer>();
+        stopped.Setup(s => s.ServerState).Returns(ServerState.Stopped);
+        var stoppedAdministration = stopped.As<IGameServerAdministration>();
+        var operations = CreateOperations(WebManager(WebsitePermissions.Events), started.Object, failing.Object, stopped.Object);
+
+        var events = await operations.EventsAsync(CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(events, Has.Count.EqualTo(1));
+        Assert.That(events[0].ServerName, Is.EqualTo("Server 1"));
+        Assert.That(events[0].Events, Is.EqualTo(new[] { new WebsiteEvent(golden.PlugInId, golden.Name, golden.NextStartUtc) }));
+        stoppedAdministration.Verify(a => a.GetScheduledEventsAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     private static CharacterClass AddClass(IContext context, GameConfiguration gameConfiguration, byte number, string name)
     {
         var characterClass = context.CreateNew<CharacterClass>();
@@ -296,6 +327,6 @@ public class WebsiteOperationsTests
         var executor = AdminOperationTestServices.CreateExecutor("api", actor: () => actor);
         var accounts = new AccountWriteOperations(persistence, configurations.Object, Mock.Of<ILoginServer>(), executor);
         var miniGames = new MiniGameReadOperations(persistence, configurations.Object);
-        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, executor);
+        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, NullLogger<WebsiteOperations>.Instance, executor);
     }
 }

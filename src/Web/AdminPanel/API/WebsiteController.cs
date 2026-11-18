@@ -73,4 +73,13 @@ public sealed class WebsiteController(WebsiteOperations operations) : Controller
     [HttpGet("minigames/ranking")]
     public ValueTask<WebsiteMiniGameRanking> GetMiniGameRankingAsync([FromQuery] MiniGameType? type = null, [FromQuery] int? days = null, CancellationToken cancellationToken = default)
         => operations.MiniGameRankingAsync(type, days, cancellationToken);
+
+    /// <summary>
+    /// Gets the next starts of the scheduled events, like mini games, invasions and the happy hour, per game server.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The events per started game server.</returns>
+    [HttpGet("events")]
+    public ValueTask<IReadOnlyList<WebsiteServerEvents>> GetEventsAsync(CancellationToken cancellationToken)
+        => operations.EventsAsync(cancellationToken);
 }

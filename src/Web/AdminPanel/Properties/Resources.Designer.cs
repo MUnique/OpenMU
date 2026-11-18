@@ -8269,6 +8269,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Event schedule.
+        /// </summary>
+        public static string WebsitePermissionEvents {
+            get {
+                return ResourceManager.GetString("WebsitePermissionEvents", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Mini game rankings.
         /// </summary>
         public static string WebsitePermissionMiniGameRanking {

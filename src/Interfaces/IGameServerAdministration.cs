@@ -62,6 +62,15 @@ public interface IGameServerAdministration : IGameServerPluginOperations
     /// <returns>The bounded event schedule.</returns>
     ValueTask<IReadOnlyList<LiveEventInfo>> GetEventsAsync(CancellationToken cancellationToken);
 
+    /// <summary>Reads the next starts of all active scheduled events of this game server, like mini games, invasions and the happy hour.</summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The bounded list of scheduled events.</returns>
+    /// <remarks>
+    /// Unlike <see cref="GetEventsAsync"/>, it's not limited to the mini games which can be started by an administrator,
+    /// but includes every plugin with a schedule which runs on this game server and has an upcoming start.
+    /// </remarks>
+    ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(CancellationToken cancellationToken);
+
     /// <summary>Force-starts or restarts an enabled periodic mini game.</summary>
     /// <param name="eventType">The invariant mini game type.</param>
     /// <param name="restart">Whether an already running event may be removed first.</param>

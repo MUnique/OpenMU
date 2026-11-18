@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.GameLogic.Administration;
 
+using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
@@ -83,6 +85,26 @@ public sealed partial class GameServerAdministration(IGameContext context) : IGa
         }
 
         return events;
+    }
+
+    /// <inheritdoc />
+    public ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        var now = DateTime.UtcNow;
+        IReadOnlyList<ScheduledEventInfo> events = context.PlugInManager.GetActivePlugInsOf<IPeriodicTaskPlugIn>()
+            .OfType<IScheduledPlugIn>()
+            .Where(plugIn => plugIn.IsScheduledOn(context))
+            .Select(plugIn => (PlugIn: plugIn, NextStartUtc: plugIn.GetNextStartUtc(now, context.ServerTimeZone)))
+            .Where(e => e.NextStartUtc is not null)
+            .OrderBy(e => e.NextStartUtc)
+            .Take(100)
+            .Select(e => new ScheduledEventInfo(
+                e.PlugIn.GetType().GUID,
+                UpcomingEvents.GetName(e.PlugIn.GetType(), CultureInfo.InvariantCulture),
+                e.NextStartUtc!.Value))
+            .ToList();
+        return ValueTask.FromResult(events);
     }
 
     /// <inheritdoc />

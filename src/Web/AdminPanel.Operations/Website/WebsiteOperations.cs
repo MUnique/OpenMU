@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 
 using System.Threading;
+using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
@@ -27,6 +28,7 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 /// <param name="accounts">The account operations, which the registration shares with the admin panel.</param>
 /// <param name="rankingCache">The cache of the rankings.</param>
 /// <param name="miniGames">The mini game operations, which provide the leaderboards of the admin panel.</param>
+/// <param name="logger">The logger.</param>
 /// <param name="executor">The authorization and audit service.</param>
 public sealed class WebsiteOperations(
     IServerProvider servers,
@@ -35,6 +37,7 @@ public sealed class WebsiteOperations(
     AccountWriteOperations accounts,
     WebsiteRankingCache rankingCache,
     MiniGameReadOperations miniGames,
+    ILogger<WebsiteOperations> logger,
     AdminOperationExecutor executor)
 {
     /// <summary>
@@ -162,6 +165,48 @@ public sealed class WebsiteOperations(
             leaderboard.AvailableTypes.Select(type => type.ToString()).ToList(),
             leaderboard.Days,
             leaderboard.Entries.Select(entry => entry with { ClassName = englishClassNames.GetValueOrDefault(entry.ClassName, entry.ClassName) }).ToList());
+    }
+
+    /// <summary>Reads the next starts of the scheduled events of the started game servers.</summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The events per game server.</returns>
+    /// <remarks>
+    /// It includes every active plugin with a schedule, like the mini games, the invasions and the happy hour,
+    /// so an event which is added or activated later shows up without a change of the website API.
+    /// Each game server reports its own events, because an event can be limited to some game servers.
+    /// </remarks>
+    [AdminOperation("WebManager")]
+    [NotExposedToAgents("Public projection for websites; agents use events_schedule.")]
+    public async ValueTask<IReadOnlyList<WebsiteServerEvents>> EventsAsync(CancellationToken cancellationToken)
+    {
+        await executor.RequireOperationAsync(AdminRoles.WebManager, WebsitePermissions.Events, cancellationToken).ConfigureAwait(false);
+        var result = new List<WebsiteServerEvents>();
+        foreach (var server in servers.Servers.OfType<IGameServer>().Where(s => s.ServerState == ServerState.Started).OrderBy(s => s.Id).Take(AdminReadResult.MaximumRows))
+        {
+            if (server is not IGameServerAdministration administration)
+            {
+                continue;
+            }
+
+            IReadOnlyList<ScheduledEventInfo> events;
+            try
+            {
+                events = await administration.GetScheduledEventsAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // A game server which doesn't answer, e.g. in the distributed deployment, must not hide the events of the others.
+                logger.LogWarning(ex, "Could not read the scheduled events of game server {ServerId} for the website.", server.Id);
+                continue;
+            }
+
+            result.Add(new WebsiteServerEvents(
+                server.Id,
+                server.Description,
+                events.Select(e => new WebsiteEvent(e.PlugInId, e.Name, e.NextStartUtc)).ToList()));
+        }
+
+        return result;
     }
 
     /// <summary>
