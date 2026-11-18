@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
@@ -18,16 +19,6 @@ using MUnique.OpenMU.PlugIns;
 [Guid("7EABF432-BC91-48E6-BDD0-5F1B7D7EFBC9")]
 public class AddFigurinesAndCharmsUpdatePlugIn : UpdatePlugInBase
 {
-    /// <summary>
-    /// The plug in name.
-    /// </summary>
-    internal const string PlugInName = "Add the figurines and charms";
-
-    /// <summary>
-    /// The plug in description.
-    /// </summary>
-    internal const string PlugInDescription = "This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory.";
-
     /// <summary>
     /// The items of the products of the cash shop script of the game client, by their product sequence.
     /// </summary>
@@ -43,10 +34,10 @@ public class AddFigurinesAndCharmsUpdatePlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => PlugInName;
+    public override string Name => PlugInResources.AddFigurinesAndCharmsUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => PlugInDescription;
+    public override string Description => PlugInResources.AddFigurinesAndCharmsUpdatePlugIn_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => true;
