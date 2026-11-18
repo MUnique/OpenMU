@@ -78,10 +78,24 @@ public class ApiKeyManagementService
             return null;
         }
 
-        if (!AdminToolGroups.IsValid(input.AllowedToolGroups))
+        var allowedToolGroups = input.AllowedToolGroups.Trim();
+        if (input.Role == ApiKeyRole.WebManager)
         {
-            this._toastService.ShowError(ApiKeyToolGroupResources.Caption);
-            return null;
+            // A website key can't do anything by its role, so its functions are selected right away.
+            if (await this.SelectWebsitePermissionsAsync(string.Empty).ConfigureAwait(false) is not { } permissions)
+            {
+                return null;
+            }
+
+            allowedToolGroups = permissions;
+        }
+        else
+        {
+            if (!AdminToolGroups.IsValid(allowedToolGroups))
+            {
+                this._toastService.ShowError(ApiKeyToolGroupResources.Caption);
+                return null;
+            }
         }
 
         var generatedKey = ApiKeyGenerator.GenerateKey();
@@ -92,7 +106,7 @@ public class ApiKeyManagementService
             KeyHash = ApiKeyGenerator.Hash(generatedKey),
             KeyPrefix = ApiKeyGenerator.GetVisiblePrefix(generatedKey),
             Roles = input.Role.ToString(),
-            AllowedToolGroups = input.AllowedToolGroups.Trim(),
+            AllowedToolGroups = allowedToolGroups,
         };
 
         try
@@ -117,8 +131,18 @@ public class ApiKeyManagementService
     /// <summary>Edits an existing key's optional MCP allowlist without changing its secret or role.</summary>
     /// <param name="apiKey">The stored key.</param>
     /// <returns>Whether the restriction was saved.</returns>
+    /// <remarks>
+    /// The functions of a <see cref="AdminRoles.WebManager"/> key are selected with check boxes instead,
+    /// because they are a fixed set and an empty list means that the key can't do anything.
+    /// </remarks>
     public async ValueTask<bool> EditToolGroupsAsync(ApiKey apiKey)
     {
+        if (string.Equals(apiKey.Roles, AdminRoles.WebManager, StringComparison.Ordinal))
+        {
+            return await this.SelectWebsitePermissionsAsync(apiKey.AllowedToolGroups).ConfigureAwait(false) is { } permissions
+                && await this.SaveToolGroupsAsync(apiKey, permissions).ConfigureAwait(false);
+        }
+
         var input = new ApiKeyToolGroupParameters { AllowedToolGroups = apiKey.AllowedToolGroups };
         var parameters = new ModalParameters();
         parameters.Add(nameof(ModalCreateNew<ApiKeyToolGroupParameters>.Item), input);
@@ -135,19 +159,7 @@ public class ApiKeyManagementService
             return false;
         }
 
-        var previous = apiKey.AllowedToolGroups;
-        apiKey.AllowedToolGroups = input.AllowedToolGroups.Trim();
-        try
-        {
-            await this._repository.UpdateAsync(apiKey).ConfigureAwait(false);
-            return true;
-        }
-        catch (Exception exception)
-        {
-            apiKey.AllowedToolGroups = previous;
-            this._toastService.ShowError(exception.Message);
-            return false;
-        }
+        return await this.SaveToolGroupsAsync(apiKey, input.AllowedToolGroups.Trim()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -198,6 +210,38 @@ public class ApiKeyManagementService
         return true;
     }
 
+    private async ValueTask<bool> SaveToolGroupsAsync(ApiKey apiKey, string allowedToolGroups)
+    {
+        var previous = apiKey.AllowedToolGroups;
+        apiKey.AllowedToolGroups = allowedToolGroups;
+        try
+        {
+            await this._repository.UpdateAsync(apiKey).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception exception)
+        {
+            apiKey.AllowedToolGroups = previous;
+            this._toastService.ShowError(exception.Message);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Asks for the functions of a website key with check boxes.
+    /// </summary>
+    /// <param name="allowedToolGroups">The currently allowed functions.</param>
+    /// <returns>The selected functions as allowlist; <c>null</c>, if the dialog has been cancelled.</returns>
+    private async ValueTask<string?> SelectWebsitePermissionsAsync(string allowedToolGroups)
+    {
+        var input = WebsitePermissionParameters.FromAllowlist(allowedToolGroups);
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalCreateNew<WebsitePermissionParameters>.Item), input);
+        var modal = this._modalService.Show<ModalCreateNew<WebsitePermissionParameters>>(Resources.WebsitePermissions, parameters, new ModalOptions { DisableBackgroundCancel = true });
+        var result = await modal.Result.ConfigureAwait(false);
+        return result.Cancelled ? null : input.ToAllowlist();
+    }
+
     /// <summary>
     /// Refuses to create a key while the admin panel has no user, and tells why.
     /// </summary>
@@ -211,6 +255,49 @@ public class ApiKeyManagementService
 
         this._toastService.ShowError(Resources.ApiKeyNeedsAUser);
         return true;
+    }
+
+    /// <summary>
+    /// The check boxes of the functions of a website key, see <see cref="WebsitePermissions"/>.
+    /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Used by data binding.")]
+    private sealed class WebsitePermissionParameters
+    {
+        /// <summary>
+        /// The functions with their check boxes, in the order in which they are stored.
+        /// </summary>
+        private static readonly (string Permission, Func<WebsitePermissionParameters, bool> IsSelected, Action<WebsitePermissionParameters> Select)[] Map =
+        [
+            (WebsitePermissions.Status, p => p.Status, p => p.Status = true),
+        ];
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionStatus))]
+        public bool Status { get; set; }
+
+        /// <summary>
+        /// Creates the check boxes for the functions of an allowlist.
+        /// </summary>
+        /// <param name="allowlist">The allowlist of the key.</param>
+        /// <returns>The check boxes.</returns>
+        public static WebsitePermissionParameters FromAllowlist(string allowlist)
+        {
+            var result = new WebsitePermissionParameters();
+            foreach (var (permission, _, select) in Map)
+            {
+                if (AdminToolGroups.AllowsExplicitly(allowlist, permission))
+                {
+                    select(result);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the allowlist of the selected functions.
+        /// </summary>
+        /// <returns>The comma separated names of the selected functions.</returns>
+        public string ToAllowlist() => string.Join(',', Map.Where(entry => entry.IsSelected(this)).Select(entry => entry.Permission));
     }
 
     private sealed class ApiKeyToolGroupParameters

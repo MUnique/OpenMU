@@ -7414,6 +7414,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Website (selected functions only).
+        /// </summary>
+        public static string RoleWebManager {
+            get {
+                return ResourceManager.GetString("RoleWebManager", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
@@ -8256,6 +8265,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string WarpList {
             get {
                 return ResourceManager.GetString("WarpList", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Website functions.
+        /// </summary>
+        public static string WebsitePermissions {
+            get {
+                return ResourceManager.GetString("WebsitePermissions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Server status.
+        /// </summary>
+        public static string WebsitePermissionStatus {
+            get {
+                return ResourceManager.GetString("WebsitePermissionStatus", resourceCulture);
             }
         }
 

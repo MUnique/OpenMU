@@ -2756,4 +2756,13 @@
   <data name="ShopImportRejected" xml:space="preserve">
     <value>The shop was not changed, because the file contains entries which can't be imported: {0}</value>
   </data>
+  <data name="RoleWebManager" xml:space="preserve">
+    <value>Website (selected functions only)</value>
+  </data>
+  <data name="WebsitePermissions" xml:space="preserve">
+    <value>Website functions</value>
+  </data>
+  <data name="WebsitePermissionStatus" xml:space="preserve">
+    <value>Server status</value>
+  </data>
 </root>
