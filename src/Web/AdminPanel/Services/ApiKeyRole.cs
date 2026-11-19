@@ -36,4 +36,9 @@ public enum ApiKeyRole
     /// The <see cref="AdminRoles.WebManager"/> role, which only allows the selected functions of the website API.
     /// </summary>
     WebManager,
+
+    /// <summary>
+    /// The <see cref="AdminRoles.LoginTicket"/> role, which only allows to issue login tickets.
+    /// </summary>
+    LoginTicket,
 }

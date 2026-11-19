@@ -127,6 +127,7 @@ internal sealed class BasicModelConverter
             LetterHeader value => this.Convert(value),
             LevelBonus value => this.Convert(value),
             LevelDependentDamage value => this.Convert(value),
+            LoginTicket value => this.Convert(value),
             MagicEffectDefinition value => this.Convert(value),
             MasterSkillDefinition value => this.Convert(value),
             MasterSkillRoot value => this.Convert(value),
@@ -2521,6 +2522,24 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Level = source.Level;
         target.Damage = source.Damage;
+        return target;
+    }
+
+    private BasicModel.LoginTicket Convert(LoginTicket source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.LoginTicket)converted;
+        }
+
+        var target = new BasicModel.LoginTicket();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.AccountId = source.AccountId;
+        target.TokenHash = source.TokenHash;
+        target.CreatedAt = source.CreatedAt;
+        target.ExpiresAt = source.ExpiresAt;
+        target.UsedAt = source.UsedAt;
         return target;
     }
 

@@ -4192,6 +4192,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Packet handler for the login with a ticket instead of a password, e.g. after signing in on a website..
+        /// </summary>
+        public static string LoginWithTicketHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LoginWithTicketHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login with ticket.
+        /// </summary>
+        public static string LoginWithTicketHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LoginWithTicketHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for logout (by cheat) packets..
         /// </summary>
         public static string LogOutByCheatDetectionHandlerPlugIn_Description {

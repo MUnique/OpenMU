@@ -203,6 +203,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for LoginWithTicket.
+    /// </summary>
+    [Test]
+    public void LoginWithTicket_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 72;
+        var actualLength = LoginWithTicketRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Token' boundary
+        Assert.That(4 + 43, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Token' exceeds packet boundary");
+        
+        // Validate field 'TickCount' boundary
+        Assert.That(47 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TickCount' exceeds packet boundary");
+        
+        // Validate field 'ClientVersion' boundary
+        Assert.That(51 + 5, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClientVersion' exceeds packet boundary");
+        
+        // Validate field 'ClientSerial' boundary
+        Assert.That(56 + 16, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClientSerial' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for LogOut.
     /// </summary>
     [Test]

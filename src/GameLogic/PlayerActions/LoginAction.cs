@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using System.Threading;
+using MUnique.OpenMU.GameLogic.LoginTickets;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.Interfaces;
 
@@ -31,26 +32,26 @@ public class LoginAction
             return;
         }
 
-        if (!await this.ValidateAccountStateAsync(player, state.Value).ConfigureAwait(false))
+        await this.LoginAuthenticatedAsync(player, username, state.Value).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Logins the specified player with a login ticket, instead of a password.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="token">The token of the ticket.</param>
+    /// <param name="ticketService">The service which redeems the ticket.</param>
+    public async ValueTask LoginWithTicketAsync(Player player, string token, ILoginTicketService ticketService)
+    {
+        using var loggerScope = player.Logger.BeginScope(this.GetType());
+
+        var account = await this.RedeemTicketAsync(player, token, ticketService).ConfigureAwait(false);
+        if (account is not { } resolved)
         {
             return;
         }
 
-        var (success, account) = await this.TryEstablishSessionAsync(player, username).ConfigureAwait(false);
-        if (success && account is { })
-        {
-            try
-            {
-                await this.FinishLoginAsync(player, username, account).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                player.Logger.LogError(ex, "Failed to finish login for [{Username}].", username);
-                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
-
-                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
-            }
-        }
+        await this.LoginAuthenticatedAsync(player, resolved.LoginName, resolved.State).ConfigureAwait(false);
     }
 
     private static async ValueTask ReleaseLoginServerRegistrationAsync(Player player)
@@ -123,6 +124,33 @@ public class LoginAction
         await gameServerContext.EventPublisher.GameEventAsync(new AccountLoginBlockedEvent(gameServerContext.Id, DateTime.UtcNow, username)).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Logins the player into the account, after it was resolved by one of the login methods.
+    /// </summary>
+    private async ValueTask LoginAuthenticatedAsync(Player player, string username, AccountState state)
+    {
+        if (!await this.ValidateAccountStateAsync(player, state).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var (success, account) = await this.TryEstablishSessionAsync(player, username).ConfigureAwait(false);
+        if (success && account is { })
+        {
+            try
+            {
+                await this.FinishLoginAsync(player, username, account).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Failed to finish login for [{Username}].", username);
+                await ReleaseLoginServerRegistrationAsync(player).ConfigureAwait(false);
+
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            }
+        }
+    }
+
     private async ValueTask<AccountState?> AuthenticateAsync(Player player, string username, string password)
     {
         try
@@ -139,6 +167,31 @@ public class LoginAction
         catch (Exception ex)
         {
             player.Logger.LogError(ex, "Login Failed.");
+            await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
+            return null;
+        }
+    }
+
+    private async ValueTask<(string LoginName, AccountState State)?> RedeemTicketAsync(Player player, string token, ILoginTicketService ticketService)
+    {
+        try
+        {
+            var redemption = await ticketService.RedeemAsync(token).ConfigureAwait(false);
+            var account = redemption.Status == LoginTicketRedeemStatus.Redeemed
+                ? await player.PersistenceContext.GetAccountLoginStateAsync(redemption.AccountId).ConfigureAwait(false)
+                : null;
+            if (account is null)
+            {
+                // The token is never logged, it's a credential until it expires.
+                player.Logger.LogInformation("Login with ticket refused: {Status}.", redemption.Status);
+                await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.AccountInvalid)).ConfigureAwait(false);
+            }
+
+            return account;
+        }
+        catch (Exception ex)
+        {
+            player.Logger.LogError(ex, "Login with ticket failed.");
             await player.InvokeViewPlugInAsync<IShowLoginResultPlugIn>(p => p.ShowLoginResultAsync(LoginResult.ConnectionError)).ConfigureAwait(false);
             return null;
         }

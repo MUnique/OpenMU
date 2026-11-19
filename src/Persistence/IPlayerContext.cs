@@ -319,6 +319,68 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the login name and the state of an account, without loading the account.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The login name and state; Otherwise, null, if the account doesn't exist.</returns>
+    ValueTask<(string LoginName, AccountState State)?> GetAccountLoginStateAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the login ticket with the specified token hash.
+    /// </summary>
+    /// <param name="tokenHash">The hash of the token.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The ticket; Otherwise, null, if no ticket has the hash.</returns>
+    ValueTask<LoginTicket?> GetLoginTicketByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically marks an unused and unexpired login ticket as used.
+    /// Of concurrent calls for the same ticket, only one succeeds, even across game servers.
+    /// </summary>
+    /// <param name="ticketId">The identifier of the ticket.</param>
+    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if this call marked the ticket as used; Otherwise, <c>false</c>.</returns>
+    ValueTask<bool> TryUseLoginTicketAsync(
+        Guid ticketId,
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically adds a login ticket, unless the account already has the maximum of unexpired tickets, used or not.
+    /// Concurrent calls for the same account are serialized, even across servers, so they never exceed the maximum.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="tokenHash">The hash of the ticket's token.</param>
+    /// <param name="createdAtUtc">The UTC time of the issue; tickets expiring after it count against the maximum.</param>
+    /// <param name="expiresAtUtc">The UTC time when the ticket expires.</param>
+    /// <param name="maximumUnexpired">The maximum number of unexpired tickets of the account.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the ticket was added; Otherwise, <c>false</c>, if the account has the maximum already.</returns>
+    ValueTask<bool> TryAddLoginTicketAsync(
+        Guid accountId,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes the expired login tickets of all accounts.
+    /// </summary>
+    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The task.</returns>
+    ValueTask DeleteExpiredLoginTicketsAsync(
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the gens membership of a character.
     /// </summary>
     /// <param name="characterId">The persistent character identifier.</param>
