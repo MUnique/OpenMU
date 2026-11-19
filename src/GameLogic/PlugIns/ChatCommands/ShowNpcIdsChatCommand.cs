@@ -29,7 +29,7 @@ internal sealed class ShowNpcIdsChatCommand : IChatCommandPlugIn
     /// <inheritdoc/>
     public async ValueTask HandleCommandAsync(Player player, string command)
     {
-        var monsters = player.ObservingBuckets.SelectMany(b => b).OfType<NonPlayerCharacter>().ToList();
+        var monsters = player.GetObservedLocateables().OfType<NonPlayerCharacter>().ToList();
         foreach (var monster in monsters)
         {
             await player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync($"{monster.Id}", monster)).ConfigureAwait(false);

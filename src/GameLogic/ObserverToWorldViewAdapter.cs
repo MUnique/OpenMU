@@ -43,7 +43,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             return;
         }
 
-        if (item is IHasBucketInformation { OldBucket: { } oldBucket } && this.ObservingBuckets.Contains(oldBucket))
+        if (item is IHasBucketInformation { OldBucket: { } oldBucket } && this.IsObservingBucket(oldBucket))
         {
             // we already observe the bucket where the object came from
             return;
@@ -103,7 +103,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
 
         var hasBucketInfo = item as IHasBucketInformation;
-        if (hasBucketInfo?.NewBucket != null && this.ObservingBuckets.Contains(hasBucketInfo.NewBucket))
+        if (hasBucketInfo?.NewBucket != null && this.IsObservingBucket(hasBucketInfo.NewBucket))
         {
             // CurrentBucket contains the new bucket if the object is moving. So in this case we still observe the new bucket and don't need to remove the object from observation.
             return;
@@ -231,10 +231,13 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
     /// <inheritdoc/>
     protected override async ValueTask DisposeAsyncCore()
     {
-        if (this.ObservingBuckets.Count > 0)
+        lock (this.ObservingBuckets)
         {
-            Debug.Fail($"ObservingBuckets not empty when this instance is disposed. Count: {this.ObservingBuckets.Count}. Maybe observer wasn't correctly removed from the game map.");
-            this.ObservingBuckets.Clear();
+            if (this.ObservingBuckets.Count > 0)
+            {
+                Debug.Fail($"ObservingBuckets not empty when this instance is disposed. Count: {this.ObservingBuckets.Count}. Maybe observer wasn't correctly removed from the game map.");
+                this.ObservingBuckets.Clear();
+            }
         }
 
         if (this._observingObjects.Count > 0)
@@ -243,6 +246,18 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
         }
 
         await base.DisposeAsyncCore().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether the bucket is currently observed. Synchronized with the updates of <see cref="ObservingBuckets"/>,
+    /// which is a plain list that's modified by the movement of this observer (potentially from other threads).
+    /// </summary>
+    private bool IsObservingBucket(Bucket<ILocateable> bucket)
+    {
+        lock (this.ObservingBuckets)
+        {
+            return this.ObservingBuckets.Contains(bucket);
+        }
     }
 
     private bool ObjectWillBeOutOfScope(ILocateable locateable)
@@ -268,7 +283,7 @@ public sealed class ObserverToWorldViewAdapter : AsyncDisposable, IBucketMapObse
             }
 
             // If we observe the target bucket of the observable, it will be in our range
-            return !this.ObservingBuckets.Contains(locateableBucketInformations.NewBucket);
+            return !this.IsObservingBucket(locateableBucketInformations.NewBucket);
         }
 
         // We have to assume that this observable will be

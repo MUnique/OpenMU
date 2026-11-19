@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using System.Runtime.CompilerServices;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
@@ -11,8 +12,24 @@ using Nito.AsyncEx;
 /// <summary>
 /// A area of interest manager which works with a bucket map.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Locking: Several threads can move, add or remove the same observer at the same time, e.g. a monster pushing a player
+/// while the player walks. The changes of the observed buckets (and the resulting notifications of the observer)
+/// are serialized per observer by an <see cref="ObservationLease"/>, so that they are applied in the same order
+/// as the moves were applied to the map.
+/// </para>
+/// <para>
+/// Lock order: <c>moveLock</c> (of the moved object) -> observer lock. A move takes the observer lock while it still holds the
+/// move lock, and only then releases the move lock ("hand over hand"). Both locks are not reentrant. Therefore nothing which
+/// runs under the observer lock - notifications, view plugins, observer registrations - may wait for the move lock or the observer
+/// lock of the same observer, e.g. by moving it.
+/// </para>
+/// </remarks>
 internal class BucketAreaOfInterestManager : IAreaOfInterestManager
 {
+    private readonly ConditionalWeakTable<IBucketMapObserver, AsyncLock> _observerLocks = new();
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BucketAreaOfInterestManager" /> class.
     /// </summary>
@@ -39,9 +56,10 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
 
         await newBucket.AddAsync(obj).ConfigureAwait(false);
 
-        if (obj is IBucketMapObserver observingPlayer)
+        if (obj is IBucketMapObserver observer)
         {
-            await this.UpdateObservingBucketsAsync(obj.Position, observingPlayer).ConfigureAwait(false);
+            using var observation = await this.AcquireObservationAsync(observer).ConfigureAwait(false);
+            await observation.UpdateAsync(this.Map.GetBucketsInRange(obj.Position, observer.InfoRange)).ConfigureAwait(false);
         }
     }
 
@@ -52,63 +70,55 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
     /// </remarks>
     public async ValueTask RemoveObjectAsync(ILocateable obj)
     {
-        if (obj is IHasBucketInformation bucketInfo)
+        await this.RemoveFromBucketsAsync(obj).ConfigureAwait(false);
+
+        if (obj is IBucketMapObserver observer)
         {
-            // we remove the object from all known buckets and set old/new bucket to null
-            var oldBucket = bucketInfo.OldBucket;
-            var newBucket = bucketInfo.NewBucket;
-
-            bucketInfo.OldBucket = newBucket;
-            bucketInfo.NewBucket = null;
-            if (newBucket is not null)
-            {
-                await newBucket.RemoveAsync(obj).ConfigureAwait(false);
-            }
-
-            bucketInfo.OldBucket = newBucket;
-            if (oldBucket is not null)
-            {
-                await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
-            }
-
-            bucketInfo.OldBucket = null;
-        }
-        else
-        {
-            await this.Map[obj.Position].RemoveAsync(obj).ConfigureAwait(false);
-        }
-
-        if (obj is IBucketMapObserver observingPlayer)
-        {
-            foreach (var bucket in observingPlayer.ObservingBuckets)
-            {
-                bucket.ItemAdded -= observingPlayer.LocateableAddedAsync;
-                bucket.ItemRemoved -= observingPlayer.LocateableRemovedAsync;
-            }
-
-            if (observingPlayer.ObservingBuckets.Any(b => b.Count > 0))
-            {
-                await observingPlayer.LocateablesOutOfScopeAsync(observingPlayer.ObservingBuckets.SelectMany(o => o)).ConfigureAwait(false);
-            }
-
-            observingPlayer.ObservingBuckets.Clear();
+            // Queues behind changes which are still in progress, so that they can't subscribe again afterwards.
+            using var observation = await this.AcquireObservationAsync(observer).ConfigureAwait(false);
+            await observation.StopObservingAsync().ConfigureAwait(false);
         }
     }
 
     /// <inheritdoc/>
     public async ValueTask MoveObjectAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType, bool notifyMovedObject = true, bool notifyObservers = true)
     {
-        var differentBucket = await this.MoveObjectOnMapAsync(obj, target, moveLock, moveType).ConfigureAwait(false);
+        var observer = obj as IBucketMapObserver;
+        var targetOnMap = GetTargetOnMap(obj, target, moveType);
+        ObservationLease? observation = null;
 
-        if (notifyObservers && obj is IObservable observable)
+        if (this.IsInSameBucket(obj.Position, targetOnMap))
         {
-            await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(obj, moveType), notifyMovedObject).ConfigureAwait(false);
+            if (moveType != MoveType.Walk)
+            {
+                obj.Position = targetOnMap;
+            }
+        }
+        else
+        {
+            using (await moveLock.LockAsync().ConfigureAwait(false))
+            {
+                await this.MoveBetweenBucketsAsync(obj, targetOnMap, moveType).ConfigureAwait(false);
+
+                if (observer is not null)
+                {
+                    // Hand over: the lease is acquired before the move lock is released, so that queued moves update the observed buckets in the order they were applied.
+                    observation = await this.AcquireObservationAsync(observer).ConfigureAwait(false);
+                }
+            }
         }
 
-        var observingPlayer = obj as IBucketMapObserver;
-        if (differentBucket && observingPlayer != null)
+        using (observation)
         {
-            await this.UpdateObservingBucketsAsync(target, observingPlayer).ConfigureAwait(false);
+            if (notifyObservers && obj is IObservable observable)
+            {
+                await observable.ForEachWorldObserverAsync<IObjectMovedPlugIn>(p => p.ObjectMovedAsync(obj, moveType), notifyMovedObject).ConfigureAwait(false);
+            }
+
+            if (observation is not null && observer is not null)
+            {
+                await observation.UpdateAsync(this.Map.GetBucketsInRange(target, observer.InfoRange)).ConfigureAwait(false);
+            }
         }
     }
 
@@ -119,93 +129,99 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
     }
 
     /// <summary>
-    /// Updates the observing buckets, and notifies the <paramref name="player"/> about new objects which are in scope, and old objects which are out of scope.
+    /// Gets the target which is used to determine the bucket of the object.
     /// </summary>
-    /// <param name="newPoint">The new coordinates on the map.</param>
-    /// <param name="player">The player.</param>
-    protected async ValueTask UpdateObservingBucketsAsync(Point newPoint, IBucketMapObserver player)
+    /// <param name="obj">The moved object.</param>
+    /// <param name="target">The requested target.</param>
+    /// <param name="moveType">Type of the move.</param>
+    /// <returns>The target of the walker when the object is walking, otherwise the requested target.</returns>
+    private static Point GetTargetOnMap(ILocateable obj, Point target, MoveType moveType)
     {
-        var curbuckets = this.Map.GetBucketsInRange(newPoint, player.InfoRange).ToList(); // All buckets in range
-        var oldbuckets = player.ObservingBuckets.Where(i => !curbuckets.Contains(i)).ToList(); // Buckets which are not meant to be observed anymore
-        var newbuckets = curbuckets.Where(i => !player.ObservingBuckets.Contains(i)).ToList(); // New buckets for observation
-
-        oldbuckets.ForEach(i =>
-        {
-            i.ItemAdded -= player.LocateableAddedAsync;
-            i.ItemRemoved -= player.LocateableRemovedAsync;
-        });
-        newbuckets.ForEach(i =>
-        {
-            i.ItemAdded += player.LocateableAddedAsync;
-            i.ItemRemoved += player.LocateableRemovedAsync;
-        });
-
-        oldbuckets.ForEach(b => player.ObservingBuckets.Remove(b));
-        newbuckets.ForEach(player.ObservingBuckets.Add);
-        if (oldbuckets.Any(b => b.Count > 0))
-        {
-            await player.LocateablesOutOfScopeAsync(oldbuckets.SelectMany(o => o)).ConfigureAwait(false);
-        }
-
-        if (newbuckets.Any(b => b.Count > 0))
-        {
-            await player.NewLocateablesInScopeAsync(newbuckets.SelectMany(o => o)).ConfigureAwait(false);
-        }
+        return moveType == MoveType.Walk && obj is ISupportWalk supportWalk
+            ? supportWalk.WalkTarget
+            : target;
     }
 
-    private async ValueTask<bool> MoveObjectOnMapAsync(ILocateable obj, Point target, AsyncLock moveLock, MoveType moveType)
+    private bool IsInSameBucket(Point first, Point second)
     {
-        if (moveType == MoveType.Walk)
+        return first.X / this.Map.BucketSideLength == second.X / this.Map.BucketSideLength
+               && first.Y / this.Map.BucketSideLength == second.Y / this.Map.BucketSideLength;
+    }
+
+    /// <summary>
+    /// Acquires the lease which allows to change the observed buckets of the <paramref name="observer"/>.
+    /// </summary>
+    /// <param name="observer">The observer.</param>
+    /// <returns>The lease. Dispose it to release the lock of the observer.</returns>
+    private async ValueTask<ObservationLease> AcquireObservationAsync(IBucketMapObserver observer)
+    {
+        var observerLock = this._observerLocks.GetValue(observer, static _ => new AsyncLock());
+        var lockRelease = await observerLock.LockAsync().ConfigureAwait(false);
+        return new ObservationLease(observer, lockRelease);
+    }
+
+    /// <summary>
+    /// Moves the object from its current bucket to the bucket of the target.
+    /// The caller has to hold the move lock of the object.
+    /// </summary>
+    /// <param name="obj">The moved object.</param>
+    /// <param name="target">The target on the map.</param>
+    /// <param name="moveType">Type of the move.</param>
+    private async ValueTask MoveBetweenBucketsAsync(ILocateable obj, Point target, MoveType moveType)
+    {
+        var oldPosition = obj.Position;
+        Bucket<ILocateable>? oldBucket;
+        Bucket<ILocateable> newBucket = this.Map[target];
+        if (obj is IHasBucketInformation bucketInfo)
         {
-            if (obj is ISupportWalk supportWalk)
-            {
-                target = supportWalk.WalkTarget;
-            }
+            oldBucket = bucketInfo.NewBucket;
+            bucketInfo.NewBucket = newBucket;
+            bucketInfo.OldBucket = oldBucket;
+        }
+        else
+        {
+            oldBucket = this.Map[oldPosition];
         }
 
-        var differentBucket = obj.Position.X / this.Map.BucketSideLength != target.X / this.Map.BucketSideLength
-                              || obj.Position.Y / this.Map.BucketSideLength != target.Y / this.Map.BucketSideLength;
-
-        if (!differentBucket)
+        // only set x and y of the object if it's not walking - the Walker sets these coordinates!
+        if (moveType != MoveType.Walk)
         {
-            if (moveType != MoveType.Walk)
-            {
-                obj.Position = target;
-            }
-
-            return false;
+            obj.Position = target;
         }
 
-        using (await moveLock.LockAsync().ConfigureAwait(false))
+        if (oldBucket is not null)
         {
-            var oldPosition = obj.Position;
-            Bucket<ILocateable>? oldBucket;
-            Bucket<ILocateable> newBucket = this.Map[target];
-            if (obj is IHasBucketInformation bucketInfo)
-            {
-                oldBucket = bucketInfo.NewBucket;
-                bucketInfo.NewBucket = newBucket;
-                bucketInfo.OldBucket = oldBucket;
-            }
-            else
-            {
-                oldBucket = this.Map[oldPosition];
-            }
-
-            // only set x and y of the object if it's not walking - the Walker sets these coordinates!
-            if (moveType != MoveType.Walk)
-            {
-                obj.Position = target;
-            }
-
-            if (oldBucket is not null)
-            {
-                await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
-            }
-
-            await newBucket.AddAsync(obj).ConfigureAwait(false);
+            await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
         }
 
-        return true;
+        await newBucket.AddAsync(obj).ConfigureAwait(false);
+    }
+
+    private async ValueTask RemoveFromBucketsAsync(ILocateable obj)
+    {
+        if (obj is not IHasBucketInformation bucketInfo)
+        {
+            await this.Map[obj.Position].RemoveAsync(obj).ConfigureAwait(false);
+            return;
+        }
+
+        // we remove the object from all known buckets and set old/new bucket to null
+        var oldBucket = bucketInfo.OldBucket;
+        var newBucket = bucketInfo.NewBucket;
+
+        bucketInfo.OldBucket = newBucket;
+        bucketInfo.NewBucket = null;
+        if (newBucket is not null)
+        {
+            await newBucket.RemoveAsync(obj).ConfigureAwait(false);
+        }
+
+        bucketInfo.OldBucket = newBucket;
+        if (oldBucket is not null)
+        {
+            await oldBucket.RemoveAsync(obj).ConfigureAwait(false);
+        }
+
+        bucketInfo.OldBucket = null;
     }
 }

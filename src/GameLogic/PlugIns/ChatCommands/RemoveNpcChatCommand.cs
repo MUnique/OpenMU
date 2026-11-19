@@ -29,7 +29,7 @@ internal class RemoveNpcChatCommand : ChatCommandPlugInBase<IdCommandArgs>
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, IdCommandArgs arguments)
     {
-        var monster = player.ObservingBuckets.SelectMany(b => b).OfType<NonPlayerCharacter>().FirstOrDefault(m => m.Id == arguments.Id);
+        var monster = player.GetObservedLocateables().OfType<NonPlayerCharacter>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NpcNotFoundById), arguments.Id).ConfigureAwait(false);
