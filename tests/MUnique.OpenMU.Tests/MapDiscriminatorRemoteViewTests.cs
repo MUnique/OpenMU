@@ -75,7 +75,7 @@ public class MapDiscriminatorRemoteViewTests
         var (player, output, stage) = await CreatePlayerInWorldAsync(ExtendedClient, discriminator, enterOnStage: false).ConfigureAwait(false);
 
         await player.WarpToAsync(new ExitGate { Map = stage, X1 = 130, X2 = 130, Y1 = 90, Y2 = 90 }).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync(player.Position)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
 
         var packets = ReadPackets(output).Where(p => p[2] == MapChangedCode).ToList();
@@ -122,7 +122,7 @@ public class MapDiscriminatorRemoteViewTests
         var (player, output, stage) = await CreatePlayerInWorldAsync(ExtendedClient, 2, enterOnStage: false).ConfigureAwait(false);
 
         await player.WarpToAsync(new ExitGate { Map = stage, X1 = 130, X2 = 130, Y1 = 90, Y2 = 90 }).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync(player.Position)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
 
         var packets = ReadPackets(output);
@@ -145,7 +145,7 @@ public class MapDiscriminatorRemoteViewTests
         var (player, output, stage) = await CreatePlayerInWorldAsync(Season6Client, 6, enterOnStage: false).ConfigureAwait(false);
 
         await player.WarpToAsync(new ExitGate { Map = stage, X1 = 130, X2 = 130, Y1 = 90, Y2 = 90 }).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync(player.Position)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IMapChangePlugIn>(p => p.MapChangeFailedAsync()).ConfigureAwait(false);
 
         var packets = ReadPackets(output).Where(p => p[2] == MapChangedCode).ToList();

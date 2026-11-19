@@ -139,6 +139,13 @@ internal sealed class PlayerMovement : IDisposable
             return;
         }
 
+        if (this._player.IsTeleporting)
+        {
+            // Ignore walks during the teleport and pull the client back.
+            await this.ResynchronizeClientAsync().ConfigureAwait(false);
+            return;
+        }
+
         if (steps.IsEmpty)
         {
             return;
@@ -252,6 +259,12 @@ internal sealed class PlayerMovement : IDisposable
     {
         if (this._player.CurrentMap is not { } currentMap)
         {
+            return;
+        }
+
+        if (this._player.IsTeleporting)
+        {
+            await this.ResynchronizeClientAsync().ConfigureAwait(false);
             return;
         }
 
