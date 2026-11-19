@@ -2662,4 +2662,7 @@
   <data name="WebsitePermissionChangePassword" xml:space="preserve">
     <value>Kontopasswörter ändern (erfordert das aktuelle Passwort)</value>
   </data>
+  <data name="WebsitePermissionCashShopGrant" xml:space="preserve">
+    <value>Cash-Shop-Münzen gutschreiben</value>
+  </data>
 </root>

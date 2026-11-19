@@ -17,6 +17,7 @@ using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>
@@ -531,6 +532,6 @@ public class WebsiteOperationsTests
         var miniGames = new MiniGameReadOperations(persistence, configurations.Object);
         var loginServer = new Mock<ILoginServer>();
         loginServer.Setup(l => l.GetSnapshotAsync()).ReturnsAsync(new Dictionary<string, byte>());
-        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, loginServer.Object, new WebsiteLoginThrottle(), NullLogger<WebsiteOperations>.Instance, executor);
+        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, loginServer.Object, new WebsiteLoginThrottle(), new CashShopCoinService(persistence, configurations.Object), NullLogger<WebsiteOperations>.Instance, executor);
     }
 }

@@ -18,6 +18,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// The functions of the website API, which a website of the server uses with an API key
@@ -36,6 +37,7 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 /// <param name="miniGames">The mini game operations, which provide the leaderboards of the admin panel.</param>
 /// <param name="loginServer">The login server, which knows the online accounts.</param>
 /// <param name="loginThrottle">The limit of the failed logins.</param>
+/// <param name="coins">The cash shop coin service, which the grants share with the cash shop API.</param>
 /// <param name="logger">The logger.</param>
 /// <param name="executor">The authorization and audit service.</param>
 public sealed class WebsiteOperations(
@@ -47,6 +49,7 @@ public sealed class WebsiteOperations(
     MiniGameReadOperations miniGames,
     ILoginServer loginServer,
     WebsiteLoginThrottle loginThrottle,
+    CashShopCoinService coins,
     ILogger<WebsiteOperations> logger,
     AdminOperationExecutor executor)
 {
@@ -447,6 +450,47 @@ public sealed class WebsiteOperations(
                 loginThrottle.CancelAttempt(loginName);
             }
         }
+    }
+
+    /// <summary>Grants cash shop coins to an account, e.g. after a payment on the website.</summary>
+    /// <param name="loginName">The exact login name.</param>
+    /// <param name="coinType">The coin type.</param>
+    /// <param name="amount">The positive amount.</param>
+    /// <param name="reason">The optional reason, which is shown in the admin panel.</param>
+    /// <param name="reference">The unique reference of the grant, e.g. the identifier of the payment; reuse it when retrying the same grant.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The status of the grant, and the grant if it exists.</returns>
+    /// <remarks>
+    /// Unlike the cash shop API of a payment provider, a website can only add coins and has to name a reference,
+    /// so a repeated request never grants the coins twice. The game server applies the grant when the player opens the cash shop.
+    /// </remarks>
+    [AdminOperation("WebManager", ReadOnly = false)]
+    [NotExposedToAgents("Payment flow of websites; agents use cashshop_grant.")]
+    public async ValueTask<(CashShopCoinGrantStatus Status, CashShopCoinGrantInfo? Grant)> GrantCashShopCoinsAsync(string loginName, CashShopCoinType coinType, int amount, string? reason, string reference, CancellationToken cancellationToken)
+    {
+        if (amount <= 0 || !Enum.IsDefined(coinType) || string.IsNullOrWhiteSpace(reference))
+        {
+            throw new AdminOperationException($"Supply a known coin type, a positive {nameof(amount)} and a unique {nameof(reference)}.", AdminOperationErrorKind.InvalidInput);
+        }
+
+        var result = await executor.ExecuteAsync(
+            AdminRoles.WebManager,
+            WebsitePermissions.CashShopGrant,
+            new { loginName, coinType = coinType.ToString(), amount, reason, reference },
+            async actor =>
+            {
+                var (status, grant) = await coins.GrantAsync(loginName, coinType, amount, reason, reference, actor.Name, cancellationToken).ConfigureAwait(false);
+                if (status == CashShopCoinGrantStatus.AlreadyGranted && (grant?.Amount != amount || grant.CoinType != coinType))
+                {
+                    // A retry has to repeat the same grant; otherwise the reference is reused by mistake.
+                    throw new AdminOperationException($"The {nameof(reference)} was already used with a different {nameof(amount)} or coin type. No additional coins were granted.");
+                }
+
+                return new { Status = status, Grant = grant };
+            },
+            cancellationToken,
+            value => value.Status is CashShopCoinGrantStatus.Created or CashShopCoinGrantStatus.AlreadyGranted).ConfigureAwait(false);
+        return (result.Status, result.Grant);
     }
 
     private static float GetAttribute(Character character, AttributeDefinition definition)

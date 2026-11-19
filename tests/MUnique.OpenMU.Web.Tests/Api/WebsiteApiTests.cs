@@ -17,6 +17,7 @@ using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>Exercises the website API with real API key authentication, persistence and auditing.</summary>
@@ -292,6 +293,35 @@ public sealed class WebsiteApiTests : System.IDisposable
         using var response = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "secret1", newPassword = "changed1" }).ConfigureAwait(false);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+    }
+
+    /// <summary>A website grants coins once per reference, and only positive amounts.</summary>
+    [Test]
+    public async Task CashShopGrantIsIdempotentAsync()
+    {
+        await this.UseWebsiteKeyAsync(WebsitePermissions.CashShopGrant).ConfigureAwait(false);
+        const string path = "/api/website/accounts/tester/cash-shop/grants";
+
+        using var created = await this._http.PostAsJsonAsync(path, new { coinType = "WCoinC", amount = 100, reference = "payment-1" }).ConfigureAwait(false);
+        using var repeated = await this._http.PostAsJsonAsync(path, new { coinType = "WCoinC", amount = 100, reference = "payment-1" }).ConfigureAwait(false);
+        using var changed = await this._http.PostAsJsonAsync(path, new { coinType = "WCoinC", amount = 500, reference = "payment-1" }).ConfigureAwait(false);
+        using var changedType = await this._http.PostAsJsonAsync(path, new { coinType = "WCoinP", amount = 100, reference = "payment-1" }).ConfigureAwait(false);
+        using var negative = await this._http.PostAsJsonAsync(path, new { coinType = "WCoinC", amount = -100, reference = "payment-2" }).ConfigureAwait(false);
+        using var withoutReference = await this._http.PostAsJsonAsync(path, new { coinType = "WCoinC", amount = 100 }).ConfigureAwait(false);
+        using var unknownAccount = await this._http.PostAsJsonAsync("/api/website/accounts/nobody/cash-shop/grants", new { coinType = "WCoinC", amount = 100, reference = "payment-3" }).ConfigureAwait(false);
+
+        Assert.That(created.StatusCode, Is.EqualTo(HttpStatusCode.Created));
+        Assert.That(repeated.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(changed.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        Assert.That(changedType.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        Assert.That(negative.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        Assert.That(withoutReference.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        Assert.That(unknownAccount.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+
+        // The game server applies the pending grants to the balance, so the coins are granted once if there is one grant.
+        using var scope = this._host.App.Services.CreateScope();
+        var summary = await scope.ServiceProvider.GetRequiredService<CashShopCoinService>().GetSummaryAsync("tester").ConfigureAwait(false);
+        Assert.That(summary!.Grants.Select(g => (g.CoinType, g.Amount, g.Reference)), Is.EqualTo(new[] { (CashShopCoinType.WCoinC, 100, "payment-1") }));
     }
 
     private async Task UseWebsiteKeyAsync(string allowedFunctions)

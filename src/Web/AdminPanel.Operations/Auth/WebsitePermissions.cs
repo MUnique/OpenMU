@@ -40,6 +40,9 @@ public static class WebsitePermissions
     /// <summary>Gets the function which changes the password of a game account, which requires its current password.</summary>
     public static string ChangePassword => "website_change_password";
 
+    /// <summary>Gets the function which grants cash shop coins to an account, e.g. after a payment on the website.</summary>
+    public static string CashShopGrant => "website_cash_shop_grant";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
@@ -53,5 +56,6 @@ public static class WebsitePermissions
         Character,
         Login,
         ChangePassword,
+        CashShopGrant,
     ];
 }

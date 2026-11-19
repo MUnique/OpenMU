@@ -2786,4 +2786,7 @@
   <data name="WebsitePermissionChangePassword" xml:space="preserve">
     <value>Change account passwords (requires the current password)</value>
   </data>
+  <data name="WebsitePermissionCashShopGrant" xml:space="preserve">
+    <value>Grant cash shop coins</value>
+  </data>
 </root>

@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 using MUnique.OpenMU.Web.AdminPanel.Operations;
 using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
+using MUnique.OpenMU.Web.AdminPanel.Services;
 
 /// <summary>
 /// The API for the website of a server, e.g. to show its status, register accounts and show rankings.
@@ -162,6 +163,37 @@ public sealed class WebsiteController(WebsiteOperations operations, WebsiteLogin
             default:
                 return this.StatusCode(StatusCodes.Status401Unauthorized, new { status = status.ToString() });
         }
+    }
+
+    /// <summary>
+    /// Grants cash shop coins to an account, e.g. after a payment on the website.
+    /// The game server applies them the next time the player opens the cash shop.
+    /// </summary>
+    /// <param name="loginName">The login name of the account.</param>
+    /// <param name="request">The request, with a positive amount and the unique reference of the payment.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// <c>201</c> with the created grant; <c>200</c> with the existing grant, if the account already got a grant with
+    /// the same reference; <c>400</c>, if the request is invalid; <c>404</c>, if the account doesn't exist;
+    /// <c>409</c>, if another account already got a grant with the same reference, or the account got one with the same
+    /// reference, but another amount or coin type.
+    /// </returns>
+    [HttpPost("accounts/{loginName}/cash-shop/grants")]
+    public async Task<IActionResult> GrantCashShopCoinsAsync(string loginName, [FromBody] CashShopCoinGrantRequest request, CancellationToken cancellationToken)
+    {
+        if (request.CoinType is not { } coinType || request.Amount is not { } amount || request.Reference is not { } reference)
+        {
+            return this.BadRequest();
+        }
+
+        var (status, grant) = await operations.GrantCashShopCoinsAsync(loginName, coinType, amount, request.Reason, reference, cancellationToken).ConfigureAwait(false);
+        return status switch
+        {
+            CashShopCoinGrantStatus.Created => this.StatusCode(StatusCodes.Status201Created, grant),
+            CashShopCoinGrantStatus.AlreadyGranted => this.Ok(grant),
+            CashShopCoinGrantStatus.AccountNotFound => this.NotFound(),
+            _ => this.Conflict(),
+        };
     }
 
     /// <summary>

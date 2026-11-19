@@ -8269,6 +8269,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Grant cash shop coins.
+        /// </summary>
+        public static string WebsitePermissionCashShopGrant {
+            get {
+                return ResourceManager.GetString("WebsitePermissionCashShopGrant", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Change account passwords (requires the current password).
         /// </summary>
         public static string WebsitePermissionChangePassword {
