@@ -16,7 +16,7 @@ The damage is shown at the object which received the hit.
 | 1 | 1 |    Byte   |   10   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0x11  | Packet header - packet type identifier |
 | 2 | 1 | Byte |  | HeaderCode |
-| 3 | 2 | ShortBigEndian |  | ObjectId |
+| 3 | 2 | ShortBigEndian |  | ObjectId; The object ID; its most significant bit indicates whether the target receives a hit shock. |
 | 5 | 2 | ShortBigEndian |  | HealthDamage |
 | 7 << 0 | 4 bit | DamageKind |  | Kind |
 | 7 << 4 | 1 bit | Boolean |  | IsRageFighterStreakHit |
@@ -37,5 +37,5 @@ Defines the kind of the damage.
 | 3 | CriticalBlue | Blue color, usually used by critical damage. |
 | 4 | ReflectedLightPink | Light pink color, usually used by reflected damage. |
 | 5 | PoisonDarkGreen | Dark green color, usually used by poison damage. |
-| 6 | DarkPink | Dark pink color. |
+| 6 | BleedDarkPink | Dark pink color, usually used by bleed damage. |
 | 7 | White | White color. |
