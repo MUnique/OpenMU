@@ -53,10 +53,11 @@ public class LocalizedUpdatePlugInNameTest
         AssertLocalized(new IllusionTempleDataUpdatePlugIn(), culture, expectedName);
     }
   
+    /// <summary>
     /// Tests the name and description of the update which adds the socket count tables.
-    /// </summary>
     /// <param name="culture">The culture of the user interface.</param>
     /// <param name="expectedName">The expected name.</param>
+    /// </summary>
     [TestCase("en", "Socket count tables")]
     [TestCase("de", "Tabellen der Sockelanzahl")]
     [TestCase("zh-CN", "镶嵌孔数量表")]

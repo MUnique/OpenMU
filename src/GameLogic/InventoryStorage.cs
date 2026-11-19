@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameLogic.WaitingItems;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 using static MUnique.OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
@@ -19,6 +20,13 @@ public class InventoryStorage : Storage, IInventoryStorage
     private readonly IGameContext _gameContext;
 
     private readonly Player _player;
+
+    /// <summary>
+    /// Serializes the updates of the item power ups. The event is raised from different threads
+    /// (e.g. several monsters hitting the same player at once, each one ticking on its own timer thread),
+    /// and the update is a multi-step remove/dispose/add operation which must not interleave.
+    /// </summary>
+    private readonly AsyncLock _powerUpLock = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InventoryStorage" /> class.
@@ -207,31 +215,37 @@ public class InventoryStorage : Storage, IInventoryStorage
             p => p.AppearanceChangedAsync(this._player, item, isEquipped),
             false).ConfigureAwait(false); // in my tests it was not needed to send the appearance to the own players client.
 
-        if (this._player.Attributes is null)
+        if (this._player.Attributes is not { } attributes)
         {
             return;
         }
 
-        if (this._player.Attributes.ItemPowerUps.Remove(item, out var itemPowerUps))
+        // The lock is intentionally not held while sending the appearance above (network I/O).
+        // Inside the lock, nothing raises EquippedItemsChanged again, so it can't be re-entered.
+        using (await this._powerUpLock.LockAsync().ConfigureAwait(false))
         {
-            foreach (var powerUp in itemPowerUps)
+            if (attributes.ItemPowerUps.Remove(item, out var itemPowerUps))
             {
-                powerUp.Dispose();
+                foreach (var powerUp in itemPowerUps)
+                {
+                    powerUp.Dispose();
+                }
             }
-        }
 
-        this.UpdateSetPowerUps();
+            this.UpdateSetPowerUps();
 
-        var itemAdded = this.EquippedItems.Contains(item);
-        if (itemAdded)
-        {
-            var factory = this._gameContext.ItemPowerUpFactory;
-            this._player.Attributes.ItemPowerUps.Add(item, factory.GetPowerUps(item, this._player.Attributes).ToList());
-
-            // reset player equipped ammunition amount
-            if (this.EquippedAmmunitionItem is { } ammoItem)
+            // Evaluated inside the lock, so it reflects the state which this update has to apply.
+            var itemAdded = this.EquippedItems.Contains(item);
+            if (itemAdded)
             {
-                this._player.Attributes[Stats.AmmunitionAmount] = (float)ammoItem.Durability;
+                var factory = this._gameContext.ItemPowerUpFactory;
+                attributes.ItemPowerUps[item] = factory.GetPowerUps(item, attributes).ToList();
+
+                // reset player equipped ammunition amount
+                if (this.EquippedAmmunitionItem is { } ammoItem)
+                {
+                    attributes[Stats.AmmunitionAmount] = (float)ammoItem.Durability;
+                }
             }
         }
     }
