@@ -343,6 +343,65 @@ public class WebsiteOperationsTests
     }
 
     /// <summary>
+    /// The password of an account with an offline leveling character isn't changed: the account is logged off,
+    /// but the game server saves it again when the offline leveling ends.
+    /// </summary>
+    [Test]
+    public async Task PasswordIsNotChangedWhileOfflineLevelingAsync()
+    {
+        var persistence = new InMemoryPersistenceContextProvider();
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var account = context.CreateNew<Account>();
+            account.LoginName = "player";
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword("right1");
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var server = new Mock<IGameServer>();
+        server.Setup(s => s.ServerState).Returns(ServerState.Started);
+        server.As<IGameServerAdministration>().Setup(a => a.IsOfflineLevelingAsync("player", It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var operations = CreateOperations(WebManager(WebsitePermissions.ChangePassword), persistence, gameConfiguration, server.Object);
+
+        var status = await operations.ChangePasswordAsync("player", "right1", "new123", CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(status, Is.EqualTo(WebsitePasswordChangeStatus.OfflineLeveling));
+        using var checkContext = persistence.CreateNewPlayerContext(gameConfiguration);
+        Assert.That(await checkContext.AuthenticateAsync("player", "right1", CancellationToken.None).ConfigureAwait(false), Is.Not.Null, "The old password still works.");
+    }
+
+    /// <summary>
+    /// The password isn't changed when a game server can't tell whether a character of the account is offline leveling,
+    /// because that game server would overwrite the new password later.
+    /// </summary>
+    [Test]
+    public async Task PasswordIsNotChangedWhenGameServerFailsAsync()
+    {
+        var persistence = new InMemoryPersistenceContextProvider();
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var account = context.CreateNew<Account>();
+            account.LoginName = "player";
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword("right1");
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var server = new Mock<IGameServer>();
+        server.Setup(s => s.ServerState).Returns(ServerState.Started);
+        server.As<IGameServerAdministration>().Setup(a => a.IsOfflineLevelingAsync("player", It.IsAny<CancellationToken>())).ThrowsAsync(new InvalidOperationException("The game server doesn't answer."));
+        var operations = CreateOperations(WebManager(WebsitePermissions.ChangePassword + "," + WebsitePermissions.Login), persistence, gameConfiguration, server.Object);
+
+        var status = await operations.ChangePasswordAsync("player", "right1", "new123", CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(status, Is.EqualTo(WebsitePasswordChangeStatus.GameServerUnavailable));
+        using var checkContext = persistence.CreateNewPlayerContext(gameConfiguration);
+        Assert.That(await checkContext.AuthenticateAsync("player", "right1", CancellationToken.None).ConfigureAwait(false), Is.Not.Null, "The old password still works.");
+        Assert.That((await operations.LoginAsync("player", "right1", CancellationToken.None).ConfigureAwait(false)).Status, Is.EqualTo(WebsiteLoginStatus.Succeeded), "The login isn't prevented by the failing game server.");
+    }
+
+    /// <summary>
     /// The lockout lasts for the window from the failed login which started it, not from the first failed login,
     /// and a successful login forgets the failures.
     /// </summary>

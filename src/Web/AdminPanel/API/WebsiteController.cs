@@ -131,6 +131,40 @@ public sealed class WebsiteController(WebsiteOperations operations, WebsiteLogin
     }
 
     /// <summary>
+    /// Changes the password of a game account, after checking its current password.
+    /// </summary>
+    /// <param name="loginName">The login name of the account.</param>
+    /// <param name="request">The current and the new password.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// <c>204</c>, when the password has been changed; <c>400</c>, when the new password is invalid;
+    /// <c>401</c>, when the login name or the current password is wrong; <c>409</c>, when the account is online
+    /// (<c>AccountOnline</c>) or one of its characters is offline leveling (<c>OfflineLeveling</c>);
+    /// <c>429</c> with the remaining time of the lockout in <c>Retry-After</c>, when the account had too many failed logins recently;
+    /// <c>503</c>, when a game server can't tell whether a character of the account is offline leveling.
+    /// </returns>
+    [HttpPut("accounts/{loginName}/password")]
+    public async Task<IActionResult> ChangePasswordAsync(string loginName, [FromBody] WebsitePasswordChangeRequest request, CancellationToken cancellationToken)
+    {
+        var status = await operations.ChangePasswordAsync(loginName, request.CurrentPassword, request.NewPassword, cancellationToken).ConfigureAwait(false);
+        switch (status)
+        {
+            case WebsitePasswordChangeStatus.Changed:
+                return this.NoContent();
+            case WebsitePasswordChangeStatus.AccountOnline:
+            case WebsitePasswordChangeStatus.OfflineLeveling:
+                return this.Conflict(new { status = status.ToString() });
+            case WebsitePasswordChangeStatus.GameServerUnavailable:
+                return this.StatusCode(StatusCodes.Status503ServiceUnavailable, new { status = status.ToString() });
+            case WebsitePasswordChangeStatus.LockedOut:
+                this.SetRetryAfter(loginName);
+                return this.StatusCode(StatusCodes.Status429TooManyRequests, new { status = status.ToString() });
+            default:
+                return this.StatusCode(StatusCodes.Status401Unauthorized, new { status = status.ToString() });
+        }
+    }
+
+    /// <summary>
     /// Sets the <c>Retry-After</c> header of a locked out account to the remaining time of its lockout.
     /// </summary>
     /// <param name="loginName">The login name of the account.</param>

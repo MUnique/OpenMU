@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.AttributeSystem;
@@ -350,8 +351,102 @@ public sealed class WebsiteOperations(
                 character.PositionY))
             .ToList();
         var isOnline = (await loginServer.GetSnapshotAsync().ConfigureAwait(false)).Keys.Contains(account.LoginName, StringComparer.OrdinalIgnoreCase);
-        var isOfflineLeveling = await this.IsOfflineLevelingAsync(account.LoginName, cancellationToken).ConfigureAwait(false);
+
+        // A game server which doesn't answer must not prevent the login.
+        var isOfflineLeveling = await this.IsOfflineLevelingAsync(account.LoginName, cancellationToken).ConfigureAwait(false) ?? false;
         return new WebsiteLoginResult(WebsiteLoginStatus.Succeeded, new WebsiteAccount(account.LoginName, state!.Value.ToString(), isOnline, isOfflineLeveling, characters));
+    }
+
+    /// <summary>Changes the password of a game account, after checking its current password.</summary>
+    /// <param name="loginName">The login name.</param>
+    /// <param name="currentPassword">The current password; it's never logged or audited.</param>
+    /// <param name="newPassword">The new password, which follows the rules of the registration; it's never logged or audited.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result of the change.</returns>
+    /// <remarks>
+    /// A wrong current password counts as a failed login of the <see cref="WebsiteLoginThrottle"/>. The change is audited with the name of the key,
+    /// once the current password is checked; an invalid request or a locked out account isn't audited.
+    /// The account has to be offline and none of its characters may be offline leveling, because the game server
+    /// would overwrite the new password when it saves the account later. If a game server can't tell whether a character
+    /// of the account is offline leveling, the password isn't changed either.
+    /// </remarks>
+    [AdminOperation("WebManager", ReadOnly = false)]
+    [NotExposedToAgents("Players change their own password on websites; agents never handle player credentials.")]
+    public async ValueTask<WebsitePasswordChangeStatus> ChangePasswordAsync(string loginName, string currentPassword, string newPassword, CancellationToken cancellationToken)
+    {
+        await executor.RequireOperationAsync(AdminRoles.WebManager, WebsitePermissions.ChangePassword, cancellationToken).ConfigureAwait(false);
+        if (!IsValidPassword(newPassword))
+        {
+            throw new AdminOperationException($"The new password must contain {AccountRegistration.MinimumLength}-{AccountRegistration.PasswordMaximumLength} printable ASCII characters.", AdminOperationErrorKind.InvalidInput);
+        }
+
+        if (!IsValidLogin(loginName, currentPassword))
+        {
+            return WebsitePasswordChangeStatus.Failed;
+        }
+
+        if (!loginThrottle.TryBeginAttempt(loginName, DateTime.UtcNow))
+        {
+            return WebsitePasswordChangeStatus.LockedOut;
+        }
+
+        var isChecked = false;
+        try
+        {
+            return await executor.ExecuteAsync(
+                AdminRoles.WebManager,
+                WebsitePermissions.ChangePassword,
+                new { loginName },
+                async _ =>
+                {
+                    using var context = persistence.CreateNewPlayerContext(await configurations.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false));
+                    var account = await context.AuthenticateAsync(loginName, currentPassword, cancellationToken).ConfigureAwait(false) is null
+                        ? null
+                        : await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
+                    isChecked = true;
+                    if (account is not { IsTemplate: false })
+                    {
+                        loginThrottle.CompleteAttempt(loginName, false, DateTime.UtcNow);
+                        return WebsitePasswordChangeStatus.Failed;
+                    }
+
+                    loginThrottle.CompleteAttempt(loginName, true, DateTime.UtcNow);
+                    if ((await loginServer.GetSnapshotAsync().ConfigureAwait(false)).Keys.Contains(account.LoginName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        return WebsitePasswordChangeStatus.AccountOnline;
+                    }
+
+                    var isOfflineLeveling = await this.IsOfflineLevelingAsync(account.LoginName, cancellationToken).ConfigureAwait(false);
+                    if (isOfflineLeveling is null)
+                    {
+                        // Fail closed: if a character is offline leveling there, its game server would overwrite the new password later.
+                        return WebsitePasswordChangeStatus.GameServerUnavailable;
+                    }
+
+                    if (isOfflineLeveling.Value)
+                    {
+                        return WebsitePasswordChangeStatus.OfflineLeveling;
+                    }
+
+                    account.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                    if (!await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false))
+                    {
+                        throw new AdminOperationException("The password change could not be saved.");
+                    }
+
+                    return WebsitePasswordChangeStatus.Changed;
+                },
+                cancellationToken,
+                status => status == WebsitePasswordChangeStatus.Changed).ConfigureAwait(false);
+        }
+        finally
+        {
+            if (!isChecked)
+            {
+                // The current password wasn't checked, so the reserved check doesn't count as a failed login.
+                loginThrottle.CancelAttempt(loginName);
+            }
+        }
     }
 
     private static float GetAttribute(Character character, AttributeDefinition definition)
@@ -366,6 +461,14 @@ public sealed class WebsiteOperations(
     private static bool IsValidLogin(string? loginName, string? password)
         => !string.IsNullOrEmpty(loginName) && loginName.Length <= AccountRegistration.LoginNameMaximumLength
            && !string.IsNullOrEmpty(password) && password.Length <= AccountRegistration.PasswordMaximumLength;
+
+    /// <summary>
+    /// Determines whether a password follows the rules of the registration, see <see cref="AccountRegistration.Password"/>.
+    /// </summary>
+    /// <param name="password">The password.</param>
+    /// <returns><c>true</c>, if the password is valid.</returns>
+    private static bool IsValidPassword(string? password)
+        => Validator.TryValidateProperty(password, new ValidationContext(new AccountRegistration()) { MemberName = nameof(AccountRegistration.Password) }, null);
 
     /// <summary>
     /// Gets the classes of the line of a character class, which are connected by their <see cref="CharacterClass.NextGenerationClass"/>.
@@ -459,9 +562,13 @@ public sealed class WebsiteOperations(
     /// </summary>
     /// <param name="loginName">The login name of the account.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns><c>true</c>, if a game server runs an offline leveling character of the account.</returns>
-    private async ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
+    /// <returns>
+    /// <c>true</c>, if a game server runs an offline leveling character of the account; <c>false</c>, if no game server does;
+    /// <c>null</c>, if none of the game servers which answered does, but at least one couldn't be asked.
+    /// </returns>
+    private async ValueTask<bool?> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
     {
+        var isUnknown = false;
         foreach (var server in servers.Servers.OfType<IGameServer>().Where(s => s.ServerState == ServerState.Started).OfType<IGameServerAdministration>())
         {
             try
@@ -473,11 +580,12 @@ public sealed class WebsiteOperations(
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                // A game server which doesn't answer must not prevent the login.
+                // The callers decide whether an unknown answer is acceptable, so a failing game server is only logged here.
                 logger.LogWarning(ex, "Could not check the offline leveling of account {LoginName} for the website.", loginName);
+                isUnknown = true;
             }
         }
 
-        return false;
+        return isUnknown ? null : false;
     }
 }

@@ -37,6 +37,9 @@ public static class WebsitePermissions
     /// <summary>Gets the function which checks the password of a game account and lists its characters, for a login on the website.</summary>
     public static string Login => "website_login";
 
+    /// <summary>Gets the function which changes the password of a game account, which requires its current password.</summary>
+    public static string ChangePassword => "website_change_password";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
@@ -49,5 +52,6 @@ public static class WebsitePermissions
         Events,
         Character,
         Login,
+        ChangePassword,
     ];
 }

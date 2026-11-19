@@ -275,6 +275,7 @@ public class ApiKeyManagementService
             (WebsitePermissions.Events, p => p.Events, p => p.Events = true),
             (WebsitePermissions.Character, p => p.Character, p => p.Character = true),
             (WebsitePermissions.Login, p => p.Login, p => p.Login = true),
+            (WebsitePermissions.ChangePassword, p => p.ChangePassword, p => p.ChangePassword = true),
         ];
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionStatus))]
@@ -297,6 +298,9 @@ public class ApiKeyManagementService
 
         [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionLogin))]
         public bool Login { get; set; }
+
+        [Display(ResourceType = typeof(Resources), Name = nameof(Resources.WebsitePermissionChangePassword))]
+        public bool ChangePassword { get; set; }
 
         /// <summary>
         /// Creates the check boxes for the functions of an allowlist.

@@ -238,6 +238,62 @@ public sealed class WebsiteApiTests : System.IDisposable
         Assert.That(await unknown.Content.ReadAsStringAsync().ConfigureAwait(false), Is.EqualTo(await wrongPassword.Content.ReadAsStringAsync().ConfigureAwait(false)));
     }
 
+    /// <summary>A player changes the password with the current one; a wrong current password changes nothing.</summary>
+    [Test]
+    public async Task PasswordChangeNeedsCurrentPasswordAsync()
+    {
+        await this.UseWebsiteKeyAsync(string.Join(',', WebsitePermissions.Register, WebsitePermissions.Login, WebsitePermissions.ChangePassword)).ConfigureAwait(false);
+        using var registration = await this._http.PostAsJsonAsync("/api/website/accounts", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+
+        using var wrong = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "wrong1", newPassword = "changed1" }).ConfigureAwait(false);
+        using var invalid = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "secret1", newPassword = "x" }).ConfigureAwait(false);
+        using var changed = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "secret1", newPassword = "changed1" }).ConfigureAwait(false);
+        using var login = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "visitor", password = "changed1" }).ConfigureAwait(false);
+
+        Assert.That(wrong.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        Assert.That(invalid.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        Assert.That(changed.StatusCode, Is.EqualTo(HttpStatusCode.NoContent));
+        Assert.That(login.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        var audit = (await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Where(e => e.Operation == WebsitePermissions.ChangePassword).ToList();
+        Assert.That(audit.Select(e => e.ArgumentsJson + e.ResultJson), Has.None.Contains("secret1").And.None.Contains("changed1"));
+    }
+
+    /// <summary>
+    /// Each checked current password of a password change is audited, but a locked out account answers <c>429</c>
+    /// before anything is checked or audited.
+    /// </summary>
+    [Test]
+    public async Task LockedOutPasswordChangeIsNotAuditedAsync()
+    {
+        await this.UseWebsiteKeyAsync(string.Join(',', WebsitePermissions.Register, WebsitePermissions.ChangePassword)).ConfigureAwait(false);
+        using var registration = await this._http.PostAsJsonAsync("/api/website/accounts", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+        for (var i = 0; i < WebsiteLoginThrottle.MaximumFailures; i++)
+        {
+            using var wrong = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "wrong1", newPassword = "changed1" }).ConfigureAwait(false);
+            Assert.That(wrong.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        using var locked = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "secret1", newPassword = "changed1" }).ConfigureAwait(false);
+
+        Assert.That(locked.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(locked.Headers.RetryAfter?.Delta, Is.GreaterThan(TimeSpan.Zero).And.LessThanOrEqualTo(WebsiteLoginThrottle.Window));
+        var audit = (await this._audit.ReadAsync(0, 100).ConfigureAwait(false)).Items.Where(e => e.Operation == WebsitePermissions.ChangePassword).ToList();
+        Assert.That(audit, Has.Count.EqualTo(WebsiteLoginThrottle.MaximumFailures));
+    }
+
+    /// <summary>The password of an online account can't be changed, because the game server would save the old one.</summary>
+    [Test]
+    public async Task PasswordOfOnlineAccountIsNotChangedAsync()
+    {
+        await this.UseWebsiteKeyAsync(string.Join(',', WebsitePermissions.Register, WebsitePermissions.ChangePassword)).ConfigureAwait(false);
+        using var registration = await this._http.PostAsJsonAsync("/api/website/accounts", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+        Mock.Get(this._host.App.Services.GetRequiredService<ILoginServer>()).Setup(l => l.GetSnapshotAsync()).ReturnsAsync(new Dictionary<string, byte> { ["visitor"] = 0 });
+
+        using var response = await this._http.PutAsJsonAsync("/api/website/accounts/visitor/password", new { currentPassword = "secret1", newPassword = "changed1" }).ConfigureAwait(false);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+    }
+
     private async Task UseWebsiteKeyAsync(string allowedFunctions)
     {
         await this._host.App.Services.GetRequiredService<IApiKeyRepository>().AddAsync(new ApiKey

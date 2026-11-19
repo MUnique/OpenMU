@@ -2659,4 +2659,7 @@
   <data name="WebsitePermissionLogin" xml:space="preserve">
     <value>Anmeldung mit Spielkonten (prüft Passwörter)</value>
   </data>
+  <data name="WebsitePermissionChangePassword" xml:space="preserve">
+    <value>Kontopasswörter ändern (erfordert das aktuelle Passwort)</value>
+  </data>
 </root>

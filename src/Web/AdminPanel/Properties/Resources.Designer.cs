@@ -8269,6 +8269,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Change account passwords (requires the current password).
+        /// </summary>
+        public static string WebsitePermissionChangePassword {
+            get {
+                return ResourceManager.GetString("WebsitePermissionChangePassword", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Character profiles (equipped items).
         /// </summary>
         public static string WebsitePermissionCharacter {

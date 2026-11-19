@@ -2783,4 +2783,7 @@
   <data name="WebsitePermissionLogin" xml:space="preserve">
     <value>Login with game accounts (checks passwords)</value>
   </data>
+  <data name="WebsitePermissionChangePassword" xml:space="preserve">
+    <value>Change account passwords (requires the current password)</value>
+  </data>
 </root>
