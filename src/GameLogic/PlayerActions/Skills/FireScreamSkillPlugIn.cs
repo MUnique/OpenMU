@@ -90,8 +90,7 @@ public class FireScreamSkillPlugIn : IAreaSkillPlugIn
         {
             if (explosionTarget.IsActive())
             {
-                // We just need to apply the damage, so we can resort to the bleeding damage method which has DamageAttributes.Undefined
-                await explosionTarget.ApplyBleedingDamageAsync(attacker, explosionDamage).ConfigureAwait(false);
+                await explosionTarget.ApplyDamageAsync(attacker, explosionDamage).ConfigureAwait(false);
             }
         }
     }

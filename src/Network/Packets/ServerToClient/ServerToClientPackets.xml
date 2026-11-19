@@ -17311,8 +17311,8 @@
           <Value>5</Value>
         </EnumValue>
         <EnumValue>
-          <Name>DarkPink</Name>
-          <Description>Dark pink color.</Description>
+          <Name>BleedDarkPink</Name>
+          <Description>Dark pink color, usually used by bleed damage.</Description>
           <Value>6</Value>
         </EnumValue>
         <EnumValue>

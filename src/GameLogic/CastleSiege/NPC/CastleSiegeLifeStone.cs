@@ -107,13 +107,11 @@ public sealed class CastleSiegeLifeStone : AttackableNpcBase, IObserverDependent
     }
 
     /// <inheritdoc />
-    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage) => ValueTask.CompletedTask;
-
-    /// <inheritdoc />
-    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage) => ValueTask.CompletedTask;
-
-    /// <inheritdoc />
-    public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage) => ValueTask.CompletedTask;
+    public override ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes)
+    {
+        // A life stone doesn't attack, reflect, get poisoned or bleed.
+        return ValueTask.CompletedTask;
+    }
 
     /// <inheritdoc />
     public ushort GetTypeNumberFlags(Player observer)
