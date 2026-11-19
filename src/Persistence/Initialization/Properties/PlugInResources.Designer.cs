@@ -1231,6 +1231,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Socket items drop with one socket most of the time and with three (five for two-handed weapons) rarely, instead of with any number up to the maximum at the same chance. Raises the maximum sockets of the socket items to five; the tables restrict the drops. Socket items which already have a socket count table keep it..
+        /// </summary>
+        public static string AddSocketCountTablesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSocketCountTablesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Socket count tables.
+        /// </summary>
+        public static string AddSocketCountTablesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSocketCountTablesUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adds the Spiral Slash skill (active in castle siege) to a created magic gladiator character..
         /// </summary>
         public static string AddSpiralSlashForMagicGladiator_Description {

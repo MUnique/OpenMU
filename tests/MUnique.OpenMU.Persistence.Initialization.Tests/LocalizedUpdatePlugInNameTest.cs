@@ -40,6 +40,19 @@ public class LocalizedUpdatePlugInNameTest
         AssertLocalized(new FixSeedSphereMaximumItemLevelUpdatePlugIn(), culture, expectedName);
     }
 
+    /// <summary>
+    /// Tests the name and description of the update which adds the socket count tables.
+    /// </summary>
+    /// <param name="culture">The culture of the user interface.</param>
+    /// <param name="expectedName">The expected name.</param>
+    [TestCase("en", "Socket count tables")]
+    [TestCase("de", "Tabellen der Sockelanzahl")]
+    [TestCase("zh-CN", "镶嵌孔数量表")]
+    public void SocketCountTablesUpdateIsLocalized(string culture, string expectedName)
+    {
+        AssertLocalized(new AddSocketCountTablesUpdatePlugIn(), culture, expectedName);
+    }
+
     private static void AssertLocalized(UpdatePlugInBase updatePlugIn, string culture, string expectedName)
     {
         var previousCulture = CultureInfo.CurrentUICulture;
