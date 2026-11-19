@@ -7918,6 +7918,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Socket count table.
+        /// </summary>
+        public static string SocketCountTable {
+            get {
+                return ResourceManager.GetString("SocketCountTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selects the number of sockets of the socket items this group drops, also above the three of a normal drop, up to the maximum sockets of the item. Empty means that the table of the item applies..
+        /// </summary>
+        public static string SocketCountTableHint {
+            get {
+                return ResourceManager.GetString("SocketCountTableHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Socket {0}.
         /// </summary>
         public static string SocketNumber {

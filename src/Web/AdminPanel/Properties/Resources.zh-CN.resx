@@ -2807,4 +2807,10 @@
   <data name="ShopImportFailed" xml:space="preserve">
     <value>导入失败。商店可能已被部分修改；请使用“放弃更改”撤销未保存的更改。</value>
   </data>
+  <data name="SocketCountTable" xml:space="preserve">
+    <value>镶嵌孔数量表</value>
+  </data>
+  <data name="SocketCountTableHint" xml:space="preserve">
+    <value>决定此组掉落的镶嵌物品的孔数，可超过普通掉落的三个孔，最多到物品的最大孔数。留空表示使用物品的数量表。</value>
+  </data>
 </root>
