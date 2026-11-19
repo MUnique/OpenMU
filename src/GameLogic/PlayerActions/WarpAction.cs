@@ -29,29 +29,46 @@ public class WarpAction
             return;
         }
 
-        if (warpInfo.Gate is { } gate
-            && player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
+        if (!CheckRequirements(player, warpInfo, out var errorMessage))
         {
-            // Checked before the requirements, because the costs are paid when they're fulfilled.
-            var eventArgs = new CancelEventArgs();
-            await plugInPoint.WarpGateEnteringAsync(player, gate, eventArgs).ConfigureAwait(false);
-            if (eventArgs.Cancel)
+            await player.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
+            return;
+        }
+
+        // Reserve the warp cost before entry plug-ins can charge additional fees.
+        if (!player.TryRemoveMoney(warpInfo.Costs))
+        {
+            await player.ShowBlueMessageAsync($"You need {warpInfo.Costs} in order to warp").ConfigureAwait(false);
+            return;
+        }
+
+        var admitted = false;
+        try
+        {
+            if (player.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>() is { } plugInPoint)
             {
-                return;
+                var eventArgs = new CancelEventArgs();
+                await plugInPoint.WarpGateEnteringAsync(player, warpInfo.Gate!, eventArgs).ConfigureAwait(false);
+                if (eventArgs.Cancel)
+                {
+                    return;
+                }
+            }
+
+            admitted = true;
+        }
+        finally
+        {
+            if (!admitted)
+            {
+                player.TryAddMoney(warpInfo.Costs);
             }
         }
 
-        if (this.CheckRequirements(player, warpInfo, out var errorMessage))
-        {
-            await player.WarpToAsync(warpInfo.Gate!).ConfigureAwait(false);
-        }
-        else
-        {
-            await player.ShowBlueMessageAsync(errorMessage).ConfigureAwait(false);
-        }
+        await player.WarpToAsync(warpInfo.Gate!).ConfigureAwait(false);
     }
 
-    private bool CheckRequirements(Player player, WarpInfo warpInfo, [MaybeNullWhen(true)] out string errorMessage)
+    private static bool CheckRequirements(Player player, WarpInfo warpInfo, [MaybeNullWhen(true)] out string errorMessage)
     {
         errorMessage = null;
 
@@ -74,23 +91,6 @@ public class WarpAction
             return false;
         }
 
-        // Money check should be last to avoid getting zen when other checks failed
-        if (!this.CheckMoneyRequirement(player, warpInfo))
-        {
-            errorMessage = $"You need {warpInfo.Costs} in order to warp";
-            return false;
-        }
-
         return true;
-    }
-
-    private bool CheckMoneyRequirement(Player player, WarpInfo warpInfo)
-    {
-        if (player.TryRemoveMoney(warpInfo.Costs))
-        {
-            return true;
-        }
-
-        return false;
     }
 }

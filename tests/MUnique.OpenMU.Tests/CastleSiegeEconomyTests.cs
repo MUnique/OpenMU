@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
@@ -428,6 +429,38 @@ public class CastleSiegeEconomyTests
 
         siegeData.IsOccupied = false;
         Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.True, "Unoccupied castle");
+    }
+
+    /// <summary>
+    /// Warp-list entry checks and the combined cost must pass before a visitor pays a hunt fee.
+    /// </summary>
+    [TestCase(400, 500)]
+    [TestCase(0, 600)]
+    public async ValueTask RejectedWarpToLandOfTrialsKeepsMoneyAsync(int levelRequirement, int warpCost)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var landOfTrials = new BasicModel.GameMapDefinition { Number = 31, IsActive = true };
+        fixture.Context.Configuration.LandOfTrialsMapDefinition = landOfTrials;
+        var plugIn = new CastleSiegePlugIn();
+        await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<MUnique.OpenMU.GameLogic.PlugIns.IWarpGateEnteringPlugIn>(plugIn);
+        var siegeData = plugIn.GetContext(fixture.GameServerContext)!.SiegeData;
+        siegeData.IsHuntZoneEnabled = true;
+        siegeData.TaxHunt = 1_000;
+        var player = fixture.Visitor;
+        player.Money = 1_500;
+        var sourceMap = player.CurrentMap;
+        var warp = new WarpInfo
+        {
+            Gate = new BasicModel.ExitGate { Map = landOfTrials },
+            LevelRequirement = levelRequirement,
+            Costs = warpCost,
+        };
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        Assert.That(player.Money, Is.EqualTo(1_500));
+        Assert.That(player.CurrentMap, Is.SameAs(sourceMap));
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()
