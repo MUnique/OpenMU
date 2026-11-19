@@ -46,7 +46,12 @@ export class NonPlayerCharacter extends Attackable<NpcData> {
         super(
             data,
             NonPlayerCharacter.defaultGeometry,
-            new THREE.MeshBasicMaterial({ color, alphaMap: attackableAlphaMapTexture, alphaTest: attackableAlphaTest, transparent: true }),
+            new THREE.MeshBasicMaterial({
+                color,
+                alphaMap: attackableAlphaMapTexture,
+                alphaTest: attackableAlphaTest,
+                transparent: true,
+            }),
         );
     }
 

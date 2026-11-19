@@ -14,6 +14,7 @@ export class WorldObjectPicker {
 
     private readonly onObjectPicked: (data: ObjectData | null) => void;
     private readonly onObjectHovered?: (data: ObjectData | null) => void;
+    private readonly shouldIgnoreClick?: () => boolean;
 
     private isHoverRaycastPending: boolean = false;
     private lastMouseX: number = 0;
@@ -28,9 +29,11 @@ export class WorldObjectPicker {
         private readonly camera: THREE.Camera,
         onObjectPicked: (data: ObjectData | null) => void,
         onObjectHovered?: (data: ObjectData | null) => void,
+        shouldIgnoreClick?: () => boolean,
     ) {
         this.onObjectPicked = onObjectPicked;
         this.onObjectHovered = onObjectHovered;
+        this.shouldIgnoreClick = shouldIgnoreClick;
 
         this.handleClick = this.onClick.bind(this);
         this.handleMouseMove = this.onMouseMove.bind(this);
@@ -45,6 +48,10 @@ export class WorldObjectPicker {
     }
 
     private onClick(e: MouseEvent): void {
+        if (this.shouldIgnoreClick?.()) {
+            return;
+        }
+
         const data = this.pickAt(e.offsetX, e.offsetY);
         this.onObjectPicked(data);
     }

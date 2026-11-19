@@ -583,9 +583,9 @@ System.register("Attackable", ["three", "tween", "NameLabel"], function (exports
         }
     };
 });
-System.register("DamageNumbers", ["three", "tween"], function (exports_7, context_7) {
+System.register("DamageNumber", ["three", "tween"], function (exports_7, context_7) {
     "use strict";
-    var THREE, tween_3, CANVAS_HEIGHT, DAMAGE_SCALE_Y, DAMAGE_Z_POSITION, FONT, LIFETIME_MS, MIN_CANVAS_WIDTH, PADDING, RISE_DISTANCE, RANDOM_OFFSET, DamageNumbers, DamageNumber;
+    var THREE, tween_3, CANVAS_HEIGHT, DAMAGE_SCALE_Y, DAMAGE_Z_POSITION, EMPTY_CANVAS_SIZE, FONT, LIFETIME_MS, MIN_CANVAS_WIDTH, OUTLINE_WIDTH, PADDING, RISE_DISTANCE, DamageNumber;
     var __moduleName = context_7 && context_7.id;
     return {
         setters: [
@@ -600,51 +600,13 @@ System.register("DamageNumbers", ["three", "tween"], function (exports_7, contex
             CANVAS_HEIGHT = 64;
             DAMAGE_SCALE_Y = 8;
             DAMAGE_Z_POSITION = 300;
+            EMPTY_CANVAS_SIZE = 0;
             FONT = "bold 40px Consolas, monospace";
             LIFETIME_MS = 900;
             MIN_CANVAS_WIDTH = 64;
+            OUTLINE_WIDTH = 6;
             PADDING = 12;
             RISE_DISTANCE = 10;
-            RANDOM_OFFSET = 6;
-            DamageNumbers = (function (_super) {
-                __extends(DamageNumbers, _super);
-                function DamageNumbers() {
-                    var _this = _super.call(this) || this;
-                    _this.numbers = [];
-                    _this.nextIndex = 0;
-                    _this.zoom = 1;
-                    for (var i = 0; i < DamageNumbers.poolSize; i++) {
-                        var number = new DamageNumber();
-                        _this.numbers.push(number);
-                        _this.add(number);
-                    }
-                    return _this;
-                }
-                DamageNumbers.prototype.setZoom = function (zoom) {
-                    this.zoom = zoom;
-                    for (var _i = 0, _a = this.numbers; _i < _a.length; _i++) {
-                        var number = _a[_i];
-                        number.setZoom(zoom);
-                    }
-                };
-                DamageNumbers.prototype.show = function (x, y, damage, color) {
-                    var number = this.numbers[this.nextIndex];
-                    this.nextIndex = (this.nextIndex + 1) % this.numbers.length;
-                    var offset = (Math.random() - 0.5) * RANDOM_OFFSET / this.zoom;
-                    number.show(x + offset, y, damage.toString(), color, this.zoom);
-                };
-                DamageNumbers.prototype.dispose = function () {
-                    for (var _i = 0, _a = this.numbers; _i < _a.length; _i++) {
-                        var number = _a[_i];
-                        this.remove(number);
-                        number.dispose();
-                    }
-                    this.numbers.length = 0;
-                };
-                DamageNumbers.poolSize = 64;
-                return DamageNumbers;
-            }(THREE.Object3D));
-            exports_7("DamageNumbers", DamageNumbers);
             DamageNumber = (function (_super) {
                 __extends(DamageNumber, _super);
                 function DamageNumber() {
@@ -708,8 +670,8 @@ System.register("DamageNumbers", ["three", "tween"], function (exports_7, contex
                         this.texture = null;
                     }
                     if (this.canvas !== null) {
-                        this.canvas.width = 0;
-                        this.canvas.height = 0;
+                        this.canvas.width = EMPTY_CANVAS_SIZE;
+                        this.canvas.height = EMPTY_CANVAS_SIZE;
                         this.canvas = null;
                     }
                     this.context = null;
@@ -741,7 +703,7 @@ System.register("DamageNumbers", ["three", "tween"], function (exports_7, contex
                     }
                 };
                 DamageNumber.prototype.applyScale = function () {
-                    if (this.unscaledWidth === 0 || this.unscaledHeight === 0) {
+                    if (this.unscaledWidth === EMPTY_CANVAS_SIZE || this.unscaledHeight === EMPTY_CANVAS_SIZE) {
                         return;
                     }
                     this.scale.set(this.unscaledWidth / this.zoom, this.unscaledHeight / this.zoom, 1);
@@ -764,7 +726,7 @@ System.register("DamageNumbers", ["three", "tween"], function (exports_7, contex
                     ctx.textAlign = "center";
                     ctx.textBaseline = "middle";
                     ctx.lineJoin = "round";
-                    ctx.lineWidth = 6;
+                    ctx.lineWidth = OUTLINE_WIDTH;
                     ctx.strokeStyle = "rgba(0, 0, 0, 0.9)";
                     ctx.strokeText(text, centerX, centerY);
                     ctx.fillStyle = color;
@@ -779,16 +741,76 @@ System.register("DamageNumbers", ["three", "tween"], function (exports_7, contex
                 DamageNumber.hiddenMaterial = new THREE.SpriteMaterial();
                 return DamageNumber;
             }(THREE.Sprite));
+            exports_7("DamageNumber", DamageNumber);
         }
     };
 });
-System.register("Debug", [], function (exports_8, context_8) {
+System.register("DamageNumbers", ["three", "DamageNumber"], function (exports_8, context_8) {
     "use strict";
+    var THREE, DamageNumber_1, EMPTY_LENGTH, RANDOM_OFFSET, RANDOM_OFFSET_CENTER, DamageNumbers;
     var __moduleName = context_8 && context_8.id;
+    return {
+        setters: [
+            function (THREE_5) {
+                THREE = THREE_5;
+            },
+            function (DamageNumber_1_1) {
+                DamageNumber_1 = DamageNumber_1_1;
+            }
+        ],
+        execute: function () {
+            EMPTY_LENGTH = 0;
+            RANDOM_OFFSET = 6;
+            RANDOM_OFFSET_CENTER = 0.5;
+            DamageNumbers = (function (_super) {
+                __extends(DamageNumbers, _super);
+                function DamageNumbers() {
+                    var _this = _super.call(this) || this;
+                    _this.numbers = [];
+                    _this.nextIndex = 0;
+                    _this.zoom = 1;
+                    for (var i = 0; i < DamageNumbers.poolSize; i++) {
+                        var number = new DamageNumber_1.DamageNumber();
+                        _this.numbers.push(number);
+                        _this.add(number);
+                    }
+                    return _this;
+                }
+                DamageNumbers.prototype.setZoom = function (zoom) {
+                    this.zoom = zoom;
+                    for (var _i = 0, _a = this.numbers; _i < _a.length; _i++) {
+                        var number = _a[_i];
+                        number.setZoom(zoom);
+                    }
+                };
+                DamageNumbers.prototype.show = function (x, y, damage, color) {
+                    var number = this.numbers[this.nextIndex];
+                    this.nextIndex = (this.nextIndex + 1) % this.numbers.length;
+                    var offset = (Math.random() - RANDOM_OFFSET_CENTER) * RANDOM_OFFSET / this.zoom;
+                    number.show(x + offset, y, damage.toString(), color, this.zoom);
+                };
+                DamageNumbers.prototype.dispose = function () {
+                    for (var _i = 0, _a = this.numbers; _i < _a.length; _i++) {
+                        var number = _a[_i];
+                        this.remove(number);
+                        number.dispose();
+                    }
+                    this.numbers.length = EMPTY_LENGTH;
+                };
+                DamageNumbers.poolSize = 64;
+                return DamageNumbers;
+            }(THREE.Object3D));
+            exports_8("DamageNumbers", DamageNumbers);
+        }
+    };
+});
+System.register("Debug", [], function (exports_9, context_9) {
+    "use strict";
+    var __moduleName = context_9 && context_9.id;
     function isDebugLoggingEnabled() {
         return window.liveMapDebugLogging === true;
     }
-    exports_8("isDebugLoggingEnabled", isDebugLoggingEnabled);
+    exports_9("isDebugLoggingEnabled", isDebugLoggingEnabled);
     function logDebug(message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
@@ -798,17 +820,17 @@ System.register("Debug", [], function (exports_8, context_8) {
             console.debug.apply(console, __spreadArray([message], parameters, false));
         }
     }
-    exports_8("logDebug", logDebug);
+    exports_9("logDebug", logDebug);
     return {
         setters: [],
         execute: function () {
         }
     };
 });
-System.register("TerrainShader", ["three"], function (exports_9, context_9) {
+System.register("TerrainShader", ["three"], function (exports_10, context_10) {
     "use strict";
     var THREE, fragmentShader, vertexShader;
-    var __moduleName = context_9 && context_9.id;
+    var __moduleName = context_10 && context_10.id;
     function createTerrainShader() {
         return {
             fragmentShader: fragmentShader,
@@ -820,11 +842,11 @@ System.register("TerrainShader", ["three"], function (exports_9, context_9) {
             vertexShader: vertexShader,
         };
     }
-    exports_9("createTerrainShader", createTerrainShader);
+    exports_10("createTerrainShader", createTerrainShader);
     return {
         setters: [
-            function (THREE_5) {
-                THREE = THREE_5;
+            function (THREE_6) {
+                THREE = THREE_6;
             }
         ],
         execute: function () {
@@ -855,14 +877,14 @@ System.register("TerrainShader", ["three"], function (exports_9, context_9) {
         }
     };
 });
-System.register("Player", ["three", "Attackable"], function (exports_10, context_10) {
+System.register("Player", ["three", "Attackable"], function (exports_11, context_11) {
     "use strict";
     var THREE, Attackable_1, Player;
-    var __moduleName = context_10 && context_10.id;
+    var __moduleName = context_11 && context_11.id;
     return {
         setters: [
-            function (THREE_6) {
-                THREE = THREE_6;
+            function (THREE_7) {
+                THREE = THREE_7;
             },
             function (Attackable_1_1) {
                 Attackable_1 = Attackable_1_1;
@@ -899,19 +921,19 @@ System.register("Player", ["three", "Attackable"], function (exports_10, context
                 Player.defaultGeometry = new THREE.BoxGeometry(Player.size, Player.size, Player.size);
                 return Player;
             }(Attackable_1.Attackable));
-            exports_10("Player", Player);
+            exports_11("Player", Player);
             ;
         }
     };
 });
-System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_11, context_11) {
+System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports_12, context_12) {
     "use strict";
     var THREE, Attackable_2, NpcObjectKind, NpcColors, NonPlayerCharacter;
-    var __moduleName = context_11 && context_11.id;
+    var __moduleName = context_12 && context_12.id;
     return {
         setters: [
-            function (THREE_7) {
-                THREE = THREE_7;
+            function (THREE_8) {
+                THREE = THREE_8;
             },
             function (Attackable_2_1) {
                 Attackable_2 = Attackable_2_1;
@@ -937,7 +959,12 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 __extends(NonPlayerCharacter, _super);
                 function NonPlayerCharacter(data) {
                     var color = NonPlayerCharacter.getColorForObjectKind(data.npcObjectKind);
-                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({ color: color, alphaMap: Attackable_2.attackableAlphaMapTexture, alphaTest: Attackable_2.attackableAlphaTest, transparent: true })) || this;
+                    return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({
+                        color: color,
+                        alphaMap: Attackable_2.attackableAlphaMapTexture,
+                        alphaTest: Attackable_2.attackableAlphaTest,
+                        transparent: true,
+                    })) || this;
                 }
                 NonPlayerCharacter.getColorForObjectKind = function (kind) {
                     switch (kind) {
@@ -957,19 +984,19 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 NonPlayerCharacter.defaultGeometry = new THREE.BoxGeometry(NonPlayerCharacter.size, NonPlayerCharacter.size, NonPlayerCharacter.size);
                 return NonPlayerCharacter;
             }(Attackable_2.Attackable));
-            exports_11("NonPlayerCharacter", NonPlayerCharacter);
+            exports_12("NonPlayerCharacter", NonPlayerCharacter);
             ;
         }
     };
 });
-System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter", "Debug"], function (exports_12, context_12) {
+System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "Player", "Attackable", "NonPlayerCharacter", "Debug"], function (exports_13, context_13) {
     "use strict";
-    var THREE, Attack_1, DamageNumbers_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, Debug_1, World;
-    var __moduleName = context_12 && context_12.id;
+    var THREE, Attack_1, DamageNumbers_1, TerrainShader_1, Player_1, Attackable_3, NonPlayerCharacter_1, Debug_1, NO_DAMAGE, NO_RENDER_SIZE, World;
+    var __moduleName = context_13 && context_13.id;
     return {
         setters: [
-            function (THREE_8) {
-                THREE = THREE_8;
+            function (THREE_9) {
+                THREE = THREE_9;
             },
             function (Attack_1_1) {
                 Attack_1 = Attack_1_1;
@@ -994,6 +1021,8 @@ System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "
             }
         ],
         execute: function () {
+            NO_DAMAGE = 0;
+            NO_RENDER_SIZE = 0;
             World = (function (_super) {
                 __extends(World, _super);
                 function World(serverId, mapId) {
@@ -1145,7 +1174,7 @@ System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "
                         return;
                     }
                     var damage = healthDamage + shieldDamage;
-                    if (damage <= 0) {
+                    if (damage <= NO_DAMAGE) {
                         return;
                     }
                     this.damageNumbers.show(target.position.x, target.position.y, damage, this.getDamageColor(healthDamage, shieldDamage, attributes));
@@ -1340,7 +1369,7 @@ System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "
                     return "#FF0000";
                 };
                 World.prototype.updateTerrainPixelSize = function () {
-                    if (this.renderSize > 0) {
+                    if (this.renderSize > NO_RENDER_SIZE) {
                         this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / (this.renderSize * this.zoom);
                     }
                 };
@@ -1352,18 +1381,18 @@ System.register("World", ["three", "Attack", "DamageNumbers", "TerrainShader", "
                 World.rotationAnimationId = 122;
                 return World;
             }(THREE.Object3D));
-            exports_12("World", World);
+            exports_13("World", World);
         }
     };
 });
-System.register("WorldObjectPicker", ["three"], function (exports_13, context_13) {
+System.register("WorldObjectPicker", ["three"], function (exports_14, context_14) {
     "use strict";
     var THREE, isGameObject, WorldObjectPicker;
-    var __moduleName = context_13 && context_13.id;
+    var __moduleName = context_14 && context_14.id;
     return {
         setters: [
-            function (THREE_9) {
-                THREE = THREE_9;
+            function (THREE_10) {
+                THREE = THREE_10;
             }
         ],
         execute: function () {
@@ -1371,7 +1400,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_13, context_13
                 return obj.data !== undefined;
             };
             WorldObjectPicker = (function () {
-                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered) {
+                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered, shouldIgnoreClick) {
                     this.worldCanvas = worldCanvas;
                     this.worldMesh = worldMesh;
                     this.camera = camera;
@@ -1382,6 +1411,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_13, context_13
                     this.lastMouseY = 0;
                     this.onObjectPicked = onObjectPicked;
                     this.onObjectHovered = onObjectHovered;
+                    this.shouldIgnoreClick = shouldIgnoreClick;
                     this.handleClick = this.onClick.bind(this);
                     this.handleMouseMove = this.onMouseMove.bind(this);
                     worldCanvas.addEventListener("click", this.handleClick, false);
@@ -1392,6 +1422,10 @@ System.register("WorldObjectPicker", ["three"], function (exports_13, context_13
                     this.worldCanvas.removeEventListener("mousemove", this.handleMouseMove);
                 };
                 WorldObjectPicker.prototype.onClick = function (e) {
+                    var _a;
+                    if ((_a = this.shouldIgnoreClick) === null || _a === void 0 ? void 0 : _a.call(this)) {
+                        return;
+                    }
                     var data = this.pickAt(e.offsetX, e.offsetY);
                     this.onObjectPicked(data);
                 };
@@ -1450,18 +1484,18 @@ System.register("WorldObjectPicker", ["three"], function (exports_13, context_13
                 WorldObjectPicker.hoverThresholdSquared = 16;
                 return WorldObjectPicker;
             }());
-            exports_13("WorldObjectPicker", WorldObjectPicker);
+            exports_14("WorldObjectPicker", WorldObjectPicker);
         }
     };
 });
-System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_14, context_14) {
+System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_15, context_15) {
     "use strict";
-    var THREE, tween_4, WorldObjectPicker_1, World_1, MapApp;
-    var __moduleName = context_14 && context_14.id;
+    var THREE, tween_4, WorldObjectPicker_1, World_1, LEFT_MOUSE_BUTTON, LEFT_MOUSE_BUTTON_MASK, MAP_CENTER, MAP_PLANE_Z, NO_CAMERA_OFFSET, NO_MOUSE_BUTTONS, NO_WHEEL_DELTA, PAN_THRESHOLD, PAN_THRESHOLD_SQUARED, MapApp;
+    var __moduleName = context_15 && context_15.id;
     return {
         setters: [
-            function (THREE_10) {
-                THREE = THREE_10;
+            function (THREE_11) {
+                THREE = THREE_11;
             },
             function (tween_4_1) {
                 tween_4 = tween_4_1;
@@ -1474,6 +1508,15 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
             }
         ],
         execute: function () {
+            LEFT_MOUSE_BUTTON = 0;
+            LEFT_MOUSE_BUTTON_MASK = 1;
+            MAP_CENTER = 0;
+            MAP_PLANE_Z = 0;
+            NO_CAMERA_OFFSET = 0;
+            NO_MOUSE_BUTTONS = 0;
+            NO_WHEEL_DELTA = 0;
+            PAN_THRESHOLD = 3;
+            PAN_THRESHOLD_SQUARED = PAN_THRESHOLD * PAN_THRESHOLD;
             MapApp = (function () {
                 function MapApp(stats, serverId, mapId, mapContainer, onPickObjectHandler) {
                     var _this = this;
@@ -1481,6 +1524,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.isDisposing = false;
                     this.isDisposed = false;
                     this.isPanning = false;
+                    this.hasPanned = false;
                     this.lastPanX = 0;
                     this.lastPanY = 0;
                     this.animationFrameId = null;
@@ -1521,7 +1565,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                         else {
                             hideInfo();
                         }
-                    }, function (data) { return _this.onObjectHovered(data); });
+                    }, function (data) { return _this.onObjectHovered(data); }, function () { return _this.hasPanned; });
                     this.animate();
                 }
                 MapApp.prototype.highlightByName = function (playerName) {
@@ -1550,8 +1594,8 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 };
                 MapApp.prototype.resetView = function () {
                     this.camera.zoom = MapApp.minZoom;
-                    this.camera.position.x = 0;
-                    this.camera.position.y = 0;
+                    this.camera.position.x = MAP_CENTER;
+                    this.camera.position.y = MAP_CENTER;
                     this.camera.updateProjectionMatrix();
                     this.world.setZoom(this.camera.zoom);
                 };
@@ -1601,13 +1645,14 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 };
                 MapApp.prototype.createCamera = function () {
                     var NEAR = 0.1, FAR = 10000;
-                    var camera = new THREE.OrthographicCamera(MapApp.mapSize / -2, MapApp.mapSize / 2, MapApp.mapSize / 2, MapApp.mapSize / -2, NEAR, FAR);
+                    var halfMapSize = MapApp.mapSize / 2;
+                    var camera = new THREE.OrthographicCamera(-halfMapSize, halfMapSize, halfMapSize, -halfMapSize, NEAR, FAR);
                     camera.position.z = 1000;
                     return camera;
                 };
                 MapApp.prototype.onWheel = function (event) {
                     event.preventDefault();
-                    if (event.deltaY === 0) {
+                    if (event.deltaY === NO_WHEEL_DELTA) {
                         return;
                     }
                     var factor = Math.exp(-this.getWheelDeltaInPixels(event) * MapApp.wheelZoomSpeed);
@@ -1625,7 +1670,8 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.world.setZoom(newZoom);
                 };
                 MapApp.prototype.onPanStart = function (event) {
-                    var isPanButton = event.button === 1 || event.button === 2;
+                    this.hasPanned = false;
+                    var isPanButton = event.button === LEFT_MOUSE_BUTTON;
                     if (!isPanButton || this.camera.zoom <= MapApp.minZoom) {
                         return;
                     }
@@ -1638,14 +1684,19 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     if (!this.isPanning) {
                         return;
                     }
-                    var panButtons = 2 | 4;
-                    if ((event.buttons & panButtons) === 0) {
+                    if ((event.buttons & LEFT_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
                         this.isPanning = false;
                         return;
                     }
+                    var deltaX = event.clientX - this.lastPanX;
+                    var deltaY = event.clientY - this.lastPanY;
+                    if (!this.hasPanned && (deltaX * deltaX) + (deltaY * deltaY) < PAN_THRESHOLD_SQUARED) {
+                        return;
+                    }
+                    this.hasPanned = true;
                     var unitsPerPixel = (MapApp.mapSize / this.camera.zoom) / this.renderer.domElement.clientWidth;
-                    this.camera.position.x -= (event.clientX - this.lastPanX) * unitsPerPixel;
-                    this.camera.position.y += (event.clientY - this.lastPanY) * unitsPerPixel;
+                    this.camera.position.x -= deltaX * unitsPerPixel;
+                    this.camera.position.y += deltaY * unitsPerPixel;
                     this.lastPanX = event.clientX;
                     this.lastPanY = event.clientY;
                     this.clampCamera();
@@ -1669,11 +1720,11 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     var canvas = this.renderer.domElement;
                     var x = (offsetX / canvas.clientWidth) * 2 - 1;
                     var y = -(offsetY / canvas.clientHeight) * 2 + 1;
-                    return new THREE.Vector3(x, y, 0).unproject(this.camera);
+                    return new THREE.Vector3(x, y, MAP_PLANE_Z).unproject(this.camera);
                 };
                 MapApp.prototype.clampCamera = function () {
                     var halfVisibleSize = (MapApp.mapSize / 2) / this.camera.zoom;
-                    var maximumOffset = Math.max(0, (MapApp.mapSize / 2) - halfVisibleSize);
+                    var maximumOffset = Math.max(NO_CAMERA_OFFSET, (MapApp.mapSize / 2) - halfVisibleSize);
                     this.camera.position.x = THREE.Math.clamp(this.camera.position.x, -maximumOffset, maximumOffset);
                     this.camera.position.y = THREE.Math.clamp(this.camera.position.y, -maximumOffset, maximumOffset);
                 };
@@ -1712,7 +1763,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                 MapApp.pixelsPerWheelPage = 100;
                 return MapApp;
             }());
-            exports_14("MapApp", MapApp);
+            exports_15("MapApp", MapApp);
         }
     };
 });

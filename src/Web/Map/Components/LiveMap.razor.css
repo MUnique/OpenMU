@@ -3,6 +3,14 @@
     width: auto;
 }
 
+.livemap-target canvas {
+    cursor: grab;
+}
+
+.livemap-target canvas:active {
+    cursor: grabbing;
+}
+
 .livemap-reset-view {
     position: absolute;
     top: 0.5rem;

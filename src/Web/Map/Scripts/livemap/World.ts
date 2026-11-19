@@ -9,7 +9,18 @@ import { GameObject } from "./GameObject";
 import { NonPlayerCharacter as NPC } from "./NonPlayerCharacter";
 import { logDebug } from "./Debug";
 
-import { MonsterFilterMatch, MonsterFilterMode, NpcData, PlayerData, ObjectData, Step, DamageAttributes } from "./Types";
+import {
+    MonsterFilterMatch,
+    MonsterFilterMode,
+    NpcData,
+    PlayerData,
+    ObjectData,
+    Step,
+    DamageAttributes,
+} from "./Types";
+
+const NO_DAMAGE = 0;
+const NO_RENDER_SIZE = 0;
 
 export class World extends THREE.Object3D {
     private static readonly sideLength: number = 256;
@@ -218,7 +229,12 @@ export class World extends THREE.Object3D {
      * @param shieldDamage - The damage to the shield of the target.
      * @param attributes - The flags of the damage attributes, see DamageAttributes.
      */
-    public showDamage(attackerId: number, targetId: number, healthDamage: number, shieldDamage: number, attributes: number): void {
+    public showDamage(
+        attackerId: number,
+        targetId: number,
+        healthDamage: number,
+        shieldDamage: number,
+        attributes: number): void {
         if (this.isDisposed || this.selectedObjectId === null || this.selectedObjectId !== attackerId) {
             return;
         }
@@ -229,7 +245,7 @@ export class World extends THREE.Object3D {
         }
 
         const damage = healthDamage + shieldDamage;
-        if (damage <= 0) {
+        if (damage <= NO_DAMAGE) {
             return;
         }
 
@@ -517,23 +533,23 @@ export class World extends THREE.Object3D {
      * @returns The color as CSS color string.
      */
     private getDamageColor(healthDamage: number, shieldDamage: number, attributes: number): string {
-        if ((attributes & DamageAttributes.IgnoreDefense) !== 0) {
+        if ((attributes & DamageAttributes.IgnoreDefense) !== DamageAttributes.Undefined) {
             return "#00FFFF";
         }
 
-        if ((attributes & DamageAttributes.Excellent) !== 0) {
+        if ((attributes & DamageAttributes.Excellent) !== DamageAttributes.Undefined) {
             return "#90EE90";
         }
 
-        if ((attributes & DamageAttributes.Critical) !== 0) {
+        if ((attributes & DamageAttributes.Critical) !== DamageAttributes.Undefined) {
             return "#0000FF";
         }
 
-        if ((attributes & DamageAttributes.Reflected) !== 0) {
+        if ((attributes & DamageAttributes.Reflected) !== DamageAttributes.Undefined) {
             return "#FFB6C1";
         }
 
-        if ((attributes & DamageAttributes.Poison) !== 0) {
+        if ((attributes & DamageAttributes.Poison) !== DamageAttributes.Undefined) {
             return "#006400";
         }
 
@@ -545,7 +561,7 @@ export class World extends THREE.Object3D {
      * The edges of the terrain should be one pixel wide on the screen, however far the map is zoomed.
      */
     private updateTerrainPixelSize(): void {
-        if (this.renderSize > 0) {
+        if (this.renderSize > NO_RENDER_SIZE) {
             this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / (this.renderSize * this.zoom);
         }
     }

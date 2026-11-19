@@ -4,6 +4,16 @@ import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
 import { MonsterFilterMatch, MonsterFilterMode, ObjectData } from "./Types";
 
+const LEFT_MOUSE_BUTTON = 0;
+const LEFT_MOUSE_BUTTON_MASK = 1;
+const MAP_CENTER = 0;
+const MAP_PLANE_Z = 0;
+const NO_CAMERA_OFFSET = 0;
+const NO_MOUSE_BUTTONS = 0;
+const NO_WHEEL_DELTA = 0;
+const PAN_THRESHOLD = 3;
+const PAN_THRESHOLD_SQUARED = PAN_THRESHOLD * PAN_THRESHOLD;
+
 /**
  * Class for a Map application which is shown on the whole browser page.
  */
@@ -27,6 +37,7 @@ export class MapApp {
     private isDisposing: boolean = false;
     private isDisposed: boolean = false;
     private isPanning: boolean = false;
+    private hasPanned: boolean = false;
     private lastPanX: number = 0;
     private lastPanY: number = 0;
     private animationFrameId: number | null = null;
@@ -89,7 +100,8 @@ export class MapApp {
                     hideInfo();
                 }
             },
-            (data) => this.onObjectHovered(data));
+            (data) => this.onObjectHovered(data),
+            () => this.hasPanned);
 
         this.animate(); //starts the rendering loop
     }
@@ -144,8 +156,8 @@ export class MapApp {
      */
     public resetView(): void {
         this.camera.zoom = MapApp.minZoom;
-        this.camera.position.x = 0;
-        this.camera.position.y = 0;
+        this.camera.position.x = MAP_CENTER;
+        this.camera.position.y = MAP_CENTER;
         this.camera.updateProjectionMatrix();
         this.world.setZoom(this.camera.zoom);
     }
@@ -211,12 +223,13 @@ export class MapApp {
      */
     private createCamera(): THREE.OrthographicCamera {
         const NEAR = 0.1, FAR = 10000;
+        const halfMapSize = MapApp.mapSize / 2;
 
         const camera = new THREE.OrthographicCamera(
-            MapApp.mapSize / -2,
-            MapApp.mapSize / 2,
-            MapApp.mapSize / 2,
-            MapApp.mapSize / -2,
+            -halfMapSize,
+            halfMapSize,
+            halfMapSize,
+            -halfMapSize,
             NEAR,
             FAR);
         camera.position.z = 1000;
@@ -229,7 +242,7 @@ export class MapApp {
      */
     private onWheel(event: WheelEvent): void {
         event.preventDefault();
-        if (event.deltaY === 0) {
+        if (event.deltaY === NO_WHEEL_DELTA) {
             return;
         }
 
@@ -253,11 +266,13 @@ export class MapApp {
     }
 
     /**
-     * Starts panning when the map is dragged with the right or middle mouse button.
+     * Starts panning when the map is dragged with the left mouse button.
      * @param event - The mouse event.
      */
     private onPanStart(event: MouseEvent): void {
-        const isPanButton = event.button === 1 || event.button === 2;
+        this.hasPanned = false;
+
+        const isPanButton = event.button === LEFT_MOUSE_BUTTON;
         if (!isPanButton || this.camera.zoom <= MapApp.minZoom) {
             return;
         }
@@ -277,16 +292,22 @@ export class MapApp {
             return;
         }
 
-        const panButtons = 2 | 4;
-        if ((event.buttons & panButtons) === 0) {
+        if ((event.buttons & LEFT_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
             // The button was released where we didn't get the event, e.g. outside of the browser window.
             this.isPanning = false;
             return;
         }
 
+        const deltaX = event.clientX - this.lastPanX;
+        const deltaY = event.clientY - this.lastPanY;
+        if (!this.hasPanned && (deltaX * deltaX) + (deltaY * deltaY) < PAN_THRESHOLD_SQUARED) {
+            return;
+        }
+
+        this.hasPanned = true;
         const unitsPerPixel = (MapApp.mapSize / this.camera.zoom) / this.renderer.domElement.clientWidth;
-        this.camera.position.x -= (event.clientX - this.lastPanX) * unitsPerPixel;
-        this.camera.position.y += (event.clientY - this.lastPanY) * unitsPerPixel;
+        this.camera.position.x -= deltaX * unitsPerPixel;
+        this.camera.position.y += deltaY * unitsPerPixel;
         this.lastPanX = event.clientX;
         this.lastPanY = event.clientY;
         this.clampCamera();
@@ -327,7 +348,7 @@ export class MapApp {
         const canvas = this.renderer.domElement;
         const x = (offsetX / canvas.clientWidth) * 2 - 1;
         const y = -(offsetY / canvas.clientHeight) * 2 + 1;
-        return new THREE.Vector3(x, y, 0).unproject(this.camera);
+        return new THREE.Vector3(x, y, MAP_PLANE_Z).unproject(this.camera);
     }
 
     /**
@@ -335,7 +356,7 @@ export class MapApp {
      */
     private clampCamera(): void {
         const halfVisibleSize = (MapApp.mapSize / 2) / this.camera.zoom;
-        const maximumOffset = Math.max(0, (MapApp.mapSize / 2) - halfVisibleSize);
+        const maximumOffset = Math.max(NO_CAMERA_OFFSET, (MapApp.mapSize / 2) - halfVisibleSize);
         this.camera.position.x = THREE.Math.clamp(this.camera.position.x, -maximumOffset, maximumOffset);
         this.camera.position.y = THREE.Math.clamp(this.camera.position.y, -maximumOffset, maximumOffset);
     }
