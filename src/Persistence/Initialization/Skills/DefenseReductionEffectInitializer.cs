@@ -33,7 +33,7 @@ public class DefenseReductionEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.DefenseReduction;
         magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.DefenseReductionEffectFireSlash);
         magicEffect.InformObservers = true;
-        magicEffect.SendDuration = true;
+        magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromSeconds(10).TotalSeconds;

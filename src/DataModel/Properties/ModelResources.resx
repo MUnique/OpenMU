@@ -6574,4 +6574,70 @@
   <data name="WaitingItemReason_NoSpaceWhenLoaded_Description" xml:space="preserve">
     <value>The item found no place when its storage was loaded, e.g. because the size of its definition grew.</value>
   </data>
+  <data name="GameConfiguration_WeightedValueTables_Caption" xml:space="preserve">
+    <value>Weighted Value Tables</value>
+  </data>
+  <data name="GameConfiguration_WeightedValueTables_Description" xml:space="preserve">
+    <value>Tables of values with relative weights, e.g. for the number of sockets of dropped items.</value>
+  </data>
+  <data name="ItemDefinition_SocketCountTable_Caption" xml:space="preserve">
+    <value>Socket Count Table</value>
+  </data>
+  <data name="ItemDefinition_SocketCountTable_Description" xml:space="preserve">
+    <value>The table from which the number of sockets of a dropped item is selected. Values above the maximum sockets are never selected. If empty, the number is selected uniformly between 1 and the maximum sockets.</value>
+  </data>
+  <data name="DropItemGroup_SocketCountTable_Caption" xml:space="preserve">
+    <value>Socket Count Table</value>
+  </data>
+  <data name="DropItemGroup_SocketCountTable_Description" xml:space="preserve">
+    <value>The table from which the number of sockets of the socket items dropped by this group is selected. If empty, the socket count table of the item is used.</value>
+  </data>
+  <data name="WeightedValueTable_TypeCaption" xml:space="preserve">
+    <value>Weighted Value Table</value>
+  </data>
+  <data name="WeightedValueTable_TypeCaptionPlural" xml:space="preserve">
+    <value>Weighted Value Tables</value>
+  </data>
+  <data name="WeightedValueTable_TypeDescription" xml:space="preserve">
+    <value>A table of values with relative weights, from which a value is selected randomly.</value>
+  </data>
+  <data name="WeightedValueTable_Name_Caption" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="WeightedValueTable_Name_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="WeightedValueTable_Description_Caption" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="WeightedValueTable_Description_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="WeightedValueTable_Values_Caption" xml:space="preserve">
+    <value>Values</value>
+  </data>
+  <data name="WeightedValueTable_Values_Description" xml:space="preserve">
+    <value>The values with their weights.</value>
+  </data>
+  <data name="WeightedValue_TypeCaption" xml:space="preserve">
+    <value>Weighted Value</value>
+  </data>
+  <data name="WeightedValue_TypeCaptionPlural" xml:space="preserve">
+    <value>Weighted Values</value>
+  </data>
+  <data name="WeightedValue_TypeDescription" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="WeightedValue_Value_Caption" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="WeightedValue_Value_Description" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="WeightedValue_Weight_Caption" xml:space="preserve">
+    <value>Weight</value>
+  </data>
+  <data name="WeightedValue_Weight_Description" xml:space="preserve">
+    <value>The weight, relative to the other values of the table. A value with a weight of 0 is never selected.</value>
+  </data>
 </root>

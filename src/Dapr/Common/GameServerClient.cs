@@ -24,9 +24,7 @@ public sealed partial class GameServerClient : ManageableServerClient, IGameServ
     /// <summary>
     /// The topic of the <see cref="RestartAsync"/> command.
     /// </summary>
-#pragma warning disable S2339 // Topic and HttpPost attribute arguments require a compile-time constant.
     public const string RestartTopic = "RestartAsync";
-#pragma warning restore S2339
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameServerClient"/> class.

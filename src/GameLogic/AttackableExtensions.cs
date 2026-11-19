@@ -328,13 +328,13 @@ public static class AttackableExtensions
     /// <returns>The calculated hit info.</returns>
     public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null, uint petDamage = 0)
     {
-        var triggersHitShock = defender.GetsHitShocked(damage);
+        var triggersHitShock = !attributes.HasFlag(DamageAttributes.Bleed) && defender.GetsHitShocked(damage);
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
         {
-            var shieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
-            return new HitInfo(damage, (uint)shieldDamage, attributes, manaToll, petDamage, skill, triggersHitShock);
+            var slasherShieldDamage = defender.Attributes[Stats.CurrentShield] * skillAttributes[Stats.DragonSlasherShieldDamageRate];
+            return new HitInfo(damage, (uint)slasherShieldDamage, attributes, manaToll, petDamage, skill, triggersHitShock);
         }
 
         var shieldBypass = Rand.NextRandomBool(attacker.Attributes[Stats.ShieldBypassChance]);
@@ -345,7 +345,8 @@ public static class AttackableExtensions
 
         var shieldRatio = defender.Attributes[Stats.ShieldRatio] - attacker.Attributes[Stats.ShieldDecreaseRateIncrease];
         shieldRatio = Math.Max(0, shieldRatio);
-        return new HitInfo((uint)(damage * (1 - shieldRatio)), (uint)(damage * shieldRatio), attributes, manaToll, petDamage, skill, triggersHitShock);
+        var shieldDamage = (uint)(damage * shieldRatio);
+        return new HitInfo(damage - shieldDamage, shieldDamage, attributes, manaToll, petDamage, skill, triggersHitShock);
     }
 
     /// <summary>

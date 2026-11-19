@@ -174,7 +174,7 @@ public class CastleSiegeTeleportTests
         {
             Assert.That(player.Attributes[Stats.CurrentMana], isPrevented ? Is.EqualTo(manaBefore) : Is.EqualTo(manaBefore - ManaCost));
             Mock.Get(player.ViewPlugIns.GetPlugIn<ITeleportPlugIn>()!)
-                .Verify(p => p.ShowTeleportedAsync(), isPrevented ? Times.Once() : Times.Never());
+                .Verify(p => p.ShowTeleportedAsync(It.IsAny<Point>()), isPrevented ? Times.Once() : Times.Never());
         });
     }
 

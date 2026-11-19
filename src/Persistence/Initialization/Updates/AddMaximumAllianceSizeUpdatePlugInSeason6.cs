@@ -47,9 +47,7 @@ public class AddMaximumAllianceSizeUpdatePlugInSeason6 : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 04, 03, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         this.AddStatIfNotExists(context, gameConfiguration, Stats.MaximumAllianceSize);
 

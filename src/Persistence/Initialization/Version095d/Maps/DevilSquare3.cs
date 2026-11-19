@@ -102,10 +102,10 @@ internal class DevilSquare3 : BaseMapInitializer
                 { Stats.DefenseBase, 170 },
                 { Stats.AttackRatePvm, 350 },
                 { Stats.DefenseRatePvm, 115 },
-                { Stats.PoisonResistance, 7f / 255 },
-                { Stats.IceResistance, 7f / 255 },
-                { Stats.WaterResistance, 7f / 255 },
-                { Stats.FireResistance, 7f / 255 },
+                { Stats.IceResistance, 7 },
+                { Stats.PoisonResistance, 7 },
+                { Stats.LightningResistance, 7 },
+                { Stats.FireResistance, 7 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -135,10 +135,10 @@ internal class DevilSquare3 : BaseMapInitializer
                 { Stats.DefenseBase, 190 },
                 { Stats.AttackRatePvm, 400 },
                 { Stats.DefenseRatePvm, 125 },
-                { Stats.PoisonResistance, 8f / 255 },
-                { Stats.IceResistance, 8f / 255 },
-                { Stats.WaterResistance, 8f / 255 },
-                { Stats.FireResistance, 8f / 255 },
+                { Stats.IceResistance, 8 },
+                { Stats.PoisonResistance, 8 },
+                { Stats.LightningResistance, 8 },
+                { Stats.FireResistance, 8 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -168,10 +168,10 @@ internal class DevilSquare3 : BaseMapInitializer
                 { Stats.DefenseBase, 220 },
                 { Stats.AttackRatePvm, 385 },
                 { Stats.DefenseRatePvm, 150 },
-                { Stats.PoisonResistance, 9f / 255 },
-                { Stats.IceResistance, 9f / 255 },
-                { Stats.WaterResistance, 9f / 255 },
-                { Stats.FireResistance, 9f / 255 },
+                { Stats.IceResistance, 9 },
+                { Stats.PoisonResistance, 9 },
+                { Stats.LightningResistance, 9 },
+                { Stats.FireResistance, 9 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

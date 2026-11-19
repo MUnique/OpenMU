@@ -3,8 +3,12 @@
 // </copyright>
 
 const BASE_SIZE = 768;
-const MIN_ZOOM = 1.0;
+const LEFT_MOUSE_BUTTON = 0;
 const MAX_ZOOM = 4.0;
+const MIDDLE_MOUSE_BUTTON = 1;
+const MIDDLE_MOUSE_BUTTON_MASK = 4;
+const MIN_ZOOM = 1.0;
+const NO_MOUSE_BUTTONS = 0;
 
 let _element = null;
 let _dotNetRef = null;
@@ -52,18 +56,6 @@ function _getMapTileCoords(clientX, clientY) {
     };
 }
 
-function _updateZoomDisplay() {
-    let container = _element ? _element.closest(".map-host-container") : null;
-    if (!container) {
-        return;
-    }
-
-    let zoomLabel = container.querySelector(".zoom-label");
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(_zoomLevel * 100) + "%";
-    }
-}
-
 function _applyZoom(zoom) {
     if (!_element) {
         return;
@@ -84,8 +76,6 @@ function _applyZoom(zoom) {
         img.style.width = size + "px";
         img.style.height = size + "px";
     }
-
-    _updateZoomDisplay();
 }
 
 function _updateCoordsLabel(mapX, mapY) {
@@ -130,10 +120,6 @@ function _notifyPointerMove(x, y) {
 }
 
 function _handlePanEnd() {
-    if (!_hasMoved && _dotNetRef) {
-        _dotNetRef.invokeMethodAsync("OnPointerClickAsync");
-    }
-
     _isPanning = false;
 }
 
@@ -171,6 +157,19 @@ function _onDocumentMouseDown(e) {
         _element = container;
     }
 
+    if (e.button === MIDDLE_MOUSE_BUTTON) {
+        e.preventDefault();
+        _lastClientX = e.clientX;
+        _lastClientY = e.clientY;
+        _hasMoved = false;
+        _isPanning = true;
+        return;
+    }
+
+    if (e.button !== LEFT_MOUSE_BUTTON) {
+        return;
+    }
+
     if (_tryStartResize(e)) {
         return;
     }
@@ -204,15 +203,24 @@ function _updateElementIfChanged(e) {
     }
 }
 
-function _applyMouseMoveAction(e, x, y) {
-    if (_isPanning) {
-        _handlePanning(e);
-    } else if (_isDragging || _isResizing) {
+function _applyMouseMoveAction(x, y) {
+    if (_isDragging || _isResizing) {
         _notifyPointerMove(x, y);
     }
 }
 
 function _onDocumentMouseMove(e) {
+    if (_isPanning) {
+        if ((e.buttons & MIDDLE_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
+            // The button was released where we didn't get the mouseup event, e.g. outside of the browser window.
+            _handlePanEnd();
+        } else {
+            _handlePanning(e);
+        }
+
+        return;
+    }
+
     if (!_isValidMouseMoveTarget(e)) {
         return;
     }
@@ -226,16 +234,16 @@ function _onDocumentMouseMove(e) {
     _updateCoordsLabel(x, y);
     _hasMoved = true;
 
-    _applyMouseMoveAction(e, x, y);
+    _applyMouseMoveAction(x, y);
 }
 
 function _onDocumentMouseUp(e) {
-    if (!_element) {
+    if (_isPanning) {
+        _handlePanEnd();
         return;
     }
 
-    if (_isPanning) {
-        _handlePanEnd();
+    if (!_element) {
         return;
     }
 
@@ -454,15 +462,6 @@ export function resetZoom(element) {
 }
 
 /**
- * Sets the pan state. Called from Blazor to signal panning mode.
- * @param {boolean} panning - Whether panning is active.
- */
-export function setPanning(panning) {
-    _isPanning = panning;
-    _hasMoved = false;
-}
-
-/**
  * Sets the drag state. Called from Blazor to signal dragging mode.
  * @param {boolean} dragging - Whether dragging is active.
  */
@@ -482,4 +481,8 @@ export function dispose() {
     document.removeEventListener("keydown", _onDocumentKeyDown);
     _element = null;
     _dotNetRef = null;
+    _isDragging = false;
+    _isPanning = false;
+    _isResizing = false;
+    _hasMoved = false;
 }

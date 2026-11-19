@@ -161,10 +161,10 @@ internal class BloodCastle6 : BloodCastleBase
                 { Stats.DefenseBase, 210 },
                 { Stats.AttackRatePvm, 460 },
                 { Stats.DefenseRatePvm, 150 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 6f / 255 },
-                { Stats.FireResistance, 6f / 255 },
-                { Stats.LightningResistance, 6f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.LightningResistance, 6 },
+                { Stats.FireResistance, 6 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -193,10 +193,10 @@ internal class BloodCastle6 : BloodCastleBase
                 { Stats.DefenseBase, 270 },
                 { Stats.AttackRatePvm, 520 },
                 { Stats.DefenseRatePvm, 160 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 6f / 255 },
-                { Stats.FireResistance, 6f / 255 },
-                { Stats.LightningResistance, 6f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.LightningResistance, 6 },
+                { Stats.FireResistance, 6 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -225,10 +225,10 @@ internal class BloodCastle6 : BloodCastleBase
                 { Stats.DefenseBase, 360 },
                 { Stats.AttackRatePvm, 580 },
                 { Stats.DefenseRatePvm, 195 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 6f / 255 },
-                { Stats.FireResistance, 6f / 255 },
-                { Stats.LightningResistance, 6f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.LightningResistance, 6 },
+                { Stats.FireResistance, 6 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -258,10 +258,10 @@ internal class BloodCastle6 : BloodCastleBase
                 { Stats.DefenseBase, 400 },
                 { Stats.AttackRatePvm, 660 },
                 { Stats.DefenseRatePvm, 230 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 6f / 255 },
-                { Stats.FireResistance, 6f / 255 },
-                { Stats.LightningResistance, 6f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.LightningResistance, 6 },
+                { Stats.FireResistance, 6 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -290,10 +290,10 @@ internal class BloodCastle6 : BloodCastleBase
                 { Stats.DefenseBase, 450 },
                 { Stats.AttackRatePvm, 720 },
                 { Stats.DefenseRatePvm, 260 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 6f / 255 },
-                { Stats.FireResistance, 6f / 255 },
-                { Stats.LightningResistance, 6f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.LightningResistance, 6 },
+                { Stats.FireResistance, 6 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -323,10 +323,10 @@ internal class BloodCastle6 : BloodCastleBase
                 { Stats.DefenseBase, 500 },
                 { Stats.AttackRatePvm, 840 },
                 { Stats.DefenseRatePvm, 280 },
-                { Stats.PoisonResistance, 9f / 255 },
-                { Stats.IceResistance, 9f / 255 },
-                { Stats.FireResistance, 9f / 255 },
-                { Stats.LightningResistance, 9f / 255 },
+                { Stats.IceResistance, 9 },
+                { Stats.PoisonResistance, 9 },
+                { Stats.LightningResistance, 9 },
+                { Stats.FireResistance, 9 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

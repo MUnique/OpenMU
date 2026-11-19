@@ -207,4 +207,10 @@
   <data name="NoMatchingMonsters" xml:space="preserve">
     <value>No matching monster on this map</value>
   </data>
+  <data name="ResetView" xml:space="preserve">
+    <value>Reset view</value>
+  </data>
+  <data name="ZoomHint" xml:space="preserve">
+    <value>Zoom with the mouse wheel, pan by dragging with the middle mouse button</value>
+  </data>
 </root>

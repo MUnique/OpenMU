@@ -2220,4 +2220,55 @@
   <data name="BotMerchantConfiguration_CityMapNumbers_Description" xml:space="preserve"><value>The numbers of the city maps, separated by commas (0 = Lorencia, 2 = Devias, 3 = Noria, 51 = Elvenland). The bots open their store in the safezone near the spawn gate.</value></data>
   <data name="BotMerchantConfiguration_NewMerchantsPerCheck_Name" xml:space="preserve"><value>New merchants per 30 seconds</value></data>
   <data name="BotMerchantConfiguration_NewMerchantsPerCheck_Description" xml:space="preserve"><value>How many bots at most start a shift every 30 seconds. After a server start, the market fills up within minutes instead of all at once, and the parties of the bots don't fall apart together.</value></data>
+  <data name="GameEventWebhookPlugIn_Name" xml:space="preserve">
+    <value>Game Event Webhook</value>
+  </data>
+  <data name="GameEventWebhookPlugIn_Description" xml:space="preserve">
+    <value>Forwards selected events of the game as signed JSON to a URL, e.g. to the news feed of the server's website. Needs the Game Event Publisher plugin. Chat messages and letters are never forwarded.</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_Url_Name" xml:space="preserve">
+    <value>URL</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_Url_Description" xml:space="preserve">
+    <value>The address to which the events are posted, e.g. https://example.com/api/realm-events. Use HTTPS when the receiver is on another machine.</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_Secret_Name" xml:space="preserve">
+    <value>Secret</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_Secret_Description" xml:space="preserve">
+    <value>The shared secret with which each request is signed (HMAC-SHA256 over the timestamp and the body). The receiver needs the same secret. Nothing is sent without one.</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardBossKills_Name" xml:space="preserve">
+    <value>Forward boss kills</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardLevelMilestones_Name" xml:space="preserve">
+    <value>Forward level milestones</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardItemDrops_Name" xml:space="preserve">
+    <value>Forward item drops</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_DropItemNames_Name" xml:space="preserve">
+    <value>Forwarded drop items</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_DropItemNames_Description" xml:space="preserve">
+    <value>The names of the items whose drops are forwarded. When empty, every drop which the Game Event Publisher publishes is forwarded.</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_DropMinimumItemLevel_Name" xml:space="preserve">
+    <value>Minimum item level of forwarded drops</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardMiniGameResults_Name" xml:space="preserve">
+    <value>Forward mini game results</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardMiniGameOpenings_Name" xml:space="preserve">
+    <value>Forward mini game openings and starts</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardInvasions_Name" xml:space="preserve">
+    <value>Forward invasions</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardCastleSiege_Name" xml:space="preserve">
+    <value>Forward castle siege state changes</value>
+  </data>
+  <data name="GameEventWebhookConfiguration_ForwardGlobalNotices_Name" xml:space="preserve">
+    <value>Forward global notices of game masters</value>
+  </data>
 </root>

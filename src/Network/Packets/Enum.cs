@@ -28,7 +28,5 @@ public class Enum
     /// Gets or sets the possible values of this enum.
     /// </summary>
     [XmlArrayItem(IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public EnumValue[]? Values { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 }

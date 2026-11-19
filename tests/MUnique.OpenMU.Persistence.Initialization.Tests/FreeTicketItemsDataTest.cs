@@ -92,7 +92,7 @@ internal class FreeTicketItemsDataTest
         return number is null ? null : gameConfiguration.Items.Single(item => item.Group == 13 && item.Number == number);
     }
 
-        private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()
+    private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6ConfigurationAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());

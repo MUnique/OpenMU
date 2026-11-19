@@ -38,9 +38,7 @@ public partial class StatAttributeDefinition
     /// <summary>
     /// Gets or sets the attribute definition of this stat attribute.
     /// </summary>
-#pragma warning disable S2292 // When this would be an auto property, it would lead to a virtual member call in the constructor.
     public virtual AttributeDefinition? Attribute
-#pragma warning restore S2292
     {
         get { return this.attribute; }
         set { this.attribute = value; }

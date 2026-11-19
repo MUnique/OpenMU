@@ -33,7 +33,7 @@ public class DefenseReductionBeastUppercutEffectInitializer : InitializerBase
         magicEffect.Number = (short)MagicEffectNumber.DefenseReductionBeastUppercut;
         magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.DefenseReductionEffectBeastUppercut);
         magicEffect.InformObservers = true;
-        magicEffect.SendDuration = true;
+        magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = (float)TimeSpan.FromSeconds(10).TotalSeconds;

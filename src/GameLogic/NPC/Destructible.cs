@@ -8,7 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// The implementation of a destructible, which can attack players.
+/// The implementation of a destructible, which can't attack players.
 /// </summary>
 public sealed class Destructible : AttackableNpcBase, IAttackable
 {
@@ -27,23 +27,9 @@ public sealed class Destructible : AttackableNpcBase, IAttackable
     }
 
     /// <inheritdoc/>
-    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+    public override ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes)
     {
-        // A destructible doesn't attack, so it doesn't reflect.
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        // A destructible is not an organism which can be poisoned.
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        // A destructible is not an organism which can bleed.
+        // A destructible doesn't attack, reflect, get poisoned or bleed.
         return ValueTask.CompletedTask;
     }
 }

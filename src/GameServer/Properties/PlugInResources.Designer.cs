@@ -2500,6 +2500,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IActivateMagicEffectPlugIn, IDeactivateMagicEffectPlugIn and IUpdateMagicEffectPlugIn which also sends the values of the own player&apos;s effects to the game client, and the time left of the effects which send their duration..
+        /// </summary>
+        public static string DeActivateMagicEffectExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DeActivateMagicEffectExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to De &amp; ActivateMagicEffectPlugIn (extended).
+        /// </summary>
+        public static string DeActivateMagicEffectExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DeActivateMagicEffectExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IActivateMagicEffectPlugIn and IDeactivateMagicEffectPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string DeActivateMagicEffectPlugIn_Description {
@@ -4170,6 +4188,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string LogInOutGroup_Name {
             get {
                 return ResourceManager.GetString("LogInOutGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for the login with a ticket instead of a password, e.g. after signing in on a website..
+        /// </summary>
+        public static string LoginWithTicketHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LoginWithTicketHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login with ticket.
+        /// </summary>
+        public static string LoginWithTicketHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LoginWithTicketHandlerPlugIn_Name", resourceCulture);
             }
         }
         

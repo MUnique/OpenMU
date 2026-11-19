@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.Attributes;
 
+using System.Collections.Concurrent;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
@@ -24,7 +25,7 @@ public sealed class ItemAwareAttributeSystem : AttributeSystem
             character.CharacterClass!.BaseAttributeValues.Concat(gameConfiguration.GlobalBaseAttributeValues),
             character.CharacterClass.AttributeCombinations.Concat(gameConfiguration.GlobalAttributeCombinations))
     {
-        this.ItemPowerUps = new Dictionary<Item, IReadOnlyList<PowerUpWrapper>>();
+        this.ItemPowerUps = new ConcurrentDictionary<Item, IReadOnlyList<PowerUpWrapper>>();
         foreach (var attribute in this)
         {
             this.OnAttributeAdded(attribute);

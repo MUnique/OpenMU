@@ -49,6 +49,8 @@ public class SocketSystem : InitializerBase
     private ItemOptionDefinition? _bonusArmorOptions;
     private ItemOptionDefinition? _bonusPhysOptions;
     private ItemOptionDefinition? _bonusWizOptions;
+    private WeightedValueTable? _oneHandedSocketCountTable;
+    private WeightedValueTable? _twoHandedSocketCountTable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SocketSystem"/> class.
@@ -207,15 +209,17 @@ public class SocketSystem : InitializerBase
 
     private void AddSocketsToItems()
     {
-        this.AddWeaponSockets(0, 26, 3); // Flameberge
-        this.AddWeaponSockets(0, 27, 3); // Sword Breaker
-        this.AddWeaponSockets(0, 28, 3); // Imperial Sword
-        this.AddWeaponSockets(2, 16, 3); // Frost Mace
-        this.AddWeaponSockets(2, 17, 3); // Absolute Scepter
-        this.AddWeaponSockets(4, 23, 5); // Stinger Bow
-        this.AddWeaponSockets(5, 20, 3); // Eternal Wing Stick
-        this.AddWeaponSockets(5, 30, 3); // Deadly Staff
-        this.AddWeaponSockets(5, 31, 3); // Imperial Staff
+        (this._oneHandedSocketCountTable, this._twoHandedSocketCountTable) = SocketCountTables.GetOrCreate(this.Context, this.GameConfiguration);
+
+        this.AddWeaponSockets(0, 26); // Flameberge
+        this.AddWeaponSockets(0, 27); // Sword Breaker
+        this.AddWeaponSockets(0, 28); // Imperial Sword
+        this.AddWeaponSockets(2, 16); // Frost Mace
+        this.AddWeaponSockets(2, 17); // Absolute Scepter
+        this.AddWeaponSockets(4, 23); // Stinger Bow
+        this.AddWeaponSockets(5, 20); // Eternal Wing Stick
+        this.AddWeaponSockets(5, 30); // Deadly Staff
+        this.AddWeaponSockets(5, 31); // Imperial Staff
 
         this.AddArmorSockets(6, 17); // Crimson Glory
         this.AddArmorSockets(6, 18); // Salamander Shield
@@ -275,14 +279,15 @@ public class SocketSystem : InitializerBase
             return;
         }
 
-        item.MaximumSockets = 3;
+        item.MaximumSockets = SocketCountTables.MaximumSocketCount;
+        item.SocketCountTable = this._oneHandedSocketCountTable;
         item.PossibleItemOptions.Add(this._waterOptions!);
         item.PossibleItemOptions.Add(this._earthOptions!);
         item.PossibleItemOptions.Add(this._windOptions!);
         item.PossibleItemOptions.Add(this._bonusArmorOptions!);
     }
 
-    private void AddWeaponSockets(byte group, short number, int socketCount)
+    private void AddWeaponSockets(byte group, short number)
     {
         var item = this.GameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
         if (item is null)
@@ -291,7 +296,8 @@ public class SocketSystem : InitializerBase
             return;
         }
 
-        item.MaximumSockets = socketCount;
+        item.MaximumSockets = SocketCountTables.MaximumSocketCount;
+        item.SocketCountTable = SocketCountTables.IsTwoHandedWeapon(item) ? this._twoHandedSocketCountTable : this._oneHandedSocketCountTable;
         item.PossibleItemOptions.Add(this._fireOptions!);
         item.PossibleItemOptions.Add(this._lightningOptions!);
         item.PossibleItemOptions.Add(this._iceOptions!);

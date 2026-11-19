@@ -20,15 +20,4 @@ internal class Lorencia : Version075.Maps.Lorencia
         : base(context, gameConfiguration)
     {
     }
-
-    /// <inheritdoc/>
-    protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
-    {
-        foreach (var npc in base.CreateNpcSpawns())
-        {
-            yield return npc;
-        }
-
-        yield return this.CreateMonsterSpawn(15, this.NpcDictionary[236], 175, 120, Direction.SouthEast);
-    }
 }

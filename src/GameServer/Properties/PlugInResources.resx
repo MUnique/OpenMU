@@ -537,6 +537,12 @@
   <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
     <value>Packet handler for login packets.</value>
   </data>
+  <data name="LoginWithTicketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Login with ticket</value>
+  </data>
+  <data name="LoginWithTicketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for the login with a ticket instead of a password, e.g. after signing in on a website.</value>
+  </data>
   <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
     <value>Logout handler</value>
   </data>
@@ -1688,6 +1694,12 @@
   </data>
   <data name="DeActivateMagicEffectPlugIn_Description" xml:space="preserve">
     <value>The default implementation of the IActivateMagicEffectPlugIn and IDeactivateMagicEffectPlugIn which is forwarding everything to the game client with specific data packets.</value>
+  </data>
+  <data name="DeActivateMagicEffectExtendedPlugIn_Name" xml:space="preserve">
+    <value>De &amp; ActivateMagicEffectPlugIn (extended)</value>
+  </data>
+  <data name="DeActivateMagicEffectExtendedPlugIn_Description" xml:space="preserve">
+    <value>The extended implementation of the IActivateMagicEffectPlugIn, IDeactivateMagicEffectPlugIn and IUpdateMagicEffectPlugIn which also sends the values of the own player's effects to the game client, and the time left of the effects which send their duration.</value>
   </data>
   <data name="DeActivateMagicEffectPlugIn075_Name" xml:space="preserve">
     <value>De Activate Magic Effect (075)</value>

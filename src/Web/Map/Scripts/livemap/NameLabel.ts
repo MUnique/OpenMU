@@ -21,6 +21,9 @@ export class NameLabel extends THREE.Sprite {
     private context: CanvasRenderingContext2D | null = null;
     private texture: THREE.CanvasTexture | null = null;
     private labelMaterial: THREE.SpriteMaterial | null = null;
+    private zoom: number = 1;
+    private unscaledWidth: number = LABEL_SCALE_X;
+    private unscaledHeight: number = LABEL_SCALE_Y;
 
     constructor() {
         super(NameLabel.hiddenMaterial);
@@ -31,6 +34,15 @@ export class NameLabel extends THREE.Sprite {
 
     public raycast(): void {
         // No-op: name labels should not intercept raycasts.
+    }
+
+    /**
+     * Keeps the label at the same size on the screen, no matter how far the map is zoomed in.
+     * @param zoom - The zoom factor of the camera.
+     */
+    public setZoom(zoom: number): void {
+        this.zoom = zoom;
+        this.applyScale();
     }
 
     public show(name: string): void {
@@ -115,7 +127,9 @@ export class NameLabel extends THREE.Sprite {
 
         // Re-apply font after canvas resize (resize resets context state)
         ctx.font = "bold 28px Consolas, monospace";
-        this.scale.set((canvas.width / canvas.height) * SCALE_MULTIPLIER, SCALE_MULTIPLIER, LABEL_SCALE_Z);
+        this.unscaledWidth = (canvas.width / canvas.height) * SCALE_MULTIPLIER;
+        this.unscaledHeight = SCALE_MULTIPLIER;
+        this.applyScale();
 
         ctx.clearRect(CLEAR_X, CLEAR_Y, canvas.width, canvas.height);
 
@@ -144,6 +158,10 @@ export class NameLabel extends THREE.Sprite {
         ctx.fillText(name, canvas.width / 2, canvas.height / 2);
 
         texture.needsUpdate = true;
+    }
+
+    private applyScale(): void {
+        this.scale.set(this.unscaledWidth / this.zoom, this.unscaledHeight / this.zoom, LABEL_SCALE_Z);
     }
 
     private nextPowerOfTwo(value: number): number {

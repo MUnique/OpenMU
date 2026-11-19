@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data name="SocketCountOneHanded" xml:space="preserve">
+    <value>镶嵌孔数量（单手武器、盾牌、防具）</value>
+  </data>
+  <data name="SocketCountTwoHanded" xml:space="preserve">
+    <value>镶嵌孔数量（双手武器）</value>
+  </data>
+  <data name="SocketCountOneHandedDescription" xml:space="preserve">
+    <value>掉落的单手镶嵌武器、盾牌和防具的孔数：一个孔很常见，三个孔很少见，四个和五个孔不会掉落。</value>
+  </data>
+  <data name="SocketCountTwoHandedDescription" xml:space="preserve">
+    <value>掉落的双手镶嵌武器的孔数：一个孔很常见，五个孔非常少见。</value>
+  </data>
+</root>

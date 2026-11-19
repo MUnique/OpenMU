@@ -264,38 +264,26 @@ public sealed class GameServerAdministrationTests
         /// <inheritdoc />
         public MUnique.OpenMU.DataModel.Configuration.MiniGameType Key => MUnique.OpenMU.DataModel.Configuration.MiniGameType.BloodCastle;
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         bool IPeriodicMiniGameStartPlugIn.IsEnabledOn(IGameContext gameContext) => this.Enabled;
-#pragma warning restore S1172
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         bool IPeriodicMiniGameStartPlugIn.IsEventActive(IGameContext gameContext) => this.Active;
-#pragma warning restore S1172
 
         /// <inheritdoc />
         public void ForceStart() => this.Starts++;
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         ValueTask IPeriodicMiniGameStartPlugIn.DisposeRunningGamesAsync(IGameContext gameContext)
         {
             this.Disposals++;
             return ValueTask.CompletedTask;
         }
-#pragma warning restore S1172
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         ValueTask MUnique.OpenMU.GameLogic.PlugIns.IPeriodicTaskPlugIn.ExecuteTaskAsync(GameContext gameContext) => ValueTask.CompletedTask;
-#pragma warning restore S1172
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         ValueTask<TimeSpan?> IPeriodicMiniGameStartPlugIn.GetDurationUntilNextStartAsync(IGameContext gameContext, MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition miniGameDefinition)
             => ValueTask.FromResult<TimeSpan?>(null);
-#pragma warning restore S1172
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         ValueTask<MiniGameContext?> IPeriodicMiniGameStartPlugIn.GetMiniGameContextAsync(IGameContext gameContext, MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition miniGameDefinition)
             => ValueTask.FromResult<MiniGameContext?>(null);
-#pragma warning restore S1172
     }
 
     /// <summary>A contributed write operation used to verify preview and read-channel isolation.</summary>
@@ -314,12 +302,9 @@ public sealed class GameServerAdministrationTests
         /// <inheritdoc />
         public AdminPluginOperationInfo Operation => new(this.GetType().GUID, this.Key, "Reset test state.", "Administrator", false, true, false, new JsonObject { ["type"] = "object" });
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         ValueTask<JsonObject> IAdminOperationPlugIn.PreviewAsync(IGameContext context, JsonObject arguments, CancellationToken cancellationToken)
             => ValueTask.FromResult(new JsonObject { ["before"] = this.State, ["after"] = 0 });
-#pragma warning restore S1172
 
-#pragma warning disable S1172 // This test double must keep the parameters required by the plugin interface.
         ValueTask<JsonObject> IAdminOperationPlugIn.ExecuteAsync(IGameContext context, JsonObject arguments, JsonObject? expectedPreview, CancellationToken cancellationToken)
         {
             if (expectedPreview?["before"]?.GetValue<int>() != this.State)
@@ -331,6 +316,5 @@ public sealed class GameServerAdministrationTests
             this.State = 0;
             return ValueTask.FromResult(new JsonObject { ["state"] = 0 });
         }
-#pragma warning restore S1172
     }
 }

@@ -319,6 +319,68 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the login name and the state of an account, without loading the account.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The login name and state; Otherwise, null, if the account doesn't exist.</returns>
+    ValueTask<(string LoginName, AccountState State)?> GetAccountLoginStateAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the login ticket with the specified token hash.
+    /// </summary>
+    /// <param name="tokenHash">The hash of the token.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The ticket; Otherwise, null, if no ticket has the hash.</returns>
+    ValueTask<LoginTicket?> GetLoginTicketByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically marks an unused and unexpired login ticket as used.
+    /// Of concurrent calls for the same ticket, only one succeeds, even across game servers.
+    /// </summary>
+    /// <param name="ticketId">The identifier of the ticket.</param>
+    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if this call marked the ticket as used; Otherwise, <c>false</c>.</returns>
+    ValueTask<bool> TryUseLoginTicketAsync(
+        Guid ticketId,
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically adds a login ticket, unless the account already has the maximum of unexpired tickets, used or not.
+    /// Concurrent calls for the same account are serialized, even across servers, so they never exceed the maximum.
+    /// </summary>
+    /// <param name="accountId">The persistent account identifier.</param>
+    /// <param name="tokenHash">The hash of the ticket's token.</param>
+    /// <param name="createdAtUtc">The UTC time of the issue; tickets expiring after it count against the maximum.</param>
+    /// <param name="expiresAtUtc">The UTC time when the ticket expires.</param>
+    /// <param name="maximumUnexpired">The maximum number of unexpired tickets of the account.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the ticket was added; Otherwise, <c>false</c>, if the account has the maximum already.</returns>
+    ValueTask<bool> TryAddLoginTicketAsync(
+        Guid accountId,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes the expired login tickets of all accounts.
+    /// </summary>
+    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The task.</returns>
+    ValueTask DeleteExpiredLoginTicketsAsync(
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the gens membership of a character.
     /// </summary>
     /// <param name="characterId">The persistent character identifier.</param>
@@ -351,6 +413,7 @@ public interface IPlayerContext : IContext
     /// <param name="masterLevelAttributeId">The identifier of the attribute definition of the master level.</param>
     /// <param name="resetsAttributeId">The identifier of the attribute definition of the resets.</param>
     /// <param name="count">The maximum number of entries.</param>
+    /// <param name="characterClassIds">The identifiers of the character classes which are ranked; <see langword="null"/> for all classes.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The best characters.</returns>
     ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
@@ -358,6 +421,7 @@ public interface IPlayerContext : IContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         int count,
+        IReadOnlyCollection<Guid>? characterClassIds = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -375,4 +439,17 @@ public interface IPlayerContext : IContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a character which can be ranked by <see cref="GetCharacterRankingAsync"/>, with its inventory, without loading its account.
+    /// </summary>
+    /// <remarks>
+    /// It's for a public profile of a character, which needs one character, but not the other characters and the vault of its account.
+    /// Like in the ranking, characters of bots, templates and game masters are not found.
+    /// The character isn't tracked by the context, so changes to it are not saved.
+    /// </remarks>
+    /// <param name="characterName">The name of the character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The character; or <see langword="null"/>, if it doesn't exist or can't be ranked.</returns>
+    ValueTask<Character?> GetRankedCharacterAsync(string characterName, CancellationToken cancellationToken = default);
 }

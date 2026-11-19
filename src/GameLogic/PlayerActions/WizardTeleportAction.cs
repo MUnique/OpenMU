@@ -48,7 +48,7 @@ public class WizardTeleportAction
         }
         else
         {
-            await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync()).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<ITeleportPlugIn>(p => p.ShowTeleportedAsync(player.Position)).ConfigureAwait(false);
         }
     }
 

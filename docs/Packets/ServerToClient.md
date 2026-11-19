@@ -4,6 +4,7 @@
   * [C1 01 - ObjectMessage (by server)](C1-01-ObjectMessage_by-server.md)
   * [C1 03 - ChecksumRequest (by server)](C1-03-ChecksumRequest_by-server.md)
   * [C1 07 - MagicEffectStatus (by server)](C1-07-MagicEffectStatus_by-server.md)
+  * [C1 07 - MagicEffectStatusExtended (by server)](C1-07-MagicEffectStatusExtended_by-server.md)
   * [C1 0B - MapEventState (by server)](C1-0B-MapEventState_by-server.md)
   * [C1 0C - WhisperResult (by server)](C1-0C-WhisperResult_by-server.md)
   * [C1 0D - ServerMessage (by server)](C1-0D-ServerMessage_by-server.md)

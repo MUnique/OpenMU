@@ -86,10 +86,10 @@ public class AddWhiteWizardInvasionMobsUpdatePlugIn : UpdatePlugInBase
             { Stats.DefenseBase, 400 },
             { Stats.AttackRatePvm, 550 },
             { Stats.DefenseRatePvm, 200 },
-            { Stats.IceResistance, 15f / 255 },
-            { Stats.PoisonResistance, 15f / 255 },
-            { Stats.LightningResistance, 20f / 255 },
-            { Stats.FireResistance, 15f / 255 },
+            { Stats.IceResistance, 15 },
+            { Stats.PoisonResistance, 15 },
+            { Stats.LightningResistance, 20 },
+            { Stats.FireResistance, 15 },
         };
         monster.AddAttributes(attributes, context, gameConfiguration);
 
@@ -126,10 +126,10 @@ public class AddWhiteWizardInvasionMobsUpdatePlugIn : UpdatePlugInBase
             { Stats.DefenseBase, 180 },
             { Stats.AttackRatePvm, 400 },
             { Stats.DefenseRatePvm, 125 },
-            { Stats.IceResistance, 7f / 255 },
-            { Stats.PoisonResistance, 7f / 255 },
-            { Stats.LightningResistance, 7f / 255 },
-            { Stats.FireResistance, 7f / 255 },
+            { Stats.IceResistance, 7 },
+            { Stats.PoisonResistance, 7 },
+            { Stats.LightningResistance, 7 },
+            { Stats.FireResistance, 7 },
         };
         monster.AddAttributes(attributes, context, gameConfiguration);
 
@@ -166,10 +166,10 @@ public class AddWhiteWizardInvasionMobsUpdatePlugIn : UpdatePlugInBase
             { Stats.DefenseBase, 190 },
             { Stats.AttackRatePvm, 440 },
             { Stats.DefenseRatePvm, 130 },
-            { Stats.IceResistance, 8f / 255 },
-            { Stats.PoisonResistance, 8f / 255 },
-            { Stats.LightningResistance, 8f / 255 },
-            { Stats.FireResistance, 8f / 255 },
+            { Stats.IceResistance, 8 },
+            { Stats.PoisonResistance, 8 },
+            { Stats.LightningResistance, 8 },
+            { Stats.FireResistance, 8 },
         };
         monster.AddAttributes(attributes, context, gameConfiguration);
 

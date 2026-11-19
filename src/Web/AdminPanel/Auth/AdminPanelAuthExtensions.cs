@@ -130,6 +130,7 @@ public static class AdminPanelAuthExtensions
             .SetDefaultPolicy(new AuthorizationPolicyBuilder().AddRequirements(new AdminAccessRequirement()).Build())
             .AddPolicy(AdminPolicies.AuthenticatedOperator, policy => policy.RequireAuthenticatedUser().RequireRole(AdminRoles.Operator))
             .AddPolicy(AdminPolicies.AuthenticatedCashShop, policy => policy.RequireAuthenticatedUser().RequireRole(AdminRoles.CashShop))
+            .AddPolicy(AdminPolicies.AuthenticatedLoginTicket, policy => policy.RequireAuthenticatedUser().RequireRole(AdminRoles.LoginTicket))
             .AddPolicy(AdminPolicies.Viewer, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Viewer)))
             .AddPolicy(AdminPolicies.Operator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Operator)))
             .AddPolicy(AdminPolicies.Administrator, policy => policy.AddRequirements(new AdminAccessRequirement(AdminRoles.Administrator)))
@@ -137,7 +138,11 @@ public static class AdminPanelAuthExtensions
             .AddPolicy(AdminPolicies.ApiKeyViewer, policy => policy
                 .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
-                .RequireRole(AdminRoles.Viewer));
+                .RequireRole(AdminRoles.Viewer))
+            .AddPolicy(AdminPolicies.ApiKeyWebManager, policy => policy
+                .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .RequireRole(AdminRoles.WebManager));
         services.AddHttpContextAccessor();
         services.AddScoped<AdminOperationCircuitState>();
         services.AddScoped<CircuitHandler>(sp => sp.GetRequiredService<AdminOperationCircuitState>());

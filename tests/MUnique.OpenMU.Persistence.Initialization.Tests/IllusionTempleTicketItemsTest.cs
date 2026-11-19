@@ -133,6 +133,279 @@ internal class IllusionTempleTicketItemsTest
     }
 
     /// <summary>
+    /// Tests that the update sets the original sizes when the names are swapped, but the server owner fixed the
+    /// sizes already, and that applying it twice keeps the result: the sizes are set, not swapped.
+    /// </summary>
+    /// <param name="state">The way in which the configuration got the swapped data.</param>
+    /// <param name="installedVersion">The installed version of the update.</param>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateKeepsSizesWhichTheOwnerFixedAsync([Values] SwappedState state, [Values(1, 2)] int installedVersion)
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var expected = CaptureItems(gameConfiguration);
+        Swap(gameConfiguration, state);
+        var ownedTicketDefinition = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        Assert.That(ownedTicketDefinition.Width, Is.EqualTo(1), "The swapped state isn't simulated.");
+        (ownedTicketDefinition.Width, covenant.Width) = (covenant.Width, ownedTicketDefinition.Width);
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = installedVersion;
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            AssertItems(gameConfiguration, expected);
+            Assert.That(GetItem(gameConfiguration, TicketNumber), Is.SameAs(ownedTicketDefinition));
+        }
+    }
+
+    /// <summary>
+    /// Tests that the update gives the two items the rest of their original data back when the server owner gave
+    /// them their original names already, but the data is still swapped: the ticket at 13/51 has the size 1x2.
+    /// </summary>
+    /// <param name="state">The way in which the configuration got the swapped data.</param>
+    /// <param name="installedVersion">The installed version of the update. Version three didn't restore such a configuration.</param>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateRestoresSwappedItemsWhichTheOwnerRenamedBackAsync([Values] SwappedState state, [Values(2, 3)] int installedVersion)
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var expected = CaptureItems(gameConfiguration);
+        Swap(gameConfiguration, state);
+        var ownedTicketDefinition = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        (ownedTicketDefinition.Name, covenant.Name) = (covenant.Name, ownedTicketDefinition.Name);
+        Assert.That(ownedTicketDefinition.Width, Is.EqualTo(1), "The swapped state isn't simulated.");
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = installedVersion;
+
+        // The data update service applies the update only when its version is higher than the installed one.
+        Assert.That(update.Version, Is.GreaterThan(installedVersion), "The update wouldn't be applied.");
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            AssertItems(gameConfiguration, expected);
+            Assert.That(GetItem(gameConfiguration, TicketNumber), Is.SameAs(ownedTicketDefinition));
+        }
+    }
+
+    /// <summary>
+    /// Tests that the update repairs the references of the original data when the server owner gave the items their
+    /// original names and sizes already: Lumen the Barmaid sells the covenant again, its drop item groups drop it
+    /// again, and the temples take the Scroll of Blood.
+    /// </summary>
+    /// <param name="state">The way in which the configuration got the swapped data.</param>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateRestoresReferencesWhenTheOwnerFixedNamesAndSizesAsync([Values] SwappedState state)
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var expected = CaptureItems(gameConfiguration);
+        Swap(gameConfiguration, state);
+        var ticket = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        (ticket.Name, covenant.Name) = (covenant.Name, ticket.Name);
+        (ticket.Width, covenant.Width) = (covenant.Width, ticket.Width);
+        Assert.That(GetDropItemGroups(gameConfiguration, ticket), Is.Not.Empty, "The swapped state isn't simulated.");
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 3;
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            AssertItems(gameConfiguration, expected);
+        }
+    }
+
+    /// <summary>
+    /// Tests that the update repairs the references when the server owner gave the items their original names and
+    /// sizes, and fixed either the store of Lumen the Barmaid or the drop item groups: the one remain which is left
+    /// is enough to recognize the swap.
+    /// </summary>
+    /// <param name="lumenSellsTicket">Whether Lumen the Barmaid still sells 13/51 instead of 13/50.</param>
+    /// <param name="groupsHaveTicket">Whether the covenant groups still have 13/51 instead of 13/50.</param>
+    /// <returns>The task.</returns>
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public async Task UpdateRestoresReferencesWithOneRemainOfTheSwapAsync(bool lumenSellsTicket, bool groupsHaveTicket)
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var expected = CaptureItems(gameConfiguration);
+        Swap(gameConfiguration, SwappedState.RenumberedByUpdate);
+        var ticket = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        (ticket.Name, covenant.Name) = (covenant.Name, ticket.Name);
+        (ticket.Width, covenant.Width) = (covenant.Width, ticket.Width);
+        var lumensStore = gameConfiguration.Monsters.Single(monster => monster.Number == LumenTheBarmaidNumber).MerchantStore!;
+        if (!lumenSellsTicket)
+        {
+            foreach (var item in lumensStore.Items.Where(item => item.Definition == ticket))
+            {
+                item.Definition = covenant;
+            }
+        }
+
+        if (!groupsHaveTicket)
+        {
+            foreach (var group in GetDropItemGroups(gameConfiguration, ticket))
+            {
+                group.PossibleItems.Remove(ticket);
+                group.PossibleItems.Add(covenant);
+            }
+        }
+
+        Assert.That(lumensStore.Items.Any(item => item.Definition == ticket), Is.EqualTo(lumenSellsTicket), "The remain isn't simulated.");
+        Assert.That(GetDropItemGroups(gameConfiguration, ticket).Any(), Is.EqualTo(groupsHaveTicket), "The remain isn't simulated.");
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 3;
+        for (var application = 0; application < 2; application++)
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+            AssertItems(gameConfiguration, expected);
+        }
+    }
+
+    /// <summary>
+    /// Tests that the update keeps a configuration with the original data unchanged when the server owner added the
+    /// Scroll of Blood next to the covenant, to the store of Lumen the Barmaid and to a drop item group of the
+    /// covenant: that's no remain of the swap, so the owner's sizes and temple tickets stay, too.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateKeepsScrollOfBloodAddedNextToTheCovenantAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var ticket = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        ticket.Width = 1;
+        var temple = gameConfiguration.MiniGameDefinitions.First(definition => definition.Type == MiniGameType.IllusionTemple);
+        temple.TicketItem = covenant;
+        var addedTicket = context.CreateNew<MUnique.OpenMU.DataModel.Entities.Item>();
+        addedTicket.Definition = ticket;
+        addedTicket.Durability = 1;
+        gameConfiguration.Monsters.Single(monster => monster.Number == LumenTheBarmaidNumber).MerchantStore!.Items.Add(addedTicket);
+        GetDropItemGroups(gameConfiguration, covenant)[0].PossibleItems.Add(ticket);
+        var expected = CaptureItems(gameConfiguration);
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 3;
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        AssertItems(gameConfiguration, expected);
+    }
+
+    /// <summary>
+    /// Tests that the update keeps the customizations of the server owner on a configuration with the original data,
+    /// which has no remains of the swap: other sizes, and a temple whose ticket the owner set to 13/50.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateKeepsOwnerChangesOfOriginalItemsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var ticket = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        ticket.Width = 1;
+        covenant.Height = 1;
+        var temple = gameConfiguration.MiniGameDefinitions.First(definition => definition.Type == MiniGameType.IllusionTemple);
+        temple.TicketItem = covenant;
+        var expected = CaptureItems(gameConfiguration);
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 3;
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        AssertItems(gameConfiguration, expected);
+    }
+
+    /// <summary>
+    /// Tests that the update keeps a Scroll of Blood which the server owner added to a merchant store after giving the
+    /// items their original names, while Lumen the Barmaid gets her covenants back.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateKeepsStoreTicketAddedAfterRenamingBackAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        Swap(gameConfiguration, SwappedState.RenumberedByUpdate);
+        var ticket = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        (ticket.Name, covenant.Name) = (covenant.Name, ticket.Name);
+        var lumensItems = gameConfiguration.Monsters.Single(monster => monster.Number == LumenTheBarmaidNumber).MerchantStore!.Items
+            .Where(item => item.Definition == ticket)
+            .ToList();
+        var otherStore = gameConfiguration.Monsters.First(monster => monster.Number != LumenTheBarmaidNumber && monster.MerchantStore is not null).MerchantStore!;
+        var addedTicket = context.CreateNew<MUnique.OpenMU.DataModel.Entities.Item>();
+        addedTicket.Definition = ticket;
+        addedTicket.Durability = 1;
+        otherStore.Items.Add(addedTicket);
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 3;
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(addedTicket.Definition, Is.SameAs(ticket));
+        Assert.That(ticket.Name.ValueInNeutralLanguage, Is.EqualTo("Scroll of Blood"));
+        Assert.That(lumensItems, Is.Not.Empty);
+        Assert.That(lumensItems.Select(item => item.Definition), Is.All.SameAs(covenant));
+    }
+
+    /// <summary>
+    /// Tests that the update keeps the drop item groups of the server owner after the owner gave the items their
+    /// original names: a group of their own with the Scroll of Blood, and a covenant group which the owner already
+    /// pointed at 13/50. The other covenant groups get 13/50.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateKeepsOwnerDropItemGroupsAfterRenamingBackAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        Swap(gameConfiguration, SwappedState.RenumberedByUpdate);
+        var ticket = GetItem(gameConfiguration, TicketNumber);
+        var covenant = GetItem(gameConfiguration, CovenantNumber);
+        (ticket.Name, covenant.Name) = (covenant.Name, ticket.Name);
+        var covenantGroups = GetDropItemGroups(gameConfiguration, ticket);
+        Assert.That(covenantGroups, Has.Count.GreaterThan(1), "The swapped state isn't simulated.");
+        var fixedGroup = covenantGroups[0];
+        fixedGroup.PossibleItems.Remove(ticket);
+        fixedGroup.PossibleItems.Add(covenant);
+        var ownGroup = context.CreateNew<DropItemGroup>();
+        ownGroup.Description = "Scrolls of Blood of the owner";
+        ownGroup.PossibleItems.Add(ticket);
+        gameConfiguration.DropItemGroups.Add(ownGroup);
+
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 3;
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(ownGroup.PossibleItems, Is.EquivalentTo(new[] { ticket }));
+        Assert.That(covenantGroups.Select(group => group.PossibleItems.Single()), Is.All.SameAs(covenant));
+    }
+
+    /// <summary>
     /// Tests that the update changes neither item when only one of the two has the swapped name, because the server
     /// owner renamed the other: the data of one item alone can't be swapped.
     /// </summary>
@@ -150,7 +423,7 @@ internal class IllusionTempleTicketItemsTest
 
         var update = new IllusionTempleDataUpdatePlugIn();
         var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
-        installedUpdate.Version = 2;
+        installedUpdate.Version = 3;
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         AssertItems(gameConfiguration, expected);

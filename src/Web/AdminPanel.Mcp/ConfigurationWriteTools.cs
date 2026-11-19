@@ -307,4 +307,25 @@ public sealed class ConfigurationWriteTools
         [Description("False returns a preview; true applies exactly that preview.")] bool apply = false,
         [Description("Single-use token from the preview; expires after five minutes.")] string? confirmationToken = null)
         => AdminToolExecution.ExecuteAsync(() => operations.SetActiveAsync(activateIds, deactivateIds, apply, confirmationToken, cancellationToken));
+
+    /// <summary>Switch magic effects to send their remaining time to the client, or not, after preview.</summary>
+    /// <param name="operations">The shared operations.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <param name="sendIds">Identifiers from effect_times_list which send their time.</param>
+    /// <param name="hideIds">Identifiers from effect_times_list which don't send their time.</param>
+    /// <param name="apply">False returns a preview; true applies exactly that preview.</param>
+    /// <param name="confirmationToken">Single-use token from the preview; expires after five minutes.</param>
+    /// <returns>The safe operation result.</returns>
+    [McpServerTool(Name = "effect_times_set", ReadOnly = false, Destructive = true, Idempotent = false, OpenWorld = false, UseStructuredContent = true)]
+    [Description("Switch magic effects to send their remaining time to the client, or not, after preview.")]
+    [Authorize(Roles = "Administrator")]
+    [ExposesOperation(typeof(EffectTimeOperations), nameof(EffectTimeOperations.SetSendsTimeAsync))]
+    public static ValueTask<JsonObject> EffectTimesSetAsync(
+        [FromServices] EffectTimeOperations operations,
+        CancellationToken cancellationToken,
+        [Description("Identifiers from effect_times_list which send their time.")] Guid[]? sendIds = null,
+        [Description("Identifiers from effect_times_list which don't send their time.")] Guid[]? hideIds = null,
+        [Description("False returns a preview; true applies exactly that preview.")] bool apply = false,
+        [Description("Single-use token from the preview; expires after five minutes.")] string? confirmationToken = null)
+        => AdminToolExecution.ExecuteAsync(() => operations.SetSendsTimeAsync(sendIds, hideIds, apply, confirmationToken, cancellationToken));
 }

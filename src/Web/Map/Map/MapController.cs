@@ -42,6 +42,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     private readonly CancellationTokenSource _disposeCts = new();
     private readonly CircuitConnectionState _circuitState;
     private readonly AsyncLock _resyncLock = new();
+    private readonly IDisposable _hitSubscription;
 
     private int _disposeState;
 
@@ -81,6 +82,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
         viewPlugIns.RegisterPlugIn<IShowAreaSkillAnimationPlugIn>(new ShowAreaSkillAnimationPlugIn(this._jsQueue, loggerFactory, worldAccessor, this._disposeCts.Token));
 
         this.ViewPlugIns = viewPlugIns;
+        this._hitSubscription = MapHitNotificationPlugIn.Subscribe(this._mapId, this.OnAttackableGotHit);
 
         this._circuitState.ConnectionRestored += this.OnConnectionRestored;
     }
@@ -144,6 +146,7 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
             return;
         }
 
+        this._hitSubscription.Dispose();
         this._circuitState.ConnectionRestored -= this.OnConnectionRestored;
         this._jsQueue.ResynchronizationRequired -= this.OnResynchronizationRequired;
 
@@ -203,6 +206,39 @@ public sealed class MapController : IMapController, IWorldObserver, ILocateable,
     private void OnResynchronizationRequired()
     {
         this.ScheduleResync("fell behind");
+    }
+
+    /// <summary>
+    /// Forwards a hit on this map to the browser, which shows the damage of the selected object.
+    /// </summary>
+    /// <param name="attackable">The object which got hit.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="hitInfo">The hit information.</param>
+    private void OnAttackableGotHit(IAttackable attackable, IAttacker attacker, HitInfo hitInfo)
+    {
+        try
+        {
+            if (Volatile.Read(ref this._disposeState) != 0)
+            {
+                return;
+            }
+
+            // The damage of a pet or a summoned monster is shown as the damage of its owner.
+            IIdentifiable dealer = attacker is IPlayerSurrogate surrogate ? surrogate.Owner : attacker;
+            this._jsQueue.QueueVoidCall(
+                $"{this._identifier}.world.showDamage",
+                this._disposeCts.Token,
+                [dealer.Id, attackable.Id, hitInfo.HealthDamage, hitInfo.ShieldDamage, (int)hitInfo.Attributes]);
+        }
+        catch (ObjectDisposedException)
+        {
+            // The controller got disposed in the meantime, so there's nothing left to show.
+        }
+        catch (Exception ex)
+        {
+            // The game logic calls this handler, which must not be disturbed by a faulty map view.
+            this.Logger.LogError(ex, "Error when forwarding a hit to the map view '{MapIdentifier}'.", this._identifier);
+        }
     }
 
     private void ScheduleResync(string reason)

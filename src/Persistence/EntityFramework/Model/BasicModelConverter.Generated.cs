@@ -127,6 +127,7 @@ internal sealed class BasicModelConverter
             LetterHeader value => this.Convert(value),
             LevelBonus value => this.Convert(value),
             LevelDependentDamage value => this.Convert(value),
+            LoginTicket value => this.Convert(value),
             MagicEffectDefinition value => this.Convert(value),
             MasterSkillDefinition value => this.Convert(value),
             MasterSkillRoot value => this.Convert(value),
@@ -157,6 +158,8 @@ internal sealed class BasicModelConverter
             SystemConfiguration value => this.Convert(value),
             WaitingItem value => this.Convert(value),
             WarpInfo value => this.Convert(value),
+            WeightedValue value => this.Convert(value),
+            WeightedValueTable value => this.Convert(value),
             _ => source,
         };
     }
@@ -1128,6 +1131,7 @@ internal sealed class BasicModelConverter
         target.ItemType = source.ItemType;
         target.ExcellentOptionsAddChance = source.ExcellentOptionsAddChance;
         target.ExcellentOptionsMaximumOptionsPerItem = source.ExcellentOptionsMaximumOptionsPerItem;
+        target.SocketCountTable = (MUnique.OpenMU.DataModel.Configuration.WeightedValueTable)this.ConvertObject(source.SocketCountTable)!;
         if (source.PossibleItems is { } possibleItemsItems)
         {
             foreach (var item in possibleItemsItems)
@@ -1351,6 +1355,14 @@ internal sealed class BasicModelConverter
             foreach (var item in itemLevelBonusTablesItems)
             {
                 target.ItemLevelBonusTables.Add((MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable)this.ConvertObject(item)!);
+            }
+        }
+
+        if (source.WeightedValueTables is { } weightedValueTablesItems)
+        {
+            foreach (var item in weightedValueTablesItems)
+            {
+                target.WeightedValueTables.Add((MUnique.OpenMU.DataModel.Configuration.WeightedValueTable)this.ConvertObject(item)!);
             }
         }
 
@@ -1994,6 +2006,7 @@ internal sealed class BasicModelConverter
         target.PetExperienceFormula = source.PetExperienceFormula;
         target.ConsumeEffect = (MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition)this.ConvertObject(source.ConsumeEffect)!;
         target.MaximumSockets = source.MaximumSockets;
+        target.SocketCountTable = (MUnique.OpenMU.DataModel.Configuration.WeightedValueTable)this.ConvertObject(source.SocketCountTable)!;
         target.Skill = (MUnique.OpenMU.DataModel.Configuration.Skill)this.ConvertObject(source.Skill)!;
         if (source.QualifiedCharacters is { } qualifiedCharactersItems)
         {
@@ -2071,6 +2084,7 @@ internal sealed class BasicModelConverter
         target.ItemType = source.ItemType;
         target.ExcellentOptionsAddChance = source.ExcellentOptionsAddChance;
         target.ExcellentOptionsMaximumOptionsPerItem = source.ExcellentOptionsMaximumOptionsPerItem;
+        target.SocketCountTable = (MUnique.OpenMU.DataModel.Configuration.WeightedValueTable)this.ConvertObject(source.SocketCountTable)!;
         if (source.PossibleItems is { } possibleItemsItems)
         {
             foreach (var item in possibleItemsItems)
@@ -2508,6 +2522,24 @@ internal sealed class BasicModelConverter
         target.Id = source.Id;
         target.Level = source.Level;
         target.Damage = source.Damage;
+        return target;
+    }
+
+    private BasicModel.LoginTicket Convert(LoginTicket source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.LoginTicket)converted;
+        }
+
+        var target = new BasicModel.LoginTicket();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.AccountId = source.AccountId;
+        target.TokenHash = source.TokenHash;
+        target.CreatedAt = source.CreatedAt;
+        target.ExpiresAt = source.ExpiresAt;
+        target.UsedAt = source.UsedAt;
         return target;
     }
 
@@ -3319,6 +3351,44 @@ internal sealed class BasicModelConverter
         target.LevelRequirement = source.LevelRequirement;
         target.IsWarpable = source.IsWarpable;
         target.Gate = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Gate)!;
+        return target;
+    }
+
+    private BasicModel.WeightedValue Convert(WeightedValue source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.WeightedValue)converted;
+        }
+
+        var target = new BasicModel.WeightedValue();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Value = source.Value;
+        target.Weight = source.Weight;
+        return target;
+    }
+
+    private BasicModel.WeightedValueTable Convert(WeightedValueTable source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.WeightedValueTable)converted;
+        }
+
+        var target = new BasicModel.WeightedValueTable();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Name = source.Name;
+        target.Description = source.Description;
+        if (source.Values is { } valuesItems)
+        {
+            foreach (var item in valuesItems)
+            {
+                target.Values.Add((MUnique.OpenMU.DataModel.Configuration.WeightedValue)this.ConvertObject(item)!);
+            }
+        }
+
         return target;
     }
 
