@@ -68,7 +68,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddAreaSkillSettingsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Area Skill Settings.
         /// </summary>
@@ -77,7 +77,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddAreaSkillSettingsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds arrows to a created fairy elf character..
         /// </summary>
@@ -86,7 +86,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddArrowsForFairyElf_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddArrowsForFairyElf.
         /// </summary>
@@ -95,7 +95,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddArrowsForFairyElf_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the seals, scrolls, elixirs and auras of the in-game shop, which apply a timed effect when they are used. Existing items with the same numbers are left unchanged..
         /// </summary>
@@ -104,7 +104,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddBuffItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add buff items.
         /// </summary>
@@ -113,16 +113,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddBuffItemsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the Lethal Wizard's Ring, the Sapphire, Ruby, Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces of the in-game shop, with their fixed bonuses. Their packages stay not for sale, because the shop sells them for a limited time, which isn't supported yet..
+        ///   Looks up a localized string similar to This update adds the Lethal Wizard&apos;s Ring, the Sapphire, Ruby, Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces of the in-game shop, with their fixed bonuses. Their packages stay not for sale, because the shop sells them for a limited time, which isn&apos;t supported yet..
         /// </summary>
         public static string AddCashShopJeweleryUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add cash shop rings and necklaces.
         /// </summary>
@@ -131,16 +131,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCashShopJeweleryUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the cash shop configuration with the packages of the cash shop script 512.2012.084 of the game client, and the items which are applied when they're used from the cash shop storage (character cards, vault and inventory extension)..
+        ///   Looks up a localized string similar to This update adds the cash shop configuration with the packages of the cash shop script 512.2012.084 of the game client, and the items which are applied when they&apos;re used from the cash shop storage (character cards, vault and inventory extension)..
         /// </summary>
         public static string AddCashShopUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddCashShopUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add cash shop.
         /// </summary>
@@ -149,7 +149,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCashShopUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Castle Siege configuration and persistent state..
         /// </summary>
@@ -158,7 +158,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCastleSiegeDataUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Castle Siege data.
         /// </summary>
@@ -167,7 +167,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCastleSiegeDataUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Charge skill to a created rage fighter character..
         /// </summary>
@@ -176,7 +176,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddChargeForRageFighter_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddChargeForRageFighter.
         /// </summary>
@@ -185,7 +185,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddChargeForRageFighter_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the attribute which defines the percentage points which are added to the success rate of item craftings..
         /// </summary>
@@ -194,7 +194,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCraftingBonusPercentageAttributePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add crafting bonus percentage attribute.
         /// </summary>
@@ -203,7 +203,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCraftingBonusPercentageAttributePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Talisman of Luck, which increases the success rate of a crafting by its durability in percent, and the Talisman of Chaos Assembly, which keeps the item of a failed +10 to +15 item upgrade. They are added to the craftings which accept them, and the packages of the in-game shop which contain them are put on sale..
         /// </summary>
@@ -212,7 +212,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add crafting talismans.
         /// </summary>
@@ -221,7 +221,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCraftingTalismansUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the crescent moon slash skill (active in castle siege) to a created dark knight character..
         /// </summary>
@@ -230,7 +230,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddCrescentMoonSlashForDarkKnight.
         /// </summary>
@@ -239,16 +239,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrescentMoonSlashForDarkKnight_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Adds the Crest of Monarch (Loch's Feather +1) drop item group to Icarus..
+        ///   Looks up a localized string similar to Adds the Crest of Monarch (Loch&apos;s Feather +1) drop item group to Icarus..
         /// </summary>
         public static string AddCrestOfMonarchDropGroupUpdateSeason6_Description {
             get {
                 return ResourceManager.GetString("AddCrestOfMonarchDropGroupUpdateSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Crest of Monarch Drop Group.
         /// </summary>
@@ -257,7 +257,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrestOfMonarchDropGroupUpdateSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Crystal Sword ice chance, which turns an attack into an ice skill instead..
         /// </summary>
@@ -266,7 +266,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrystalSwordIceChanceUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Crystal Sword Ice Chance.
         /// </summary>
@@ -275,7 +275,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrystalSwordIceChanceUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the monsters of the crywolf event and their spawns, lets the statue and the altars of the fortress always be on the map, adds the warp entry of the fortress and the terrains of the occupation states..
         /// </summary>
@@ -284,7 +284,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrywolfEventUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Crywolf event.
         /// </summary>
@@ -293,7 +293,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddCrywolfEventUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the doppelganger event configuration..
         /// </summary>
@@ -302,7 +302,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddDoppelgangerDataUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Doppelganger data.
         /// </summary>
@@ -311,7 +311,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddDoppelgangerDataUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds data for the duel configuration.
         /// </summary>
@@ -320,7 +320,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddDuelConfigurationPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add duel configuration.
         /// </summary>
@@ -329,7 +329,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddDuelConfigurationPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Elf Soldier buff (defense and damage boost) as a configurable Buff..
         /// </summary>
@@ -338,7 +338,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddElfSoldierBuffPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Elf Soldier Buff.
         /// </summary>
@@ -347,7 +347,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddElfSoldierBuffPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the elite healing, mana and SD potions of the in-game shop, which recover health, mana or shield immediately. The packages of the in-game shop which contain them are put on sale..
         /// </summary>
@@ -356,7 +356,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddElitePotionsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add elite potions.
         /// </summary>
@@ -365,7 +365,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddElitePotionsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the energy ball skill to a created dark wizard character..
         /// </summary>
@@ -374,7 +374,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddEnergyBallForDarkWizard_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddEnergyBallForDarkWizard.
         /// </summary>
@@ -383,7 +383,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddEnergyBallForDarkWizard_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the drops of Splinter of Armor (5 %), Bless of Guardian (2 %) and Claw of Beast (0.5 %) to all monsters of Crywolf. Materials which already drop on Crywolf by another group are skipped..
         /// </summary>
@@ -392,7 +392,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFenrirMaterialDropGroupsUpdateSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Fenrir Material Drop Groups.
         /// </summary>
@@ -401,7 +401,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFenrirMaterialDropGroupsUpdateSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory..
         /// </summary>
@@ -428,7 +428,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFireBlastForDarkLord_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddFireBlastForDarkLord.
         /// </summary>
@@ -437,7 +437,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFireBlastForDarkLord_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Force skill to a created dark lord character..
         /// </summary>
@@ -446,7 +446,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddForceForDarkLord_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddForceForDarkLord.
         /// </summary>
@@ -455,7 +455,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddForceForDarkLord_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the free tickets of Devil Square, Blood Castle, Illusion Temple and Chaos Castle, which allow to enter the event of any level. The packages of the in-game shop which contain them are put on sale..
         /// </summary>
@@ -464,6 +464,187 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFreeTicketItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>Gets the localized HideSkillEffectTimesPlugIn_Name text.</summary>
+        public static string HideSkillEffectTimesPlugIn_Name => ResourceManager.GetString("HideSkillEffectTimesPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized HideSkillEffectTimesPlugIn_Description text.</summary>
+        public static string HideSkillEffectTimesPlugIn_Description => ResourceManager.GetString("HideSkillEffectTimesPlugIn_Description", resourceCulture)!;
+
+
+
+
+
+
+
 
         /// <summary>
         ///   Looks up a localized string similar to Add free event tickets.
@@ -473,7 +654,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFreeTicketItemsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the jewellery cases (14/141 to 14/144), which the gens members get as monthly reward..
         /// </summary>
@@ -482,7 +663,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGensRewardItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the gens reward items.
         /// </summary>
@@ -491,25 +672,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGensRewardItemsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the Gladiator's Honor, which increases the experience in Vulcanus by 20 % for 30 minutes..
+        ///   Looks up a localized string similar to This update adds the Gladiator&apos;s Honor, which increases the experience in Vulcanus by 20 % for 30 minutes..
         /// </summary>
         public static string AddGladiatorsHonorUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddGladiatorsHonorUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Add the Gladiator's Honor.
+        ///   Looks up a localized string similar to Add the Gladiator&apos;s Honor.
         /// </summary>
         public static string AddGladiatorsHonorUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("AddGladiatorsHonorUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Moves the MoneyAmountRate attribute from character class base attributes to global base attributes..
         /// </summary>
@@ -518,7 +699,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGlobalMoneyAmountRateAttributePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Global Money Amount Rate Attribute.
         /// </summary>
@@ -527,16 +708,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGlobalMoneyAmountRateAttributePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the Gold Key and Silver Key, the Sealed Golden Box and Sealed Silver Box, which the keys open at the chaos goblin, and the Golden Box and Silver Box, which give an item or money when they're dropped. The packages of the in-game shop which contain the keys are put on sale..
+        ///   Looks up a localized string similar to This update adds the Gold Key and Silver Key, the Sealed Golden Box and Sealed Silver Box, which the keys open at the chaos goblin, and the Golden Box and Silver Box, which give an item or money when they&apos;re dropped. The packages of the in-game shop which contain the keys are put on sale..
         /// </summary>
         public static string AddGoblinBoxesUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddGoblinBoxesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add golden and silver boxes.
         /// </summary>
@@ -545,7 +726,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGoblinBoxesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds data for guard npcs, so they can attack and move around..
         /// </summary>
@@ -554,7 +735,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGuardsDataPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add guard npc data.
         /// </summary>
@@ -563,7 +744,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddGuardsDataPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds Jewel of Harmony option weights used for option assignment, fixes some options, and fixes item restore mix.
         /// </summary>
@@ -572,7 +753,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddHarmonyOptionWeightsUpdateSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add harmony option weights.
         /// </summary>
@@ -581,7 +762,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddHarmonyOptionWeightsUpdateSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the global hit-shock chance and damage threshold settings, and the Uniria marker so Uniria-equipped players are excluded from hit shock..
         /// </summary>
@@ -590,7 +771,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddHitShockSettingsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add hit-shock settings.
         /// </summary>
@@ -599,7 +780,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddHitShockSettingsPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update lets the Iron Knight of Raklion attack with its stab, which the client shows with a combo effect..
         /// </summary>
@@ -608,7 +789,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddIronKnightStabUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Let the Iron Knight use its stab.
         /// </summary>
@@ -617,7 +798,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddIronKnightStabUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update creates a specific item drop group for jewels with a default chance of 5%..
         /// </summary>
@@ -626,7 +807,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemDropGroupForJewelsUpdate075_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Create item drop group for jewels.
         /// </summary>
@@ -635,7 +816,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemDropGroupForJewelsUpdate075_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the price definitions of special items like jewels, potions and event tickets, which were hard-coded before. Without it, these items are priced like usual equipment..
         /// </summary>
@@ -644,7 +825,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add item price definitions.
         /// </summary>
@@ -653,7 +834,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemPriceDefinitionsPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds data for the item registration attributes..
         /// </summary>
@@ -662,7 +843,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemRegistrationAttributesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Item Registration Attributes.
         /// </summary>
@@ -671,7 +852,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemRegistrationAttributesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the item stat profiles, which hold the item formulas (how requirements grow, what excellent and ancient items get more) as data, and gives each item the profile of its kind. The values the game computes stay the same; profiles which exist and items which have a profile are kept..
         /// </summary>
@@ -680,7 +861,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemStatProfilesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add item stat profiles.
         /// </summary>
@@ -689,7 +870,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddItemStatProfilesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This adds the items required to enter the kalima map..
         /// </summary>
@@ -698,7 +879,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddKalimaPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Kalima.
         /// </summary>
@@ -707,7 +888,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddKalimaPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the kalima ticket, which opens a gate to the level of Kalima which fits the level of the character. The packages of the in-game shop which contain it are put on sale..
         /// </summary>
@@ -716,7 +897,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add kalima ticket.
         /// </summary>
@@ -725,7 +906,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddKalimaTicketUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Kanturu Refinery Tower event configuration..
         /// </summary>
@@ -734,7 +915,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddKanturuDataUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Kanturu data.
         /// </summary>
@@ -743,7 +924,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddKanturuDataUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Lance skill to a created summoner character..
         /// </summary>
@@ -752,7 +933,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLanceForSummoner_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddLanceForSummoner.
         /// </summary>
@@ -761,7 +942,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLanceForSummoner_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Makes Market Union Member Julia (547) a working warp NPC between Lorencia and the Loren Market, on both sides, instead of an empty merchant..
         /// </summary>
@@ -770,7 +951,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLorenMarketJuliaWarpPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Loren Market Julia warp.
         /// </summary>
@@ -779,7 +960,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLorenMarketJuliaWarpPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update lets Jeweler Raul (546) of the Loren Market open the jewel bundle window, to combine jewels into bundles and disband them, like Lahap..
         /// </summary>
@@ -788,7 +969,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLorenMarketRaulJewelBundlePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Loren Market Jeweler Raul jewel bundles.
         /// </summary>
@@ -797,7 +978,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLorenMarketRaulJewelBundlePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the lucky coin, which is registered or exchanged for items at the NPC Delgado in Devias, and opens his lucky coin dialog..
         /// </summary>
@@ -806,7 +987,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLuckyCoinUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the lucky coin.
         /// </summary>
@@ -815,7 +996,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLuckyCoinUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class. The packages of the in-game shop which contain the tickets are put on sale..
         /// </summary>
@@ -824,7 +1005,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLuckyItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add lucky items.
         /// </summary>
@@ -833,7 +1014,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddLuckyItemsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Mana Rays skill (active in castle siege) to a created magic gladiator character..
         /// </summary>
@@ -842,7 +1023,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddManaRaysForMagicGladiator_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddManaRaysForMagicGladiator.
         /// </summary>
@@ -851,7 +1032,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddManaRaysForMagicGladiator_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the MaximumAllianceSize global base attribute with a default value of 5 to the Season 6 game configuration..
         /// </summary>
@@ -860,7 +1041,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddMaximumAllianceSizeUpdatePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Maximum Alliance Size Attribute (Season 6).
         /// </summary>
@@ -869,7 +1050,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddMaximumAllianceSizeUpdatePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Gives a general-goods store to Christine the General Goods Merchant (545), which had a shop window but no items, cloned from Thompson the Merchant (231)..
         /// </summary>
@@ -878,7 +1059,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddMissingMerchantStoresPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add missing merchant stores.
         /// </summary>
@@ -887,7 +1068,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddMissingMerchantStoresPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds attribute-based movement speed configuration for players, monsters, items, effects, and underwater maps..
         /// </summary>
@@ -896,7 +1077,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddMovementSpeedAttributesPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Movement Speed Attributes.
         /// </summary>
@@ -905,7 +1086,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddMovementSpeedAttributesPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the attribute PointsPerReset..
         /// </summary>
@@ -914,7 +1095,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddPointsPerResetAttributePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds attribute PointsPerReset.
         /// </summary>
@@ -923,7 +1104,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddPointsPerResetAttributePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Talisman of Guardian, which protects from the death penalty, and the Talisman of Item Protection, which keeps the durability of the equipped items..
         /// </summary>
@@ -932,7 +1113,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddProtectionTalismansUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the protection talismans.
         /// </summary>
@@ -941,7 +1122,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddProtectionTalismansUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds limits to quest items, so that only one item can be picked up..
         /// </summary>
@@ -950,7 +1131,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddQuestItemLimitPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add quest item limits.
         /// </summary>
@@ -959,7 +1140,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddQuestItemLimitPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the ancient sets Vega and Chamer of the Sacred items..
         /// </summary>
@@ -968,7 +1149,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRageFighterAncientSetsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Rage Fighter Ancient Sets.
         /// </summary>
@@ -977,7 +1158,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRageFighterAncientSetsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds new random experience Configuration attributes to the game configuration..
         /// </summary>
@@ -986,7 +1167,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRandomExperienceConfigAttributesPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Random Experience Configuration Attributes.
         /// </summary>
@@ -995,7 +1176,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRandomExperienceConfigAttributesPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the missing Rena item, which is required for the item registration feature..
         /// </summary>
@@ -1004,7 +1185,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRenaItemUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Rena Item.
         /// </summary>
@@ -1013,7 +1194,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRenaItemUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the reset fruits of strength, agility, vitality, energy and command, which take back invested points of a stat and return them as level up points. The packages of the in-game shop which contain them are put on sale..
         /// </summary>
@@ -1022,7 +1203,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add reset fruits.
         /// </summary>
@@ -1031,7 +1212,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddResetFruitsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the ring, which can be dropped at level 40..
         /// </summary>
@@ -1040,7 +1221,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRingOfWarriorLevel40ForNewCharacters_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddRingOfWarriorLevel40ForNewCharacters.
         /// </summary>
@@ -1049,7 +1230,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRingOfWarriorLevel40ForNewCharacters_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the ring, which can be dropped at level 80..
         /// </summary>
@@ -1058,7 +1239,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRingOfWarriorLevel80ForNewCharacters_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddRingOfWarriorLevel80ForNewCharacters.
         /// </summary>
@@ -1067,7 +1248,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddRingOfWarriorLevel80ForNewCharacters_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the invitation to the santa village, which warps the player to the santa village, and a spawn gate to the santa village..
         /// </summary>
@@ -1076,7 +1257,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSantaVillageInvitationUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add invitation to santa village.
         /// </summary>
@@ -1085,7 +1266,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSantaVillageInvitationUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the item drop rate of 150 % to the Seals of Wealth and Divinity and the Master Seal of Wealth, and adds the second Seal of Wealth (13/116), which only raises the item drop rate..
         /// </summary>
@@ -1094,7 +1275,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSealItemDropRateUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the item drop rate of seals.
         /// </summary>
@@ -1103,7 +1284,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSealItemDropRateUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the configurable shield damage ratio and over-shield burst threshold..
         /// </summary>
@@ -1112,7 +1293,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShieldRatioAttributesPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Shield Ratio Attributes.
         /// </summary>
@@ -1121,7 +1302,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShieldRatioAttributesPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds a short bow to a created fairy elf character..
         /// </summary>
@@ -1130,7 +1311,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShortBowForFairyElf_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddShortBowForFairyElf.
         /// </summary>
@@ -1139,7 +1320,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShortBowForFairyElf_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds a short sword to a created dark lord character..
         /// </summary>
@@ -1148,7 +1329,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShortSwordForDarkLord_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddShortSwordForDarkLord.
         /// </summary>
@@ -1157,7 +1338,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShortSwordForDarkLord_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds a short sword to a created magic gladiator character..
         /// </summary>
@@ -1166,7 +1347,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShortSwordForMagicGladiator_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddShortSwordForMagicGladiator.
         /// </summary>
@@ -1175,7 +1356,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddShortSwordForMagicGladiator_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds a small axe to a created dark knight character..
         /// </summary>
@@ -1184,7 +1365,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallAxeForDarkKnight_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddSmallAxeForDarkKnight.
         /// </summary>
@@ -1193,7 +1374,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallAxeForDarkKnight_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds a small shield to a created dark lord character..
         /// </summary>
@@ -1202,7 +1383,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallShieldForDarkLord_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddSmallShieldForDarkLord.
         /// </summary>
@@ -1211,7 +1392,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallShieldForDarkLord_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds a small shield to a created magic gladiator character..
         /// </summary>
@@ -1220,7 +1401,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallShieldForMagicGladiator_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddSmallShieldForMagicGladiator.
         /// </summary>
@@ -1229,16 +1410,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallShieldForMagicGladiator_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior's Cloak. Existing items with the same numbers are left unchanged..
+        ///   Looks up a localized string similar to This update adds the missing small wings and capes of the in-game shop: Small Cape of Lord, Small Wing of Curse, Small Wings of Elf, Small Wings of Heaven, Small Wings of Satan and Little Warrior&apos;s Cloak. Existing items with the same numbers are left unchanged..
         /// </summary>
         public static string AddSmallWingsUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add small wings and capes.
         /// </summary>
@@ -1247,7 +1428,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSmallWingsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Socket items drop with one socket most of the time and with three (five for two-handed weapons) rarely, instead of with any number up to the maximum at the same chance. Raises the maximum sockets of the socket items to five; the tables restrict the drops. Socket items which already have a socket count table keep it..
         /// </summary>
@@ -1256,7 +1437,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSocketCountTablesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Socket count tables.
         /// </summary>
@@ -1265,7 +1446,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSocketCountTablesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Spiral Slash skill (active in castle siege) to a created magic gladiator character..
         /// </summary>
@@ -1274,7 +1455,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddSpiralSlashForMagicGladiator.
         /// </summary>
@@ -1283,7 +1464,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSpiralSlashForMagicGladiator_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Starfall skill (active in castle siege) to a created fairy elf character..
         /// </summary>
@@ -1292,7 +1473,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddStarfallForFairyElf_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to AddStarfallForFairyElf.
         /// </summary>
@@ -1301,7 +1482,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddStarfallForFairyElf_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Sleep, Innovation, Damage Reflection and Weakness Summoner buff skills. It also fixes the 3rd wing full reflect option..
         /// </summary>
@@ -1310,7 +1491,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSummonerBuffSkillsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add Summoner Buff Skills.
         /// </summary>
@@ -1319,7 +1500,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSummonerBuffSkillsPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the Talisman of Resurrection, which respawns a dead player at the place of its death. The packages of the in-game shop which contain it are put on sale..
         /// </summary>
@@ -1328,7 +1509,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddTalismanOfResurrectionUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the Talisman of Resurrection.
         /// </summary>
@@ -1337,7 +1518,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddTalismanOfResurrectionUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds White Wizard (135), Destructive Ogre Soldier (136), and Destructive Ogre Archer (137) and drop groups for existing databases..
         /// </summary>
@@ -1346,7 +1527,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddWhiteWizardInvasionMobsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add White Wizard Invasion Monsters.
         /// </summary>
@@ -1355,7 +1536,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddWhiteWizardInvasionMobsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects..
         /// </summary>
@@ -1364,7 +1545,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adjust Ice Arrow freeze duration.
         /// </summary>
@@ -1373,7 +1554,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update sets the right settings for the chain lightning skill..
         /// </summary>
@@ -1382,7 +1563,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChainLightningUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Chain Lightning skill.
         /// </summary>
@@ -1391,7 +1572,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChainLightningUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update creates the configuration data for the chaos castle event..
         /// </summary>
@@ -1400,7 +1581,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChaosCastleDataUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Chaos Castle Data.
         /// </summary>
@@ -1409,7 +1590,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChaosCastleDataUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog..
         /// </summary>
@@ -1418,7 +1599,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Configure Castle Siege guards.
         /// </summary>
@@ -1427,7 +1608,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel..
         /// </summary>
@@ -1436,7 +1617,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ConfigureNpcTalkPlugInsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Configure NPCs of talk plugins.
         /// </summary>
@@ -1445,43 +1626,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ConfigureNpcTalkPlugInsPlugIn_Name", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Provides initial data for Version 0.75.
-        /// </summary>
-        public static string DataInitialization075_Description {
-            get {
-                return ResourceManager.GetString("DataInitialization075_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Version 0.75 Initialization.
-        /// </summary>
-        public static string DataInitialization075_Name {
-            get {
-                return ResourceManager.GetString("DataInitialization075_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Provides initial data for Version 0.95d.
-        /// </summary>
-        public static string DataInitialization095d_Description {
-            get {
-                return ResourceManager.GetString("DataInitialization095d_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Version 0.95d Initialization.
-        /// </summary>
-        public static string DataInitialization095d_Name {
-            get {
-                return ResourceManager.GetString("DataInitialization095d_Name", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Provides initial data for Season 6 Episode 3..
         /// </summary>
@@ -1490,7 +1635,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("DataInitialization_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Season 6 Episode 3 Initialization.
         /// </summary>
@@ -1499,7 +1644,43 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("DataInitialization_Name", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides initial data for Version 0.75.
+        /// </summary>
+        public static string DataInitialization075_Description {
+            get {
+                return ResourceManager.GetString("DataInitialization075_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version 0.75 Initialization.
+        /// </summary>
+        public static string DataInitialization075_Name {
+            get {
+                return ResourceManager.GetString("DataInitialization075_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides initial data for Version 0.95d.
+        /// </summary>
+        public static string DataInitialization095d_Description {
+            get {
+                return ResourceManager.GetString("DataInitialization095d_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version 0.95d Initialization.
+        /// </summary>
+        public static string DataInitialization095d_Name {
+            get {
+                return ResourceManager.GetString("DataInitialization095d_Name", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Brings the monster spawns of the field maps to the Season 6 data, which this version uses as well: Devias and Noria get the layout of smaller areas and single spots instead of quarters of the map, without the spiders of Season 6. Missing spawns of Dungeon, Lost Tower and Icarus are added and surplus ones removed. Also removes the duplicate monster spawns of Dungeon (254) and Lost Tower (2). Customized spawns of the field monsters of Devias and Noria are overwritten..
         /// </summary>
@@ -1508,7 +1689,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Season 6 monster spawns of the field maps.
         /// </summary>
@@ -1517,16 +1698,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Brings the monster spawns of the field maps to the Season 6 data: Devias, Noria and Elvenland get the layout of smaller areas and single spots instead of quarters of the map, with the spiders of Noria and Elvenland. Missing spawns of Dungeon, Lost Tower, Icarus, Kalima 3, 6 and 7, Land of Trials, Aida, Crywolf Fortress, Kanturu Relics and Barracks of Balgass are added and surplus ones removed, spawns with wrong coordinates in Crywolf Fortress, Barracks of Balgass, Swamp of Calmness, Vulcanus and Karutan corrected. Also removes the duplicate monster spawns of Dungeon (254) and Lost Tower (2). Customized spawns of the field monsters of Devias, Noria and Elvenland are overwritten..
+        ///   Looks up a localized string similar to Brings the monster spawns of the field maps to the Season 6 data: Devias, Noria and Elvenland get the layout of smaller areas and single spots instead of quarters of the map, with the spiders of Noria and Elvenland. Missing spawns of Dungeon, Lost Tower, Icarus, Kalima 3, 6 and 7, Land of Trials, Aida, Crywolf Fortress, Kanturu Relics and Barracks of Balgass are added and surplus ones removed, spawns with wrong coordinates in Crywolf Fortress, Barracks of Balgass, Swamp of Calmness, Vulcanus and Karutan cor [rest of string was truncated]&quot;;.
         /// </summary>
         public static string FieldMonsterSpawnsUpdatePlugInSeason6_Description {
             get {
                 return ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Season 6 monster spawns of the field maps.
         /// </summary>
@@ -1535,7 +1716,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the dark knight master tree skills and effects. It also fixes the double wield damage calculations..
         /// </summary>
@@ -1544,7 +1725,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkKnightMasterTreePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Dark Knight Master Tree PlugIn.
         /// </summary>
@@ -1553,7 +1734,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkKnightMasterTreePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the dark knight master tree skills and effects. It also fixes the double wield damage calculations..
         /// </summary>
@@ -1562,7 +1743,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkKnightMasterTreePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Dark Knight Master Tree PlugIn.
         /// </summary>
@@ -1571,7 +1752,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkKnightMasterTreePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the dark lord master tree skills and effects..
         /// </summary>
@@ -1580,7 +1761,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkLordMasterTreePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Dark Lord Master Tree PlugIn.
         /// </summary>
@@ -1589,7 +1770,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkLordMasterTreePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the dark wizard master tree expansion of wizardry effects..
         /// </summary>
@@ -1598,7 +1779,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkWizardMasterTreePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Dark Wizard Master Tree PlugIn.
         /// </summary>
@@ -1607,7 +1788,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishDarkWizardMasterTreePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the elf master tree and fixes some of its skill values. It also adds the missing extra projectile (4th) on some higher level (cross)bows..
         /// </summary>
@@ -1616,7 +1797,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishElfMasterTreePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Elf Master Tree PlugIn.
         /// </summary>
@@ -1625,7 +1806,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishElfMasterTreePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the rage fighter master tree and fixes some of its skill values..
         /// </summary>
@@ -1634,7 +1815,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishRageFighterMasterTreePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Rage Fighter Master Tree PlugIn.
         /// </summary>
@@ -1643,7 +1824,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishRageFighterMasterTreePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update completes the summoner master tree and fixes some of its skill values..
         /// </summary>
@@ -1652,7 +1833,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishSummonerMasterTreePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish Summoner Master Tree PlugIn.
         /// </summary>
@@ -1661,7 +1842,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FinishSummonerMasterTreePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the discriminators of some ancient items..
         /// </summary>
@@ -1670,7 +1851,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixAncientDiscriminatorsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Ancient Discriminators.
         /// </summary>
@@ -1679,7 +1860,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixAncientDiscriminatorsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds attributes and relations for attack speed. Adds effects for Ale and Potion of Soul..
         /// </summary>
@@ -1688,7 +1869,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixAttackSpeedCalculationUpdate_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Attack Speed Calculation.
         /// </summary>
@@ -1697,7 +1878,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixAttackSpeedCalculationUpdate_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sets level, health, damage, defense, attack and defense rate, ranges and delays of the monsters of Blood Castle 1 to 8 to the Season 6 data, so the difficulty rises from level to level. Customized values of these stats are overwritten..
         /// </summary>
@@ -1706,7 +1887,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixBloodCastleMonsterAttributesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Season 6 Blood Castle monster attributes.
         /// </summary>
@@ -1715,7 +1896,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixBloodCastleMonsterAttributesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes Chaos Weapon crafting settings..
         /// </summary>
@@ -1724,7 +1905,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixChaosMixesPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Chaos Mixes Settings.
         /// </summary>
@@ -1733,16 +1914,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixChaosMixesPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard's Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter..
+        ///   Looks up a localized string similar to This update fixes the Chaos Weapon, First Wings, Dinorant, Item Level Upgrade, Second Wings, Third Wings, Cape, SD Potions, Guardian Option, and Secromicon crafting settings; Blue Fenrir (Protect) damage decrease option value; Wizard&apos;s Ring wizardry option; lvl 380 item guardian options for Summoner and Rage Fighter..
         /// </summary>
         public static string FixChaosMixesPlugInSeason6_Description {
             get {
                 return ResourceManager.GetString("FixChaosMixesPlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Chaos Mixes Settings And Several Options.
         /// </summary>
@@ -1751,7 +1932,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixChaosMixesPlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes agility to defense multiplier (DW) and base energy (MG) stats..
         /// </summary>
@@ -1760,7 +1941,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCharStatsForceWavePlugIn095d_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix DW and MG Char Stats.
         /// </summary>
@@ -1769,7 +1950,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCharStatsForceWavePlugIn095d_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes DW agility to defense multiplier stat..
         /// </summary>
@@ -1778,7 +1959,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCharStatsForceWavePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix DW Defense Multiplier.
         /// </summary>
@@ -1787,7 +1968,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCharStatsForceWavePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes several character stats values and DL Force Wave Strengthener master skill..
         /// </summary>
@@ -1796,7 +1977,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCharStatsForceWavePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Char Stats and DL Force Wave Str skill.
         /// </summary>
@@ -1805,7 +1986,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCharStatsForceWavePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Makes the south entry of the gate to Crywolf Fortress in Valley of Loren walkable, which players use outside of Castle Siege. The north entry and all other tiles are kept..
         /// </summary>
@@ -1814,7 +1995,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCrywolfGateTerrainUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix the Crywolf entrance in Valley of Loren.
         /// </summary>
@@ -1823,7 +2004,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixCrywolfGateTerrainUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the damage absorbtion settings for items and skills..
         /// </summary>
@@ -1832,7 +2013,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDamageAbsorbItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fixed damage absorb items/skills.
         /// </summary>
@@ -1841,7 +2022,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDamageAbsorbItemsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes character stats, magic effects, items, and options related to damage..
         /// </summary>
@@ -1850,7 +2031,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDamageCalcsPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Damage Calculations.
         /// </summary>
@@ -1859,7 +2040,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDamageCalcsPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes character stats, magic effects, and options related to defense..
         /// </summary>
@@ -1868,7 +2049,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDefenseCalcsPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Defense Calculations.
         /// </summary>
@@ -1877,16 +2058,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDefenseCalcsPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Swaps the names of the Phantom (47) and Destroy (48) armor sets and of their set bonuses, which were initialized with each other's name, and corrects the spelling "Destory"..
+        ///   Looks up a localized string similar to Swaps the names of the Phantom (47) and Destroy (48) armor sets and of their set bonuses, which were initialized with each other&apos;s name, and corrects the spelling &quot;Destory&quot;..
         /// </summary>
         public static string FixDestroyPhantomArmorNamesPlugIn_Description {
             get {
                 return ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Destroy and Phantom Armor Names.
         /// </summary>
@@ -1895,7 +2076,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDestroyPhantomArmorNamesPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update gives each Dinorant option a distinct number, which is its bit in the option field the client expects..
         /// </summary>
@@ -1904,7 +2085,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Dinorant option numbers.
         /// </summary>
@@ -1913,16 +2094,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDinorantOptionNumbersPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Updates the attributes of the summoner's Drain Life skill to make it work properly..
+        ///   Looks up a localized string similar to Updates the attributes of the summoner&apos;s Drain Life skill to make it work properly..
         /// </summary>
         public static string FixDrainLifeSkillUpdate_Description {
             get {
                 return ResourceManager.GetString("FixDrainLifeSkillUpdate_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Drain Life Skill.
         /// </summary>
@@ -1931,7 +2112,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDrainLifeSkillUpdate_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sets the safezone of duel arena to lorencia..
         /// </summary>
@@ -1940,7 +2121,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDuelArenaSafezoneMapUpdate_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Duel Arena Safezone Map.
         /// </summary>
@@ -1949,7 +2130,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixDuelArenaSafezoneMapUpdate_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups..
         /// </summary>
@@ -1958,7 +2139,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugIn095d_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Event Items DropsFromMonsters 0.95d.
         /// </summary>
@@ -1967,7 +2148,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugIn095d_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups..
         /// </summary>
@@ -1976,7 +2157,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Event Items DropsFromMonsters.
         /// </summary>
@@ -1985,7 +2166,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups..
         /// </summary>
@@ -1994,7 +2175,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Event Items DropsFromMonsters Season 6.
         /// </summary>
@@ -2003,7 +2184,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixEventItemsDropFromMonstersUpdatePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update corrects the energy and leadership requirements of the fire scream skill to 150 and 70. They were swapped, so a dark lord with less than 150 leadership could learn the skill but not use it..
         /// </summary>
@@ -2012,7 +2193,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixFireScreamRequirementsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Fire Scream requirements.
         /// </summary>
@@ -2021,7 +2202,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixFireScreamRequirementsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds Dark Horse options, fixes Gold Fenrir options and Soul Barrier effects..
         /// </summary>
@@ -2030,7 +2211,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixHorseFenrirOptionsSoulBarrierPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Dark Horse and Gold Fenrir Options, and Soul Barrier Effects.
         /// </summary>
@@ -2039,7 +2220,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixHorseFenrirOptionsSoulBarrierPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the magic effect definition for the Ignore Defense skill..
         /// </summary>
@@ -2048,7 +2229,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixIgnoreDefenseSkillUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fixed ignore defense skill.
         /// </summary>
@@ -2057,7 +2238,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixIgnoreDefenseSkillUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes some item options (damage, defense rate) and weapons attack speed..
         /// </summary>
@@ -2066,7 +2247,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixItemOptionsAndAttackSpeedPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Item Options And Attack Speed.
         /// </summary>
@@ -2075,7 +2256,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixItemOptionsAndAttackSpeedPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Updates some item requirements for elf bows which were initialized wrongly..
         /// </summary>
@@ -2084,7 +2265,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixItemRequirementsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Item Requirements (Elf Bows).
         /// </summary>
@@ -2093,7 +2274,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixItemRequirementsPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes jewelery items resistance values..
         /// </summary>
@@ -2102,7 +2283,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Jewelery Resistance Calculations.
         /// </summary>
@@ -2111,7 +2292,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes jewelery items and pet options related to damage, and jewelery resistance values..
         /// </summary>
@@ -2120,7 +2301,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Jewelery and Pets Damage Calculations.
         /// </summary>
@@ -2129,7 +2310,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixJeweleryPetsDamageCalcsPlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept..
         /// </summary>
@@ -2138,7 +2319,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Kanturu Ruins 3 landing area.
         /// </summary>
@@ -2147,7 +2328,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the excellent option which adds level / 20 as wizardry damage.
         /// </summary>
@@ -2156,7 +2337,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixLevelDiv20ExcOptionUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Excellent Option Level/20 damage fix.
         /// </summary>
@@ -2165,7 +2346,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixLevelDiv20ExcOptionUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update sets the right settings for the life swell effect..
         /// </summary>
@@ -2174,7 +2355,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixLifeSwellEffectUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fixed life swell effect.
         /// </summary>
@@ -2183,7 +2364,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixLifeSwellEffectUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the calculation for max mana/AG % increase provided by Ring of Magic/Pendant of Ability options.
         /// </summary>
@@ -2192,7 +2373,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix max mana/AG % increase jewelry options.
         /// </summary>
@@ -2201,7 +2382,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Gives the Ring of Fire of the Muren ancient set its energy bonus, which was initialized as vitality..
         /// </summary>
@@ -2210,7 +2391,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Muren Ring of Fire Bonus.
         /// </summary>
@@ -2219,7 +2400,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixMurenRingOfFireBonusPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fixes the energy, strength and agility requirements of orbs, crystals and scrolls which are used to learn skills. E.g. the Orbs of Healing, Greater Defense and Greater Damage required 100 energy instead of 52, 72 and 92..
         /// </summary>
@@ -2228,7 +2409,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixOrbRequirementsPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Orb Requirements.
         /// </summary>
@@ -2237,7 +2418,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixOrbRequirementsPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the missing multiple hits to the Killing Blow, Beast Uppercut, Chain Drive, Dragon Roar and Phoenix Shot Rage Fighter skills, as well as their magic effects..
         /// </summary>
@@ -2246,7 +2427,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixRageFighterMultipleHitSkillsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Rage Fighter Multiple Hit Skills.
         /// </summary>
@@ -2255,7 +2436,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixRageFighterMultipleHitSkillsPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update sets the maximum item level of the seed spheres to the highest option number of their element. The item level of a seed sphere defines its option, so seed spheres with other options than the first one could not be created, e.g. with the item chat command..
         /// </summary>
@@ -2264,7 +2445,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSeedSphereMaximumItemLevelUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix maximum item level of seed spheres.
         /// </summary>
@@ -2273,7 +2454,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSeedSphereMaximumItemLevelUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the set bonuses for additional defense of +10~15 sets and the defense rate..
         /// </summary>
@@ -2282,7 +2463,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSetBonusesPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Item Set Bonuses.
         /// </summary>
@@ -2291,7 +2472,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSetBonusesPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes RF skill multipliers and adds several skill-specific multipliers..
         /// </summary>
@@ -2300,7 +2481,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSkillMultipliersPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Skill Multipliers.
         /// </summary>
@@ -2309,7 +2490,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSkillMultipliersPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update sets the right settings for the socket seed crafting..
         /// </summary>
@@ -2318,7 +2499,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSocketSeedCraftingUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fixed socket seed crafting.
         /// </summary>
@@ -2327,7 +2508,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSocketSeedCraftingUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds missing area skill settings for summoner curse (book) and lightning shock skills..
         /// </summary>
@@ -2336,7 +2517,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Summoner Curse Skills.
         /// </summary>
@@ -2345,16 +2526,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixSummonerCurseSkillsPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Requires character level 50 for transformation ring levels 3 to 5 and adds the Death Cow ring's 20% maximum-health bonus..
+        ///   Looks up a localized string similar to Requires character level 50 for transformation ring levels 3 to 5 and adds the Death Cow ring&apos;s 20% maximum-health bonus..
         /// </summary>
         public static string FixTransformationRingRulesUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("FixTransformationRingRulesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix transformation ring rules.
         /// </summary>
@@ -2363,7 +2544,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixTransformationRingRulesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update corrects the index of the warp entry of Vulcanus to 42, which the season 6 game client requests..
         /// </summary>
@@ -2372,7 +2553,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixVulcanusWarpIndexUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Vulcanus warp index.
         /// </summary>
@@ -2381,7 +2562,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixVulcanusWarpIndexUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This plugin updates the LevelWarpRequirementReductionPercent for MG, DL, and RF..
         /// </summary>
@@ -2390,7 +2571,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWarpLevelUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Warp Level Reduction.
         /// </summary>
@@ -2399,7 +2580,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWarpLevelUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the weapon of the warrior ancient set. The Hand Axe is replaced by the Morning Star..
         /// </summary>
@@ -2408,7 +2589,21 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWarriorMorningStarPlugIn_Description", resourceCulture);
             }
         }
+        
 
+
+
+
+
+
+
+
+        /// <summary>Gets the localized MonsterResistancesUpdatePlugInBase_Name text.</summary>
+        public static string MonsterResistancesUpdatePlugInBase_Name => ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterResistancesUpdatePlugInBase_Description text.</summary>
+        public static string MonsterResistancesUpdatePlugInBase_Description => ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Description", resourceCulture)!;
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Warrior Morning Star.
         /// </summary>
@@ -2417,6 +2612,28 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWarriorMorningStarPlugIn_Name", resourceCulture);
             }
         }
+        
+
+
+
+
+        /// <summary>Gets the localized IllusionTempleDataUpdatePlugIn_Name text.</summary>
+        public static string IllusionTempleDataUpdatePlugIn_Name => ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized IllusionTempleDataUpdatePlugIn_Description text.</summary>
+        public static string IllusionTempleDataUpdatePlugIn_Description => ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn075_Name text.</summary>
+        public static string NpcSpawnsUpdatePlugIn075_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn075_Description text.</summary>
+        public static string NpcSpawnsUpdatePlugIn075_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn095d_Name text.</summary>
+        public static string NpcSpawnsUpdatePlugIn095d_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn095d_Description text.</summary>
+        public static string NpcSpawnsUpdatePlugIn095d_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Description", resourceCulture)!;
 
         /// <summary>
         ///   Looks up a localized string similar to This update fixes weapons (staff) rise percentage.
@@ -2426,7 +2643,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWeaponRisePercentagePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Weapon Rise Percentage.
         /// </summary>
@@ -2435,7 +2652,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWeaponRisePercentagePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes weapons (staff, stick, book, scepter) rise percentage; Summoner weapons and wings wizardry/curse options; and Wing of Dimension (inc/dec), Cape of Overrule (inc/dec), Cape of Emperor (dec) damage rates. Also includes fixes for Divine Staff of Archangel and Eternal Wing Stick..
         /// </summary>
@@ -2444,7 +2661,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWeaponRisePercentagePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Weapon Rise Percentage, Summoner Items Wizardry/Curse Options, and Several 3rd Level Wing Damage Rates.
         /// </summary>
@@ -2453,7 +2670,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWeaponRisePercentagePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update sets the right settings for the wings and capes craftings..
         /// </summary>
@@ -2462,7 +2679,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWingsAndCapesCraftingsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fixed wings and capes craftings.
         /// </summary>
@@ -2471,7 +2688,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWingsAndCapesCraftingsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes the wings damage absorption and increase bonus level tables values..
         /// </summary>
@@ -2480,7 +2697,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWingsDmgRatesUpdatePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Wings Damage Rates.
         /// </summary>
@@ -2489,52 +2706,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FixWingsDmgRatesUpdatePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Switches off sending the duration of the skill effects which the Season 6 data sent it for: Infinite Arrow and the defense reductions of Fire Slash and Beast Uppercut. The original game shows no time for skill effects. It overwrites the current setting, also one made on the Effect times page..
-        /// </summary>
-        public static string HideSkillEffectTimesPlugIn_Description {
-            get {
-                return ResourceManager.GetString("HideSkillEffectTimesPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Hide Skill Effect Times.
-        /// </summary>
-        public static string HideSkillEffectTimesPlugIn_Name {
-            get {
-                return ResourceManager.GetString("HideSkillEffectTimesPlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC. If the items 13/50 and 13/51 have swapped data (Scroll of Blood and Illusion Sorcerer Covenant), it gives them their original data back: names, sizes, durability, levels and drops, the drop item groups, the temple tickets and the merchant items of 13/51. If both have their original names, but the sizes are still swapped, Lumen the Barmaid sells 13/51 instead of 13/50, or a drop item group of the covenant contains 13/51 instead of 13/50, it sets their original sizes, points the temple tickets of 13/50 at 13/51, and moves only these merchant items of Lumen the Barmaid and drop item groups of the covenant from 13/51 to 13/50. A Scroll of Blood which you added next to the covenant stays. If only one of the two has the swapped name, it changes neither. References to the two items which you added yourself (craftings, quests, item drops, plug-in settings) stay as they are: check them after the update..
-        /// </summary>
-        public static string IllusionTempleDataUpdatePlugIn_Description {
-            get {
-                return ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Illusion Temple Data.
-        /// </summary>
-        public static string IllusionTempleDataUpdatePlugIn_Name {
-            get {
-                return ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to This update adds the infinity arrow skill as quest reward for 'Gain Hero Status (Muse Elf)'..
+        ///   Looks up a localized string similar to This update adds the infinity arrow skill as quest reward for &apos;Gain Hero Status (Muse Elf)&apos;..
         /// </summary>
         public static string InfinityArrowSkillOnQuestCompletionPlugIn_Description {
             get {
                 return ResourceManager.GetString("InfinityArrowSkillOnQuestCompletionPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds infinity arrow skill with quest.
         /// </summary>
@@ -2543,16 +2724,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("InfinityArrowSkillOnQuestCompletionPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Limits the Wizard's Ring to one per character..
+        ///   Looks up a localized string similar to Limits the Wizard&apos;s Ring to one per character..
         /// </summary>
         public static string LimitWhiteWizardDropsUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("LimitWhiteWizardDropsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Limit White Wizard drops.
         /// </summary>
@@ -2561,34 +2742,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("LimitWhiteWizardDropsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Converts the elemental resistances of the monsters to whole numbers from 0 to 255, which the resistance check expects; until now, monsters resisted ice, poison and lightning effects in only about 1 to 2 % of the hits. Corrects the resistances which the import of the monster data assigned to the wrong elements (ice and poison swapped, lightning stored as water) and sets the Season 6 values. Customized resistances are converted to the new scale, but not changed otherwise..
-        /// </summary>
-        public static string MonsterResistancesUpdatePlugInBase_Description {
-            get {
-                return ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Monster elemental resistances.
-        /// </summary>
-        public static string MonsterResistancesUpdatePlugInBase_Name {
-            get {
-                return ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sets level, health, damage, defense, attack and defense rate, ranges, delays and respawn times of the monsters to the Season 6 data, which this version uses as well. It corrects field monsters, invasion monsters and guards and, in Season 6, Chaos Castle 4 and 7 and Devil Square 7. Customized values of these stats are overwritten. In Season 6, renames the monster 275 of Kalima 7 from "Illusion of Kundun 7" to "Kundun"..
+        ///   Looks up a localized string similar to Sets level, health, damage, defense, attack and defense rate, ranges, delays and respawn times of the monsters to the Season 6 data, which this version uses as well. It corrects field monsters, invasion monsters and guards and, in Season 6, Chaos Castle 4 and 7 and Devil Square 7. Customized values of these stats are overwritten. In Season 6, renames the monster 275 of Kalima 7 from &quot;Illusion of Kundun 7&quot; to &quot;Kundun&quot;..
         /// </summary>
         public static string MonsterStatsUpdatePlugInBase_Description {
             get {
                 return ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Season 6 monster stats.
         /// </summary>
@@ -2597,7 +2760,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update moves the ports of the game servers and the chat server from 55900 – 55999 to 45900 – 45999 (e.g. 55901 to 45901 and 55980 to 45980), because the former ports are within the dynamic port range of the operating system and may already be in use. Adjust your firewall, port forwardings and docker compose files accordingly..
         /// </summary>
@@ -2606,7 +2769,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Move server ports out of the dynamic port range.
         /// </summary>
@@ -2615,52 +2778,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Brings the NPCs of 0.75 to the Season 6 data: removes the two Potion Girls of Noria, the Potion Girl and the Safety Guardian of Lost Tower, the Safety Guardians of Arena and Atlans and the Crossbow Guard at 114/125 in Lorencia, and moves the Soccer Ball and the Arena Guard of Arena to their Season 6 positions..
-        /// </summary>
-        public static string NpcSpawnsUpdatePlugIn075_Description {
-            get {
-                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to 0.75 NPC spawns.
-        /// </summary>
-        public static string NpcSpawnsUpdatePlugIn075_Name {
-            get {
-                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Brings the NPCs of 0.95d to the Season 6 data: removes the two Potion Girls of Noria, the Potion Girl and the Safety Guardian of Lost Tower, the Safety Guardians of Arena and Atlans and the Crossbow Guard at 114/125 in Lorencia, moves the Soccer Ball and the Arena Guard of Arena to their Season 6 positions and the Golden Archer from Lorencia to Devias (226/66)..
-        /// </summary>
-        public static string NpcSpawnsUpdatePlugIn095d_Description {
-            get {
-                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to 0.95d NPC spawns.
-        /// </summary>
-        public static string NpcSpawnsUpdatePlugIn095d_Name {
-            get {
-                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Name", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn't have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golden Archer of Lorencia; Lugard, Priest Devin and Mirage of Devias, which Season 6 has only in Elvenland and Crywolf Fortress; and the second Crown of Valley of Loren. Customized positions and directions of these NPCs are overwritten..
+        ///   Looks up a localized string similar to Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn&apos;t have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golde [rest of string was truncated]&quot;;.
         /// </summary>
         public static string NpcSpawnsUpdatePlugInSeason6_Description {
             get {
                 return ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Season 6 NPC spawns.
         /// </summary>
@@ -2669,7 +2796,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("NpcSpawnsUpdatePlugInSeason6_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update fixes and reworks some regeneration attributes (health, mana, ability)..
         /// </summary>
@@ -2678,7 +2805,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RegenerationsRefactorPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Regenerations Refactor.
         /// </summary>
@@ -2687,7 +2814,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RegenerationsRefactorPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update removes stat attributes which are defined more than once for a character class..
         /// </summary>
@@ -2696,7 +2823,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RemoveDuplicateStatAttributesPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Remove duplicate stat attributes.
         /// </summary>
@@ -2705,7 +2832,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RemoveDuplicateStatAttributesPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update removes the existing drop level gap condition for jewels and similar items that should always drop..
         /// </summary>
@@ -2714,7 +2841,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RemoveJewelDropLevelGapPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Remove Jewel Drop Level Gap.
         /// </summary>
@@ -2723,16 +2850,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RemoveJewelDropLevelGapPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Makes the warps which the original client doesn't offer in its warp window (Crywolf, Loren Market and the second LaCleon warp) available to game masters only..
+        ///   Looks up a localized string similar to Makes the warps which the original client doesn&apos;t offer in its warp window (Crywolf, Loren Market and the second LaCleon warp) available to game masters only..
         /// </summary>
         public static string RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description {
             get {
                 return ResourceManager.GetString("RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Restrict warps outside of the original warp window.
         /// </summary>
@@ -2741,7 +2868,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("RestrictWarpsOutsideOfOriginalWarpWindowPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Makes the extra projectile of the triple shot mastery apply to the triple shot skill only, while equipping certain (cross)bows keeps boosting every multi-projectile skill..
         /// </summary>
@@ -2750,7 +2877,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ScopeExtraProjectilesPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Scope extra projectiles per skill.
         /// </summary>
@@ -2759,7 +2886,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ScopeExtraProjectilesPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update sets in which version of the original game the maps, character classes, monsters, items and mini games were introduced. It allows to activate or deactivate the content of certain game versions in batches. Versions which were already set are kept..
         /// </summary>
@@ -2768,7 +2895,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SetIntroducedGameVersionsPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Set the game versions of the content.
         /// </summary>
@@ -2777,7 +2904,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SetIntroducedGameVersionsPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This updates the spawn points of NPCs. 1) Crywolf-Statues are fixed. 2) Wandering merchants and Marlon. 3) Spawn trigger in chaos castle 1.
         /// </summary>
@@ -2786,7 +2913,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SpawnFixesUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Spawn Points Fixes.
         /// </summary>
@@ -2795,7 +2922,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SpawnFixesUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update raises the entrance duration of the events with a shared entrance, like Blood Castle, Devil Square and Kanturu, to the five minutes which every event entrance announces..
         /// </summary>
@@ -2804,7 +2931,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("StandardizeEventEnterDurationPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Standardize event entrance duration.
         /// </summary>
@@ -2813,7 +2940,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("StandardizeEventEnterDurationPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the new system configuration..
         /// </summary>
@@ -2822,7 +2949,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SystemConfigurationAddedPlugInBase_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add System Configuration.
         /// </summary>
@@ -2831,7 +2958,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SystemConfigurationAddedPlugInBase_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This update adds the following skills: Wizardry Enhance, Increase Health, Increase Block, Ignore Defense..
         /// </summary>
@@ -2840,7 +2967,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Some added skills.
         /// </summary>

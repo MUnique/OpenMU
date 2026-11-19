@@ -6021,6 +6021,64 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for LuckyCoinCountResponse.
+    /// </summary>
+    [Test]
+    public void LuckyCoinCountResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = LuckyCoinCountResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Count' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LuckyCoinRegistrationResponse.
+    /// </summary>
+    [Test]
+    public void LuckyCoinRegistrationResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = LuckyCoinRegistrationResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'Count' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LuckyCoinExchangeResponse.
+    /// </summary>
+    [Test]
+    public void LuckyCoinExchangeResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = LuckyCoinExchangeResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for DoppelgangerEnterResult.
     /// </summary>
     [Test]

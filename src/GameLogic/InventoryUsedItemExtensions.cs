@@ -46,11 +46,14 @@ public static class InventoryUsedItemExtensions
     /// <returns>The configuration, if the item is used inside the inventory; otherwise, <c>null</c>.</returns>
     internal static InventoryItemUseConfiguration? GetInventoryItemUseConfiguration(this Item item, IGameContext gameContext)
     {
-        return item.Definition is { } definition
-               && InventoryItemUseFeaturePlugIn.GetActiveConfiguration(gameContext) is { } configuration
-               && configuration.Contains(definition)
-            ? configuration
-            : null;
+        if (item.Definition is { } definition
+            && InventoryItemUseFeaturePlugIn.GetActiveConfiguration(gameContext) is { } configuration
+            && configuration.Contains(definition))
+        {
+            return configuration;
+        }
+
+        return null;
     }
 
     /// <summary>

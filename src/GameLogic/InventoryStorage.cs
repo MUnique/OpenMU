@@ -21,14 +21,14 @@ public class InventoryStorage : Storage, IInventoryStorage
 
     private readonly Player _player;
 
-    private Item? _itemMovedInsideInventory;
-
     /// <summary>
     /// Serializes the updates of the item power ups. The event is raised from different threads
     /// (e.g. several monsters hitting the same player at once, each one ticking on its own timer thread),
     /// and the update is a multi-step remove/dispose/add operation which must not interleave.
     /// </summary>
     private readonly AsyncLock _powerUpLock = new();
+
+    private Item? _itemMovedInsideInventory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="InventoryStorage" /> class.
