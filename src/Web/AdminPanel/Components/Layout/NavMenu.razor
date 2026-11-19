@@ -36,7 +36,9 @@
                 </li>
                 <AuthorizeView Policy="@AdminPolicies.Administrator">
                     <li class="nav-item px-3">
-                        <NavLink class="nav-link" href="audit">@Resources.ResourceManager.GetString("AuditHistory", Resources.Culture)</NavLink>
+                        <NavLink class="nav-link" href="audit" @onclick="() => NavigationHistory.Clear()">
+                            <span class="oi oi-script" aria-hidden="true"></span> @Resources.AuditHistory
+                        </NavLink>
                     </li>
                 </AuthorizeView>
                 <li class="nav-item px-3">
