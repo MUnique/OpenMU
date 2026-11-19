@@ -17,6 +17,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Network.Analyzer;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
@@ -95,6 +96,8 @@ public static class WebApplicationExtensions
         services.AddSingleton(provider => new DiscordConfigurationService(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"), provider.GetRequiredService<IConfiguration>()));
         services.AddScoped<DataUpdateService>();
         services.AddScoped<ConfigurationCaptionService>();
+        services.AddScoped<EffectTimeDefaults>();
+        services.AddScoped<IEffectTimeDefaultsSource, EffectTimeDefaultsSource>();
         services.AddScoped<AccountService>();
         services.AddScoped<IDataService<Account>>(serviceProvider => serviceProvider.GetService<AccountService>()!);
         services.AddScoped<IGuildMemberEnricher, CharacterGuildMemberEnricher>();

@@ -2632,6 +2632,45 @@
   <data name="ShopImportRejected" xml:space="preserve">
     <value>Der Shop wurde nicht geändert, da die Datei Einträge enthält, die nicht importiert werden können: {0}</value>
   </data>
+  <data name="EffectTimes" xml:space="preserve">
+    <value>Effektzeiten</value>
+  </data>
+  <data name="EffectTimesDescription" xml:space="preserve">
+    <value>Lege fest, welche magischen Effekte ihre Restzeit an den Client senden, damit Spieler sehen, wie lange sie dauern. Ob Spieler das wissen, ist Spieldesign. Die Season-6-Daten senden sie für die Effekte verbrauchter Gegenstände, da das Originalspiel für Fertigkeitseffekte keine Zeit zeigt. Der Open-Source-Client zeigt die Zeit jedes Effekts, der sie sendet; die Original-Clients erhalten sie nur für verbrauchte Gegenstände, die Angriffsgeschwindigkeit, Schaden, Verteidigung, maximale Lebenspunkte oder maximales Mana ändern. Wird sie für einen solchen Gegenstand ausgeschaltet, bleibt seine Zeit in MuMain sichtbar: Es zeigt dann die Dauer aus seinen eigenen Gegenstandsdaten.</value>
+  </data>
+  <data name="SendsTime" xml:space="preserve">
+    <value>Zeit senden</value>
+  </data>
+  <data name="AllOn" xml:space="preserve">
+    <value>Alle an</value>
+  </data>
+  <data name="AllOff" xml:space="preserve">
+    <value>Alle aus</value>
+  </data>
+  <data name="AllShownEffectsHint" xml:space="preserve">
+    <value>Gilt für alle angezeigten Effekte. Die Änderungen werden nach dem Speichern übernommen.</value>
+  </data>
+  <data name="DefaultsFormat" xml:space="preserve">
+    <value>{0}-Standard</value>
+  </data>
+  <data name="DefaultsHintFormat" xml:space="preserve">
+    <value>Setzt jeden angezeigten Effekt wie in den {0}-Daten; Effekte, die {0} nicht kennt, bleiben unverändert. Die Änderungen werden nach dem Speichern übernommen.</value>
+  </data>
+  <data name="DefaultsLoading" xml:space="preserve">
+    <value>Die Standardwerte werden geladen...</value>
+  </data>
+  <data name="DefaultsNotAvailable" xml:space="preserve">
+    <value>Die Standardwerte der Daten, aus denen die Konfiguration erstellt wurde, sind nicht verfügbar; das Log nennt den Grund beim ersten Versuch nach dem Start.</value>
+  </data>
+  <data name="SendingCountFormat" xml:space="preserve">
+    <value>{0} von {1} Effekten senden ihre Zeit.</value>
+  </data>
+  <data name="EffectTimesConfirmFormat" xml:space="preserve">
+    <value>Diese {0} Effekte senden dann ihre Zeit: {1}. Diese {2} Effekte nicht: {3}. Fortfahren?</value>
+  </data>
+  <data name="EffectTimesHint" xml:space="preserve">
+    <value>Welche magischen Effekte Spielern ihre Restzeit zeigen:</value>
+  </data>
   <data name="RoleWebManager" xml:space="preserve">
     <value>Website (nur ausgewählte Funktionen)</value>
   </data>
