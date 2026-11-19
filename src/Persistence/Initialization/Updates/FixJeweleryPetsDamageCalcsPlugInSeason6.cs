@@ -87,14 +87,17 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         }
 
         // Update jewelery
-#pragma warning disable SA1116, SA1117 // Parameters must be on same line or separate lines
         var eliteSkeletonRing = jewelery.First(i => i.Number == 39);
         this.AddLevelRequirement(context, gameConfiguration, eliteSkeletonRing, 10);
         if (eliteSkeletonRing.PossibleItemOptions.FirstOrDefault() is { } eliteSkeletonRingItemOptDef)
         {
-            CreateItemBasePowerUps(eliteSkeletonRing,
+            CreateItemBasePowerUps(
+                eliteSkeletonRing,
                 (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
-            CreateItemOptionDefinition(eliteSkeletonRingItemOptDef, "Elite Skeleton Transformation Ring", ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
+            CreateItemOptionDefinition(
+                eliteSkeletonRingItemOptDef,
+                "Elite Skeleton Transformation Ring",
+                ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1)));
         }
 
@@ -102,11 +105,13 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         this.AddLevelRequirement(context, gameConfiguration, jackOlanternRing, 10);
 
         var christmasRing = jewelery.First(i => i.Number == 41);
-        CreateItemBasePowerUps(christmasRing,
+        CreateItemBasePowerUps(
+            christmasRing,
             (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
 
         var gameMasterRing = jewelery.First(i => i.Number == 42);
-        CreateItemBasePowerUps(gameMasterRing,
+        CreateItemBasePowerUps(
+            gameMasterRing,
             (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
             (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
             (Stats.LightningDamageBonus, 255, AggregateType.AddRaw),
@@ -127,7 +132,8 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
 
         var pandaRing = jewelery.First(i => i.Number == 76);
         pandaRing.PossibleItemOptions.Clear();
-        CreateItemBasePowerUps(pandaRing,
+        CreateItemBasePowerUps(
+            pandaRing,
             (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
@@ -136,16 +142,21 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         var skeletonRing = jewelery.First(i => i.Number == 122);
         if (skeletonRing.PossibleItemOptions.FirstOrDefault() is { } skeletonRingItemOptDef)
         {
-            CreateItemBasePowerUps(skeletonRing,
+            CreateItemBasePowerUps(
+                skeletonRing,
                 (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
                 (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
-            CreateItemOptionDefinition(skeletonRingItemOptDef, "Skeleton Transformation Ring", ItemOptionDefinitionNumbers.SkeletonTransformationRing,
-                    (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f)));
+            CreateItemOptionDefinition(
+                skeletonRingItemOptDef,
+                "Skeleton Transformation Ring",
+                ItemOptionDefinitionNumbers.SkeletonTransformationRing,
+                (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f)));
         }
 
         var wizardsRing = jewelery.First(i => i.Number == 20);
         wizardsRing.PossibleItemOptions.Clear();
-        CreateItemBasePowerUps(wizardsRing,
+        CreateItemBasePowerUps(
+            wizardsRing,
             (Stats.MinimumPhysBaseDmg, 1.1f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.1f, AggregateType.Multiplicate),
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
@@ -155,7 +166,8 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         // Update pets
         var demon = pets.First(i => i.Number == 64);
         demon.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(demon,
+        CreateItemBasePowerUps(
+            demon,
             (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
@@ -166,19 +178,22 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
 
         var panda = pets.First(i => i.Number == 80);
         panda.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(panda,
+        CreateItemBasePowerUps(
+            panda,
             (Stats.BonusExperienceRate, 0.5f, AggregateType.AddRaw),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
 
         var unicorn = pets.First(i => i.Number == 106);
         unicorn.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(unicorn,
+        CreateItemBasePowerUps(
+            unicorn,
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
 
         var skeleton = pets.First(i => i.Number == 123);
         skeleton.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(skeleton,
+        CreateItemBasePowerUps(
+            skeleton,
             (Stats.MinimumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
@@ -188,7 +203,6 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
             (Stats.BonusExperienceRate, 0.3f, AggregateType.AddRaw),
             (Stats.IsPetSkeletonEquipped, 1, AggregateType.AddRaw));
-#pragma warning restore SA1116, SA1117
 
         void CreateItemBasePowerUps(ItemDefinition item, params (AttributeDefinition AttributeDefinition, float Value, AggregateType AggregateType)[] powerUps)
         {

@@ -126,9 +126,7 @@ public class FriendServer : IFriendServer
     public async ValueTask FriendResponseAsync(string characterName, string friendName, bool accepted)
     {
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-#pragma warning disable S2234 // The parameters are passed correctly
-        var requester = await context.GetFriendByNamesAsync(friendName, characterName).ConfigureAwait(false);
-#pragma warning restore S2234
+        var requester = await context.GetFriendByNamesAsync(characterName: friendName, friendName: characterName).ConfigureAwait(false);
         if (requester is null)
         {
             return;

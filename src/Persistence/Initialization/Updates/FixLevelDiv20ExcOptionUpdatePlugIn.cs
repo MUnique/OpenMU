@@ -45,9 +45,7 @@ public class FixLevelDiv20ExcOptionUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2023, 04, 03, 20, 5, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         var level20Relationships = gameConfiguration.ItemOptions
             .SelectMany(io => io.PossibleOptions.Where(p => p.OptionType == ItemOptionTypes.Excellent))

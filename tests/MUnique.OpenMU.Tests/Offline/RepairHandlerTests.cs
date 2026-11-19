@@ -172,7 +172,7 @@ public class RepairHandlerTests
     /// correctly: 13 / 25 = 52% (above threshold → skip), but 12 / 25 = 48% (≤ 50% → repair).
     /// </summary>
     [TestCase(13, false, TestName = "NonRoundMax_52pct_Skipped")]
-    [TestCase(12, true,  TestName = "NonRoundMax_48pct_Repaired")]
+    [TestCase(12, true, TestName = "NonRoundMax_48pct_Repaired")]
     public async ValueTask ThresholdWithNonRoundMaxDurabilityAsync(byte currentDurability, bool expectRepair)
     {
         // Arrange — max = 25; ceiling(d*100/25) = ceiling(d*4)

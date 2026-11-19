@@ -160,7 +160,7 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
     {
         if (disposing)
         {
-#pragma warning disable VSTHRD103
+#pragma warning disable VSTHRD103 // Dispose(bool) is synchronous, so CancelAsync can't be awaited here.
             this._searchCts?.Cancel();
 #pragma warning restore VSTHRD103
             this._searchCts?.Dispose();
@@ -261,12 +261,10 @@ public partial class Typeahead<TItem, TValue> : ComponentBase, IDisposable
 
     private async Task PerformSearchAsync()
     {
-        if (this._searchCts != null)
+        if (this._searchCts is { } previousCts)
         {
-#pragma warning disable VSTHRD103
-            this._searchCts.Cancel();
-#pragma warning restore VSTHRD103
-            this._searchCts.Dispose();
+            await previousCts.CancelAsync().ConfigureAwait(true);
+            previousCts.Dispose();
         }
 
         var cts = new CancellationTokenSource();

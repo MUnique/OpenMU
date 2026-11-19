@@ -78,7 +78,13 @@ public abstract class FixJeweleryPetsDamageCalcsPlugInBase : UpdatePlugInBase
         }
     }
 
-#pragma warning disable SA1600, CS1591
+    /// <summary>
+    /// Adds a minimum level requirement to the item.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="item">The item definition.</param>
+    /// <param name="level">The minimum required character level.</param>
     protected void AddLevelRequirement(IContext context, GameConfiguration gameConfiguration, ItemDefinition item, int level)
     {
         var requirement = context.CreateNew<AttributeRequirement>();
@@ -86,5 +92,4 @@ public abstract class FixJeweleryPetsDamageCalcsPlugInBase : UpdatePlugInBase
         requirement.MinimumValue = level;
         item.Requirements.Add(requirement);
     }
-#pragma warning restore SA1600, CS1591
 }
