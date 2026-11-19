@@ -190,7 +190,6 @@ public partial class MapEditor : IAsyncDisposable
         else
         {
             this._focusedObject = null;
-            _ = this._jsModule?.InvokeVoidAsync("setPanning", true);
         }
 
         _ = this.UpdateSelectValueAsync();
@@ -229,22 +228,6 @@ public partial class MapEditor : IAsyncDisposable
     public void OnPointerUp()
     {
         this._hasDragSnapshot = false;
-    }
-
-    /// <summary>
-    /// Called from JavaScript when clicking empty space without dragging.
-    /// </summary>
-    [JSInvokable]
-    public async Task OnPointerClickAsync()
-    {
-        if (this._createMode || this._jsModule is null)
-        {
-            return;
-        }
-
-        this._focusedObject = null;
-        await this.UpdateSelectValueAsync().ConfigureAwait(true);
-        this.StateHasChanged();
     }
 
     /// <summary>

@@ -101,25 +101,6 @@
   border: 1px solid #00aa00;
 }
 
-.map-zoom-display {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 100;
-  pointer-events: none;
-}
-
-.map-zoom-display .zoom-label {
-  padding: 6px 12px;
-  background: rgba(0, 0, 0, 0.9);
-  color: #ffaa00;
-  font-family: "Consolas", monospace;
-  font-size: 14px;
-  font-weight: bold;
-  border-radius: 4px;
-  border: 1px solid #aa7700;
-}
-
 .map-object-select select {
   width: 100%;
 }

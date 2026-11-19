@@ -60,6 +60,14 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
     }
 
     /**
+     * Keeps the labels of this object at the same size on the screen when the map is zoomed.
+     * @param zoom - The zoom factor of the camera.
+     */
+    public setZoom(zoom: number): void {
+        this.nameLabel.setZoom(zoom);
+    }
+
+    /**
      * Stops all running animations and releases the resources of this object.
      * The geometry is not disposed, because it's shared between all objects of the same type.
      */
@@ -216,6 +224,14 @@ export class Attackable<TData extends ObjectData> extends THREE.Mesh implements 
 }
 
 export var attackableAlphaMapTexture: THREE.Texture;
+
+/**
+ * The alpha threshold of the icons of players and NPCs. The icons are boxes with a circular alpha map,
+ * so the corners of their squares are fully transparent. Without a threshold, these transparent pixels still
+ * write the depth buffer, and hide everything which is drawn behind them afterwards - e.g. a player icon
+ * next to the (bigger) icon of the selected player. With it, only the visible circle hides other icons.
+ */
+export const attackableAlphaTest: number = 0.05;
 new THREE.TextureLoader().load("_content/MUnique.OpenMU.Web.Map/img/attackable_alphamap.png", (t: THREE.Texture) => {
     attackableAlphaMapTexture = t;
 });

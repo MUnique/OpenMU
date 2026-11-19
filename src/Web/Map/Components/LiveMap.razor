@@ -1,1 +1,8 @@
-<div class="livemap-target" id=@this.Id></div>
+@using MUnique.OpenMU.Web.Map.Properties
+
+<div class="livemap-target" id=@this.Id>
+    <button type="button" class="btn btn-secondary btn-sm livemap-reset-view"
+            title="@($"{Resources.ResetView} – {Resources.ZoomHint}")" @onclick="this.ResetViewAsync">
+        <i class="oi oi-fullscreen-exit"></i>
+    </button>
+</div>

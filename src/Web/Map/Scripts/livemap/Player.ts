@@ -1,5 +1,5 @@
 ﻿import * as THREE from "three";
-import { Attackable, attackableAlphaMapTexture } from "./Attackable";
+import { Attackable, attackableAlphaMapTexture, attackableAlphaTest } from "./Attackable";
 import { PlayerData } from "./Types";
 
 export class Player extends Attackable<PlayerData> {
@@ -13,6 +13,7 @@ export class Player extends Attackable<PlayerData> {
             Player.defaultGeometry,
             new THREE.MeshBasicMaterial({
                 alphaMap: attackableAlphaMapTexture,
+                alphaTest: attackableAlphaTest,
                 color: Player.defaultColor,
                 transparent: true,
             }),

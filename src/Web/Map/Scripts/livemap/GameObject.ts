@@ -9,6 +9,12 @@ export interface GameObject extends THREE.Object3D {
     gotKilled(): void;
 
     /**
+     * Scales the labels of the object so that they keep their size on the screen when the map is zoomed.
+     * @param zoom - The zoom factor of the camera.
+     */
+    setZoom(zoom: number): void;
+
+    /**
      * Stops all running animations and releases the resources (materials, textures)
      * which are exclusively used by this object.
      */
