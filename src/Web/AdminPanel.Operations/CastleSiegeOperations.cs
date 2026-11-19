@@ -26,11 +26,10 @@ public sealed class CastleSiegeOperations(CastleSiegeManagementService siege, Ad
         await executor.RequireAsync(AdminRoles.Viewer, cancellationToken).ConfigureAwait(false);
         var result = await siege.GetSnapshotAsync(serverId).ConfigureAwait(false);
         var snapshot = result.Snapshot;
-        return AdminReadResult.From(new
+        object? snapshotData = null;
+        if (snapshot is not null)
         {
-            available = snapshot is not null,
-            error = result.Error.ToString(),
-            snapshot = snapshot is null ? null : new
+            snapshotData = new
             {
                 state = snapshot.State.ToString(),
                 snapshot.StateStartTimeUtc,
@@ -44,7 +43,14 @@ public sealed class CastleSiegeOperations(CastleSiegeManagementService siege, Ad
                 snapshot.TributeMoney,
                 registrations = snapshot.Registrations.Take(100),
                 npcs = snapshot.Npcs.Take(100),
-            },
+            };
+        }
+
+        return AdminReadResult.From(new
+        {
+            available = snapshot is not null,
+            error = result.Error.ToString(),
+            snapshot = snapshotData,
         });
     }
 

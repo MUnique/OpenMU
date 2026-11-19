@@ -176,7 +176,7 @@ public sealed class GameServerStatePublisher : IDisposable
         public void RegisterGameServer(ServerInfo gameServer, IPEndPoint publicEndPoint)
             => this._publisher.RegisterEndPoint(this._endpoint, gameServer, publicEndPoint);
 
-        public void UnregisterGameServer(ushort serverId)
+        public void UnregisterGameServer(ushort gameServerId)
             => this._publisher.UnregisterEndPoint(this._endpoint);
 
         public void CurrentConnectionsChanged(ushort serverId, int currentConnections)

@@ -225,21 +225,9 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     public ValueTask StopWalkingAsync() => this._walker.StopAsync();
 
     /// <inheritdoc />
-    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+    public override ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes = DamageAttributes.Undefined)
     {
-        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Reflected), reflector, null);
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Undefined), initialAttacker, null);
+        return this.HitAsync(new HitInfo(damage, 0, damageAttributes), attacker, null);
     }
 
     /// <inheritdoc/>
@@ -298,15 +286,15 @@ public sealed class Monster : AttackableNpcBase, IAttackable, IAttacker, ISuppor
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this._walker.Dispose();
             (this._intelligence as IDisposable)?.Dispose();
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 
     /// <inheritdoc />

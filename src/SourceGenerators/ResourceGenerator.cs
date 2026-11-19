@@ -73,7 +73,7 @@ public class ResourceGenerator : IIncrementalGenerator
         sb.AppendLine("</root>");
 
         var targetPath = Path.Combine(projectDir!, "Properties", "ModelResources.resx");
-#pragma warning disable RS1035
+#pragma warning disable RS1035 // Intended side effect: this development-time generator (currently not enabled with [Generator]) writes the resx file into the project directory, so it can be checked in.
         File.WriteAllText(targetPath, sb.ToString(), Encoding.UTF8);
 #pragma warning restore RS1035
     }

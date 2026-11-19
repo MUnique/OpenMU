@@ -282,11 +282,17 @@
   <data name="ToggleTheme" xml:space="preserve">
     <value>切换主题</value>
   </data>
-  <data name="SwitchToDarkMode" xml:space="preserve">
-    <value>切换至深色模式</value>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
   </data>
-  <data name="SwitchToLightMode" xml:space="preserve">
-    <value>切换至浅色模式</value>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="ThemeAuto" xml:space="preserve">
+    <value>自动（跟随系统）</value>
   </data>
   <data name="MapEditorShortcutPan" xml:space="preserve">
     <value>单击空白区域并拖动以平移地图</value>

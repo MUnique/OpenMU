@@ -29,9 +29,9 @@ public class SkinChatCommandPlugIn : ChatCommandPlugInBase<SkinChatCommandArgs>
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc/>
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, SkinChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, SkinChatCommandArgs arguments)
     {
-        if (gameMaster?.Attributes is { } attributes
+        if (player?.Attributes is { } attributes
             && attributes.GetComposableAttribute(Stats.TransformationSkin) is { } attribute)
         {
             attribute.Elements.ToList().ForEach(attribute.RemoveElement);

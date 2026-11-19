@@ -140,7 +140,8 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
             try
             {
                 customConfiguration = item.GetConfiguration(type, plugins.CustomConfigReferenceHandler) ?? Activator.CreateInstance(type)!;
-                current = item.CustomConfiguration is null ? JsonSerializer.SerializeToNode(customConfiguration, type, ConfigurationPatch.Options) as JsonObject ?? new JsonObject()
+                current = item.CustomConfiguration is null
+                    ? JsonSerializer.SerializeToNode(customConfiguration, type, ConfigurationPatch.Options) as JsonObject ?? new JsonObject()
                     : JsonNode.Parse(item.CustomConfiguration) as JsonObject ?? throw new JsonException();
             }
             catch (Exception ex) when (ex is JsonException or FormatException or KeyNotFoundException)
@@ -162,7 +163,8 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
                 }
                 else
                 {
-                    changedBefore[property.Name] = current.ContainsKey(property.Name) ? current[property.Name]?.DeepClone()
+                    changedBefore[property.Name] = current.ContainsKey(property.Name)
+                        ? current[property.Name]?.DeepClone()
                         : JsonSerializer.SerializeToNode(property.GetValue(customConfiguration), property.PropertyType, ConfigurationPatch.Options);
                     changedAfter[property.Name] = JsonSerializer.SerializeToNode(value, property.PropertyType, ConfigurationPatch.Options);
                 }
@@ -195,8 +197,12 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
         var change = new JsonObject
         {
             ["kind"] = panelConfiguration is null ? "plugin" : "pluginPanel",
-            ["revertAvailable"] = panelConfiguration is null && !stringChange, ["pluginId"] = pluginId.ToString(), ["before"] = before, ["after"] = after,
-            ["stateFingerprint"] = fingerprint, ["afterStateFingerprint"] = Fingerprint(active ?? item.IsActive, patch is null && panelConfiguration is null ? item.CustomConfiguration : newJson),
+            ["revertAvailable"] = panelConfiguration is null && !stringChange,
+            ["pluginId"] = pluginId.ToString(),
+            ["before"] = before,
+            ["after"] = after,
+            ["stateFingerprint"] = fingerprint,
+            ["afterStateFingerprint"] = Fingerprint(active ?? item.IsActive, patch is null && panelConfiguration is null ? item.CustomConfiguration : newJson),
         };
         return await AdminChangeExecution.RunAsync(
             executor,

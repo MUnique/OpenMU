@@ -33,7 +33,9 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
         return AdminReadResult.From(new
         {
             summary = "Global experience is multiplied by the game server's ExperienceRate. Master experience is global. Drops use DropItemGroup.Chance; money uses MoneyAmountRate attribute configuration, not a per-server scalar.",
-            configurationId = config.GetId(), config.ExperienceRate, config.MasterExperienceRate,
+            configurationId = config.GetId(),
+            config.ExperienceRate,
+            config.MasterExperienceRate,
             moneyAmount = config.GlobalBaseAttributeValues.Where(a => a.Definition.Id == Stats.MoneyAmountRate.Id).Select(a => new { id = a.GetId(), a.Value, aggregateType = a.AggregateType.ToString() }),
             servers = servers.OrderBy(s => s.ServerID).Take(100).Select(s => new { id = s.GetId(), serverId = s.ServerID, s.Description, s.ExperienceRate }),
         });
@@ -99,20 +101,25 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
             ?? throw new AdminOperationException("Monster not found.", AdminOperationErrorKind.InvalidInput);
         var map = config.Maps.SingleOrDefault(m => m.Number == mapNumber)
             ?? throw new AdminOperationException("Map not found.", AdminOperationErrorKind.InvalidInput);
-        var groups = monster.DropItemGroups.Select(g => (source: "monster", group: g))
-            .Concat(map.DropItemGroups.Select(g => (source: "map", group: g)))
-            .Concat(config.DropItemGroups.Select(g => (source: "global", group: g)))
-            .Where(g => (g.group.Monster is null || g.group.Monster.GetId() == monster.GetId())
-                && (g.group.MinimumMonsterLevel is null || monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == Stats.Level.Id)?.Value >= g.group.MinimumMonsterLevel)
-                && (g.group.MaximumMonsterLevel is null || monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == Stats.Level.Id)?.Value <= g.group.MaximumMonsterLevel)).ToList();
+        var groups = monster.DropItemGroups.Select(g => (Source: "monster", Group: g))
+            .Concat(map.DropItemGroups.Select(g => (Source: "map", Group: g)))
+            .Concat(config.DropItemGroups.Select(g => (Source: "global", Group: g)))
+            .Where(g => (g.Group.Monster is null || g.Group.Monster.GetId() == monster.GetId())
+                && (g.Group.MinimumMonsterLevel is null || monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == Stats.Level.Id)?.Value >= g.Group.MinimumMonsterLevel)
+                && (g.Group.MaximumMonsterLevel is null || monster.Attributes.FirstOrDefault(a => a.AttributeDefinition?.Id == Stats.Level.Id)?.Value <= g.Group.MaximumMonsterLevel)).ToList();
         var result = AdminReadResult.Page(
             groups.Skip(offset).Take(limit).Select(g => new
-        {
-            g.source, id = g.group.GetId(), g.group.Chance, itemType = g.group.ItemType.ToString(),
-            g.group.MinimumMonsterLevel, g.group.MaximumMonsterLevel, g.group.ItemLevel,
-            items = g.group.PossibleItems.Take(100).Select(i => new { id = i.GetId(), name = i.GetNameForLevel(g.group.ItemLevel ?? 0) }),
-            itemsTruncated = g.group.PossibleItems.Count > 100,
-        }),
+            {
+                source = g.Source,
+                id = g.Group.GetId(),
+                g.Group.Chance,
+                itemType = g.Group.ItemType.ToString(),
+                g.Group.MinimumMonsterLevel,
+                g.Group.MaximumMonsterLevel,
+                g.Group.ItemLevel,
+                items = g.Group.PossibleItems.Take(100).Select(i => new { id = i.GetId(), name = i.GetNameForLevel(g.Group.ItemLevel ?? 0) }),
+                itemsTruncated = g.Group.PossibleItems.Count > 100,
+            }),
             groups.Count,
             offset,
             limit);
@@ -176,10 +183,19 @@ public sealed class ConfigurationTaskOperations(IDataSource<GameConfiguration> c
         var spawns = map.MonsterSpawns.OrderBy(s => s.GetId()).ToArray();
         return AdminReadResult.Page(
             spawns.Skip(offset).Take(limit).Select(s => new
-        {
-            id = s.GetId(), monsterNumber = s.MonsterDefinition?.Number, monster = s.MonsterDefinition?.Designation,
-            s.X1, s.Y1, s.X2, s.Y2, s.Quantity, s.Direction, s.SpawnTrigger, s.WaveNumber,
-        }),
+            {
+                id = s.GetId(),
+                monsterNumber = s.MonsterDefinition?.Number,
+                monster = s.MonsterDefinition?.Designation,
+                s.X1,
+                s.Y1,
+                s.X2,
+                s.Y2,
+                s.Quantity,
+                s.Direction,
+                s.SpawnTrigger,
+                s.WaveNumber,
+            }),
             spawns.Length,
             offset,
             limit);

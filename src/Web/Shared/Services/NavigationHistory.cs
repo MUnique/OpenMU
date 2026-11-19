@@ -231,5 +231,7 @@ public sealed class NavigationHistory
     /// <summary>
     /// An entry for a navigation history.
     /// </summary>
+    /// <param name="Uri">The target URI.</param>
+    /// <param name="Title">The display title.</param>
     public record HistoryEntry(string Uri, string Title);
 }

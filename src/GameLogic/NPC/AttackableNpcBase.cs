@@ -78,7 +78,10 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <inheritdoc/>
     public override Point Position
     {
-        get => base.Position;
+        get
+        {
+            return base.Position;
+        }
         set
         {
             if (base.Position != value)
@@ -160,13 +163,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     }
 
     /// <inheritdoc />
-    public abstract ValueTask ReflectDamageAsync(IAttacker reflector, uint damage);
-
-    /// <inheritdoc />
-    public abstract ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
-
-    /// <inheritdoc />
-    public abstract ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
+    public abstract ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes);
 
     /// <inheritdoc/>
     public ValueTask KillInstantlyAsync()
@@ -192,15 +189,15 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this.Died = null;
             this.IsAlive = false;
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 
     /// <summary>

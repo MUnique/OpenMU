@@ -108,17 +108,17 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc/>
-    public async ValueTask DeleteFriendAsync(string playerName, string friendName)
+    public async ValueTask DeleteFriendAsync(string name, string friendName)
     {
-        if (this.OnlineFriends.TryGetValue(playerName, out var player) && this.OnlineFriends.TryGetValue(friendName, out var friend))
+        if (this.OnlineFriends.TryGetValue(name, out var player) && this.OnlineFriends.TryGetValue(friendName, out var friend))
         {
             player.RemoveSubscriber(friend);
             friend.RemoveSubscriber(player);
         }
 
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-        await context.DeleteAsync(playerName, friendName).ConfigureAwait(false);
-        await context.DeleteAsync(friendName, playerName).ConfigureAwait(false);
+        await context.DeleteAsync(name, friendName).ConfigureAwait(false);
+        await context.DeleteAsync(friendName, name).ConfigureAwait(false);
         await context.SaveChangesAsync().ConfigureAwait(false);
     }
 
@@ -126,9 +126,7 @@ public class FriendServer : IFriendServer
     public async ValueTask FriendResponseAsync(string characterName, string friendName, bool accepted)
     {
         using var context = this._persistenceContextProvider.CreateNewFriendServerContext();
-#pragma warning disable S2234 // The parameters are passed correctly
-        var requester = await context.GetFriendByNamesAsync(friendName, characterName).ConfigureAwait(false);
-#pragma warning restore S2234
+        var requester = await context.GetFriendByNamesAsync(characterName: friendName, friendName: characterName).ConfigureAwait(false);
         if (requester is null)
         {
             return;
@@ -186,9 +184,9 @@ public class FriendServer : IFriendServer
     }
 
     /// <inheritdoc />
-    public async ValueTask<bool> InviteFriendToChatRoomAsync(string playerName, string friendName, ushort roomId)
+    public async ValueTask<bool> InviteFriendToChatRoomAsync(string selectedCharacterName, string friendName, ushort roomNumber)
     {
-        if (!this.OnlineFriends.TryGetValue(playerName, out var player))
+        if (!this.OnlineFriends.TryGetValue(selectedCharacterName, out var player))
         {
             return false;
         }
@@ -208,10 +206,10 @@ public class FriendServer : IFriendServer
             return false;
         }
 
-        var authenticationInfoFriend = await this._chatServer.RegisterClientAsync(roomId, friendName).ConfigureAwait(false);
+        var authenticationInfoFriend = await this._chatServer.RegisterClientAsync(roomNumber, friendName).ConfigureAwait(false);
         if (authenticationInfoFriend is not null)
         {
-            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, playerName).ConfigureAwait(false);
+            await this._friendNotifier.ChatRoomCreatedAsync(friend.ServerId, authenticationInfoFriend, selectedCharacterName).ConfigureAwait(false);
             return true;
         }
 

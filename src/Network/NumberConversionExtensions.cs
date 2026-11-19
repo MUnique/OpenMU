@@ -42,7 +42,7 @@ public static class NumberConversionExtensions
     /// <returns>The high byte.</returns>
     public static byte GetHighByte(this ushort value)
     {
-        return (byte)(value >> 8 & 0xFF);
+        return (byte)((value >> 8) & 0xFF);
     }
 
     /// <summary>

@@ -354,8 +354,14 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
             throw new AdminOperationException("The deleted object's identifier already exists. Revert refused.");
         }
 
-        var item = mode == "create" ? null : type == typeof(GameServerDefinition)
-            ? await context.GetByIdAsync<GameServerDefinition>(id, cancellationToken).ConfigureAwait(false) : Find(config, type, id);
+        object? item = null;
+        if (mode != "create")
+        {
+            item = type == typeof(GameServerDefinition)
+                ? await context.GetByIdAsync<GameServerDefinition>(id, cancellationToken).ConfigureAwait(false)
+                : Find(config, type, id);
+        }
+
         if ((mode != "create" && item is null) || (item is GameServerDefinition server && server.GameConfiguration?.GetId() != configId))
         {
             throw new AdminOperationException("The object is not part of the active game configuration.", AdminOperationErrorKind.InvalidInput);
@@ -393,9 +399,14 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
 
         var change = new JsonObject
         {
-            ["kind"] = mode, ["type"] = type.Name, ["id"] = id.ToString(),
-            ["parentType"] = parentType, ["parentId"] = parentId?.ToString(), ["collection"] = collection,
-            ["beforeFingerprint"] = Fingerprint(before, item, type), ["afterFingerprint"] = Fingerprint(after, item, type),
+            ["kind"] = mode,
+            ["type"] = type.Name,
+            ["id"] = id.ToString(),
+            ["parentType"] = parentType,
+            ["parentId"] = parentId?.ToString(),
+            ["collection"] = collection,
+            ["beforeFingerprint"] = Fingerprint(before, item, type),
+            ["afterFingerprint"] = Fingerprint(after, item, type),
             ["before"] = mode == "update" ? SelectFields(before!, values.Keys) : before,
             ["after"] = mode == "update" ? SelectFields(after!, values.Keys) : after,
         };

@@ -375,15 +375,27 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
             }
         }
 
-        public static string SwitchToDarkMode {
+        public static string Theme {
             get {
-                return ResourceManager.GetString("SwitchToDarkMode", resourceCulture);
+                return ResourceManager.GetString("Theme", resourceCulture);
             }
         }
 
-        public static string SwitchToLightMode {
+        public static string ThemeLight {
             get {
-                return ResourceManager.GetString("SwitchToLightMode", resourceCulture);
+                return ResourceManager.GetString("ThemeLight", resourceCulture);
+            }
+        }
+
+        public static string ThemeDark {
+            get {
+                return ResourceManager.GetString("ThemeDark", resourceCulture);
+            }
+        }
+
+        public static string ThemeAuto {
+            get {
+                return ResourceManager.GetString("ThemeAuto", resourceCulture);
             }
         }
         

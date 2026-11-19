@@ -31,7 +31,10 @@ public class PlugInConfiguration : INotifyPropertyChanged
     /// </summary>
     public bool IsActive
     {
-        get => this._isActive;
+        get
+        {
+            return this._isActive;
+        }
         set
         {
             if (value == this._isActive)
@@ -59,7 +62,10 @@ public class PlugInConfiguration : INotifyPropertyChanged
     /// </summary>
     public string? CustomConfiguration
     {
-        get => this._customConfiguration;
+        get
+        {
+            return this._customConfiguration;
+        }
         set
         {
             if (value == this._customConfiguration)

@@ -31,9 +31,12 @@ internal sealed class CastleSiegeTaxInfoHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc />
     public ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        return packet.Length >= CastleSiegeTaxInfoRequest.Length
-               && player.OpenedNpc?.Definition.Number == SeniorNumber
-            ? this._action.ShowAsync(player, CastleSiegeHandlerContext.Get(player))
-            : ValueTask.CompletedTask;
+        if (packet.Length >= CastleSiegeTaxInfoRequest.Length
+            && player.OpenedNpc?.Definition.Number == SeniorNumber)
+        {
+            return this._action.ShowAsync(player, CastleSiegeHandlerContext.Get(player));
+        }
+
+        return ValueTask.CompletedTask;
     }
 }

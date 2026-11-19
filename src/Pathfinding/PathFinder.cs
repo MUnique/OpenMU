@@ -58,7 +58,10 @@ public class PathFinder : IPathFinder
     /// </summary>
     public int MaximumDistance
     {
-        get => this._maximumDistance;
+        get
+        {
+            return this._maximumDistance;
+        }
         set
         {
             this._maximumDistance = value;

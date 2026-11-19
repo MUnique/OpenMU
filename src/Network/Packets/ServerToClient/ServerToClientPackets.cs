@@ -48329,9 +48329,9 @@ public readonly struct ActiveQuestListReady
             PoisonDarkGreen = 5,
 
         /// <summary>
-        /// Dark pink color.
+        /// Dark pink color, usually used by bleed damage.
         /// </summary>
-            DarkPink = 6,
+            BleedDarkPink = 6,
 
         /// <summary>
         /// White color.

@@ -17,6 +17,11 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes jewelery items and pet options related to damage, and jewelery resistance values.
 /// </summary>
+/// <remarks>
+/// It converted the elemental resistances of the characters to whole numbers. Version 2 converts the resistance increases
+/// of the Rage Fighter master tree as well, which version 1 left at a hundredth of their value, unlike the ones of the
+/// other master trees.
+/// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixJeweleryPetsDamageCalcsPlugInSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixJeweleryPetsDamageCalcsPlugInSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("DD5B0424-89DB-4DE4-A1BB-B294F2C1FCE6")]
@@ -42,6 +47,25 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 16, 22, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        if (installedVersion is null)
+        {
+            await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
+            return;
+        }
+
+        // Applying version 1 again would overwrite customized jewelery and pets; only the master skills are new.
+        FixResistanceIncreaseFormulas(gameConfiguration);
+    }
+
+    /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         await base.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
@@ -63,14 +87,17 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         }
 
         // Update jewelery
-#pragma warning disable SA1116, SA1117 // Parameters must be on same line or separate lines
         var eliteSkeletonRing = jewelery.First(i => i.Number == 39);
         this.AddLevelRequirement(context, gameConfiguration, eliteSkeletonRing, 10);
         if (eliteSkeletonRing.PossibleItemOptions.FirstOrDefault() is { } eliteSkeletonRingItemOptDef)
         {
-            CreateItemBasePowerUps(eliteSkeletonRing,
+            CreateItemBasePowerUps(
+                eliteSkeletonRing,
                 (Stats.DefenseBase, 1.1f, AggregateType.Multiplicate));
-            CreateItemOptionDefinition(eliteSkeletonRingItemOptDef, "Elite Skeleton Transformation Ring", ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
+            CreateItemOptionDefinition(
+                eliteSkeletonRingItemOptDef,
+                "Elite Skeleton Transformation Ring",
+                ItemOptionDefinitionNumbers.EliteSkeletonTransformationRing,
                 (Stats.MaximumHealth, 0, AggregateType.AddRaw, (Stats.Level, 1)));
         }
 
@@ -78,11 +105,13 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         this.AddLevelRequirement(context, gameConfiguration, jackOlanternRing, 10);
 
         var christmasRing = jewelery.First(i => i.Number == 41);
-        CreateItemBasePowerUps(christmasRing,
+        CreateItemBasePowerUps(
+            christmasRing,
             (Stats.BaseDamageBonus, 20, AggregateType.AddRaw));
 
         var gameMasterRing = jewelery.First(i => i.Number == 42);
-        CreateItemBasePowerUps(gameMasterRing,
+        CreateItemBasePowerUps(
+            gameMasterRing,
             (Stats.IceDamageBonus, 255, AggregateType.AddRaw),
             (Stats.PoisonDamageBonus, 255, AggregateType.AddRaw),
             (Stats.LightningDamageBonus, 255, AggregateType.AddRaw),
@@ -103,7 +132,8 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
 
         var pandaRing = jewelery.First(i => i.Number == 76);
         pandaRing.PossibleItemOptions.Clear();
-        CreateItemBasePowerUps(pandaRing,
+        CreateItemBasePowerUps(
+            pandaRing,
             (Stats.BaseDamageBonus, 30, AggregateType.AddRaw),
             (Stats.CurseBaseDmg, 30, AggregateType.AddRaw),
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
@@ -112,16 +142,21 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         var skeletonRing = jewelery.First(i => i.Number == 122);
         if (skeletonRing.PossibleItemOptions.FirstOrDefault() is { } skeletonRingItemOptDef)
         {
-            CreateItemBasePowerUps(skeletonRing,
+            CreateItemBasePowerUps(
+                skeletonRing,
                 (Stats.BaseDamageBonus, 40, AggregateType.AddRaw),
                 (Stats.CurseBaseDmg, 40, AggregateType.AddRaw));
-            CreateItemOptionDefinition(skeletonRingItemOptDef, "Skeleton Transformation Ring", ItemOptionDefinitionNumbers.SkeletonTransformationRing,
-                    (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f)));
+            CreateItemOptionDefinition(
+                skeletonRingItemOptDef,
+                "Skeleton Transformation Ring",
+                ItemOptionDefinitionNumbers.SkeletonTransformationRing,
+                (Stats.BonusExperienceRate, 0, AggregateType.AddRaw, (Stats.IsPetSkeletonEquipped, 0.3f)));
         }
 
         var wizardsRing = jewelery.First(i => i.Number == 20);
         wizardsRing.PossibleItemOptions.Clear();
-        CreateItemBasePowerUps(wizardsRing,
+        CreateItemBasePowerUps(
+            wizardsRing,
             (Stats.MinimumPhysBaseDmg, 1.1f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.1f, AggregateType.Multiplicate),
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
@@ -131,7 +166,8 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
         // Update pets
         var demon = pets.First(i => i.Number == 64);
         demon.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(demon,
+        CreateItemBasePowerUps(
+            demon,
             (Stats.MinimumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.4f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.4f, AggregateType.Multiplicate),
@@ -142,19 +178,22 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
 
         var panda = pets.First(i => i.Number == 80);
         panda.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(panda,
+        CreateItemBasePowerUps(
+            panda,
             (Stats.BonusExperienceRate, 0.5f, AggregateType.AddRaw),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
 
         var unicorn = pets.First(i => i.Number == 106);
         unicorn.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(unicorn,
+        CreateItemBasePowerUps(
+            unicorn,
             (Stats.MoneyAmountRate, 1.5f, AggregateType.Multiplicate),
             (Stats.DefenseFinal, 50f, AggregateType.AddRaw));
 
         var skeleton = pets.First(i => i.Number == 123);
         skeleton.BasePowerUpAttributes.Clear();
-        CreateItemBasePowerUps(skeleton,
+        CreateItemBasePowerUps(
+            skeleton,
             (Stats.MinimumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MaximumPhysBaseDmg, 1.2f, AggregateType.Multiplicate),
             (Stats.MinimumWizBaseDmg, 1.2f, AggregateType.Multiplicate),
@@ -164,7 +203,6 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
             (Stats.AttackSpeedAny, 10f, AggregateType.AddRaw),
             (Stats.BonusExperienceRate, 0.3f, AggregateType.AddRaw),
             (Stats.IsPetSkeletonEquipped, 1, AggregateType.AddRaw));
-#pragma warning restore SA1116, SA1117
 
         void CreateItemBasePowerUps(ItemDefinition item, params (AttributeDefinition AttributeDefinition, float Value, AggregateType AggregateType)[] powerUps)
         {
@@ -238,20 +276,29 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
             return itemOption;
         }
 
-        // Update skills
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.PoisonResistanceInc)?.MasterDefinition is { } poisonResistanceInc)
-        {
-            poisonResistanceInc.ValueFormula = poisonResistanceInc.DisplayValueFormula;
-        }
+        FixResistanceIncreaseFormulas(gameConfiguration);
+    }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.LightningResistanceInc)?.MasterDefinition is { } lightningResistanceInc)
+    /// <summary>
+    /// Sets the values of the resistance increases of the master trees to whole numbers, like they are displayed.
+    /// </summary>
+    private static void FixResistanceIncreaseFormulas(GameConfiguration gameConfiguration)
+    {
+        var skillNumbers = new[]
         {
-            lightningResistanceInc.ValueFormula = lightningResistanceInc.DisplayValueFormula;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.IceResistanceIncrease)?.MasterDefinition is { } iceResistanceIncrease)
+            SkillNumber.PoisonResistanceInc,
+            SkillNumber.LightningResistanceInc,
+            SkillNumber.IceResistanceIncrease,
+            SkillNumber.IncreasePoisonResistance,
+            SkillNumber.IncreaseLightningResistance,
+            SkillNumber.IncreaseIceResistance,
+        };
+        foreach (var skillNumber in skillNumbers)
         {
-            iceResistanceIncrease.ValueFormula = iceResistanceIncrease.DisplayValueFormula;
+            if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)skillNumber)?.MasterDefinition is { } masterDefinition)
+            {
+                masterDefinition.ValueFormula = masterDefinition.DisplayValueFormula;
+            }
         }
     }
 }

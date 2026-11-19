@@ -114,12 +114,12 @@ internal class CrywolfFortress : BaseMapInitializer
     {
         yield return this.CreateMonsterSpawn(1, this.NpcDictionary[406], 228, 048, Direction.SouthWest); // Apostle Devin
         yield return this.CreateMonsterSpawn(2, this.NpcDictionary[407], 062, 239, Direction.SouthWest); // Werewolf Quarel
-        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[226], 135, 047, Direction.SouthWest); // Treiner
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[226], 135, 047, Direction.South); // Treiner
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[248], 099, 040, Direction.SouthEast, SpawnTrigger.Wandering); // Wandering Merchant
-        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[256], 096, 025, Direction.SouthEast); // Lahap
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[256], 096, 025, Direction.South); // Lahap
         yield return this.CreateMonsterSpawn(6, this.NpcDictionary[251], 145, 014, Direction.SouthEast); // Hanzo the Blacksmith
-        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[240], 113, 056, Direction.SouthWest); // Baz The Vault Keeper
-        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[224], 118, 011, Direction.SouthEast); // Guardsman
+        yield return this.CreateMonsterSpawn(7, this.NpcDictionary[240], 113, 056, Direction.South); // Baz The Vault Keeper
+        yield return this.CreateMonsterSpawn(8, this.NpcDictionary[224], 118, 011, Direction.East); // Guardsman
 
         yield return this.CreateMonsterSpawn(9, this.NpcDictionary[204], 121, 031, Direction.South); // Wolf Status
         yield return this.CreateMonsterSpawn(10, this.NpcDictionary[205], 125, 027, Direction.South); // Wolf Altar1
@@ -466,9 +466,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 420 },
                 { Stats.AttackRatePvm, 670 },
                 { Stats.DefenseRatePvm, 250 },
-                { Stats.PoisonResistance, 15f / 255 },
-                { Stats.IceResistance, 15f / 255 },
-                { Stats.FireResistance, 15f / 255 },
+                { Stats.IceResistance, 15 },
+                { Stats.PoisonResistance, 15 },
+                { Stats.LightningResistance, 15 },
+                { Stats.FireResistance, 15 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -497,9 +498,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 420 },
                 { Stats.AttackRatePvm, 670 },
                 { Stats.DefenseRatePvm, 250 },
-                { Stats.PoisonResistance, 17f / 255 },
-                { Stats.IceResistance, 17f / 255 },
-                { Stats.FireResistance, 17f / 255 },
+                { Stats.IceResistance, 17 },
+                { Stats.PoisonResistance, 17 },
+                { Stats.LightningResistance, 17 },
+                { Stats.FireResistance, 17 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -528,9 +530,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 420 },
                 { Stats.AttackRatePvm, 670 },
                 { Stats.DefenseRatePvm, 250 },
-                { Stats.PoisonResistance, 19f / 255 },
-                { Stats.IceResistance, 19f / 255 },
-                { Stats.FireResistance, 19f / 255 },
+                { Stats.IceResistance, 19 },
+                { Stats.PoisonResistance, 19 },
+                { Stats.LightningResistance, 19 },
+                { Stats.FireResistance, 19 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -559,9 +562,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 680 },
                 { Stats.AttackRatePvm, 950 },
                 { Stats.DefenseRatePvm, 355 },
-                { Stats.PoisonResistance, 21f / 255 },
-                { Stats.IceResistance, 21f / 255 },
-                { Stats.FireResistance, 21f / 255 },
+                { Stats.IceResistance, 21 },
+                { Stats.PoisonResistance, 21 },
+                { Stats.LightningResistance, 21 },
+                { Stats.FireResistance, 21 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -590,9 +594,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 740 },
                 { Stats.AttackRatePvm, 980 },
                 { Stats.DefenseRatePvm, 370 },
-                { Stats.PoisonResistance, 23f / 255 },
-                { Stats.IceResistance, 23f / 255 },
-                { Stats.FireResistance, 23f / 255 },
+                { Stats.IceResistance, 23 },
+                { Stats.PoisonResistance, 23 },
+                { Stats.LightningResistance, 23 },
+                { Stats.FireResistance, 23 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -621,9 +626,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 800 },
                 { Stats.AttackRatePvm, 1027 },
                 { Stats.DefenseRatePvm, 397 },
-                { Stats.PoisonResistance, 25f / 255 },
-                { Stats.IceResistance, 25f / 255 },
-                { Stats.FireResistance, 25f / 255 },
+                { Stats.IceResistance, 25 },
+                { Stats.PoisonResistance, 25 },
+                { Stats.LightningResistance, 25 },
+                { Stats.FireResistance, 25 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -652,9 +658,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 885 },
                 { Stats.AttackRatePvm, 1100 },
                 { Stats.DefenseRatePvm, 440 },
-                { Stats.PoisonResistance, 27f / 255 },
-                { Stats.IceResistance, 27f / 255 },
-                { Stats.FireResistance, 27f / 255 },
+                { Stats.IceResistance, 27 },
+                { Stats.PoisonResistance, 27 },
+                { Stats.LightningResistance, 27 },
+                { Stats.FireResistance, 27 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -683,9 +690,10 @@ internal class CrywolfFortress : BaseMapInitializer
                 { Stats.DefenseBase, 982 },
                 { Stats.AttackRatePvm, 1173 },
                 { Stats.DefenseRatePvm, 500 },
-                { Stats.PoisonResistance, 29f / 255 },
-                { Stats.IceResistance, 29f / 255 },
-                { Stats.FireResistance, 29f / 255 },
+                { Stats.IceResistance, 29 },
+                { Stats.PoisonResistance, 29 },
+                { Stats.LightningResistance, 29 },
+                { Stats.FireResistance, 29 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

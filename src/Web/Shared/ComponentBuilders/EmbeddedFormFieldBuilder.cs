@@ -16,9 +16,9 @@ using MUnique.OpenMU.Web.Shared.Services;
 public class EmbeddedFormFieldBuilder : BaseComponentBuilder, IComponentBuilder
 {
     /// <inheritdoc/>
-    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder builder, int currentIndex, IChangeNotificationService notificationService)
+    public int BuildComponent(object model, PropertyInfo propertyInfo, RenderTreeBuilder treeBuilder, int currentIndex, IChangeNotificationService notificationService)
     {
-        return this.BuildGenericField(model, typeof(MemberOfAggregateField<>), builder, propertyInfo, currentIndex, notificationService);
+        return this.BuildGenericField(model, typeof(MemberOfAggregateField<>), treeBuilder, propertyInfo, currentIndex, notificationService);
     }
 
     /// <inheritdoc/>

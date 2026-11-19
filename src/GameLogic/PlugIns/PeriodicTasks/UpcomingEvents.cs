@@ -39,7 +39,13 @@ public static class UpcomingEvents
             .ToList();
     }
 
-    private static string GetName(Type plugInType, CultureInfo culture)
+    /// <summary>
+    /// Gets the name of a scheduled plugin, as it's shown to the players and in the admin panel.
+    /// </summary>
+    /// <param name="plugInType">The type of the plugin.</param>
+    /// <param name="culture">The culture of the name.</param>
+    /// <returns>The localized name; the type name, if the plugin has no display name.</returns>
+    public static string GetName(Type plugInType, CultureInfo culture)
     {
         var display = plugInType.GetCustomAttribute<DisplayAttribute>();
         if (display?.Name is { } name

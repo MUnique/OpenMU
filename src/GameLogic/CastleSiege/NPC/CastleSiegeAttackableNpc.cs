@@ -115,20 +115,9 @@ public abstract class CastleSiegeAttackableNpc : AttackableNpcBase, ICastleSiege
     }
 
     /// <inheritdoc />
-    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+    public override ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes)
     {
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
-    {
+        // A siege gate or statue doesn't attack, reflect, get poisoned or bleed.
         return ValueTask.CompletedTask;
     }
 
@@ -186,14 +175,14 @@ public abstract class CastleSiegeAttackableNpc : AttackableNpcBase, ICastleSiege
     }
 
     /// <inheritdoc />
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        if (managed)
+        if (disposing)
         {
             this._intelligence.Pause();
             (this._intelligence as IDisposable)?.Dispose();
         }
 
-        base.Dispose(managed);
+        base.Dispose(disposing);
     }
 }

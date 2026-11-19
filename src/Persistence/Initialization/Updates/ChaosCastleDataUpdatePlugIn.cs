@@ -43,9 +43,7 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2023, 03, 05, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         // First check if an update is required.
         if (gameConfiguration.MiniGameDefinitions.Any(def => def.Type == MiniGameType.ChaosCastle))
@@ -57,7 +55,7 @@ public class ChaosCastleDataUpdatePlugIn : UpdatePlugInBase
         var initializer = new ChaosCastleInitializer(context, gameConfiguration);
         initializer.Initialize();
 
-        var chaosCastleMaps = gameConfiguration.Maps.Where(map => map.Number is >= 17 and <= 23 or 53);
+        var chaosCastleMaps = gameConfiguration.Maps.Where(map => map.Number is (>= 17 and <= 23) or 53);
         foreach (var chaosCastleMap in chaosCastleMaps)
         {
             chaosCastleMap.UpdateTerrainFromResources();

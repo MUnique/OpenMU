@@ -2,17 +2,18 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-#pragma warning disable CA1416 // This project is compiled for windows
 namespace MUnique.OpenMU.ClientLauncher;
 
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
 /// <summary>
 /// The main form of the launcher.
 /// </summary>
+[SupportedOSPlatform("windows")]
 public partial class MainForm : Form
 {
     private const string ConfigFileName = "launcher.config";
@@ -34,7 +35,10 @@ public partial class MainForm : Form
 
     private BindingList<ServerHostSettings> Hosts
     {
-        get => this._hostsBindingList;
+        get
+        {
+            return this._hostsBindingList;
+        }
         set
         {
             this._hostsBindingList = value;

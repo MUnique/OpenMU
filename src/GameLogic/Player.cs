@@ -237,7 +237,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public int Money
     {
-        get => this.SelectedCharacter?.Inventory?.Money ?? 0;
+        get
+        {
+            return this.SelectedCharacter?.Inventory?.Money ?? 0;
+        }
 
         set
         {
@@ -295,7 +298,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public CharacterPose Pose
     {
-        get => this._selectedCharacter?.Pose ?? default;
+        get
+        {
+            return this._selectedCharacter?.Pose ?? default;
+        }
 
         set
         {
@@ -314,7 +320,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public Account? Account
     {
-        get => this._account;
+        get
+        {
+            return this._account;
+        }
         set
         {
             if (this._account != value)
@@ -364,7 +373,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public GameMap? CurrentMap
     {
-        get => this._currentMap;
+        get
+        {
+            return this._currentMap;
+        }
 
         internal set
         {
@@ -463,7 +475,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <inheritdoc/>
     public Point Position
     {
-        get => new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        get
+        {
+            return new(this.SelectedCharacter?.PositionX ?? 0, this.SelectedCharacter?.PositionY ?? 0);
+        }
 
         set
         {
@@ -746,6 +761,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
             this.DuelRoom = null;
 
+            // A request to this player can't be answered anymore once the character left the world.
+            this.PendingAllianceRequest = default;
+
             this._selectedCharacter = null;
         }
         else
@@ -887,21 +905,20 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <inheritdoc/>
-    public ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
-    {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null);
-    }
-
-    /// <inheritdoc/>
     public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
     {
+        if (initialAttacker is Player)
+        {
+            return this.HitAsync(new HitInfo(0, damage, DamageAttributes.Poison), initialAttacker, null);
+        }
+
         return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
     }
 
     /// <inheritdoc/>
-    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    public ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes = DamageAttributes.Undefined)
     {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null);
+        return this.HitAsync(this.GetHitInfo(damage, damageAttributes, attacker), attacker, null);
     }
 
     /// <summary>
@@ -1838,9 +1855,10 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.OnDeathAsync(attacker).ConfigureAwait(false);
         }
 
-        if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
+        if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison)
+            || hitInfo.Attributes.HasFlag(DamageAttributes.Bleed))
         {
-            // Poison Damage does not reflect to the attacker.
+            // Neither Poison nor Bleed damage reflect to the attacker.
             return;
         }
 

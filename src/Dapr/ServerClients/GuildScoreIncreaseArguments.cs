@@ -7,4 +7,6 @@ namespace MUnique.OpenMU.ServerClients;
 /// <summary>
 /// Arguments for increasing a guild's score.
 /// </summary>
+/// <param name="GuildId">The guild identifier.</param>
+/// <param name="Amount">The score amount.</param>
 public record GuildScoreIncreaseArguments(uint GuildId, int Amount);

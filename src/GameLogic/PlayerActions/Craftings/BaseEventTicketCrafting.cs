@@ -44,10 +44,10 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected virtual byte MaximumSuccessRate => 100;
 
     /// <inheritdoc />
-    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> itemLinks, out byte successRate)
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRateByItems)
     {
-        successRate = 0;
-        itemLinks = new List<CraftingRequiredItemLink>(3);
+        successRateByItems = 0;
+        items = new List<CraftingRequiredItemLink>(3);
 
         var item1 = player.TemporaryStorage!.Items.FirstOrDefault(item => item.Definition?.Name.ValueInNeutralLanguage == this._requiredEventItemName1);
         var item2 = player.TemporaryStorage.Items.FirstOrDefault(item => item.Definition?.Name.ValueInNeutralLanguage == this._requiredEventItemName2);
@@ -57,7 +57,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
             return this.IncorrectMixItemsResult;
         }
 
-        itemLinks.Add(new CraftingRequiredItemLink(
+        items.Add(new CraftingRequiredItemLink(
             item1.GetAsEnumerable(),
             new TransientItemCraftingRequiredItem
             {
@@ -65,7 +65,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
                 MaximumAmount = 1,
                 MinimumAmount = 1,
             }));
-        itemLinks.Add(new CraftingRequiredItemLink(
+        items.Add(new CraftingRequiredItemLink(
             item2.GetAsEnumerable(),
             new TransientItemCraftingRequiredItem
             {
@@ -73,7 +73,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
                 MaximumAmount = 1,
                 MinimumAmount = 1,
             }));
-        itemLinks.Add(new CraftingRequiredItemLink(
+        items.Add(new CraftingRequiredItemLink(
             chaos.GetAsEnumerable(),
             new TransientItemCraftingRequiredItem
             {
@@ -83,7 +83,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
             }));
 
         var crywolfBenefit = CrywolfPlugIn.GetContext(player.GameContext)?.ChaosRateBenefit ?? 0;
-        successRate = (byte)Math.Min(this.GetSuccessRate(item1.Level) + crywolfBenefit, this.MaximumSuccessRate);
+        successRateByItems = (byte)Math.Min(this.GetSuccessRate(item1.Level) + crywolfBenefit, this.MaximumSuccessRate);
         return default;
     }
 
@@ -108,7 +108,7 @@ public abstract class BaseEventTicketCrafting : BaseItemCraftingHandler
     protected abstract byte GetSuccessRate(int eventLevel);
 
     /// <inheritdoc />
-    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketIndex, byte successRate)
+    protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
         var item = player.PersistenceContext.CreateNew<Item>();
         item.Level = this.GetEventLevel(requiredItems);

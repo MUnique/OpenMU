@@ -48,7 +48,7 @@ internal class Karutan1 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(2, this.NpcDictionary[578], 117, 126, Direction.SouthEast); // Weapons Merchant Bolo
         yield return this.CreateMonsterSpawn(3, this.NpcDictionary[240], 123, 132, Direction.South); // Safety Guardian
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[240], 122, 096, Direction.SouthEast); // Safety Guardian
-        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 158, 126, Direction.SouthWest); // Safety Guardian
+        yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 157, 127, Direction.SouthWest); // Safety Guardian
     }
 
     /// <inheritdoc/>
@@ -204,9 +204,10 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.DefenseBase, 445 },
                 { Stats.AttackRatePvm, 845 },
                 { Stats.DefenseRatePvm, 248 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 100f / 255 },
-                { Stats.FireResistance, 200f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 200 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -235,9 +236,10 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.DefenseBase, 485 },
                 { Stats.AttackRatePvm, 915 },
                 { Stats.DefenseRatePvm, 283 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 100f / 255 },
-                { Stats.FireResistance, 200f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 200 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -266,9 +268,10 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.DefenseBase, 518 },
                 { Stats.AttackRatePvm, 965 },
                 { Stats.DefenseRatePvm, 293 },
-                { Stats.PoisonResistance, 100f / 255 },
-                { Stats.IceResistance, 100f / 255 },
-                { Stats.FireResistance, 240f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 240 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -297,9 +300,10 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.DefenseBase, 560 },
                 { Stats.AttackRatePvm, 1080 },
                 { Stats.DefenseRatePvm, 340 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.FireResistance, 150f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 150 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -328,9 +332,10 @@ internal class Karutan1 : BaseMapInitializer
                 { Stats.DefenseBase, 575 },
                 { Stats.AttackRatePvm, 1140 },
                 { Stats.DefenseRatePvm, 375 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.FireResistance, 150f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 150 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

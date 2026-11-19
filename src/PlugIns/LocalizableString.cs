@@ -44,7 +44,10 @@ internal sealed class LocalizableString
     /// </summary>
     public string? Value
     {
-        get => this._propertyValue;
+        get
+        {
+            return this._propertyValue;
+        }
         set
         {
             if (this._propertyValue != value)
@@ -61,7 +64,10 @@ internal sealed class LocalizableString
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
     public Type? ResourceType
     {
-        get => this._resourceType;
+        get
+        {
+            return this._resourceType;
+        }
         set
         {
             if (this._resourceType != value)

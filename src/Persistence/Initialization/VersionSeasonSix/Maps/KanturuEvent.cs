@@ -137,7 +137,7 @@ internal class KanturuEvent : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[ElpisNpcNumber], 77, 177, Direction.SouthWest); // Elpis NPC
+        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[ElpisNpcNumber], 77, 177, Direction.South); // Elpis NPC
     }
 
     /// <inheritdoc/>
@@ -216,10 +216,10 @@ internal class KanturuEvent : BaseMapInitializer
                 { Stats.DefenseBase, 6500 },
                 { Stats.AttackRatePvm, 2800 },
                 { Stats.DefenseRatePvm, 2200 },
-                { Stats.PoisonResistance, 50f / 255 },
-                { Stats.IceResistance, 50f / 255 },
-                { Stats.LightningResistance, 50f / 255 },
-                { Stats.FireResistance, 50f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -251,10 +251,10 @@ internal class KanturuEvent : BaseMapInitializer
                 { Stats.DefenseBase, 7500 },
                 { Stats.AttackRatePvm, 3000 },
                 { Stats.DefenseRatePvm, 2500 },
-                { Stats.PoisonResistance, 50f / 255 },
-                { Stats.IceResistance, 50f / 255 },
-                { Stats.LightningResistance, 50f / 255 },
-                { Stats.FireResistance, 50f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 255 },
+                { Stats.LightningResistance, 150 },
+                { Stats.FireResistance, 150 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -286,10 +286,10 @@ internal class KanturuEvent : BaseMapInitializer
                 { Stats.DefenseBase, 5000 },
                 { Stats.AttackRatePvm, 2000 },
                 { Stats.DefenseRatePvm, 1500 },
-                { Stats.PoisonResistance, 40f / 255 },
-                { Stats.IceResistance, 40f / 255 },
-                { Stats.LightningResistance, 40f / 255 },
-                { Stats.FireResistance, 40f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -321,10 +321,10 @@ internal class KanturuEvent : BaseMapInitializer
                 { Stats.DefenseBase, 5000 },
                 { Stats.AttackRatePvm, 2100 },
                 { Stats.DefenseRatePvm, 1600 },
-                { Stats.PoisonResistance, 40f / 255 },
-                { Stats.IceResistance, 40f / 255 },
-                { Stats.LightningResistance, 40f / 255 },
-                { Stats.FireResistance, 40f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);

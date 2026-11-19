@@ -39,14 +39,14 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
     protected RemotePlayer Player { get; }
 
     /// <inheritdoc/>
-    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newPlayers, bool isSpawned = true)
+    public async ValueTask NewPlayersInScopeAsync(IEnumerable<Player> newObjects, bool isSpawned = true)
     {
-        if (newPlayers is null || !newPlayers.Any())
+        if (newObjects is null || !newObjects.Any())
         {
             return;
         }
 
-        var (shopPlayers, guildPlayers, gensPlayers) = await this.SendCharactersAsync(newPlayers, isSpawned).ConfigureAwait(false);
+        var (shopPlayers, guildPlayers, gensPlayers) = await this.SendCharactersAsync(newObjects, isSpawned).ConfigureAwait(false);
 
         if (shopPlayers != null)
         {
@@ -218,7 +218,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
 
-    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers, IList<Player>? GensPlayers)> SendCharactersAsync(IEnumerable<Player> newPlayers, bool isSpawned)
+    private async ValueTask<(IList<Player>? ShopPlayers, IList<Player>? GuildPlayers, IList<Player>? GensPlayers)> SendCharactersAsync(IEnumerable<Player> newObjects, bool isSpawned)
     {
         IList<Player>? shopPlayers = null;
         IList<Player>? guildPlayers = null;
@@ -230,7 +230,7 @@ public class NewPlayersInScopePlugIn : INewPlayersInScopePlugIn
             return (shopPlayers, guildPlayers, gensPlayers);
         }
 
-        var newPlayerList = newPlayers.ToList();
+        var newPlayerList = newObjects.ToList();
         foreach (var newPlayer in newPlayerList)
         {
             if (newPlayer.Attributes?[Stats.TransformationSkin] == 0)

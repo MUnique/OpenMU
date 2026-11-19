@@ -8,7 +8,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using MUnique.OpenMU.Interfaces;
 
-/// <summary>The confirmed live administration part of the remote game server client.</summary>
+/// <content>The confirmed live administration part of the remote game server client.</content>
 public sealed partial class GameServerClient : IGameServerAdministration
 {
     /// <summary>Gets the unique Dapr app identifier used for confirmed live administration.</summary>
@@ -41,6 +41,14 @@ public sealed partial class GameServerClient : IGameServerAdministration
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<LiveEventInfo>> GetEventsAsync(CancellationToken cancellationToken)
         => this.InvokeAdministrationAsync<IReadOnlyList<LiveEventInfo>>(nameof(this.GetEventsAsync), new(), cancellationToken);
+
+    /// <inheritdoc />
+    public ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(CancellationToken cancellationToken)
+        => this.InvokeAdministrationAsync<IReadOnlyList<ScheduledEventInfo>>(nameof(this.GetScheduledEventsAsync), new(), cancellationToken);
+
+    /// <inheritdoc />
+    public ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
+        => this.InvokeAdministrationAsync<bool>(nameof(this.IsOfflineLevelingAsync), new() { LoginName = loginName }, cancellationToken);
 
     /// <inheritdoc />
     public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)

@@ -2846,4 +2846,10 @@
   <data name="EffectTimesHint" xml:space="preserve">
     <value>哪些魔法效果向玩家显示剩余时间：</value>
   </data>
+  <data name="SocketCountTable" xml:space="preserve">
+    <value>镶嵌孔数量表</value>
+  </data>
+  <data name="SocketCountTableHint" xml:space="preserve">
+    <value>决定此组掉落的镶嵌物品的孔数，可超过普通掉落的三个孔，最多到物品的最大孔数。留空表示使用物品的数量表。</value>
+  </data>
 </root>

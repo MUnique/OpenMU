@@ -55,7 +55,10 @@ public class ConnectServer : IConnectServer, OpenMU.Interfaces.IConnectServer, I
     /// <inheritdoc/>
     public ServerState ServerState
     {
-        get => this._serverState;
+        get
+        {
+            return this._serverState;
+        }
         private set
         {
             if (value != this._serverState)

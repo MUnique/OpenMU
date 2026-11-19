@@ -27,12 +27,12 @@ internal class MoveMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommand
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, MoveMonsterCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, MoveMonsterCommandArgs arguments)
     {
-        var monster = gameMaster.ObservingBuckets.SelectMany(b => b).OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
+        var monster = player.ObservingBuckets.SelectMany(b => b).OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
-            await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundById), arguments.Id).ConfigureAwait(false);
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundById), arguments.Id).ConfigureAwait(false);
             return;
         }
 

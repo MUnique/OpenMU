@@ -145,7 +145,7 @@ public class GameContextPeriodicTasksTests
         /// <summary>
         /// Gets the plug-in id, referenced by the test's plug-in configuration.
         /// </summary>
-        public static Guid PlugInId { get; } = new ("7D2A4C91-3B5E-4F8A-9C1D-6E5B0A7F3D82");
+        public static Guid PlugInId { get; } = new("7D2A4C91-3B5E-4F8A-9C1D-6E5B0A7F3D82");
 
         /// <summary>
         /// The invocations per game context: discovered plug-ins are active in every game context of

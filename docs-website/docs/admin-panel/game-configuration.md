@@ -121,6 +121,19 @@ Item definitions with their requirements, level tables, possible options, socket
 and the classes which may equip them. Items use a dedicated editor with a
 graphical representation instead of the plain generic form.
 
+### Socket count of dropped items
+
+A socket item can have up to its **maximum sockets**. How many sockets a dropped
+instance gets is decided by its **socket count table**, a *weighted value table*
+(`WeightedValueTables` of the game configuration, in the full configuration tree):
+a list of values with relative weights, where a value with a weight of 0 never
+drops. Season 6 has two tables, one for one-handed weapons, shields and armor
+(one socket is common, three are rare, four and five never drop) and one for
+two-handed weapons (up to five, very rare). Without a table, the number is
+selected with the same chance between 1 and the maximum sockets. A drop group
+can override the table for the items it drops, see
+[Item drops](item-drops.md#map-drop-groups).
+
 ### Item prices
 
 The price of an item is used by the NPC merchants (buying, selling, repairing)

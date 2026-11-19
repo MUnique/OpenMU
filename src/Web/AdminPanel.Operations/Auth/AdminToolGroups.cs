@@ -4,7 +4,13 @@
 
 namespace MUnique.OpenMU.Web.AdminPanel.Auth;
 
-/// <summary>Parses optional per-key MCP allowlists. Empty preserves existing role-only access.</summary>
+/// <summary>Parses the optional per-key allowlists of MCP tools and of website functions.</summary>
+/// <remarks>
+/// For the MCP tools, an empty allowlist preserves the existing role-only access. A website key
+/// (<see cref="MUnique.OpenMU.Persistence.AdminAuth.AdminRoles.WebManager"/>) can't do anything by its role alone, so its
+/// allowlist has to name each website function; an empty one allows nothing, see <see cref="AllowsExplicitly"/>.
+/// Both are stored in the same claim, see <see cref="ClaimType"/>.
+/// </remarks>
 public static class AdminToolGroups
 {
     /// <summary>Gets the signed claim containing the configured tool restriction.</summary>
@@ -25,7 +31,7 @@ public static class AdminToolGroups
             var pattern = part.Trim();
             var stem = pattern.EndsWith("_*", StringComparison.Ordinal) ? pattern[..^1] : pattern;
             return stem.Length >= 3 && stem.Contains('_', StringComparison.Ordinal) && stem[0] is >= 'a' and <= 'z'
-                && stem.All(c => c is >= 'a' and <= 'z' or '_');
+                && stem.All(c => c is (>= 'a' and <= 'z') or '_');
         });
     }
 
@@ -40,7 +46,19 @@ public static class AdminToolGroups
             return true;
         }
 
-        return IsValid(value) && value.Split(',', StringSplitOptions.TrimEntries).Any(pattern => pattern.EndsWith("_*", StringComparison.Ordinal)
-            ? tool.StartsWith(pattern[..^1], StringComparison.Ordinal) : tool.Equals(pattern, StringComparison.Ordinal));
+        return IsValid(value) && value.Split(',', StringSplitOptions.TrimEntries).Any(pattern =>
+            pattern.EndsWith("_*", StringComparison.Ordinal)
+                ? tool.StartsWith(pattern[..^1], StringComparison.Ordinal)
+                : tool.Equals(pattern, StringComparison.Ordinal));
     }
+
+    /// <summary>Checks an exact tool name against an allowlist which has to name it; an empty allowlist allows nothing.</summary>
+    /// <param name="value">The allowlist.</param>
+    /// <param name="tool">The invariant tool or operation name.</param>
+    /// <returns>Whether the allowlist is not empty and allows the tool.</returns>
+    /// <remarks>
+    /// Used for keys which can't do anything by their role alone, like the key of a website.
+    /// </remarks>
+    public static bool AllowsExplicitly(string? value, string tool)
+        => !string.IsNullOrWhiteSpace(value) && Allows(value, tool);
 }

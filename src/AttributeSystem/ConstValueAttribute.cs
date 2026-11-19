@@ -35,7 +35,6 @@ public class ConstValueAttribute : IAttribute
     /// <remarks>Empty implementation, because the value can't change.</remarks>
     public event EventHandler? ValueChanged
     {
-#pragma warning disable S3237 //Empty implementation, because the value can't change.
         add
         {
             // no action required
@@ -45,7 +44,6 @@ public class ConstValueAttribute : IAttribute
         {
             // no action required
         }
-#pragma warning restore S3237
     }
 
     /// <inheritdoc/>

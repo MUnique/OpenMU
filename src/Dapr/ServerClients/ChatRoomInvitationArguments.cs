@@ -7,6 +7,9 @@ namespace MUnique.OpenMU.ServerClients;
 /// <summary>
 /// The arguments for a chat room invitation.
 /// </summary>
+/// <param name="CharacterName">The character name.</param>
+/// <param name="FriendName">The friend name.</param>
+/// <param name="RoomNumber">The room number.</param>
 public record ChatRoomInvitationArguments(
     string CharacterName,
     string FriendName,

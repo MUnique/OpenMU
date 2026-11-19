@@ -119,7 +119,7 @@ public class AppearanceSerializer : IAppearanceSerializer
 
         if (appearanceData.CharacterClass is not null)
         {
-            target[0] = (byte)(appearanceData.CharacterClass.Number << 3 & 0xF8);
+            target[0] = (byte)((appearanceData.CharacterClass.Number << 3) & 0xF8);
         }
 
         target[0] |= (byte)appearanceData.Pose;

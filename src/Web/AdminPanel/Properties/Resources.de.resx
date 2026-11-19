@@ -2671,4 +2671,43 @@
   <data name="EffectTimesHint" xml:space="preserve">
     <value>Welche magischen Effekte Spielern ihre Restzeit zeigen:</value>
   </data>
+  <data name="RoleWebManager" xml:space="preserve">
+    <value>Website (nur ausgewählte Funktionen)</value>
+  </data>
+  <data name="WebsitePermissions" xml:space="preserve">
+    <value>Website-Funktionen</value>
+  </data>
+  <data name="WebsitePermissionStatus" xml:space="preserve">
+    <value>Serverstatus</value>
+  </data>
+  <data name="WebsitePermissionRegister" xml:space="preserve">
+    <value>Konten registrieren</value>
+  </data>
+  <data name="WebsitePermissionRanking" xml:space="preserve">
+    <value>Charakter-Rangliste</value>
+  </data>
+  <data name="WebsitePermissionMiniGameRanking" xml:space="preserve">
+    <value>Minispiel-Ranglisten</value>
+  </data>
+  <data name="WebsitePermissionEvents" xml:space="preserve">
+    <value>Eventplan</value>
+  </data>
+  <data name="WebsitePermissionCharacter" xml:space="preserve">
+    <value>Charakterprofile (ausgerüstete Gegenstände)</value>
+  </data>
+  <data name="WebsitePermissionLogin" xml:space="preserve">
+    <value>Anmeldung mit Spielkonten (prüft Passwörter)</value>
+  </data>
+  <data name="WebsitePermissionChangePassword" xml:space="preserve">
+    <value>Kontopasswörter ändern (erfordert das aktuelle Passwort)</value>
+  </data>
+  <data name="WebsitePermissionCashShopGrant" xml:space="preserve">
+    <value>Cash-Shop-Münzen gutschreiben</value>
+  </data>
+  <data name="SocketCountTable" xml:space="preserve">
+    <value>Tabelle der Sockelanzahl</value>
+  </data>
+  <data name="SocketCountTableHint" xml:space="preserve">
+    <value>Bestimmt die Sockelanzahl der Sockelgegenstände, die diese Gruppe fallen lässt, auch über die drei eines normalen Drops hinaus, bis zur maximalen Sockelanzahl des Gegenstands. Leer bedeutet, dass die Tabelle des Gegenstands gilt.</value>
+  </data>
 </root>

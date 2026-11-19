@@ -237,5 +237,6 @@ public sealed class LogOperations(LoggingConfigurationService logging, AdminLogA
     }
 
     private static string Redact(string line) => SensitiveMarkers.Any(marker => line.Contains(marker, StringComparison.OrdinalIgnoreCase))
-        ? "[sensitive log line redacted]" : AddressPattern.Replace(line, RedactAddress);
+        ? "[sensitive log line redacted]"
+        : AddressPattern.Replace(line, RedactAddress);
 }

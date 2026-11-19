@@ -9,7 +9,7 @@ using System.Threading;
 using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.Interfaces;
 
-/// <summary>The live administration channel of a game server.</summary>
+/// <content>The live administration channel of a game server.</content>
 public sealed partial class GameServer : IGameServerAdministration
 {
     private GameServerAdministration Administration => new(this._gameContext);
@@ -41,6 +41,14 @@ public sealed partial class GameServer : IGameServerAdministration
     /// <inheritdoc />
     public ValueTask<IReadOnlyList<LiveEventInfo>> GetEventsAsync(CancellationToken cancellationToken)
         => this.Administration.GetEventsAsync(cancellationToken);
+
+    /// <inheritdoc />
+    public ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(CancellationToken cancellationToken)
+        => this.Administration.GetScheduledEventsAsync(cancellationToken);
+
+    /// <inheritdoc />
+    public ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
+        => this.Administration.IsOfflineLevelingAsync(loginName, cancellationToken);
 
     /// <inheritdoc />
     public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)

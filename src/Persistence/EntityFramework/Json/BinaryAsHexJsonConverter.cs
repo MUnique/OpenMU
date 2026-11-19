@@ -85,7 +85,7 @@ public class BinaryAsHexJsonConverter : JsonConverter<byte[]>
     }
 
     /// <inheritdoc />
-    public override bool CanConvert(Type objectType) => objectType == typeof(byte[]);
+    public override bool CanConvert(Type typeToConvert) => typeToConvert == typeof(byte[]);
 
     private int ParseCharacter(byte character)
     {

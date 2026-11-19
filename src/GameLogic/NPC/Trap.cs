@@ -9,7 +9,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
-/// The implementation of a monster, which can attack players.
+/// The implementation of a trap, which can attack players.
 /// </summary>
 public sealed class Trap : NonPlayerCharacter, IAttacker
 {
@@ -65,10 +65,10 @@ public sealed class Trap : NonPlayerCharacter, IAttacker
     }
 
     /// <inheritdoc/>
-    protected override void Dispose(bool managed)
+    protected override void Dispose(bool disposing)
     {
-        base.Dispose(managed);
-        if (managed)
+        base.Dispose(disposing);
+        if (disposing)
         {
             (this._intelligence as IDisposable)?.Dispose();
         }

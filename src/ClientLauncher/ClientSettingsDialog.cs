@@ -36,7 +36,10 @@ internal partial class ClientSettingsDialog : Form
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public BindingList<ClientResolution>? Resolutions
     {
-        get => this.clientResolutionComboBox.DataSource as BindingList<ClientResolution>;
+        get
+        {
+            return this.clientResolutionComboBox.DataSource as BindingList<ClientResolution>;
+        }
         set
         {
             if (value?.Count > 0)

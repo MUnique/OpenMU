@@ -117,10 +117,14 @@ public sealed class DiscordChatBridge
 
         ulong? GetChannelId(Guid? guildId, GuildChatScope scope)
         {
-            return guildId is { } g && this._store.Get(g, scope) is { } binding
-                   && ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var bindingChannelId)
-                ? bindingChannelId
-                : null;
+            if (guildId is { } g
+                && this._store.Get(g, scope) is { } binding
+                && ulong.TryParse(binding.ExternalChannelId, NumberStyles.None, CultureInfo.InvariantCulture, out var bindingChannelId))
+            {
+                return bindingChannelId;
+            }
+
+            return null;
         }
     }
 

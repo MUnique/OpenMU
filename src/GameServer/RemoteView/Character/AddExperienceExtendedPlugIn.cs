@@ -30,19 +30,19 @@ public class AddExperienceExtendedPlugIn : IAddExperiencePlugIn
     public AddExperienceExtendedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask AddExperienceAsync(int exp, IAttackable? obj, ExperienceType experienceType)
+    public async ValueTask AddExperienceAsync(int gainedExperience, IAttackable? killedObject, ExperienceType experienceType)
     {
         uint damage = 0;
 
         // Show damage only for party members.
-        if (obj is not null
-            && this._player.Id != obj.LastDeath?.KillerId)
+        if (killedObject is not null
+            && this._player.Id != killedObject.LastDeath?.KillerId)
         {
-            damage = (uint)Math.Min(obj.LastDeath?.FinalHit.HealthDamage ?? 0, uint.MaxValue);
+            damage = (uint)Math.Min(killedObject.LastDeath?.FinalHit.HealthDamage ?? 0, uint.MaxValue);
         }
 
-        var killedId = obj?.GetId(this._player) ?? 0;
-        var killerId = obj?.LastDeath?.KillerId ?? 0;
+        var killedId = killedObject?.GetId(this._player) ?? 0;
+        var killerId = killedObject?.LastDeath?.KillerId ?? 0;
         if (killerId == this._player.Id)
         {
             killerId = ViewExtensions.ConstantPlayerId;
@@ -50,7 +50,7 @@ public class AddExperienceExtendedPlugIn : IAddExperiencePlugIn
 
         await this._player.Connection.SendExperienceGainedExtendedAsync(
                 Convert(experienceType),
-                (uint)exp,
+                (uint)gainedExperience,
                 damage,
                 killedId,
                 killerId)

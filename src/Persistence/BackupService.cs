@@ -386,12 +386,15 @@ public class BackupService : IBackupService
             propertyName,
             BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
-        return property is not null
-               && property.CanRead
-               && property.GetIndexParameters().Length == 0
-               && IsCollectionType(property.PropertyType)
-            ? property
-            : null;
+        if (property is not null
+            && property.CanRead
+            && property.GetIndexParameters().Length == 0
+            && IsCollectionType(property.PropertyType))
+        {
+            return property;
+        }
+
+        return null;
     }
 
     private static PropertyInfo? FindWritableProperty(Type type, string propertyName)

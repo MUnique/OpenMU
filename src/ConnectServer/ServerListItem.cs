@@ -49,7 +49,10 @@ internal class ServerListItem : IGameServerEntry
     /// </summary>
     public byte ServerLoadPercentage
     {
-        get => this._serverLoadPercentage;
+        get
+        {
+            return this._serverLoadPercentage;
+        }
 
         private set
         {
@@ -97,7 +100,10 @@ internal class ServerListItem : IGameServerEntry
     /// </summary>
     public int CurrentConnections
     {
-        get => this._currentConnections;
+        get
+        {
+            return this._currentConnections;
+        }
         set
         {
             this._currentConnections = value;

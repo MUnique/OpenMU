@@ -26,9 +26,21 @@ internal static class ConfigurationPatch
 
     /// <summary>Resolves model types from the same catalog as configuration reads.</summary>
     /// <param name="name">The invariant model type name.</param>
-    internal static Type Resolve(string name) => name == nameof(GameConfiguration) ? typeof(GameConfiguration) : name == nameof(GameServerDefinition) ? typeof(GameServerDefinition)
-        : GameConfigurationHelper.Enumerables.Keys.FirstOrDefault(t => t.Name == name && t != typeof(PlugInConfiguration))
-          ?? throw new AdminOperationException("Unknown or excluded configuration type. Use config_types.", AdminOperationErrorKind.InvalidInput);
+    internal static Type Resolve(string name)
+    {
+        if (name == nameof(GameConfiguration))
+        {
+            return typeof(GameConfiguration);
+        }
+
+        if (name == nameof(GameServerDefinition))
+        {
+            return typeof(GameServerDefinition);
+        }
+
+        return GameConfigurationHelper.Enumerables.Keys.FirstOrDefault(t => t.Name == name && t != typeof(PlugInConfiguration))
+            ?? throw new AdminOperationException("Unknown or excluded configuration type. Use config_types.", AdminOperationErrorKind.InvalidInput);
+    }
 
     /// <summary>Parses a bounded merge patch without allowing duplicate field names.</summary>
     /// <param name="json">The json.</param>
@@ -66,10 +78,22 @@ internal static class ConfigurationPatch
         foreach (var property in Fields(type))
         {
             var value = property.GetValue(item);
-            result[property.Name] = value is null ? null : IsReferenceCollection(property) && value is IEnumerable collection
-                ? new JsonArray(collection.Cast<object>().OrderBy(v => v.GetId()).Select(v => (JsonNode)new JsonObject { ["$ref"] = v.GetId().ToString() }).ToArray()) : IsReference(property.PropertyType)
-                ? new JsonObject { ["$ref"] = value.GetId().ToString() }
-                : JsonSerializer.SerializeToNode(value, property.PropertyType, Options);
+            if (value is null)
+            {
+                result[property.Name] = null;
+            }
+            else if (IsReferenceCollection(property) && value is IEnumerable collection)
+            {
+                result[property.Name] = new JsonArray(collection.Cast<object>().OrderBy(v => v.GetId()).Select(v => (JsonNode)new JsonObject { ["$ref"] = v.GetId().ToString() }).ToArray());
+            }
+            else if (IsReference(property.PropertyType))
+            {
+                result[property.Name] = new JsonObject { ["$ref"] = value.GetId().ToString() };
+            }
+            else
+            {
+                result[property.Name] = JsonSerializer.SerializeToNode(value, property.PropertyType, Options);
+            }
         }
 
         return result;

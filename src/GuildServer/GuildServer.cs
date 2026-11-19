@@ -595,22 +595,22 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
-    public ValueTask<GuildRelationship> GetGuildRelationshipAsync(uint guild1Id, uint guild2Id)
+    public ValueTask<GuildRelationship> GetGuildRelationshipAsync(uint guild1, uint guild2)
     {
-        if (!this._guildDictionary.TryGetValue(guild1Id, out var guild1Container)
-            || !this._guildDictionary.TryGetValue(guild2Id, out var guild2Container))
+        if (!this._guildDictionary.TryGetValue(guild1, out var guild1Container)
+            || !this._guildDictionary.TryGetValue(guild2, out var guild2Container))
         {
             return ValueTask.FromResult(GuildRelationship.None);
         }
 
-        var guild1 = guild1Container.Guild;
-        var guild2 = guild2Container.Guild;
+        var guild1Entity = guild1Container.Guild;
+        var guild2Entity = guild2Container.Guild;
 
         // Check if both guilds are in the same alliance
-        if (guild1.AllianceGuild is not null && guild2.AllianceGuild is not null)
+        if (guild1Entity.AllianceGuild is not null && guild2Entity.AllianceGuild is not null)
         {
-            var master1Guid = GetAllianceMasterGuid(guild1);
-            var master2Guid = GetAllianceMasterGuid(guild2);
+            var master1Guid = GetAllianceMasterGuid(guild1Entity);
+            var master2Guid = GetAllianceMasterGuid(guild2Entity);
             if (master1Guid != Guid.Empty && master1Guid == master2Guid)
             {
                 return ValueTask.FromResult(GuildRelationship.Union);
@@ -619,15 +619,15 @@ public class GuildServer : IGuildServer
 
         // Standalone guilds cannot inherit hostility, so avoid alliance scans and allocations for this common case.
         // This shortcut is not valid for allied guilds: another member may carry the direct hostility.
-        if (guild1.AllianceGuild is null && guild2.AllianceGuild is null)
+        if (guild1Entity.AllianceGuild is null && guild2Entity.AllianceGuild is null)
         {
-            var isHostile = (guild1.Hostility is Guild hostile1 && hostile1.Id == guild2.Id)
-                            || (guild2.Hostility is Guild hostile2 && hostile2.Id == guild1.Id);
+            var isHostile = (guild1Entity.Hostility is Guild hostile1 && hostile1.Id == guild2Entity.Id)
+                            || (guild2Entity.Hostility is Guild hostile2 && hostile2.Id == guild1Entity.Id);
             return ValueTask.FromResult(isHostile ? GuildRelationship.Rival : GuildRelationship.None);
         }
 
         // Check hostility (transitively through alliances)
-        if (this.AreAlliancesStillHostile(this.GetAllianceMemberIds(guild1Id), this.GetAllianceMemberIds(guild2Id)))
+        if (this.AreAlliancesStillHostile(this.GetAllianceMemberIds(guild1), this.GetAllianceMemberIds(guild2)))
         {
             return ValueTask.FromResult(GuildRelationship.Rival);
         }

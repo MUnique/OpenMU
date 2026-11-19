@@ -18,6 +18,9 @@ using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>Provides bounded, discoverable read access to the game configuration.</summary>
+/// <param name="configurations">The configuration data source.</param>
+/// <param name="readModel">The admin read model.</param>
+/// <param name="persistence">The persistence context provider.</param>
 public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> configurations, IAdminReadModel readModel, IPersistenceContextProvider persistence)
 {
     private const int MaximumReadAttempts = 3;
@@ -251,8 +254,12 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
             }
             else if (IsScalar(property.PropertyType))
             {
-                result[property.Name] = value is string text ? JsonValue.Create(text.Length > 4096 ? text[..4096] : text)
-                    : value.GetType().IsEnum ? JsonValue.Create(value.ToString()) : JsonSerializer.SerializeToNode(value, ConfigurationPatch.Options);
+                result[property.Name] = value switch
+                {
+                    string text => JsonValue.Create(text.Length > 4096 ? text[..4096] : text),
+                    Enum => JsonValue.Create(value.ToString()),
+                    _ => JsonSerializer.SerializeToNode(value, ConfigurationPatch.Options),
+                };
             }
             else if (value is IEnumerable collection)
             {
@@ -280,7 +287,8 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
             return null;
         }
 
-        return depth > 0 && budget[0] > 0 ? Project(value, type, depth - 1, null, visited, budget)
+        return depth > 0 && budget[0] > 0
+            ? Project(value, type, depth - 1, null, visited, budget)
             : new JsonObject { ["$ref"] = value.GetId().ToString(), ["caption"] = Caption(value, type) };
     }
 
@@ -314,8 +322,30 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
         object? expected;
         try
         {
-            expected = value is null ? null : isText ? value : fieldType.IsEnum ? Enum.Parse(fieldType, value) : fieldType == typeof(Guid) ? Guid.Parse(value)
-                : fieldType == typeof(TimeSpan) ? TimeSpan.Parse(value, CultureInfo.InvariantCulture) : Convert.ChangeType(value, fieldType, CultureInfo.InvariantCulture);
+            if (value is null)
+            {
+                expected = null;
+            }
+            else if (isText)
+            {
+                expected = value;
+            }
+            else if (fieldType.IsEnum)
+            {
+                expected = Enum.Parse(fieldType, value);
+            }
+            else if (fieldType == typeof(Guid))
+            {
+                expected = Guid.Parse(value);
+            }
+            else if (fieldType == typeof(TimeSpan))
+            {
+                expected = TimeSpan.Parse(value, CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                expected = Convert.ChangeType(value, fieldType, CultureInfo.InvariantCulture);
+            }
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException or OverflowException or InvalidCastException)
         {
@@ -331,9 +361,13 @@ public sealed class ConfigurationReadOperations(IDataSource<GameConfiguration> c
                 return actual is string text && value is not null && text.Contains(value, StringComparison.OrdinalIgnoreCase);
             }
 
-            var comparison = actual is string a && expected is string b ? StringComparer.OrdinalIgnoreCase.Compare(a, b)
-                : actual is IComparable comparable && expected is not null ? comparable.CompareTo(expected)
-                : actual is null ? expected is null ? 0 : -1 : 1;
+            var comparison = actual switch
+            {
+                string a when expected is string b => StringComparer.OrdinalIgnoreCase.Compare(a, b),
+                IComparable comparable when expected is not null => comparable.CompareTo(expected),
+                null => expected is null ? 0 : -1,
+                _ => 1,
+            };
             return op switch { "eq" => comparison == 0, "ne" => comparison != 0, "gt" => comparison > 0, "ge" => comparison >= 0, "lt" => comparison < 0, "le" => comparison <= 0, _ => false };
         };
     }

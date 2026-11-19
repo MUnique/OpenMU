@@ -44,7 +44,10 @@ public partial class ExitGatePicker
 
     private GameMapDefinition? Map
     {
-        get => this._map;
+        get
+        {
+            return this._map;
+        }
         set
         {
             if (this._map != value)

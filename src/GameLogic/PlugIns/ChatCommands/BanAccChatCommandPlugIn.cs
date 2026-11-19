@@ -26,10 +26,10 @@ public class BanAccChatCommandPlugIn : ChatCommandPlugInBase<BanAccChatCommandAr
     public override CharacterStatus MinCharacterStatusRequirement => CharacterStatus.GameMaster;
 
     /// <inheritdoc />
-    protected override async ValueTask DoHandleCommandAsync(Player gameMaster, BanAccChatCommandArgs arguments)
+    protected override async ValueTask DoHandleCommandAsync(Player player, BanAccChatCommandArgs arguments)
     {
-        await this.ChangeAccountStateByLoginNameAsync(gameMaster, arguments.AccountName ?? string.Empty, AccountState.Banned).ConfigureAwait(false);
+        await this.ChangeAccountStateByLoginNameAsync(player, arguments.AccountName ?? string.Empty, AccountState.Banned).ConfigureAwait(false);
 
-        await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountHasBeenBanned), this.Key, arguments.AccountName).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.AccountHasBeenBanned), this.Key, arguments.AccountName).ConfigureAwait(false);
     }
 }

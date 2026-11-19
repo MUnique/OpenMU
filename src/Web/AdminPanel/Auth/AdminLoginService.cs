@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence.AdminAuth;
 
-    /// <summary>
-    /// Validates the credentials of an admin panel user.
+/// <summary>
+/// Validates the credentials of an admin panel user.
 /// </summary>
 /// <remarks>
 /// This service runs inside the blazor circuit, so the whole login - including the second factor -

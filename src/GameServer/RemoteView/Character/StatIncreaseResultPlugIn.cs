@@ -31,7 +31,7 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
     public StatIncreaseResultPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask StatIncreaseResultAsync(AttributeDefinition attribute, ushort addedPoints)
+    public async ValueTask StatIncreaseResultAsync(AttributeDefinition statType, ushort addedPoints)
     {
         var connection = this._player.Connection;
         if (connection is null)
@@ -41,18 +41,27 @@ public class StatIncreaseResultPlugIn : IStatIncreaseResultPlugIn
 
         if (addedPoints <= 1)
         {
-#pragma warning disable SA1118 // Parameter should not span multiple lines
+            var attributes = this._player.Attributes!;
+            ushort maximumHealthOrMana = 0;
+            if (statType == Stats.BaseEnergy)
+            {
+                maximumHealthOrMana = attributes[Stats.MaximumMana].ToUInt16Clamped();
+            }
+            else if (statType == Stats.BaseVitality)
+            {
+                maximumHealthOrMana = attributes[Stats.MaximumHealth].ToUInt16Clamped();
+            }
+            else
+            {
+                // Other stats don't change the maximum health or mana, so it stays 0.
+            }
+
             await connection.SendCharacterStatIncreaseResponseAsync(
                 addedPoints > 0,
-                attribute.GetStatType(),
-                attribute == Stats.BaseEnergy
-                    ? this._player.Attributes![Stats.MaximumMana].ToUInt16Clamped()
-                    : attribute == Stats.BaseVitality
-                        ? this._player.Attributes![Stats.MaximumHealth].ToUInt16Clamped()
-                        : default,
-                this._player.Attributes![Stats.MaximumShield].ToUInt16Clamped(),
-                this._player.Attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
-#pragma warning restore SA1118 // Parameter should not span multiple lines
+                statType.GetStatType(),
+                maximumHealthOrMana,
+                attributes[Stats.MaximumShield].ToUInt16Clamped(),
+                attributes[Stats.MaximumAbility].ToUInt16Clamped()).ConfigureAwait(false);
             return;
         }
 

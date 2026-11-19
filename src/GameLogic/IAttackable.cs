@@ -68,34 +68,35 @@ public interface IAttackable : IIdentifiable, ILocateable
     /// </summary>
     /// <param name="reflector">The reflector.</param>
     /// <param name="damage">The damage.</param>
-    ValueTask ReflectDamageAsync(IAttacker reflector, uint damage);
+    ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+         => this.ApplyDamageAsync(reflector, damage, DamageAttributes.Reflected);
 
     /// <summary>
     /// Applies the poison damage.
     /// </summary>
     /// <param name="initialAttacker">The initial attacker.</param>
     /// <param name="damage">The damage.</param>
-    ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage);
+    ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
+        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Poison);
 
     /// <summary>
     /// Applies the bleeding damage.
     /// </summary>
     /// <param name="initialAttacker">The initial attacker.</param>
     /// <param name="damage">The damage.</param>
-    ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage);
+    ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+        => this.ApplyDamageAsync(initialAttacker, damage, DamageAttributes.Bleed);
+
+    /// <summary>
+    /// Applies damage to this instance.
+    /// </summary>
+    /// <param name="attacker">The initial attacker.</param>
+    /// <param name="damage">The damage.</param>
+    /// <param name="damageAttributes">The damage attributes.</param>
+    ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes = DamageAttributes.Undefined);
 
     /// <summary>
     /// Kills the attackable instantly.
     /// </summary>
     ValueTask KillInstantlyAsync();
 }
-
-/// <summary>
-/// Contains information about the last death of the object.
-/// </summary>
-/// <param name="KillerId">The id of the killer.</param>
-/// <param name="KillerName">The name of the killer.</param>
-/// <param name="FinalHit">The hit info of the final/lethal hit.</param>
-/// <param name="SkillNumber">The number of the used skill.</param>
-// [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1313:Parameter names should begin with lower-case letter", Justification = "The names are affecting the property names of the record. We want upper case there.")]
-public record DeathInformation(ushort KillerId, string KillerName, HitInfo FinalHit, short SkillNumber);

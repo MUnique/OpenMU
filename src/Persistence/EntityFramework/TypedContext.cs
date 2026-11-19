@@ -86,10 +86,10 @@ internal class TypedContext : EntityDataContext, ITypedContext
     }
 
     /// <inheritdoc />
-    public bool IsBackReference(Type type)
+    public bool IsBackReference(Type clrType)
     {
-        return this.BackReferenceTypes.Contains(type)
-               || (type.BaseType is { } baseType && this.BackReferenceTypes.Contains(baseType));
+        return this.BackReferenceTypes.Contains(clrType)
+               || (clrType.BaseType is { } baseType && this.BackReferenceTypes.Contains(baseType));
     }
 
     /// <summary>
@@ -127,9 +127,9 @@ internal class TypedContext : EntityDataContext, ITypedContext
         var gameConfigNav = gameConfigType is null ? null : GetNavigationsInOrder(gameConfigType).FirstOrDefault(nav => nav.IsCollection && nav.TargetEntityType.ClrType == mainType);
 
         var additionalTypes = editTypes
-            .Select(et => (et, entityType: modelTypes.FirstOrDefault(mt => mt.ClrType == et.EntityType)))
-            .Where(t => t.entityType is not null)
-            .SelectMany(t => DetermineAdditionalTypes(modelTypes.Select(m => m.ClrType), t.entityType!))
+            .Select(et => (EditType: et, EntityType: modelTypes.FirstOrDefault(mt => mt.ClrType == et.EntityType)))
+            .Where(t => t.EntityType is not null)
+            .SelectMany(t => DetermineAdditionalTypes(modelTypes.Select(m => m.ClrType), t.EntityType!))
             .ToList();
         editTypes.AddRange(additionalTypes);
 
