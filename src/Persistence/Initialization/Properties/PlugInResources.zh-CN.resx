@@ -513,6 +513,10 @@
   </data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>第六季NPC刷新点</value></data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>将NPC调整为第六季的位置和朝向（勇者大陆、冰风谷、仙踪林、竞技场、亚特兰蒂斯、幻术园、幽暗森林、狼魂要塞、罗兰峡谷、卡伦特、坎特鲁和幻影寺院），补充冰风谷缺少的1名幻影导师、仙踪林缺少的2名幻影导师以及冰风谷的黄金弓箭手，并移除第六季没有的NPC：旧版本中仙踪林和失落之塔的药水少女（253）、失落之塔、竞技场和亚特兰蒂斯的安全守卫（240）、勇者大陆114/125处的守卫（247）以及勇者大陆的黄金弓箭手；冰风谷的陆迦德、弟子黛彬和弥拉邱（第六季中只在幻术园和狼魂要塞）；以及罗兰峡谷的第二个王座（216）。会覆盖这些NPC自定义的位置和朝向。</value></data>
+  <data name="NpcSpawnsUpdatePlugIn075_Name" xml:space="preserve"><value>0.75版NPC刷新点</value></data>
+  <data name="NpcSpawnsUpdatePlugIn075_Description" xml:space="preserve"><value>将0.75版的NPC调整为第六季数据：移除仙踪林的两名药水少女（253）、失落之塔的药水少女（253）和安全守卫（240）、竞技场和亚特兰蒂斯的安全守卫（240），以及勇者大陆114/125处的守卫（247），并将竞技场的足球和竞技场守卫调整到第六季的位置。</value></data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Name" xml:space="preserve"><value>0.95d版NPC刷新点</value></data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve"><value>将0.95d版的NPC调整为第六季数据：移除仙踪林的两名药水少女（253）、失落之塔的药水少女（253）和安全守卫（240）、竞技场和亚特兰蒂斯的安全守卫（240），以及勇者大陆114/125处的守卫（247），将竞技场的足球和竞技场守卫调整到第六季的位置，并将黄金弓箭手从勇者大陆移至冰风谷（226/66）。</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>镶嵌孔数量表</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>镶嵌物品掉落时大多只有一个孔，三个孔（双手武器为五个孔）很少见，而不是以相同几率获得最多孔数以内的任意数量。将镶嵌物品的最大孔数提高到五个，由数量表限制掉落。已有数量表的镶嵌物品保持不变。</value></data>
 </root>

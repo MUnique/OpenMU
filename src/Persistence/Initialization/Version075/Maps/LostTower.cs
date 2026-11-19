@@ -43,13 +43,6 @@ internal class LostTower : BaseMapInitializer
     protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
-    protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
-    {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[253], 207, 76, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[240], 201, 76, Direction.SouthEast);
-    }
-
-    /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateMonsterSpawns()
     {
         yield return this.CreateMonsterSpawn(100, this.NpcDictionary[40], 6, 98);

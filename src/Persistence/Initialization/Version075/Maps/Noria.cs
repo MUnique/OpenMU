@@ -77,8 +77,6 @@ internal class Noria : BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[253], 169, 109, Direction.SouthEast);
-        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[253], 193, 110, Direction.South);
         yield return this.CreateMonsterSpawn(3, this.NpcDictionary[242], 173, 125, Direction.SouthWest);
         yield return this.CreateMonsterSpawn(4, this.NpcDictionary[243], 195, 124, Direction.South);
         yield return this.CreateMonsterSpawn(5, this.NpcDictionary[240], 172, 96, Direction.SouthEast);

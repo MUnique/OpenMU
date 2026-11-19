@@ -1008,6 +1008,18 @@
   <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve">
     <value>Bringt die NPCs auf ihre Season-6-Positionen und Blickrichtungen (Lorencia, Devias, Noria, Arena, Atlans, Elfenland, Aida, Crywolf-Festung, Tal von Loren, Karutan, Kanturu und Illusionstempel), ergänzt den fehlenden Elfensoldaten von Devias, die zwei fehlenden Elfensoldaten von Noria sowie den Goldenen Bogenschützen von Devias und entfernt die NPCs, die es in Season 6 nicht gibt: aus den älteren Versionen die Trankverkäuferinnen von Noria und Verlorener Turm, die Sicherheitswächter von Verlorener Turm, Arena und Atlans, die Wache bei 114/125 und den Goldenen Bogenschützen von Lorencia; Lugard, Priester Devin und Mirage in Devias, die Season 6 nur in Elfenland und in der Crywolf-Festung hat; sowie die zweite Krone im Tal von Loren. Angepasste Positionen und Blickrichtungen dieser NPCs werden überschrieben.</value>
   </data>
+  <data name="NpcSpawnsUpdatePlugIn075_Name" xml:space="preserve">
+    <value>0.75-NPC-Spawns</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugIn075_Description" xml:space="preserve">
+    <value>Bringt die NPCs von 0.75 auf die Season-6-Daten: entfernt die zwei Trankverkäuferinnen von Noria, die Trankverkäuferin und den Sicherheitswächter von Verlorener Turm, die Sicherheitswächter von Arena und Atlans sowie die Armbrustwache bei 114/125 in Lorencia und versetzt den Fußball und die Arenawache der Arena auf ihre Season-6-Positionen.</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Name" xml:space="preserve">
+    <value>0.95d-NPC-Spawns</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve">
+    <value>Bringt die NPCs von 0.95d auf die Season-6-Daten: entfernt die zwei Trankverkäuferinnen von Noria, die Trankverkäuferin und den Sicherheitswächter von Verlorener Turm, die Sicherheitswächter von Arena und Atlans sowie die Armbrustwache bei 114/125 in Lorencia, versetzt den Fußball und die Arenawache der Arena auf ihre Season-6-Positionen und den Goldenen Bogenschützen von Lorencia nach Devias (226/66).</value>
+  </data>
   <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>Tabellen der Sockelanzahl</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>Sockelgegenstände fallen meistens mit einem Sockel und selten mit drei (Zweihandwaffen: fünf), statt mit jeder Anzahl bis zum Maximum mit gleicher Wahrscheinlichkeit. Erhöht die maximale Sockelanzahl der Sockelgegenstände auf fünf; die Tabellen begrenzen die Drops. Sockelgegenstände, die schon eine Tabelle haben, behalten sie.</value></data>
 </root>
