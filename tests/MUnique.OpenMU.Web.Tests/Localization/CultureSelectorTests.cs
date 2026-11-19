@@ -70,4 +70,40 @@ public class CultureSelectorTests
             CultureInfo.CurrentUICulture = previousCulture;
         }
     }
+
+    /// <summary>
+    /// Tests that the selector shows the supported culture whose texts are displayed,
+    /// when the current UI culture itself isn't supported.
+    /// </summary>
+    /// <param name="currentCulture">The current UI culture; an empty string is the invariant culture.</param>
+    /// <param name="expectedCulture">The expected selected culture of the selector.</param>
+    [TestCase("de-DE", "de")]
+    [TestCase("en-US", "en")]
+    [TestCase("fr-FR", "en")]
+    [TestCase("", "en")]
+    public void UnsupportedCultureSelectsDisplayedLanguage(string currentCulture, string expectedCulture)
+    {
+        var previousCulture = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(currentCulture);
+            using var context = new BunitContext();
+            context.Services.Configure<RequestLocalizationOptions>(options =>
+                options.AddSupportedUICultures("de", "en", "zh-CN"));
+            var navigation = context.Services.GetRequiredService<NavigationManager>();
+            var initialUri = navigation.Uri;
+            var component = context.Render<CultureSelector>();
+
+            Assert.That(component.FindAll("option[selected]"), Has.Count.EqualTo(1));
+            Assert.That(component.Find("option[selected]").GetAttribute("value"), Is.EqualTo(expectedCulture));
+
+            component.Find("select").Change(expectedCulture);
+
+            Assert.That(navigation.Uri, Is.EqualTo(initialUri));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previousCulture;
+        }
+    }
 }

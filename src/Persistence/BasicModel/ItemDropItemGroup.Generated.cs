@@ -64,6 +64,24 @@ public partial class ItemDropItemGroup : MUnique.OpenMU.DataModel.Configuration.
         set => base.Monster = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="SocketCountTable" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("socketCountTable")]
+    public WeightedValueTable RawSocketCountTable
+    {
+        get => base.SocketCountTable as WeightedValueTable;
+        set => base.SocketCountTable = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.WeightedValueTable SocketCountTable
+    {
+        get => base.SocketCountTable;
+        set => base.SocketCountTable = value;
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.ItemDropItemGroup Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

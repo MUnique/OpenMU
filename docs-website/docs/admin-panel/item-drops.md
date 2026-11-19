@@ -114,6 +114,17 @@ level. The possible items of a map group are additionally filtered by the
 monster level, so that e.g. a high level item doesn't drop from a low level
 monster.
 
+The details of an excellent item group also offer the chance and the maximum
+number of excellent options. For the other groups, except money, you can select
+a **socket count table**. It decides how many sockets the socket items of this
+group get, and overrides the socket count table of the item definition, so that
+for example a boss or a box drops socket items with more sockets than a normal
+drop. A socket count table is a *weighted value table*: a list of values with
+relative weights, which you edit in the game configuration. A value with a weight
+of 0 never drops, and a value above the maximum sockets of the item neither.
+Without any table, the number of sockets is selected with the same chance
+between 1 and the maximum sockets of the item.
+
 A group which isn't assigned to any map doesn't drop anywhere; such a group is
 marked with **Not assigned to any map** in the list. **Add drop item group**
 creates a new one and assigns it to all maps, so that it takes effect right away;

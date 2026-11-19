@@ -2750,4 +2750,10 @@
   <data name="ShopImportFailed" xml:space="preserve">
     <value>A importação falhou. A loja pode ter sido alterada parcialmente; use "Descartar alterações" para desfazer as alterações não salvas.</value>
   </data>
+  <data name="SocketCountTable" xml:space="preserve">
+    <value>Tabela de quantidade de sockets</value>
+  </data>
+  <data name="SocketCountTableHint" xml:space="preserve">
+    <value>Define a quantidade de sockets dos itens com socket que este grupo dropa, inclusive acima dos três de um drop normal, até o máximo de sockets do item. Vazio significa que vale a tabela do item.</value>
+  </data>
 </root>

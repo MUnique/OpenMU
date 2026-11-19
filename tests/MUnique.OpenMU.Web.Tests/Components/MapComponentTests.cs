@@ -56,15 +56,20 @@ public class MapComponentTests
             controllerDisposed.TrySetResult();
             return ValueTask.CompletedTask;
         });
+        var creationStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var factory = new Mock<IMapFactory>();
         factory.Setup(f => f.GetMapContainerIdentifier(It.IsAny<int>(), It.IsAny<Guid>())).Returns("map_0");
         factory.Setup(f => f.CreateMapAsync(It.IsAny<IObservableGameServer>(), It.IsAny<Guid>()))
+            .Callback(() => creationStarted.TrySetResult())
             .Returns(() => new ValueTask<IMapController>(creation.Task));
         this._context.Services.AddSingleton(factory.Object);
 
         this._context.Render<MapComponent>(parameters => parameters
             .Add(p => p.Server, new Mock<IObservableGameServer>().Object)
             .Add(p => p.MapId, Guid.NewGuid()));
+
+        // The component starts the creation after its first render, which may complete after Render returned.
+        Assert.That(await Task.WhenAny(creationStarted.Task, Task.Delay(Timeout)).ConfigureAwait(false), Is.SameAs(creationStarted.Task));
         factory.Verify(f => f.CreateMapAsync(It.IsAny<IObservableGameServer>(), It.IsAny<Guid>()), Times.Once);
 
         await this._context.DisposeComponentsAsync().ConfigureAwait(false);

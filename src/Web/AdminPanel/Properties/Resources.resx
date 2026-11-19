@@ -2789,4 +2789,10 @@
   <data name="WebsitePermissionCashShopGrant" xml:space="preserve">
     <value>Grant cash shop coins</value>
   </data>
+  <data name="SocketCountTable" xml:space="preserve">
+    <value>Socket count table</value>
+  </data>
+  <data name="SocketCountTableHint" xml:space="preserve">
+    <value>Selects the number of sockets of the socket items this group drops, also above the three of a normal drop, up to the maximum sockets of the item. Empty means that the table of the item applies.</value>
+  </data>
 </root>
