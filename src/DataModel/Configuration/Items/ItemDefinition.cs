@@ -212,6 +212,16 @@ public partial class ItemDefinition
     public int MaximumSockets { get; set; }
 
     /// <summary>
+    /// Gets or sets the table from which the number of sockets of a dropped instance of this item is selected.
+    /// </summary>
+    /// <remarks>
+    /// Values above <see cref="MaximumSockets"/> are never selected. If <c>null</c>, the number of sockets is
+    /// selected uniformly between 1 and <see cref="MaximumSockets"/>. A drop group can override it,
+    /// see <see cref="DropItemGroup.SocketCountTable"/>.
+    /// </remarks>
+    public virtual WeightedValueTable? SocketCountTable { get; set; }
+
+    /// <summary>
     /// Gets or sets the skill which this items adds to the skill list while wearing or which can be learned by consuming this item.
     /// TODO: Split these two usages into different properties?.
     /// </summary>

@@ -277,7 +277,7 @@
     <value>Automatisch (System)</value>
   </data>
   <data name="MapEditorShortcutPan" xml:space="preserve">
-    <value>Auf eine freie Fläche klicken und ziehen, um die Karte zu verschieben</value>
+    <value>Mit der mittleren Maustaste ziehen, um die Karte zu verschieben</value>
   </data>
   <data name="MapEditorShortcutDrag" xml:space="preserve">
     <value>STRG + Klick auf ein Objekt, um es zu ziehen</value>

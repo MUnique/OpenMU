@@ -310,11 +310,38 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All off.
+        /// </summary>
+        public static string AllOff {
+            get {
+                return ResourceManager.GetString("AllOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All on.
+        /// </summary>
+        public static string AllOn {
+            get {
+                return ResourceManager.GetString("AllOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Allowed MCP tools (comma separated; empty allows all tools for the role).
         /// </summary>
         public static string AllowedMcpTools {
             get {
                 return ResourceManager.GetString("AllowedMcpTools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applies to all shown effects. The changes are stored after saving..
+        /// </summary>
+        public static string AllShownEffectsHint {
+            get {
+                return ResourceManager.GetString("AllShownEffectsHint", resourceCulture);
             }
         }
         
@@ -3136,6 +3163,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} defaults.
+        /// </summary>
+        public static string DefaultsFormat {
+            get {
+                return ResourceManager.GetString("DefaultsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets each shown effect as in the {0} data; effects which {0} doesn&apos;t know stay unchanged. The changes are stored after saving..
+        /// </summary>
+        public static string DefaultsHintFormat {
+            get {
+                return ResourceManager.GetString("DefaultsHintFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The defaults are being loaded....
+        /// </summary>
+        public static string DefaultsLoading {
+            get {
+                return ResourceManager.GetString("DefaultsLoading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The defaults of the data which the configuration was created from aren&apos;t available; the log tells why at the first attempt after the start..
+        /// </summary>
+        public static string DefaultsNotAvailable {
+            get {
+                return ResourceManager.GetString("DefaultsNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         public static string Delete {
@@ -4953,6 +5016,42 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string EditorContextChanged {
             get {
                 return ResourceManager.GetString("EditorContextChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effect times.
+        /// </summary>
+        public static string EffectTimes {
+            get {
+                return ResourceManager.GetString("EffectTimes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These {0} effects will send their time: {1}. These {2} effects won&apos;t: {3}. Continue?.
+        /// </summary>
+        public static string EffectTimesConfirmFormat {
+            get {
+                return ResourceManager.GetString("EffectTimesConfirmFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose which magic effects send their remaining time to the client, so that players see how long they last. Whether players know this is game design. The Season 6 data sends it for the effects of consumed items, as the original game shows no time for skill effects. The open source client shows the time of every effect which sends it; the original clients only get it for consumed items which change the attack speed, damage, defense, maximum health or maximum mana. Switching it off for such an item doesn&apos;t hi [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string EffectTimesDescription {
+            get {
+                return ResourceManager.GetString("EffectTimesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which magic effects show players their remaining time:.
+        /// </summary>
+        public static string EffectTimesHint {
+            get {
+                return ResourceManager.GetString("EffectTimesHint", resourceCulture);
             }
         }
         
@@ -7504,6 +7603,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Website (selected functions only).
+        /// </summary>
+        public static string RoleWebManager {
+            get {
+                return ResourceManager.GetString("RoleWebManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
@@ -7698,6 +7806,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Send {
             get {
                 return ResourceManager.GetString("Send", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} of {1} effects send their time..
+        /// </summary>
+        public static string SendingCountFormat {
+            get {
+                return ResourceManager.GetString("SendingCountFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send time.
+        /// </summary>
+        public static string SendsTime {
+            get {
+                return ResourceManager.GetString("SendsTime", resourceCulture);
             }
         }
         
@@ -7914,6 +8040,24 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string Skills {
             get {
                 return ResourceManager.GetString("Skills", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Socket count table.
+        /// </summary>
+        public static string SocketCountTable {
+            get {
+                return ResourceManager.GetString("SocketCountTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selects the number of sockets of the socket items this group drops, also above the three of a normal drop, up to the maximum sockets of the item. Empty means that the table of the item applies..
+        /// </summary>
+        public static string SocketCountTableHint {
+            get {
+                return ResourceManager.GetString("SocketCountTableHint", resourceCulture);
             }
         }
         
@@ -8346,6 +8490,96 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string WarpList {
             get {
                 return ResourceManager.GetString("WarpList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grant cash shop coins.
+        /// </summary>
+        public static string WebsitePermissionCashShopGrant {
+            get {
+                return ResourceManager.GetString("WebsitePermissionCashShopGrant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change account passwords (requires the current password).
+        /// </summary>
+        public static string WebsitePermissionChangePassword {
+            get {
+                return ResourceManager.GetString("WebsitePermissionChangePassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character profiles (equipped items).
+        /// </summary>
+        public static string WebsitePermissionCharacter {
+            get {
+                return ResourceManager.GetString("WebsitePermissionCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event schedule.
+        /// </summary>
+        public static string WebsitePermissionEvents {
+            get {
+                return ResourceManager.GetString("WebsitePermissionEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login with game accounts (checks passwords).
+        /// </summary>
+        public static string WebsitePermissionLogin {
+            get {
+                return ResourceManager.GetString("WebsitePermissionLogin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mini game rankings.
+        /// </summary>
+        public static string WebsitePermissionMiniGameRanking {
+            get {
+                return ResourceManager.GetString("WebsitePermissionMiniGameRanking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character ranking.
+        /// </summary>
+        public static string WebsitePermissionRanking {
+            get {
+                return ResourceManager.GetString("WebsitePermissionRanking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register accounts.
+        /// </summary>
+        public static string WebsitePermissionRegister {
+            get {
+                return ResourceManager.GetString("WebsitePermissionRegister", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Website functions.
+        /// </summary>
+        public static string WebsitePermissions {
+            get {
+                return ResourceManager.GetString("WebsitePermissions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server status.
+        /// </summary>
+        public static string WebsitePermissionStatus {
+            get {
+                return ResourceManager.GetString("WebsitePermissionStatus", resourceCulture);
             }
         }
         

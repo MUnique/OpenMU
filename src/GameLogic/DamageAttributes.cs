@@ -41,7 +41,7 @@ public enum DamageAttributes
     Double = 16,
 
     /// <summary>
-    /// The damage was tripled (e.g. combo skill).
+    /// The damage was tripled.
     /// </summary>
     Triple = 32,
 
@@ -51,7 +51,7 @@ public enum DamageAttributes
     Reflected = 64,
 
     /// <summary>
-    /// The damage includes the combo bonus.
+    /// The damage is from combo skill.
     /// </summary>
     Combo = 128,
 
@@ -64,4 +64,9 @@ public enum DamageAttributes
     /// The damage is the final hit of a quick sequence from a rage fighter skill.
     /// </summary>
     RageFighterStreakFinalHit = 512,
+
+    /// <summary>
+    /// The damage is caused by bleeding.
+    /// </summary>
+    Bleed = 1024,
 }

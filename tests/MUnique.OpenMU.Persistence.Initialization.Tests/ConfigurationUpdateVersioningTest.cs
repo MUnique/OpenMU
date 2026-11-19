@@ -201,7 +201,7 @@ internal class ConfigurationUpdateVersioningTest
         public override bool IsMandatory => false;
 
         /// <inheritdoc />
-        public override DateTime CreatedAt => new (2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public override DateTime CreatedAt => new(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <inheritdoc />
         public override int Version => CodeVersion;

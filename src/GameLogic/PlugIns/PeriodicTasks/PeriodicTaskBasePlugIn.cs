@@ -34,6 +34,9 @@ public abstract class PeriodicTaskBasePlugIn<TConfiguration, TState> : IPeriodic
         return this.Configuration?.GetNextStartUtc(utcNow, serverTimeZone);
     }
 
+    /// <inheritdoc />
+    public bool IsScheduledOn(IGameContext gameContext) => this.IsEnabledOnContext(gameContext);
+
     /// <summary>
     /// Forces the task to start on the next start check of the game server which
     /// owns this plug-in instance: every game server runs its own instance, so a

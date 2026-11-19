@@ -30,27 +30,21 @@ public class PacketDefinitions
     /// Gets or sets the structures.
     /// </summary>
     [XmlArrayItem(IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public Structure[]? Structures { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
     /// <summary>
     /// Gets or sets the packet definitions.
     /// </summary>
     [XmlArray(IsNullable = true)]
     [XmlArrayItem("Packet", IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public PacketDefinition[]? Packets { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
     /// <summary>
     /// Gets or sets the enums.
     /// </summary>
     [XmlArray(IsNullable = true)]
     [XmlArrayItem("Enum", IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public Enum[]? Enums { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
     /// <summary>
     /// Loads the specified file and returns the parsed <see cref="PacketDefinitions"/> object.

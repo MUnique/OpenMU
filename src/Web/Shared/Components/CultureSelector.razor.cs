@@ -8,6 +8,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Web.Shared.Services;
 
 /// <summary>
@@ -32,15 +33,20 @@ public partial class CultureSelector
     /// <summary>
     /// Gets or sets the selected culture code.
     /// </summary>
+    /// <remarks>
+    /// The current UI culture isn't necessarily one of the supported cultures, e.g. when the
+    /// browser requests an unsupported language and the server falls back to its own culture.
+    /// In this case, the supported culture is selected which provides the displayed texts.
+    /// </remarks>
     public string SelectedCultureCode
     {
         get
         {
-            return CultureInfo.CurrentUICulture.Name;
+            return this.GetDisplayedCultureCode();
         }
         set
         {
-            if (CultureInfo.CurrentUICulture.Name == value)
+            if (this.GetDisplayedCultureCode() == value)
             {
                 return;
             }
@@ -54,6 +60,26 @@ public partial class CultureSelector
     /// Gets the supported UI cultures.
     /// </summary>
     private IList<CultureInfo> SupportedUICultures { get; }
+
+    /// <summary>
+    /// Gets the code of the supported culture whose texts are displayed for the current UI culture.
+    /// </summary>
+    /// <returns>
+    /// The current UI culture or its nearest supported parent culture. If there is none, the texts come
+    /// from the neutral resources, so the neutral language is returned.
+    /// </returns>
+    private string GetDisplayedCultureCode()
+    {
+        for (var culture = CultureInfo.CurrentUICulture; !string.IsNullOrEmpty(culture.Name); culture = culture.Parent)
+        {
+            if (this.SupportedUICultures.Any(supported => supported.Name == culture.Name))
+            {
+                return culture.Name;
+            }
+        }
+
+        return LocalizedString.NeutralLanguageCode;
+    }
 
     /// <summary>
     /// Sets the culture in a cookie by calling the <see cref="CultureController"/>.

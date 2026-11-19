@@ -212,7 +212,7 @@ public class LookupFieldTests
             Assert.That(component.FindAll(".typeahead-result"), Has.Count.EqualTo(3));
         });
     }
-    
+
     /// <summary>
     /// An older focus lookup response must not replace results from a newer filtered search.
     /// </summary>
@@ -306,12 +306,12 @@ public class LookupFieldTests
         public override string ToString() => this.Name;
     }
 
-    
+
     /// <inheritdoc />
     private sealed class TestLookupController(IEnumerable<TestOption> options) : ILookupController
     {
         public int SearchCount { get; private set; }
-        
+
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage(
             "Major Code Smell",
@@ -329,7 +329,7 @@ public class LookupFieldTests
             return Task.FromResult(results.OfType<T>().AsEnumerable());
         }
     }
-    
+
     private sealed class ControlledLookupController : ILookupController
     {
         private readonly Dictionary<string, TaskCompletionSource<IEnumerable<TestOption>>> _responses =

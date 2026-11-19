@@ -198,4 +198,10 @@
   <data name="NoMatchingMonsters" xml:space="preserve">
     <value>Kein passendes Monster auf dieser Karte</value>
   </data>
+  <data name="ResetView" xml:space="preserve">
+    <value>Ansicht zurücksetzen</value>
+  </data>
+  <data name="ZoomHint" xml:space="preserve">
+    <value>Mit dem Mausrad zoomen, mit der mittleren Maustaste ziehen, um zu verschieben</value>
+  </data>
 </root>

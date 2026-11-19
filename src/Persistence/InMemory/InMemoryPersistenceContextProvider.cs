@@ -143,7 +143,7 @@ public class InMemoryPersistenceContextProvider : IMigratableDatabaseContextProv
     {
         if (this.ChangePublisher is { } changePublisher)
         {
-#pragma warning disable VSTHRD100
+#pragma warning disable VSTHRD100 // SavedChanges requires a void handler. PublishConfigurationChangesAsync catches all exceptions, so none get lost or crash the process.
             async void OnContextOnSavedChanges(object? o, EventArgs e)
 #pragma warning restore VSTHRD100
             {

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.Dapr.Common;
 using MUnique.OpenMU.Discord;
+using MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 using MUnique.OpenMU.ServerClients;
@@ -22,6 +23,7 @@ builder.Services
     .AddSingleton<IFriendServer, FriendServer>()
     .AddSingleton<IGuildServer, GuildServer>()
     .AddSingleton<IEventPublisher, EventPublisher>()
+    .AddSingleton<IGameEventListener, GameEventPlugInListener>()
 
     // The game servers of the distributed deployment run in UTC, too.
     .AddDiscordIntegration(builder.Configuration.GetSection(DiscordSettings.SectionName), () => TimeZoneInfo.Utc);

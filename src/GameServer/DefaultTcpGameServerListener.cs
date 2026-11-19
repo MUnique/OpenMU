@@ -168,7 +168,7 @@ public class DefaultTcpGameServerListener : IGameServerListener
         this.EncryptionFactoryPlugIn = null;
     }
 
-#pragma warning disable VSTHRD100 // Exceptions are handled.
+#pragma warning disable VSTHRD100 // This is an event handler, which requires a void return type. The body catches and logs all exceptions, so none get lost.
     private async void OnResolverConfigurationChanged(object? sender, EventArgs e)
 #pragma warning restore VSTHRD100
     {

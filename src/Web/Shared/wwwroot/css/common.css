@@ -25,3 +25,10 @@ mark, .mark {
   background: var(--omu-mark-bg);
   padding: 0;
 }
+
+/* FocusOnNavigate focuses the page heading after a navigation, so that screen
+   readers announce the new page. The heading isn't interactive, so the browser
+   shouldn't draw a focus outline around it. */
+h1:focus {
+  outline: none;
+}

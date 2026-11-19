@@ -32,21 +32,40 @@ public class Pets : InitializerBase
     /// <inheritdoc />
     public override void Initialize()
     {
-#pragma warning disable SA1117 // Parameters should be on same line or separete lines
-        var angel = this.CreatePet(0, 0, LocalizedString.FromResource(() => ItemNames.GuardianAngel), 23, true,
+        var angel = this.CreatePet(
+            0,
+            0,
+            LocalizedString.FromResource(() => ItemNames.GuardianAngel),
+            23,
+            true,
             (Stats.DamageReceiveDecrement, 0.8f, AggregateType.Multiplicate),
             (Stats.MaximumHealth, 50f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(angel);
-        var imp = this.CreatePet(1, 0, LocalizedString.FromResource(() => ItemNames.Imp), 28, true,
+        var imp = this.CreatePet(
+            1,
+            0,
+            LocalizedString.FromResource(() => ItemNames.Imp),
+            28,
+            true,
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
         this.AddItemToJewelItemDrop(imp);
-        var uniria = this.CreatePet(2, 0, LocalizedString.FromResource(() => ItemNames.HornOfUniria), 25, true,
+        var uniria = this.CreatePet(
+            2,
+            0,
+            LocalizedString.FromResource(() => ItemNames.HornOfUniria),
+            25,
+            true,
             (Stats.IsUniriaEquipped, 1, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum));
         this.AddItemToJewelItemDrop(uniria);
 
-        var dinorant = this.CreatePet(3, SkillNumber.FireBreath, LocalizedString.FromResource(() => ItemNames.HornOfDinorant), 110, false,
+        var dinorant = this.CreatePet(
+            3,
+            SkillNumber.FireBreath,
+            LocalizedString.FromResource(() => ItemNames.HornOfDinorant),
+            110,
+            false,
             (Stats.IsDinorantEquipped, 1, AggregateType.AddRaw),
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
@@ -54,7 +73,6 @@ public class Pets : InitializerBase
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
         this.AddDinorantOptions(dinorant);
-#pragma warning restore SA1117
     }
 
     private ItemDefinition CreatePet(byte number, SkillNumber skillNumber, LocalizedString name, int dropLevelAndLevelRequirement, bool dropsFromMonsters, params (AttributeDefinition, float, AggregateType)[] basePowerUps)

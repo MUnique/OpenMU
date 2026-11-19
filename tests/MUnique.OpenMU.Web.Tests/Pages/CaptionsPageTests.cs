@@ -9,9 +9,11 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -36,6 +38,8 @@ public class CaptionsPageTests
 
     private CultureInfo _previousUiCulture = null!;
 
+    private string _initializationKey = CaptionsPageTestInitialization.Id;
+
     private static string SourceKey => LocalizedStringResources.CreateSourceKey(SourceName, nameof(Resources.Captions));
 
     /// <summary>
@@ -44,6 +48,8 @@ public class CaptionsPageTests
     [SetUp]
     public void Setup()
     {
+        // NUnit uses one instance of the fixture for all tests, so a test which changes the key doesn't affect the others.
+        this._initializationKey = CaptionsPageTestInitialization.Id;
         this._previousUiCulture = CultureInfo.CurrentUICulture;
         CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
         if (!LocalizedStringResources.TryGetName(Resources.ResourceManager, out _))
@@ -196,6 +202,27 @@ public class CaptionsPageTests
         Assert.That(savedMonster.Designation.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("配置名称"));
     }
 
+    /// <summary>
+    /// If the reference configuration failed in a way which it remembers, e.g. because the data initialization isn't available,
+    /// the check for linkable captions only logs it as debug information, as the reference configuration logged it once.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task RememberedReferenceFailure_IsNotLoggedAsWarningAsync()
+    {
+        var logger = new Mock<ILogger<Captions>>();
+        this._context.Services.AddSingleton(logger.Object);
+        this._initializationKey = "captions-page-test-unavailable";
+        await this.CreateConfigurationAsync(Resources.ResourceManager.GetLocalizedString(nameof(Resources.Captions))).ConfigureAwait(false);
+
+        var cut = this._context.Render<Captions>();
+
+        cut.WaitForAssertion(
+            () => logger.Verify(l => l.Log(LogLevel.Debug, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.Is<Exception?>(e => e is ReferenceConfigurationFailedException), It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once),
+            TimeSpan.FromSeconds(30));
+        logger.Verify(l => l.Log(LogLevel.Warning, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception?>(), It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Never);
+    }
+
     private async Task<MonsterDefinition> CreateConfigurationAsync(LocalizedString designation, params (Guid Id, LocalizedString Designation)[] additionalMonsters)
     {
         using var context = this._persistenceContextProvider.CreateNewContext();
@@ -212,7 +239,7 @@ public class CaptionsPageTests
         }
 
         var updateState = context.CreateNew<ConfigurationUpdateState>();
-        updateState.InitializationKey = CaptionsPageTestInitialization.Id;
+        updateState.InitializationKey = this._initializationKey;
         await context.SaveChangesAsync().ConfigureAwait(false);
         return monster;
     }

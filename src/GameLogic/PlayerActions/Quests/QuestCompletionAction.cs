@@ -144,39 +144,39 @@ public class QuestCompletionAction
                 await player.InvokeViewPlugInAsync<ILegacyQuestRewardPlugIn>(p => p.ShowAsync(player, QuestRewardType.LevelUpPoints, reward.Value, null)).ConfigureAwait(false);
                 break;
             case QuestRewardType.CharacterEvolutionFirstToSecond:
-            {
-                var previousClass = player.SelectedCharacter!.CharacterClass
-                                    ?? throw new InvalidOperationException($"Character has no class");
-                player.SelectedCharacter.CharacterClass = previousClass.NextGenerationClass
-                                                          ?? throw new InvalidOperationException($"Current character class has no next generation");
-                player.ApplyCharacterClassChange(previousClass);
-                await player.ForEachWorldObserverAsync<ILegacyQuestRewardPlugIn>(
-                    p => p.ShowAsync(
-                        player,
-                        QuestRewardType.CharacterEvolutionFirstToSecond,
-                        reward.Value,
-                        null),
-                    true).ConfigureAwait(false);
-                break;
-            }
+                {
+                    var previousClass = player.SelectedCharacter!.CharacterClass
+                                        ?? throw new InvalidOperationException($"Character has no class");
+                    player.SelectedCharacter.CharacterClass = previousClass.NextGenerationClass
+                                                              ?? throw new InvalidOperationException($"Current character class has no next generation");
+                    player.ApplyCharacterClassChange(previousClass);
+                    await player.ForEachWorldObserverAsync<ILegacyQuestRewardPlugIn>(
+                        p => p.ShowAsync(
+                            player,
+                            QuestRewardType.CharacterEvolutionFirstToSecond,
+                            reward.Value,
+                            null),
+                        true).ConfigureAwait(false);
+                    break;
+                }
 
             case QuestRewardType.CharacterEvolutionSecondToThird:
-            {
-                var previousClass = player.SelectedCharacter!.CharacterClass
-                                    ?? throw new InvalidOperationException($"Character has no class");
-                player.SelectedCharacter.CharacterClass = previousClass.NextGenerationClass
-                                                          ?? throw new InvalidOperationException($"Current character class has no next generation");
-                player.ApplyCharacterClassChange(previousClass);
-                await player.ForEachWorldObserverAsync<ILegacyQuestRewardPlugIn>(
-                    p => p.ShowAsync(
-                        player,
-                        QuestRewardType.CharacterEvolutionSecondToThird,
-                        reward.Value,
-                        null),
-                    true).ConfigureAwait(false);
-                await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
-                break;
-            }
+                {
+                    var previousClass = player.SelectedCharacter!.CharacterClass
+                                        ?? throw new InvalidOperationException($"Character has no class");
+                    player.SelectedCharacter.CharacterClass = previousClass.NextGenerationClass
+                                                              ?? throw new InvalidOperationException($"Current character class has no next generation");
+                    player.ApplyCharacterClassChange(previousClass);
+                    await player.ForEachWorldObserverAsync<ILegacyQuestRewardPlugIn>(
+                        p => p.ShowAsync(
+                            player,
+                            QuestRewardType.CharacterEvolutionSecondToThird,
+                            reward.Value,
+                            null),
+                        true).ConfigureAwait(false);
+                    await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
+                    break;
+                }
 
             case QuestRewardType.Experience:
                 await player.AddExperienceAsync(reward.Value, null).ConfigureAwait(false);

@@ -295,7 +295,7 @@
     <value>自动（跟随系统）</value>
   </data>
   <data name="MapEditorShortcutPan" xml:space="preserve">
-    <value>单击空白区域并拖动以平移地图</value>
+    <value>按住鼠标中键拖动以平移地图</value>
   </data>
   <data name="MapEditorShortcutDrag" xml:space="preserve">
     <value>按住 CTRL 并单击对象以拖动</value>

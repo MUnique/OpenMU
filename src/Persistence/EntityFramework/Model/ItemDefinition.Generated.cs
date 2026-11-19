@@ -165,6 +165,32 @@ internal partial class ItemDefinition : MUnique.OpenMU.DataModel.Configuration.I
     }
 
     /// <summary>
+    /// Gets or sets the identifier of <see cref="SocketCountTable"/>.
+    /// </summary>
+    public Guid? SocketCountTableId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="SocketCountTable" />.
+    /// </summary>
+    [ForeignKey(nameof(SocketCountTableId))]
+    public WeightedValueTable RawSocketCountTable
+    {
+        get => base.SocketCountTable as WeightedValueTable;
+        set => base.SocketCountTable = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.WeightedValueTable SocketCountTable
+    {
+        get => base.SocketCountTable;set
+        {
+            base.SocketCountTable = value;
+            this.SocketCountTableId = this.RawSocketCountTable?.Id;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Skill"/>.
     /// </summary>
     public Guid? SkillId { get; set; }

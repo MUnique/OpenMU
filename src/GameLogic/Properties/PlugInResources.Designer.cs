@@ -8763,5 +8763,158 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("WorldChatChatCommandPlugIn_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Game Event Webhook.
+        /// </summary>
+        public static string GameEventWebhookPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forwards selected events of the game as signed JSON to a URL.
+        /// </summary>
+        public static string GameEventWebhookPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GameEventWebhookPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_Url_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_Url_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The address to which the events are posted, e.g. https://exa.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_Url_Description {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_Url_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secret.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_Secret_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_Secret_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shared secret with which each request is signed (HMAC-SH.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_Secret_Description {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_Secret_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward boss kills.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardBossKills_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardBossKills_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward level milestones.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardLevelMilestones_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardLevelMilestones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward item drops.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardItemDrops_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardItemDrops_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forwarded drop items.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_DropItemNames_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_DropItemNames_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The names of the items whose drops are forwarded. When empty.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_DropItemNames_Description {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_DropItemNames_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum item level of forwarded drops.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_DropMinimumItemLevel_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_DropMinimumItemLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward mini game results.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardMiniGameResults_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardMiniGameResults_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward mini game openings and starts.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardMiniGameOpenings_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardMiniGameOpenings_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward invasions.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardInvasions_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardInvasions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward castle siege state changes.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardCastleSiege_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardCastleSiege_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forward global notices of game masters.
+        /// </summary>
+        public static string GameEventWebhookConfiguration_ForwardGlobalNotices_Name {
+            get {
+                return ResourceManager.GetString("GameEventWebhookConfiguration_ForwardGlobalNotices_Name", resourceCulture);
+            }
+        }
     }
 }
