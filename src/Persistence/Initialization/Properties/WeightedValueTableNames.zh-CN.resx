@@ -18,4 +18,10 @@
   <data name="SocketCountTwoHanded" xml:space="preserve">
     <value>镶嵌孔数量（双手武器）</value>
   </data>
+  <data name="SocketCountOneHandedDescription" xml:space="preserve">
+    <value>掉落的单手镶嵌武器、盾牌和防具的孔数：一个孔很常见，三个孔很少见，四个和五个孔不会掉落。</value>
+  </data>
+  <data name="SocketCountTwoHandedDescription" xml:space="preserve">
+    <value>掉落的双手镶嵌武器的孔数：一个孔很常见，五个孔非常少见。</value>
+  </data>
 </root>

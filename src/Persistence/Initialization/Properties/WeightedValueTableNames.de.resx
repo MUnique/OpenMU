@@ -18,4 +18,10 @@
   <data name="SocketCountTwoHanded" xml:space="preserve">
     <value>Sockelanzahl (Zweihandwaffen)</value>
   </data>
+  <data name="SocketCountOneHandedDescription" xml:space="preserve">
+    <value>Die Sockelanzahl fallen gelassener Einhand-Sockelwaffen, Schilde und Rüstungen: ein Sockel ist häufig, drei sind selten, vier und fünf fallen nie.</value>
+  </data>
+  <data name="SocketCountTwoHandedDescription" xml:space="preserve">
+    <value>Die Sockelanzahl fallen gelassener Zweihand-Sockelwaffen: ein Sockel ist häufig, fünf sind sehr selten.</value>
+  </data>
 </root>
