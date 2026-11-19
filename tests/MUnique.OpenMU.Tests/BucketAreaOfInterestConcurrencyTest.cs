@@ -10,6 +10,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using Nito.AsyncEx;
+using System.Threading;
 
 /// <summary>
 /// Tests for the concurrent usage of the area of interest management of the <see cref="GameMap"/>.
