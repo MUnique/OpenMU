@@ -94,11 +94,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 360 },
                 { Stats.AttackRatePvm, 715 },
                 { Stats.DefenseRatePvm, 270 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 25f / 255 },
-                { Stats.IceResistance, 25f / 255 },
-                { Stats.WaterResistance, 25f / 255 },
-                { Stats.FireResistance, 25f / 255 },
+                { Stats.IceResistance, 25 },
+                { Stats.PoisonResistance, 25 },
+                { Stats.LightningResistance, 25 },
+                { Stats.FireResistance, 25 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -126,11 +125,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 410 },
                 { Stats.AttackRatePvm, 750 },
                 { Stats.DefenseRatePvm, 280 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 50f / 255 },
-                { Stats.IceResistance, 50f / 255 },
-                { Stats.WaterResistance, 50f / 255 },
-                { Stats.FireResistance, 50f / 255 },
+                { Stats.IceResistance, 50 },
+                { Stats.PoisonResistance, 50 },
+                { Stats.LightningResistance, 50 },
+                { Stats.FireResistance, 50 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -158,11 +156,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 460 },
                 { Stats.AttackRatePvm, 800 },
                 { Stats.DefenseRatePvm, 320 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 23f / 255 },
-                { Stats.IceResistance, 23f / 255 },
-                { Stats.WaterResistance, 23f / 255 },
-                { Stats.FireResistance, 23f / 255 },
+                { Stats.IceResistance, 23 },
+                { Stats.PoisonResistance, 23 },
+                { Stats.LightningResistance, 23 },
+                { Stats.FireResistance, 23 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -190,11 +187,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 510 },
                 { Stats.AttackRatePvm, 835 },
                 { Stats.DefenseRatePvm, 330 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 25f / 255 },
-                { Stats.IceResistance, 25f / 255 },
-                { Stats.WaterResistance, 25f / 255 },
-                { Stats.FireResistance, 25f / 255 },
+                { Stats.IceResistance, 25 },
+                { Stats.PoisonResistance, 25 },
+                { Stats.LightningResistance, 25 },
+                { Stats.FireResistance, 25 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -222,11 +218,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 560 },
                 { Stats.AttackRatePvm, 935 },
                 { Stats.DefenseRatePvm, 370 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 29f / 255 },
-                { Stats.IceResistance, 29f / 255 },
-                { Stats.WaterResistance, 29f / 255 },
-                { Stats.FireResistance, 29f / 255 },
+                { Stats.IceResistance, 29 },
+                { Stats.PoisonResistance, 29 },
+                { Stats.LightningResistance, 29 },
+                { Stats.FireResistance, 29 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -254,11 +249,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 610 },
                 { Stats.AttackRatePvm, 1015 },
                 { Stats.DefenseRatePvm, 380 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 27f / 255 },
-                { Stats.IceResistance, 27f / 255 },
-                { Stats.WaterResistance, 27f / 255 },
-                { Stats.FireResistance, 27f / 255 },
+                { Stats.IceResistance, 27 },
+                { Stats.PoisonResistance, 27 },
+                { Stats.LightningResistance, 27 },
+                { Stats.FireResistance, 27 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -286,11 +280,10 @@ internal class DevilSquare7 : BaseMapInitializer
                 { Stats.DefenseBase, 690 },
                 { Stats.AttackRatePvm, 1300 },
                 { Stats.DefenseRatePvm, 430 },
-                { Stats.WindResistance, 23f / 255 },
-                { Stats.PoisonResistance, 23f / 255 },
-                { Stats.IceResistance, 23f / 255 },
-                { Stats.WaterResistance, 23f / 255 },
-                { Stats.FireResistance, 23f / 255 },
+                { Stats.IceResistance, 23 },
+                { Stats.PoisonResistance, 23 },
+                { Stats.LightningResistance, 23 },
+                { Stats.FireResistance, 23 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);

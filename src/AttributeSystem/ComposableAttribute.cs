@@ -176,27 +176,13 @@ public class ComposableAttribute : BaseAttribute, IComposableAttribute, IDisposa
             return 0;
         }
 
-        var rawValues = elements.Where(e => e.AggregateType == AggregateType.AddRaw).Sum(e => e.Value);
-        var multiValues = elements.Where(e => e.AggregateType == AggregateType.Multiplicate).Select(e => e.Value).Concat(Enumerable.Repeat(1.0F, 1)).Aggregate((a, b) => a * b);
-        var finalValues = elements.Where(e => e.AggregateType == AggregateType.AddFinal).Sum(e => e.Value);
-        var maxValues = elements.Where(e => e.AggregateType == AggregateType.Maximum).MaxBy(e => e.Value)?.Value ?? 0;
-        rawValues += maxValues;
-
-        if (elements.All(e => e.AggregateType == AggregateType.Multiplicate))
+        var aggregate = default(ElementAggregate);
+        foreach (var element in elements)
         {
-            rawValues = 1;
+            aggregate.Add(element);
         }
 
-        var newValue = (rawValues * multiValues) + finalValues;
-        if (this._maximumValue.HasValue)
-        {
-            newValue = Math.Min(this._maximumValue.Value, newValue);
-        }
-
-        if (this.Definition.MaximumValue.HasValue)
-        {
-            newValue = Math.Min(this.Definition.MaximumValue.Value, newValue);
-        }
+        var newValue = aggregate.GetValue(this.Definition, this._maximumValue);
 
         lock (this._elementLock)
         {

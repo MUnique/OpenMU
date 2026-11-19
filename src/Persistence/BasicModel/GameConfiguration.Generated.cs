@@ -173,6 +173,27 @@ public partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuration.
     }
 
     /// <summary>
+    /// Gets the raw collection of <see cref="WeightedValueTables" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("weightedValueTables")]
+    public ICollection<WeightedValueTable> RawWeightedValueTables { get; } = new List<WeightedValueTable>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.WeightedValueTable> WeightedValueTables
+    {
+        get => base.WeightedValueTables ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.WeightedValueTable, WeightedValueTable>(this.RawWeightedValueTables);
+        protected set
+        {
+            this.WeightedValueTables.Clear();
+            foreach (var item in value)
+            {
+                this.WeightedValueTables.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemStatProfiles" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("itemStatProfiles")]

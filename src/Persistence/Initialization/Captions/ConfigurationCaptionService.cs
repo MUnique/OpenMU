@@ -4,12 +4,9 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Captions;
 
-using System.Collections.Concurrent;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
-using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -18,17 +15,6 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public class ConfigurationCaptionService
 {
-    /// <summary>
-    /// The references of the data initializations, by their key.
-    /// They only depend on the initialization code and the resources, so they're created once per process.
-    /// </summary>
-    private static readonly ConcurrentDictionary<string, CaptionLinkReference> References = new(StringComparer.Ordinal);
-
-    /// <summary>
-    /// The lock which ensures that a reference is created only once, even if it's requested concurrently.
-    /// </summary>
-    private static readonly SemaphoreSlim ReferenceCreationLock = new(1, 1);
-
     private readonly IPersistenceContextProvider _contextProvider;
     private readonly PlugInManager _plugInManager;
     private readonly ILoggerFactory _loggerFactory;
@@ -137,49 +123,13 @@ public class ConfigurationCaptionService
     }
 
     /// <summary>
-    /// Gets the reference of the data initialization. When it's created for the first time,
+    /// Gets the reference of the data initialization. It's created once per process; the first time,
     /// the data initialization is executed in memory, which takes a while.
     /// </summary>
     /// <param name="initializationKey">The key of the data initialization.</param>
     /// <returns>The reference.</returns>
-    private async ValueTask<CaptionLinkReference> GetReferenceAsync(string initializationKey)
+    private ValueTask<CaptionLinkReference> GetReferenceAsync(string initializationKey)
     {
-        if (References.TryGetValue(initializationKey, out var reference))
-        {
-            return reference;
-        }
-
-        await ReferenceCreationLock.WaitAsync().ConfigureAwait(false);
-        try
-        {
-            if (!References.TryGetValue(initializationKey, out reference))
-            {
-                // The initialization is mostly synchronous, CPU bound work.
-                // It's executed on the thread pool, so that the caller (e.g. a Blazor circuit) stays responsive.
-                var referenceConfiguration = await Task.Run(() => this.CreateReferenceConfigurationAsync(initializationKey).AsTask()).ConfigureAwait(false);
-                reference = CaptionLinkReference.Create(referenceConfiguration);
-                References[initializationKey] = reference;
-            }
-
-            return reference;
-        }
-        finally
-        {
-            ReferenceCreationLock.Release();
-        }
-    }
-
-    private async ValueTask<GameConfiguration> CreateReferenceConfigurationAsync(string initializationKey)
-    {
-        var plugIn = this._plugInManager.GetStrategyProvider<string, IDataInitializationPlugIn>()?[initializationKey]
-                     ?? throw new InvalidOperationException($"The data initialization '{initializationKey}' is not available.");
-
-        var inMemoryProvider = new InMemoryPersistenceContextProvider();
-        var referenceInitialization = Activator.CreateInstance(plugIn.GetType(), inMemoryProvider, this._loggerFactory) as IDataInitializationPlugIn
-                                      ?? throw new InvalidOperationException($"The data initialization '{initializationKey}' can't be executed in memory.");
-        await referenceInitialization.CreateInitialDataAsync(1, false).ConfigureAwait(false);
-
-        using var referenceContext = inMemoryProvider.CreateNewContext();
-        return await GetGameConfigurationAsync(referenceContext).ConfigureAwait(false);
+        return ReferenceConfiguration.GetDerivedAsync(this._plugInManager, this._loggerFactory, initializationKey, "captions", CaptionLinkReference.Create);
     }
 }

@@ -137,7 +137,11 @@ public static class AdminPanelAuthExtensions
             .AddPolicy(AdminPolicies.ApiKeyViewer, policy => policy
                 .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
-                .RequireRole(AdminRoles.Viewer));
+                .RequireRole(AdminRoles.Viewer))
+            .AddPolicy(AdminPolicies.ApiKeyWebManager, policy => policy
+                .AddAuthenticationSchemes(ApiKeyAuthenticationDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .RequireRole(AdminRoles.WebManager));
         services.AddHttpContextAccessor();
         services.AddScoped<AdminOperationCircuitState>();
         services.AddScoped<CircuitHandler>(sp => sp.GetRequiredService<AdminOperationCircuitState>());

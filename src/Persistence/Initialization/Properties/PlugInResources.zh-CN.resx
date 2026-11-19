@@ -461,6 +461,8 @@
   <data name="FixMurenRingOfFireBonusPlugIn_Description" xml:space="preserve"><value>将 Muren 古代套装中火之指环的加成由体力修正为智力。</value></data>
   <data name="FixDestroyPhantomArmorNamesPlugIn_Name" xml:space="preserve"><value>修正 Phantom 与 Destroy 套装的英文名称</value></data>
   <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve"><value>交换 47 号与 48 号铠甲套装及其套装加成的英文名称（47 为 Phantom，48 为 Destroy），并修正拼写错误“Destory”。</value></data>
+  <data name="HideSkillEffectTimesPlugIn_Name" xml:space="preserve"><value>隐藏技能效果的时间</value></data>
+  <data name="HideSkillEffectTimesPlugIn_Description" xml:space="preserve"><value>关闭发送第6季数据曾为其发送持续时间的技能效果：Infinite Arrow 以及 Fire Slash 与 Beast Uppercut 的防御降低效果。原版游戏不显示技能效果的时间。它会覆盖当前设置，包括在效果时间页面上所做的设置。</value></data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
     <value>添加圣诞村邀请函</value>
   </data>
@@ -483,6 +485,8 @@
   <data name="FieldMonsterSpawnsUpdatePlugInBase_Description" xml:space="preserve"><value>将野外地图的怪物刷新点调整为第六季的数据（本版本同样使用）：冰风谷和仙踪林按地图四分之一区域分布的刷新点替换为更小的区域和单个刷新点，不含第六季的蜘蛛。补充地下城、失落之塔和天空之城缺少的刷新点，并移除多余的刷新点。同时移除地下城（254 个）和失落之塔（2 个）中重复的怪物刷新点。冰风谷和仙踪林野外怪物的自定义刷新点将被覆盖。</value></data>
   <data name="MonsterStatsUpdatePlugInBase_Name" xml:space="preserve"><value>第六季怪物属性</value></data>
   <data name="MonsterStatsUpdatePlugInBase_Description" xml:space="preserve"><value>将怪物的等级、生命值、伤害、防御力、攻击成功率和防御成功率、范围、延迟和重生时间设为第六季的数据（本版本同样使用）。修正野外怪物、入侵怪物和守卫，以及第六季中赤色要塞 4、7 层和恶魔广场 7 层的怪物。这些属性的自定义值将被覆盖。在第六季中，将卡利玛 7 的怪物 275 由“昆顿幻影 7”更名为“昆顿”。</value></data>
+  <data name="MonsterResistancesUpdatePlugInBase_Name" xml:space="preserve"><value>怪物元素抗性</value></data>
+  <data name="MonsterResistancesUpdatePlugInBase_Description" xml:space="preserve"><value>将怪物的元素抗性转换为抗性判定所需的 0 到 255 的整数；此前怪物仅在约 1% 到 2% 的命中中抵抗冰、毒和雷电效果。修正导入怪物数据时被分配到错误元素的抗性（冰与毒互换、雷电被存为水），并设为第六季的数值。自定义的抗性会换算为新的比例，但不做其他更改。</value></data>
   <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
     <value>添加保护护身符</value>
   </data>
@@ -517,4 +521,10 @@
   <data name="IllusionTempleDataUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新创建幻影寺院活动的配置数据，并将活动对话框分配给 NPC 弥拉邱。如果物品 13/50 和 13/51 的数据被互换（血的卷纸和幻影教药水），则恢复它们的原始数据：名称、尺寸、耐久度、等级和掉落、掉落物品组、寺院门票以及 13/51 的商店物品。如果两者都已是原始名称，但尺寸仍被互换、老板娘莉雅出售 13/51 而不是 13/50，或幻影教药水的掉落物品组包含 13/51 而不是 13/50，则设置它们的原始尺寸，将使用 13/50 的寺院门票改为 13/51，并且只将老板娘莉雅的这些商店物品和幻影教药水的这些掉落物品组从 13/51 改为 13/50。您在幻影教药水旁另外添加的血的卷纸保持不变。如果只有其中一个的名称被互换，则两者都不更改。您自己添加的对这两个物品的引用（合成、任务、物品掉落、插件设置）保持不变：请在更新后检查它们。</value>
   </data>
+  <data name="NpcSpawnsUpdatePlugIn075_Name" xml:space="preserve"><value>0.75版NPC刷新点</value></data>
+  <data name="NpcSpawnsUpdatePlugIn075_Description" xml:space="preserve"><value>将0.75版的NPC调整为第六季数据：移除仙踪林的两名药水少女（253）、失落之塔的药水少女（253）和安全守卫（240）、竞技场和亚特兰蒂斯的安全守卫（240），以及勇者大陆114/125处的守卫（247），并将竞技场的足球和竞技场守卫调整到第六季的位置。</value></data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Name" xml:space="preserve"><value>0.95d版NPC刷新点</value></data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve"><value>将0.95d版的NPC调整为第六季数据：移除仙踪林的两名药水少女（253）、失落之塔的药水少女（253）和安全守卫（240）、竞技场和亚特兰蒂斯的安全守卫（240），以及勇者大陆114/125处的守卫（247），将竞技场的足球和竞技场守卫调整到第六季的位置，并将黄金弓箭手从勇者大陆移至冰风谷（226/66）。</value></data>
+  <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>镶嵌孔数量表</value></data>
+  <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>镶嵌物品掉落时大多只有一个孔，三个孔（双手武器为五个孔）很少见，而不是以相同几率获得最多孔数以内的任意数量。将镶嵌物品的最大孔数提高到五个，由数量表限制掉落。已有数量表的镶嵌物品保持不变。</value></data>
 </root>

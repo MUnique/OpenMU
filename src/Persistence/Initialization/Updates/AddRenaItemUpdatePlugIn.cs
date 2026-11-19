@@ -55,9 +55,7 @@ public class AddRenaItemUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 07, 26, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         var itemDefinition = gameConfiguration.Items.FirstOrDefault(item => item.Group == ItemGroup && item.Number == ItemNumber);
         if (itemDefinition is null)

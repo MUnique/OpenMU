@@ -33,7 +33,7 @@ public class InfiniteArrowEffectInitializer : InitializerBase
         magicEffect.Number = (byte)MagicEffectNumber.InfiniteArrow;
         magicEffect.Name = LocalizedString.FromResource(() => MagicEffectNames.InfinityArrowSkillEffect);
         magicEffect.InformObservers = true;
-        magicEffect.SendDuration = true;
+        magicEffect.SendDuration = false;
         magicEffect.StopByDeath = true;
         magicEffect.Duration = this.Context.CreateNew<PowerUpDefinitionValue>();
         magicEffect.Duration.ConstantValue.Value = 600;

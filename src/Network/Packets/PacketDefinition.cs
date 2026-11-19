@@ -202,23 +202,17 @@ public class PacketDefinition
     /// </summary>
     [XmlArray(IsNullable = true)]
     [XmlArrayItem("Field", IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public Field[]? Fields { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
     /// <summary>
     /// Gets or sets the structures which are exclusively used by this packet.
     /// </summary>
     [XmlArrayItem("Structure", IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public Structure[]? Structures { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 
     /// <summary>
     /// Gets or sets the enums which are exclusively used by this packet.
     /// </summary>
     [XmlArrayItem(IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public Enum[]? Enums { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 }

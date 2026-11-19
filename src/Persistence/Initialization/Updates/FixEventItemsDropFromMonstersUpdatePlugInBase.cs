@@ -35,9 +35,7 @@ public abstract class FixEventItemsDropFromMonstersUpdatePlugInBase : UpdatePlug
     public override DateTime CreatedAt => new(2025, 09, 01, 10, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         // Find event items that have DropsFromMonsters = true but also have dedicated DropItemGroups
         var eventItemsWithDropGroups = gameConfiguration.DropItemGroups

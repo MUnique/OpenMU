@@ -35,4 +35,14 @@ internal static class GameConfigurationExtensions
         builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
         builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
     }
+
+    /// <summary>
+    /// Applies the settings for the <see cref="WeightedValueTable"/> entity.
+    /// </summary>
+    /// <param name="builder">The builder.</param>
+    public static void Apply(this EntityTypeBuilder<WeightedValueTable> builder)
+    {
+        builder.Property(p => p.Name).HasConversion(LocalizedStringConverter.Instance);
+        builder.Property(p => p.Description).HasConversion(LocalizedStringConverter.Instance);
+    }
 }

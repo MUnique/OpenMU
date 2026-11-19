@@ -47,9 +47,7 @@ public class SpawnFixesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2023, 04, 03, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         var wanderingSpawns = gameConfiguration.Maps.SelectMany(m => m.MonsterSpawns.Where(s => s.MonsterDefinition?.Number is MarlonNumber or Wandering1Number or Wandering2Number or ZyroNumber));
         foreach (var spawn in wanderingSpawns)

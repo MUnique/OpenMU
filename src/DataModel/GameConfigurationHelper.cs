@@ -39,6 +39,8 @@ public static class GameConfigurationHelper
         { typeof(ItemOfItemSet), c => c.ItemSetGroups.SelectMany(o => o.Items) },
         { typeof(ItemLevelBonusTable), c => c.ItemLevelBonusTables },
         { typeof(LevelBonus), c => c.ItemLevelBonusTables.SelectMany(i => i.BonusPerLevel) },
+        { typeof(WeightedValueTable), c => c.WeightedValueTables },
+        { typeof(WeightedValue), c => c.WeightedValueTables.SelectMany(t => t.Values) },
         { typeof(ItemStatProfile), c => c.ItemStatProfiles },
         { typeof(ItemStatTerms), c => c.ItemStatProfiles.SelectMany(p => p.StatTerms) },
         { typeof(ItemRequirementFormula), c => c.ItemStatProfiles.SelectMany(p => p.RequirementFormulas) },

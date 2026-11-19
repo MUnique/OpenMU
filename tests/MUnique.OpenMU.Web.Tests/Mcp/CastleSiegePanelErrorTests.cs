@@ -63,7 +63,8 @@ public sealed class CastleSiegePanelErrorTests
         await using var game = new GameServerContext(
             new MUnique.OpenMU.Persistence.BasicModel.GameServerDefinition { ServerID = 4, GameConfiguration = configuration, ServerConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameServerConfiguration() },
             Mock.Of<IGuildServer>(), Mock.Of<IEventPublisher>(), Mock.Of<ILoginServer>(), Mock.Of<IFriendServer>(), persistence,
-            initializer, loggers, plugins, NullDropGenerator.Instance, new ConfigurationChangeMediator()) { ServerTimeZone = TimeZoneInfo.Utc };
+            initializer, loggers, plugins, NullDropGenerator.Instance, new ConfigurationChangeMediator())
+        { ServerTimeZone = TimeZoneInfo.Utc };
         game.StopPeriodicTasks();
         await plugin.ExecuteTaskAsync(game).ConfigureAwait(false);
         var server = new Mock<IGameServer>();

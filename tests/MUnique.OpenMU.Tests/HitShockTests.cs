@@ -70,6 +70,21 @@ public class HitShockTests
     }
 
     /// <summary>
+    /// Bleeding damage never triggers hit shock.
+    /// </summary>
+    [Test]
+    public async Task BleedDamageDoesNotTriggerHitShockAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var defender = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        AddHitShockSettings(defender, 1, 5);
+
+        var hitInfo = defender.GetHitInfo(100, DamageAttributes.Bleed, attacker);
+
+        Assert.That(hitInfo.TriggersHitShock, Is.False);
+    }
+
+    /// <summary>
     /// A zero configured chance never triggers hit shock.
     /// </summary>
     [Test]

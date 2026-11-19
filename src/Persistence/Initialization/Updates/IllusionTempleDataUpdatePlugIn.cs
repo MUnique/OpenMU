@@ -254,9 +254,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         this.AddRelicItem(context, gameConfiguration);
         this.AddArenaMonsterDefinitions(context, gameConfiguration);

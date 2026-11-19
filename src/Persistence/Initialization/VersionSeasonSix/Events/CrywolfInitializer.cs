@@ -227,10 +227,10 @@ internal class CrywolfInitializer : InitializerBase
             { Stats.DefenseBase, defense },
             { Stats.AttackRatePvm, attackRate },
             { Stats.DefenseRatePvm, defenseRate },
-            { Stats.PoisonResistance, resistance / 255f },
-            { Stats.IceResistance, resistance / 255f },
-            { Stats.LightningResistance, resistance / 255f },
-            { Stats.FireResistance, resistance / 255f },
+            { Stats.PoisonResistance, resistance },
+            { Stats.IceResistance, resistance },
+            { Stats.LightningResistance, resistance },
+            { Stats.FireResistance, resistance },
         };
 
         monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

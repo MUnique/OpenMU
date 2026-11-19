@@ -55,7 +55,7 @@ public class KillAllMonstersChatCommandPlugIn : IChatCommandPlugIn
                     continue;
                 }
 
-                await monster.ReflectDamageAsync(player, uint.MaxValue).ConfigureAwait(false);
+                await monster.ApplyDamageAsync(player, uint.MaxValue).ConfigureAwait(false);
                 killed++;
             }
             catch (Exception ex)

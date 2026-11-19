@@ -36,7 +36,9 @@
                 </li>
                 <AuthorizeView Policy="@AdminPolicies.Administrator">
                     <li class="nav-item px-3">
-                        <NavLink class="nav-link" href="audit">@Resources.ResourceManager.GetString("AuditHistory", Resources.Culture)</NavLink>
+                        <NavLink class="nav-link" href="audit" @onclick="() => NavigationHistory.Clear()">
+                            <span class="oi oi-script" aria-hidden="true"></span> @Resources.AuditHistory
+                        </NavLink>
                     </li>
                 </AuthorizeView>
                 <li class="nav-item px-3">
@@ -99,7 +101,7 @@
                             <span class="oi oi-medical-cross" aria-hidden="true"></span> @Resources.Updates
                             @if (this._availableConfigUpdates > 0)
                             {
-                                <span class="badge text-bg-light ms-2">@this._availableConfigUpdates</span>
+                                <span class="badge text-bg-primary ms-2">@this._availableConfigUpdates</span>
                                 <span class="visually-hidden">@Resources.AvailableUpdates</span>
                             }
                         </NavLink>

@@ -924,6 +924,12 @@
   <data name="FixDestroyPhantomArmorNamesPlugIn_Description" xml:space="preserve">
     <value>Tauscht die Namen der Rüstungssets Phantom (47) und Zerstörer (48) und ihrer Set-Boni, die mit dem Namen des jeweils anderen Sets initialisiert wurden, und korrigiert die Schreibweise „Destory“.</value>
   </data>
+  <data name="HideSkillEffectTimesPlugIn_Name" xml:space="preserve">
+    <value>Zeiten von Fertigkeitseffekten ausblenden</value>
+  </data>
+  <data name="HideSkillEffectTimesPlugIn_Description" xml:space="preserve">
+    <value>Schaltet das Senden der Dauer der Fertigkeitseffekte aus, für die die Season-6-Daten sie gesendet haben: Infinite Arrow und die Verteidigungsverringerungen von Fire Slash und Beast Uppercut. Das Originalspiel zeigt für Fertigkeitseffekte keine Zeit. Es überschreibt die aktuelle Einstellung, auch eine auf der Seite Effektzeiten gemachte.</value>
+  </data>
   <data name="AddSantaVillageInvitationUpdatePlugIn_Name" xml:space="preserve">
     <value>Einladung ins Dorf des Weihnachtsmanns hinzufügen</value>
   </data>
@@ -965,6 +971,12 @@
   </data>
   <data name="MonsterStatsUpdatePlugInBase_Description" xml:space="preserve">
     <value>Setzt Level, Leben, Schaden, Verteidigung, Angriffs- und Verteidigungsrate, Reichweiten, Verzögerungen und Respawn-Zeiten der Monster auf die Season-6-Daten, die auch diese Version verwendet. Korrigiert Feldmonster, Invasionsmonster und Wachen sowie in Season 6 Chaos Castle 4 und 7 sowie Devil Square 7. Angepasste Werte dieser Attribute werden überschrieben. Benennt in Season 6 das Monster 275 von Kalima 7 von „Illusion of Kundun 7“ in „Kundun“ um.</value>
+  </data>
+  <data name="MonsterResistancesUpdatePlugInBase_Name" xml:space="preserve">
+    <value>Elementare Resistenzen der Monster</value>
+  </data>
+  <data name="MonsterResistancesUpdatePlugInBase_Description" xml:space="preserve">
+    <value>Wandelt die elementaren Resistenzen der Monster in ganze Zahlen von 0 bis 255 um, welche die Resistenzprüfung erwartet; bisher widerstanden Monster Eis-, Gift- und Blitzeffekten nur bei etwa 1 bis 2 % der Treffer. Korrigiert die Resistenzen, die der Import der Monsterdaten den falschen Elementen zugeordnet hat (Eis und Gift vertauscht, Blitz als Wasser gespeichert), und setzt die Season-6-Werte. Angepasste Resistenzen werden auf die neue Skala umgerechnet, aber sonst nicht verändert.</value>
   </data>
   <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
     <value>Schutztalismane hinzufügen</value>
@@ -1008,4 +1020,18 @@
   <data name="IllusionTempleDataUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung erstellt die Konfigurationsdaten für das Event Illusionstempel und weist dem NPC Mirage den Event-Dialog zu. Wenn die Gegenstände 13/50 und 13/51 vertauschte Daten haben (Schriftrolle des Blutes und Vertrag des Illusionszauberers), gibt sie ihnen ihre ursprünglichen Daten zurück: Namen, Größen, Haltbarkeit, Stufen und Drops, die Drop-Gruppen, die Tempel-Tickets und die Händler-Gegenstände von 13/51. Wenn beide ihre ursprünglichen Namen haben, aber die Größen noch vertauscht sind, Schankmädchen Lumen 13/51 statt 13/50 verkauft oder eine Drop-Gruppe des Vertrags 13/51 statt 13/50 enthält, setzt sie ihre ursprünglichen Größen, stellt die Tempel-Tickets von 13/50 auf 13/51 um und verschiebt nur diese Händler-Gegenstände von Schankmädchen Lumen und Drop-Gruppen des Vertrags von 13/51 auf 13/50. Eine Schriftrolle des Blutes, die Sie neben dem Vertrag hinzugefügt haben, bleibt. Wenn nur einer der beiden den vertauschten Namen hat, ändert sie keinen. Verweise auf die beiden Gegenstände, die Sie selbst hinzugefügt haben (Kombinationen, Quests, Item-Drops, Plugin-Einstellungen), bleiben, wie sie sind: prüfen Sie sie nach der Aktualisierung.</value>
   </data>
+  <data name="NpcSpawnsUpdatePlugIn075_Name" xml:space="preserve">
+    <value>0.75-NPC-Spawns</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugIn075_Description" xml:space="preserve">
+    <value>Bringt die NPCs von 0.75 auf die Season-6-Daten: entfernt die zwei Trankverkäuferinnen von Noria, die Trankverkäuferin und den Sicherheitswächter von Verlorener Turm, die Sicherheitswächter von Arena und Atlans sowie die Armbrustwache bei 114/125 in Lorencia und versetzt den Fußball und die Arenawache der Arena auf ihre Season-6-Positionen.</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Name" xml:space="preserve">
+    <value>0.95d-NPC-Spawns</value>
+  </data>
+  <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve">
+    <value>Bringt die NPCs von 0.95d auf die Season-6-Daten: entfernt die zwei Trankverkäuferinnen von Noria, die Trankverkäuferin und den Sicherheitswächter von Verlorener Turm, die Sicherheitswächter von Arena und Atlans sowie die Armbrustwache bei 114/125 in Lorencia, versetzt den Fußball und die Arenawache der Arena auf ihre Season-6-Positionen und den Goldenen Bogenschützen von Lorencia nach Devias (226/66).</value>
+  </data>
+  <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>Tabellen der Sockelanzahl</value></data>
+  <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>Sockelgegenstände fallen meistens mit einem Sockel und selten mit drei (Zweihandwaffen: fünf), statt mit jeder Anzahl bis zum Maximum mit gleicher Wahrscheinlichkeit. Erhöht die maximale Sockelanzahl der Sockelgegenstände auf fünf; die Tabellen begrenzen die Drops. Sockelgegenstände, die schon eine Tabelle haben, behalten sie.</value></data>
 </root>

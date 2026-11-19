@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.Persistence;
+using MUnique.OpenMU.Persistence.Initialization;
 using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.Web.AdminPanel.Properties;
 
@@ -194,7 +195,8 @@ public partial class Captions : IDisposable
         catch (Exception ex)
         {
             // It's just a hint, linking is still possible manually.
-            this.Logger.LogWarning(ex, "Couldn't check for built-in captions which are not linked to their sources yet.");
+            // A failure of the reference configuration is remembered and logged once by it, so it's only debug information here.
+            this.Logger.Log(ex is ReferenceConfigurationFailedException ? LogLevel.Debug : LogLevel.Warning, ex, "Couldn't check for built-in captions which are not linked to their sources yet.");
         }
         finally
         {
