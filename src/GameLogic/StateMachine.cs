@@ -16,6 +16,10 @@ public class StateMachine
     /// <summary>
     /// The lock object for state transitions.
     /// </summary>
+    /// <remarks>
+    /// A caller which holds the transition scopes of two players at once (the trade finish) must acquire them
+    /// in the order of <see cref="TransitionLockId"/>, so that two such callers can't wait for each other.
+    /// </remarks>
     private readonly AsyncLock _asyncLock = new();
 
     /// <summary>
@@ -51,6 +55,10 @@ public class StateMachine
     /// Gets a value indicating whether the state machine is in a finished state, that means that no further state changes are possible.
     /// </summary>
     public bool Finished => this.CurrentState?.PossibleTransitions is null || this.CurrentState.PossibleTransitions.Count == 0;
+
+    /// <summary>Gets the existing exclusion identity for consistently ordering simultaneous state scopes.</summary>
+    /// <remarks>Nito assigns this stable per-lock identity lazily; its contract is semi-unique over very long allocation sequences.</remarks>
+    internal int TransitionLockId => this._asyncLock.Id;
 
     /// <summary>
     /// Tries to advance the state to <paramref name="nextState"/>.

@@ -69,11 +69,31 @@ public class PartyRequestAction
             return;
         }
 
-        if (await toRequest.PlayerState.TryAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
+        await using (var context = await toRequest.PlayerState.TryBeginAdvanceToAsync(PlayerState.PartyRequest).ConfigureAwait(false))
+        {
+            context.Allowed &= player.IsAlive && toRequest.IsAlive
+                && !player.IsPreparingForcedPlacement && !toRequest.IsPreparingForcedPlacement
+                && !ReferenceEquals(player, toRequest) && toRequest.LastPartyRequester is null;
+            if (!context.Allowed)
+            {
+                return;
+            }
+
+            toRequest.LastPartyRequester = player;
+        }
+
+        if (player.IsAlive && toRequest.IsAlive)
         {
             await this.SendPartyRequestAsync(toRequest, player).ConfigureAwait(false);
-            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RequestedPlayerForParty), toRequest.Name).ConfigureAwait(false);
         }
+
+        if (!player.IsAlive || !toRequest.IsAlive)
+        {
+            await ClearPendingRequestAsync(toRequest, player).ConfigureAwait(false);
+            return;
+        }
+
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.RequestedPlayerForParty), toRequest.Name).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -94,6 +114,17 @@ public class PartyRequestAction
         return eventArgs.Cancel;
     }
 
+    private static async ValueTask ClearPendingRequestAsync(Player recipient, Player requester)
+    {
+        await using var context = await recipient.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        context.Allowed &= recipient.PlayerState.CurrentState == PlayerState.PartyRequest
+            && ReferenceEquals(recipient.LastPartyRequester, requester);
+        if (context.Allowed)
+        {
+            recipient.LastPartyRequester = null;
+        }
+    }
+
     private async ValueTask SendPartyRequestAsync(IPartyMember toRequest, IPartyMember requester)
     {
         if (Equals(requester, toRequest))
@@ -101,7 +132,10 @@ public class PartyRequestAction
             return;
         }
 
-        toRequest.LastPartyRequester = requester;
+        if (!ReferenceEquals(toRequest.LastPartyRequester, requester))
+        {
+            return;
+        }
 
         if (toRequest is Player receiver && requester is Player requesterPlayer)
         {

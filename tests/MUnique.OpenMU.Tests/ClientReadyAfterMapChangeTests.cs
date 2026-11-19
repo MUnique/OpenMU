@@ -5,7 +5,11 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Moq;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Pathfinding;
@@ -132,6 +136,97 @@ public class ClientReadyAfterMapChangeTests
 
         Assert.That(async () => await player.WarpToSafezoneAsync().ConfigureAwait(false), Throws.Nothing);
         Assert.That(player.SelectedCharacter!.CurrentMap, Is.SameAs(mapDefinition));
+    }
+
+    /// <summary>An ordinary recovery warp keeps the lethal owner until its subsequent client Ready completes arrival.</summary>
+    /// <param name="recovery">Blocked tile or unavailable destination with a valid home fallback.</param>
+    /// <param name="lethal">Whether a real instant hazard lands in the outgoing map-change view.</param>
+    [TestCase("blocked", true)]
+    [TestCase("home", true)]
+    [TestCase("blocked", false)]
+    [TestCase("home", false)]
+    public async Task RecoveryReadyCompletesOwnedDeathAsync(string recovery, bool lethal)
+    {
+        var game = GameContextTestHelper.CreateGameContext();
+        var home = game.Configuration.Maps.First();
+        home.IsActive = true;
+        home.ExitGates.Add(new MUnique.OpenMU.Persistence.BasicModel.ExitGate
+        {
+            Map = home, X1 = 1, X2 = 1, Y1 = 1, Y2 = 1, IsSpawnGate = true,
+        });
+        if (recovery == "blocked")
+        {
+            BlockTerrain(home.TerrainData!, 10, 10, 10, 10);
+        }
+
+        var player = await PlayerTestHelper.CreatePlayerAsync(game).ConfigureAwait(false);
+        player.Attributes![Stats.CurrentHealth] = 37;
+        Mock.Get(player.SelectedCharacter!.CharacterClass!).Setup(c => c.HomeMap).Returns(home);
+        var unavailable = new MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition { Number = 7, IsActive = true };
+        var destination = recovery == "blocked" ? home : unavailable;
+        var deaths = 0;
+        player.Died += (_, _) => deaths++;
+        var armed = lethal;
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IMapChangePlugIn>()!).Setup(v => v.MapChangeAsync()).Returns(async () =>
+        {
+            if (armed)
+            {
+                armed = false;
+                await player.KillInstantlyAsync().ConfigureAwait(false);
+            }
+        });
+        try
+        {
+            await player.RunPersistenceExclusiveAsync(() => player.WarpToAsync(new ExitGate { Map = destination, X1 = 10, X2 = 10, Y1 = 10, Y2 = 10 }))
+                .AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            var death = player.LastDeath;
+            Assert.Multiple(() =>
+            {
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+                Assert.That(player.CurrentMap, Is.Null);
+                Assert.That(player.GetPlacementDeathSnapshot().Reserved, Is.EqualTo(lethal));
+                Assert.That(deaths, Is.Zero);
+            });
+            await player.RunPersistenceExclusiveAsync(() => player.ClientReadyAfterMapChangeAsync()).AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(player.SelectedCharacter!.CurrentMap, Is.SameAs(home));
+                Assert.That(player.SelectedCharacter.PositionX, Is.EqualTo(1));
+                Assert.That(player.SelectedCharacter.PositionY, Is.EqualTo(1));
+                Assert.That(player.CurrentMap, Is.Null, "Recovery started a SECOND normal map-change handshake.");
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.ChangingMap));
+                Assert.That(player.LastDeath, Is.SameAs(death));
+                Assert.That(player.GetPlacementDeathSnapshot().Reserved, Is.EqualTo(lethal));
+                Assert.That(deaths, Is.Zero, "No death timer starts before the recovery arrival.");
+            });
+            await player.RunPersistenceExclusiveAsync(() => player.ClientReadyAfterMapChangeAsync()).AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(player.CurrentMap!.Definition, Is.SameAs(home));
+                Assert.That(player.CurrentMap.GetPlayers().Count(p => ReferenceEquals(p, player)), Is.EqualTo(1));
+                Assert.That(player.PlayerState.CurrentState, Is.EqualTo(lethal ? PlayerState.Dead : PlayerState.EnteredWorld));
+                Assert.That(player.LastDeath, Is.SameAs(death));
+                Assert.That(deaths, Is.EqualTo(lethal ? 1 : 0));
+            });
+            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+            while (!player.IsAlive || player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+            {
+                await Task.Delay(10, deadline.Token).ConfigureAwait(false);
+            }
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(player.Attributes![Stats.CurrentHealth], Is.GreaterThan(0));
+                Assert.That(player.CurrentMap!.Terrain.WalkMap[player.Position.X, player.Position.Y], Is.True);
+                Assert.That(player.CurrentMap.GetPlayers().Count(p => ReferenceEquals(p, player)), Is.EqualTo(1));
+                Assert.That(player.LastDeath, Is.SameAs(death));
+                Assert.That(deaths, Is.EqualTo(lethal ? 1 : 0));
+            });
+        }
+        finally
+        {
+            await player.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>

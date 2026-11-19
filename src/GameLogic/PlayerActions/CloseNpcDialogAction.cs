@@ -21,19 +21,37 @@ public class CloseNpcDialogAction
     {
         using var loggerScope = player.Logger.BeginScope(this.GetType());
         var npc = player.OpenedNpc;
-        if (npc != null && await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false))
+        var closed = false;
+        if (npc is not null)
         {
-            player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {player.OpenedNpc}");
-            player.OpenedNpc = null;
-            player.Vault = null;
-            if (npc.Definition.ItemCraftings.Any())
-            {
-                // The backup which was taken when the crafting dialog opened only guards a disconnect while
-                // it's open. Kept beyond, a disconnect would roll the inventory back to that moment, losing or
-                // duplicating everything since. Items left in the machine are returned through the temporary
-                // storage instead.
-                player.BackupInventory = null;
+            await using var context = await player.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
 
+            // Only an opened dialog is closed here. A close request of a dialog which a death or a map change
+            // already ended must not bring that life back into the world.
+            context.Allowed &= player.PlayerState.CurrentState == PlayerState.NpcDialogOpened
+                && ReferenceEquals(player.OpenedNpc, npc);
+            if (context.Allowed)
+            {
+                player.OpenedNpc = null;
+                player.Vault = null;
+                if (npc.Definition.ItemCraftings.Any())
+                {
+                    // The backup which was taken when the crafting dialog opened only guards a disconnect while
+                    // it's open. Kept beyond, a disconnect would roll the inventory back to that moment, losing or
+                    // duplicating everything since. Items left in the machine are returned through the temporary
+                    // storage instead.
+                    player.BackupInventory = null;
+                }
+
+                closed = true;
+            }
+        }
+
+        if (closed)
+        {
+            player.Logger.LogDebug($"Player {player.SelectedCharacter?.Name} closes NPC {npc}");
+            if (npc!.Definition.ItemCraftings.Any())
+            {
                 // Items the player left in the machine would stay hidden in the server's tray, out of the
                 // client's inventory and out of its (reset) tray, until the next login.
                 await player.ReturnTemporaryStorageItemsAsync().ConfigureAwait(false);

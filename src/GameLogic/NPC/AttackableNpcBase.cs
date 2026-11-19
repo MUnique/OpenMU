@@ -20,6 +20,9 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 {
+    // The sign bit reserves death independently of public HP, including fresh alive-zero configurations.
+    private const int ReservedDeath = int.MinValue;
+
     private const byte MaximumDropDistance = 2;
     private const short IceSkillNumber = 7;
 
@@ -95,10 +98,26 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// <summary>
     /// Gets or sets the current health.
     /// </summary>
+    /// <remarks>Assignments preserve lethal ownership; only initialization establishes a fresh life.</remarks>
     public int Health
     {
-        get => Math.Max(Volatile.Read(ref this._health), 0);
-        set => Interlocked.Exchange(ref this._health, value);
+        get
+        {
+            return Volatile.Read(ref this._health) & int.MaxValue;
+        }
+        set
+        {
+            var health = Math.Max(value, 0);
+            while (true)
+            {
+                var current = Volatile.Read(ref this._health);
+                var replacement = (current & ReservedDeath) | health;
+                if (Interlocked.CompareExchange(ref this._health, replacement, current) == current)
+                {
+                    return;
+                }
+            }
+        }
     }
 
     private bool ShouldRespawn => this.SpawnArea.SpawnTrigger == SpawnTrigger.Automatic
@@ -129,7 +148,10 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
             attacker.ApplyAmmunitionConsumption(hitInfo);
         }
 
-        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
+        if (!await this.TryHitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false))
+        {
+            return null;
+        }
 
         if (hitInfo.HealthDamage > 0)
         {
@@ -181,7 +203,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     public override void Initialize()
     {
         base.Initialize();
-        this.Health = this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth];
+
+        // Only initialization establishes a fresh life and clears the reserved-death bit.
+        Interlocked.Exchange(ref this._health, Math.Max(this.SpawnArea.MaximumHealthOverride ?? (int)this.Attributes[Stats.MaximumHealth], 0));
         this.IsAlive = true;
     }
 
@@ -227,41 +251,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     /// </param>
     protected async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
     {
-        if (!this.IsAlive)
-        {
-            return;
-        }
-
-        var killed = this.TryHit(hitInfo.TotalDamage, attacker);
-
-        var player = this.GetHitNotificationTarget(attacker);
-        if (player is not null)
-        {
-            if (isFinalStreakHit.HasValue)
-            {
-                hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
-
-                if (isFinalStreakHit.Value || killed)
-                {
-                    hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
-                }
-            }
-
-            await player.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
-            player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
-            player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitWithSkillPlugIn>()?.AttackableGotHit(this, attacker, hitInfo, skill);
-        }
-
-        if (killed)
-        {
-            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
-            await this.OnDeathAsync(attacker).ConfigureAwait(false);
-            this.Died?.Invoke(this, this.LastDeath);
-            if (!this.ShouldRespawn)
-            {
-                await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
-            }
-        }
+        await this.TryHitAsync(hitInfo, attacker, skill, isFinalStreakHit).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -306,7 +296,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         while (true)
         {
             var currentHealth = Volatile.Read(ref this._health);
-            if (currentHealth <= 0 || currentHealth >= maximumHealth)
+            if (currentHealth < 0 || currentHealth >= maximumHealth)
             {
                 return 0;
             }
@@ -376,6 +366,65 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
     }
 
+    private async ValueTask<bool> TryHitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit)
+    {
+        if (!this.IsAlive)
+        {
+            return false;
+        }
+
+        if (!this.TryHit(hitInfo.TotalDamage, out var killed))
+        {
+            return false;
+        }
+
+        if (isFinalStreakHit.HasValue)
+        {
+            hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+
+            if (isFinalStreakHit.Value || killed)
+            {
+                hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+            }
+        }
+
+        var death = killed ? new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0) : null;
+        if (death is not null)
+        {
+            this.LastDeath = death;
+        }
+
+        try
+        {
+            if (hitInfo.TotalDamage > 0)
+            {
+                this.RegisterHit(attacker);
+            }
+
+            var player = this.GetHitNotificationTarget(attacker);
+            if (player is not null)
+            {
+                await player.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
+                player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
+                player.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitWithSkillPlugIn>()?.AttackableGotHit(this, attacker, hitInfo, skill);
+            }
+        }
+        finally
+        {
+            if (death is not null)
+            {
+                await this.OnDeathAsync(attacker).ConfigureAwait(false);
+                this.Died?.Invoke(this, death);
+                if (!this.ShouldRespawn)
+                {
+                    await this.RemoveFromMapAndDisposeAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        return true;
+    }
+
     private async ValueTask RemoveFromMapAndDisposeAsync()
     {
         await this.CurrentMap.RemoveAsync(this).ConfigureAwait(false);
@@ -412,28 +461,33 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         }
     }
 
-    private bool TryHit(uint damage, IAttacker attacker)
+    private bool TryHit(uint damage, out bool killed)
     {
-        if (damage > 0)
+        killed = false;
+        while (true)
         {
-            this.RegisterHit(attacker);
-        }
+            var currentHealth = Volatile.Read(ref this._health);
+            if (currentHealth < 0)
+            {
+                return false;
+            }
 
-        if (damage >= this.Health)
-        {
-            this.IsAlive = false;
-            this.Health = 0;
+            // Share one representation with setters and restoration. Fresh zero CASes to
+            // reserved zero, never zero-to-zero; only that winner owns death.
+            var remainingHealth = (int)Math.Max(0L, (long)currentHealth - damage);
+            var replacement = remainingHealth == 0 ? ReservedDeath : remainingHealth;
+            if (Interlocked.CompareExchange(ref this._health, replacement, currentHealth) != currentHealth)
+            {
+                continue;
+            }
+
+            killed = remainingHealth == 0;
+            if (killed)
+            {
+                this.IsAlive = false;
+            }
+
             return true;
-        }
-
-        try
-        {
-            Interlocked.Add(ref this._health, -(int)damage);
-            return false;
-        }
-        catch
-        {
-            return false;
         }
     }
 

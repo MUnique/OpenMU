@@ -11,8 +11,11 @@ using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Trade;
+using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.Trade;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -44,6 +47,127 @@ public class TradeTest
     }
 
     /// <summary>
+    /// A pending trade request keeps its pair: further requests which involve one of its players are refused and
+    /// don't replace a partner; the third player stays untouched. After the cancel, a new request succeeds.
+    /// </summary>
+    [Test]
+    public async Task PendingRequestKeepsItsPairAsync()
+    {
+        var a = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        try
+        {
+            var b = await PlayerTestHelper.CreatePlayerAsync(a.GameContext).ConfigureAwait(false);
+            try
+            {
+                var c = await PlayerTestHelper.CreatePlayerAsync(a.GameContext).ConfigureAwait(false);
+                try
+                {
+                    Assert.That(await RequestAsync(a, b).ConfigureAwait(false), Is.True);
+                    var busyRequester = await RequestAsync(a, c).ConfigureAwait(false);
+                    var busyRequestedAsRequester = await RequestAsync(b, c).ConfigureAwait(false);
+                    var busyRequesterAsRequested = await RequestAsync(c, a).ConfigureAwait(false);
+                    var busyRequested = await RequestAsync(c, b).ConfigureAwait(false);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(busyRequester, Is.False, "busy requester");
+                        Assert.That(busyRequestedAsRequester, Is.False, "busy requested player as requester");
+                        Assert.That(busyRequesterAsRequested, Is.False, "busy requester as requested player");
+                        Assert.That(busyRequested, Is.False, "busy requested player");
+                    });
+                    AssertPair(a, b);
+                    AssertFree(c);
+
+                    await a.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(a)).ConfigureAwait(false);
+                    AssertFree(a);
+                    AssertFree(b);
+                    Assert.That(await RequestAsync(a, c).ConfigureAwait(false), Is.True);
+                    AssertPair(a, c);
+                    AssertFree(b);
+                }
+                finally
+                {
+                    await c.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                await b.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            await a.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Two requests which involve the same player (C to A and A to B) are started through the packet funnels of their
+    /// requesters at the same time. Exactly one pair results, and the refused request is rolled back. The tasks aren't
+    /// forced to interleave in a specific order; each attempt alternates which one starts first.
+    /// </summary>
+    [Test]
+    public async Task CrossingRequestsResultInOnePairAsync()
+    {
+        var a = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        try
+        {
+            var b = await PlayerTestHelper.CreatePlayerAsync(a.GameContext).ConfigureAwait(false);
+            try
+            {
+                var c = await PlayerTestHelper.CreatePlayerAsync(a.GameContext).ConfigureAwait(false);
+                try
+                {
+                    for (var attempt = 0; attempt < 8; attempt++)
+                    {
+                        Task<bool> fromC;
+                        Task<bool> fromA;
+                        if (attempt % 2 == 0)
+                        {
+                            fromC = RequestAsync(c, a);
+                            fromA = RequestAsync(a, b);
+                        }
+                        else
+                        {
+                            fromA = RequestAsync(a, b);
+                            fromC = RequestAsync(c, a);
+                        }
+
+                        var results = await Task.WhenAll(fromC, fromA).WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+                        Assert.That(results.Count(r => r), Is.EqualTo(1), $"attempt {attempt}: C to A {results[0]}, A to B {results[1]}");
+                        if (results[0])
+                        {
+                            AssertPair(c, a);
+                            AssertFree(b);
+                        }
+                        else
+                        {
+                            AssertPair(a, b);
+                            AssertFree(c);
+                        }
+
+                        await a.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(a)).ConfigureAwait(false);
+                        AssertFree(a);
+                        AssertFree(b);
+                        AssertFree(c);
+                    }
+                }
+                finally
+                {
+                    await c.DisposeAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                await b.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            await a.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Tests the trade response.
     /// </summary>
     [Test]
@@ -58,6 +182,86 @@ public class TradeTest
         Assert.AreEqual(requester.PlayerState.CurrentState, PlayerState.TradeOpened);
         Assert.AreEqual(responder.PlayerState.CurrentState, PlayerState.TradeOpened);
         Mock.Get(requester.ViewPlugIns.GetPlugIn<IShowTradeRequestAnswerPlugIn>()!).Verify(view => view!.ShowTradeRequestAnswerAsync(true), Times.Once);
+    }
+
+    /// <summary>Logout cancels the current trade before character teardown and permits the same connection to trade again.</summary>
+    /// <param name="phase">The ordinary trade state in which logout is requested.</param>
+    [TestCase("requested")]
+    [TestCase("opened")]
+    [TestCase("pressed")]
+    public async Task LogoutTradeCanReselectAndTradeAgainAsync(string phase)
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var peer = await PlayerTestHelper.CreatePlayerAsync(owner.GameContext).ConfigureAwait(false);
+        owner.GameContext.Configuration.MaximumInventoryMoney = 1_000_000;
+        var character = owner.SelectedCharacter!;
+        character.Name = "LogoutA";
+        Mock.Get(owner.Account!).Setup(a => a.Characters).Returns(new List<Character> { character });
+        owner.Money = 200;
+        peer.Money = 300;
+        var inventory = owner.Inventory!;
+        var item = this.GetItem();
+        item.Definition = new ItemDefinition { Width = 1, Height = 1, IsTradable = true };
+        Assert.That(await inventory.AddItemAsync(20, item).ConfigureAwait(false), Is.True);
+        try
+        {
+            Assert.That(await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+                () => new TradeRequestAction().RequestTradeAsync(owner, peer)).ConfigureAwait(false)).ConfigureAwait(false), Is.True);
+            if (phase != "requested")
+            {
+                await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                    () => new TradeAcceptAction().HandleTradeAcceptAsync(peer, true)).ConfigureAwait(false)).ConfigureAwait(false);
+                await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(async () =>
+                {
+                    await new MoveItemAction().MoveItemAsync(owner, 20, Storages.Inventory, 0, Storages.Trade).ConfigureAwait(false);
+                    await new TradeMoneyAction().TradeMoneyAsync(owner, 60).ConfigureAwait(false);
+                    if (phase == "pressed")
+                    {
+                        await new TradeButtonAction().TradeButtonChangedAsync(owner, TradeButtonState.Checked).ConfigureAwait(false);
+                    }
+                }).ConfigureAwait(false)).ConfigureAwait(false);
+            }
+
+            await Task.Run(async () => await owner.RunPersistenceExclusiveAsync(
+                () => new LogoutAction().LogoutAsync(owner, LogoutType.BackToCharacterSelection)).ConfigureAwait(false)).ConfigureAwait(false);
+            // The peer's later cancel is a separate packet; it must not be needed to clean the logged-out player.
+            await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                () => new TradeCancelAction().CancelTradeAsync(peer)).ConfigureAwait(false)).ConfigureAwait(false);
+            var stateAfterLogout = owner.PlayerState.CurrentState;
+            var characterAfterLogout = owner.SelectedCharacter;
+            var partnerAfterLogout = owner.TradingPartner;
+            var moneyAfterLogout = owner.TradingMoney;
+            var peerAfterLogout = peer.TradingPartner;
+            await owner.RunPersistenceExclusiveAsync(() => new RequestCharacterListAction().RequestCharacterListAsync(owner)).ConfigureAwait(false);
+            await owner.RunPersistenceExclusiveAsync(() => new SelectCharacterAction().SelectCharacterAsync(owner, character.Name)).ConfigureAwait(false);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+            var requested = await Task.Run(async () => await peer.RunPersistenceExclusiveAsync(
+                () => new TradeRequestAction().RequestTradeAsync(peer, owner)).ConfigureAwait(false)).ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(stateAfterLogout, Is.EqualTo(PlayerState.Authenticated));
+                Assert.That(characterAfterLogout, Is.Null);
+                Assert.That(partnerAfterLogout, Is.Null);
+                Assert.That(moneyAfterLogout, Is.Zero);
+                Assert.That(owner.BackupInventory, Is.Null);
+                Assert.That(peerAfterLogout, Is.Null);
+                Assert.That(peer.BackupInventory, Is.Null);
+                Assert.That(inventory.ItemStorage.Money, Is.EqualTo(200));
+                Assert.That(inventory.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
+                Assert.That(peer.Money, Is.EqualTo(300));
+                Assert.That(requested, Is.True, "Same-session trade must work after actual logout and character reselection.");
+            });
+            await owner.RunPersistenceExclusiveAsync(() => new TradeAcceptAction().HandleTradeAcceptAsync(owner, true)).ConfigureAwait(false);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+            await owner.RunPersistenceExclusiveAsync(() => new TradeCancelAction().CancelTradeAsync(owner)).ConfigureAwait(false);
+            Assert.That(owner.Money, Is.EqualTo(200));
+            Assert.That(owner.Inventory!.Items.Count(i => ReferenceEquals(i, item)), Is.EqualTo(1));
+        }
+        finally
+        {
+            await owner.DisposeAsync().ConfigureAwait(false);
+            await peer.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -324,6 +528,29 @@ public class TradeTest
         Assert.That(trader2.Money, Is.EqualTo(1000));
         Assert.That(trader1.TradingPartner, Is.Null);
         Assert.That(trader2.TradingPartner, Is.Null);
+    }
+
+    private static Task<bool> RequestAsync(Player requester, Player partner)
+        => Task.Run(async () => await requester.RunPersistenceExclusiveAsync(() => new TradeRequestAction().RequestTradeAsync(requester, partner)).ConfigureAwait(false));
+
+    private static void AssertPair(Player requester, Player partner)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(requester.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeRequested));
+            Assert.That(partner.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeRequested));
+            Assert.That(requester.TradingPartner, Is.SameAs(partner));
+            Assert.That(partner.TradingPartner, Is.SameAs(requester));
+        });
+    }
+
+    private static void AssertFree(Player player)
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+            Assert.That(player.TradingPartner, Is.Null);
+        });
     }
 
     private Item GetItem()

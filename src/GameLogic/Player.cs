@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -60,6 +62,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     private static readonly TimeSpan HeroStateDuration = TimeSpan.FromHours(1);
 
+    // Only synchronous hit accounting takes this target-local lock. Attribute observers snapshot
+    // notifications here; views, plug-ins, death and cross-target effects run after release.
+    // Map/life transitions may take PlayerState's exclusion before this lock; hit commits never
+    // acquire the state exclusion while holding this lock, and never await external callbacks here.
+    private readonly object _hitLock = new();
+
     private readonly MoveItemAction _moveAction = new();
 
     private readonly PlayerExperience _experience;
@@ -89,7 +97,24 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private readonly AccountAttributeGrantPowerUps _accountAttributeGrantPowerUps = new();
 
+    /// <summary>
+    /// The attribute changes which the thread holding <see cref="_hitLock"/> makes, see <see cref="CollectAttributeChangesUnderHitLock"/>.
+    /// </summary>
+    private List<(AttributeDefinition Definition, float Value)>? _hitAttributeChanges;
+
     private CancellationTokenSource? _respawnAfterDeathCts;
+
+    // One elapsed respawn, bound to the original death timer; state exclusion owns claim/defer.
+    private (CancellationTokenSource Source, DeathInformation Death, bool Claimed)? _pendingDeathRespawn;
+
+    // An already-owned lethal hit can finish after a warp, without waiting for another packet here.
+    // Publication and consumption use PlayerState's exclusion; the death identity excludes later lives.
+    private (IAttacker? Killer, DeathInformation Death)? _pendingMapChangeDeath;
+
+    private bool _hasReservedLethalHit;
+
+    // State exclusion owns preparation; an old life cannot release a replacement's admission owner.
+    private ItemAwareAttributeSystem? _forcedPlacementPreparation;
 
     private Character? _selectedCharacter;
 
@@ -145,6 +170,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         this._appearanceData = new PlayerAppearanceData(this);
         this.PlayerState.StateChanged += async args =>
         {
+            if (args.CurrentStateState.IsDisconnectedOrFinished()
+                || args.CurrentStateState == GameLogic.PlayerState.Authenticated
+                || args.CurrentStateState == GameLogic.PlayerState.CharacterSelection)
+            {
+                this._pendingMapChangeDeath = null;
+                this._pendingDeathRespawn = null;
+                lock (this._hitLock)
+                {
+                    this._hasReservedLethalHit = false;
+                }
+            }
+
             // The game context counts its players first, so that the plugins already see the new numbers.
             this.GameContext.OnPlayerStateChanged(this, args.PreviousState, args.CurrentStateState);
             await (this.GameContext.PlugInManager.GetPlugInPoint<IPlayerStateChangedPlugIn>()?.PlayerStateChangedAsync(this, args.PreviousState, args.CurrentStateState) ?? ValueTask.CompletedTask).ConfigureAwait(false);
@@ -663,6 +700,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public DateTime LastShieldRecoveryHiatusAccrual { get; set; } = DateTime.UtcNow;
 
+    /// <summary>Gets a value indicating whether this life's forced placement is closing its interactions.</summary>
+    internal bool IsPreparingForcedPlacement => this.Attributes is { } attributes
+        && ReferenceEquals(Volatile.Read(ref this._forcedPlacementPreparation), attributes);
+
+    /// <summary>Gets a value indicating whether a live character can publish trade state.</summary>
+    internal bool IsAvailableForTrade => !this.IsPreparingForcedPlacement && this.SelectedCharacter is not null && this.IsAlive;
+
+    /// <summary>
+    /// Gets a value indicating whether this thread is committing this player's hit resources.
+    /// </summary>
+    internal bool IsApplyingHitOnCurrentThread => Monitor.IsEntered(this._hitLock);
+
     /// <summary>
     /// Gets a value indicating whether opening the player store after entering the game is supported by this instance.
     /// </summary>
@@ -796,11 +845,36 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
-        this.Attributes[Stats.CurrentHealth] = 0;
+        DeathInformation ownedDeath;
+        List<(AttributeDefinition Definition, float Value)> changes = [];
+        lock (this._hitLock)
+        {
+            if (this._hasReservedLethalHit || this.IsDisposed || this.IsDisposing
+                || this.SelectedCharacter is null || this.PlayerState.CurrentState.IsDisconnectedOrFinished()
+                || this.PlayerState.CurrentState == GameLogic.PlayerState.Dead)
+            {
+                return;
+            }
 
-        this.LastDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
-        await this.OnDeathAsync(null).ConfigureAwait(false);
+            var hitInfo = new HitInfo((uint)this.Attributes[Stats.CurrentHealth], (uint)this.Attributes[Stats.CurrentShield], DamageAttributes.Undefined);
+            using (this.CollectAttributeChangesUnderHitLock(changes))
+            {
+                this.Attributes[Stats.CurrentHealth] = 0;
+                this._hasReservedLethalHit = true;
+                this.IsAlive = false;
+                ownedDeath = new DeathInformation(0, string.Empty, hitInfo, 0);
+                this.LastDeath = ownedDeath;
+            }
+        }
+
+        try
+        {
+            await this.PublishAttributeChangesAsync(changes).ConfigureAwait(false);
+        }
+        finally
+        {
+            await this.OnDeathAsync(null, ownedDeath).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -811,7 +885,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        if (this.IsAttackBlockedBySafezone(attacker)
+        if (!this.IsAlive || this.IsAttackBlockedBySafezone(attacker)
             || this.IsAttackPreventedByPlugIns(attacker))
         {
             return null;
@@ -847,28 +921,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             return hitInfo;
         }
 
-        if (this.Attributes[Stats.IsFrozen] > 0)
-        {
-            await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
-        }
-
-        if (this.Attributes[Stats.IsAsleep] > 0)
-        {
-            await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
-        }
-
-        if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
-        {
-            this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
-        }
-
+        var recoverHealthBeforeHit = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]);
         var manaFullyRecovered = Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverManaAfterHitChance]);
-        if (hitInfo.ManaToll > 0 || manaFullyRecovered)
+        if (!await this.HitAsync(
+                hitInfo,
+                attacker,
+                skill?.Skill,
+                isFinalStreakHit,
+                recoverHealthBeforeHit,
+                applyOrdinaryHitEffects: true,
+                recoverManaBeforeHit: manaFullyRecovered).ConfigureAwait(false))
         {
-            this.Attributes[Stats.CurrentMana] = (manaFullyRecovered ? this.Attributes[Stats.MaximumMana] : this.Attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
+            return null;
         }
-
-        await this.HitAsync(hitInfo, attacker, skill?.Skill, isFinalStreakHit).ConfigureAwait(false);
 
         bool isPvpDamage = attacker is Player or IPlayerSurrogate;
         float damage = isPvpDamage ? hitInfo.TotalDamage : attacker.Attributes[Stats.MinimumPhysBaseDmg];
@@ -899,27 +964,31 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="damageType">The damage type.</param>
     public async ValueTask AfterHitTargetAsync(float targetDefense, DamageType? damageType)
     {
-        this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+        var healthLoss = this.Attributes![Stats.HealthLossAfterHit];
+        if (healthLoss > 0)
+        {
+            await this.ApplyHealthLossAfterHitAsync(healthLoss).ConfigureAwait(false);
+        }
 
         await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, damageType ?? DamageType.Physical).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+    public async ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
     {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null);
+        await this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Reflected, reflector), reflector, null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
+    public async ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
     {
-        return this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null);
+        await this.HitAsync(new HitInfo(damage, 0, DamageAttributes.Poison), initialAttacker, null).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
+    public async ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
     {
-        return this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null);
+        await this.HitAsync(this.GetHitInfo(damage, DamageAttributes.Undefined, initialAttacker), initialAttacker, null).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -1383,7 +1452,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask ReturnTemporaryStorageItemsAsync()
     {
-        if (await this._storages.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
+        if (await this.TryReturnTemporaryStorageItemsAsync().ConfigureAwait(false))
         {
             await this.InvokeViewPlugInAsync<IUpdateInventoryListPlugIn>(p => p.UpdateInventoryListAsync()).ConfigureAwait(false);
         }
@@ -1394,6 +1463,9 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public async ValueTask RemoveFromGameAsync()
     {
+        // A trade can't continue without this character; the partner gets its items back as with a cancel.
+        await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+
         if (this.Party is { } party)
         {
             await party.LeaveTemporarilyAsync(this).ConfigureAwait(false);
@@ -1602,14 +1674,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     }
 
     /// <summary>
-    /// Disposes the cancellation token source of a pending respawn after a death, because the
-    /// player is respawning now.
+    /// Returns the items of the temporary storage like <see cref="ReturnTemporaryStorageItemsAsync"/>, without telling the client,
+    /// so that a dialog owner can move them while it holds the state and update the client afterwards.
     /// </summary>
-    internal void ClearRespawnAfterDeathToken()
-    {
-        this._respawnAfterDeathCts?.Dispose();
-        this._respawnAfterDeathCts = null;
-    }
+    /// <returns><c>true</c>, if items have been moved.</returns>
+    internal ValueTask<bool> TryReturnTemporaryStorageItemsAsync() => this._storages.TryReturnTemporaryStorageItemsAsync();
 
     /// <summary>
     /// Clears the list of the objects which are observed by this player.
@@ -1628,9 +1697,261 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         return this._mapTransitions.GetSpawnGateOfCurrentMapAsync();
     }
 
+    /// <summary>
+    /// Completes the map-arrival state without reviving an already-reserved lethal hit.
+    /// </summary>
+    /// <returns>Whether the arrival state transition was allowed.</returns>
+    internal async ValueTask<bool> EnterWorldAfterMapChangeAsync()
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+        if (!context.Allowed)
+        {
+            return false;
+        }
+
+        this.RestoreLivenessAfterPlacement();
+        return true;
+    }
+
+    /// <summary>Reads lethal ownership together with its identity for a bounded placement.</summary>
+    /// <returns>The last death and whether it is reserved for this life, read under hit exclusion.</returns>
+    internal (DeathInformation? Death, bool Reserved) GetPlacementDeathSnapshot()
+    {
+        lock (this._hitLock)
+        {
+            return (this.LastDeath, this._hasReservedLethalHit);
+        }
+    }
+
+    /// <summary>Closes recognized interactions and claims map change before removing the player.</summary>
+    /// <param name="isCurrentLife">Validates the captured character, attributes and death before claiming placement.</param>
+    /// <param name="tryPreparePlacement">Optional owned restoration commit; synchronous and invoked only inside successful state admission.</param>
+    /// <returns>Whether this operation owns the existing changing-map state.</returns>
+    internal async ValueTask<bool> PrepareForForcedPlacementAsync(Func<bool> isCurrentLife, Func<bool>? tryPreparePlacement = null)
+    {
+        var attributes = this.Attributes;
+        var acquired = false;
+        try
+        {
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+            {
+                context.Allowed = false;
+                if (attributes is null || !isCurrentLife() || ReferenceEquals(this._forcedPlacementPreparation, attributes))
+                {
+                    return false;
+                }
+
+                this._forcedPlacementPreparation = attributes;
+                acquired = true;
+            }
+
+            while (true)
+            {
+                State state;
+                NonPlayerCharacter? dialog;
+                await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.ChangingMap).ConfigureAwait(false))
+                {
+                    state = this.PlayerState.CurrentState;
+                    dialog = this.OpenedNpc;
+                    context.Allowed &= isCurrentLife() && state != GameLogic.PlayerState.NpcDialogOpened;
+                    if (context.Allowed)
+                    {
+                        try
+                        {
+                            context.Allowed &= tryPreparePlacement?.Invoke() ?? true;
+                            return context.Allowed;
+                        }
+                        catch
+                        {
+                            context.Allowed = false;
+                            throw;
+                        }
+                    }
+
+                    if (!isCurrentLife() || (state != GameLogic.PlayerState.PartyRequest
+                        && state != GameLogic.PlayerState.TradeRequested && state != GameLogic.PlayerState.TradeOpened
+                        && state != GameLogic.PlayerState.TradeButtonPressed && state != GameLogic.PlayerState.NpcDialogOpened))
+                    {
+                        return false;
+                    }
+                }
+
+                if (state == GameLogic.PlayerState.PartyRequest)
+                {
+                    await new GameLogic.PlayerActions.Party.PartyResponseAction().HandleResponseAsync(this, false).ConfigureAwait(false);
+                }
+                else if (state == GameLogic.PlayerState.NpcDialogOpened)
+                {
+                    if (dialog is not null)
+                    {
+                        await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                        context.Allowed &= isCurrentLife() && this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpc is null;
+                    }
+                }
+                else
+                {
+                    await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+                }
+
+                if (this.PlayerState.CurrentState == state)
+                {
+                    return false;
+                }
+            }
+        }
+        finally
+        {
+            if (acquired)
+            {
+                await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+                context.Allowed = false;
+                if (ReferenceEquals(this._forcedPlacementPreparation, attributes))
+                {
+                    this._forcedPlacementPreparation = null;
+                }
+            }
+        }
+    }
+
+    /// <summary>Restores liveness after placement only when no lethal hit owns this life.</summary>
+    internal void RestoreLivenessAfterPlacement()
+    {
+        lock (this._hitLock)
+        {
+            if (!this._hasReservedLethalHit)
+            {
+                this.IsAlive = true;
+            }
+        }
+    }
+
+    /// <summary>Runs actual death restoration, distinct from generic siege or duel placement.</summary>
+    /// <param name="gate">The selected respawn gate, or the ordinary spawn selection.</param>
+    /// <param name="expectedSource">The original death timer, when invoked by its continuation.</param>
+    /// <param name="expectedDeath">The original death identity, when invoked by its continuation.</param>
+    internal async ValueTask RespawnAfterDeathAsync(ExitGate? gate = null, CancellationTokenSource? expectedSource = null, DeathInformation? expectedDeath = null)
+    {
+        CancellationTokenSource source;
+        CancellationToken token;
+        DeathInformation death;
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            if (this.IsDisposed || this.IsDisposing || this._respawnAfterDeathCts is not { } current || this.LastDeath is not { } currentDeath
+                || (expectedSource is not null && !ReferenceEquals(current, expectedSource))
+                || (expectedDeath is not null && !ReferenceEquals(currentDeath, expectedDeath)))
+            {
+                return;
+            }
+
+            source = current;
+            token = source.Token;
+            death = currentDeath;
+        }
+
+        if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: true).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        var prepared = false;
+        var releaseSource = false;
+        try
+        {
+            await this._summon.RemoveAsync().ConfigureAwait(false);
+            if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: false).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
+            if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: false).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            gate ??= await this._mapTransitions.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false);
+            if (!await this.ContinueDeathRespawnAsync(source, death, token, claim: false).ConfigureAwait(false))
+            {
+                return;
+            }
+
+            List<(AttributeDefinition Definition, float Value)> changes = [];
+            await this._mapTransitions.RespawnWithPreparationAsync(
+                gate,
+                () => prepared = this.TryPrepareForRespawn(source, death, token, changes),
+                () => this.PublishAttributeChangesAsync(changes),
+                () => releaseSource = this.TryCompleteDeathRespawn(source, death)).ConfigureAwait(false);
+            if (!prepared)
+            {
+                await this.DeferDeathRespawnClaimAsync(source, death).ConfigureAwait(false);
+                return;
+            }
+
+            if (!this.IsDisposed && !this.IsDisposing && this.SelectedCharacter is not null
+                && ReferenceEquals(this.LastDeath, death) && this._respawnAfterDeathCts is null)
+            {
+                await this.RespawnOfDuelPartnerIfInDuelAsync().ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            if (!prepared)
+            {
+                await this.DeferDeathRespawnClaimAsync(source, death).ConfigureAwait(false);
+            }
+
+            throw;
+        }
+        finally
+        {
+            if (releaseSource)
+            {
+                source.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finishes a lethal hit handed off during a map change, after the player was added to the map.
+    /// </summary>
+    internal async ValueTask CompleteMapChangeDeathAsync()
+    {
+        (IAttacker? Killer, DeathInformation Death)? pending;
+        (CancellationTokenSource Source, DeathInformation Death, bool Claimed)? respawn;
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            pending = this._pendingMapChangeDeath;
+            this._pendingMapChangeDeath = null;
+            respawn = this._pendingDeathRespawn;
+        }
+
+        if (pending is { } death)
+        {
+            await this.OnDeathAsync(death.Killer, death.Death).ConfigureAwait(false);
+        }
+
+        if (respawn is { Claimed: false } due)
+        {
+            await this.RespawnAfterDeathAsync(expectedSource: due.Source, expectedDeath: due.Death).ConfigureAwait(false);
+        }
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
+        var respawnCancellation = await this.TakeRespawnCancellationAsync().ConfigureAwait(false);
+        if (respawnCancellation is not null)
+        {
+            await respawnCancellation.CancelAsync().ConfigureAwait(false);
+            respawnCancellation.Dispose();
+        }
+
         // A disposed player must never stay reachable from the game context: it would keep counting
         // towards the server's maximum player count (which turns real clients away) and keep its whole
         // object graph alive. The regular teardown removes it through the PlayerDisconnected event, but
@@ -1662,7 +1983,6 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await this.MagicEffectList.DisposeAsync().ConfigureAwait(false);
         this.ReleaseSkillList();
         this.ReleaseAttributeSystem();
-        this._respawnAfterDeathCts?.Dispose();
         (this._viewPlugIns as IDisposable)?.Dispose();
 
         this.PlayerDisconnected = null;
@@ -1697,10 +2017,16 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     {
         bool moveToNextSafezone = false;
 
-        if (this._respawnAfterDeathCts is { IsCancellationRequested: false })
+        var respawnCancellation = await this.TakeRespawnCancellationAsync().ConfigureAwait(false);
+        if (respawnCancellation is not null)
         {
-            await this._respawnAfterDeathCts.CancelAsync().ConfigureAwait(false);
-            moveToNextSafezone = true;
+            if (!respawnCancellation.IsCancellationRequested)
+            {
+                await respawnCancellation.CancelAsync().ConfigureAwait(false);
+                moveToNextSafezone = true;
+            }
+
+            respawnCancellation.Dispose();
         }
 
         if (this.CurrentMiniGame is { } miniGame)
@@ -1807,66 +2133,175 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null)
+    private async ValueTask ApplyHealthLossAfterHitAsync(float healthLoss)
     {
-        this._summon.RegisterHit(attacker);
-        var healthDamage = hitInfo.HealthDamage;
-        int oversd = (int)(this.Attributes![Stats.CurrentShield] - hitInfo.ShieldDamage);
-        if (oversd < 0)
+        List<(AttributeDefinition Definition, float Value)> attributeChanges = [];
+        lock (this._hitLock)
         {
-            healthDamage += (uint)(oversd * (-1));
+            if (!this.IsAlive)
+            {
+                return;
+            }
 
-            if (this.Attributes[Stats.CurrentShield] > 0
-                && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
-                && healthDamage > this.Attributes[Stats.MaximumHealth] * this.Attributes[Stats.OverShieldBurstDamageRatio])
+            using (this.CollectAttributeChangesUnderHitLock(attributeChanges))
+            {
+                this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - healthLoss, 1);
+            }
+        }
+
+        await this.PublishAttributeChangesAsync(attributeChanges).ConfigureAwait(false);
+    }
+
+    private async ValueTask<bool> HitAsync(HitInfo hitInfo, IAttacker attacker, Skill? skill, bool? isFinalStreakHit = null, bool recoverHealthBeforeHit = false, bool applyOrdinaryHitEffects = false, bool recoverManaBeforeHit = false)
+    {
+        bool killed;
+        bool shieldBurst;
+        DeathInformation? ownedDeath = null;
+        var skillNumber = skill?.Number ?? 0;
+        var attackerId = attacker.Id;
+        var attackerName = attacker.GetName();
+        List<(AttributeDefinition Definition, float Value)> attributeChanges = [];
+        lock (this._hitLock)
+        {
+            if (!this.IsAlive || this._hasReservedLethalHit)
+            {
+                return false;
+            }
+
+            var attributes = this.Attributes!;
+            using (this.CollectAttributeChangesUnderHitLock(attributeChanges))
+            {
+                if (recoverHealthBeforeHit)
+                {
+                    attributes[Stats.CurrentHealth] = attributes[Stats.MaximumHealth];
+                }
+
+                if (applyOrdinaryHitEffects && (hitInfo.ManaToll > 0 || recoverManaBeforeHit))
+                {
+                    attributes[Stats.CurrentMana] = (recoverManaBeforeHit ? attributes[Stats.MaximumMana] : attributes[Stats.CurrentMana]) - hitInfo.ManaToll;
+                }
+
+                var healthDamage = hitInfo.HealthDamage;
+                int oversd = (int)(attributes[Stats.CurrentShield] - hitInfo.ShieldDamage);
+                shieldBurst = false;
+                if (oversd < 0)
+                {
+                    healthDamage += (uint)(oversd * (-1));
+                    shieldBurst = attributes[Stats.CurrentShield] > 0
+                        && this.CurrentMiniGame?.Definition.Type != MiniGameType.ChaosCastle
+                        && healthDamage > attributes[Stats.MaximumHealth] * attributes[Stats.OverShieldBurstDamageRatio];
+                    attributes[Stats.CurrentShield] = 0;
+                }
+                else
+                {
+                    attributes[Stats.CurrentShield] = oversd;
+                }
+
+                attributes[Stats.CurrentHealth] -= healthDamage;
+                killed = attributes[Stats.CurrentHealth] < 1;
+                if (isFinalStreakHit.HasValue)
+                {
+                    hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
+                    if (isFinalStreakHit.Value || killed)
+                    {
+                        hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+                    }
+                }
+
+                if (killed)
+                {
+                    ownedDeath = new DeathInformation(attackerId, attackerName, hitInfo, skillNumber);
+                    this.LastDeath = ownedDeath;
+                    this._hasReservedLethalHit = true;
+                    this.IsAlive = false;
+                }
+            }
+        }
+
+        ExceptionDispatchInfo? effectFailure = null;
+        try
+        {
+            if (applyOrdinaryHitEffects)
+            {
+                try
+                {
+                    if (this.Attributes![Stats.IsFrozen] > 0)
+                    {
+                        await this.MagicEffectList.ShortenEffectsProducingSpecificStatAsync(Stats.IsFrozen, 1).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    effectFailure = ExceptionDispatchInfo.Capture(ex);
+                }
+
+                try
+                {
+                    if (this.Attributes![Stats.IsAsleep] > 0)
+                    {
+                        await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (effectFailure is null)
+                    {
+                        effectFailure = ExceptionDispatchInfo.Capture(ex);
+                    }
+                    else
+                    {
+                        this.Logger.LogError(ex, "Error waking the character after an earlier hit-effect failure.");
+                    }
+                }
+            }
+
+            await this.PublishAttributeChangesAsync(attributeChanges).ConfigureAwait(false);
+            this._summon.RegisterHit(attacker);
+            if (shieldBurst)
             {
                 await this.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(this, IShowEffectPlugIn.EffectType.ShieldBurst), true).ConfigureAwait(false);
             }
 
-            this.Attributes[Stats.CurrentShield] = 0;
-        }
-        else
-        {
-            this.Attributes[Stats.CurrentShield] = oversd;
-        }
-
-        this.Attributes[Stats.CurrentHealth] -= healthDamage;
-
-        if (isFinalStreakHit.HasValue)
-        {
-            hitInfo.Attributes |= DamageAttributes.RageFighterStreakHit;
-
-            if (isFinalStreakHit.Value || this.Attributes[Stats.CurrentHealth] < 1)
+            await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
+            if (attacker is IWorldObserver observer)
             {
-                hitInfo.Attributes |= DamageAttributes.RageFighterStreakFinalHit;
+                await observer.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
+            }
+
+            this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
+        }
+        catch (Exception ex) when (effectFailure is not null)
+        {
+            this.Logger.LogError(ex, "Error publishing an accepted hit after its effect update failed.");
+        }
+        finally
+        {
+            if (killed)
+            {
+                try
+                {
+                    await this.OnDeathAsync(attacker, ownedDeath).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (effectFailure is not null)
+                {
+                    this.Logger.LogError(ex, "Error completing death after an earlier hit-effect failure.");
+                }
             }
         }
 
-        await this.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
-        if (attacker is IWorldObserver observer)
-        {
-            await observer.InvokeViewPlugInAsync<IShowHitPlugIn>(p => p.ShowHitAsync(this, hitInfo)).ConfigureAwait(false);
-        }
-
-        this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotHitPlugIn>()?.AttackableGotHit(this, attacker, hitInfo);
-
-        if (this.Attributes[Stats.CurrentHealth] < 1)
-        {
-            this.LastDeath = new DeathInformation(attacker.Id, attacker.GetName(), hitInfo, skill?.Number ?? 0);
-            await this.OnDeathAsync(attacker).ConfigureAwait(false);
-        }
+        effectFailure?.Throw();
 
         if (hitInfo.Attributes.HasFlag(DamageAttributes.Poison))
         {
             // Poison Damage does not reflect to the attacker.
-            return;
+            return true;
         }
 
         if (attacker is IAttackable or AttackerSurrogate)
         {
             var attackableAttacker = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (IAttackable)attacker;
 
-            var reflectPercentage = this.Attributes[Stats.DamageReflection];
+            var reflectPercentage = this.Attributes![Stats.DamageReflection];
             if (reflectPercentage > 0)
             {
                 var reflectedDamage = hitInfo.TotalDamage * reflectPercentage;
@@ -1876,7 +2311,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             if (attacker is not AttackerSurrogate)
             {
                 // Raven does not cause full reflect.
-                var fullReflectPercentage = this.Attributes[Stats.FullyReflectDamageAfterHitChance];
+                var fullReflectPercentage = this.Attributes![Stats.FullyReflectDamageAfterHitChance];
                 if (fullReflectPercentage > 0 && Rand.NextRandomBool(fullReflectPercentage))
                 {
                     var reflectedDamage = attackableAttacker is Player
@@ -1886,6 +2321,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 }
             }
         }
+
+        return true;
 
         void ReflectDamage(int reflectedDamage, IAttackable attackable)
         {
@@ -1905,16 +2342,120 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
     }
 
-    private async ValueTask OnDeathAsync(IAttacker? killer)
+    private async ValueTask<bool> TryEnterDeadStateAsync(IAttacker? killer, DeathInformation? ownedDeath)
     {
-        if (!await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
+        // Death cancels combat-reachable interactions using their normal cleanup. A changing-map
+        // life keeps its original lethal owner until arrival; disconnected states still refuse death.
+        while (true)
+        {
+            State state;
+            NonPlayerCharacter? dialog;
+            await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.Dead).ConfigureAwait(false))
+            {
+                state = this.PlayerState.CurrentState;
+                dialog = this.OpenedNpc;
+                if (ownedDeath is not null)
+                {
+                    lock (this._hitLock)
+                    {
+                        if (this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                            || !this._hasReservedLethalHit || !ReferenceEquals(this.LastDeath, ownedDeath))
+                        {
+                            context.Allowed = false;
+                            return false;
+                        }
+                    }
+                }
+
+                if (state == GameLogic.PlayerState.ChangingMap && ownedDeath is not null)
+                {
+                    this._pendingMapChangeDeath = (killer, ownedDeath);
+                    context.Allowed = false;
+                    return false;
+                }
+
+                if (state != GameLogic.PlayerState.PartyRequest
+                    && state != GameLogic.PlayerState.TradeRequested
+                    && state != GameLogic.PlayerState.TradeOpened
+                    && state != GameLogic.PlayerState.TradeButtonPressed
+                    && state != GameLogic.PlayerState.NpcDialogOpened)
+                {
+                    return context.Allowed;
+                }
+
+                context.Allowed = false;
+            }
+
+            if (state == GameLogic.PlayerState.PartyRequest)
+            {
+                this.LastPartyRequester = null;
+                await this.PlayerState.TryAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+            }
+            else if (state == GameLogic.PlayerState.TradeRequested
+                     || state == GameLogic.PlayerState.TradeOpened
+                     || state == GameLogic.PlayerState.TradeButtonPressed)
+            {
+                await this.CloseTradeIfNeededAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                if (dialog is not null)
+                {
+                    await new CloseNpcDialogAction().CloseNpcDialogAsync(this).ConfigureAwait(false);
+                }
+                else
+                {
+                    await using var context = await this.PlayerState.TryBeginAdvanceToAsync(GameLogic.PlayerState.EnteredWorld).ConfigureAwait(false);
+                    var current = this.GetPlacementDeathSnapshot();
+                    context.Allowed &= this.PlayerState.CurrentState == GameLogic.PlayerState.NpcDialogOpened && this.OpenedNpc is null
+                        && (ownedDeath is null || (current.Reserved && ReferenceEquals(current.Death, ownedDeath)));
+                }
+            }
+
+            if (this.PlayerState.CurrentState == state)
+            {
+                return false;
+            }
+        }
+    }
+
+    private async ValueTask OnDeathAsync(IAttacker? killer, DeathInformation? ownedDeath = null)
+    {
+        if (!await this.TryEnterDeadStateAsync(killer, ownedDeath).ConfigureAwait(false))
         {
             return;
         }
 
         await this._movement.StopWalkingAsync().ConfigureAwait(false);
-        this.IsAlive = false;
-        this._respawnAfterDeathCts = new CancellationTokenSource();
+        CancellationTokenSource respawnCancellation;
+        CancellationToken respawnToken;
+        DeathInformation deathInformation;
+        CancellationTokenSource? previousRespawnCancellation;
+        await using (var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false))
+        {
+            context.Allowed = false;
+            lock (this._hitLock)
+            {
+                if (this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                    || !this._hasReservedLethalHit || this.LastDeath is not { } currentDeath
+                    || (ownedDeath is not null && !ReferenceEquals(currentDeath, ownedDeath))
+                    || this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+                {
+                    return;
+                }
+
+                this.IsAlive = false;
+                deathInformation = currentDeath;
+                respawnCancellation = new CancellationTokenSource();
+                respawnToken = respawnCancellation.Token;
+                previousRespawnCancellation = this._respawnAfterDeathCts;
+                this._respawnAfterDeathCts = respawnCancellation;
+                this._pendingDeathRespawn = null;
+            }
+        }
+
+        // Replacement transfers disposal from the old timer; it only uses its already captured token.
+        previousRespawnCancellation?.Dispose();
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);
 
         if (killer is Player killerAfterKilled
@@ -1925,23 +2466,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         // TODO: Drop items
-        async Task RespawnAsync(CancellationToken cancellationToken)
+        async Task RespawnAsync()
         {
             try
             {
-                await Task.Delay(3000, cancellationToken).ConfigureAwait(false);
-
-                if (cancellationToken.IsCancellationRequested || this.CurrentMap is null)
-                {
-                    return;
-                }
-
-                await this._summon.RemoveAsync().ConfigureAwait(false);
-
-                await this.MagicEffectList.ClearEffectsAfterDeathAsync().ConfigureAwait(false);
-                this.SetReclaimableAttributesToMaximum();
-                await this.RespawnAtAsync(await this._mapTransitions.GetSpawnGateOfCurrentMapAsync().ConfigureAwait(false)).ConfigureAwait(false);
-                await this.RespawnOfDuelPartnerIfInDuelAsync().ConfigureAwait(false);
+                await Task.Delay(3000, respawnToken).ConfigureAwait(false);
+                await this.RespawnAfterDeathAsync(expectedSource: respawnCancellation, expectedDeath: deathInformation).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -1953,34 +2483,173 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
         }
 
-        _ = RespawnAsync(this._respawnAfterDeathCts.Token);
+        _ = RespawnAsync();
 
         if (this.GameContext.PlugInManager.GetPlugInPoint<IAttackableGotKilledPlugIn>() is { } plugInPoint)
         {
             await plugInPoint.AttackableGotKilledAsync(this, killer).ConfigureAwait(false);
         }
 
-        if (this.LastDeath is { } deathInformation)
+        this.Died?.Invoke(this, deathInformation);
+    }
+
+    private async ValueTask<CancellationTokenSource?> TakeRespawnCancellationAsync()
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        var source = this._respawnAfterDeathCts;
+        this._respawnAfterDeathCts = null;
+        this._pendingDeathRespawn = null;
+        this._pendingMapChangeDeath = null;
+        return source;
+    }
+
+    private async ValueTask<bool> ContinueDeathRespawnAsync(CancellationTokenSource source, DeathInformation death, CancellationToken token, bool claim)
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        lock (this._hitLock)
         {
-            this.Died?.Invoke(this, deathInformation);
+            if (token.IsCancellationRequested || this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                || !ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death)
+                || !this._hasReservedLethalHit || this.PlayerState.CurrentState.IsDisconnectedOrFinished())
+            {
+                return false;
+            }
+
+            if (claim && this._pendingDeathRespawn is { Claimed: true })
+            {
+                return false;
+            }
+
+            if (!claim && this._pendingDeathRespawn is not { Claimed: true })
+            {
+                return false;
+            }
+
+            if (this.CurrentMap is null || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+            {
+                this._pendingDeathRespawn = (source, death, false);
+                return false;
+            }
+
+            this._pendingDeathRespawn = (source, death, true);
+            return true;
+        }
+    }
+
+    private async ValueTask DeferDeathRespawnClaimAsync(CancellationTokenSource source, DeathInformation death)
+    {
+        await using var context = await this.PlayerState.TryBeginAdvanceToAsync(this.PlayerState.CurrentState).ConfigureAwait(false);
+        context.Allowed = false;
+        if (ReferenceEquals(this._respawnAfterDeathCts, source) && ReferenceEquals(this.LastDeath, death)
+            && this._pendingDeathRespawn is { Claimed: true } pending
+            && ReferenceEquals(pending.Source, source) && ReferenceEquals(pending.Death, death))
+        {
+            // A later map arrival may retry this death; never release a replacement's claim.
+            this._pendingDeathRespawn = (source, death, false);
+        }
+    }
+
+    // Placement owns state admission before consuming this death; notifications are sent outside state/hit exclusion.
+    private bool TryPrepareForRespawn(CancellationTokenSource source, DeathInformation death, CancellationToken token, List<(AttributeDefinition Definition, float Value)> changes)
+    {
+        lock (this._hitLock)
+        {
+            if (token.IsCancellationRequested || this.IsDisposed || this.IsDisposing || this.SelectedCharacter is null
+                || !ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death)
+                || !this._hasReservedLethalHit || this.PlayerState.CurrentState.IsDisconnectedOrFinished()
+                || this._pendingDeathRespawn is not { Claimed: true } pending
+                || !ReferenceEquals(pending.Source, source) || !ReferenceEquals(pending.Death, death))
+            {
+                return false;
+            }
+
+            if (this.CurrentMap is null || this.PlayerState.CurrentState == GameLogic.PlayerState.ChangingMap)
+            {
+                return false;
+            }
+
+            using (this.CollectAttributeChangesUnderHitLock(changes))
+            {
+                this.SetReclaimableAttributesToMaximum();
+                this._hasReservedLethalHit = false;
+                this._pendingMapChangeDeath = null;
+                this._pendingDeathRespawn = null;
+            }
+        }
+
+        return true;
+    }
+
+    // Called under placement's state admission, after coordinates commit and before any further await.
+    private bool TryCompleteDeathRespawn(CancellationTokenSource source, DeathInformation death)
+    {
+        lock (this._hitLock)
+        {
+            if (!ReferenceEquals(this._respawnAfterDeathCts, source) || !ReferenceEquals(this.LastDeath, death))
+            {
+                return false;
+            }
+
+            this._respawnAfterDeathCts = null;
+            return true;
         }
     }
 
     /// <summary>
     /// Called when this player is in a duel and was killed.
-    /// Sets the player back to its starting position and reclaims the attributes
-    /// so that they're ready for the next round.
+    /// Resets the partner only after placement owns the same live duel participant.
     /// </summary>
     private async ValueTask RespawnOfDuelPartnerIfInDuelAsync()
     {
-        if (this.DuelRoom is { State: DuelState.DuelStarted } duelRoom
-            && duelRoom.IsDuelist(this)
-            && (duelRoom.Requester == this ? duelRoom.Opponent : duelRoom.Requester) is { IsAlive: true, CurrentMap: not null } duelPartner
-            && duelRoom.GetSpawnGate(duelPartner) is { } partnerSpawnGate)
+        if (this.DuelRoom is not { State: DuelState.DuelStarted } duelRoom
+            || !duelRoom.IsDuelist(this)
+            || (duelRoom.Requester == this ? duelRoom.Opponent : duelRoom.Requester) is not { IsAlive: true, CurrentMap: not null } duelPartner
+            || duelRoom.GetSpawnGate(duelPartner) is not { } partnerSpawnGate)
         {
-            duelPartner.IsAlive = false; // Avoid ending the duel...
-            duelPartner.SetReclaimableAttributesToMaximum();
-            await duelPartner.RespawnAtAsync(partnerSpawnGate).ConfigureAwait(false);
+            return;
+        }
+
+        var character = this.SelectedCharacter;
+        var attributes = this.Attributes;
+        var partnerCharacter = duelPartner.SelectedCharacter;
+        var partnerAttributes = duelPartner.Attributes;
+        var initiatorDeath = this.LastDeath;
+        if (character is null || attributes is null || partnerCharacter is null || partnerAttributes is null)
+        {
+            return;
+        }
+
+        List<(AttributeDefinition Definition, float Value)> changes = [];
+        await duelPartner._mapTransitions.RespawnWithPreparationAsync(
+            partnerSpawnGate,
+            TryPreparePartner,
+            () => duelPartner.PublishAttributeChangesAsync(changes)).ConfigureAwait(false);
+
+        bool TryPreparePartner()
+        {
+            lock (duelPartner._hitLock)
+            {
+                if (duelRoom.State != DuelState.DuelStarted || !ReferenceEquals(this.DuelRoom, duelRoom)
+                    || !ReferenceEquals(duelPartner.DuelRoom, duelRoom) || !duelRoom.IsDuelist(this) || !duelRoom.IsDuelist(duelPartner)
+                    || !ReferenceEquals(this.SelectedCharacter, character) || !ReferenceEquals(this.Attributes, attributes)
+                    || !ReferenceEquals(this.LastDeath, initiatorDeath)
+                    || !ReferenceEquals(duelPartner.SelectedCharacter, partnerCharacter) || !ReferenceEquals(duelPartner.Attributes, partnerAttributes)
+                    || this.IsDisposed || this.IsDisposing || !duelPartner.IsAlive || duelPartner._hasReservedLethalHit)
+                {
+                    return false;
+                }
+
+                using (duelPartner.CollectAttributeChangesUnderHitLock(changes))
+                {
+                    // Keep the normal false-before-removal hook semantics, but only for this admitted reset.
+                    duelPartner.IsAlive = false;
+                    duelPartner.SetReclaimableAttributesToMaximum();
+                }
+
+                return true;
+            }
         }
     }
 
@@ -2275,6 +2944,74 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         await openStoreAction.RestoreAfterEnterWorldAsync(this, this.IsPlayerStoreOpeningAfterEnterSupported).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Starts to collect the attribute changes which the current thread makes while it holds <see cref="_hitLock"/>,
+    /// until the returned scope is disposed. The caller sends them afterwards with <see cref="PublishAttributeChangesAsync"/>.
+    /// </summary>
+    /// <remarks>
+    /// The attribute system raises its value changed event synchronously, on the thread of the setter, and
+    /// <see cref="OnAttributeValueChanged"/> runs synchronously until its first await. Without collecting, that
+    /// handler would start the client update (a view plug-in, i.e. a network write which may wait or call back into
+    /// game logic) while the setter still holds the hit lock. The changes can't simply be determined after the lock
+    /// is released instead: the event is the only place which also reports the attributes derived from the changed
+    /// ones, and a later read would already see the values of a concurrent hit.
+    /// The lock is a monitor whose scopes never contain an await, so the thread which entered it stays the same
+    /// until it leaves; <see cref="Monitor.IsEntered"/> therefore identifies exactly the changes of the committing
+    /// thread. Changes made by other threads at the same time are not collected and are sent as usual.
+    /// </remarks>
+    /// <param name="changes">The list which receives the changes.</param>
+    /// <returns>The scope which ends the collection.</returns>
+    private HitAttributeChangeCollection CollectAttributeChangesUnderHitLock(List<(AttributeDefinition Definition, float Value)> changes)
+    {
+        Debug.Assert(this.IsApplyingHitOnCurrentThread, "Attribute changes are only collected under the hit lock.");
+        this._hitAttributeChanges = changes;
+        return new HitAttributeChangeCollection(this);
+    }
+
+    /// <summary>
+    /// Adds the change to the collection of <see cref="CollectAttributeChangesUnderHitLock"/>, if the current thread
+    /// holds the hit lock and collects.
+    /// </summary>
+    /// <param name="attribute">The changed attribute.</param>
+    /// <returns><c>true</c>, if the change was collected and is sent by the collecting caller.</returns>
+    private bool TryCollectAttributeChangeUnderHitLock(IAttribute attribute)
+    {
+        if (this.IsApplyingHitOnCurrentThread && this._hitAttributeChanges is { } changes)
+        {
+            changes.Add((attribute.Definition, attribute.Value));
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Sends the collected attribute changes to the client after the hit lock was released, one after another and
+    /// in the order in which they were made, so that they arrive before the views which follow.
+    /// A failing update is logged by <see cref="NotifyAttributeValueChangedAsync"/> and doesn't stop the next ones.
+    /// </summary>
+    /// <param name="changes">The collected changes.</param>
+    private async ValueTask PublishAttributeChangesAsync(List<(AttributeDefinition Definition, float Value)> changes)
+    {
+        Debug.Assert(!this.IsApplyingHitOnCurrentThread, "Attribute changes are sent after the hit lock was released.");
+        foreach (var (definition, value) in changes)
+        {
+            await this.NotifyAttributeValueChangedAsync(definition, value).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask NotifyAttributeValueChangedAsync(AttributeDefinition definition, float value)
+    {
+        try
+        {
+            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateStatsAsync(definition, value)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this.Logger.LogError(ex, $"{nameof(this.OnAttributeValueChanged)} failed for attribute {definition}.");
+        }
+    }
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
     private async void OnTransformationSkinChanged(object? sender, EventArgs args)
     {
@@ -2331,7 +3068,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
                 || LimitCurrentAttribute(Stats.MaximumShield, Stats.CurrentShield)
                 || LimitCurrentAttribute(Stats.MaximumAbility, Stats.CurrentAbility);
 
-            await this.InvokeViewPlugInAsync<IUpdateStatsPlugIn>(p => p.UpdateStatsAsync(attribute.Definition, attribute.Value)).ConfigureAwait(false);
+            if (this.TryCollectAttributeChangeUnderHitLock(attribute))
+            {
+                return;
+            }
+
+            await this.NotifyAttributeValueChangedAsync(attribute.Definition, attribute.Value).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -2645,11 +3387,29 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private async ValueTask CloseTradeIfNeededAsync()
     {
-        if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
+        if (this.PlayerState.CurrentState == GameLogic.PlayerState.TradeRequested
+            || this.PlayerState.CurrentState == GameLogic.PlayerState.TradeButtonPressed
             || this.PlayerState.CurrentState == GameLogic.PlayerState.TradeOpened)
         {
             var cancelAction = new TradeCancelAction();
             await cancelAction.CancelTradeAsync(this).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Ends the collection which <see cref="CollectAttributeChangesUnderHitLock"/> started, before the hit lock is released.
+    /// </summary>
+    private sealed class HitAttributeChangeCollection : IDisposable
+    {
+        private readonly Player _player;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HitAttributeChangeCollection"/> class.
+        /// </summary>
+        /// <param name="player">The collecting player.</param>
+        public HitAttributeChangeCollection(Player player) => this._player = player;
+
+        /// <inheritdoc />
+        public void Dispose() => this._player._hitAttributeChanges = null;
     }
 }
