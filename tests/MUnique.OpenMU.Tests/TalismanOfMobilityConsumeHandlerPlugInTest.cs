@@ -10,9 +10,11 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
@@ -23,6 +25,21 @@ using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 public class TalismanOfMobilityConsumeHandlerPlugInTest
 {
     private static readonly Point SavedPosition = new(100, 120);
+
+    /// <summary>
+    /// GM grants start with both uses available, while ordinary stackable items are granted one at a time.
+    /// </summary>
+    [TestCase(70, 2)]
+    [TestCase(71, 1)]
+    public void GameMasterGrantSetsInitialDurability(short number, int expectedDurability)
+    {
+        var definition = new BasicModel.ItemDefinition { Group = 13, Number = number, Durability = 2 };
+        var specification = new ItemSpecification(13, number, 0, false, false, 0, 0, 0, 0);
+
+        var item = GameMasterItemFactory.CreateItem(definition, specification);
+
+        Assert.That(item.Durability, Is.EqualTo(expectedDurability));
+    }
 
     /// <summary>
     /// The first usage saves the place and uses up one durability, the second one warps the character back to it.
