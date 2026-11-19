@@ -211,6 +211,6 @@
     <value>Reset view</value>
   </data>
   <data name="ZoomHint" xml:space="preserve">
-    <value>Zoom with the mouse wheel, pan by dragging with the left mouse button</value>
+    <value>Zoom with the mouse wheel, pan by dragging with the middle mouse button</value>
   </data>
 </root>

@@ -340,7 +340,7 @@ namespace MUnique.OpenMU.Web.Map.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Zoom with the mouse wheel, pan by dragging with the left mouse button.
+        ///   Looks up a localized string similar to Zoom with the mouse wheel, pan by dragging with the middle mouse button.
         /// </summary>
         public static string ZoomHint {
             get {

@@ -3,8 +3,10 @@
 // </copyright>
 
 const BASE_SIZE = 768;
-const MIN_ZOOM = 1.0;
+const LEFT_MOUSE_BUTTON = 0;
 const MAX_ZOOM = 4.0;
+const MIDDLE_MOUSE_BUTTON = 1;
+const MIN_ZOOM = 1.0;
 
 let _element = null;
 let _dotNetRef = null;
@@ -130,10 +132,6 @@ function _notifyPointerMove(x, y) {
 }
 
 function _handlePanEnd() {
-    if (!_hasMoved && _dotNetRef) {
-        _dotNetRef.invokeMethodAsync("OnPointerClickAsync");
-    }
-
     _isPanning = false;
 }
 
@@ -169,6 +167,19 @@ function _onDocumentMouseDown(e) {
 
     if (container !== _element) {
         _element = container;
+    }
+
+    if (e.button === MIDDLE_MOUSE_BUTTON) {
+        e.preventDefault();
+        _lastClientX = e.clientX;
+        _lastClientY = e.clientY;
+        _hasMoved = false;
+        _isPanning = true;
+        return;
+    }
+
+    if (e.button !== LEFT_MOUSE_BUTTON) {
+        return;
     }
 
     if (_tryStartResize(e)) {
@@ -451,15 +462,6 @@ export function resetZoom(element) {
     element.scrollTop = 0;
 
     return _defaultZoom;
-}
-
-/**
- * Sets the pan state. Called from Blazor to signal panning mode.
- * @param {boolean} panning - Whether panning is active.
- */
-export function setPanning(panning) {
-    _isPanning = panning;
-    _hasMoved = false;
 }
 
 /**

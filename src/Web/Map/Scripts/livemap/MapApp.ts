@@ -4,15 +4,13 @@ import { WorldObjectPicker } from "./WorldObjectPicker";
 import { World } from "./World";
 import { MonsterFilterMatch, MonsterFilterMode, ObjectData } from "./Types";
 
-const LEFT_MOUSE_BUTTON = 0;
-const LEFT_MOUSE_BUTTON_MASK = 1;
 const MAP_CENTER = 0;
 const MAP_PLANE_Z = 0;
+const MIDDLE_MOUSE_BUTTON = 1;
+const MIDDLE_MOUSE_BUTTON_MASK = 4;
 const NO_CAMERA_OFFSET = 0;
 const NO_MOUSE_BUTTONS = 0;
 const NO_WHEEL_DELTA = 0;
-const PAN_THRESHOLD = 3;
-const PAN_THRESHOLD_SQUARED = PAN_THRESHOLD * PAN_THRESHOLD;
 
 /**
  * Class for a Map application which is shown on the whole browser page.
@@ -37,7 +35,6 @@ export class MapApp {
     private isDisposing: boolean = false;
     private isDisposed: boolean = false;
     private isPanning: boolean = false;
-    private hasPanned: boolean = false;
     private lastPanX: number = 0;
     private lastPanY: number = 0;
     private animationFrameId: number | null = null;
@@ -100,8 +97,7 @@ export class MapApp {
                     hideInfo();
                 }
             },
-            (data) => this.onObjectHovered(data),
-            () => this.hasPanned);
+            (data) => this.onObjectHovered(data));
 
         this.animate(); //starts the rendering loop
     }
@@ -266,13 +262,11 @@ export class MapApp {
     }
 
     /**
-     * Starts panning when the map is dragged with the left mouse button.
+     * Starts panning when the map is dragged with the middle mouse button.
      * @param event - The mouse event.
      */
     private onPanStart(event: MouseEvent): void {
-        this.hasPanned = false;
-
-        const isPanButton = event.button === LEFT_MOUSE_BUTTON;
+        const isPanButton = event.button === MIDDLE_MOUSE_BUTTON;
         if (!isPanButton || this.camera.zoom <= MapApp.minZoom) {
             return;
         }
@@ -292,22 +286,15 @@ export class MapApp {
             return;
         }
 
-        if ((event.buttons & LEFT_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
+        if ((event.buttons & MIDDLE_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
             // The button was released where we didn't get the event, e.g. outside of the browser window.
             this.isPanning = false;
             return;
         }
 
-        const deltaX = event.clientX - this.lastPanX;
-        const deltaY = event.clientY - this.lastPanY;
-        if (!this.hasPanned && (deltaX * deltaX) + (deltaY * deltaY) < PAN_THRESHOLD_SQUARED) {
-            return;
-        }
-
-        this.hasPanned = true;
         const unitsPerPixel = (MapApp.mapSize / this.camera.zoom) / this.renderer.domElement.clientWidth;
-        this.camera.position.x -= deltaX * unitsPerPixel;
-        this.camera.position.y += deltaY * unitsPerPixel;
+        this.camera.position.x -= (event.clientX - this.lastPanX) * unitsPerPixel;
+        this.camera.position.y += (event.clientY - this.lastPanY) * unitsPerPixel;
         this.lastPanX = event.clientX;
         this.lastPanY = event.clientY;
         this.clampCamera();

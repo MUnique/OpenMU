@@ -9,5 +9,5 @@
   <data name="MatchingMonsters" xml:space="preserve"><value>找到 {0} 只符合条件的怪物</value></data>
   <data name="NoMatchingMonsters" xml:space="preserve"><value>此地图上没有符合条件的怪物</value></data>
   <data name="ResetView" xml:space="preserve"><value>重置视图</value></data>
-  <data name="ZoomHint" xml:space="preserve"><value>使用鼠标滚轮缩放，按住左键拖动平移</value></data>
+  <data name="ZoomHint" xml:space="preserve"><value>使用鼠标滚轮缩放，按住中键拖动平移</value></data>
 </root>

@@ -1400,7 +1400,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_14, context_14
                 return obj.data !== undefined;
             };
             WorldObjectPicker = (function () {
-                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered, shouldIgnoreClick) {
+                function WorldObjectPicker(worldCanvas, worldMesh, camera, onObjectPicked, onObjectHovered) {
                     this.worldCanvas = worldCanvas;
                     this.worldMesh = worldMesh;
                     this.camera = camera;
@@ -1411,7 +1411,6 @@ System.register("WorldObjectPicker", ["three"], function (exports_14, context_14
                     this.lastMouseY = 0;
                     this.onObjectPicked = onObjectPicked;
                     this.onObjectHovered = onObjectHovered;
-                    this.shouldIgnoreClick = shouldIgnoreClick;
                     this.handleClick = this.onClick.bind(this);
                     this.handleMouseMove = this.onMouseMove.bind(this);
                     worldCanvas.addEventListener("click", this.handleClick, false);
@@ -1422,10 +1421,6 @@ System.register("WorldObjectPicker", ["three"], function (exports_14, context_14
                     this.worldCanvas.removeEventListener("mousemove", this.handleMouseMove);
                 };
                 WorldObjectPicker.prototype.onClick = function (e) {
-                    var _a;
-                    if ((_a = this.shouldIgnoreClick) === null || _a === void 0 ? void 0 : _a.call(this)) {
-                        return;
-                    }
                     var data = this.pickAt(e.offsetX, e.offsetY);
                     this.onObjectPicked(data);
                 };
@@ -1490,7 +1485,7 @@ System.register("WorldObjectPicker", ["three"], function (exports_14, context_14
 });
 System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], function (exports_15, context_15) {
     "use strict";
-    var THREE, tween_4, WorldObjectPicker_1, World_1, LEFT_MOUSE_BUTTON, LEFT_MOUSE_BUTTON_MASK, MAP_CENTER, MAP_PLANE_Z, NO_CAMERA_OFFSET, NO_MOUSE_BUTTONS, NO_WHEEL_DELTA, PAN_THRESHOLD, PAN_THRESHOLD_SQUARED, MapApp;
+    var THREE, tween_4, WorldObjectPicker_1, World_1, MAP_CENTER, MAP_PLANE_Z, MIDDLE_MOUSE_BUTTON, MIDDLE_MOUSE_BUTTON_MASK, NO_CAMERA_OFFSET, NO_MOUSE_BUTTONS, NO_WHEEL_DELTA, MapApp;
     var __moduleName = context_15 && context_15.id;
     return {
         setters: [
@@ -1508,15 +1503,13 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
             }
         ],
         execute: function () {
-            LEFT_MOUSE_BUTTON = 0;
-            LEFT_MOUSE_BUTTON_MASK = 1;
             MAP_CENTER = 0;
             MAP_PLANE_Z = 0;
+            MIDDLE_MOUSE_BUTTON = 1;
+            MIDDLE_MOUSE_BUTTON_MASK = 4;
             NO_CAMERA_OFFSET = 0;
             NO_MOUSE_BUTTONS = 0;
             NO_WHEEL_DELTA = 0;
-            PAN_THRESHOLD = 3;
-            PAN_THRESHOLD_SQUARED = PAN_THRESHOLD * PAN_THRESHOLD;
             MapApp = (function () {
                 function MapApp(stats, serverId, mapId, mapContainer, onPickObjectHandler) {
                     var _this = this;
@@ -1524,7 +1517,6 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.isDisposing = false;
                     this.isDisposed = false;
                     this.isPanning = false;
-                    this.hasPanned = false;
                     this.lastPanX = 0;
                     this.lastPanY = 0;
                     this.animationFrameId = null;
@@ -1565,7 +1557,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                         else {
                             hideInfo();
                         }
-                    }, function (data) { return _this.onObjectHovered(data); }, function () { return _this.hasPanned; });
+                    }, function (data) { return _this.onObjectHovered(data); });
                     this.animate();
                 }
                 MapApp.prototype.highlightByName = function (playerName) {
@@ -1670,8 +1662,7 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     this.world.setZoom(newZoom);
                 };
                 MapApp.prototype.onPanStart = function (event) {
-                    this.hasPanned = false;
-                    var isPanButton = event.button === LEFT_MOUSE_BUTTON;
+                    var isPanButton = event.button === MIDDLE_MOUSE_BUTTON;
                     if (!isPanButton || this.camera.zoom <= MapApp.minZoom) {
                         return;
                     }
@@ -1684,19 +1675,13 @@ System.register("MapApp", ["three", "tween", "WorldObjectPicker", "World"], func
                     if (!this.isPanning) {
                         return;
                     }
-                    if ((event.buttons & LEFT_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
+                    if ((event.buttons & MIDDLE_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
                         this.isPanning = false;
                         return;
                     }
-                    var deltaX = event.clientX - this.lastPanX;
-                    var deltaY = event.clientY - this.lastPanY;
-                    if (!this.hasPanned && (deltaX * deltaX) + (deltaY * deltaY) < PAN_THRESHOLD_SQUARED) {
-                        return;
-                    }
-                    this.hasPanned = true;
                     var unitsPerPixel = (MapApp.mapSize / this.camera.zoom) / this.renderer.domElement.clientWidth;
-                    this.camera.position.x -= deltaX * unitsPerPixel;
-                    this.camera.position.y += deltaY * unitsPerPixel;
+                    this.camera.position.x -= (event.clientX - this.lastPanX) * unitsPerPixel;
+                    this.camera.position.y += (event.clientY - this.lastPanY) * unitsPerPixel;
                     this.lastPanX = event.clientX;
                     this.lastPanY = event.clientY;
                     this.clampCamera();
