@@ -76,7 +76,9 @@ public class BucketAreaOfInterestConcurrencyTest
 
         var observedBuckets = player.Object.ObservingBuckets;
         Assert.That(observedBuckets, Is.All.Not.Null);
-        Assert.That(observedBuckets, Is.Unique);
+
+        var distinctBuckets = new HashSet<Bucket<ILocateable>>(observedBuckets, ReferenceEqualityComparer.Instance);
+        Assert.That(distinctBuckets, Has.Count.EqualTo(observedBuckets.Count));
 
         // The last move which was applied to the map decides the position, and the observed buckets have to match it.
         var finalPosition = player.Object.Position;
