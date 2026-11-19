@@ -92,6 +92,15 @@ internal partial class GameConfiguration : MUnique.OpenMU.DataModel.Configuratio
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable> ItemLevelBonusTables => base.ItemLevelBonusTables ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.ItemLevelBonusTable, ItemLevelBonusTable>(this.RawItemLevelBonusTables);
 
     /// <summary>
+    /// Gets the raw collection of <see cref="WeightedValueTables" />.
+    /// </summary>
+    public ICollection<WeightedValueTable> RawWeightedValueTables { get; } = new EntityFramework.List<WeightedValueTable>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.WeightedValueTable> WeightedValueTables => base.WeightedValueTables ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.WeightedValueTable, WeightedValueTable>(this.RawWeightedValueTables);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemStatProfiles" />.
     /// </summary>
     public ICollection<ItemStatProfile> RawItemStatProfiles { get; } = new EntityFramework.List<ItemStatProfile>();
