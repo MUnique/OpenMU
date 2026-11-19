@@ -134,10 +134,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 185 },
                 { Stats.AttackRatePvm, 397 },
                 { Stats.DefenseRatePvm, 120 },
-                { Stats.PoisonResistance, 20f / 255 },
-                { Stats.IceResistance, 20f / 255 },
-                { Stats.LightningResistance, 20f / 255 },
-                { Stats.FireResistance, 20f / 255 },
+                { Stats.IceResistance, 20 },
+                { Stats.PoisonResistance, 20 },
+                { Stats.LightningResistance, 20 },
+                { Stats.FireResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -167,10 +167,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 255 },
                 { Stats.AttackRatePvm, 500 },
                 { Stats.DefenseRatePvm, 175 },
-                { Stats.PoisonResistance, 22f / 255 },
-                { Stats.IceResistance, 22f / 255 },
-                { Stats.LightningResistance, 22f / 255 },
-                { Stats.FireResistance, 22f / 255 },
+                { Stats.IceResistance, 22 },
+                { Stats.PoisonResistance, 22 },
+                { Stats.LightningResistance, 22 },
+                { Stats.FireResistance, 22 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -200,10 +200,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 165 },
                 { Stats.AttackRatePvm, 360 },
                 { Stats.DefenseRatePvm, 105 },
-                { Stats.PoisonResistance, 19f / 255 },
-                { Stats.IceResistance, 19f / 255 },
-                { Stats.LightningResistance, 19f / 255 },
-                { Stats.FireResistance, 19f / 255 },
+                { Stats.IceResistance, 19 },
+                { Stats.PoisonResistance, 19 },
+                { Stats.LightningResistance, 19 },
+                { Stats.FireResistance, 19 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -233,10 +233,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 140 },
                 { Stats.AttackRatePvm, 310 },
                 { Stats.DefenseRatePvm, 87 },
-                { Stats.PoisonResistance, 17f / 255 },
-                { Stats.IceResistance, 17f / 255 },
-                { Stats.LightningResistance, 17f / 255 },
-                { Stats.FireResistance, 17f / 255 },
+                { Stats.IceResistance, 17 },
+                { Stats.PoisonResistance, 17 },
+                { Stats.LightningResistance, 17 },
+                { Stats.FireResistance, 17 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -266,10 +266,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 150 },
                 { Stats.AttackRatePvm, 330 },
                 { Stats.DefenseRatePvm, 95 },
-                { Stats.PoisonResistance, 18f / 255 },
-                { Stats.IceResistance, 18f / 255 },
-                { Stats.LightningResistance, 18f / 255 },
-                { Stats.FireResistance, 18f / 255 },
+                { Stats.IceResistance, 18 },
+                { Stats.PoisonResistance, 18 },
+                { Stats.LightningResistance, 18 },
+                { Stats.FireResistance, 18 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -299,10 +299,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 215 },
                 { Stats.AttackRatePvm, 440 },
                 { Stats.DefenseRatePvm, 145 },
-                { Stats.PoisonResistance, 21f / 255 },
-                { Stats.IceResistance, 21f / 255 },
-                { Stats.LightningResistance, 21f / 255 },
-                { Stats.FireResistance, 21f / 255 },
+                { Stats.IceResistance, 21 },
+                { Stats.PoisonResistance, 21 },
+                { Stats.LightningResistance, 21 },
+                { Stats.FireResistance, 21 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -332,10 +332,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 300 },
                 { Stats.AttackRatePvm, 575 },
                 { Stats.DefenseRatePvm, 215 },
-                { Stats.PoisonResistance, 23f / 255 },
-                { Stats.IceResistance, 23f / 255 },
-                { Stats.LightningResistance, 23f / 255 },
-                { Stats.FireResistance, 23f / 255 },
+                { Stats.IceResistance, 23 },
+                { Stats.PoisonResistance, 23 },
+                { Stats.LightningResistance, 23 },
+                { Stats.FireResistance, 23 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -365,10 +365,10 @@ internal class Kalima4 : KalimaBase
                 { Stats.DefenseBase, 500 },
                 { Stats.AttackRatePvm, 780 },
                 { Stats.DefenseRatePvm, 295 },
-                { Stats.PoisonResistance, 45f / 255 },
-                { Stats.IceResistance, 45f / 255 },
-                { Stats.LightningResistance, 45f / 255 },
-                { Stats.FireResistance, 45f / 255 },
+                { Stats.IceResistance, 45 },
+                { Stats.PoisonResistance, 45 },
+                { Stats.LightningResistance, 45 },
+                { Stats.FireResistance, 45 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

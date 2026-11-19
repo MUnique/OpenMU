@@ -454,6 +454,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>WarpNames.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Update="Properties\WeightedValueTableNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>WeightedValueTableNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\WeightedValueTableNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WeightedValueTableNames.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\CashShopPackageNames.resx">

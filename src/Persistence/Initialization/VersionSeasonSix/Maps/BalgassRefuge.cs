@@ -82,10 +82,10 @@ internal class BalgassRefuge : BaseMapInitializer
                 { Stats.DefenseBase, 900 },
                 { Stats.AttackRatePvm, 1500 },
                 { Stats.DefenseRatePvm, 400 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 23f / 255 },
-                { Stats.LightningResistance, 23f / 255 },
-                { Stats.FireResistance, 23f / 255 },
+                { Stats.IceResistance, 23 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 23 },
+                { Stats.FireResistance, 23 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

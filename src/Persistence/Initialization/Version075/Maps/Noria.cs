@@ -114,11 +114,6 @@ internal class Noria : BaseMapInitializer
                 { Stats.DefenseBase, 2 },
                 { Stats.AttackRatePvm, 13 },
                 { Stats.DefenseRatePvm, 2 },
-                { Stats.WindResistance, 0f / 255 },
-                { Stats.PoisonResistance, 0f / 255 },
-                { Stats.IceResistance, 0f / 255 },
-                { Stats.WaterResistance, 0f / 255 },
-                { Stats.FireResistance, 0f / 255 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);

@@ -966,6 +966,12 @@
   <data name="MonsterStatsUpdatePlugInBase_Description" xml:space="preserve">
     <value>Setzt Level, Leben, Schaden, Verteidigung, Angriffs- und Verteidigungsrate, Reichweiten, Verzögerungen und Respawn-Zeiten der Monster auf die Season-6-Daten, die auch diese Version verwendet. Korrigiert Feldmonster, Invasionsmonster und Wachen sowie in Season 6 Chaos Castle 4 und 7 sowie Devil Square 7. Angepasste Werte dieser Attribute werden überschrieben. Benennt in Season 6 das Monster 275 von Kalima 7 von „Illusion of Kundun 7“ in „Kundun“ um.</value>
   </data>
+  <data name="MonsterResistancesUpdatePlugInBase_Name" xml:space="preserve">
+    <value>Elementare Resistenzen der Monster</value>
+  </data>
+  <data name="MonsterResistancesUpdatePlugInBase_Description" xml:space="preserve">
+    <value>Wandelt die elementaren Resistenzen der Monster in ganze Zahlen von 0 bis 255 um, welche die Resistenzprüfung erwartet; bisher widerstanden Monster Eis-, Gift- und Blitzeffekten nur bei etwa 1 bis 2 % der Treffer. Korrigiert die Resistenzen, die der Import der Monsterdaten den falschen Elementen zugeordnet hat (Eis und Gift vertauscht, Blitz als Wasser gespeichert), und setzt die Season-6-Werte. Angepasste Resistenzen werden auf die neue Skala umgerechnet, aber sonst nicht verändert.</value>
+  </data>
   <data name="AddProtectionTalismansUpdatePlugIn_Name" xml:space="preserve">
     <value>Schutztalismane hinzufügen</value>
   </data>
@@ -1014,4 +1020,6 @@
   <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve">
     <value>Bringt die NPCs von 0.95d auf die Season-6-Daten: entfernt die zwei Trankverkäuferinnen von Noria, die Trankverkäuferin und den Sicherheitswächter von Verlorener Turm, die Sicherheitswächter von Arena und Atlans sowie die Armbrustwache bei 114/125 in Lorencia, versetzt den Fußball und die Arenawache der Arena auf ihre Season-6-Positionen und den Goldenen Bogenschützen von Lorencia nach Devias (226/66).</value>
   </data>
+  <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>Tabellen der Sockelanzahl</value></data>
+  <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>Sockelgegenstände fallen meistens mit einem Sockel und selten mit drei (Zweihandwaffen: fünf), statt mit jeder Anzahl bis zum Maximum mit gleicher Wahrscheinlichkeit. Erhöht die maximale Sockelanzahl der Sockelgegenstände auf fünf; die Tabellen begrenzen die Drops. Sockelgegenstände, die schon eine Tabelle haben, behalten sie.</value></data>
 </root>

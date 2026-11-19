@@ -383,6 +383,7 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
         Guid masterLevelAttributeId,
         Guid resetsAttributeId,
         int count,
+        IReadOnlyCollection<Guid>? characterClassIds = null,
         CancellationToken cancellationToken = default)
     {
         var accounts = await this.Provider.GetRepository<Account>()
@@ -393,6 +394,7 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             .Where(account => !account.IsBot && !account.IsTemplate)
             .SelectMany(account => account.Characters)
             .Where(character => character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal)
+            .Where(character => characterClassIds is null || (character.CharacterClass is { } characterClass && characterClassIds.Contains(characterClass.GetId())))
             .OrderByDescending(character => GetValue(character, resetsAttributeId))
             .ThenByDescending(character => GetValue(character, masterLevelAttributeId))
             .ThenByDescending(character => GetValue(character, levelAttributeId))
@@ -423,6 +425,19 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.Character?> GetRankedCharacterAsync(string characterName, CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return accounts
+            .Where(account => !account.IsBot && !account.IsTemplate)
+            .SelectMany(account => account.Characters)
+            .FirstOrDefault(character => character.Name == characterName && character.CharacterStatus == DataModel.Entities.CharacterStatus.Normal);
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensAbuse?> GetGensAbuseAsync(
         Guid killerId,
         Guid victimId,
@@ -443,5 +458,6 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             (string?)character.CharacterClass?.Name ?? string.Empty,
             (int)GetValue(character, levelAttributeId),
             (int)GetValue(character, masterLevelAttributeId),
-            (int)GetValue(character, resetsAttributeId));
+            (int)GetValue(character, resetsAttributeId),
+            character.CharacterClass?.GetId());
 }

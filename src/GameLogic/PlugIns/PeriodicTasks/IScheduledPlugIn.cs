@@ -16,4 +16,11 @@ public interface IScheduledPlugIn
     /// <param name="serverTimeZone">The time zone of the server, in which the schedule is defined.</param>
     /// <returns>The next start time, in UTC; or <see langword="null"/>, if there is none.</returns>
     DateTime? GetNextStartUtc(DateTime utcNow, TimeZoneInfo serverTimeZone);
+
+    /// <summary>
+    /// Determines whether the schedule applies to the game server which owns the specified context.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns><c>true</c>, if the plugin runs on this game server according to its schedule.</returns>
+    bool IsScheduledOn(IGameContext gameContext) => true;
 }

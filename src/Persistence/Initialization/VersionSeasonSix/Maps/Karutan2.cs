@@ -210,10 +210,10 @@ internal class Karutan2 : BaseMapInitializer
                 { Stats.DefenseBase, 545 },
                 { Stats.AttackRatePvm, 1020 },
                 { Stats.DefenseRatePvm, 315 },
-                { Stats.PoisonResistance, 100f / 255 },
-                { Stats.IceResistance, 100f / 255 },
-                { Stats.LightningResistance, 100f / 255 },
-                { Stats.FireResistance, 240f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 100 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 240 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -242,10 +242,10 @@ internal class Karutan2 : BaseMapInitializer
                 { Stats.DefenseBase, 610 },
                 { Stats.AttackRatePvm, 1200 },
                 { Stats.DefenseRatePvm, 405 },
-                { Stats.PoisonResistance, 255f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.LightningResistance, 255f / 255 },
-                { Stats.FireResistance, 255f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 255 },
+                { Stats.LightningResistance, 255 },
+                { Stats.FireResistance, 255 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -274,10 +274,10 @@ internal class Karutan2 : BaseMapInitializer
                 { Stats.DefenseBase, 640 },
                 { Stats.AttackRatePvm, 1265 },
                 { Stats.DefenseRatePvm, 425 },
-                { Stats.PoisonResistance, 255f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.LightningResistance, 255f / 255 },
-                { Stats.FireResistance, 255f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 255 },
+                { Stats.LightningResistance, 255 },
+                { Stats.FireResistance, 255 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
