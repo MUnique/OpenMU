@@ -175,10 +175,10 @@ internal class ChaosCastle3 : BaseMapInitializer
                 { Stats.DefenseBase, 105 },
                 { Stats.AttackRatePvm, 270 },
                 { Stats.DefenseRatePvm, 80 },
-                { Stats.PoisonResistance, 3f / 255 },
-                { Stats.IceResistance, 3f / 255 },
-                { Stats.FireResistance, 3f / 255 },
-                { Stats.LightningResistance, 3f / 255 },
+                { Stats.IceResistance, 2 },
+                { Stats.PoisonResistance, 2 },
+                { Stats.LightningResistance, 2 },
+                { Stats.FireResistance, 2 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -208,10 +208,10 @@ internal class ChaosCastle3 : BaseMapInitializer
                 { Stats.DefenseBase, 120 },
                 { Stats.AttackRatePvm, 290 },
                 { Stats.DefenseRatePvm, 90 },
-                { Stats.PoisonResistance, 3f / 255 },
-                { Stats.IceResistance, 3f / 255 },
-                { Stats.FireResistance, 3f / 255 },
-                { Stats.LightningResistance, 3f / 255 },
+                { Stats.IceResistance, 2 },
+                { Stats.PoisonResistance, 2 },
+                { Stats.LightningResistance, 2 },
+                { Stats.FireResistance, 2 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
