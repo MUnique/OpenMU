@@ -572,10 +572,14 @@ public class IllusionTempleTicketCraftingTest
     }
 
     /// <summary>
-    /// Makes the creation of the result accessible, because the combination itself succeeds only by chance.
+    /// Makes the result creation accessible and makes the success path deterministic for placement tests.
     /// </summary>
     private sealed class TestableIllusionTempleTicketCrafting : IllusionTempleTicketCrafting
     {
+        // The game rule caps the real crafting chance at 80 %. This test exercises result placement,
+        // not the random success roll, so remove that cap to make the success path deterministic.
+        protected override byte MaximumSuccessRate => byte.MaxValue;
+
         /// <summary>
         /// Creates the result items of the combination.
         /// </summary>
