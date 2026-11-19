@@ -87,24 +87,24 @@ internal class BucketAreaOfInterestManager : IAreaOfInterestManager
         var targetOnMap = GetTargetOnMap(obj, target, moveType);
         ObservationLease? observation = null;
 
-        if (this.IsInSameBucket(obj.Position, targetOnMap))
+        using (await moveLock.LockAsync().ConfigureAwait(false))
         {
-            if (moveType != MoveType.Walk)
+            if (this.IsInSameBucket(obj.Position, targetOnMap))
             {
-                obj.Position = targetOnMap;
+                if (moveType != MoveType.Walk)
+                {
+                    obj.Position = targetOnMap;
+                }
             }
-        }
-        else
-        {
-            using (await moveLock.LockAsync().ConfigureAwait(false))
+            else
             {
                 await this.MoveBetweenBucketsAsync(obj, targetOnMap, moveType).ConfigureAwait(false);
+            }
 
-                if (observer is not null)
-                {
-                    // Hand over: the lease is acquired before the move lock is released, so that queued moves update the observed buckets in the order they were applied.
-                    observation = await this.AcquireObservationAsync(observer).ConfigureAwait(false);
-                }
+            if (observer is not null)
+            {
+                // Hand over: the lease is acquired before the move lock is released, so that queued moves update the observed buckets in the order they were applied.
+                observation = await this.AcquireObservationAsync(observer).ConfigureAwait(false);
             }
         }
 

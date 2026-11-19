@@ -180,6 +180,12 @@ public class BotMapFloorTest
         var gameContext = GameContextTestHelper.CreateGameContext();
         var bot = await CreateHunterAsync(gameContext).ConfigureAwait(false);
         var (floorMap, _, _) = AddTwoFloorMap(gameContext, 5);
+
+        var lowerFloorSpawn = floorMap.MonsterSpawns.First();
+        lowerFloorSpawn.X1 = 10;
+        lowerFloorSpawn.X2 = 15;
+        lowerFloorSpawn.Y1 = 10;
+        lowerFloorSpawn.Y2 = 15;
         var map = new GameMap(floorMap, TimeSpan.FromMinutes(1), 8);
         bot.SetCurrentMapSilently(map);
         bot.Position = new Point(10, 10);

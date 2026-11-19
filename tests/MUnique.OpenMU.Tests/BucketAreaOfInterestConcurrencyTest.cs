@@ -278,8 +278,9 @@ public class BucketAreaOfInterestConcurrencyTest
         player.SetupAllProperties();
         player.As<ILocateable>().SetupGet(p => p.Id).Returns(() => (player.Object as ISupportIdUpdate).Id);
 
-        // Like the real player, the list of observed buckets is a plain list.
-        player.Setup(p => p.ObservingBuckets).Returns(new List<Bucket<ILocateable>>());
+        // Like the real player, the list of observed buckets is a plain list with a stable identity.
+        var observingBuckets = new List<Bucket<ILocateable>>();
+        player.Setup(p => p.ObservingBuckets).Returns(observingBuckets);
         player.Setup(p => p.Observers).Returns(new HashSet<IWorldObserver>());
         player.Setup(p => p.ObserverLock).Returns(new AsyncReaderWriterLock());
         player.Setup(p => p.InfoRange).Returns(20);
