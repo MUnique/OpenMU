@@ -38,7 +38,7 @@ public class MonsterItemDroppedPlugInTest
         var killer = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         var monster = await CreateMonsterAsync(gameContext, dropGenerator.Object).ConfigureAwait(false);
 
-        await monster.ReflectDamageAsync(killer, 1_000_000).ConfigureAwait(false);
+        await monster.ApplyDamageAsync(killer, 1_000_000).ConfigureAwait(false);
 
         // The drop happens delayed, after the death animation.
         var deadline = DateTime.UtcNow.AddSeconds(10);
