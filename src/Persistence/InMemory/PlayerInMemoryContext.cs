@@ -443,5 +443,6 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
             (string?)character.CharacterClass?.Name ?? string.Empty,
             (int)GetValue(character, levelAttributeId),
             (int)GetValue(character, masterLevelAttributeId),
-            (int)GetValue(character, resetsAttributeId));
+            (int)GetValue(character, resetsAttributeId),
+            character.CharacterClass?.GetId());
 }

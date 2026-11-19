@@ -66,7 +66,7 @@ public class CharacterRankingTest
         var ranking = await queryContext.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, 10).ConfigureAwait(false);
 
         Assert.That(ranking.Select(entry => entry.Name), Is.EqualTo(new[] { "Reset", "Master", "Normal" }));
-        Assert.That(ranking[1], Is.EqualTo(new CharacterSummary("Master", "Blade Knight", 400, 50, 0)));
+        Assert.That(ranking[1] with { CharacterClassId = null }, Is.EqualTo(new CharacterSummary("Master", "Blade Knight", 400, 50, 0)));
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class CharacterRankingTest
         using var queryContext = contextProvider.CreateNewPlayerContext(new GameConfiguration());
 
         Assert.That(
-            await queryContext.GetCharacterSummaryAsync("Wizard", Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id).ConfigureAwait(false),
+            (await queryContext.GetCharacterSummaryAsync("Wizard", Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id).ConfigureAwait(false))! with { CharacterClassId = null },
             Is.EqualTo(new CharacterSummary("Wizard", "Dark Wizard", 250, 0, 2)));
         Assert.That(await queryContext.GetCharacterSummaryAsync("Unknown", Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id).ConfigureAwait(false), Is.Null);
     }
