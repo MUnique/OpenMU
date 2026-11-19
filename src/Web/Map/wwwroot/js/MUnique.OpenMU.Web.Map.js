@@ -960,9 +960,9 @@ System.register("NonPlayerCharacter", ["three", "Attackable"], function (exports
                 function NonPlayerCharacter(data) {
                     var color = NonPlayerCharacter.getColorForObjectKind(data.npcObjectKind);
                     return _super.call(this, data, NonPlayerCharacter.defaultGeometry, new THREE.MeshBasicMaterial({
-                        color: color,
                         alphaMap: Attackable_2.attackableAlphaMapTexture,
                         alphaTest: Attackable_2.attackableAlphaTest,
+                        color: color,
                         transparent: true,
                     })) || this;
                 }

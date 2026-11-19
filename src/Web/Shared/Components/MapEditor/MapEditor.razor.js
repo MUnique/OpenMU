@@ -6,7 +6,9 @@ const BASE_SIZE = 768;
 const LEFT_MOUSE_BUTTON = 0;
 const MAX_ZOOM = 4.0;
 const MIDDLE_MOUSE_BUTTON = 1;
+const MIDDLE_MOUSE_BUTTON_MASK = 4;
 const MIN_ZOOM = 1.0;
+const NO_MOUSE_BUTTONS = 0;
 
 let _element = null;
 let _dotNetRef = null;
@@ -54,18 +56,6 @@ function _getMapTileCoords(clientX, clientY) {
     };
 }
 
-function _updateZoomDisplay() {
-    let container = _element ? _element.closest(".map-host-container") : null;
-    if (!container) {
-        return;
-    }
-
-    let zoomLabel = container.querySelector(".zoom-label");
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(_zoomLevel * 100) + "%";
-    }
-}
-
 function _applyZoom(zoom) {
     if (!_element) {
         return;
@@ -86,8 +76,6 @@ function _applyZoom(zoom) {
         img.style.width = size + "px";
         img.style.height = size + "px";
     }
-
-    _updateZoomDisplay();
 }
 
 function _updateCoordsLabel(mapX, mapY) {
@@ -215,15 +203,24 @@ function _updateElementIfChanged(e) {
     }
 }
 
-function _applyMouseMoveAction(e, x, y) {
-    if (_isPanning) {
-        _handlePanning(e);
-    } else if (_isDragging || _isResizing) {
+function _applyMouseMoveAction(x, y) {
+    if (_isDragging || _isResizing) {
         _notifyPointerMove(x, y);
     }
 }
 
 function _onDocumentMouseMove(e) {
+    if (_isPanning) {
+        if ((e.buttons & MIDDLE_MOUSE_BUTTON_MASK) === NO_MOUSE_BUTTONS) {
+            // The button was released where we didn't get the mouseup event, e.g. outside of the browser window.
+            _handlePanEnd();
+        } else {
+            _handlePanning(e);
+        }
+
+        return;
+    }
+
     if (!_isValidMouseMoveTarget(e)) {
         return;
     }
@@ -237,16 +234,16 @@ function _onDocumentMouseMove(e) {
     _updateCoordsLabel(x, y);
     _hasMoved = true;
 
-    _applyMouseMoveAction(e, x, y);
+    _applyMouseMoveAction(x, y);
 }
 
 function _onDocumentMouseUp(e) {
-    if (!_element) {
+    if (_isPanning) {
+        _handlePanEnd();
         return;
     }
 
-    if (_isPanning) {
-        _handlePanEnd();
+    if (!_element) {
         return;
     }
 
@@ -484,4 +481,8 @@ export function dispose() {
     document.removeEventListener("keydown", _onDocumentKeyDown);
     _element = null;
     _dotNetRef = null;
+    _isDragging = false;
+    _isPanning = false;
+    _isResizing = false;
+    _hasMoved = false;
 }
