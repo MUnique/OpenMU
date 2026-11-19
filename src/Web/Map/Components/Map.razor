@@ -7,6 +7,8 @@
 <div class="livemap">
     <LiveMap
         Id="@this.MapFactory.GetMapContainerIdentifier(this.Server.Id, this.MapId)"
+        ServerId="@this.Server.Id"
+        MapId="@this.MapId"
         MapController="@this._lazyController"/>
     @if (this._controller is { })
     {

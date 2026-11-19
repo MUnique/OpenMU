@@ -942,7 +942,10 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         }
     }
 
-#pragma warning disable SA1600, CS1591 // Elements should be documented.
+    /// <summary>
+    /// Updates the excellent wizardry attack, physical attack and defense options, so that they target the damage increase, total level and armor damage decrease attributes of the new damage calculation.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void UpdateExcellentOptions(GameConfiguration gameConfiguration)
     {
         var excWizAttackOptionsId = new Guid("00000083-0014-0000-0000-000000000000");
@@ -987,6 +990,14 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Adds the damage bonus base power-up, which depends on the item level, to the ammunition items (bolts and arrows).
+    /// For Season 6, it also adds the extra mana cost per skill hit.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="ammunitionDamageIncreaseByLevel">The damage increase of the ammunition, indexed by item level.</param>
+    /// <param name="isSeasonSix">If set to <c>true</c>, the Season 6 mana loss per hit is added as well.</param>
     protected void UpdateAmmoItems(IContext context, GameConfiguration gameConfiguration, float[] ammunitionDamageIncreaseByLevel, bool isSeasonSix = false)
     {
         if (gameConfiguration.Items.Where(i => i.Group == (byte)ItemGroups.Bows && i.IsAmmunition) is { } ammoItems)
@@ -1055,6 +1066,11 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Adds the base power-up which marks the Dinorant as equipped.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void AddDinorantBasePowerUp(IContext context, GameConfiguration gameConfiguration)
     {
         var dinorantId = new Guid("00000080-000d-0003-0000-000000000000");
@@ -1068,6 +1084,10 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Makes the one-handed staffs, which can be used by the Magic Gladiator, equippable in the left and in the right hand slot.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void UpdateMGStaffsItemSlot(GameConfiguration gameConfiguration)
     {
         var leftOrRightHandSlot = gameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
@@ -1080,6 +1100,11 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
         }
     }
 
+    /// <summary>
+    /// Adds the equipped weapon count base power-up to all weapons, and removes the ammunition consumption rate from weapons which are not bows.
+    /// </summary>
+    /// <param name="context">The persistence context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
     protected void UpdateWeaponItems(IContext context, GameConfiguration gameConfiguration)
     {
         var equippedWeaponCount = Stats.EquippedWeaponCount.GetPersistent(gameConfiguration);
@@ -1097,5 +1122,4 @@ public abstract class FixDamageCalcsPlugInBase : UpdatePlugInBase
             weapon.BasePowerUpAttributes.Add(powerUpDefinition);
         }
     }
-#pragma warning restore SA1600, CS1591 // Elements should be documented.
 }

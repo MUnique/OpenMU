@@ -3666,4 +3666,34 @@
   <data name="WaitingItemReason_NoSpaceWhenLoaded_Description" xml:space="preserve">
     <value>Der Gegenstand fand beim Laden seines Lagerplatzes keinen Platz, z. B. weil die Größe seiner Definition gewachsen ist.</value>
   </data>
+  <data name="GameConfiguration_WeightedValueTables_Caption" xml:space="preserve">
+    <value>Gewichtete Wertetabellen</value>
+  </data>
+  <data name="ItemDefinition_SocketCountTable_Caption" xml:space="preserve">
+    <value>Tabelle der Sockelanzahl</value>
+  </data>
+  <data name="DropItemGroup_SocketCountTable_Caption" xml:space="preserve">
+    <value>Tabelle der Sockelanzahl</value>
+  </data>
+  <data name="WeightedValueTable_TypeCaption" xml:space="preserve">
+    <value>Gewichtete Wertetabelle</value>
+  </data>
+  <data name="WeightedValueTable_TypeCaptionPlural" xml:space="preserve">
+    <value>Gewichtete Wertetabellen</value>
+  </data>
+  <data name="WeightedValueTable_Values_Caption" xml:space="preserve">
+    <value>Werte</value>
+  </data>
+  <data name="WeightedValue_TypeCaption" xml:space="preserve">
+    <value>Gewichteter Wert</value>
+  </data>
+  <data name="WeightedValue_TypeCaptionPlural" xml:space="preserve">
+    <value>Gewichtete Werte</value>
+  </data>
+  <data name="WeightedValue_Value_Caption" xml:space="preserve">
+    <value>Wert</value>
+  </data>
+  <data name="WeightedValue_Weight_Caption" xml:space="preserve">
+    <value>Gewichtung</value>
+  </data>
 </root>

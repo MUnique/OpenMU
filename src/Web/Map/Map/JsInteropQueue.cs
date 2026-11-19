@@ -109,11 +109,25 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
             return this._inner.InvokeAsync<TValue>(identifier, cancellationToken, args);
         }
 
+        this.QueueVoidCall(identifier, cancellationToken, args);
+        return default;
+    }
+
+    /// <summary>
+    /// Queues a call which doesn't return anything, without waiting for the browser.
+    /// It behaves like the asynchronous call of a function which returns nothing (<see cref="IJSVoidResult"/>),
+    /// but it's synchronous - for callers which can't await, like plugin points.
+    /// </summary>
+    /// <param name="identifier">The identifier of the function to call.</param>
+    /// <param name="cancellationToken">The cancellation token, which drops the call when it's cancelled before it was delivered.</param>
+    /// <param name="args">The arguments of the call.</param>
+    public void QueueVoidCall(string identifier, CancellationToken cancellationToken, object?[]? args)
+    {
         if (this._disposeCts.IsCancellationRequested
             || cancellationToken.IsCancellationRequested
             || !this._circuitState.IsConnected)
         {
-            return default;
+            return;
         }
 
         // After an overflow, nothing is queued until the rebuild discarded the rest. Moving or
@@ -125,8 +139,6 @@ public sealed class JsInteropQueue : IJSRuntime, IAsyncDisposable
         {
             this._logger.LogWarning("The browser doesn't keep up with the live map ({Capacity} calls pending); dropping calls until the map is resynchronized.", Capacity);
         }
-
-        return default;
     }
 
     /// <summary>

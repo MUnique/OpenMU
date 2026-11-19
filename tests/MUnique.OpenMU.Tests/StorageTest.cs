@@ -152,6 +152,76 @@ public class StorageTest
     }
 
     /// <summary>
+    /// Tests that an item fits after the removal of items only when they free cells of its size: in a full storage
+    /// with a box offset, like the inventory, two removed 1x1 items leave a 2x2 item no place, four in a square do.
+    /// </summary>
+    [Test]
+    public async ValueTask FitsAfterRemovalOfItemsInASquareAsync()
+    {
+        var storage = new Storage(12 + 64, 12, 0, this.CreateItemStorage()) as IStorage;
+        var items = await this.FillAsync(storage, 12, 12 + 64).ConfigureAwait(false);
+        var definition = this.GetItemDefintion(2, 2);
+
+        Assert.That(storage.FitsAfterRemoval(definition, []), Is.False);
+        Assert.That(storage.FitsAfterRemoval(definition, [items[12], items[13]]), Is.False);
+        Assert.That(storage.FitsAfterRemoval(definition, [items[12], items[13], items[12 + 8], items[13 + 8]]), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that removed items which aren't in the storage free no cells.
+    /// </summary>
+    [Test]
+    public async ValueTask FitsAfterRemovalIgnoresItemsOfOtherStoragesAsync()
+    {
+        var storage = new Storage(12 + 64, 12, 0, this.CreateItemStorage()) as IStorage;
+        await this.FillAsync(storage, 12, 12 + 64).ConfigureAwait(false);
+        var otherStorage = new Storage(12 + 64, 12, 0, this.CreateItemStorage()) as IStorage;
+        var otherItems = await this.FillAsync(otherStorage, 12, 12 + 64).ConfigureAwait(false);
+
+        Assert.That(storage.FitsAfterRemoval(this.GetItemDefintion(1, 1), otherItems.Values.ToList()), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that an item fits after the removal of items when it finds a place in an extension of a full storage,
+    /// and that it doesn't when the extension is full, too.
+    /// </summary>
+    [Test]
+    public async ValueTask FitsAfterRemovalFallsThroughToTheExtensionsAsync()
+    {
+        var extension = new Storage(32, 0, 12 + 64, this.CreateItemStorage()) as IStorage;
+        var storage = new StorageWithExtension(12 + 64, 12, this.CreateItemStorage(), extension);
+        await this.FillAsync(storage, 12, 12 + 64).ConfigureAwait(false);
+        var definition = this.GetItemDefintion(2, 2);
+
+        Assert.That(storage.FitsAfterRemoval(definition, []), Is.True);
+
+        await this.FillAsync(extension, 12 + 64, 12 + 64 + 32).ConfigureAwait(false);
+
+        Assert.That(storage.FitsAfterRemoval(definition, []), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that a storage without its own implementation of <see cref="IStorage.FitsAfterRemoval"/>, e.g. of a
+    /// plug-in, takes an item only when it fits now: the removed items free no cells. The mock calls the default
+    /// implementation of the interface.
+    /// </summary>
+    /// <param name="hasSpace">Whether the storage has space for the item.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public void FitsAfterRemovalByDefaultChecksTheSpace(bool hasSpace)
+    {
+        ItemDefinition? checkedDefinition = null;
+        var storage = new Mock<IStorage> { CallBase = true };
+        storage.Setup(s => s.CheckInvSpace(It.IsAny<Item>()))
+            .Callback<Item>(item => checkedDefinition = item.Definition)
+            .Returns(hasSpace ? (byte)0 : null);
+        var definition = this.GetItemDefintion(2, 2);
+
+        Assert.That(storage.Object.FitsAfterRemoval(definition, [this.GetItem(1, 1)]), Is.EqualTo(hasSpace));
+        Assert.That(checkedDefinition, Is.SameAs(definition));
+    }
+
+    /// <summary>
     /// Creates an item as it is loaded from the database, with its collections, at the specified slot.
     /// </summary>
     private static Item CreateLoadedItem(byte width, byte height, byte slot)
@@ -181,10 +251,45 @@ public class StorageTest
         return item;
     }
 
+    /// <summary>
+    /// Fills the slots from the first to the last one (exclusive) with 1x1 items.
+    /// </summary>
+    private async ValueTask<Dictionary<byte, Item>> FillAsync(IStorage storage, int firstSlot, int endSlot)
+    {
+        var items = new Dictionary<byte, Item>();
+        for (var slot = (byte)firstSlot; slot < endSlot; slot++)
+        {
+            var item = this.GetItem(1, 1);
+            Assert.That(await storage.AddItemAsync(slot, item).ConfigureAwait(false), Is.True);
+            items[slot] = item;
+        }
+
+        return items;
+    }
+
     private ItemStorage CreateItemStorage(params Item[] items)
     {
         var storage = new Mock<ItemStorage>();
         storage.Setup(s => s.Items).Returns(items.ToList());
         return storage.Object;
+    }
+
+    /// <summary>
+    /// A storage with an extension, like the inventory with its extensions.
+    /// </summary>
+    private sealed class StorageWithExtension : Storage
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StorageWithExtension"/> class.
+        /// </summary>
+        /// <param name="numberOfSlots">The number of slots.</param>
+        /// <param name="boxOffset">The box offset.</param>
+        /// <param name="itemStorage">The item storage.</param>
+        /// <param name="extension">The extension.</param>
+        public StorageWithExtension(int numberOfSlots, int boxOffset, ItemStorage itemStorage, IStorage extension)
+            : base(numberOfSlots, boxOffset, 0, itemStorage)
+        {
+            this.Extensions = [extension];
+        }
     }
 }

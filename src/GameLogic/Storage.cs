@@ -211,21 +211,30 @@ public class Storage : IStorage
     }
 
     /// <inheritdoc/>
+    public bool FitsAfterRemoval(ItemDefinition definition, ICollection<Item> removedItems)
+    {
+        var usedSlots = (bool[,])this._usedSlots.Clone();
+        for (var slot = this._boxOffset; slot < this.ItemArray.Length; slot++)
+        {
+            if (this.ItemArray[slot] is { } item && removedItems.Contains(item))
+            {
+                SetUsedSlots(usedSlots, item, this.GetColumnIndex(slot), this.GetRowIndex(slot), false);
+            }
+        }
+
+        return FindPlace(usedSlots, definition.Width, definition.Height) is not null
+               || this.Extensions.Any(extension => extension.FitsAfterRemoval(definition, removedItems));
+    }
+
+    /// <inheritdoc/>
     public byte? CheckInvSpace(Item item)
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
         // Find free Space in the Inventory and return the slot where the Item can be placed
-        // Check every slot if it fits
-        for (byte row = 0; row < this._rows; row++)
+        if (FindPlace(this._usedSlots, item.Definition.Width, item.Definition.Height) is { } place)
         {
-            for (byte column = 0; column < InventoryConstants.RowSize; column++)
-            {
-                if (this.FitsInside(row, column, item.Definition.Width, item.Definition.Height))
-                {
-                    return (byte)((row * InventoryConstants.RowSize) + column + this._boxOffset + this._slotOffset);
-                }
-            }
+            return (byte)((place.Row * InventoryConstants.RowSize) + place.Column + this._boxOffset + this._slotOffset);
         }
 
         foreach (var extension in this.Extensions)
@@ -312,7 +321,7 @@ public class Storage : IStorage
             {
                 var columnIndex = this.GetColumnIndex(slot);
                 var rowIndex = this.GetRowIndex(slot);
-                this.SetItemUsedSlots(item, columnIndex, rowIndex, false);
+                SetUsedSlots(this._usedSlots, item, columnIndex, rowIndex, false);
             }
 
             this.ItemStorage.Items.Remove(item);
@@ -417,13 +426,71 @@ public class Storage : IStorage
         var columnIndex = this.GetColumnIndex(slot);
         var rowIndex = this.GetRowIndex(slot);
         var itemDef = item.Definition;
-        if (!this.FitsInside((byte)rowIndex, (byte)columnIndex, itemDef.Width, itemDef.Height))
+        if (!FitsInside(this._usedSlots, (byte)rowIndex, (byte)columnIndex, itemDef.Width, itemDef.Height))
         {
             return false;
         }
 
         this.ItemArray[slot] = item;
-        this.SetItemUsedSlots(item, columnIndex, rowIndex);
+        SetUsedSlots(this._usedSlots, item, columnIndex, rowIndex, true);
+        return true;
+    }
+
+    private static void SetUsedSlots(bool[,] usedSlots, Item item, int columnIndex, int rowIndex, bool used)
+    {
+        for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
+        {
+            for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
+            {
+                if (r < usedSlots.GetLength(0) && c < usedSlots.GetLength(1))
+                {
+                    usedSlots[r, c] = used;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Finds the first place, row by row, where an item of the specified size fits into the used slots.
+    /// </summary>
+    private static (byte Row, byte Column)? FindPlace(bool[,] usedSlots, byte width, byte height)
+    {
+        for (byte row = 0; row < usedSlots.GetLength(0); row++)
+        {
+            for (byte column = 0; column < usedSlots.GetLength(1); column++)
+            {
+                if (FitsInside(usedSlots, row, column, width, height))
+                {
+                    return (row, column);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static bool FitsInside(bool[,] usedSlots, byte row, byte column, byte x, byte y)
+    {
+        int rowCount = usedSlots.GetLength(0);
+        int columnCount = usedSlots.GetLength(1);
+        if ((rowCount >= row + y) && (columnCount >= column + x))
+        {
+            for (byte currentRow = row; currentRow < row + y; currentRow++)
+            {
+                for (byte currentColumn = column; currentColumn < column + x; currentColumn++)
+                {
+                    if (usedSlots[currentRow, currentColumn])
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        else
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -445,20 +512,6 @@ public class Storage : IStorage
         return result;
     }
 
-    private void SetItemUsedSlots(Item item, int columnIndex, int rowIndex, bool used = true)
-    {
-        for (int r = rowIndex; r < rowIndex + item.Definition!.Height; r++)
-        {
-            for (int c = columnIndex; c < columnIndex + item.Definition.Width; c++)
-            {
-                if (r < this._rows && c < InventoryConstants.RowSize)
-                {
-                    this._usedSlots[r, c] = used;
-                }
-            }
-        }
-    }
-
     private int GetColumnIndex(int slot)
     {
         return (slot - this._boxOffset) % InventoryConstants.RowSize;
@@ -467,30 +520,5 @@ public class Storage : IStorage
     private int GetRowIndex(int slot)
     {
         return (slot - this._boxOffset) / InventoryConstants.RowSize;
-    }
-
-    private bool FitsInside(byte row, byte column, byte x, byte y)
-    {
-        int rowCount = this._usedSlots.GetLength(0);
-        int columnCount = this._usedSlots.GetLength(1);
-        if ((rowCount >= row + y) && (columnCount >= column + x))
-        {
-            for (byte currentRow = row; currentRow < row + y; currentRow++)
-            {
-                for (byte currentColumn = column; currentColumn < column + x; currentColumn++)
-                {
-                    if (this._usedSlots[currentRow, currentColumn])
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            return false;
-        }
-
-        return true;
     }
 }

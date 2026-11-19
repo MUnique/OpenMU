@@ -124,6 +124,7 @@ internal class IllusionTempleDataTest
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
+    [TestCase(3)]
     public async Task UpdateKeepsOriginalTicketItemsAsync(int installedVersion)
     {
         var contextProvider = new InMemoryPersistenceContextProvider();

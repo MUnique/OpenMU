@@ -159,6 +159,17 @@
                                     <small class="text-muted d-block">@Resources.ExcellentOptionsHint</small>
                                 </div>
                             }
+                            @if (group.ItemType is not (SpecialItemType.Money or SpecialItemType.Excellent))
+                            {
+                                <div class="col-lg-6">
+                                    <label class="form-label fw-semibold">@Resources.SocketCountTable</label>
+                                    <LookupField TObject="WeightedValueTable"
+                                                 Value="@group.SocketCountTable"
+                                                 ValueExpression="@(() => group.SocketCountTable)"
+                                                 ValueChanged="@(table => group.SocketCountTable = table)" />
+                                    <small class="text-muted d-block">@Resources.SocketCountTableHint</small>
+                                </div>
+                            }
                         </div>
                     </CascadingValue>
                 </td>

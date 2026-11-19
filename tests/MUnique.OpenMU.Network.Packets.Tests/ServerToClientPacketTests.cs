@@ -289,6 +289,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for MagicEffectStatusExtended.
+    /// </summary>
+    [Test]
+    public void MagicEffectStatusExtended_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'IsActive' starts at index 3 with size 1
+        Assert.That(3, Is.GreaterThanOrEqualTo(0), 
+            "Field 'IsActive' has invalid negative index");
+        
+        // Field 'PlayerId' starts at index 4 with size 2
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'PlayerId' has invalid negative index");
+        
+        // Field 'EffectId' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'EffectId' has invalid negative index");
+        
+        // Field 'RemainingSeconds' starts at index 7 with size 4
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'RemainingSeconds' has invalid negative index");
+        
+        // Field 'ValueCount' starts at index 11 with size 1
+        Assert.That(11, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ValueCount' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for WeatherStatusUpdate.
     /// </summary>
     [Test]
@@ -5988,6 +6018,64 @@ public class PacketStructureTests
         // Field 'TargetCount' starts at index 8 with size 1
         Assert.That(8, Is.GreaterThanOrEqualTo(0), 
             "Field 'TargetCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LuckyCoinCountResponse.
+    /// </summary>
+    [Test]
+    public void LuckyCoinCountResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = LuckyCoinCountResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Count' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LuckyCoinRegistrationResponse.
+    /// </summary>
+    [Test]
+    public void LuckyCoinRegistrationResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = LuckyCoinRegistrationResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'Count' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LuckyCoinExchangeResponse.
+    /// </summary>
+    [Test]
+    public void LuckyCoinExchangeResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = LuckyCoinExchangeResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
     }
 
     /// <summary>

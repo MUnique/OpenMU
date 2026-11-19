@@ -1,6 +1,7 @@
 ﻿import * as THREE from "three";
 
 import { Attacks } from "./Attack";
+import { DamageNumbers } from "./DamageNumbers";
 import { createTerrainShader } from "./TerrainShader";
 import { Player } from "./Player";
 import { Attackable, attackableAlphaMapTexture, getDisplayName } from "./Attackable";
@@ -8,7 +9,18 @@ import { GameObject } from "./GameObject";
 import { NonPlayerCharacter as NPC } from "./NonPlayerCharacter";
 import { logDebug } from "./Debug";
 
-import { MonsterFilterMatch, MonsterFilterMode, NpcData, PlayerData, ObjectData, Step } from "./Types";
+import {
+    MonsterFilterMatch,
+    MonsterFilterMode,
+    NpcData,
+    PlayerData,
+    ObjectData,
+    Step,
+    DamageAttributes,
+} from "./Types";
+
+const NO_DAMAGE = 0;
+const NO_RENDER_SIZE = 0;
 
 export class World extends THREE.Object3D {
     private static readonly sideLength: number = 256;
@@ -19,10 +31,14 @@ export class World extends THREE.Object3D {
             [id: number]: GameObject,
         };
     private attacks: Attacks;
+    private damageNumbers: DamageNumbers;
     private terrainMesh: THREE.Mesh;
     private terrainMaterial: THREE.ShaderMaterial;
     private terrainTexture: THREE.Texture | null = null;
     private lastLabelObjectId: number | null = null;
+    private selectedObjectId: number | null = null;
+    private zoom: number = 1;
+    private renderSize: number = 0;
     private isDisposed: boolean = false;
     private monsterFilterMode: MonsterFilterMode = MonsterFilterMode.Contains;
 
@@ -43,6 +59,9 @@ export class World extends THREE.Object3D {
         this.attacks = new Attacks();
         this.attacks.position.z = attacksZ;
         this.add(this.attacks);
+
+        this.damageNumbers = new DamageNumbers();
+        this.add(this.damageNumbers);
 
         const segments = 1;
 
@@ -202,6 +221,57 @@ export class World extends THREE.Object3D {
     }
 
     /**
+     * Shows the damage of a hit above the object which received it. Only hits of the selected
+     * (highlighted) object are shown, so that the map stays readable while an admin watches one player.
+     * @param attackerId - The id of the attacker.
+     * @param targetId - The id of the object which received the damage.
+     * @param healthDamage - The damage to the health of the target.
+     * @param shieldDamage - The damage to the shield of the target.
+     * @param attributes - The flags of the damage attributes, see DamageAttributes.
+     */
+    public showDamage(
+        attackerId: number,
+        targetId: number,
+        healthDamage: number,
+        shieldDamage: number,
+        attributes: number): void {
+        if (this.isDisposed || this.selectedObjectId === null || this.selectedObjectId !== attackerId) {
+            return;
+        }
+
+        const target = this.getObjectById(targetId);
+        if (target === undefined || target === null || !target.visible) {
+            return;
+        }
+
+        const damage = healthDamage + shieldDamage;
+        if (damage <= NO_DAMAGE) {
+            return;
+        }
+
+        this.damageNumbers.show(
+            target.position.x,
+            target.position.y,
+            damage,
+            this.getDamageColor(healthDamage, shieldDamage, attributes));
+    }
+
+    /**
+     * Updates the size of the labels when the map is zoomed.
+     * @param zoom - The zoom factor of the camera.
+     */
+    public setZoom(zoom: number): void {
+        this.zoom = zoom;
+        this.updateTerrainPixelSize();
+        this.damageNumbers.setZoom(zoom);
+        for (const id in this.objects) {
+            if (this.objects.hasOwnProperty(id)) {
+                this.objects[id].setZoom(zoom);
+            }
+        }
+    }
+
+    /**
      * Cleans up all objects and releases resources.
      */
     public dispose(): void {
@@ -224,6 +294,9 @@ export class World extends THREE.Object3D {
 
         this.remove(this.attacks);
         this.attacks.dispose();
+
+        this.remove(this.damageNumbers);
+        this.damageNumbers.dispose();
 
         this.remove(this.terrainMesh);
         this.terrainMesh.geometry.dispose();
@@ -296,6 +369,10 @@ export class World extends THREE.Object3D {
         const player = this.getObjectById(objectId) as Player;
         if (player != null) {
             player.data = { ... player.data, isHighlighted: true };
+
+            // The highlighted object is the selected one, however it got highlighted (clicked, selected
+            // in a list or followed by its name), so its damage is shown in each case.
+            this.selectedObjectId = objectId;
         }
     }
 
@@ -307,6 +384,9 @@ export class World extends THREE.Object3D {
         const player = this.getObjectById(objectId) as Player;
         if (player != null) {
             player.data = { ... player.data, isHighlighted: false };
+            if (this.selectedObjectId === objectId) {
+                this.selectedObjectId = null;
+            }
         }
     }
 
@@ -339,7 +419,8 @@ export class World extends THREE.Object3D {
      * @param newSize - The new render size in pixels.
      */
     public onSizeChanged(newSize: number): void {
-        this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / newSize;
+        this.renderSize = newSize;
+        this.updateTerrainPixelSize();
     }
 
     /**
@@ -354,6 +435,7 @@ export class World extends THREE.Object3D {
         const npc = new NPC(data);
         this.addObjectMesh(npc);
         npc.respawn(data);
+        npc.setZoom(this.zoom);
         this.applyMonsterFilter(npc);
     }
 
@@ -369,6 +451,7 @@ export class World extends THREE.Object3D {
         const player = new Player(data);
         this.addObjectMesh(player);
         player.respawn(data);
+        player.setZoom(this.zoom);
     }
 
     /**
@@ -389,6 +472,10 @@ export class World extends THREE.Object3D {
         }
 
         mesh.dispose();
+
+        if (this.selectedObjectId === objectId) {
+            this.selectedObjectId = null;
+        }
     }
 
     /**
@@ -435,6 +522,47 @@ export class World extends THREE.Object3D {
                 return lowerName.endsWith(this.monsterFilterText);
             default:
                 return lowerName.includes(this.monsterFilterText);
+        }
+    }
+
+    /**
+     * Gets the color of a damage number: special hits are highlighted, pure shield damage is blue.
+     * @param healthDamage - The damage to the health of the target.
+     * @param shieldDamage - The damage to the shield of the target.
+     * @param attributes - The flags of the damage attributes.
+     * @returns The color as CSS color string.
+     */
+    private getDamageColor(healthDamage: number, shieldDamage: number, attributes: number): string {
+        if ((attributes & DamageAttributes.IgnoreDefense) !== DamageAttributes.Undefined) {
+            return "#00FFFF";
+        }
+
+        if ((attributes & DamageAttributes.Excellent) !== DamageAttributes.Undefined) {
+            return "#90EE90";
+        }
+
+        if ((attributes & DamageAttributes.Critical) !== DamageAttributes.Undefined) {
+            return "#0000FF";
+        }
+
+        if ((attributes & DamageAttributes.Reflected) !== DamageAttributes.Undefined) {
+            return "#FFB6C1";
+        }
+
+        if ((attributes & DamageAttributes.Poison) !== DamageAttributes.Undefined) {
+            return "#006400";
+        }
+
+        return "#FF0000";
+    }
+
+    /**
+     * Updates the pixel size of the terrain shader, which depends on the render size and on the zoom:
+     * The edges of the terrain should be one pixel wide on the screen, however far the map is zoomed.
+     */
+    private updateTerrainPixelSize(): void {
+        if (this.renderSize > NO_RENDER_SIZE) {
+            this.terrainMaterial.uniforms.tPixelSize.value = World.sideLength / (this.renderSize * this.zoom);
         }
     }
 

@@ -197,8 +197,12 @@ public sealed class PluginWriteOperations(IPersistenceContextProvider persistenc
         var change = new JsonObject
         {
             ["kind"] = panelConfiguration is null ? "plugin" : "pluginPanel",
-            ["revertAvailable"] = panelConfiguration is null && !stringChange, ["pluginId"] = pluginId.ToString(), ["before"] = before, ["after"] = after,
-            ["stateFingerprint"] = fingerprint, ["afterStateFingerprint"] = Fingerprint(active ?? item.IsActive, patch is null && panelConfiguration is null ? item.CustomConfiguration : newJson),
+            ["revertAvailable"] = panelConfiguration is null && !stringChange,
+            ["pluginId"] = pluginId.ToString(),
+            ["before"] = before,
+            ["after"] = after,
+            ["stateFingerprint"] = fingerprint,
+            ["afterStateFingerprint"] = Fingerprint(active ?? item.IsActive, patch is null && panelConfiguration is null ? item.CustomConfiguration : newJson),
         };
         return await AdminChangeExecution.RunAsync(
             executor,

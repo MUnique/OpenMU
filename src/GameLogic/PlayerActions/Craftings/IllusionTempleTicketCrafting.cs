@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
@@ -25,15 +26,22 @@ public class IllusionTempleTicketCrafting : BaseEventTicketCrafting
     protected override byte MaximumSuccessRate => 80;
 
     /// <inheritdoc />
+    protected override MiniGameType? EventType => MiniGameType.IllusionTemple;
+
+    /// <inheritdoc />
     /// <remarks>
-    /// The ticket which the temple of the level accepts, so the crafting and the temples stay in step when the
-    /// server owner selects another ticket item. Only without such a temple, the item named "Scroll of Blood".
+    /// The ticket which a temple of the level accepts, so the crafting and the temples stay in step when the server
+    /// owner selects another ticket item. A temple without a ticket item (free entry) has no ticket to give, so it's
+    /// skipped. Of the others, an available temple comes first; the ticket of an inactive one is still the one it
+    /// accepts when it's activated again. Only when no temple of the level has a ticket item, the item named
+    /// "Scroll of Blood".
     /// </remarks>
-    protected override ItemDefinition GetResultItemDefinition(Player player, byte eventLevel)
+    protected override ItemDefinition? GetResultItemDefinition(Player player, byte eventLevel)
     {
         return player.GameContext.Configuration.MiniGameDefinitions
                    .Where(definition => definition.Type == MiniGameType.IllusionTemple && definition.TicketItemLevel == eventLevel)
-                   .OrderBy(definition => definition.GameLevel)
+                   .OrderByDescending(definition => definition.IsAvailable())
+                   .ThenBy(definition => definition.GameLevel)
                    .Select(definition => definition.TicketItem)
                    .FirstOrDefault(ticket => ticket is not null)
                ?? base.GetResultItemDefinition(player, eventLevel);

@@ -91,6 +91,35 @@ internal class AccountRepository : CachingGenericRepository<Account>
     }
 
     /// <summary>
+    /// Gets a character by its identifier, without its account.
+    /// </summary>
+    /// <param name="characterId">The identifier of the character.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The character, which isn't tracked by the context; otherwise, null.</returns>
+    /// <remarks>
+    /// The character is loaded with the json query of the account data, but just its own part of it, i.e. without the other characters
+    /// and the vault of its account. The generic repository can't load it, because the configuration types are not part of the account model.
+    /// </remarks>
+    internal async ValueTask<DataModel.Entities.Character?> GetCharacterByIdAsync(Guid characterId, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        (this.RepositoryProvider as ICacheAwareRepositoryProvider)?.EnsureCachesForCurrentGameConfiguration();
+
+        using var context = this.GetContext();
+        await context.Context.Database.OpenConnectionAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            var objectLoader = new AccountJsonObjectLoader((this.RepositoryProvider as CacheAwareRepositoryProvider)?.ConfigurationReferences);
+            return await objectLoader.LoadObjectAsync<Character>(characterId, context.Context, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            await context.Context.Database.CloseConnectionAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Gets the account by login name if the password is correct.
     /// </summary>
     /// <param name="loginName">The login name.</param>

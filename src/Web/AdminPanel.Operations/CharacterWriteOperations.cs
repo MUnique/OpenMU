@@ -30,9 +30,14 @@ public sealed class CharacterWriteOperations(IPersistenceContextProvider persist
 {
     private static readonly IReadOnlyDictionary<string, AttributeDefinition> EditableStats = new Dictionary<string, AttributeDefinition>(StringComparer.Ordinal)
     {
-        ["level"] = Stats.Level, ["masterLevel"] = Stats.MasterLevel, ["resets"] = Stats.Resets,
-        ["strength"] = Stats.BaseStrength, ["agility"] = Stats.BaseAgility, ["vitality"] = Stats.BaseVitality,
-        ["energy"] = Stats.BaseEnergy, ["leadership"] = Stats.BaseLeadership,
+        ["level"] = Stats.Level,
+        ["masterLevel"] = Stats.MasterLevel,
+        ["resets"] = Stats.Resets,
+        ["strength"] = Stats.BaseStrength,
+        ["agility"] = Stats.BaseAgility,
+        ["vitality"] = Stats.BaseVitality,
+        ["energy"] = Stats.BaseEnergy,
+        ["leadership"] = Stats.BaseLeadership,
     };
 
     /// <summary>Updates level, stats, money or position of an offline character after preview.</summary>
@@ -63,8 +68,10 @@ public sealed class CharacterWriteOperations(IPersistenceContextProvider persist
     {
         ["id"] = character.Id.ToString(),
         ["stats"] = JsonSerializer.SerializeToNode(character.Attributes.OrderBy(a => a.Definition.Id).Select(a => new { id = a.Definition.Id, a.Value })),
-        ["money"] = character.Inventory?.Money, ["mapId"] = character.CurrentMap?.GetId().ToString(),
-        ["x"] = character.PositionX, ["y"] = character.PositionY,
+        ["money"] = character.Inventory?.Money,
+        ["mapId"] = character.CurrentMap?.GetId().ToString(),
+        ["x"] = character.PositionX,
+        ["y"] = character.PositionY,
     };
 
     private static void ValidateStats(JsonObject patch, Character character, GameConfiguration config)

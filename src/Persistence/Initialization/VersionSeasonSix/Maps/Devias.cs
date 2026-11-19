@@ -43,6 +43,5 @@ internal class Devias : Version095d.Maps.Devias
         yield return this.CreateMonsterSpawn(41, this.NpcDictionary[233], 219, 9, Direction.SouthEast);
         yield return this.CreateMonsterSpawn(42, this.NpcDictionary[568], 225, 52, Direction.South, SpawnTrigger.Wandering); // Wandering Merchant Zyro
         yield return this.CreateMonsterSpawn(43, this.NpcDictionary[257], 172, 44, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(44, this.NpcDictionary[236], 226, 66, Direction.SouthWest); // Golden Archer
     }
 }

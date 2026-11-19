@@ -21,8 +21,14 @@ public sealed class AuditHistoryPageTests
         using var context = new BunitContext();
         context.Services.AddLocalization();
         var audit = new InMemoryAdminAuditRepository();
-        await audit.AddAsync(new AdminAuditEntry { Id = Guid.NewGuid(), StartedAt = DateTime.UtcNow,
-            PrincipalName = "agent", Operation = "server_send_message", ArgumentsJson = "<script>not executable</script>" }).ConfigureAwait(false);
+        await audit.AddAsync(new AdminAuditEntry
+        {
+            Id = Guid.NewGuid(),
+            StartedAt = DateTime.UtcNow,
+            PrincipalName = "agent",
+            Operation = "server_send_message",
+            ArgumentsJson = "<script>not executable</script>"
+        }).ConfigureAwait(false);
         context.Services.AddSingleton(new AuditReadOperations(AdminOperationTestServices.CreateExecutor(audit: audit), audit));
         var page = context.Render<AuditHistory>();
         page.WaitForAssertion(() => Assert.That(page.Markup, Does.Contain("server_send_message")));

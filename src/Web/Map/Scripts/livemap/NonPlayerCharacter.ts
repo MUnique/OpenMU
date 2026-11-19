@@ -1,5 +1,5 @@
 ﻿import * as THREE from "three";
-import { Attackable, attackableAlphaMapTexture } from "./Attackable";
+import { Attackable, attackableAlphaMapTexture, attackableAlphaTest } from "./Attackable";
 import { NpcData } from "./Types";
 
 /*
@@ -46,7 +46,12 @@ export class NonPlayerCharacter extends Attackable<NpcData> {
         super(
             data,
             NonPlayerCharacter.defaultGeometry,
-            new THREE.MeshBasicMaterial({ color, alphaMap: attackableAlphaMapTexture, transparent: true }),
+            new THREE.MeshBasicMaterial({
+                alphaMap: attackableAlphaMapTexture,
+                alphaTest: attackableAlphaTest,
+                color,
+                transparent: true,
+            }),
         );
     }
 

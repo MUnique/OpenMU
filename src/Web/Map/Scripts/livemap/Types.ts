@@ -48,6 +48,23 @@ export interface Step {
 }
 
 /*
+ * Flags of the damage attributes (matching the C# enum DamageAttributes).
+ */
+export const enum DamageAttributes {
+    Undefined = 0,
+    Critical = 1,
+    Excellent = 2,
+    IgnoreDefense = 4,
+    Poison = 8,
+    Double = 16,
+    Triple = 32,
+    Reflected = 64,
+    Combo = 128,
+    RageFighterStreakHit = 256,
+    RageFighterStreakFinalHit = 512,
+}
+
+/*
  * How the monster filter of the live map compares a name with its text
  * (matching the C# enum MonsterFilterMode).
  */

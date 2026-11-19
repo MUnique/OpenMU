@@ -169,9 +169,7 @@ public sealed class GameConfigurationLoaderGenerator
     {
         var keyProperty = navigation.ForeignKey.Properties[0];
         var navigationType = (IEntityType)keyProperty.DeclaringType;
-#pragma warning disable EF1001 // Internal EF Core API usage.
-        if (Microsoft.EntityFrameworkCore.Metadata.Internal.EntityTypeExtensions.FindDeclaredPrimaryKey(navigationType) is not { } primaryKey)
-#pragma warning restore EF1001 // Internal EF Core API usage.
+        if (navigationType.FindPrimaryKeyIfDeclared() is not { } primaryKey)
         {
             return;
         }

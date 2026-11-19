@@ -26,10 +26,30 @@ If the server hosts no maps yet — because it is not started — the page says 
 * **Players and NPCs** as objects on the terrain of the map
 * **Movements** as they happen
 * **Attacks and skills**, including area skill animations
+* **Damage numbers** for the selected player: each hit they land shows the
+  damage above the victim. The damage of their pets and summoned monsters
+  counts as theirs. Critical hits are yellow, excellent hits orange, poison
+  damage green and pure shield damage blue.
 * **Kills** — objects disappearing when they die
 
 Clicking an object shows its details: name, id, position and, for players, the
-character level.
+character level. The selected object is highlighted, and its damage numbers are
+shown while it stays selected. That's also the case for the player you follow
+in the player list.
+
+## Zooming and panning
+
+The map starts with the whole map in view. To spectate a player more closely:
+
+1. Turn the mouse wheel (or use the touchpad) over the map to zoom in, up to
+   eight times. It zooms towards the mouse cursor.
+2. While zoomed in, drag the map with the right mouse button (the middle button
+   works too) to move it. The map can't be dragged out of view.
+3. Click the button in the top right corner of the map to reset the view.
+
+Zooming only changes the view in the browser; the server keeps sending the same
+objects. Name labels and damage numbers keep their size on the screen, so they
+stay readable at every zoom level.
 
 ## The player list
 
@@ -89,7 +109,7 @@ slow down the game for the players.
 
 ## Planned
 
-Some ideas which are not implemented yet: zooming in on players, display of all
-skill animations and of active magic effects, health status, an overview of
-several maps on one page, a view of public chats, and game master actions such
-as dropping items or starting automated events.
+Some ideas which are not implemented yet: display of all skill animations and of
+active magic effects, health status, an overview of several maps on one page, a
+view of public chats, and game master actions such as dropping items or starting
+automated events.

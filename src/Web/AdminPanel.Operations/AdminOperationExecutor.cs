@@ -33,6 +33,29 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
         return actor;
     }
 
+    /// <summary>Checks an operation's role and the allowlist of the calling API key, without auditing it.</summary>
+    /// <param name="role">The minimum role.</param>
+    /// <param name="operation">The operation name, as it's named in the allowlist.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The authorized caller.</returns>
+    /// <remarks>
+    /// The allowlist of an MCP key restricts it in addition to its role, and an empty one keeps the role-only access.
+    /// A <see cref="AdminRoles.WebManager"/> key can't do anything by its role alone, so it always needs the operation in its allowlist.
+    /// Reads of a website use this directly, because auditing every visit of a ranking would only flood the audit history.
+    /// </remarks>
+    public async ValueTask<AdminActor> RequireOperationAsync(string role, string operation, CancellationToken cancellationToken)
+    {
+        var actor = await this.RequireAsync(role, cancellationToken).ConfigureAwait(false);
+        if (actor.Roles.Contains(AdminRoles.WebManager, StringComparer.Ordinal)
+            ? !AdminToolGroups.AllowsExplicitly(actor.AllowedToolGroups, operation)
+            : actor.Frontend == "mcp" && !AdminToolGroups.Allows(actor.AllowedToolGroups, operation))
+        {
+            throw new AdminOperationException("This tool is excluded by the API key's allowlist.", AdminOperationErrorKind.Forbidden);
+        }
+
+        return actor;
+    }
+
     /// <summary>Runs an audited action. Arguments must be an explicit projection which excludes secrets.</summary>
     /// <typeparam name="T">The safe result type.</typeparam>
     /// <param name="role">The required role.</param>
@@ -44,12 +67,7 @@ public sealed class AdminOperationExecutor(IAdminOperationContext caller, IAdmin
     /// <returns>The action result.</returns>
     public async ValueTask<T> ExecuteAsync<T>(string role, string operation, object arguments, Func<AdminActor, ValueTask<T>> action, CancellationToken cancellationToken, Func<T, bool>? succeeded = null)
     {
-        var actor = await this.RequireAsync(role, cancellationToken).ConfigureAwait(false);
-        if (actor.Frontend == "mcp" && !AdminToolGroups.Allows(actor.AllowedToolGroups, operation))
-        {
-            throw new AdminOperationException("This tool is excluded by the API key's allowlist.", AdminOperationErrorKind.Forbidden);
-        }
-
+        var actor = await this.RequireOperationAsync(role, operation, cancellationToken).ConfigureAwait(false);
         if (actor.Frontend == "mcp" && settings.ReadOnly)
         {
             throw new AdminOperationException("MCP writes are disabled. Enable AdminPanel:Mcp:ReadOnly=false explicitly.");

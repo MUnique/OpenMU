@@ -41,9 +41,8 @@ internal class Arena : Initialization.BaseMapInitializer
     /// <inheritdoc/>
     protected override IEnumerable<MonsterSpawnArea> CreateNpcSpawns()
     {
-        yield return this.CreateMonsterSpawn(1, this.NpcDictionary[240], 58, 58, 140, 140, 1, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[200], 62, 62, 160, 160, 1, Direction.SouthWest);
-        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[239], 67, 67, 140, 140, 1, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(2, this.NpcDictionary[200], 63, 63, 160, 160, 1, Direction.SouthWest);
+        yield return this.CreateMonsterSpawn(3, this.NpcDictionary[239], 72, 72, 164, 164, 1, Direction.SouthWest);
     }
 
     /// <inheritdoc/>

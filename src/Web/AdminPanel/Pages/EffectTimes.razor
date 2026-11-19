@@ -1,0 +1,77 @@
+﻿@page "/effect-times"
+
+@using System.Globalization
+@using MUnique.OpenMU.Web.AdminPanel.Properties
+
+<PageTitle>OpenMU: @Resources.EffectTimes</PageTitle>
+<Breadcrumb IsFirstFromRoot="true" Caption="@Resources.EffectTimes" />
+
+<h1>@Resources.EffectTimes</h1>
+<p class="text-muted">@Resources.EffectTimesDescription</p>
+
+@if (this._entries is null)
+{
+    return;
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <div class="flex-grow-1">
+        <input type="search" class="form-control" placeholder="@($"{Resources.Search}...")"
+               @bind="this.Filter" @bind:event="oninput" />
+    </div>
+    <button type="button" class="btn btn-success" title="@Resources.AllShownEffectsHint" @onclick="() => this.SetSendsTimeOfShownEntries(true)">@Resources.AllOn</button>
+    <button type="button" class="btn btn-warning" title="@Resources.AllShownEffectsHint" @onclick="() => this.SetSendsTimeOfShownEntries(false)">@Resources.AllOff</button>
+    @if (this._defaults is not null)
+    {
+        <button type="button" class="btn btn-outline-primary" title="@string.Format(CultureInfo.CurrentCulture, Resources.DefaultsHintFormat, this.DefaultsName)" @onclick="this.SetDefaultsOfShownEntries">@string.Format(CultureInfo.CurrentCulture, Resources.DefaultsFormat, this.DefaultsName)</button>
+    }
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClick">@Resources.DiscardChanges</button>
+</div>
+
+<p>@string.Format(CultureInfo.CurrentCulture, Resources.SendingCountFormat, this.SendingCount, this._entries.Count)</p>
+@if (this._defaults is null)
+{
+    <p class="text-muted">@(this.IsLoadingDefaults ? Resources.DefaultsLoading : Resources.DefaultsNotAvailable)</p>
+}
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover align-middle">
+        <thead>
+        <tr>
+            <th class="col-1">@Resources.SendsTime</th>
+            <th class="col-1">@Resources.Number</th>
+            <th>@Resources.Name</th>
+            <th>@Resources.Skills</th>
+            @if (this._defaults is not null)
+            {
+                <th class="col-1">@this.DefaultsName</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var entry in this.ShownEntries)
+        {
+            <tr @key="entry.Id">
+                <td>
+                    <input type="checkbox" class="form-check-input" aria-label="@Resources.SendsTime"
+                           @bind:get="this.SendsTime(entry)" @bind:set="value => this.SetSendsTime(entry, value)" />
+                </td>
+                <td>@entry.Number</td>
+                <td><MarkedText Marked="@this.Filter" Text="@entry.Name" /></td>
+                <td class="text-muted"><MarkedText Marked="@this.Filter" Text="@string.Join(", ", entry.Skills)" /></td>
+                @if (this._defaults is { } defaults)
+                {
+                    <td>
+                        @if (defaults.SendsTime.TryGetValue(entry.Number, out var sendsByDefault))
+                        {
+                            <input type="checkbox" class="form-check-input" disabled checked="@sendsByDefault"
+                                   aria-label="@this.DefaultsName" />
+                        }
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

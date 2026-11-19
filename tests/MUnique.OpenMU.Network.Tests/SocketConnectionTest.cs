@@ -64,9 +64,7 @@ public class SocketConnectionTest
                 Thread.Sleep(10);
             }
 
-#pragma warning disable 4014
-            connection.BeginReceiveAsync();
-#pragma warning restore 4014
+            _ = connection.BeginReceiveAsync();
 
             var packet = new byte[22222];
             packet[0] = 0xDE;

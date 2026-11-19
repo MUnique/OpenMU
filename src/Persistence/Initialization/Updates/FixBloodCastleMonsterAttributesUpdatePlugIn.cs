@@ -18,6 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// Version 1 swapped the attribute values between BC7 (monsters 138-143) and BC8 (monsters 428-433).
 /// Version 2 sets the values on which the Season 6 server data of several sources agree for all levels: the former
 /// levels 1 to 5 had the values of the Season 6 levels 3 to 7, and level 6 was stronger than level 7.
+/// The resistances of BC7 and BC8 are whole numbers like those of the characters. Databases on which this update stored them
+/// divided by 255, as before the elemental resistances became whole numbers, are corrected by <see cref="MonsterResistancesUpdatePlugInBase"/>.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixBloodCastleMonsterAttributesUpdatePlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixBloodCastleMonsterAttributesUpdatePlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
@@ -123,10 +125,10 @@ public class FixBloodCastleMonsterAttributesUpdatePlugIn : UpdatePlugInBase
         {
             if (gameConfiguration.Monsters.FirstOrDefault(m => m.Number == number) is { } monster)
             {
-                SetAttribute(monster, Stats.PoisonResistance, resistance / 255);
-                SetAttribute(monster, Stats.IceResistance, resistance / 255);
-                SetAttribute(monster, Stats.FireResistance, resistance / 255);
-                SetAttribute(monster, Stats.LightningResistance, resistance / 255);
+                SetAttribute(monster, Stats.PoisonResistance, resistance);
+                SetAttribute(monster, Stats.IceResistance, resistance);
+                SetAttribute(monster, Stats.FireResistance, resistance);
+                SetAttribute(monster, Stats.LightningResistance, resistance);
             }
         }
 

@@ -43,9 +43,7 @@ public class AddCrestOfMonarchDropGroupUpdateSeason6 : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 03, 13, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-#pragma warning disable CS1998
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
-#pragma warning restore CS1998
     {
         var map = gameConfiguration.Maps.First(m => m.Number == Icarus.Number && m.Discriminator == 0);
         var lochsFeather = gameConfiguration.Items.First(item => item.Group == 13 && item.Number == 14);

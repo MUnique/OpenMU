@@ -35,7 +35,5 @@ public class Structure
     /// </summary>
     [XmlArray(IsNullable = true)]
     [XmlArrayItem(IsNullable = false)]
-#pragma warning disable SA1011 // Closing square brackets should be spaced correctly
     public Field[]? Fields { get; set; }
-#pragma warning restore SA1011 // Closing square brackets should be spaced correctly
 }

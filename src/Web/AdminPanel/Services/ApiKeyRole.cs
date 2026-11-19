@@ -31,4 +31,9 @@ public enum ApiKeyRole
     /// The <see cref="AdminRoles.CashShop"/> role, which only allows to grant cash shop coins.
     /// </summary>
     CashShop,
+
+    /// <summary>
+    /// The <see cref="AdminRoles.WebManager"/> role, which only allows the selected functions of the website API.
+    /// </summary>
+    WebManager,
 }

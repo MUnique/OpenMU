@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -30,14 +31,13 @@ public class TeleportExtendedPlugIn : ITeleportPlugIn
     public TeleportExtendedPlugIn(RemotePlayer player) => this._player = player;
 
     /// <inheritdoc/>
-    public async ValueTask ShowTeleportedAsync()
+    public async ValueTask ShowTeleportedAsync(Point position)
     {
         if (this._player.SelectedCharacter?.CurrentMap is not { } map)
         {
             return;
         }
 
-        var position = this._player.Position;
         await this._player.Connection.SendClearedMapChangedExtendedAsync(map.Number.ToUnsigned(), position.X, position.Y, this._player.Rotation.ToPacketByte(), map.GetDiscriminatorForClient(), false).ConfigureAwait(false);
     }
 }

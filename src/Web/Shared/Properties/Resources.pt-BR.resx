@@ -295,7 +295,7 @@
     <value>Automático (sistema)</value>
   </data>
   <data name="MapEditorShortcutPan" xml:space="preserve">
-    <value>Clique no espaço vazio e arraste para deslocar o mapa</value>
+    <value>Clique com o botão do meio e arraste para deslocar o mapa</value>
   </data>
   <data name="MapEditorShortcutDrag" xml:space="preserve">
     <value>CTRL + Clique no objeto para arrastá-lo</value>
