@@ -58,8 +58,11 @@ public class ItemExpirationPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigura
             var handledItems = this._handledItems.GetOrCreateValue(player);
             foreach (var item in inventory.Items.Where(item => item.IsExpired(now) && !handledItems.Contains(item)).ToList())
             {
-                handledItems.Add(item);
-                await HandleExpiredItemAsync(player, item).ConfigureAwait(false);
+                // Only an item which was handled completely is skipped later; after a failure, the next check tries again.
+                if (await HandleExpiredItemAsync(player, item).ConfigureAwait(false))
+                {
+                    handledItems.Add(item);
+                }
             }
         }
     }
@@ -76,7 +79,14 @@ public class ItemExpirationPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigura
         return new ItemExpirationConfiguration();
     }
 
-    private static async ValueTask HandleExpiredItemAsync(Player player, Item item)
+    /// <summary>
+    /// Handles an item which expired: the effects of an equipped item are created again, the client gets the item,
+    /// and the player is told. Each step can be repeated, so a failed handling is simply tried again.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="item">The expired item.</param>
+    /// <returns><c>true</c>, if the item was handled completely.</returns>
+    private static async ValueTask<bool> HandleExpiredItemAsync(Player player, Item item)
     {
         try
         {
@@ -90,10 +100,12 @@ public class ItemExpirationPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigura
             await player.InvokeViewPlugInAsync<IItemUpgradedPlugIn>(p => p.ItemUpgradedAsync(item)).ConfigureAwait(false);
             var itemName = item.Definition?.Name.GetTranslation(player.Culture) ?? item.ToString();
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemHasExpired), itemName).ConfigureAwait(false);
+            return true;
         }
         catch (Exception ex)
         {
-            player.Logger.LogError(ex, "Error when handling the expired item {item} of player {player}.", item, player);
+            player.Logger.LogError(ex, "Error when handling the expired item {item} of player {player}; it's tried again at the next check.", item, player);
+            return false;
         }
     }
 }

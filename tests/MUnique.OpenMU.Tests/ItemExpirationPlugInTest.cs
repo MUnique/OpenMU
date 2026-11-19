@@ -108,6 +108,35 @@ public class ItemExpirationPlugInTest
         Mock.Get(secondPlayer.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()!).Verify(v => v.ItemUpgradedAsync(secondPet), Times.Once);
     }
 
+    /// <summary>
+    /// Tests that an expired item whose handling failed while its effects were refreshed is handled again at the
+    /// next check, instead of being skipped for the rest of the session.
+    /// </summary>
+    [Test]
+    public async Task FailedHandlingIsRetriedAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var healthWithoutPet = player.Attributes![Stats.MaximumHealth];
+        var pet = await EquipPetAsync(player, DateTime.UtcNow.AddDays(1)).ConfigureAwait(false);
+        var failRefresh = true;
+        player.Inventory!.AsInventoryStorage!.EquippedItemsChanged += _ => failRefresh ? throw new InvalidOperationException("Transient failure") : ValueTask.CompletedTask;
+        var plugIn = new ItemExpirationPlugIn { Configuration = new ItemExpirationConfiguration { CheckInterval = TimeSpan.Zero } };
+        var itemUpgradedPlugIn = Mock.Get(player.ViewPlugIns.GetPlugIn<IItemUpgradedPlugIn>()!);
+        var messagePlugIn = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+
+        pet.ExpiresAt = DateTime.UtcNow.AddSeconds(-1);
+        await plugIn.ExecuteTaskAsync((GameContext)player.GameContext).ConfigureAwait(false);
+        itemUpgradedPlugIn.Verify(v => v.ItemUpgradedAsync(pet), Times.Never, "the handling failed");
+
+        failRefresh = false;
+        await plugIn.ExecuteTaskAsync((GameContext)player.GameContext).ConfigureAwait(false);
+        await plugIn.ExecuteTaskAsync((GameContext)player.GameContext).ConfigureAwait(false);
+
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(healthWithoutPet), "the expired pet has no effect");
+        itemUpgradedPlugIn.Verify(v => v.ItemUpgradedAsync(pet), Times.Once);
+        messagePlugIn.Verify(v => v.ShowMessageAsync(It.Is<string>(m => m.Contains("Rented pet")), MessageType.BlueNormal), Times.Once);
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
