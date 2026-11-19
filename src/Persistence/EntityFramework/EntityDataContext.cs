@@ -147,6 +147,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();
         modelBuilder.Entity<GameConfiguration>().Apply();
+        modelBuilder.Entity<WeightedValueTable>().Apply();
         modelBuilder.Entity<GameMapDefinition>().Apply();
         modelBuilder.Entity<GensMember>().Apply();
         modelBuilder.Entity<GensAbuse>().Apply();

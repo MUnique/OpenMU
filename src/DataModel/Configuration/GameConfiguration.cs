@@ -260,6 +260,12 @@ public partial class GameConfiguration
     public virtual ICollection<ItemLevelBonusTable> ItemLevelBonusTables { get; protected set; } = null!;
 
     /// <summary>
+    /// Gets or sets the weighted value tables, e.g. for the number of sockets of dropped items.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<WeightedValueTable> WeightedValueTables { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the item stat profiles: the item formulas which the <see cref="Items"/> refer to.
     /// </summary>
     [MemberOfAggregate]

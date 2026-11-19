@@ -103,6 +103,8 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.StatAttributeDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.SystemConfiguration>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WarpInfo>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WeightedValue>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.WeightedValueTable>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestItemRequirement>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.Quests.QuestMonsterKillRequirement>();
@@ -191,6 +193,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawCharacterClasses).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemLevelBonusTables).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawWeightedValueTables).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemStatProfiles).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemPriceDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<GameConfiguration>().HasMany(entity => entity.RawItemSlotTypes).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -241,6 +244,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Skill>().HasOne(entity => entity.RawMasterDefinition).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Skill>().HasOne(entity => entity.RawAreaSkillSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SkillComboDefinition>().HasMany(entity => entity.RawSteps).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<WeightedValueTable>().HasMany(entity => entity.RawValues).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRequiredMonsterKills).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRewards).WithOne().OnDelete(DeleteBehavior.Cascade);
