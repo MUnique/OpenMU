@@ -161,10 +161,10 @@ internal class DoppelgangerMonsters : InitializerBase
             { Stats.DefenseBase, defense },
             { Stats.AttackRatePvm, attackRate },
             { Stats.DefenseRatePvm, defenseRate },
-            { Stats.PoisonResistance, resistance / 255f },
-            { Stats.IceResistance, resistance / 255f },
-            { Stats.LightningResistance, lightningResistance / 255f },
-            { Stats.FireResistance, resistance / 255f },
+            { Stats.PoisonResistance, resistance },
+            { Stats.IceResistance, resistance },
+            { Stats.LightningResistance, lightningResistance },
+            { Stats.FireResistance, resistance },
         };
 
         monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

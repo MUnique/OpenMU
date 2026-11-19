@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.Views.World;
 
+using MUnique.OpenMU.Pathfinding;
+
 /// <summary>
 /// Interface of a view whose implementation informs about a teleport action of the current player.
 /// </summary>
@@ -12,5 +14,6 @@ public interface ITeleportPlugIn : IViewPlugIn
     /// <summary>
     /// Will be called when the player teleported or failed to teleport to another location of the same map.
     /// </summary>
-    ValueTask ShowTeleportedAsync();
+    /// <param name="position">The position of the player on the map which is sent to the client.</param>
+    ValueTask ShowTeleportedAsync(Point position);
 }

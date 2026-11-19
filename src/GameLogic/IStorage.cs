@@ -70,6 +70,20 @@ public interface IStorage
     byte? CheckInvSpace(Item item);
 
     /// <summary>
+    /// Determines whether an item of the specified definition would find a place in this storage (including
+    /// extensions) after the specified items are removed from it.
+    /// </summary>
+    /// <param name="definition">The item definition.</param>
+    /// <param name="removedItems">The items of this storage which are removed before; others are ignored.</param>
+    /// <returns><c>True</c>, if an item of the definition would fit; Otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    /// By default, e.g. for storages of plug-in assemblies, it only checks whether the item fits now, without the
+    /// cells which the removed items free. That may refuse an item which would fit, but never accepts one which
+    /// finds no place. <see cref="Storage"/> also counts the freed cells.
+    /// </remarks>
+    bool FitsAfterRemoval(ItemDefinition definition, ICollection<Item> removedItems) => this.CheckInvSpace(new TemporaryItem { Definition = definition }) is not null;
+
+    /// <summary>
     /// Checks if the items of another storage will fit into this storage (including extensions), and adds them if possible.
     /// </summary>
     /// <param name="anotherStorage">The other storage.</param>

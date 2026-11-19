@@ -40,6 +40,31 @@ public class LocalizedUpdatePlugInNameTest
         AssertLocalized(new FixSeedSphereMaximumItemLevelUpdatePlugIn(), culture, expectedName);
     }
 
+    /// <summary>
+    /// Tests the name and description of the update which adds and repairs the data of the illusion temple.
+    /// </summary>
+    /// <param name="culture">The culture of the user interface.</param>
+    /// <param name="expectedName">The expected name.</param>
+    [TestCase("en", "Illusion Temple Data")]
+    [TestCase("de", "Daten des Illusionstempels")]
+    [TestCase("zh-CN", "幻影寺院数据")]
+    public void IllusionTempleDataUpdateIsLocalized(string culture, string expectedName)
+    {
+        AssertLocalized(new IllusionTempleDataUpdatePlugIn(), culture, expectedName);
+    }
+  
+    /// Tests the name and description of the update which adds the socket count tables.
+    /// </summary>
+    /// <param name="culture">The culture of the user interface.</param>
+    /// <param name="expectedName">The expected name.</param>
+    [TestCase("en", "Socket count tables")]
+    [TestCase("de", "Tabellen der Sockelanzahl")]
+    [TestCase("zh-CN", "镶嵌孔数量表")]
+    public void SocketCountTablesUpdateIsLocalized(string culture, string expectedName)
+    {
+        AssertLocalized(new AddSocketCountTablesUpdatePlugIn(), culture, expectedName);
+    }
+
     private static void AssertLocalized(UpdatePlugInBase updatePlugIn, string culture, string expectedName)
     {
         var previousCulture = CultureInfo.CurrentUICulture;

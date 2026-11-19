@@ -12,4 +12,9 @@ namespace MUnique.OpenMU.Persistence;
 /// <param name="Level">The level.</param>
 /// <param name="MasterLevel">The master level.</param>
 /// <param name="Resets">The number of resets.</param>
-public sealed record CharacterSummary(string Name, string CharacterClassName, int Level, int MasterLevel, int Resets);
+/// <param name="CharacterClassId">
+/// The identifier of the class of the character, with which a caller can look up the class in the game configuration.
+/// The entity framework queries can't read the class name, because the classes are part of the configuration and
+/// not of the player data; there, <paramref name="CharacterClassName"/> is empty.
+/// </param>
+public sealed record CharacterSummary(string Name, string CharacterClassName, int Level, int MasterLevel, int Resets, Guid? CharacterClassId = null);

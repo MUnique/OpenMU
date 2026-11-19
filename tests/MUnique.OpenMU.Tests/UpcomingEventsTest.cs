@@ -5,7 +5,11 @@
 namespace MUnique.OpenMU.Tests;
 
 using System.Globalization;
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
@@ -90,6 +94,38 @@ public class UpcomingEventsTest
         var events = UpcomingEvents.Get(plugInManager, Now, TimeZoneInfo.Utc, TimeSpan.FromHours(1), CultureInfo.InvariantCulture);
 
         Assert.That(events, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that the scheduled events of a game server are all active scheduled plugins which run on it,
+    /// with their identifier and english name, ordered by their next start.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task ScheduledEventsOfGameServerRespectTheServerScopeAsync()
+    {
+        var plugInManager = new PlugInManager([], NullLoggerFactory.Instance, null, null);
+        var golden = CreateInvasionConfiguration(new TimeOnly(18, 0));
+        golden.AllowedServerIds = [1];
+        plugInManager.RegisterPlugInAtPlugInPoint<IPeriodicTaskPlugIn>(new GoldenInvasionPlugIn { Configuration = golden });
+        plugInManager.RegisterPlugInAtPlugInPoint<IPeriodicTaskPlugIn>(new RedDragonInvasionPlugIn { Configuration = CreateInvasionConfiguration(new TimeOnly(13, 0)) });
+        plugInManager.RegisterPlugInAtPlugInPoint<IPeriodicTaskPlugIn>(new HappyHourPlugIn { Configuration = new HappyHourConfiguration { Timetable = [new TimeOnly(23, 0)] } });
+
+        var otherServer = await new GameServerAdministration(CreateServerContext(plugInManager, 0)).GetScheduledEventsAsync(CancellationToken.None).ConfigureAwait(false);
+        var goldenServer = await new GameServerAdministration(CreateServerContext(plugInManager, 1)).GetScheduledEventsAsync(CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(otherServer.Select(e => e.Name), Is.EquivalentTo(new[] { "Red Dragon Invasion", "Happy Hour" }));
+        Assert.That(goldenServer.Select(e => e.PlugInId), Does.Contain(typeof(GoldenInvasionPlugIn).GUID));
+        Assert.That(goldenServer.Select(e => e.NextStartUtc), Is.Ordered);
+    }
+
+    private static IGameServerContext CreateServerContext(PlugInManager plugInManager, byte serverId)
+    {
+        var context = new Mock<IGameServerContext>();
+        context.Setup(c => c.Id).Returns(serverId);
+        context.Setup(c => c.PlugInManager).Returns(plugInManager);
+        context.Setup(c => c.ServerTimeZone).Returns(TimeZoneInfo.Utc);
+        return context.Object;
     }
 
     private static PeriodicTaskConfiguration CreateConfiguration(params TimeOnly[] times)

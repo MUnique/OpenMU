@@ -124,10 +124,10 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.DefenseBase, 1250 },
                 { Stats.AttackRatePvm, 2200 },
                 { Stats.DefenseRatePvm, 1800 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 254f / 255 },
-                { Stats.WaterResistance, 150f / 255 },
-                { Stats.FireResistance, 150f / 255 },
+                { Stats.IceResistance, 254 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 150 },
+                { Stats.FireResistance, 150 },
                 { Stats.SkillMultiplier, 2 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -159,10 +159,10 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.DefenseBase, 410 },
                 { Stats.AttackRatePvm, 750 },
                 { Stats.DefenseRatePvm, 280 },
-                { Stats.PoisonResistance, 50f / 255 },
-                { Stats.IceResistance, 50f / 255 },
-                { Stats.WaterResistance, 50f / 255 },
-                { Stats.FireResistance, 50f / 255 },
+                { Stats.IceResistance, 50 },
+                { Stats.PoisonResistance, 50 },
+                { Stats.LightningResistance, 50 },
+                { Stats.FireResistance, 50 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -190,10 +190,10 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.DefenseBase, 410 },
                 { Stats.AttackRatePvm, 750 },
                 { Stats.DefenseRatePvm, 280 },
-                { Stats.PoisonResistance, 50f / 255 },
-                { Stats.IceResistance, 50f / 255 },
-                { Stats.WaterResistance, 50f / 255 },
-                { Stats.FireResistance, 50f / 255 },
+                { Stats.IceResistance, 50 },
+                { Stats.PoisonResistance, 50 },
+                { Stats.LightningResistance, 50 },
+                { Stats.FireResistance, 50 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -221,10 +221,10 @@ internal class RaklionBoss : BaseMapInitializer
                 { Stats.DefenseBase, 410 },
                 { Stats.AttackRatePvm, 750 },
                 { Stats.DefenseRatePvm, 280 },
-                { Stats.PoisonResistance, 50f / 255 },
-                { Stats.IceResistance, 50f / 255 },
-                { Stats.WaterResistance, 50f / 255 },
-                { Stats.FireResistance, 50f / 255 },
+                { Stats.IceResistance, 50 },
+                { Stats.PoisonResistance, 50 },
+                { Stats.LightningResistance, 50 },
+                { Stats.FireResistance, 50 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);

@@ -48,6 +48,7 @@ internal class ConfigurationNameResourcesTests
         (nameof(QuestNames), QuestNames.ResourceManager),
         (nameof(SkillComboNames), SkillComboNames.ResourceManager),
         (nameof(WarpNames), WarpNames.ResourceManager),
+        (nameof(WeightedValueTableNames), WeightedValueTableNames.ResourceManager),
     ];
 
     /// <summary>The resources are registered as sources, so source keys can be resolved without running an initialization.</summary>

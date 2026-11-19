@@ -17,6 +17,11 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// This update fixes jewelery items and pet options related to damage, and jewelery resistance values.
 /// </summary>
+/// <remarks>
+/// It converted the elemental resistances of the characters to whole numbers. Version 2 converts the resistance increases
+/// of the Rage Fighter master tree as well, which version 1 left at a hundredth of their value, unlike the ones of the
+/// other master trees.
+/// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixJeweleryPetsDamageCalcsPlugInSeason6_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixJeweleryPetsDamageCalcsPlugInSeason6_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
 [Guid("DD5B0424-89DB-4DE4-A1BB-B294F2C1FCE6")]
@@ -40,6 +45,25 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
 
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
+
+    /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 16, 22, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        if (installedVersion is null)
+        {
+            await this.ApplyAsync(context, gameConfiguration).ConfigureAwait(false);
+            return;
+        }
+
+        // Applying version 1 again would overwrite customized jewelery and pets; only the master skills are new.
+        FixResistanceIncreaseFormulas(gameConfiguration);
+    }
 
     /// <inheritdoc />
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -252,20 +276,29 @@ public class FixJeweleryPetsDamageCalcsPlugInSeason6 : FixJeweleryPetsDamageCalc
             return itemOption;
         }
 
-        // Update skills
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.PoisonResistanceInc)?.MasterDefinition is { } poisonResistanceInc)
-        {
-            poisonResistanceInc.ValueFormula = poisonResistanceInc.DisplayValueFormula;
-        }
+        FixResistanceIncreaseFormulas(gameConfiguration);
+    }
 
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.LightningResistanceInc)?.MasterDefinition is { } lightningResistanceInc)
+    /// <summary>
+    /// Sets the values of the resistance increases of the master trees to whole numbers, like they are displayed.
+    /// </summary>
+    private static void FixResistanceIncreaseFormulas(GameConfiguration gameConfiguration)
+    {
+        var skillNumbers = new[]
         {
-            lightningResistanceInc.ValueFormula = lightningResistanceInc.DisplayValueFormula;
-        }
-
-        if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)SkillNumber.IceResistanceIncrease)?.MasterDefinition is { } iceResistanceIncrease)
+            SkillNumber.PoisonResistanceInc,
+            SkillNumber.LightningResistanceInc,
+            SkillNumber.IceResistanceIncrease,
+            SkillNumber.IncreasePoisonResistance,
+            SkillNumber.IncreaseLightningResistance,
+            SkillNumber.IncreaseIceResistance,
+        };
+        foreach (var skillNumber in skillNumbers)
         {
-            iceResistanceIncrease.ValueFormula = iceResistanceIncrease.DisplayValueFormula;
+            if (gameConfiguration.Skills.FirstOrDefault(s => s.Number == (short)skillNumber)?.MasterDefinition is { } masterDefinition)
+            {
+                masterDefinition.ValueFormula = masterDefinition.DisplayValueFormula;
+            }
         }
     }
 }

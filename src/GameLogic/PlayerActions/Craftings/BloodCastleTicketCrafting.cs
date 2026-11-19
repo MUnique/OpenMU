@@ -23,6 +23,9 @@ public class BloodCastleTicketCrafting : BaseEventTicketCrafting
     protected override CraftingResult IncorrectMixItemsResult => CraftingResult.IncorrectBloodCastleItems;
 
     /// <inheritdoc />
+    protected override MiniGameType? EventType => MiniGameType.BloodCastle;
+
+    /// <inheritdoc />
     protected override int GetPrice(int eventLevel)
     {
         return eventLevel switch

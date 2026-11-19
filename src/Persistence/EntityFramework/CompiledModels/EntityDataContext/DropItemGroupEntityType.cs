@@ -25,10 +25,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup),
                 baseEntityType,
-                propertyCount: 11,
-                navigationCount: 2,
-                foreignKeyCount: 2,
-                unnamedIndexCount: 2,
+                propertyCount: 12,
+                navigationCount: 3,
+                foreignKeyCount: 3,
+                unnamedIndexCount: 3,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -123,6 +123,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             monsterId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var socketCountTableId = runtimeEntityType.AddProperty(
+                "SocketCountTableId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup).GetProperty("SocketCountTableId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup).GetField("<SocketCountTableId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            socketCountTableId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var key = runtimeEntityType.AddKey(
                 new[] { id });
             runtimeEntityType.SetPrimaryKey(key);
@@ -132,6 +140,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             var index0 = runtimeEntityType.AddIndex(
                 new[] { monsterId });
+
+            var index1 = runtimeEntityType.AddIndex(
+                new[] { socketCountTableId });
 
             return runtimeEntityType;
         }
@@ -164,6 +175,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 onDependent: true,
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition),
                 propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup).GetProperty("RawMonster", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("SocketCountTableId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawSocketCountTable = declaringEntityType.AddNavigation("RawSocketCountTable",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WeightedValueTable),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.DropItemGroup).GetProperty("RawSocketCountTable", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }

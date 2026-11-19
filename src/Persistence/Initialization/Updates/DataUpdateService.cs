@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
+using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.PlugIns;
 
@@ -190,17 +191,18 @@ public class DataUpdateService
     /// Determines the key of the data initialization which created the configuration.
     /// </summary>
     /// <param name="context">The context.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The key of the <see cref="IDataInitializationPlugIn"/>.</returns>
-    internal static async ValueTask<string> DetermineInitializationKeyAsync(IContext context)
+    internal static async ValueTask<string> DetermineInitializationKeyAsync(IContext context, CancellationToken cancellationToken = default)
     {
-        var updateStates = await context.GetAsync<ConfigurationUpdateState>().ConfigureAwait(false);
+        var updateStates = await context.GetAsync<ConfigurationUpdateState>(cancellationToken).ConfigureAwait(false);
         if (updateStates.FirstOrDefault() is { InitializationKey: not null } updateState)
         {
             return updateState.InitializationKey;
         }
 
         // Now it's getting tricky ...
-        var clientDefinitions = await context.GetAsync<GameClientDefinition>().ConfigureAwait(false);
+        var clientDefinitions = await context.GetAsync<GameClientDefinition>(cancellationToken).ConfigureAwait(false);
         if (clientDefinitions.FirstOrDefault() is not { } clientDefinition)
         {
             throw new InvalidOperationException("No data installed");

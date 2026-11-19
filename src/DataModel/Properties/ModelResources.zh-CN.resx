@@ -6505,4 +6505,40 @@
   <data name="WaitingItemReason_NoSpaceWhenLoaded_Description" xml:space="preserve">
     <value>加载存放位置时物品找不到空间，例如其定义的尺寸变大了。</value>
   </data>
+  <data name="GameConfiguration_WeightedValueTables_Caption" xml:space="preserve">
+    <value>加权数值表</value>
+  </data>
+  <data name="ItemDefinition_SocketCountTable_Caption" xml:space="preserve">
+    <value>镶嵌孔数量表</value>
+  </data>
+  <data name="DropItemGroup_SocketCountTable_Caption" xml:space="preserve">
+    <value>镶嵌孔数量表</value>
+  </data>
+  <data name="WeightedValueTable_TypeCaption" xml:space="preserve">
+    <value>加权数值表</value>
+  </data>
+  <data name="WeightedValueTable_TypeCaptionPlural" xml:space="preserve">
+    <value>加权数值表</value>
+  </data>
+  <data name="WeightedValueTable_Name_Caption" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="WeightedValueTable_Description_Caption" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="WeightedValueTable_Values_Caption" xml:space="preserve">
+    <value>数值</value>
+  </data>
+  <data name="WeightedValue_TypeCaption" xml:space="preserve">
+    <value>加权数值</value>
+  </data>
+  <data name="WeightedValue_TypeCaptionPlural" xml:space="preserve">
+    <value>加权数值</value>
+  </data>
+  <data name="WeightedValue_Value_Caption" xml:space="preserve">
+    <value>数值</value>
+  </data>
+  <data name="WeightedValue_Weight_Caption" xml:space="preserve">
+    <value>权重</value>
+  </data>
 </root>

@@ -61,10 +61,10 @@ internal class InvasionMobsInitialization : InitializerBase
                 { Stats.DefenseBase, 45 },
                 { Stats.AttackRatePvm, 75 },
                 { Stats.DefenseRatePvm, 30 },
-                { Stats.PoisonResistance, 2f / 255 },
-                { Stats.IceResistance, 2f / 255 },
-                { Stats.WaterResistance, 2f / 255 },
-                { Stats.FireResistance, 2f / 255 },
+                { Stats.IceResistance, 2 },
+                { Stats.PoisonResistance, 2 },
+                { Stats.LightningResistance, 2 },
+                { Stats.FireResistance, 2 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 
@@ -100,10 +100,10 @@ internal class InvasionMobsInitialization : InitializerBase
                 { Stats.DefenseBase, 75 },
                 { Stats.AttackRatePvm, 230 },
                 { Stats.DefenseRatePvm, 64 },
-                { Stats.PoisonResistance, 3f / 255 },
-                { Stats.IceResistance, 3f / 255 },
-                { Stats.WaterResistance, 3f / 255 },
-                { Stats.FireResistance, 3f / 255 },
+                { Stats.IceResistance, 3 },
+                { Stats.PoisonResistance, 3 },
+                { Stats.LightningResistance, 3 },
+                { Stats.FireResistance, 3 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
@@ -132,10 +132,10 @@ internal class InvasionMobsInitialization : InitializerBase
                 { Stats.DefenseBase, 105 },
                 { Stats.AttackRatePvm, 265 },
                 { Stats.DefenseRatePvm, 77 },
-                { Stats.PoisonResistance, 5f / 255 },
-                { Stats.IceResistance, 5f / 255 },
-                { Stats.WaterResistance, 5f / 255 },
-                { Stats.FireResistance, 5f / 255 },
+                { Stats.IceResistance, 5 },
+                { Stats.PoisonResistance, 5 },
+                { Stats.LightningResistance, 5 },
+                { Stats.FireResistance, 5 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 
@@ -185,10 +185,10 @@ internal class InvasionMobsInitialization : InitializerBase
                 { Stats.DefenseBase, 120 },
                 { Stats.AttackRatePvm, 300 },
                 { Stats.DefenseRatePvm, 88 },
-                { Stats.PoisonResistance, 9f / 255 },
-                { Stats.IceResistance, 7f / 255 },
-                { Stats.WaterResistance, 9f / 255 },
-                { Stats.FireResistance, 9f / 255 },
+                { Stats.IceResistance, 9 },
+                { Stats.PoisonResistance, 7 },
+                { Stats.LightningResistance, 9 },
+                { Stats.FireResistance, 9 },
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
 

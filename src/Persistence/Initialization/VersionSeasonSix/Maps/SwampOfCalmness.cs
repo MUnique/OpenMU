@@ -360,7 +360,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 370 },
                 { Stats.AttackRatePvm, 700 },
                 { Stats.DefenseRatePvm, 220 },
-                { Stats.PoisonResistance, 20f / 255 },
+                { Stats.PoisonResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -389,7 +389,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 375 },
                 { Stats.AttackRatePvm, 730 },
                 { Stats.DefenseRatePvm, 225 },
-                { Stats.PoisonResistance, 30f / 255 },
+                { Stats.PoisonResistance, 30 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -419,7 +419,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 470 },
                 { Stats.AttackRatePvm, 880 },
                 { Stats.DefenseRatePvm, 275 },
-                { Stats.PoisonResistance, 40f / 255 },
+                { Stats.PoisonResistance, 40 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -448,8 +448,8 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 430 },
                 { Stats.AttackRatePvm, 830 },
                 { Stats.DefenseRatePvm, 240 },
-                { Stats.PoisonResistance, 20f / 255 },
-                { Stats.IceResistance, 20f / 255 },
+                { Stats.IceResistance, 20 },
+                { Stats.PoisonResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -479,8 +479,8 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 455 },
                 { Stats.AttackRatePvm, 860 },
                 { Stats.DefenseRatePvm, 255 },
-                { Stats.PoisonResistance, 30f / 255 },
-                { Stats.IceResistance, 30f / 255 },
+                { Stats.IceResistance, 30 },
+                { Stats.PoisonResistance, 30 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -509,8 +509,8 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 500 },
                 { Stats.AttackRatePvm, 950 },
                 { Stats.DefenseRatePvm, 290 },
-                { Stats.PoisonResistance, 40f / 255 },
-                { Stats.IceResistance, 40f / 255 },
+                { Stats.IceResistance, 40 },
+                { Stats.PoisonResistance, 40 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -539,7 +539,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 395 },
                 { Stats.AttackRatePvm, 750 },
                 { Stats.DefenseRatePvm, 235 },
-                { Stats.LightningResistance, 20f / 255 },
+                { Stats.LightningResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -569,7 +569,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 535 },
                 { Stats.AttackRatePvm, 980 },
                 { Stats.DefenseRatePvm, 295 },
-                { Stats.PoisonResistance, 30f / 255 },
+                { Stats.PoisonResistance, 30 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -598,7 +598,7 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 530 },
                 { Stats.AttackRatePvm, 1000 },
                 { Stats.DefenseRatePvm, 303 },
-                { Stats.FireResistance, 40f / 255 },
+                { Stats.FireResistance, 40 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -627,10 +627,10 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 670 },
                 { Stats.AttackRatePvm, 1847 },
                 { Stats.DefenseRatePvm, 875 },
-                { Stats.PoisonResistance, 20f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.LightningResistance, 20f / 255 },
-                { Stats.FireResistance, 20f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 20 },
+                { Stats.LightningResistance, 20 },
+                { Stats.FireResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -659,10 +659,10 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 730 },
                 { Stats.AttackRatePvm, 1544 },
                 { Stats.DefenseRatePvm, 903 },
-                { Stats.PoisonResistance, 20f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.LightningResistance, 20f / 255 },
-                { Stats.FireResistance, 20f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 20 },
+                { Stats.LightningResistance, 20 },
+                { Stats.FireResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -691,10 +691,10 @@ internal class SwampOfCalmness : BaseMapInitializer
                 { Stats.DefenseBase, 700 },
                 { Stats.AttackRatePvm, 1646 },
                 { Stats.DefenseRatePvm, 990 },
-                { Stats.PoisonResistance, 20f / 255 },
-                { Stats.IceResistance, 150f / 255 },
-                { Stats.LightningResistance, 20f / 255 },
-                { Stats.FireResistance, 20f / 255 },
+                { Stats.IceResistance, 150 },
+                { Stats.PoisonResistance, 20 },
+                { Stats.LightningResistance, 20 },
+                { Stats.FireResistance, 20 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

@@ -233,6 +233,10 @@ have this role implicitly.
 | `POST /api/accounts/{account}/cash-shop/grants` | Cash shop |
 | `GET /api/items/exchange` | Viewer, [key only](#items-for-the-client-editor) |
 
+A key can also get the role **Website (selected functions only)**. It can't use
+any of the endpoints above, only the [website API](#the-api-of-a-website), and
+only the functions which are selected for it.
+
 So a status page gets a Viewer key and can only read, while an application which
 announces something in the game needs an Operator key. The role is chosen when
 the key is created and can't be changed afterwards — create a new key with the
@@ -354,6 +358,108 @@ grants, where `appliedAt` is empty for the pending ones.
 Like the panel itself, the API is open as long as [no user exists at
 all](#the-first-user).
 
+### The API of a website
+
+A website of the server — with a registration, a login with the game account,
+rankings, an armory and the event schedule — uses its own part of the API under
+`/api/website`. It needs a key with the role **Website (selected functions
+only)**. Such a key can't do anything by its role alone: when it's created, the
+admin panel asks for its functions with check boxes, and **Change** in the list
+of keys changes them later. Select only what the website shows, so a stolen key
+can't do more than the website itself.
+
+The keys of the administration can't use the website API, and a website key
+can't use the rest of the API or [MCP](mcp.md).
+
+| Function | Endpoint |
+|---|---|
+| Server status | `GET /api/website/status` |
+| Register accounts | `POST /api/website/accounts` |
+| Login with game accounts | `POST /api/website/login` |
+| Change account passwords | `PUT /api/website/accounts/{account}/password` |
+| Character ranking | `GET /api/website/ranking?count=10&class=` |
+| Mini game rankings | `GET /api/website/minigames/ranking?type=BloodCastle&days=` |
+| Character profiles | `GET /api/website/characters/{name}` |
+| Event schedule | `GET /api/website/events` |
+| Grant cash shop coins | `POST /api/website/accounts/{account}/cash-shop/grants` |
+
+A function which isn't selected for the key answers with `403`.
+The names of classes, items, maps and events are the english names of the
+configuration; the website translates them if needed.
+
+* **Server status** lists the game servers with their state and number of
+  players.
+* **Register accounts** works like
+  [`POST /api/accounts`](#registering-accounts-from-a-website), with the same
+  body and answers. The registration is recorded in the audit history with the
+  name of the key.
+* **Login** takes `{ "loginName": "...", "password": "..." }` and answers `200`
+  with the login name, the state of the account (e.g. `Banned`, so the website
+  can decide what a banned player may do), whether the account is in the game
+  right now (`isOnline`; its password can only be changed while it's offline, so
+  the website can ask the player to leave the game first), whether a character of
+  the account is offline leveling (`isOfflineLeveling`; such an account isn't
+  `isOnline`, but its character is still in the game) and its characters with
+  their zen, map and position. Only the player gets these, after the login.
+  A wrong login name and a wrong password both answer `401` with the same
+  body. After 5 failed logins of an account within 15 minutes, the account
+  can't log in at the website for the next 15 minutes — not even with the
+  right password — and the answer is `429`, with the remaining seconds of the
+  lockout in `Retry-After`.
+  Logins which are sent at the same time count as well, so they can't try more
+  passwords. The game itself isn't affected. The failed logins are counted per
+  admin panel process, so several instances count them separately. The server
+  doesn't issue a token: the website keeps the login in its own session and must
+  not store the password.
+* **Change account passwords** takes `{ "currentPassword": "...", "newPassword":
+  "..." }` and answers `204`. A wrong current password counts as a failed login
+  (`401`, `429`). The account has to be offline (`409` with `{ "status":
+  "AccountOnline" }` otherwise), because the game server saves the account when
+  the player leaves. For the same reason, none of its characters may be offline
+  leveling (`409` with `{ "status": "OfflineLeveling" }`); if a game server
+  can't be asked about it, the password isn't changed and the answer is `503`
+  with `{ "status": "GameServerUnavailable" }`. The new password follows
+  the rules of the registration (`400` otherwise). Passwords are never returned,
+  logged or recorded in the audit history; an invalid request or a locked out
+  account isn't recorded at all.
+* **Character ranking** ranks by resets, master level and level, up to 100
+  characters (`count`), with their class and guild (`guildName`, `null`
+  without a guild). `class` is the number of a character class and limits
+  the ranking to its line, e.g. `class=0` ranks the Dark Wizards, Soul Masters
+  and Grand Masters. Bots and game masters aren't ranked. Like the ranking of
+  the Discord bot, the server caches the ranking for 2 minutes, so it can be up
+  to 2 minutes old.
+* **Mini game rankings** are the [leaderboards](overview.md#leaderboards) of
+  the admin panel. `type` is the mini game type (`BloodCastle`, `DevilSquare`,
+  `ChaosCastle`, …); without it, the first one with a leaderboard is returned.
+  The answer lists the types which have a leaderboard.
+* **Character profiles** return the name, class, levels, resets, guild and the
+  equipped items with their group and number, level, sockets, whether they are
+  excellent or ancient, the file name of their picture (`image`, as in the item
+  editor, e.g. `item_0_16_13_e.png`), whether they have the skill, the name of
+  their ancient set and their structured `options` (type, number, level, target
+  attribute and value), from which the website builds the texts of the options.
+  They don't contain the account, the inventory, the money or the position, and
+  they don't tell whether the player is online. A missing character, and like
+  in the ranking a bot or a game master, answers `404`.
+* **Event schedule** lists, per started game server, the next start of every
+  active event with a schedule — mini games, invasions, the happy hour. An event
+  which is limited to some game servers only shows up at those. An event which
+  is added or activated later shows up without a change of the API. Recognize an
+  event by its `id`, the identifier of its plugin, which doesn't change; the
+  `name` is the english name.
+* **Grant cash shop coins** works like
+  [the cash shop API](#granting-cash-shop-coins), but a website can only add
+  coins (a positive amount) and has to send a `reference`, e.g. the identifier of
+  the payment. Repeating a grant with the same reference answers `200` and
+  doesn't grant twice; the same reference with another amount or coin type, or a
+  reference which another account already got, answers `409`. An unknown account
+  answers `404`.
+
+Like for the [registration](#registering-accounts-from-a-website), call the API
+from the website's server, never from the visitor's browser, and protect the
+forms against abuse: the game server only sees the website, not its visitors.
+
 ## Keeping the sessions alive across restarts
 
 The sessions and the stored authenticator secrets are protected with a key ring
@@ -418,4 +524,6 @@ Empty keeps the key's existing role-based access. The allowlist further limits
 MCP discovery and direct calls; it never grants a tool beyond the key's role
 and does not alter REST API permissions. See
 [MCP configuration changes](mcp.md#configuration-and-offline-character-changes)
-for the preview/apply workflow.
+for the preview/apply workflow. A key with the website role
+stores its selected [website functions](#the-api-of-a-website) in the same
+field; for it, an empty field allows nothing.

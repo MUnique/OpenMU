@@ -21,6 +21,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Discord;
 using MUnique.OpenMU.FriendServer;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.PlugIns.GameEvents;
 using MUnique.OpenMU.GameLogic.TestActors;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GuildServer;
@@ -411,6 +412,7 @@ internal sealed class Program : IDisposable
             .AddSingleton<IGuildServer, GuildServer>()
             .AddSingleton<IFriendServer, FriendServer>()
             .AddDiscordIntegration(builder.Configuration.GetSection(DiscordSettings.SectionName), () => ServerTimeZone)
+            .AddSingleton<IGameEventListener, GameEventPlugInListener>()
             .AddSingleton<ChatServer>()
             .AddSingleton<IChatServer>(s => s.GetService<ChatServer>()!)
             .AddSingleton<ConnectServerFactory>()
