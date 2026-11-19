@@ -279,10 +279,10 @@ internal class LandOfTrials : BaseMapInitializer
                 { Stats.DefenseBase, 210 },
                 { Stats.AttackRatePvm, 430 },
                 { Stats.DefenseRatePvm, 140 },
-                { Stats.PoisonResistance, 26f / 255 },
-                { Stats.IceResistance, 26f / 255 },
-                { Stats.LightningResistance, 26f / 255 },
-                { Stats.FireResistance, 26f / 255 },
+                { Stats.IceResistance, 26 },
+                { Stats.PoisonResistance, 26 },
+                { Stats.LightningResistance, 26 },
+                { Stats.FireResistance, 26 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -311,10 +311,10 @@ internal class LandOfTrials : BaseMapInitializer
                 { Stats.DefenseBase, 550 },
                 { Stats.AttackRatePvm, 870 },
                 { Stats.DefenseRatePvm, 310 },
-                { Stats.PoisonResistance, 29f / 255 },
-                { Stats.IceResistance, 29f / 255 },
-                { Stats.LightningResistance, 29f / 255 },
-                { Stats.FireResistance, 29f / 255 },
+                { Stats.IceResistance, 29 },
+                { Stats.PoisonResistance, 29 },
+                { Stats.LightningResistance, 29 },
+                { Stats.FireResistance, 29 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -344,10 +344,10 @@ internal class LandOfTrials : BaseMapInitializer
                 { Stats.DefenseBase, 360 },
                 { Stats.AttackRatePvm, 620 },
                 { Stats.DefenseRatePvm, 240 },
-                { Stats.PoisonResistance, 28f / 255 },
-                { Stats.IceResistance, 28f / 255 },
-                { Stats.LightningResistance, 28f / 255 },
-                { Stats.FireResistance, 28f / 255 },
+                { Stats.IceResistance, 28 },
+                { Stats.PoisonResistance, 28 },
+                { Stats.LightningResistance, 28 },
+                { Stats.FireResistance, 28 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -377,10 +377,10 @@ internal class LandOfTrials : BaseMapInitializer
                 { Stats.DefenseBase, 275 },
                 { Stats.AttackRatePvm, 530 },
                 { Stats.DefenseRatePvm, 190 },
-                { Stats.PoisonResistance, 27f / 255 },
-                { Stats.IceResistance, 27f / 255 },
-                { Stats.LightningResistance, 27f / 255 },
-                { Stats.FireResistance, 27f / 255 },
+                { Stats.IceResistance, 27 },
+                { Stats.PoisonResistance, 27 },
+                { Stats.LightningResistance, 27 },
+                { Stats.FireResistance, 27 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -409,10 +409,10 @@ internal class LandOfTrials : BaseMapInitializer
                 { Stats.DefenseBase, 195 },
                 { Stats.AttackRatePvm, 385 },
                 { Stats.DefenseRatePvm, 125 },
-                { Stats.PoisonResistance, 25f / 255 },
-                { Stats.IceResistance, 25f / 255 },
-                { Stats.LightningResistance, 25f / 255 },
-                { Stats.FireResistance, 25f / 255 },
+                { Stats.IceResistance, 25 },
+                { Stats.PoisonResistance, 25 },
+                { Stats.LightningResistance, 25 },
+                { Stats.FireResistance, 25 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -442,10 +442,10 @@ internal class LandOfTrials : BaseMapInitializer
                 { Stats.DefenseBase, 1000 },
                 { Stats.AttackRatePvm, 1500 },
                 { Stats.DefenseRatePvm, 800 },
-                { Stats.PoisonResistance, 254f / 255 },
-                { Stats.IceResistance, 100f / 255 },
-                { Stats.LightningResistance, 100f / 255 },
-                { Stats.FireResistance, 100f / 255 },
+                { Stats.IceResistance, 100 },
+                { Stats.PoisonResistance, 254 },
+                { Stats.LightningResistance, 100 },
+                { Stats.FireResistance, 100 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

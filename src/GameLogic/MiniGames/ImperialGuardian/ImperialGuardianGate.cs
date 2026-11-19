@@ -67,23 +67,9 @@ public sealed class ImperialGuardianGate : AttackableNpcBase
     }
 
     /// <inheritdoc/>
-    public override ValueTask ReflectDamageAsync(IAttacker reflector, uint damage)
+    public override ValueTask ApplyDamageAsync(IAttacker attacker, uint damage, DamageAttributes damageAttributes)
     {
-        // A gate doesn't attack, so it doesn't reflect.
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyPoisonDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        // A gate is not an organism which can be poisoned.
-        return ValueTask.CompletedTask;
-    }
-
-    /// <inheritdoc />
-    public override ValueTask ApplyBleedingDamageAsync(IAttacker initialAttacker, uint damage)
-    {
-        // A gate is not an organism which can bleed.
+        // A gate or statue doesn't attack, reflect, get poisoned or bleed.
         return ValueTask.CompletedTask;
     }
 

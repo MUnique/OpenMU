@@ -2391,6 +2391,36 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         
+        /// <summary>Gets the localized AdjustIceArrowFreezeDurationUpdatePlugIn_Name text.</summary>
+        public static string AdjustIceArrowFreezeDurationUpdatePlugIn_Name => ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AdjustIceArrowFreezeDurationUpdatePlugIn_Description text.</summary>
+        public static string AdjustIceArrowFreezeDurationUpdatePlugIn_Description => ResourceManager.GetString("AdjustIceArrowFreezeDurationUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInSeason6_Name text.</summary>
+        public static string FieldMonsterSpawnsUpdatePlugInSeason6_Name => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInSeason6_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInSeason6_Description text.</summary>
+        public static string FieldMonsterSpawnsUpdatePlugInSeason6_Description => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInSeason6_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInBase_Name text.</summary>
+        public static string FieldMonsterSpawnsUpdatePlugInBase_Name => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FieldMonsterSpawnsUpdatePlugInBase_Description text.</summary>
+        public static string FieldMonsterSpawnsUpdatePlugInBase_Description => ResourceManager.GetString("FieldMonsterSpawnsUpdatePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterStatsUpdatePlugInBase_Name text.</summary>
+        public static string MonsterStatsUpdatePlugInBase_Name => ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterStatsUpdatePlugInBase_Description text.</summary>
+        public static string MonsterStatsUpdatePlugInBase_Description => ResourceManager.GetString("MonsterStatsUpdatePlugInBase_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterResistancesUpdatePlugInBase_Name text.</summary>
+        public static string MonsterResistancesUpdatePlugInBase_Name => ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized MonsterResistancesUpdatePlugInBase_Description text.</summary>
+        public static string MonsterResistancesUpdatePlugInBase_Description => ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Description", resourceCulture)!;
+        
         /// <summary>
         ///   Looks up a localized string similar to Fix Warrior Morning Star.
         /// </summary>

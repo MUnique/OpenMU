@@ -422,10 +422,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 65 },
                 { Stats.AttackRatePvm, 215 },
                 { Stats.DefenseRatePvm, 52 },
-                { Stats.PoisonResistance, 1f / 255 },
-                { Stats.IceResistance, 1f / 255 },
-                { Stats.WaterResistance, 1f / 255 },
-                { Stats.FireResistance, 1f / 255 },
+                { Stats.IceResistance, 1 },
+                { Stats.PoisonResistance, 1 },
+                { Stats.LightningResistance, 1 },
+                { Stats.FireResistance, 1 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -455,10 +455,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 70 },
                 { Stats.AttackRatePvm, 225 },
                 { Stats.DefenseRatePvm, 58 },
-                { Stats.PoisonResistance, 2f / 255 },
-                { Stats.IceResistance, 2f / 255 },
-                { Stats.WaterResistance, 3f / 255 },
-                { Stats.FireResistance, 2f / 255 },
+                { Stats.IceResistance, 2 },
+                { Stats.PoisonResistance, 2 },
+                { Stats.LightningResistance, 3 },
+                { Stats.FireResistance, 2 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -487,10 +487,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 75 },
                 { Stats.AttackRatePvm, 230 },
                 { Stats.DefenseRatePvm, 64 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 2f / 255 },
-                { Stats.WaterResistance, 2f / 255 },
-                { Stats.FireResistance, 2f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 2 },
+                { Stats.LightningResistance, 2 },
+                { Stats.FireResistance, 2 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -520,10 +520,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 180 },
                 { Stats.AttackRatePvm, 350 },
                 { Stats.DefenseRatePvm, 115 },
-                { Stats.PoisonResistance, 7f / 255 },
-                { Stats.IceResistance, 7f / 255 },
-                { Stats.WaterResistance, 7f / 255 },
-                { Stats.FireResistance, 7f / 255 },
+                { Stats.IceResistance, 7 },
+                { Stats.PoisonResistance, 7 },
+                { Stats.LightningResistance, 7 },
+                { Stats.FireResistance, 7 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -553,10 +553,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 200 },
                 { Stats.AttackRatePvm, 430 },
                 { Stats.DefenseRatePvm, 125 },
-                { Stats.PoisonResistance, 12f / 255 },
-                { Stats.IceResistance, 12f / 255 },
-                { Stats.WaterResistance, 12f / 255 },
-                { Stats.FireResistance, 12f / 255 },
+                { Stats.IceResistance, 12 },
+                { Stats.PoisonResistance, 12 },
+                { Stats.LightningResistance, 12 },
+                { Stats.FireResistance, 12 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -585,10 +585,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 200 },
                 { Stats.AttackRatePvm, 430 },
                 { Stats.DefenseRatePvm, 125 },
-                { Stats.PoisonResistance, 12f / 255 },
-                { Stats.IceResistance, 12f / 255 },
-                { Stats.WaterResistance, 12f / 255 },
-                { Stats.FireResistance, 12f / 255 },
+                { Stats.IceResistance, 12 },
+                { Stats.PoisonResistance, 12 },
+                { Stats.LightningResistance, 12 },
+                { Stats.FireResistance, 12 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -617,10 +617,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 150 },
                 { Stats.AttackRatePvm, 330 },
                 { Stats.DefenseRatePvm, 98 },
-                { Stats.PoisonResistance, 6f / 255 },
-                { Stats.IceResistance, 6f / 255 },
-                { Stats.WaterResistance, 6f / 255 },
-                { Stats.FireResistance, 6f / 255 },
+                { Stats.IceResistance, 6 },
+                { Stats.PoisonResistance, 6 },
+                { Stats.LightningResistance, 6 },
+                { Stats.FireResistance, 6 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -650,10 +650,10 @@ internal class Atlans : BaseMapInitializer
                 { Stats.DefenseBase, 170 },
                 { Stats.AttackRatePvm, 340 },
                 { Stats.DefenseRatePvm, 110 },
-                { Stats.PoisonResistance, 7f / 255 },
-                { Stats.IceResistance, 7f / 255 },
-                { Stats.WaterResistance, 7f / 255 },
-                { Stats.FireResistance, 7f / 255 },
+                { Stats.IceResistance, 7 },
+                { Stats.PoisonResistance, 7 },
+                { Stats.LightningResistance, 7 },
+                { Stats.FireResistance, 7 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);

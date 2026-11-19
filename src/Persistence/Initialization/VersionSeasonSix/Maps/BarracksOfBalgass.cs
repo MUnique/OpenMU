@@ -120,10 +120,10 @@ internal class BarracksOfBalgass : BaseMapInitializer
                 { Stats.DefenseBase, 480 },
                 { Stats.AttackRatePvm, 1200 },
                 { Stats.DefenseRatePvm, 370 },
-                { Stats.PoisonResistance, 23f / 255 },
-                { Stats.IceResistance, 23f / 255 },
-                { Stats.LightningResistance, 23f / 255 },
-                { Stats.FireResistance, 23f / 255 },
+                { Stats.IceResistance, 23 },
+                { Stats.PoisonResistance, 23 },
+                { Stats.LightningResistance, 23 },
+                { Stats.FireResistance, 23 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -152,10 +152,10 @@ internal class BarracksOfBalgass : BaseMapInitializer
                 { Stats.DefenseBase, 490 },
                 { Stats.AttackRatePvm, 1200 },
                 { Stats.DefenseRatePvm, 390 },
-                { Stats.PoisonResistance, 25f / 255 },
-                { Stats.IceResistance, 25f / 255 },
-                { Stats.LightningResistance, 25f / 255 },
-                { Stats.FireResistance, 25f / 255 },
+                { Stats.IceResistance, 25 },
+                { Stats.PoisonResistance, 25 },
+                { Stats.LightningResistance, 25 },
+                { Stats.FireResistance, 25 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
@@ -184,10 +184,10 @@ internal class BarracksOfBalgass : BaseMapInitializer
                 { Stats.DefenseBase, 500 },
                 { Stats.AttackRatePvm, 1200 },
                 { Stats.DefenseRatePvm, 390 },
-                { Stats.PoisonResistance, 25f / 255 },
-                { Stats.IceResistance, 25f / 255 },
-                { Stats.LightningResistance, 25f / 255 },
-                { Stats.FireResistance, 25f / 255 },
+                { Stats.IceResistance, 25 },
+                { Stats.PoisonResistance, 25 },
+                { Stats.LightningResistance, 25 },
+                { Stats.FireResistance, 25 },
             };
 
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
