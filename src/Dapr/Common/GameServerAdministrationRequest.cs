@@ -19,6 +19,9 @@ public sealed class GameServerAdministrationRequest
     /// <summary>Gets or sets the exact character name.</summary>
     public string CharacterName { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the login name of an account.</summary>
+    public string LoginName { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the expected character identifier.</summary>
     public Guid CharacterId { get; set; }
 

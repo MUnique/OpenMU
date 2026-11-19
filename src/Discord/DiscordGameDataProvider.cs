@@ -37,6 +37,8 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
 
     private (DateTime CreatedAtUtc, int Count, IReadOnlyList<CharacterInfo> Ranking)? _rankingCache;
 
+    private (DateTime CreatedAtUtc, IReadOnlyDictionary<Guid, string> Names)? _classNameCache;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DiscordGameDataProvider"/> class.
     /// </summary>
@@ -92,7 +94,8 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
         }
 
         var serverId = await this._friendServer.GetOnlineServerIdAsync(summary.Name).ConfigureAwait(false);
-        return ToInfo(summary, serverId is { } id ? this.GetServerName(id) : null);
+        var classNames = await this.GetClassNamesAsync().ConfigureAwait(false);
+        return ToInfo(summary, classNames, serverId is { } id ? this.GetServerName(id) : null);
     }
 
     /// <inheritdoc />
@@ -140,16 +143,61 @@ public sealed class DiscordGameDataProvider : IDiscordGameDataProvider
             return cache.Ranking;
         }
 
-        using var context = this.CreatePlayerContext();
-        var ranking = (await context.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, count).ConfigureAwait(false))
-            .Select(summary => ToInfo(summary, null))
+        IReadOnlyList<CharacterSummary> summaries;
+        using (var context = this.CreatePlayerContext())
+        {
+            summaries = await context.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, count).ConfigureAwait(false);
+        }
+
+        var classNames = await this.GetClassNamesAsync().ConfigureAwait(false);
+        var ranking = summaries
+            .Select(summary => ToInfo(summary, classNames, null))
             .ToList();
         this._rankingCache = (now, count, ranking);
         return ranking;
     }
 
-    private static CharacterInfo ToInfo(CharacterSummary summary, string? onlineServerName)
-        => new(summary.Name, summary.CharacterClassName, summary.Level, summary.MasterLevel, summary.Resets, onlineServerName);
+    private static CharacterInfo ToInfo(CharacterSummary summary, IReadOnlyDictionary<Guid, string> classNames, string? onlineServerName)
+    {
+        // The entity framework queries only return the identifier of the class, because the classes are configuration.
+        var className = summary.CharacterClassId is { } classId && classNames.TryGetValue(classId, out var name)
+            ? name
+            : summary.CharacterClassName;
+        return new(summary.Name, className, summary.Level, summary.MasterLevel, summary.Resets, onlineServerName);
+    }
+
+    /// <summary>
+    /// Gets the names of the character classes of the game configuration, as values of localized strings,
+    /// so that the commands can translate them into the culture of the bot.
+    /// </summary>
+    /// <returns>The names by the identifiers of the classes.</returns>
+    /// <remarks>
+    /// Only the classes are loaded, not the whole game configuration. They rarely change,
+    /// so they are cached as long as the ranking.
+    /// </remarks>
+    private async ValueTask<IReadOnlyDictionary<Guid, string>> GetClassNamesAsync()
+    {
+        var now = DateTime.UtcNow;
+        if (this._classNameCache is { } cache && now - cache.CreatedAtUtc < RankingCacheDuration)
+        {
+            return cache.Names;
+        }
+
+        var names = new Dictionary<Guid, string>();
+        using (var context = this._persistenceContextProvider.CreateNewTypedContext(typeof(CharacterClass), false))
+        {
+            foreach (var characterClass in await context.GetAsync<CharacterClass>().ConfigureAwait(false))
+            {
+                if (characterClass.Name.Value is { Length: > 0 } name)
+                {
+                    names.TryAdd(characterClass.GetId(), name);
+                }
+            }
+        }
+
+        this._classNameCache = (now, names);
+        return names;
+    }
 
     private IPlayerContext CreatePlayerContext()
     {

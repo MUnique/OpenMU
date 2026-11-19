@@ -2756,6 +2756,39 @@
   <data name="ShopImportRejected" xml:space="preserve">
     <value>The shop was not changed, because the file contains entries which can't be imported: {0}</value>
   </data>
+  <data name="RoleWebManager" xml:space="preserve">
+    <value>Website (selected functions only)</value>
+  </data>
+  <data name="WebsitePermissions" xml:space="preserve">
+    <value>Website functions</value>
+  </data>
+  <data name="WebsitePermissionStatus" xml:space="preserve">
+    <value>Server status</value>
+  </data>
+  <data name="WebsitePermissionRegister" xml:space="preserve">
+    <value>Register accounts</value>
+  </data>
+  <data name="WebsitePermissionRanking" xml:space="preserve">
+    <value>Character ranking</value>
+  </data>
+  <data name="WebsitePermissionMiniGameRanking" xml:space="preserve">
+    <value>Mini game rankings</value>
+  </data>
+  <data name="WebsitePermissionEvents" xml:space="preserve">
+    <value>Event schedule</value>
+  </data>
+  <data name="WebsitePermissionCharacter" xml:space="preserve">
+    <value>Character profiles (equipped items)</value>
+  </data>
+  <data name="WebsitePermissionLogin" xml:space="preserve">
+    <value>Login with game accounts (checks passwords)</value>
+  </data>
+  <data name="WebsitePermissionChangePassword" xml:space="preserve">
+    <value>Change account passwords (requires the current password)</value>
+  </data>
+  <data name="WebsitePermissionCashShopGrant" xml:space="preserve">
+    <value>Grant cash shop coins</value>
+  </data>
   <data name="SocketCountTable" xml:space="preserve">
     <value>Socket count table</value>
   </data>

@@ -7504,6 +7504,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Website (selected functions only).
+        /// </summary>
+        public static string RoleWebManager {
+            get {
+                return ResourceManager.GetString("RoleWebManager", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
@@ -8367,6 +8376,96 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Grant cash shop coins.
+        /// </summary>
+        public static string WebsitePermissionCashShopGrant {
+            get {
+                return ResourceManager.GetString("WebsitePermissionCashShopGrant", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Change account passwords (requires the current password).
+        /// </summary>
+        public static string WebsitePermissionChangePassword {
+            get {
+                return ResourceManager.GetString("WebsitePermissionChangePassword", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Character profiles (equipped items).
+        /// </summary>
+        public static string WebsitePermissionCharacter {
+            get {
+                return ResourceManager.GetString("WebsitePermissionCharacter", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Event schedule.
+        /// </summary>
+        public static string WebsitePermissionEvents {
+            get {
+                return ResourceManager.GetString("WebsitePermissionEvents", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Login with game accounts (checks passwords).
+        /// </summary>
+        public static string WebsitePermissionLogin {
+            get {
+                return ResourceManager.GetString("WebsitePermissionLogin", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mini game rankings.
+        /// </summary>
+        public static string WebsitePermissionMiniGameRanking {
+            get {
+                return ResourceManager.GetString("WebsitePermissionMiniGameRanking", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Character ranking.
+        /// </summary>
+        public static string WebsitePermissionRanking {
+            get {
+                return ResourceManager.GetString("WebsitePermissionRanking", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Register accounts.
+        /// </summary>
+        public static string WebsitePermissionRegister {
+            get {
+                return ResourceManager.GetString("WebsitePermissionRegister", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Website functions.
+        /// </summary>
+        public static string WebsitePermissions {
+            get {
+                return ResourceManager.GetString("WebsitePermissions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Server status.
+        /// </summary>
+        public static string WebsitePermissionStatus {
+            get {
+                return ResourceManager.GetString("WebsitePermissionStatus", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Welcome to the admin panel of OpenMU..
         /// </summary>

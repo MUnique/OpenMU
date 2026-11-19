@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests.Discord;
 
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -15,6 +16,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -27,6 +29,8 @@ public class DiscordGameDataProviderTest
     private const uint GuildRuntimeId = 7;
 
     private readonly Guid _guildId = Guid.NewGuid();
+    private Guid _classId;
+    private IServerProvider _serverProvider = null!;
     private InMemoryPersistenceContextProvider _persistence = null!;
     private Mock<IFriendServer> _friendServer = null!;
     private Mock<IGuildServer> _guildServer = null!;
@@ -67,6 +71,7 @@ public class DiscordGameDataProviderTest
         {
             var characterClass = context.CreateNew<CharacterClass>();
             characterClass.Name = "Blade Knight";
+            this._classId = characterClass.GetId();
             var account = context.CreateNew<Account>();
             account.LoginName = "hero";
             var character = context.CreateNew<Character>();
@@ -77,6 +82,7 @@ public class DiscordGameDataProviderTest
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
+        this._serverProvider = serverProvider.Object;
         this._provider = new DiscordGameDataProvider(serverProvider.Object, persistence, this._friendServer.Object, this._guildServer.Object, this._plugInManager, () => TimeZoneInfo.Utc);
     }
 
@@ -138,6 +144,33 @@ public class DiscordGameDataProviderTest
         var ranking = await this._provider.GetRankingAsync(10).ConfigureAwait(false);
 
         Assert.That(ranking.Select(c => c.Name), Is.EqualTo(new[] { "Hero" }));
+    }
+
+    /// <summary>
+    /// Tests that the class names are resolved from the configuration, because the entity framework queries
+    /// only return the identifier of the class; a summary with an unknown class keeps its name.
+    /// </summary>
+    [Test]
+    public async Task ClassNamesAreResolvedFromTheConfigurationAsync()
+    {
+        var unknownClassId = Guid.NewGuid();
+        var playerContext = new Mock<IPlayerContext>();
+        playerContext
+            .Setup(c => c.GetCharacterRankingAsync(Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, 10, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[] { new CharacterSummary("Hero", string.Empty, 400, 0, 0, this._classId), new CharacterSummary("Stranger", "Unknown", 1, 0, 0, unknownClassId) });
+        playerContext
+            .Setup(c => c.GetCharacterSummaryAsync("Hero", Stats.Level.Id, Stats.MasterLevel.Id, Stats.Resets.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CharacterSummary("Hero", string.Empty, 400, 0, 0, this._classId));
+        var persistence = new Mock<IPersistenceContextProvider>();
+        persistence.Setup(p => p.CreateNewPlayerContext(It.IsAny<GameConfiguration>())).Returns(playerContext.Object);
+        persistence.Setup(p => p.CreateNewTypedContext(typeof(CharacterClass), false, null)).Returns(() => this._persistence.CreateNewTypedContext(typeof(CharacterClass), false));
+        var provider = new DiscordGameDataProvider(this._serverProvider, persistence.Object, this._friendServer.Object, this._guildServer.Object, this._plugInManager, () => TimeZoneInfo.Utc);
+
+        var ranking = await provider.GetRankingAsync(10).ConfigureAwait(false);
+        var character = await provider.GetCharacterAsync("Hero").ConfigureAwait(false);
+
+        Assert.That(ranking.Select(c => (c.Name, c.ClassName)), Is.EqualTo(new[] { ("Hero", "Blade Knight"), ("Stranger", "Unknown") }));
+        Assert.That(character?.ClassName, Is.EqualTo("Blade Knight"));
     }
 
     /// <summary>
