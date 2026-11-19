@@ -71,6 +71,16 @@ public interface IGameServerAdministration : IGameServerPluginOperations
     /// </remarks>
     ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(CancellationToken cancellationToken);
 
+    /// <summary>Determines whether a character of the account is offline leveling on this game server.</summary>
+    /// <param name="loginName">The login name of the account.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the account has an active offline leveling character on this game server.</returns>
+    /// <remarks>
+    /// The account of an offline leveling character is logged off from the login server, so the login server
+    /// doesn't know it as online anymore; only the game server which runs the character knows about it.
+    /// </remarks>
+    ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken);
+
     /// <summary>Force-starts or restarts an enabled periodic mini game.</summary>
     /// <param name="eventType">The invariant mini game type.</param>
     /// <param name="restart">Whether an already running event may be removed first.</param>

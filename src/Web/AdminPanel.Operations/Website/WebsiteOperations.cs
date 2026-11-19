@@ -15,6 +15,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
+using MUnique.OpenMU.Web.AdminPanel.API;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
 
 /// <summary>
@@ -32,6 +33,8 @@ using MUnique.OpenMU.Web.AdminPanel.Auth;
 /// <param name="accounts">The account operations, which the registration shares with the admin panel.</param>
 /// <param name="rankingCache">The cache of the rankings.</param>
 /// <param name="miniGames">The mini game operations, which provide the leaderboards of the admin panel.</param>
+/// <param name="loginServer">The login server, which knows the online accounts.</param>
+/// <param name="loginThrottle">The limit of the failed logins.</param>
 /// <param name="logger">The logger.</param>
 /// <param name="executor">The authorization and audit service.</param>
 public sealed class WebsiteOperations(
@@ -41,6 +44,8 @@ public sealed class WebsiteOperations(
     AccountWriteOperations accounts,
     WebsiteRankingCache rankingCache,
     MiniGameReadOperations miniGames,
+    ILoginServer loginServer,
+    WebsiteLoginThrottle loginThrottle,
     ILogger<WebsiteOperations> logger,
     AdminOperationExecutor executor)
 {
@@ -278,8 +283,89 @@ public sealed class WebsiteOperations(
             equippedItems);
     }
 
+    /// <summary>Checks the login name and password of a game account, for a login at the website.</summary>
+    /// <param name="loginName">The login name.</param>
+    /// <param name="password">The password; it's never logged or audited.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result, with the account and its characters if the login succeeded.</returns>
+    /// <remarks>
+    /// A wrong login name and a wrong password give the same answer. After too many failed logins, the account is
+    /// locked out for the website for a while, see <see cref="WebsiteLoginThrottle"/>; the game itself is not affected.
+    /// The website keeps the login in its own session: this server doesn't issue a token, and the website must not store the password.
+    /// </remarks>
+    [AdminOperation("WebManager")]
+    [NotExposedToAgents("Checks passwords of players for websites; agents never handle player credentials.")]
+    public async ValueTask<WebsiteLoginResult> LoginAsync(string loginName, string password, CancellationToken cancellationToken)
+    {
+        var actor = await executor.RequireOperationAsync(AdminRoles.WebManager, WebsitePermissions.Login, cancellationToken).ConfigureAwait(false);
+        if (!IsValidLogin(loginName, password))
+        {
+            return new WebsiteLoginResult(WebsiteLoginStatus.Failed, null);
+        }
+
+        var gameConfiguration = await configurations.GetOwnerAsync(Guid.Empty, cancellationToken).ConfigureAwait(false);
+        using var context = persistence.CreateNewPlayerContext(gameConfiguration);
+        if (!loginThrottle.TryBeginAttempt(loginName, DateTime.UtcNow))
+        {
+            return new WebsiteLoginResult(WebsiteLoginStatus.LockedOut, null);
+        }
+
+        AccountState? state;
+        Account? account;
+        try
+        {
+            state = await context.AuthenticateAsync(loginName, password, cancellationToken).ConfigureAwait(false);
+            account = state is null ? null : await context.GetAccountByLoginNameAsync(loginName, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            // The password wasn't checked, so the reserved check doesn't count as a failed login.
+            loginThrottle.CancelAttempt(loginName);
+            throw;
+        }
+
+        var succeeded = state is not null && account is { IsTemplate: false };
+        if (loginThrottle.CompleteAttempt(loginName, succeeded, DateTime.UtcNow))
+        {
+            logger.LogWarning("The website login of account {LoginName} is locked out after {Failures} failed logins through API key {ApiKey}.", loginName, WebsiteLoginThrottle.MaximumFailures, actor.Name);
+        }
+
+        if (!succeeded)
+        {
+            return new WebsiteLoginResult(WebsiteLoginStatus.Failed, null);
+        }
+
+        var characters = account!.Characters
+            .OrderBy(character => character.CharacterSlot)
+            .Select(character => new WebsiteCharacterSummary(
+                character.Name,
+                character.CharacterClass?.Name.ValueInNeutralLanguage ?? string.Empty,
+                (int)GetAttribute(character, Stats.Level),
+                (int)GetAttribute(character, Stats.MasterLevel),
+                (int)GetAttribute(character, Stats.Resets),
+                character.Inventory?.Money ?? 0,
+                character.CurrentMap?.Number,
+                character.CurrentMap?.Name.ValueInNeutralLanguage,
+                character.PositionX,
+                character.PositionY))
+            .ToList();
+        var isOnline = (await loginServer.GetSnapshotAsync().ConfigureAwait(false)).Keys.Contains(account.LoginName, StringComparer.OrdinalIgnoreCase);
+        var isOfflineLeveling = await this.IsOfflineLevelingAsync(account.LoginName, cancellationToken).ConfigureAwait(false);
+        return new WebsiteLoginResult(WebsiteLoginStatus.Succeeded, new WebsiteAccount(account.LoginName, state!.Value.ToString(), isOnline, isOfflineLeveling, characters));
+    }
+
     private static float GetAttribute(Character character, AttributeDefinition definition)
         => character.Attributes.FirstOrDefault(a => a.Definition.Id == definition.Id)?.Value ?? 0;
+
+    /// <summary>
+    /// Determines whether a login name and a password can belong to an account at all, before the password is checked.
+    /// </summary>
+    /// <param name="loginName">The login name.</param>
+    /// <param name="password">The password.</param>
+    /// <returns><c>true</c>, if both are present and not longer than the game client allows.</returns>
+    private static bool IsValidLogin(string? loginName, string? password)
+        => !string.IsNullOrEmpty(loginName) && loginName.Length <= AccountRegistration.LoginNameMaximumLength
+           && !string.IsNullOrEmpty(password) && password.Length <= AccountRegistration.PasswordMaximumLength;
 
     /// <summary>
     /// Gets the classes of the line of a character class, which are connected by their <see cref="CharacterClass.NextGenerationClass"/>.
@@ -366,5 +452,32 @@ public sealed class WebsiteOperations(
         return guildIds
             .Where(pair => guildNames.ContainsKey(pair.Value))
             .ToDictionary(pair => pair.Key, pair => guildNames[pair.Value]);
+    }
+
+    /// <summary>
+    /// Determines whether a character of the account is offline leveling on one of the started game servers.
+    /// </summary>
+    /// <param name="loginName">The login name of the account.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if a game server runs an offline leveling character of the account.</returns>
+    private async ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
+    {
+        foreach (var server in servers.Servers.OfType<IGameServer>().Where(s => s.ServerState == ServerState.Started).OfType<IGameServerAdministration>())
+        {
+            try
+            {
+                if (await server.IsOfflineLevelingAsync(loginName, cancellationToken).ConfigureAwait(false))
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // A game server which doesn't answer must not prevent the login.
+                logger.LogWarning(ex, "Could not check the offline leveling of account {LoginName} for the website.", loginName);
+            }
+        }
+
+        return false;
     }
 }

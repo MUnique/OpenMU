@@ -79,6 +79,14 @@ public sealed class GameServerAdministrationController(IGameServer server, Admin
     public ValueTask<IReadOnlyList<ScheduledEventInfo>> GetScheduledEventsAsync(GameServerAdministrationRequest request, CancellationToken cancellationToken)
         => this.Resolve(request).GetScheduledEventsAsync(cancellationToken);
 
+    /// <summary>Determines whether a character of the account is offline leveling.</summary>
+    /// <param name="request">The request arguments.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c>, if the account has an active offline leveling character.</returns>
+    [HttpPost(nameof(IGameServerAdministration.IsOfflineLevelingAsync))]
+    public ValueTask<bool> IsOfflineLevelingAsync(GameServerAdministrationRequest request, CancellationToken cancellationToken)
+        => this.Resolve(request).IsOfflineLevelingAsync(request.LoginName, cancellationToken);
+
     /// <summary>Requests an event start with duplicate-delivery protection.</summary>
     /// <param name="request">The request arguments.</param>
     /// <returns>The confirmed result.</returns>

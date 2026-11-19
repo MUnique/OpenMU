@@ -8287,6 +8287,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Login with game accounts (checks passwords).
+        /// </summary>
+        public static string WebsitePermissionLogin {
+            get {
+                return ResourceManager.GetString("WebsitePermissionLogin", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Mini game rankings.
         /// </summary>
         public static string WebsitePermissionMiniGameRanking {

@@ -272,6 +272,149 @@ public class WebsiteOperationsTests
         stoppedAdministration.Verify(a => a.GetScheduledEventsAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    /// <summary>
+    /// A login returns the account with its characters; a wrong password and an unknown account look the same.
+    /// After too many failures, even the right password is refused for a while.
+    /// </summary>
+    [Test]
+    public async Task LoginChecksPasswordAndLocksOutAsync()
+    {
+        var persistence = new InMemoryPersistenceContextProvider();
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var account = context.CreateNew<Account>();
+            account.LoginName = "player";
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword("right1");
+            var character = context.CreateNew<Character>();
+            character.Name = "Hero";
+            character.Attributes.Add(new MUnique.OpenMU.Persistence.BasicModel.StatAttribute(Stats.Level, 123));
+            character.Inventory = context.CreateNew<ItemStorage>();
+            character.Inventory.Money = 5000;
+            character.PositionX = 130;
+            character.PositionY = 120;
+            account.Characters.Add(character);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var operations = CreateOperations(WebManager(WebsitePermissions.Login), persistence, gameConfiguration);
+
+        var success = await operations.LoginAsync("player", "right1", CancellationToken.None).ConfigureAwait(false);
+        Assert.That(success.Status, Is.EqualTo(WebsiteLoginStatus.Succeeded));
+        Assert.That(success.Account!.Characters.Select(c => (c.Name, c.Level, c.Money, c.PositionX, c.PositionY)), Is.EqualTo(new[] { ("Hero", 123, 5000, 130, 120) }));
+        Assert.That(success.Account.IsOnline, Is.False);
+        Assert.That((await operations.LoginAsync("nobody", "right1", CancellationToken.None).ConfigureAwait(false)).Status, Is.EqualTo(WebsiteLoginStatus.Failed));
+
+        for (var i = 0; i < WebsiteLoginThrottle.MaximumFailures; i++)
+        {
+            Assert.That((await operations.LoginAsync("player", "wrong1", CancellationToken.None).ConfigureAwait(false)).Status, Is.EqualTo(WebsiteLoginStatus.Failed));
+        }
+
+        var locked = await operations.LoginAsync("player", "right1", CancellationToken.None).ConfigureAwait(false);
+        Assert.That(locked.Status, Is.EqualTo(WebsiteLoginStatus.LockedOut));
+        Assert.That(locked.Account, Is.Null);
+    }
+
+    /// <summary>
+    /// The login tells the player whether a character of the account is offline leveling, which only the game server knows.
+    /// </summary>
+    [Test]
+    public async Task LoginTellsOfflineLevelingAsync()
+    {
+        var persistence = new InMemoryPersistenceContextProvider();
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var account = context.CreateNew<Account>();
+            account.LoginName = "player";
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword("right1");
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var server = new Mock<IGameServer>();
+        server.Setup(s => s.ServerState).Returns(ServerState.Started);
+        server.As<IGameServerAdministration>().Setup(a => a.IsOfflineLevelingAsync("player", It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        var operations = CreateOperations(WebManager(WebsitePermissions.Login), persistence, gameConfiguration, server.Object);
+
+        var result = await operations.LoginAsync("player", "right1", CancellationToken.None).ConfigureAwait(false);
+
+        Assert.That(result.Account!.IsOfflineLeveling, Is.True);
+        Assert.That(result.Account.IsOnline, Is.False);
+    }
+
+    /// <summary>
+    /// The lockout lasts for the window from the failed login which started it, not from the first failed login,
+    /// and a successful login forgets the failures.
+    /// </summary>
+    [Test]
+    public void LoginThrottleLocksOutForWindowFromLockout()
+    {
+        var throttle = new WebsiteLoginThrottle();
+        var start = new DateTime(2026, 11, 18, 12, 0, 0, DateTimeKind.Utc);
+        var lockoutStart = start.AddMinutes(14);
+        for (var i = 0; i < WebsiteLoginThrottle.MaximumFailures; i++)
+        {
+            var time = i == WebsiteLoginThrottle.MaximumFailures - 1 ? lockoutStart : start.AddMinutes(i);
+            Assert.That(throttle.TryBeginAttempt("Player", time), Is.True);
+            Assert.That(throttle.CompleteAttempt("Player", false, time), Is.EqualTo(i == WebsiteLoginThrottle.MaximumFailures - 1));
+        }
+
+        Assert.That(throttle.TryBeginAttempt("player", start.AddMinutes(20)), Is.False, "Login names are compared case insensitive.");
+        Assert.That(throttle.GetRetryAfter("player", start.AddMinutes(20)), Is.EqualTo(TimeSpan.FromMinutes(9)));
+        Assert.That(throttle.TryBeginAttempt("player", lockoutStart + WebsiteLoginThrottle.Window), Is.True);
+
+        Assert.That(throttle.TryBeginAttempt("other", start), Is.True);
+        throttle.CompleteAttempt("other", false, start);
+        Assert.That(throttle.TryBeginAttempt("other", start), Is.True);
+        throttle.CompleteAttempt("other", true, start);
+        Assert.That(throttle.GetRetryAfter("other", start), Is.EqualTo(TimeSpan.Zero));
+    }
+
+    /// <summary>
+    /// The password checks which are still running count against the limit, and a cancelled check doesn't count as a failure.
+    /// </summary>
+    [Test]
+    public void LoginThrottleCountsRunningAttempts()
+    {
+        var throttle = new WebsiteLoginThrottle();
+        var now = new DateTime(2026, 11, 18, 12, 0, 0, DateTimeKind.Utc);
+        for (var i = 0; i < WebsiteLoginThrottle.MaximumFailures; i++)
+        {
+            Assert.That(throttle.TryBeginAttempt("player", now), Is.True);
+        }
+
+        Assert.That(throttle.TryBeginAttempt("player", now), Is.False);
+        Assert.That(throttle.GetRetryAfter("player", now), Is.EqualTo(WebsiteLoginThrottle.Window));
+        throttle.CancelAttempt("player");
+        Assert.That(throttle.TryBeginAttempt("player", now), Is.True);
+    }
+
+    /// <summary>
+    /// Parallel wrong logins can't check more passwords than the limit allows; the others are locked out right away.
+    /// </summary>
+    [Test]
+    public async Task ParallelLoginsCantBypassThrottleAsync()
+    {
+        const int requests = 20;
+        var persistence = new InMemoryPersistenceContextProvider();
+        GameConfiguration gameConfiguration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        using (var context = persistence.CreateNewPlayerContext(gameConfiguration))
+        {
+            var account = context.CreateNew<Account>();
+            account.LoginName = "player";
+            account.PasswordHash = BCrypt.Net.BCrypt.HashPassword("right1");
+            await context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var operations = CreateOperations(WebManager(WebsitePermissions.Login), persistence, gameConfiguration);
+
+        var results = await Task.WhenAll(Enumerable.Range(0, requests).Select(_ => Task.Run(async () => (await operations.LoginAsync("player", "wrong1", CancellationToken.None).ConfigureAwait(false)).Status))).ConfigureAwait(false);
+
+        Assert.That(results.Count(status => status == WebsiteLoginStatus.Failed), Is.LessThanOrEqualTo(WebsiteLoginThrottle.MaximumFailures), "Each failed login is a checked password.");
+        Assert.That(results.Count(status => status == WebsiteLoginStatus.LockedOut), Is.GreaterThanOrEqualTo(requests - WebsiteLoginThrottle.MaximumFailures));
+        Assert.That((await operations.LoginAsync("player", "right1", CancellationToken.None).ConfigureAwait(false)).Status, Is.EqualTo(WebsiteLoginStatus.LockedOut));
+    }
+
     private static CharacterClass AddClass(IContext context, GameConfiguration gameConfiguration, byte number, string name)
     {
         var characterClass = context.CreateNew<CharacterClass>();
@@ -327,6 +470,8 @@ public class WebsiteOperationsTests
         var executor = AdminOperationTestServices.CreateExecutor("api", actor: () => actor);
         var accounts = new AccountWriteOperations(persistence, configurations.Object, Mock.Of<ILoginServer>(), executor);
         var miniGames = new MiniGameReadOperations(persistence, configurations.Object);
-        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, NullLogger<WebsiteOperations>.Instance, executor);
+        var loginServer = new Mock<ILoginServer>();
+        loginServer.Setup(l => l.GetSnapshotAsync()).ReturnsAsync(new Dictionary<string, byte>());
+        return new WebsiteOperations(serverProvider.Object, persistence, configurations.Object, accounts, rankingCache, miniGames, loginServer.Object, new WebsiteLoginThrottle(), NullLogger<WebsiteOperations>.Instance, executor);
     }
 }

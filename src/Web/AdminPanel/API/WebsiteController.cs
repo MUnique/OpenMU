@@ -23,10 +23,11 @@ using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 /// The caller is meant to be the server side of the website, which keeps the key to itself.
 /// </remarks>
 /// <param name="operations">The website operations.</param>
+/// <param name="loginThrottle">The limit of the failed logins, which tells how long a lockout lasts.</param>
 [ApiController]
 [Route("api/website")]
 [Authorize(Policy = AdminPolicies.ApiKeyWebManager)]
-public sealed class WebsiteController(WebsiteOperations operations) : ControllerBase
+public sealed class WebsiteController(WebsiteOperations operations, WebsiteLoginThrottle loginThrottle) : ControllerBase
 {
     /// <summary>
     /// Gets the state of the game servers and the number of players.
@@ -101,5 +102,42 @@ public sealed class WebsiteController(WebsiteOperations operations) : Controller
         {
             return this.NotFound();
         }
+    }
+
+    /// <summary>
+    /// Checks the login name and password of a game account, for a login at the website.
+    /// </summary>
+    /// <param name="request">The login name and password.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>
+    /// <c>200</c> with the account and its characters, when the login succeeded;
+    /// <c>401</c>, when the login name or the password is wrong;
+    /// <c>429</c> with the remaining time of the lockout in <c>Retry-After</c>, when the account had too many failed logins recently.
+    /// </returns>
+    [HttpPost("login")]
+    public async Task<IActionResult> LoginAsync([FromBody] WebsiteLoginRequest request, CancellationToken cancellationToken)
+    {
+        var result = await operations.LoginAsync(request.LoginName, request.Password, cancellationToken).ConfigureAwait(false);
+        switch (result.Status)
+        {
+            case WebsiteLoginStatus.Succeeded:
+                return this.Ok(result.Account);
+            case WebsiteLoginStatus.LockedOut:
+                this.SetRetryAfter(request.LoginName);
+                return this.StatusCode(StatusCodes.Status429TooManyRequests, new { status = result.Status.ToString() });
+            default:
+                return this.StatusCode(StatusCodes.Status401Unauthorized, new { status = result.Status.ToString() });
+        }
+    }
+
+    /// <summary>
+    /// Sets the <c>Retry-After</c> header of a locked out account to the remaining time of its lockout.
+    /// </summary>
+    /// <param name="loginName">The login name of the account.</param>
+    private void SetRetryAfter(string loginName)
+    {
+        // Rounded up, so that the website doesn't retry a moment before the lockout ends.
+        var seconds = (int)Math.Ceiling(loginThrottle.GetRetryAfter(loginName, DateTime.UtcNow).TotalSeconds);
+        this.Response.Headers.RetryAfter = Math.Max(1, seconds).ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 }

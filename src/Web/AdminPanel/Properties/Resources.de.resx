@@ -2656,4 +2656,7 @@
   <data name="WebsitePermissionCharacter" xml:space="preserve">
     <value>Charakterprofile (ausgerüstete Gegenstände)</value>
   </data>
+  <data name="WebsitePermissionLogin" xml:space="preserve">
+    <value>Anmeldung mit Spielkonten (prüft Passwörter)</value>
+  </data>
 </root>

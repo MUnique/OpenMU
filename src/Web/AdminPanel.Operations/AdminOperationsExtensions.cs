@@ -49,6 +49,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<CashShopOperations>();
         services.AddScoped<WebsiteOperations>();
         services.AddSingleton<WebsiteRankingCache>();
+        services.AddSingleton<WebsiteLoginThrottle>();
         services.AddScoped<CastleSiegeOperations>();
         services.AddScoped<LogOperations>();
         services.AddScoped<AuditReadOperations>();

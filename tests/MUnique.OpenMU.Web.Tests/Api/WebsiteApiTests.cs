@@ -16,6 +16,7 @@ using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.AdminAuth;
 using MUnique.OpenMU.Web.AdminPanel.Auth;
+using MUnique.OpenMU.Web.AdminPanel.Operations.Website;
 using MUnique.OpenMU.Web.Tests.Mcp;
 
 /// <summary>Exercises the website API with real API key authentication, persistence and auditing.</summary>
@@ -165,6 +166,24 @@ public sealed class WebsiteApiTests : System.IDisposable
         Assert.That(template.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
+    /// <summary>A locked out login answers <c>429</c> and tells the remaining time of the lockout.</summary>
+    [Test]
+    public async Task LockedOutLoginTellsRemainingTimeAsync()
+    {
+        await this.UseWebsiteKeyAsync(WebsitePermissions.Login + "," + WebsitePermissions.Register).ConfigureAwait(false);
+        using var registration = await this._http.PostAsJsonAsync("/api/website/accounts", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+        for (var i = 0; i < WebsiteLoginThrottle.MaximumFailures; i++)
+        {
+            using var failed = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "visitor", password = "wrong1" }).ConfigureAwait(false);
+            Assert.That(failed.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        using var locked = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+
+        Assert.That(locked.StatusCode, Is.EqualTo(HttpStatusCode.TooManyRequests));
+        Assert.That(locked.Headers.RetryAfter?.Delta, Is.GreaterThan(TimeSpan.Zero).And.LessThanOrEqualTo(WebsiteLoginThrottle.Window));
+    }
+
     private static IEnumerable<string> GetPropertyNames(JsonElement element)
     {
         return element.ValueKind switch
@@ -196,6 +215,27 @@ public sealed class WebsiteApiTests : System.IDisposable
         item.ItemSlot = 0;
         character.Inventory.Items.Add(item);
         await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>The login answers with the account, or the same status for a wrong password and an unknown account.</summary>
+    [Test]
+    public async Task LoginAnswersAsync()
+    {
+        await this.UseWebsiteKeyAsync(WebsitePermissions.Login + "," + WebsitePermissions.Register).ConfigureAwait(false);
+        using var registration = await this._http.PostAsJsonAsync("/api/website/accounts", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+
+        using var success = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+        using var wrongPassword = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "visitor", password = "wrong1" }).ConfigureAwait(false);
+        using var unknown = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "nobody", password = "secret1" }).ConfigureAwait(false);
+
+        Assert.That(success.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        Assert.That(await success.Content.ReadAsStringAsync().ConfigureAwait(false), Does.Contain("visitor").And.Not.Contain("secret1"));
+        Assert.That(wrongPassword.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        Assert.That(unknown.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        Mock.Get(this._host.App.Services.GetRequiredService<ILoginServer>()).Setup(l => l.GetSnapshotAsync()).ReturnsAsync(new Dictionary<string, byte> { ["visitor"] = 0 });
+        using var online = await this._http.PostAsJsonAsync("/api/website/login", new { loginName = "visitor", password = "secret1" }).ConfigureAwait(false);
+        Assert.That(await online.Content.ReadAsStringAsync().ConfigureAwait(false), Does.Contain("\"isOnline\":true"));
+        Assert.That(await unknown.Content.ReadAsStringAsync().ConfigureAwait(false), Is.EqualTo(await wrongPassword.Content.ReadAsStringAsync().ConfigureAwait(false)));
     }
 
     private async Task UseWebsiteKeyAsync(string allowedFunctions)

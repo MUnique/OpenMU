@@ -47,6 +47,10 @@ public sealed partial class GameServerClient : IGameServerAdministration
         => this.InvokeAdministrationAsync<IReadOnlyList<ScheduledEventInfo>>(nameof(this.GetScheduledEventsAsync), new(), cancellationToken);
 
     /// <inheritdoc />
+    public ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
+        => this.InvokeAdministrationAsync<bool>(nameof(this.IsOfflineLevelingAsync), new() { LoginName = loginName }, cancellationToken);
+
+    /// <inheritdoc />
     public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)
         => this.InvokeAdministrationAsync<GameServerAdminResult>(nameof(this.StartEventAsync), new() { EventType = eventType, Restart = restart, ExpectedEvent = expectedEvent }, cancellationToken);
 

@@ -2780,4 +2780,7 @@
   <data name="WebsitePermissionCharacter" xml:space="preserve">
     <value>Character profiles (equipped items)</value>
   </data>
+  <data name="WebsitePermissionLogin" xml:space="preserve">
+    <value>Login with game accounts (checks passwords)</value>
+  </data>
 </root>

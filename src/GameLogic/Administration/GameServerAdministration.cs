@@ -108,6 +108,13 @@ public sealed partial class GameServerAdministration(IGameContext context) : IGa
     }
 
     /// <inheritdoc />
+    public ValueTask<bool> IsOfflineLevelingAsync(string loginName, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(context.OfflinePlayerManager.IsActive(loginName));
+    }
+
+    /// <inheritdoc />
     public ValueTask<GameServerAdminResult> StartEventAsync(string eventType, bool restart, LiveEventInfo expectedEvent, CancellationToken cancellationToken)
         => Enum.TryParse<MiniGameType>(eventType, false, out var type) && Enum.IsDefined(type)
             ? GameMasterEventActions.StartAsync(context, type, restart, cancellationToken, expectedEvent)

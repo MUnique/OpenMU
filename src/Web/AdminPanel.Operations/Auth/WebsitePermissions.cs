@@ -34,6 +34,9 @@ public static class WebsitePermissions
     /// <summary>Gets the function which shows the public profile of a character, with its equipped items.</summary>
     public static string Character => "website_character";
 
+    /// <summary>Gets the function which checks the password of a game account and lists its characters, for a login on the website.</summary>
+    public static string Login => "website_login";
+
     /// <summary>
     /// Gets all functions of the website API.
     /// </summary>
@@ -45,5 +48,6 @@ public static class WebsitePermissions
         MiniGameRanking,
         Events,
         Character,
+        Login,
     ];
 }
