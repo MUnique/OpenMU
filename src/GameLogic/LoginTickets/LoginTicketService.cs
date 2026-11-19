@@ -69,19 +69,15 @@ public sealed class LoginTicketService : ILoginTicketService
 
         // Cleaned up while issuing, so the table only holds the tickets of the last lifetime.
         await context.DeleteExpiredLoginTicketsAsync(now, cancellationToken).ConfigureAwait(false);
-        if (await context.CountUnexpiredLoginTicketsAsync(accountId, now, cancellationToken).ConfigureAwait(false) >= MaximumTicketsPerLifetime)
+
+        var token = System.Buffers.Text.Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(TokenBytes));
+        var expiresAt = now.Add(this.Lifetime);
+        if (!await context.TryAddLoginTicketAsync(accountId, HashToken(token), now, expiresAt, MaximumTicketsPerLifetime, cancellationToken).ConfigureAwait(false))
         {
             return null;
         }
 
-        var token = System.Buffers.Text.Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(TokenBytes));
-        var ticket = context.CreateNew<LoginTicket>();
-        ticket.AccountId = accountId;
-        ticket.TokenHash = HashToken(token);
-        ticket.CreatedAt = now;
-        ticket.ExpiresAt = now.Add(this.Lifetime);
-        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return new IssuedLoginTicket(token, ticket.ExpiresAt);
+        return new IssuedLoginTicket(token, expiresAt);
     }
 
     /// <inheritdoc />

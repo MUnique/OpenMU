@@ -16,6 +16,11 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
 {
     /// <summary>
+    /// The first key of the advisory locks of the login ticket issuance (ASCII "LTIK"), the second is the account's.
+    /// </summary>
+    private const int LoginTicketLockClass = 0x4C54494B;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PlayerContext" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -534,15 +539,52 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
-    public async ValueTask<int> CountUnexpiredLoginTicketsAsync(
+    public async ValueTask<bool> TryAddLoginTicketAsync(
         Guid accountId,
-        DateTime nowUtc,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
         CancellationToken cancellationToken = default)
     {
         using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
-        return await this.Context.Set<LoginTicket>()
-            .CountAsync(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > nowUtc, cancellationToken)
+        await using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+
+        // Concurrent inserts don't see each other, so the issuers of an account take turns until the commit.
+        // Accounts whose keys collide just take turns, too.
+        var accountKey = BitConverter.ToInt32(accountId.ToByteArray(), 0);
+        await this.Context.Database
+            .ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock({LoginTicketLockClass}, {accountKey})", cancellationToken)
             .ConfigureAwait(false);
+        var unexpired = await this.Context.Set<LoginTicket>()
+            .CountAsync(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > createdAtUtc, cancellationToken)
+            .ConfigureAwait(false);
+        if (unexpired >= maximumUnexpired)
+        {
+            return false;
+        }
+
+        var ticket = new LoginTicket
+        {
+            Id = GuidV7.NewGuid(),
+            AccountId = accountId,
+            TokenHash = tokenHash,
+            CreatedAt = createdAtUtc,
+            ExpiresAt = expiresAtUtc,
+        };
+        this.Context.Add(ticket);
+        try
+        {
+            await this.Context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            // Not left tracked: the context's own saves don't save it again, also if this one failed.
+            this.Context.Entry(ticket).State = EntityState.Detached;
+        }
+
+        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        return true;
     }
 
     /// <inheritdoc />

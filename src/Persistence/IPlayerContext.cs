@@ -352,15 +352,22 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Counts the login tickets of an account which aren't expired yet, used or not.
+    /// Atomically adds a login ticket, unless the account already has the maximum of unexpired tickets, used or not.
+    /// Concurrent calls for the same account are serialized, even across servers, so they never exceed the maximum.
     /// </summary>
     /// <param name="accountId">The persistent account identifier.</param>
-    /// <param name="nowUtc">The current UTC time.</param>
+    /// <param name="tokenHash">The hash of the ticket's token.</param>
+    /// <param name="createdAtUtc">The UTC time of the issue; tickets expiring after it count against the maximum.</param>
+    /// <param name="expiresAtUtc">The UTC time when the ticket expires.</param>
+    /// <param name="maximumUnexpired">The maximum number of unexpired tickets of the account.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The number of tickets.</returns>
-    ValueTask<int> CountUnexpiredLoginTicketsAsync(
+    /// <returns><c>true</c>, if the ticket was added; Otherwise, <c>false</c>, if the account has the maximum already.</returns>
+    ValueTask<bool> TryAddLoginTicketAsync(
         Guid accountId,
-        DateTime nowUtc,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
         CancellationToken cancellationToken = default);
 
     /// <summary>

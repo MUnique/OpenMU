@@ -135,6 +135,19 @@ public class LoginTicketServiceTest
     }
 
     /// <summary>
+    /// Tests that concurrent issuers for the same account get no more tickets than the maximum together.
+    /// </summary>
+    [Test]
+    public async Task ConcurrentIssuersStayWithinTheLimitAsync()
+    {
+        var tickets = await Task.WhenAll(Enumerable.Range(0, 16)
+            .Select(_ => Task.Run(() => this._service.IssueAsync(this._accountId).AsTask()))).ConfigureAwait(false);
+
+        Assert.That(tickets.Count(ticket => ticket is not null), Is.EqualTo(LoginTicketService.MaximumTicketsPerLifetime));
+        Assert.That(await this.GetTicketsAsync().ConfigureAwait(false), Has.Count.EqualTo(LoginTicketService.MaximumTicketsPerLifetime));
+    }
+
+    /// <summary>
     /// Tests that the lifetime of the tickets can be configured.
     /// </summary>
     [Test]

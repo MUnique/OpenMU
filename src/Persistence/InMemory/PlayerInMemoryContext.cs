@@ -411,15 +411,29 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
-    public async ValueTask<int> CountUnexpiredLoginTicketsAsync(
+    public async ValueTask<bool> TryAddLoginTicketAsync(
         Guid accountId,
-        DateTime nowUtc,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
         CancellationToken cancellationToken = default)
     {
+        using var l = await LinkLocks.GetValue(this.Provider, _ => new AsyncLock()).LockAsync(cancellationToken).ConfigureAwait(false);
         var tickets = await this.Provider.GetRepository<LoginTicket>()
             .GetAllAsync(cancellationToken)
             .ConfigureAwait(false);
-        return tickets.Count(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > nowUtc);
+        if (tickets.Count(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > createdAtUtc) >= maximumUnexpired)
+        {
+            return false;
+        }
+
+        var ticket = this.CreateNew<LoginTicket>();
+        ticket.AccountId = accountId;
+        ticket.TokenHash = tokenHash;
+        ticket.CreatedAt = createdAtUtc;
+        ticket.ExpiresAt = expiresAtUtc;
+        return true;
     }
 
     /// <inheritdoc />
