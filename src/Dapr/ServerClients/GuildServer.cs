@@ -216,6 +216,20 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> TransferLeadershipAsync(uint guildId, string characterName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<GuildLeadershipTransferArguments, bool>(this._targetAppId, GetMethodName(nameof(this.TransferLeadershipAsync)), new GuildLeadershipTransferArguments(guildId, characterName)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when sending a guild leadership transfer.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
     public ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.

@@ -190,6 +190,98 @@ public class GuildServerTest : GuildTestBase
     }
 
     /// <summary>
+    /// Tests that the leadership moves to the chosen member, the old master becomes a normal member,
+    /// both are persisted and published to the game server of the online members.
+    /// </summary>
+    [Test]
+    public async ValueTask TransferLeadershipMovesPostAndDemotesOldMasterAsync()
+    {
+        const byte serverId = 1;
+        const string heirName = "Heir";
+        var heirId = Guid.NewGuid();
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(guildId, heirId, heirName, GuildPosition.AssistantMaster, serverId).ConfigureAwait(false);
+
+        var result = await this.GuildServer.TransferLeadershipAsync(guildId, heirName).ConfigureAwait(false);
+
+        var list = await this.GuildServer.GetGuildListAsync(guildId).ConfigureAwait(false);
+        Assert.Multiple(async () =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(await this.GuildServer.GetGuildPositionAsync(heirId).ConfigureAwait(false), Is.EqualTo(GuildPosition.GuildMaster));
+            Assert.That(await this.GuildServer.GetGuildPositionAsync(this.GuildMaster.Id).ConfigureAwait(false), Is.EqualTo(GuildPosition.NormalMember));
+            Assert.That(list.Single(m => m.PlayerName == heirName).PlayerPosition, Is.EqualTo(GuildPosition.GuildMaster));
+            Assert.That(list.Single(m => m.PlayerName == this.GuildMaster.Name).PlayerPosition, Is.EqualTo(GuildPosition.NormalMember));
+            Assert.That(list.Count(m => m.PlayerPosition == GuildPosition.GuildMaster), Is.EqualTo(1));
+        });
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(heirName, It.Is<GuildMemberStatus>(s => s.Position == GuildPosition.GuildMaster)), Times.Once);
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(this.GuildMaster.Name, It.Is<GuildMemberStatus>(s => s.Position == GuildPosition.NormalMember)), Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that the leadership can be transferred in a guild without any online member
+    /// (e.g. when the guild master is gone), and that nothing is published to the game servers then.
+    /// </summary>
+    [Test]
+    public async ValueTask TransferLeadershipInGuildWithoutOnlineMembersAsync()
+    {
+        const byte serverId = 1;
+
+        // The member names of a guild which gets loaded again are read from the persisted characters.
+        var heir = this.PersistenceContextProvider.CreateNewContext().CreateNew<MUnique.OpenMU.DataModel.Entities.Character>();
+        heir.Name = "Heir";
+        var heirId = heir.Id;
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var loadedGuildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        await this.GuildServer.CreateGuildMemberAsync(loadedGuildId, heirId, "Heir", GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+        await this.GuildServer.GuildMemberLeftGameAsync(loadedGuildId, heirId, serverId).ConfigureAwait(false);
+        await this.GuildServer.GuildMemberLeftGameAsync(loadedGuildId, this.GuildMaster.Id, serverId).ConfigureAwait(false);
+        Assert.That(await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false), Is.Zero, "the guild should be unloaded");
+        this.GameServer1.Invocations.Clear();
+
+        var persistentId = await this.GuildServer.GetPersistentGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        var runtimeId = await this.GuildServer.GetGuildIdAsync(persistentId!.Value).ConfigureAwait(false);
+        var result = await this.GuildServer.TransferLeadershipAsync(runtimeId, "Heir").ConfigureAwait(false);
+
+        Assert.Multiple(async () =>
+        {
+            Assert.That(result, Is.True);
+            Assert.That(await this.GuildServer.GetGuildPositionAsync(heirId).ConfigureAwait(false), Is.EqualTo(GuildPosition.GuildMaster));
+            Assert.That(await this.GuildServer.GetGuildPositionAsync(this.GuildMaster.Id).ConfigureAwait(false), Is.EqualTo(GuildPosition.NormalMember));
+        });
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync(It.IsAny<string>(), It.IsAny<GuildMemberStatus>()), Times.Never);
+    }
+
+    /// <summary>
+    /// Tests that the transfer is refused (and nothing changes) for an unknown member, for the member who already is
+    /// the guild master and for an unknown guild.
+    /// </summary>
+    [Test]
+    public async ValueTask TransferLeadershipRefusesInvalidTargetsAsync()
+    {
+        const byte serverId = 1;
+        await this.GuildServer.PlayerEnteredGameAsync(this.GuildMaster.Id, this.GuildMaster.Name, serverId).ConfigureAwait(false);
+        var guildId = await this.GuildServer.GetGuildIdByNameAsync(GuildName).ConfigureAwait(false);
+        var memberId = Guid.NewGuid();
+        await this.GuildServer.CreateGuildMemberAsync(guildId, memberId, "Member", GuildPosition.NormalMember, serverId).ConfigureAwait(false);
+
+        var unknownMember = await this.GuildServer.TransferLeadershipAsync(guildId, "Nobody").ConfigureAwait(false);
+        var alreadyMaster = await this.GuildServer.TransferLeadershipAsync(guildId, this.GuildMaster.Name).ConfigureAwait(false);
+        var unknownGuild = await this.GuildServer.TransferLeadershipAsync(guildId + 1000, "Member").ConfigureAwait(false);
+
+        Assert.Multiple(async () =>
+        {
+            Assert.That(unknownMember, Is.False);
+            Assert.That(alreadyMaster, Is.False);
+            Assert.That(unknownGuild, Is.False);
+            Assert.That(await this.GuildServer.GetGuildPositionAsync(this.GuildMaster.Id).ConfigureAwait(false), Is.EqualTo(GuildPosition.GuildMaster));
+            Assert.That(await this.GuildServer.GetGuildPositionAsync(memberId).ConfigureAwait(false), Is.EqualTo(GuildPosition.NormalMember));
+        });
+        this.GameServer1.Verify(g => g.AssignGuildToPlayerAsync("Member", It.Is<GuildMemberStatus>(s => s.Position == GuildPosition.GuildMaster)), Times.Never);
+    }
+
+    /// <summary>
     /// Tests that the guild master position cannot be assigned by member id.
     /// </summary>
     [Test]

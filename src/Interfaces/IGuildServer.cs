@@ -127,6 +127,19 @@ public interface IGuildServer
     ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role, int masterTotalLevel);
 
     /// <summary>
+    /// Transfers the leadership of the guild: the specified member becomes the guild master and the
+    /// previous guild master becomes a normal member. Both changes are persisted together and published
+    /// to the game servers of the members which are online.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    /// <param name="characterName">The name of the member which becomes the guild master.</param>
+    /// <returns>
+    /// <c>true</c> if the leadership was transferred; <c>false</c> if the guild or the member is unknown,
+    /// the member already is the guild master, or the change could not be saved (nothing is changed then).
+    /// </returns>
+    ValueTask<bool> TransferLeadershipAsync(uint guildId, string characterName);
+
+    /// <summary>
     /// Notifies the guild server that a player (potential guild member) entered the game.
     /// </summary>
     /// <param name="characterId">The character identifier.</param>

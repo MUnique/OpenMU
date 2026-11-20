@@ -289,6 +289,60 @@ public class GuildServer : IGuildServer
         }
     }
 
+    /// <inheritdoc/>
+    public async ValueTask<bool> TransferLeadershipAsync(uint guildId, string characterName)
+    {
+        try
+        {
+            if (this.GetGuildContainer(guildId, characterName) is not { } guild)
+            {
+                return false;
+            }
+
+            if (this.FindGuildMember(guild, guildId, characterName) is not { } newMaster)
+            {
+                return false;
+            }
+
+            var oldMaster = guild.Guild.Members.FirstOrDefault(m => m.Status == GuildPosition.GuildMaster);
+            if (oldMaster is null || oldMaster.Id == newMaster.Id)
+            {
+                this._logger.LogWarning("Guild {GuildId} leadership can't be transferred to {CharacterName}: the member already is the guild master, or the guild has none.", guildId, characterName);
+                return false;
+            }
+
+            var newMasterPreviousRole = newMaster.Status;
+            newMaster.Status = GuildPosition.GuildMaster;
+            oldMaster.Status = GuildPosition.NormalMember;
+            try
+            {
+                if (!await guild.DatabaseContext.SaveChangesAsync().ConfigureAwait(false))
+                {
+                    RestoreLeadership(newMaster, newMasterPreviousRole, oldMaster);
+                    this._logger.LogWarning("Guild {GuildId} leadership transfer to {CharacterName} was not saved, so it is not published.", guildId, characterName);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Restore the staged values: otherwise the failed change would linger on the
+                // tracked entities and get committed silently by the next save of this guild.
+                RestoreLeadership(newMaster, newMasterPreviousRole, oldMaster);
+                this._logger.LogError(ex, "Error when saving a leadership transfer.");
+                return false;
+            }
+
+            await this.PublishPositionAsync(guildId, guild, newMaster.Id, GuildPosition.GuildMaster).ConfigureAwait(false);
+            await this.PublishPositionAsync(guildId, guild, oldMaster.Id, GuildPosition.NormalMember).ConfigureAwait(false);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when transferring the leadership of a guild.");
+            return false;
+        }
+    }
+
     /// <inheritdoc />
     public async ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId)
     {
@@ -695,6 +749,12 @@ public class GuildServer : IGuildServer
     private static bool IsRoleAssignable(GuildPosition role)
     {
         return role is GuildPosition.NormalMember or GuildPosition.BattleMaster or GuildPosition.AssistantMaster;
+    }
+
+    private static void RestoreLeadership(GuildMember newMaster, GuildPosition newMasterPreviousRole, GuildMember oldMaster)
+    {
+        newMaster.Status = newMasterPreviousRole;
+        oldMaster.Status = GuildPosition.GuildMaster;
     }
 
     private async ValueTask<bool> DisbandAllianceCoreAsync(uint masterGuildId)
@@ -1163,5 +1223,27 @@ public class GuildServer : IGuildServer
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Updates the runtime entry of a member and publishes the new position to its game server, if it is online.
+    /// </summary>
+    /// <param name="guildId">The runtime guild identifier.</param>
+    /// <param name="guild">The guild container.</param>
+    /// <param name="characterId">The identifier of the member.</param>
+    /// <param name="role">The new role.</param>
+    private async ValueTask PublishPositionAsync(uint guildId, GuildContainer guild, Guid characterId, GuildPosition role)
+    {
+        if (!guild.Members.TryGetValue(characterId, out var listEntry))
+        {
+            this._logger.LogWarning("Guild {GuildId} member {CharacterId} position was saved, but no runtime entry exists, so it is not published.", guildId, characterId);
+            return;
+        }
+
+        listEntry.PlayerPosition = role;
+        if (listEntry.PlayerName is not null && listEntry.ServerId != OfflineServerId)
+        {
+            await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
+        }
     }
 }

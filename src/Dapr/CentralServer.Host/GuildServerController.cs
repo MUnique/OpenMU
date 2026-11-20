@@ -173,6 +173,16 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
+    /// Transfers the leadership of a guild to another member.
+    /// </summary>
+    /// <param name="data">The transfer arguments.</param>
+    [HttpPost(nameof(IGuildServer.TransferLeadershipAsync))]
+    public ValueTask<bool> TransferLeadershipAsync([FromBody] GuildLeadershipTransferArguments data)
+    {
+        return this._guildServer.TransferLeadershipAsync(data.GuildId, data.CharacterName);
+    }
+
+    /// <summary>
     /// Gets the guild member list.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>
