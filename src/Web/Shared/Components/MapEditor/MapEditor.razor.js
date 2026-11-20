@@ -2,13 +2,16 @@
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
-const BASE_SIZE = 768;
 const LEFT_MOUSE_BUTTON = 0;
 const MAX_ZOOM = 4.0;
 const MIDDLE_MOUSE_BUTTON = 1;
 const MIDDLE_MOUSE_BUTTON_MASK = 4;
 const MIN_ZOOM = 1.0;
 const NO_MOUSE_BUTTONS = 0;
+const WHEEL_SENSITIVITY = 0.001;
+const WHEEL_LINE_HEIGHT_PX = 16;
+const WHEEL_PAGE_HEIGHT_PX = 400;
+const ZOOM_NOTIFY_DELAY_MS = 150;
 
 let _element = null;
 let _dotNetRef = null;
@@ -21,6 +24,11 @@ let _isResizing = false;
 let _hasMoved = false;
 let _lastClientX = 0;
 let _lastClientY = 0;
+let _wheelFactor = 1;
+let _wheelClientX = 0;
+let _wheelClientY = 0;
+let _wheelFrame = 0;
+let _zoomNotifyTimer = 0;
 
 function _isElementWithClass(node, className) {
     return node.nodeType === Node.ELEMENT_NODE && node.classList?.contains(className);
@@ -56,25 +64,99 @@ function _getMapTileCoords(clientX, clientY) {
     };
 }
 
+/**
+ * Applies the zoom by setting the "--map-scale" CSS variable (pixels per tile).
+ * The size of the map content, the terrain image, the grid and all map objects
+ * are derived from it by CSS, so one style change updates everything in the same frame.
+ */
 function _applyZoom(zoom) {
     if (!_element) {
         return;
     }
 
     let content = _element.querySelector(".map-content");
-    let img = _element.querySelector(".map-content img");
-
     if (!content) {
         return;
     }
 
-    let size = Math.round(BASE_SIZE * zoom);
-    content.style.width = size + "px";
-    content.style.height = size + "px";
+    content.style.setProperty("--map-scale", (_baseScale * zoom) + "px");
+}
 
-    if (img) {
-        img.style.width = size + "px";
-        img.style.height = size + "px";
+/**
+ * Zooms to the given level, keeping the point (anchorX, anchorY), given relative to
+ * the map host element's top left corner, at the same position on the screen.
+ */
+function _zoomAround(newZoom, anchorX, anchorY) {
+    const oldZoom = _zoomLevel;
+    const baseX = (_element.scrollLeft + anchorX) / oldZoom;
+    const baseY = (_element.scrollTop + anchorY) / oldZoom;
+
+    _zoomLevel = newZoom;
+    _applyZoom(newZoom);
+
+    // The browser clamps the scroll position to the new scrollable area.
+    _element.scrollLeft = Math.max(0, (baseX * newZoom) - anchorX);
+    _element.scrollTop = Math.max(0, (baseY * newZoom) - anchorY);
+}
+
+/**
+ * Tells the Blazor component about the current zoom level, but only after the user
+ * stopped zooming for a moment. This avoids server round trips while zooming.
+ */
+function _scheduleZoomNotification() {
+    clearTimeout(_zoomNotifyTimer);
+    _zoomNotifyTimer = setTimeout(() => {
+        if (_dotNetRef) {
+            _dotNetRef.invokeMethodAsync("OnZoomChangedAsync", _zoomLevel);
+        }
+    }, ZOOM_NOTIFY_DELAY_MS);
+}
+
+function _flushWheelZoom() {
+    _wheelFrame = 0;
+    if (!_element) {
+        _wheelFactor = 1;
+        return;
+    }
+
+    const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, _zoomLevel * _wheelFactor));
+    _wheelFactor = 1;
+    if (newZoom === _zoomLevel) {
+        return;
+    }
+
+    const rect = _element.getBoundingClientRect();
+    _zoomAround(newZoom, _wheelClientX - rect.left, _wheelClientY - rect.top);
+    _scheduleZoomNotification();
+}
+
+/**
+ * Handles the mouse wheel natively in the browser. The wheel events are combined and applied
+ * at most once per animation frame, so fast wheels or touchpads don't flood the main thread.
+ */
+function _onDocumentWheel(e) {
+    const host = _closestByClass(e.target, "map-host");
+    // Other components (e.g. the exit gate picker) also use the "map-host" class, but have no zoomable content.
+    if (!host || !host.querySelector(":scope > .map-content")) {
+        return;
+    }
+
+    e.preventDefault();
+    _element = host;
+
+    let deltaY = e.deltaY;
+    if (e.deltaMode === 1) {
+        deltaY *= WHEEL_LINE_HEIGHT_PX;
+    } else if (e.deltaMode === 2) {
+        deltaY *= WHEEL_PAGE_HEIGHT_PX;
+    }
+
+    _wheelFactor *= Math.max(0.5, Math.min(2, 1 - (deltaY * WHEEL_SENSITIVITY)));
+    _wheelClientX = e.clientX;
+    _wheelClientY = e.clientY;
+
+    if (!_wheelFrame) {
+        _wheelFrame = requestAnimationFrame(_flushWheelZoom);
     }
 }
 
@@ -277,8 +359,9 @@ function _onDocumentKeyDown(e) {
  * @param {object} dotNetRef - JSInvokable reference to the Blazor component.
  * @param {number} initialZoom - The initial zoom level to apply.
  * @param {number} baseScale - The base pixel scale factor for the map.
+ * @param {boolean} applyInitialZoom - Whether the zoom should be reset to the initial zoom level.
  */
-export function initialize(element, dotNetRef, initialZoom, baseScale) {
+export function initialize(element, dotNetRef, initialZoom, baseScale, applyInitialZoom) {
     if (!element) {
         return;
     }
@@ -286,14 +369,20 @@ export function initialize(element, dotNetRef, initialZoom, baseScale) {
     _element = element;
     _dotNetRef = dotNetRef;
     _baseScale = baseScale || _baseScale;
-    _defaultZoom = initialZoom;
-    _zoomLevel = _defaultZoom;
+    if (applyInitialZoom !== false) {
+        _defaultZoom = initialZoom;
+        _zoomLevel = _defaultZoom;
+    }
+
+    // Also re-applied after DOM replacement, as the Blazor render may have created a new content element.
     _applyZoom(_zoomLevel);
 
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
     document.removeEventListener("mouseup", _onDocumentMouseUp);
     document.removeEventListener("keydown", _onDocumentKeyDown);
+    document.removeEventListener("wheel", _onDocumentWheel);
+    document.addEventListener("wheel", _onDocumentWheel, { passive: false });
     document.addEventListener("mousedown", _onDocumentMouseDown);
     document.addEventListener("mousemove", _onDocumentMouseMove);
     document.addEventListener("mouseup", _onDocumentMouseUp);
@@ -368,49 +457,6 @@ export function centerOn(element, mapX, mapY, baseScale) {
 }
 
 /**
- * Handles a mouse wheel event to zoom in or out centered on the cursor position.
- * @param {HTMLElement} element - The map host element.
- * @param {number} deltaY - The vertical scroll delta from the wheel event.
- * @param {number} clientX - The client X position of the cursor.
- * @param {number} clientY - The client Y position of the cursor.
- * @returns {{ zoomLevel: number, handled: boolean }}
- */
-export function handleWheel(element, deltaY, clientX, clientY) {
-    if (!element) {
-        return {
-            zoomLevel: _defaultZoom,
-            handled: false
-        };
-    }
-
-    const oldZoom = _zoomLevel;
-    const sensitivity = 0.001;
-    const zoomDelta = -deltaY * sensitivity;
-    const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldZoom * (1.0 + zoomDelta)));
-
-    const rect = element.getBoundingClientRect();
-    const mouseX = clientX - rect.left;
-    const mouseY = clientY - rect.top;
-
-    const baseX = (element.scrollLeft + mouseX) / oldZoom;
-    const baseY = (element.scrollTop + mouseY) / oldZoom;
-
-    _zoomLevel = newZoom;
-    _applyZoom(_zoomLevel);
-
-    const maxScrollLeft = Math.max(0, BASE_SIZE * newZoom - rect.width);
-    const maxScrollTop = Math.max(0, BASE_SIZE * newZoom - rect.height);
-
-    element.scrollLeft = Math.max(0, Math.min((baseX * newZoom) - mouseX, maxScrollLeft));
-    element.scrollTop = Math.max(0, Math.min((baseY * newZoom) - mouseY, maxScrollTop));
-
-    return {
-        zoomLevel: newZoom,
-        handled: true
-    };
-}
-
-/**
  * Zooms the map to a specific level, keeping the viewport center stationary.
  * @param {HTMLElement} element - The map host element.
  * @param {number} newZoom - The target zoom level.
@@ -421,24 +467,10 @@ export function zoomTo(element, newZoom) {
         return _defaultZoom;
     }
 
-    const oldZoom = _zoomLevel;
     const clampedZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newZoom));
-
     const rect = element.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const baseX = (element.scrollLeft + centerX) / oldZoom;
-    const baseY = (element.scrollTop + centerY) / oldZoom;
-
-    _zoomLevel = clampedZoom;
-    _applyZoom(_zoomLevel);
-
-    const maxScrollLeft = Math.max(0, BASE_SIZE * clampedZoom - rect.width);
-    const maxScrollTop = Math.max(0, BASE_SIZE * clampedZoom - rect.height);
-
-    element.scrollLeft = Math.max(0, Math.min((baseX * clampedZoom) - centerX, maxScrollLeft));
-    element.scrollTop = Math.max(0, Math.min((baseY * clampedZoom) - centerY, maxScrollTop));
+    _element = element;
+    _zoomAround(clampedZoom, rect.width / 2, rect.height / 2);
 
     return clampedZoom;
 }
@@ -453,6 +485,8 @@ export function resetZoom(element) {
         return _defaultZoom;
     }
 
+    _element = element;
+    _wheelFactor = 1;
     _zoomLevel = _defaultZoom;
     _applyZoom(_defaultZoom);
     element.scrollLeft = 0;
@@ -475,6 +509,14 @@ export function setDragging(dragging) {
  * Called when the Blazor component is disposed.
  */
 export function dispose() {
+    clearTimeout(_zoomNotifyTimer);
+    if (_wheelFrame) {
+        cancelAnimationFrame(_wheelFrame);
+        _wheelFrame = 0;
+    }
+
+    _wheelFactor = 1;
+    document.removeEventListener("wheel", _onDocumentWheel);
     document.removeEventListener("mousedown", _onDocumentMouseDown);
     document.removeEventListener("mousemove", _onDocumentMouseMove);
     document.removeEventListener("mouseup", _onDocumentMouseUp);
