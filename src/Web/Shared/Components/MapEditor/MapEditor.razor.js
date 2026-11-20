@@ -130,27 +130,41 @@ function _flushWheelZoom() {
     _scheduleZoomNotification();
 }
 
+function _getWheelDeltaY(e) {
+    if (e.deltaMode === 1) {
+        return e.deltaY * WHEEL_LINE_HEIGHT_PX;
+    }
+
+    if (e.deltaMode === 2) {
+        return e.deltaY * WHEEL_PAGE_HEIGHT_PX;
+    }
+
+    return e.deltaY;
+}
+
+function _findZoomableMapHost(target) {
+    const host = _closestByClass(target, "map-host");
+    if (!host || !host.querySelector(":scope > .map-content")) {
+        return null;
+    }
+
+    return host;
+}
+
 /**
  * Handles the mouse wheel natively in the browser. The wheel events are combined and applied
  * at most once per animation frame, so fast wheels or touchpads don't flood the main thread.
  */
 function _onDocumentWheel(e) {
-    const host = _closestByClass(e.target, "map-host");
-    // Other components (e.g. the exit gate picker) also use the "map-host" class, but have no zoomable content.
-    if (!host || !host.querySelector(":scope > .map-content")) {
+    const host = _findZoomableMapHost(e.target);
+    if (!host) {
         return;
     }
 
     e.preventDefault();
     _element = host;
 
-    let deltaY = e.deltaY;
-    if (e.deltaMode === 1) {
-        deltaY *= WHEEL_LINE_HEIGHT_PX;
-    } else if (e.deltaMode === 2) {
-        deltaY *= WHEEL_PAGE_HEIGHT_PX;
-    }
-
+    const deltaY = _getWheelDeltaY(e);
     _wheelFactor *= Math.max(0.5, Math.min(2, 1 - (deltaY * WHEEL_SENSITIVITY)));
     _wheelClientX = e.clientX;
     _wheelClientY = e.clientY;
