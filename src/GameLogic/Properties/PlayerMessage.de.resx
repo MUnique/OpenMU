@@ -1054,6 +1054,9 @@ Inventarerweiterungen: {18}</value>
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>Ein zeitlich begrenzter Gegenstand kann hier nicht verwendet werden.</value>
   </data>
+  <data name="QuestZenLimitReached" xml:space="preserve">
+    <value>Sie haben Ihr Zen-Limit erreicht. Die Quest kann nicht abgeschlossen werden.</value>
+  </data>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Ein Gegenstand der gleichen Art wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
   </data>
