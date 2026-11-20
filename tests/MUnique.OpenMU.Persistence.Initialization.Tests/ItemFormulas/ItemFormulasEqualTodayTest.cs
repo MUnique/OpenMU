@@ -626,7 +626,7 @@ internal class ItemFormulasEqualTodayTest
                         $"{itemCase}, slot {slot}, durability {durability}",
                         "power-ups",
                         Capture(() => DescribePowerUps(item, this._legacyPowerUps.GetPowerUps)),
-                        Capture(() => DescribePowerUps(item, this._powerUps.GetPowerUps)));
+                        Capture(() => DescribePowerUps(item, (i, attributes) => this._powerUps.GetPowerUps(i, attributes))));
                 }
             }
         }

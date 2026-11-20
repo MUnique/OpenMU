@@ -2265,4 +2265,46 @@
   <data name="GameEventWebhookConfiguration_ForwardGlobalNotices_Name" xml:space="preserve">
     <value>Forward global notices of game masters</value>
   </data>
+  <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
+    <value>Items used inside the inventory</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Description" xml:space="preserve">
+    <value>Items like the figurines and charms are used inside the inventory. While such an item is in use, its power-ups apply.</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_Items_Name" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_Items_Description" xml:space="preserve">
+    <value>The items which are used inside the inventory instead of being equipped, e.g. the figurines and charms. Items of the same exclusive group can't be in use at the same time.</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_InUseDurability_Name" xml:space="preserve">
+    <value>Durability in use</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_InUseDurability_Description" xml:space="preserve">
+    <value>The durability of an item which is in use. The game client tells by it whether the item is in use, so it has to match the client (default 254).</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_NotInUseDurability_Name" xml:space="preserve">
+    <value>Durability not in use</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_NotInUseDurability_Description" xml:space="preserve">
+    <value>The durability of an item which isn't in use, and of a new item. It has to match the game client (default 255).</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Group_Name" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Group_Description" xml:space="preserve">
+    <value>The group of the item definition.</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Number_Name" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Number_Description" xml:space="preserve">
+    <value>The number of the item definition.</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Name" xml:space="preserve">
+    <value>Exclusive group</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Description" xml:space="preserve">
+    <value>Only one item of the same exclusive group can be in use at the same time, e.g. either the Hawk or the Goat Figurine. With 0, only another item of the same definition is excluded.</value>
+  </data>
 </root>

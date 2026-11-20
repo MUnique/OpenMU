@@ -1201,4 +1201,7 @@ Extensões de inventário: {18}</value>
   <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
     <value>Não é possível excluir um personagem enquanto aguardam itens cujo tipo de item não existe mais. Peça ajuda a um administrador.</value>
   </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>Um item do mesmo tipo já está em uso. Pare de usá-lo primeiro e tente novamente.</value>
+  </data>
 </root>
