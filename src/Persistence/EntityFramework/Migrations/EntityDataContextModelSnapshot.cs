@@ -383,6 +383,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("SkillId1")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("WarpInfoId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AttributeId");
@@ -396,6 +399,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("SkillId");
 
                     b.HasIndex("SkillId1");
+
+                    b.HasIndex("WarpInfoId");
 
                     b.ToTable("AttributeRequirement", "config");
                 });
@@ -3414,6 +3419,40 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("LevelBonus", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LoginTicket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("ExpiresAt");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("LoginTicket", "data");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4877,6 +4916,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("SkillId1")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", null)
+                        .WithMany("RawRequirements")
+                        .HasForeignKey("WarpInfoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("RawAttribute");
                 });
 
@@ -6138,6 +6182,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.LoginTicket", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MagicEffectDefinition", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.PowerUpDefinitionValue", "RawChance")
@@ -7031,6 +7084,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillComboDefinition", b =>
                 {
                     b.Navigation("RawSteps");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", b =>
+                {
+                    b.Navigation("RawRequirements");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WeightedValueTable", b =>

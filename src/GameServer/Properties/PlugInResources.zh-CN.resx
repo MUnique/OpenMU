@@ -478,6 +478,12 @@
   <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
     <value>处理登录相关数据包。</value>
   </data>
+  <data name="LoginWithTicketHandlerPlugIn_Name" xml:space="preserve">
+    <value>票据登录处理</value>
+  </data>
+  <data name="LoginWithTicketHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理使用票据代替密码登录的数据包，例如在网站登录之后。</value>
+  </data>
   <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
     <value>退出登录处理</value>
   </data>
@@ -2567,5 +2573,17 @@
   </data>
   <data name="ItemExpirationViewPlugIn_Description" xml:space="preserve">
     <value>将限时物品的过期日期发送给客户端（D2 11 和 D2 12），客户端会显示剩余时间。</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>背包物品使用请求处理程序</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>处理在背包中开始或停止使用物品（如雕像或护符）的请求。</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Name" xml:space="preserve">
+    <value>背包物品使用状态已更改</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Description" xml:space="preserve">
+    <value>IInventoryItemUseChangedPlugIn的默认实现，通过特定数据包将所有内容转发给游戏客户端。</value>
   </data>
 </root>

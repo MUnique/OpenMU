@@ -1918,6 +1918,9 @@
   <data name="RoleCashShop" xml:space="preserve">
     <value>仅管理商城币</value>
   </data>
+  <data name="RoleLoginTicket" xml:space="preserve">
+    <value>仅签发登录票据</value>
+  </data>
   <data name="CashShopCoinsOf" xml:space="preserve">
     <value>{0} 的商城币</value>
   </data>

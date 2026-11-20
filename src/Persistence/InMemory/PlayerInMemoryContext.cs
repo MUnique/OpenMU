@@ -367,6 +367,89 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<(string LoginName, DataModel.Entities.AccountState State)?> GetAccountLoginStateAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        var accounts = await this.Provider.GetRepository<Account>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return accounts.FirstOrDefault(account => account.Id == accountId) is { } found
+            ? (found.LoginName, found.State)
+            : null;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.LoginTicket?> GetLoginTicketByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default)
+    {
+        var tickets = await this.Provider.GetRepository<LoginTicket>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return tickets.FirstOrDefault(ticket => ticket.TokenHash == tokenHash);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryUseLoginTicketAsync(
+        Guid ticketId,
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await LinkLocks.GetValue(this.Provider, _ => new AsyncLock()).LockAsync(cancellationToken).ConfigureAwait(false);
+        var tickets = await this.Provider.GetRepository<LoginTicket>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (tickets.FirstOrDefault(ticket => ticket.Id == ticketId) is not { UsedAt: null } ticket
+            || ticket.ExpiresAt <= nowUtc)
+        {
+            return false;
+        }
+
+        ticket.UsedAt = nowUtc;
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryAddLoginTicketAsync(
+        Guid accountId,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await LinkLocks.GetValue(this.Provider, _ => new AsyncLock()).LockAsync(cancellationToken).ConfigureAwait(false);
+        var tickets = await this.Provider.GetRepository<LoginTicket>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (tickets.Count(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > createdAtUtc) >= maximumUnexpired)
+        {
+            return false;
+        }
+
+        var ticket = this.CreateNew<LoginTicket>();
+        ticket.AccountId = accountId;
+        ticket.TokenHash = tokenHash;
+        ticket.CreatedAt = createdAtUtc;
+        ticket.ExpiresAt = expiresAtUtc;
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DeleteExpiredLoginTicketsAsync(
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        var repository = this.Provider.GetRepository<LoginTicket>();
+        var tickets = await repository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+        foreach (var expired in tickets.Where(ticket => ticket.ExpiresAt <= nowUtc).ToList())
+        {
+            await repository.DeleteAsync(expired).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<DataModel.Entities.GensMember?> GetGensMemberAsync(
         Guid characterId,
         CancellationToken cancellationToken = default)

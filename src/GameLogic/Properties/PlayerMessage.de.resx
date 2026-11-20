@@ -639,6 +639,9 @@
   <data name="MissingMapRequirement" xml:space="preserve">
     <value>Fehlende Voraussetzung zum Betreten der Karte: {0}</value>
   </data>
+  <data name="MissingWarpRequirement" xml:space="preserve">
+    <value>Fehlende Voraussetzung für diesen Warp: {0}</value>
+  </data>
   <data name="UnexpectedErrorDuringClosingTrade" xml:space="preserve">
     <value>Beim Abschließen des Handels ist ein unerwarteter Fehler aufgetreten.</value>
   </data>
@@ -1050,5 +1053,8 @@ Inventarerweiterungen: {18}</value>
   </data>
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>Ein zeitlich begrenzter Gegenstand kann hier nicht verwendet werden.</value>
+  </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>Ein Gegenstand der gleichen Art wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
   </data>
 </root>

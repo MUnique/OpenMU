@@ -44,7 +44,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     }
 
     /// <inheritdoc/>
-    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem)
+    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem, bool isInUseInsideInventory = false)
     {
         if (item.Definition is null)
         {
@@ -58,7 +58,8 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield break;
         }
 
-        if (item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex)
+        if ((item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex)
+            && !isInUseInsideInventory)
         {
             yield break;
         }

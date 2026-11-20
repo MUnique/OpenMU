@@ -642,6 +642,9 @@
   <data name="MissingMapRequirement" xml:space="preserve">
     <value>Falta um requisito para entrar no mapa: {0}</value>
   </data>
+  <data name="MissingWarpRequirement" xml:space="preserve">
+    <value>Falta um requisito para este warp: {0}</value>
+  </data>
   <data name="UnexpectedErrorDuringClosingTrade" xml:space="preserve">
     <value>Ocorreu um erro inesperado ao concluir a troca.</value>
   </data>
@@ -1203,5 +1206,8 @@ Extensões de inventário: {18}</value>
   </data>
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>Um item com tempo limitado não pode ser usado aqui.</value>
+  </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>Um item do mesmo tipo já está em uso. Pare de usá-lo primeiro e tente novamente.</value>
   </data>
 </root>

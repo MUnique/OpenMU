@@ -127,6 +127,7 @@ internal sealed class BasicModelConverter
             LetterHeader value => this.Convert(value),
             LevelBonus value => this.Convert(value),
             LevelDependentDamage value => this.Convert(value),
+            LoginTicket value => this.Convert(value),
             MagicEffectDefinition value => this.Convert(value),
             MasterSkillDefinition value => this.Convert(value),
             MasterSkillRoot value => this.Convert(value),
@@ -2526,6 +2527,24 @@ internal sealed class BasicModelConverter
         return target;
     }
 
+    private BasicModel.LoginTicket Convert(LoginTicket source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.LoginTicket)converted;
+        }
+
+        var target = new BasicModel.LoginTicket();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.AccountId = source.AccountId;
+        target.TokenHash = source.TokenHash;
+        target.CreatedAt = source.CreatedAt;
+        target.ExpiresAt = source.ExpiresAt;
+        target.UsedAt = source.UsedAt;
+        return target;
+    }
+
     private BasicModel.MagicEffectDefinition Convert(MagicEffectDefinition source)
     {
         if (this._converted.TryGetValue(source, out var converted))
@@ -3333,6 +3352,14 @@ internal sealed class BasicModelConverter
         target.Costs = source.Costs;
         target.LevelRequirement = source.LevelRequirement;
         target.IsWarpable = source.IsWarpable;
+        if (source.Requirements is { } requirementsItems)
+        {
+            foreach (var item in requirementsItems)
+            {
+                target.Requirements.Add((MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement)this.ConvertObject(item)!);
+            }
+        }
+
         target.Gate = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Gate)!;
         return target;
     }

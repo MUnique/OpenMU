@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -440,7 +441,7 @@ public class IllusionTempleTicketCraftingTest
     {
         var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
         player.TryAddMoney(10_000_000);
-        player.Attributes![Stats.CraftingBonusPercentage] = 30;
+        player.Attributes!.AddElement(new SimpleElement(30, AggregateType.AddRaw), Stats.CraftingBonusPercentage);
         var oldScroll = await this.AddToChaosMachineAsync(player, EventItemGroup, OldScrollNumber, 1, slot: 0).ConfigureAwait(false);
         var covenant = await this.AddToChaosMachineAsync(player, EventItemGroup, CovenantNumber, 1, slot: 1).ConfigureAwait(false);
         var chaos = await this.AddByNameAsync(player, "Jewel of Chaos", 0, slot: 8).ConfigureAwait(false);
@@ -572,10 +573,14 @@ public class IllusionTempleTicketCraftingTest
     }
 
     /// <summary>
-    /// Makes the creation of the result accessible, because the combination itself succeeds only by chance.
+    /// Makes the result creation accessible and makes the success path deterministic for placement tests.
     /// </summary>
     private sealed class TestableIllusionTempleTicketCrafting : IllusionTempleTicketCrafting
     {
+        // The game rule caps the real crafting chance at 80 %. This test exercises result placement,
+        // not the random success roll, so remove that cap to make the success path deterministic.
+        protected override byte MaximumSuccessRate => byte.MaxValue;
+
         /// <summary>
         /// Creates the result items of the combination.
         /// </summary>

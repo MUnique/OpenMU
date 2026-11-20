@@ -492,4 +492,10 @@
   <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve"><value>Brings the NPCs of 0.95d to the Season 6 data: removes the two Potion Girls of Noria, the Potion Girl and the Safety Guardian of Lost Tower, the Safety Guardians of Arena and Atlans and the Crossbow Guard at 114/125 in Lorencia, moves the Soccer Ball and the Arena Guard of Arena to their Season 6 positions and the Golden Archer from Lorencia to Devias (226/66).</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>Socket count tables</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>Socket items drop with one socket most of the time and with three (five for two-handed weapons) rarely, instead of with any number up to the maximum at the same chance. Raises the maximum sockets of the socket items to five; the tables restrict the drops. Socket items which already have a socket count table keep it.</value></data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the figurines and charms</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory.</value>
+  </data>
 </root>

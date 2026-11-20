@@ -81,6 +81,11 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<AccountExternalLink> AccountExternalLinks => this.Set<AccountExternalLink>();
 
     /// <summary>
+    /// Gets the tickets, with which game clients log into accounts without a password.
+    /// </summary>
+    internal DbSet<LoginTicket> LoginTickets => this.Set<LoginTicket>();
+
+    /// <summary>
     /// Gets the bindings of the chats of guilds to channels of external services.
     /// </summary>
     internal DbSet<GuildChatBinding> GuildChatBindings => this.Set<GuildChatBinding>();
@@ -143,6 +148,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<CashShopStorageItem>().Apply();
         modelBuilder.Entity<CashShopCoinGrant>().Apply();
         modelBuilder.Entity<AccountExternalLink>().Apply();
+        modelBuilder.Entity<LoginTicket>().Apply();
         modelBuilder.Entity<GuildChatBinding>().Apply();
         modelBuilder.Entity<DropItemGroup>().Apply();
         modelBuilder.Entity<ExitGate>().Apply();

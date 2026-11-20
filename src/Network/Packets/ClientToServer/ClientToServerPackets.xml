@@ -221,6 +221,43 @@
     <Packet>
       <HeaderType>C3HeaderWithSubCode</HeaderType>
       <Code>F1</Code>
+      <SubCode>10</SubCode>
+      <Name>LoginWithTicket</Name>
+      <Caption>Login with ticket</Caption>
+      <Length>72</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player tries to log into the game with a login ticket instead of a password, e.g. after signing in on a website.</SentWhen>
+      <CausedReaction>The server redeems the ticket. A ticket can be redeemed once, and only until it expires. If it's valid, the login proceeds like with a password and the server answers with a LoginResponse; if not, the result is AccountInvalid.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Token</Name>
+          <Description>The token of the ticket: 256 random bits, encoded as base64url without padding.</Description>
+          <Length>43</Length>
+        </Field>
+        <Field>
+          <Index>47</Index>
+          <Type>IntegerBigEndian</Type>
+          <Name>TickCount</Name>
+        </Field>
+        <Field>
+          <Index>51</Index>
+          <Type>Binary</Type>
+          <Name>ClientVersion</Name>
+          <Length>5</Length>
+        </Field>
+        <Field>
+          <Index>56</Index>
+          <Type>Binary</Type>
+          <Name>ClientSerial</Name>
+          <Length>16</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C3HeaderWithSubCode</HeaderType>
+      <Code>F1</Code>
       <SubCode>02</SubCode>
       <Name>LogOut</Name>
       <Length>5</Length>

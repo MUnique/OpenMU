@@ -6541,6 +6541,12 @@
   <data name="WarpInfo_IsWarpable_Description" xml:space="preserve">
     <value>Whether players can use this warp. It only restricts players when it's off: then the warp isn't in the warp list of the client and the warp request of a player is refused, while game masters can still use it.</value>
   </data>
+  <data name="WarpInfo_Requirements_Caption" xml:space="preserve">
+    <value>Requirements</value>
+  </data>
+  <data name="WarpInfo_Requirements_Description" xml:space="preserve">
+    <value>The attributes which a character needs, in addition to the level requirement and the requirements of the target map. The open source client learns the minimum master level and resets and shows the warps which the character can't use yet as unavailable.</value>
+  </data>
   <data name="Character_WaitingItems_Caption" xml:space="preserve">
     <value>Waiting Items</value>
   </data>

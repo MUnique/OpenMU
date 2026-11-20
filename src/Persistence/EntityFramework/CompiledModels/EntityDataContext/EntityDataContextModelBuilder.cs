@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("26e1e8a4-c1b8-48a7-8038-a2d361db8533"), entityTypeCount: 132)
+            : base(skipDetectChanges: false, modelId: new Guid("0e993aaf-d7e3-44d6-9e3d-8b4e2dfbcdbf"), entityTypeCount: 133)
         {
         }
 
@@ -114,6 +114,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var letterBody = LetterBodyEntityType.Create(this);
             var letterHeader = LetterHeaderEntityType.Create(this);
             var levelBonus = LevelBonusEntityType.Create(this);
+            var loginTicket = LoginTicketEntityType.Create(this);
             var magicEffectDefinition = MagicEffectDefinitionEntityType.Create(this);
             var masterSkillDefinition = MasterSkillDefinitionEntityType.Create(this);
             var masterSkillDefinitionSkill = MasterSkillDefinitionSkillEntityType.Create(this);
@@ -172,6 +173,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AttributeRequirementEntityType.CreateForeignKey4(attributeRequirement, itemDefinition);
             AttributeRequirementEntityType.CreateForeignKey5(attributeRequirement, skill);
             AttributeRequirementEntityType.CreateForeignKey6(attributeRequirement, skill);
+            AttributeRequirementEntityType.CreateForeignKey7(attributeRequirement, warpInfo);
             BattleZoneDefinitionEntityType.CreateForeignKey1(battleZoneDefinition, rectangle);
             BattleZoneDefinitionEntityType.CreateForeignKey2(battleZoneDefinition, rectangle);
             BattleZoneDefinitionEntityType.CreateForeignKey3(battleZoneDefinition, rectangle);
@@ -336,6 +338,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             LetterBodyEntityType.CreateForeignKey2(letterBody, appearanceData);
             LetterHeaderEntityType.CreateForeignKey1(letterHeader, character);
             LevelBonusEntityType.CreateForeignKey1(levelBonus, itemLevelBonusTable);
+            LoginTicketEntityType.CreateForeignKey1(loginTicket, account);
             MagicEffectDefinitionEntityType.CreateForeignKey1(magicEffectDefinition, powerUpDefinitionValue);
             MagicEffectDefinitionEntityType.CreateForeignKey2(magicEffectDefinition, powerUpDefinitionValue);
             MagicEffectDefinitionEntityType.CreateForeignKey3(magicEffectDefinition, powerUpDefinitionValue);
@@ -510,6 +513,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             LetterBodyEntityType.CreateAnnotations(letterBody);
             LetterHeaderEntityType.CreateAnnotations(letterHeader);
             LevelBonusEntityType.CreateAnnotations(levelBonus);
+            LoginTicketEntityType.CreateAnnotations(loginTicket);
             MagicEffectDefinitionEntityType.CreateAnnotations(magicEffectDefinition);
             MasterSkillDefinitionEntityType.CreateAnnotations(masterSkillDefinition);
             MasterSkillDefinitionSkillEntityType.CreateAnnotations(masterSkillDefinitionSkill);

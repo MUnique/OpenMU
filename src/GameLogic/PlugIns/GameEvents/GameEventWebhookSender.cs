@@ -24,16 +24,6 @@ using MUnique.OpenMU.Interfaces;
 public sealed class GameEventWebhookSender
 {
     /// <summary>
-    /// The name of the header with the signature, <c>sha256=</c> followed by the lowercase hex of the HMAC.
-    /// </summary>
-    public static string SignatureHeader { get; } = "X-OpenMU-Signature";
-
-    /// <summary>
-    /// The name of the header with the time of the request, in seconds since the Unix epoch, which is part of the signature.
-    /// </summary>
-    public static string TimestampHeader { get; } = "X-OpenMU-Timestamp";
-
-    /// <summary>
     /// The maximum number of events which wait to be sent.
     /// </summary>
     /// <remarks>It's not configurable: it only bounds the memory while the receiver is unreachable.</remarks>
@@ -73,6 +63,16 @@ public sealed class GameEventWebhookSender
             new BoundedChannelOptions(QueueCapacity) { FullMode = BoundedChannelFullMode.DropOldest, SingleReader = true },
             _ => Interlocked.Increment(ref this._droppedCount));
     }
+
+    /// <summary>
+    /// Gets the name of the header with the signature, <c>sha256=</c> followed by the lowercase hex of the HMAC.
+    /// </summary>
+    public static string SignatureHeader { get; } = "X-OpenMU-Signature";
+
+    /// <summary>
+    /// Gets the name of the header with the time of the request, in seconds since the Unix epoch, which is part of the signature.
+    /// </summary>
+    public static string TimestampHeader { get; } = "X-OpenMU-Timestamp";
 
     /// <summary>
     /// Gets the number of events which were dropped because the queue was full.

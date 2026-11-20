@@ -527,4 +527,10 @@
   <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve"><value>将0.95d版的NPC调整为第六季数据：移除仙踪林的两名药水少女（253）、失落之塔的药水少女（253）和安全守卫（240）、竞技场和亚特兰蒂斯的安全守卫（240），以及勇者大陆114/125处的守卫（247），将竞技场的足球和竞技场守卫调整到第六季的位置，并将黄金弓箭手从勇者大陆移至冰风谷（226/66）。</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>镶嵌孔数量表</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>镶嵌物品掉落时大多只有一个孔，三个孔（双手武器为五个孔）很少见，而不是以相同几率获得最多孔数以内的任意数量。将镶嵌物品的最大孔数提高到五个，由数量表限制掉落。已有数量表的镶嵌物品保持不变。</value></data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加雕像和护符</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加鹰雕像、山羊雕像以及（黄金）橡树和枫树护符，它们在背包中使用时提供加成。</value>
+  </data>
 </root>

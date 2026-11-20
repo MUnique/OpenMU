@@ -1873,4 +1873,46 @@
   <data name="ItemExpirationPlugIn_Description" xml:space="preserve">
     <value>当玩家的限时物品（例如在商城租用的宠物）过期时通知玩家，移除其效果，并在客户端中显示为已过期。过期的物品会留在背包中。</value>
   </data>
+  <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
+    <value>在背包中使用的物品</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Description" xml:space="preserve">
+    <value>雕像和护身符等物品在背包中使用。物品使用期间，其加成生效。</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_Items_Name" xml:space="preserve">
+    <value>物品</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_Items_Description" xml:space="preserve">
+    <value>在背包中使用而不是装备的物品，例如雕像和护符。同一互斥组的物品不能同时使用。</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_InUseDurability_Name" xml:space="preserve">
+    <value>使用中的耐久度</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_InUseDurability_Description" xml:space="preserve">
+    <value>正在使用的物品的耐久度。游戏客户端据此判断物品是否在使用，因此必须与客户端一致（默认 254）。</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_NotInUseDurability_Name" xml:space="preserve">
+    <value>未使用时的耐久度</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_NotInUseDurability_Description" xml:space="preserve">
+    <value>未使用的物品以及新物品的耐久度。必须与游戏客户端一致（默认 255）。</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Group_Name" xml:space="preserve">
+    <value>组</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Group_Description" xml:space="preserve">
+    <value>物品定义的组。</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Number_Name" xml:space="preserve">
+    <value>编号</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Number_Description" xml:space="preserve">
+    <value>物品定义的编号。</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Name" xml:space="preserve">
+    <value>互斥组</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Description" xml:space="preserve">
+    <value>同一互斥组中同时只能使用一个物品，例如鹰雕像或山羊雕像。为 0 时，只排除同一定义的其他物品。</value>
+  </data>
 </root>

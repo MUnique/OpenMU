@@ -537,6 +537,12 @@
   <data name="LogInHandlerPlugIn_Description" xml:space="preserve">
     <value>Paket-Handler für Anmeldepakete.</value>
   </data>
+  <data name="LoginWithTicketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Anmeldung mit Ticket</value>
+  </data>
+  <data name="LoginWithTicketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Paket-Handler für die Anmeldung mit einem Ticket statt eines Passworts, z.B. nach der Anmeldung auf einer Website.</value>
+  </data>
   <data name="LogOutHandlerPlugIn_Name" xml:space="preserve">
     <value>Handler für die Abmeldung</value>
   </data>
@@ -2677,7 +2683,7 @@
     <value>Warp-Liste anzeigen (erweitert)</value>
   </data>
   <data name="ShowWarpListExtendedPlugIn_Description" xml:space="preserve">
-    <value>Sendet die Warp-Liste des Servers an den Open-Source-Client, der sie in seinem Warp-Fenster statt der Warp-Liste seiner Datendateien anzeigt.</value>
+    <value>Sendet die Warp-Liste des Servers an den Open-Source-Client, der sie in seinem Warp-Fenster statt der Warp-Liste seiner Datendateien anzeigt, und danach das Mindest-Master-Level und die Mindestanzahl an Resets der Warps, die sie verlangen.</value>
   </data>
   <data name="LuckyCoinViewPlugIn_Name" xml:space="preserve">
     <value>Glücksmünzen-Ansicht</value>
@@ -2708,5 +2714,17 @@
   </data>
   <data name="ItemExpirationViewPlugIn_Description" xml:space="preserve">
     <value>Sendet die Ablaufdaten der zeitlich begrenzten Gegenstände an den Client (D2 11 und D2 12), der die verbleibende Zeit anzeigt.</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für die Benutzung von Gegenständen im Inventar</value>
+  </data>
+  <data name="InventoryItemEquipRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handler für die Anfrage, einen Gegenstand im Inventar zu benutzen oder dessen Benutzung zu beenden, wie eine Figur oder einen Talisman.</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Name" xml:space="preserve">
+    <value>Benutzung eines Inventargegenstands geändert</value>
+  </data>
+  <data name="InventoryItemUseChangedPlugIn_Description" xml:space="preserve">
+    <value>Die Standardimplementierung von IInventoryItemUseChangedPlugIn, die alles mit spezifischen Datenpaketen an den Spielclient weiterleitet.</value>
   </data>
 </root>

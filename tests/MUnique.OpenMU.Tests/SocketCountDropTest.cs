@@ -149,7 +149,7 @@ public class SocketCountDropTest
 
     /// <summary>
     /// Creates a randomizer which returns <paramref name="randomDouble"/> for <see cref="IRandomizer.NextDouble"/>,
-    /// and <paramref name="randomInt"/> (or the minimum, if <c>null</c>) for <see cref="IRandomizer.NextInt"/>.
+    /// and <paramref name="randomInt"/> (or the minimum, if <c>null</c>) for <see cref="IRandomizer.NextInt(int, int)"/>.
     /// </summary>
     private static IRandomizer CreateRandomizer(double randomDouble, int? randomInt = null)
     {

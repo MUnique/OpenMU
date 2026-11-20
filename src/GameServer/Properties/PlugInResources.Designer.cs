@@ -3643,6 +3643,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for the request to start or stop using an item inside the inventory, like a figurine or a charm..
+        /// </summary>
+        public static string InventoryItemEquipRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory item use request handler.
+        /// </summary>
+        public static string InventoryItemEquipRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IInventoryItemUseChangedPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string InventoryItemUseChangedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemUseChangedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory item use changed.
+        /// </summary>
+        public static string InventoryItemUseChangedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemUseChangedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles inventory refresh requests (0xF3, 0x10) by returning the current inventory, with configurable per-player throttling..
         /// </summary>
         public static string InventoryRequestHandlerPlugIn_Description {
@@ -4251,6 +4287,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string LogInOutGroup_Name {
             get {
                 return ResourceManager.GetString("LogInOutGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packet handler for the login with a ticket instead of a password, e.g. after signing in on a website..
+        /// </summary>
+        public static string LoginWithTicketHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LoginWithTicketHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login with ticket.
+        /// </summary>
+        public static string LoginWithTicketHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LoginWithTicketHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -7189,7 +7243,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files..
+        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files, followed by the minimum master level and resets of the warps which require them..
         /// </summary>
         public static string ShowWarpListExtendedPlugIn_Description {
             get {

@@ -6,9 +6,13 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Globalization;
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Bots;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
@@ -201,9 +205,204 @@ public class WarpListTests
             expected ? Times.Once() : Times.Never());
     }
 
-    private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs)
+    /// <summary>
+    /// Tests that the minimum master level and resets of the warps which require them are sent right after
+    /// the warp list, and that of several requirements of the same attribute the highest one is sent.
+    /// Requirements of other attributes aren't sent, and a negative minimum is sent as 0.
+    /// </summary>
+    [Test]
+    public async Task WarpRequirementsAreWrittenAfterTheWarpListAsync()
     {
-        return new WarpInfo
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new ShowWarpListExtendedPlugIn(player);
+        var masterAndResets = CreateWarp(3, "Master and resets", 2, 10, 2000, (Stats.MasterLevel, 50), (Stats.MasterLevel, 80), (Stats.Resets, 2));
+        var withoutRequirements = CreateWarp(5, "Without requirements", 4, 10, 2000);
+        var resetsAndStrength = CreateWarp(300, "Resets and strength", 6, 10, 2000, (Stats.Resets, 70000), (Stats.TotalStrength, 1000));
+        var masterAndNegativeResets = CreateWarp(7, "Master and negative resets", 8, 10, 2000, (Stats.MasterLevel, 1), (Stats.Resets, -1));
+
+        await view.ShowWarpListAsync([masterAndResets, withoutRequirements, resetsAndStrength, masterAndNegativeResets]).ConfigureAwait(false);
+
+        var data = output.ToArray();
+        var listSize = WarpListExtendedRef.GetRequiredSize(4);
+        var packet = new WarpRequirementsExtendedRef(data.AsSpan(listSize));
+        Assert.That(data.Length, Is.EqualTo(listSize + WarpRequirementsExtendedRef.GetRequiredSize(3)));
+        Assert.That(packet.Header.Type, Is.EqualTo(0xC2));
+        Assert.That(packet.Header.Length, Is.EqualTo(data.Length - listSize));
+        Assert.That(packet.Header.Code, Is.EqualTo(0xF5));
+        Assert.That(packet.Header.SubCode, Is.EqualTo(0x0B));
+        Assert.That(packet.Count, Is.EqualTo(3));
+        Assert.That((packet[0].Index, packet[0].MasterLevel, packet[0].Resets), Is.EqualTo(((ushort)3, (ushort)80, 2u)));
+        Assert.That((packet[1].Index, packet[1].MasterLevel, packet[1].Resets), Is.EqualTo(((ushort)300, (ushort)0, 70000u)));
+        Assert.That((packet[2].Index, packet[2].MasterLevel, packet[2].Resets), Is.EqualTo(((ushort)7, (ushort)1, 0u)), "a negative minimum counts as none");
+        Assert.That(
+            data.AsSpan(listSize + 6).ToArray(),
+            Is.EqualTo(new byte[] { 3, 0, 80, 0, 2, 0, 0, 0, 0x2C, 0x01, 0, 0, 0x70, 0x11, 0x01, 0, 7, 0, 1, 0, 0, 0, 0, 0 }),
+            "the entries are little endian: index (2 bytes), master level (2 bytes), resets (4 bytes)");
+    }
+
+    /// <summary>
+    /// Tests that no requirements message is sent when no warp requires a master level or resets,
+    /// even if a warp has requirements of other attributes.
+    /// </summary>
+    [Test]
+    public async Task NoWarpRequirementsAreWrittenWithoutMasterLevelOrResetsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new ShowWarpListExtendedPlugIn(player);
+        WarpInfo[] warps =
+        [
+            CreateWarp(1, "Lorencia", 0, 10, 2000),
+            CreateWarp(2, "Strength", 1, 10, 2000, (Stats.TotalStrength, 1000)),
+        ];
+
+        await view.ShowWarpListAsync(warps).ConfigureAwait(false);
+
+        Assert.That(output.ToArray().Length, Is.EqualTo(WarpListExtendedRef.GetRequiredSize(2)));
+    }
+
+    /// <summary>
+    /// Tests that a player who fulfills the requirements of a warp can use it: the costs are paid,
+    /// and no message is shown.
+    /// </summary>
+    [Test]
+    public async Task PlayerWhoFulfillsTheWarpRequirementsCanWarpAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        player.Attributes![Stats.MasterLevel] = 50;
+        player.Attributes[Stats.Resets] = 3;
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000, (Stats.MasterLevel, 50), (Stats.Resets, 3));
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(It.IsAny<string>(), It.IsAny<MessageType>()), Times.Never);
+        Assert.That(player.Money, Is.EqualTo(90000));
+    }
+
+    /// <summary>
+    /// Tests that a player who misses a required attribute of a warp can't use it: it's refused with a
+    /// message which names the attribute and its minimum, and the costs aren't paid.
+    /// </summary>
+    /// <param name="attributeName">The name of the property of <see cref="Stats"/> which the player misses.</param>
+    /// <param name="minimumValue">The minimum value of the attribute which the warp requires.</param>
+    [TestCase(nameof(Stats.MasterLevel), 50)]
+    [TestCase(nameof(Stats.Resets), 3)]
+    public async Task PlayerWhoMissesAWarpRequirementCantWarpAsync(string attributeName, int minimumValue)
+    {
+        var missing = (AttributeDefinition)typeof(Stats).GetProperty(attributeName)!.GetValue(null)!;
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        player.Attributes![Stats.MasterLevel] = 50;
+        player.Attributes[Stats.Resets] = 3;
+        player.Attributes[missing] -= 1;
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000, (Stats.MasterLevel, 50), (Stats.Resets, 3));
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var message = player.GetLocalizedMessage(nameof(PlayerMessage.MissingWarpRequirement), $"{missing.Designation} {minimumValue}");
+        Assert.That(message, Does.Contain($"{missing.Designation} {minimumValue}"));
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
+        Assert.That(player.Money, Is.EqualTo(100000));
+    }
+
+    /// <summary>
+    /// Tests that a player who misses a required attribute of the target map can't warp there,
+    /// and that the message names the attribute and its minimum.
+    /// </summary>
+    [Test]
+    public async Task PlayerWhoMissesAMapRequirementIsToldWhichAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Money = 100000;
+        player.Attributes![Stats.Resets] = 1;
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000);
+        var map = (Persistence.BasicModel.GameMapDefinition)warp.Gate!.Map!;
+        map.MapRequirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.Resets, MinimumValue = 2 });
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        var message = player.GetLocalizedMessage(nameof(PlayerMessage.MissingMapRequirement), $"{Stats.Resets.Designation} 2");
+        Assert.That(message, Does.Contain($"{Stats.Resets.Designation} 2"));
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+        view.Verify(v => v.ShowMessageAsync(message, MessageType.BlueNormal), Times.Once);
+        Assert.That(player.Money, Is.EqualTo(100000));
+    }
+
+    /// <summary>
+    /// Tests that a party member can be summoned to a map when one of its warps lets them in,
+    /// even if the warp with the lowest level requires something which they miss.
+    /// </summary>
+    /// <param name="totalLevel">The total level of the target.</param>
+    /// <param name="resets">The resets of the target.</param>
+    /// <param name="expected">Whether the target may be summoned.</param>
+    [TestCase(200, 0, true)]
+    [TestCase(50, 0, false)]
+    [TestCase(50, 5, true)]
+    public async Task SummonTargetNeedsOneUsableWarpIntoTheMapAsync(int totalLevel, int resets, bool expected)
+    {
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        target.Attributes!.AddElement(new SimpleElement(totalLevel, AggregateType.AddRaw), Stats.TotalLevel);
+        target.Attributes[Stats.Resets] = resets;
+        var lowWithResets = CreateWarp(1, "Low with resets", 7, 10, 2000, (Stats.Resets, 5));
+        var map = lowWithResets.Gate!.Map!;
+        var high = CreateWarp(2, "High", 7, 100, 2000);
+        high.Gate!.Map = map;
+        target.GameContext.Configuration.WarpList.Add(lowWithResets);
+        target.GameContext.Configuration.WarpList.Add(high);
+
+        Assert.That(SummonPartySkillPlugin.IsAllowedByTheWarpsInto(map, target), Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// Tests that bots only pick warps whose requirements they fulfill.
+    /// </summary>
+    /// <param name="masterLevel">The master level of the bot.</param>
+    /// <param name="expectedIndexes">The indexes of the warps which the bot may use.</param>
+    [TestCase(0, new[] { 1 })]
+    [TestCase(10, new[] { 1, 2 })]
+    public async Task BotsSkipWarpsWhoseRequirementsTheyMissAsync(int masterLevel, int[] expectedIndexes)
+    {
+        var bot = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        bot.Attributes![Stats.Level] = 400;
+        bot.Attributes[Stats.MasterLevel] = masterLevel;
+        var plain = CreateWarp(1, "Plain", 7, 10, 2000);
+        var master = CreateWarp(2, "Master", 7, 10, 2000, (Stats.MasterLevel, 10));
+        var map = plain.Gate!.Map!;
+        master.Gate!.Map = map;
+        bot.GameContext.Configuration.WarpList.Add(plain);
+        bot.GameContext.Configuration.WarpList.Add(master);
+
+        var legal = BotChatPlugIn.GetLegalWarps(bot, map).Select(warp => warp.Index);
+
+        Assert.That(legal, Is.EquivalentTo(expectedIndexes));
+    }
+
+    /// <summary>
+    /// Tests that the lowest level at which a bot warps on its own counts a warp with requirements
+    /// only while the bot fulfills them.
+    /// </summary>
+    /// <param name="masterLevel">The master level of the bot.</param>
+    /// <param name="expected">The lowest warp level of the bot.</param>
+    [TestCase(0, 50)]
+    [TestCase(10, 20)]
+    public async Task BotWarpFloorCountsWarpsWithRequirementsOnlyWhenFulfilledAsync(int masterLevel, int expected)
+    {
+        var gameContext = GameContextTestHelper.CreateGameContext();
+        var bot = await PlayerTestHelper.CreateOfflineLevelingPlayerAsync(gameContext).ConfigureAwait(false);
+        bot.Attributes![Stats.MasterLevel] = masterLevel;
+        gameContext.Configuration.WarpList.Clear();
+        gameContext.Configuration.WarpList.Add(CreateWarp(1, "Plain", 7, 50, 2000));
+        gameContext.Configuration.WarpList.Add(CreateWarp(2, "Master", 8, 20, 2000, (Stats.MasterLevel, 10)));
+        var navigator = new BotNavigator(bot);
+
+        Assert.That(navigator.GetMinWarpLevel(), Is.EqualTo(expected));
+    }
+
+    private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs, params (AttributeDefinition Attribute, int MinimumValue)[] requirements)
+    {
+        var warp = new Persistence.BasicModel.WarpInfo
         {
             Index = index,
             Name = name,
@@ -211,5 +410,11 @@ public class WarpListTests
             Costs = costs,
             Gate = new ExitGate { Map = new Persistence.BasicModel.GameMapDefinition { Number = mapNumber } },
         };
+        foreach (var (attribute, minimumValue) in requirements)
+        {
+            warp.Requirements.Add(new Persistence.BasicModel.AttributeRequirement { Attribute = attribute, MinimumValue = minimumValue });
+        }
+
+        return warp;
     }
 }

@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
     public partial class TradeContextModel
     {
         private TradeContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("e777a537-b4c5-4637-b148-c7365390e496"), entityTypeCount: 49)
+            : base(skipDetectChanges: false, modelId: new Guid("798a6400-fd3a-4683-8cae-74c3218d86e5"), entityTypeCount: 50)
         {
         }
 
@@ -56,6 +56,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             var itemOptionLink = ItemOptionLinkEntityType.Create(this);
             var letterBody = LetterBodyEntityType.Create(this);
             var letterHeader = LetterHeaderEntityType.Create(this);
+            var loginTicket = LoginTicketEntityType.Create(this);
             var masterSkillDefinitionSkill = MasterSkillDefinitionSkillEntityType.Create(this);
             var miniGameRankingEntry = MiniGameRankingEntryEntityType.Create(this);
             var monsterDefinitionDropItemGroup = MonsterDefinitionDropItemGroupEntityType.Create(this);
@@ -90,6 +91,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             LetterBodyEntityType.CreateForeignKey1(letterBody, letterHeader);
             LetterBodyEntityType.CreateForeignKey2(letterBody, appearanceData);
             LetterHeaderEntityType.CreateForeignKey1(letterHeader, character);
+            LoginTicketEntityType.CreateForeignKey1(loginTicket, account);
             MiniGameRankingEntryEntityType.CreateForeignKey1(miniGameRankingEntry, character);
             PowerUpDefinitionEntityType.CreateForeignKey1(powerUpDefinition, powerUpDefinitionValue);
             QuestMonsterKillRequirementStateEntityType.CreateForeignKey1(questMonsterKillRequirementState, characterQuestState);
@@ -137,6 +139,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             ItemOptionLinkEntityType.CreateAnnotations(itemOptionLink);
             LetterBodyEntityType.CreateAnnotations(letterBody);
             LetterHeaderEntityType.CreateAnnotations(letterHeader);
+            LoginTicketEntityType.CreateAnnotations(loginTicket);
             MasterSkillDefinitionSkillEntityType.CreateAnnotations(masterSkillDefinitionSkill);
             MiniGameRankingEntryEntityType.CreateAnnotations(miniGameRankingEntry);
             MonsterDefinitionDropItemGroupEntityType.CreateAnnotations(monsterDefinitionDropItemGroup);

@@ -403,6 +403,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory..
+        /// </summary>
+        public static string AddFigurinesAndCharmsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddFigurinesAndCharmsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the figurines and charms.
+        /// </summary>
+        public static string AddFigurinesAndCharmsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddFigurinesAndCharmsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Adds the Fire Blast skill (active in castle siege) to a created dark lord character..
         /// </summary>
         public static string AddFireBlastForDarkLord_Description {

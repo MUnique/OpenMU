@@ -16,6 +16,11 @@ using MUnique.OpenMU.Persistence.EntityFramework.Model;
 internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
 {
     /// <summary>
+    /// The first key of the advisory locks of the login ticket issuance (ASCII "LTIK"), the second is the account's.
+    /// </summary>
+    private const int LoginTicketLockClass = 0x4C54494B;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PlayerContext" /> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -488,6 +493,110 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<(string LoginName, DataModel.Entities.AccountState State)?> GetAccountLoginStateAsync(
+        Guid accountId,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        var account = await this.Context.Set<Account>()
+            .AsNoTracking()
+            .Where(a => a.Id == accountId)
+            .Select(a => new { a.LoginName, a.State })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return account is null ? null : (account.LoginName, account.State);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<DataModel.Entities.LoginTicket?> GetLoginTicketByHashAsync(
+        string tokenHash,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        return await this.Context.Set<LoginTicket>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(ticket => ticket.TokenHash == tokenHash, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryUseLoginTicketAsync(
+        Guid ticketId,
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+
+        // A single conditional update, so the database lets only one of concurrent redeemers win.
+        var used = await this.Context.Set<LoginTicket>()
+            .Where(ticket => ticket.Id == ticketId && ticket.UsedAt == null && ticket.ExpiresAt > nowUtc)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(ticket => ticket.UsedAt, nowUtc), cancellationToken)
+            .ConfigureAwait(false);
+        return used == 1;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<bool> TryAddLoginTicketAsync(
+        Guid accountId,
+        string tokenHash,
+        DateTime createdAtUtc,
+        DateTime expiresAtUtc,
+        int maximumUnexpired,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        await using var transaction = await this.Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+
+        // Concurrent inserts don't see each other, so the issuers of an account take turns until the commit.
+        // Accounts whose keys collide just take turns, too.
+        var accountKey = BitConverter.ToInt32(accountId.ToByteArray(), 0);
+        await this.Context.Database
+            .ExecuteSqlInterpolatedAsync($"SELECT pg_advisory_xact_lock({LoginTicketLockClass}, {accountKey})", cancellationToken)
+            .ConfigureAwait(false);
+        var unexpired = await this.Context.Set<LoginTicket>()
+            .CountAsync(ticket => ticket.AccountId == accountId && ticket.ExpiresAt > createdAtUtc, cancellationToken)
+            .ConfigureAwait(false);
+        if (unexpired >= maximumUnexpired)
+        {
+            return false;
+        }
+
+        var ticket = new LoginTicket
+        {
+            Id = GuidV7.NewGuid(),
+            AccountId = accountId,
+            TokenHash = tokenHash,
+            CreatedAt = createdAtUtc,
+            ExpiresAt = expiresAtUtc,
+        };
+        this.Context.Add(ticket);
+        try
+        {
+            await this.Context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            // Not left tracked: the context's own saves don't save it again, also if this one failed.
+            this.Context.Entry(ticket).State = EntityState.Detached;
+        }
+
+        await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        return true;
+    }
+
+    /// <inheritdoc />
+    public async ValueTask DeleteExpiredLoginTicketsAsync(
+        DateTime nowUtc,
+        CancellationToken cancellationToken = default)
+    {
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        await this.Context.Set<LoginTicket>()
+            .Where(ticket => ticket.ExpiresAt <= nowUtc)
+            .ExecuteDeleteAsync(cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />

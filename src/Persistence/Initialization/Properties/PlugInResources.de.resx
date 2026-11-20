@@ -1040,4 +1040,10 @@
   </data>
   <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>Tabellen der Sockelanzahl</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>Sockelgegenstände fallen meistens mit einem Sockel und selten mit drei (Zweihandwaffen: fünf), statt mit jeder Anzahl bis zum Maximum mit gleicher Wahrscheinlichkeit. Erhöht die maximale Sockelanzahl der Sockelgegenstände auf fünf; die Tabellen begrenzen die Drops. Sockelgegenstände, die schon eine Tabelle haben, behalten sie.</value></data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Figuren und Talismane hinzufügen</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt die Falken- und Ziegenfigur sowie die (goldenen) Eichen- und Ahorntalismane hinzu, die ihre Boni geben, während sie im Inventar benutzt werden.</value>
+  </data>
 </root>

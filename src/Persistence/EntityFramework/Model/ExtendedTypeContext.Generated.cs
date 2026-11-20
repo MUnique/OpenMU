@@ -49,6 +49,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemOptionLink>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemStorage>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LoginTicket>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.QuestMonsterKillRequirementState>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.SkillEntry>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.WaitingItem>();
@@ -245,6 +246,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Skill>().HasOne(entity => entity.RawAreaSkillSettings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SkillComboDefinition>().HasMany(entity => entity.RawSteps).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<WeightedValueTable>().HasMany(entity => entity.RawValues).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<WarpInfo>().HasMany(entity => entity.RawRequirements).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRequiredMonsterKills).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRequiredItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<QuestDefinition>().HasMany(entity => entity.RawRewards).WithOne().OnDelete(DeleteBehavior.Cascade);
