@@ -143,6 +143,8 @@ internal partial class CharacterClassInitialization : InitializerBase
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.ManaRecoveryMultiplier, 0.03f, Stats.IsResting));
         attributeRelationships.Add(this.CreateAttributeRelationship(Stats.AbilityRecoveryAbsolute, 3, Stats.IsInSafezone));
 
+        attributeRelationships.Add(this.CreateAttributeRelationship(Stats.CanFly, 1, Stats.IsWingEquipped));
+
         if (this.UseClassicPvp)
         {
             attributeRelationships.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 1, Stats.DefenseRatePvm));

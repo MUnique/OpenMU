@@ -122,7 +122,7 @@ public class Wings : WingsInitializerBase
 
         // add CanFly Attribute to all wings
         var canFlyPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-        canFlyPowerUp.TargetAttribute = Stats.CanFly.GetPersistent(this.GameConfiguration);
+        canFlyPowerUp.TargetAttribute = Stats.IsWingEquipped.GetPersistent(this.GameConfiguration);
         canFlyPowerUp.BaseValue = 1;
         wing.BasePowerUpAttributes.Add(canFlyPowerUp);
 

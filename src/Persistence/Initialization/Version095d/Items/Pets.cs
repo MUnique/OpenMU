@@ -47,7 +47,9 @@ public class Pets : InitializerBase
             LocalizedString.FromResource(() => ItemNames.Imp),
             28,
             true,
-            (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+            (Stats.IsImpEquipped, 1.0f, AggregateType.AddRaw),
+            (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate),
+            (Stats.HealthLossAfterHit, 3.0f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(
             2,

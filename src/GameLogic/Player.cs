@@ -857,6 +857,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
         }
 
+        this.Attributes[Stats.CurrentHealth] -= this.Attributes[Stats.HorseOwnerReceivedDamageHealthToll];
+
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
             this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
@@ -881,7 +883,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker is Player attackerPlayer)
         {
-            await attackerPlayer.AfterHitTargetAsync(this.Attributes[Stats.DefenseFinal], skill?.Skill?.DamageType).ConfigureAwait(false);
+            await attackerPlayer.AfterHitTargetAsync(this.Attributes[Stats.DefenseFinal], skill, this).ConfigureAwait(false);
 
             if (this.IsAlive && Rand.NextRandomBool(attackerPlayer.Attributes![Stats.MaceMasteryStunChance]))
             {
@@ -896,12 +898,29 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// Is called after the player successfully hit a target.
     /// </summary>
     /// <param name="targetDefense">The target's defense.</param>
-    /// <param name="damageType">The damage type.</param>
-    public async ValueTask AfterHitTargetAsync(float targetDefense, DamageType? damageType)
+    /// <param name="skill">The attacking skill.</param>
+    /// <param name="target">The target player.</param>
+    public async ValueTask AfterHitTargetAsync(float targetDefense, SkillEntry? skill, Player? target = null)
     {
-        this.Attributes![Stats.CurrentHealth] = Math.Max(this.Attributes[Stats.CurrentHealth] - this.Attributes[Stats.HealthLossAfterHit], 1);
+        var healthLossAfterHit = this.Attributes![Stats.HealthLossAfterHit];
+        if (skill?.EnsureSkillAttributes(this.Attributes) is { } skillAttributes && skillAttributes[Stats.SkillHealthLossAfterHit] > 0)
+        {
+            healthLossAfterHit = skillAttributes[Stats.SkillHealthLossAfterHit];
+        }
 
-        await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, damageType ?? DamageType.Physical).ConfigureAwait(false);
+        if (target?.Attributes is { } targetAttributes && targetAttributes[Stats.IsDinorantEquipped] > 0)
+        {
+            healthLossAfterHit += this.Attributes[Stats.TargetHasDinorantHealthToll];
+        }
+
+        this.Attributes[Stats.CurrentHealth] -= healthLossAfterHit;
+        if (this.Attributes[Stats.CurrentHealth] < 1)
+        {
+            this.LastDeath = new DeathInformation(0, string.Empty, default, 0);
+            await this.OnDeathAsync(null).ConfigureAwait(false);
+        }
+
+        await this.DecreaseWeaponDurabilityAfterHitAsync(targetDefense, skill?.Skill?.DamageType ?? DamageType.Physical).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
