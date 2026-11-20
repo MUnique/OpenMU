@@ -113,7 +113,7 @@ public partial class EditConfigGrid : ComponentBase, IAsyncDisposable
         }
     }
 
-    private string? NameFilter { get; set; }
+    private string NameFilter { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets a value indicating whether at least one entry has a number which can be displayed and used for sorting.
