@@ -2683,7 +2683,7 @@
     <value>Warp-Liste anzeigen (erweitert)</value>
   </data>
   <data name="ShowWarpListExtendedPlugIn_Description" xml:space="preserve">
-    <value>Sendet die Warp-Liste des Servers an den Open-Source-Client, der sie in seinem Warp-Fenster statt der Warp-Liste seiner Datendateien anzeigt.</value>
+    <value>Sendet die Warp-Liste des Servers an den Open-Source-Client, der sie in seinem Warp-Fenster statt der Warp-Liste seiner Datendateien anzeigt, und danach das Mindest-Master-Level und die Mindestanzahl an Resets der Warps, die sie verlangen.</value>
   </data>
   <data name="LuckyCoinViewPlugIn_Name" xml:space="preserve">
     <value>Glücksmünzen-Ansicht</value>

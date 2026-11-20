@@ -33438,6 +33438,149 @@ public readonly ref struct WarpListEntryRef
 
 
 /// <summary>
+/// Is sent by the server when: Right after the WarpListExtended, when the client is the open source client and at least one warp of the list requires a minimum master level or a minimum number of resets. It contains only the warps which have such a requirement.
+/// Causes reaction on client side: The client remembers the minimums of these warps and shows a warp in its warp window as unavailable (greyed out) while the character doesn't reach them. Warps which aren't in this message have no such requirement. The server checks the requirements again when the character asks for the warp.
+/// </summary>
+public readonly ref struct WarpRequirementsExtendedRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpRequirementsExtendedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WarpRequirementsExtendedRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpRequirementsExtendedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private WarpRequirementsExtendedRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xF5;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x0B;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="WarpRequirementEntryRef"/> of the specified index.
+    /// </summary>
+        public WarpRequirementEntryRef this[int index] => new (this._data[(6 + index * WarpRequirementEntryRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="WarpRequirementsExtended"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator WarpRequirementsExtendedRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="WarpRequirementsExtended"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(WarpRequirementsExtendedRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="WarpRequirementEntryRef"/>.
+    /// </summary>
+    /// <param name="requirementsCount">The count of <see cref="WarpRequirementEntryRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int requirementsCount) => requirementsCount * WarpRequirementEntryRef.Length + 6;
+
+
+/// <summary>
+/// The minimum master level and number of resets which a warp requires..
+/// </summary>
+public readonly ref struct WarpRequirementEntryRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WarpRequirementEntryRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public WarpRequirementEntryRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets or sets the index of the warp, as in the WarpListExtended.
+    /// </summary>
+    public ushort Index
+    {
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the minimum master level; 0 when the warp doesn't require one.
+    /// </summary>
+    public ushort MasterLevel
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the minimum number of resets; 0 when the warp doesn't require one.
+    /// </summary>
+    public uint Resets
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+}
+}
+
+
+/// <summary>
 /// Is sent by the server when: The player receives the result of registering Rena or Event Chips at the Golden Archer NPC.
 /// Causes reaction on client side: The client updates the Golden Archer interface with total registered count and remaining count in inventory.
 /// </summary>

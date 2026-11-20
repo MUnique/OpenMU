@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Duel;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
@@ -683,8 +684,8 @@ public class BotChatPlugIn
 
     /// <summary>
     /// Determines whether the bot may warp to the map according to the warp list - the same rule the
-    /// bots' navigation follows (the plain level against the class-reduced warp requirement) - and the
-    /// map isn't forbidden for bots.
+    /// bots' navigation follows (the plain level against the class-reduced warp requirement, and the
+    /// requirements of the warp) - and the map isn't forbidden for bots.
     /// </summary>
     /// <param name="bot">The bot.</param>
     /// <param name="map">The map.</param>
@@ -700,16 +701,15 @@ public class BotChatPlugIn
     /// <returns>The warp entries.</returns>
     internal static IEnumerable<WarpInfo> GetLegalWarps(Player bot, GameMapDefinition map)
     {
-        if (bot.SelectedCharacter is not { } character
+        if (bot.SelectedCharacter is null
             || BotFeaturePlugIn.GetConfiguration(bot.GameContext)?.IsMapForbidden(map) == true)
         {
             return [];
         }
 
-        var level = GetLevel(bot);
         return bot.GameContext.Configuration.WarpList.Where(warp =>
             warp.Gate?.Map?.Number == map.Number
-            && character.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) <= level);
+            && warp.IsAllowedFor(bot));
     }
 
     /// <summary>

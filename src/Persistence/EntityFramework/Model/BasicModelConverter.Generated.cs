@@ -3350,6 +3350,14 @@ internal sealed class BasicModelConverter
         target.Costs = source.Costs;
         target.LevelRequirement = source.LevelRequirement;
         target.IsWarpable = source.IsWarpable;
+        if (source.Requirements is { } requirementsItems)
+        {
+            foreach (var item in requirementsItems)
+            {
+                target.Requirements.Add((MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement)this.ConvertObject(item)!);
+            }
+        }
+
         target.Gate = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Gate)!;
         return target;
     }

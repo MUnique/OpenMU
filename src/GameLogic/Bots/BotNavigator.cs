@@ -377,6 +377,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private GameConfiguration? _warpFloorConfiguration;
     private CharacterClass? _warpFloorClass;
     private int _minWarpLevel = FallbackMinWarpLevel;
+
+    /// <summary>
+    /// The warps with requirements, which count for the warp floor only while the bot fulfills them;
+    /// cached with <see cref="_minWarpLevel"/>.
+    /// </summary>
+    private WarpInfo[] _warpsWithRequirements = [];
     private Guid _leaderMapId;
     private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
     private DateTimeOffset _nextEvaluationUtc = DateTimeOffset.MinValue;
@@ -1201,6 +1207,44 @@ internal sealed class BotNavigator : AsyncDisposable
             var configuration = this._player.GameContext.FeaturePlugIns.GetPlugIn<BotMerchantPlugIn>()?.Configuration;
             this.EndMarketShift(shift, configuration, BotMarketPlanner.EndReason.StoreNotOpened);
         }
+    }
+
+    /// <summary>
+    /// Lowest level at which this bot warps on its own: its lowest
+    /// class-reduced warp requirement, so special classes keep their edge.
+    /// Warps with requirements (e.g. a minimum master level) count only while the bot fulfills them.
+    /// The floor of the other warps and the warps with requirements are cached per configuration and class;
+    /// both change rarely. Without such warps (as in the default configuration) nothing is evaluated per call.
+    /// </summary>
+    internal int GetMinWarpLevel()
+    {
+        var configuration = this._player.GameContext.Configuration;
+        var characterClass = this._player.SelectedCharacter?.CharacterClass;
+        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
+            || !ReferenceEquals(characterClass, this._warpFloorClass))
+        {
+            this._warpFloorConfiguration = configuration;
+            this._warpFloorClass = characterClass;
+            this._minWarpLevel = configuration.WarpList
+                .Where(warp => warp.Requirements is not { Count: > 0 })
+                .Select(this.GetEffectiveLevelRequirement)
+                .DefaultIfEmpty(FallbackMinWarpLevel)
+                .Min();
+            this._warpsWithRequirements = configuration.WarpList
+                .Where(warp => warp.Requirements is { Count: > 0 })
+                .ToArray();
+        }
+
+        var minWarpLevel = this._minWarpLevel;
+        foreach (var warp in this._warpsWithRequirements)
+        {
+            if (warp.GetMissingRequirement(this._player) is null)
+            {
+                minWarpLevel = Math.Min(minWarpLevel, this.GetEffectiveLevelRequirement(warp));
+            }
+        }
+
+        return minWarpLevel;
     }
 
     /// <inheritdoc />
@@ -2789,8 +2833,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Gets the gate through which the bot may legally warp to the given map, exactly like a player
     /// using the in-game warp window: the map must have an entry in the server's warp list whose level
     /// requirement (class-reduced, see <see cref="CharacterExtensions.GetEffectiveMoveLevelRequirement"/>)
-    /// is met by the bot's PLAIN character level. The reset-aware effective level intentionally plays
-    /// no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
+    /// is met by the bot's PLAIN character level, and whose own requirements (e.g. a minimum master level,
+    /// see <see cref="WarpInfo.Requirements"/>) the bot fulfills. The reset-aware effective level intentionally
+    /// plays no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
     /// </summary>
     /// <param name="mapDefinition">The target map.</param>
     /// <param name="warp">The warp info, if a legal entry exists.</param>
@@ -2833,7 +2878,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {
-        if (this._player.SelectedCharacter is not { } character
+        if (this._player.SelectedCharacter is null
             || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(mapDefinition) == true)
         {
             // A map forbidden for bots has no legal warp at all: no hunting ground, no leader to follow
@@ -2857,32 +2902,12 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Select the identity tier before applying access requirements. Otherwise an exact entry
         // which is too high-level could incorrectly fall through to an easier same-number entry.
-        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
+        // The level and the warp's own requirements (e.g. a minimum master level), as WarpAction checks them.
+        return mapWarps.Where(w => w.IsAllowedFor(this._player));
     }
 
-    /// <summary>
-    /// Lowest level at which this bot warps on its own: its lowest
-    /// class-reduced warp requirement, so special classes keep their edge.
-    /// Cached per configuration and class; both change rarely.
-    /// </summary>
-    private int GetMinWarpLevel()
-    {
-        var configuration = this._player.GameContext.Configuration;
-        var characterClass = this._player.SelectedCharacter?.CharacterClass;
-        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
-            || !ReferenceEquals(characterClass, this._warpFloorClass))
-        {
-            this._warpFloorConfiguration = configuration;
-            this._warpFloorClass = characterClass;
-            this._minWarpLevel = configuration.WarpList
-                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement)
-                .DefaultIfEmpty(FallbackMinWarpLevel)
-                .Min();
-        }
-
-        return this._minWarpLevel;
-    }
+    private int GetEffectiveLevelRequirement(WarpInfo warp)
+        => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement;
 
     /// <summary>
     /// Whether the bot can pay the warp's fare. A bot travels on the same terms as a player - it pays

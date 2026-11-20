@@ -5764,6 +5764,12 @@
   <data name="WarpInfo_Gate_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="WarpInfo_Requirements_Caption" xml:space="preserve">
+    <value>传送要求</value>
+  </data>
+  <data name="WarpInfo_Requirements_Description" xml:space="preserve">
+    <value>角色除等级要求和目标地图要求外还需要满足的属性。开源客户端会获知最低大师等级和最低转生次数，并将角色尚不能使用的传送显示为不可用。</value>
+  </data>
   <data name="Account_IsBot_Caption" xml:space="preserve">
     <value>机器人账号</value>
   </data>

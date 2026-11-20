@@ -28,18 +28,10 @@ public static class GameMapDefinitionExtensions
             return true;
         }
 
-        if (gameMapDefinition.MapRequirements is null || !gameMapDefinition.MapRequirements.Any())
+        if (gameMapDefinition.MapRequirements.GetMissingRequirement(player) is { } missing)
         {
-            return false;
-        }
-
-        foreach (var requirement in gameMapDefinition.MapRequirements)
-        {
-            if (player.Attributes is null || player.Attributes[requirement.Attribute] < requirement.MinimumValue)
-            {
-                errorMessage = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, requirement.Attribute?.Description);
-                return true;
-            }
+            errorMessage = player.GetLocalizedMessage(nameof(PlayerMessage.MissingMapRequirement), missing.GetDisplayText(player));
+            return true;
         }
 
         return false;

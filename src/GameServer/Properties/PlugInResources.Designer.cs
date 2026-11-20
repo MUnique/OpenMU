@@ -6856,7 +6856,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files..
+        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files, followed by the minimum master level and resets of the warps which require them..
         /// </summary>
         public static string ShowWarpListExtendedPlugIn_Description {
             get {

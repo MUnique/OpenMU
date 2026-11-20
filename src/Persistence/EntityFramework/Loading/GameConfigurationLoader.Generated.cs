@@ -47,7 +47,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"ConsumeEffectId\", \"DropLevel\", \"DropsFromMonsters\", \"Durability\", \"ExcellentBonus\", \"ExcellentRaisesLevel\", \"GameConfigurationId\", \"Group\", \"Height\", \"IntroducedIn\", \"IsActive\", \"IsAmmunition\", \"IsBoundToCharacter\", \"IsDroppable\", \"IsPersonalStoreSellable\", \"IsQuestItem\", \"IsRepairable\", \"IsSellableToNpc\", \"IsStorable\", \"IsTradable\", \"ItemSlotId\", \"MaximumDropLevel\", \"MaximumItemLevel\", \"MaximumSockets\", \"Name\", \"Number\", \"PetExperienceFormula\", \"PriceDefinitionId\", \"SkillId\", \"SocketCountTableId\", \"StatProfileId\", \"StorageLimitPerCharacter\", \"Value\", \"Width\" from config.\"ItemDefinition\"",
         "select \"Id\", \"AggregateType\", \"BaseValue\", \"BonusPerLevelTableId\", \"ItemDefinitionId\", \"TargetAttributeId\" from config.\"ItemBasePowerUpDefinition\"",
         "select \"Id\", \"Chance\", \"Description\", \"DropEffect\", \"ExcellentOptionsAddChance\", \"ExcellentOptionsMaximumOptionsPerItem\", \"ItemDefinitionId\", \"ItemLevel\", \"ItemType\", \"MaximumLevel\", \"MaximumMonsterLevel\", \"MinimumLevel\", \"MinimumMonsterLevel\", \"MoneyAmount\", \"MonsterId\", \"RequiredCharacterLevel\", \"SocketCountTableId\", \"SourceItemLevel\" from config.\"ItemDropItemGroup\"",
-        "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"GameServerDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\" from config.\"AttributeRequirement\"",
+        "select \"Id\", \"AttributeId\", \"GameMapDefinitionId\", \"GameServerDefinitionId\", \"ItemDefinitionId\", \"MinimumItemLevel\", \"MinimumValue\", \"SkillId\", \"SkillId1\", \"WarpInfoId\" from config.\"AttributeRequirement\"",
         "select \"Id\", \"AlwaysApplies\", \"CountDistinct\", \"GameConfigurationId\", \"MinimumItemCount\", \"Name\", \"OptionsId\", \"SetLevel\" from config.\"ItemSetGroup\"",
         "select \"Id\", \"AncientSetDiscriminator\", \"BonusOptionId\", \"ItemDefinitionId\", \"ItemSetGroupId\" from config.\"ItemOfItemSet\"",
         "select \"Id\", \"Description\", \"GameConfigurationId\", \"ItemSlots\" from config.\"ItemSlotType\"",
@@ -173,7 +173,7 @@ internal sealed partial class GameConfigurationLoader
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup> _ItemDropItemGroup = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDropItemGroup Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2)> _ItemDropItemGroupRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement> _AttributeRequirement = new();
-    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2, global::System.Guid? Key3, global::System.Guid? Key4)> _AttributeRequirementRows = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement Entity, global::System.Guid? Key0, global::System.Guid? Key1, global::System.Guid? Key2, global::System.Guid? Key3, global::System.Guid? Key4, global::System.Guid? Key5)> _AttributeRequirementRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup> _ItemSetGroup = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemSetGroup Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemSetGroupRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemOfItemSet> _ItemOfItemSet = new();
@@ -990,7 +990,7 @@ internal sealed partial class GameConfigurationLoader
             if (!reader.IsDBNull(5)) { entity.MinimumItemLevel = (global::System.Byte)reader.GetInt16(5); }
             entity.MinimumValue = reader.GetInt32(6);
             this._AttributeRequirement[entity.Id] = entity;
-            this._AttributeRequirementRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(4) ? null : reader.GetGuid(4), reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(7) ? null : reader.GetGuid(7), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
+            this._AttributeRequirementRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(4) ? null : reader.GetGuid(4), reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(7) ? null : reader.GetGuid(7), reader.IsDBNull(8) ? null : reader.GetGuid(8), reader.IsDBNull(9) ? null : reader.GetGuid(9)));
         }
     }
 
@@ -3564,6 +3564,19 @@ internal sealed partial class GameConfigurationLoader
             if (row.Key4 is { } id && this._GameConfiguration.TryGetValue(id, out var parent))
             {
                 var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.Skill>)parent.RawSkills;
+                var item = row.Entity;
+                if (!collection.Contains(item))
+                {
+                    collection.Add(item);
+                }
+            }
+        }
+
+        foreach (var row in this._AttributeRequirementRows)
+        {
+            if (row.Key5 is { } id && this._WarpInfo.TryGetValue(id, out var parent))
+            {
+                var collection = (global::System.Collections.Generic.ICollection<global::MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement>)parent.RawRequirements;
                 var item = row.Entity;
                 if (!collection.Contains(item))
                 {

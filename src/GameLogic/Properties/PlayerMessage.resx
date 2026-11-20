@@ -684,6 +684,9 @@
   <data name="MissingMapRequirement" xml:space="preserve">
     <value>Missing requirement to enter the map: {0}</value>
   </data>
+  <data name="MissingWarpRequirement" xml:space="preserve">
+    <value>Missing requirement for this warp: {0}</value>
+  </data>
   <data name="UnexpectedErrorDuringClosingTrade" xml:space="preserve">
     <value>An unexpected error occured during closing the trade.</value>
   </data>
