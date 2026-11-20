@@ -49,6 +49,13 @@ public interface IGuildServerContext : IContext
     ValueTask<IReadOnlyDictionary<Guid, string>> GetGuildMasterNamesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the activity of all guild members.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The activity of all guild members whose character belongs to an account.</returns>
+    ValueTask<IReadOnlyList<GuildMemberActivity>> GetGuildMemberActivitiesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the guild membership of a character.
     /// </summary>
     /// <param name="characterName">The name of the character.</param>

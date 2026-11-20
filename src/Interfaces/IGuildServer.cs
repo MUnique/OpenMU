@@ -127,6 +127,32 @@ public interface IGuildServer
     ValueTask<bool> ChangeGuildMemberPositionByNameAsync(uint guildId, string characterName, GuildPosition role, int masterTotalLevel);
 
     /// <summary>
+    /// Transfers the leadership of the guild: the specified member becomes the guild master and the
+    /// previous guild master becomes a normal member. Both changes are persisted together and published
+    /// to the game servers of the members which are online.
+    /// </summary>
+    /// <param name="guildId">The guild identifier.</param>
+    /// <param name="characterName">The name of the member which becomes the guild master.</param>
+    /// <returns>
+    /// <c>true</c> if the leadership was transferred; <c>false</c> if the guild or the member is unknown,
+    /// the member already is the guild master, or the change could not be saved (nothing is changed then).
+    /// </returns>
+    ValueTask<bool> TransferLeadershipAsync(uint guildId, string characterName);
+
+    /// <summary>
+    /// Takes the guild master position from guild masters which haven't been seen in the game for the specified time.
+    /// The position goes to the most senior active member (assistant, battle master, other member); the previous
+    /// guild master becomes a normal member. A guild without any active member is dissolved.
+    /// </summary>
+    /// <param name="inactivityLimit">The time after which a player which wasn't seen in the game is inactive. It must be greater than zero.</param>
+    /// <param name="maximumGuilds">The maximum number of guilds which are handled by one call, the ones with the longest inactivity first.</param>
+    /// <returns>The guilds which were handled.</returns>
+    /// <remarks>
+    /// Players which are online are always active. A guild is never dissolved while one of its members is online.
+    /// </remarks>
+    ValueTask<IReadOnlyList<GuildMasterInactivityResult>> RemoveInactiveGuildMastersAsync(TimeSpan inactivityLimit, int maximumGuilds);
+
+    /// <summary>
     /// Notifies the guild server that a player (potential guild member) entered the game.
     /// </summary>
     /// <param name="characterId">The character identifier.</param>
