@@ -335,6 +335,7 @@ function _onDocumentMouseMove(e) {
 
 function _onDocumentMouseUp(e) {
     if (_isPanning) {
+        e.preventDefault();
         _handlePanEnd();
         return;
     }

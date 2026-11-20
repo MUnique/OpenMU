@@ -194,9 +194,9 @@
                 </div>
                 <input class="small form-control"
                        type="search"
-                       autofocus
                        @bind="@this._filterService.SearchFilter"
                        @bind:event="oninput"
+                       onauxclick="event.preventDefault();"
                        placeholder="@Resources.Search ..." />
             </div>
             <div class="map-object-select">
