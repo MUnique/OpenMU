@@ -42,6 +42,9 @@
   <data name="Account_RegistrationDate_Caption" xml:space="preserve">
     <value>Registrierungsdatum</value>
   </data>
+  <data name="Account_LastSeenDate_Caption" xml:space="preserve">
+    <value>Zuletzt gesehen</value>
+  </data>
   <data name="Account_State_Caption" xml:space="preserve">
     <value>Zustand</value>
   </data>

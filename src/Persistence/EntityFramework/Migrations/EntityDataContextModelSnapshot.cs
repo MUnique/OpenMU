@@ -57,6 +57,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("character varying(3)")
                         .HasDefaultValue("en");
 
+                    b.Property<DateTime>("LastSeenDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LoginName")
                         .IsRequired()
                         .HasMaxLength(10)

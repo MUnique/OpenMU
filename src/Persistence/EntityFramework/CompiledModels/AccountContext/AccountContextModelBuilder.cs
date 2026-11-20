@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("1f1d2bd7-0cf9-4a84-bbd4-743454e6e8e7"), entityTypeCount: 51)
+            : base(skipDetectChanges: false, modelId: new Guid("73f5b04b-9cbf-4552-bb1d-f81d48d191e7"), entityTypeCount: 51)
         {
         }
 

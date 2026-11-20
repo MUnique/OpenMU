@@ -70,6 +70,20 @@ public class GuildServerInMemoryContext : InMemoryContext, IGuildServerContext
     }
 
     /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<GuildMemberActivity>> GetGuildMemberActivitiesAsync(CancellationToken cancellationToken = default)
+    {
+        var lastSeenByCharacter = (await this.Provider.GetRepository<Account>().GetAllAsync(cancellationToken).ConfigureAwait(false))
+            .SelectMany(account => account.Characters.Select(character => (character.Id, character.Name, account.LastSeenDate)))
+            .ToDictionary(c => c.Id);
+        var guilds = (await this.Provider.GetRepository<DataModel.Entities.Guild>().GetAllAsync(cancellationToken).ConfigureAwait(false))
+            .ToDictionary(guild => guild.GetId());
+        return (await this.Provider.GetRepository<GuildMember>().GetAllAsync(cancellationToken).ConfigureAwait(false))
+            .Where(member => lastSeenByCharacter.ContainsKey(member.Id) && guilds.ContainsKey(member.GuildId))
+            .Select(member => new GuildMemberActivity(member.GuildId, guilds[member.GuildId].Name ?? string.Empty, member.Id, lastSeenByCharacter[member.Id].Name, member.Status, lastSeenByCharacter[member.Id].LastSeenDate))
+            .ToList();
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<GuildMembership?> GetGuildMembershipAsync(string characterName)
     {
         var characters = await this.Provider.GetRepository<Character>().GetAllAsync().ConfigureAwait(false);
