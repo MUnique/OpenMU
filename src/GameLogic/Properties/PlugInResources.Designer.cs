@@ -4264,6 +4264,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Takes the guild master position from guild masters which weren&apos;t seen in the game for the configured days. It goes to the most senior active member; a guild without active members is dissolved. The check is deactivated by default..
+        /// </summary>
+        public static string GuildMasterInactivityPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuildMasterInactivityPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Guild master inactivity.
+        /// </summary>
+        public static string GuildMasterInactivityPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuildMasterInactivityPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Goblin Points for play time.
         /// </summary>
         public static string GoblinPointsForPlayTimePlugIn_Name {

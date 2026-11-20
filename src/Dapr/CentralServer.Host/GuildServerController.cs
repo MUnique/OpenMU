@@ -183,6 +183,16 @@ public class GuildServerController : ControllerBase
     }
 
     /// <summary>
+    /// Takes the guild master position from inactive guild masters.
+    /// </summary>
+    /// <param name="data">The arguments.</param>
+    [HttpPost(nameof(IGuildServer.RemoveInactiveGuildMastersAsync))]
+    public ValueTask<IReadOnlyList<GuildMasterInactivityResult>> RemoveInactiveGuildMastersAsync([FromBody] GuildMasterInactivityArguments data)
+    {
+        return this._guildServer.RemoveInactiveGuildMastersAsync(data.InactivityLimit, data.MaximumGuilds);
+    }
+
+    /// <summary>
     /// Gets the guild member list.
     /// </summary>
     /// <param name="guildId">The guild identifier.</param>

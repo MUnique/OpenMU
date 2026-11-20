@@ -70,6 +70,12 @@
   <data name="Account_RegistrationDate_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="Account_LastSeenDate_Caption" xml:space="preserve">
+    <value>Last Seen Date</value>
+  </data>
+  <data name="Account_LastSeenDate_Description" xml:space="preserve">
+    <value>The date and time when the account was last seen in the game: when a character entered the world, and when the player left the game.</value>
+  </data>
   <data name="Account_State_Caption" xml:space="preserve">
     <value>State</value>
   </data>

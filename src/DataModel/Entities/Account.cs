@@ -97,6 +97,16 @@ public class Account
     public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
     /// <summary>
+    /// Gets or sets the date and time when the account was last seen in the game, which is when one of its
+    /// characters entered the world and when the player left the game.
+    /// </summary>
+    /// <remarks>
+    /// It's used to find abandoned accounts, e.g. of guild masters. It isn't updated while the player stays in the game,
+    /// so players which are online have to be considered as active, too.
+    /// </remarks>
+    public DateTime LastSeenDate { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
     /// Gets or sets the state.
     /// </summary>
     public AccountState State { get; set; }

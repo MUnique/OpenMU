@@ -34,6 +34,7 @@ public class GuildServer : IGuildServer
     private readonly IDictionary<uint, GuildContainer> _guildDictionary;
     private readonly IDictionary<Guid, uint> _guildIdMapping;
     private readonly IdGenerator _idGenerator;
+    private readonly AsyncLock _inactiveGuildMasterLock = new();
     private readonly IGuildChangePublisher _changePublisher;
     private readonly IPersistenceContextProvider _persistenceContextProvider;
 
@@ -341,6 +342,54 @@ public class GuildServer : IGuildServer
             this._logger.LogError(ex, "Error when transferring the leadership of a guild.");
             return false;
         }
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<IReadOnlyList<GuildMasterInactivityResult>> RemoveInactiveGuildMastersAsync(TimeSpan inactivityLimit, int maximumGuilds)
+    {
+        var results = new List<GuildMasterInactivityResult>();
+        if (inactivityLimit <= TimeSpan.Zero || maximumGuilds <= 0)
+        {
+            return results;
+        }
+
+        try
+        {
+            // Game servers run this concurrently; the second run finds nothing left to do.
+            using var sweepLock = await this._inactiveGuildMasterLock.LockAsync().ConfigureAwait(false);
+            IReadOnlyList<GuildMemberActivity> activities;
+            using (var context = this._persistenceContextProvider.CreateNewGuildContext())
+            {
+                activities = await context.GetGuildMemberActivitiesAsync().ConfigureAwait(false);
+            }
+
+            var now = DateTime.UtcNow;
+            var inactiveMasters = activities
+                .GroupBy(activity => activity.GuildId)
+                .Select(guild => (Members: guild.ToList(), Master: guild.FirstOrDefault(m => m.Position == GuildPosition.GuildMaster)))
+                .Where(guild => guild.Master is not null && !this.IsActive(guild.Master, now, inactivityLimit))
+                .OrderBy(guild => guild.Master!.LastSeen)
+                .ToList();
+            foreach (var (members, master) in inactiveMasters)
+            {
+                if (results.Count >= maximumGuilds)
+                {
+                    this._logger.LogInformation("Guild {GuildName}: the master {MasterName} is inactive, too, but the limit of {Maximum} guilds per run is reached. It's handled by a later run.", master!.GuildName, master.CharacterName, maximumGuilds);
+                    continue;
+                }
+
+                if (await this.HandleInactiveGuildMasterAsync(members, master!, now, inactivityLimit).ConfigureAwait(false) is { } result)
+                {
+                    results.Add(result);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Error when handling inactive guild masters.");
+        }
+
+        return results;
     }
 
     /// <inheritdoc />
@@ -756,6 +805,13 @@ public class GuildServer : IGuildServer
         newMaster.Status = newMasterPreviousRole;
         oldMaster.Status = GuildPosition.GuildMaster;
     }
+
+    private static int GetHeirRank(GuildPosition position) => position switch
+    {
+        GuildPosition.AssistantMaster => 0,
+        GuildPosition.BattleMaster => 1,
+        _ => 2,
+    };
 
     private async ValueTask<bool> DisbandAllianceCoreAsync(uint masterGuildId)
     {
@@ -1245,5 +1301,65 @@ public class GuildServer : IGuildServer
         {
             await this._changePublisher.AssignGuildToPlayerAsync(listEntry.ServerId, listEntry.PlayerName, new GuildMemberStatus(guildId, role)).ConfigureAwait(false);
         }
+    }
+
+    private bool IsActive(GuildMemberActivity member, DateTime now, TimeSpan inactivityLimit)
+    {
+        return this.IsOnline(member) || now - member.LastSeen < inactivityLimit;
+    }
+
+    private bool IsOnline(GuildMemberActivity member)
+    {
+        return this._guildIdMapping.TryGetValue(member.GuildId, out var shortGuildId)
+               && this._guildDictionary.TryGetValue(shortGuildId, out var guild)
+               && guild.Members.TryGetValue(member.CharacterId, out var entry)
+               && entry.ServerId != OfflineServerId;
+    }
+
+    private async ValueTask<GuildMasterInactivityResult?> HandleInactiveGuildMasterAsync(IReadOnlyList<GuildMemberActivity> members, GuildMemberActivity master, DateTime now, TimeSpan inactivityLimit)
+    {
+        var inactivity = now - master.LastSeen;
+        var heir = members
+            .Where(member => member.CharacterId != master.CharacterId && member.Position != GuildPosition.GuildMaster && this.IsActive(member, now, inactivityLimit))
+            .OrderBy(member => GetHeirRank(member.Position))
+            .ThenByDescending(member => member.LastSeen)
+            .ThenBy(member => member.CharacterName, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+
+        // Also loads guilds without online members.
+        var guildId = await this.GetGuildIdAsync(master.GuildId).ConfigureAwait(false);
+        if (guildId == 0)
+        {
+            return null;
+        }
+
+        if (heir is not null)
+        {
+            if (!await this.TransferLeadershipAsync(guildId, heir.CharacterName).ConfigureAwait(false))
+            {
+                this._logger.LogWarning("Guild {GuildName}: the leadership couldn't be transferred from the inactive master {MasterName} to {HeirName}.", master.GuildName, master.CharacterName, heir.CharacterName);
+                return null;
+            }
+
+            this._logger.LogInformation("Guild {GuildName}: the master {MasterName} was inactive for {Days:0.0} days. The leadership was transferred to {HeirName}.", master.GuildName, master.CharacterName, inactivity.TotalDays, heir.CharacterName);
+            return new GuildMasterInactivityResult(master.GuildName, master.CharacterName, heir.CharacterName, inactivity);
+        }
+
+        // Without an active member, the guild is dissolved: the master leaves, which deletes the guild.
+        // Re-checked, because players could have entered the game since the activities were read.
+        if (members.Any(this.IsOnline))
+        {
+            return null;
+        }
+
+        await this.KickMemberAsync(guildId, master.CharacterName).ConfigureAwait(false);
+        if (await this.GuildExistsAsync(master.GuildName).ConfigureAwait(false))
+        {
+            this._logger.LogWarning("Guild {GuildName}: the guild couldn't be dissolved after its master {MasterName} was inactive.", master.GuildName, master.CharacterName);
+            return null;
+        }
+
+        this._logger.LogInformation("Guild {GuildName}: the master {MasterName} was inactive for {Days:0.0} days and no member is active. The guild was dissolved.", master.GuildName, master.CharacterName, inactivity.TotalDays);
+        return new GuildMasterInactivityResult(master.GuildName, master.CharacterName, null, inactivity);
     }
 }

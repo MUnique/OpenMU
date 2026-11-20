@@ -189,6 +189,7 @@ internal sealed class BasicModelConverter
         }
 
         target.RegistrationDate = source.RegistrationDate;
+        target.LastSeenDate = source.LastSeenDate;
         target.State = source.State;
         target.TimeZone = source.TimeZone;
         target.VaultPassword = source.VaultPassword;

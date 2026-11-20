@@ -47,6 +47,7 @@ public class GuildContext : DbContext
         ConfigureModel(modelBuilder);
         modelBuilder.Entity<GuildMember>().Ignore(m => m.Character);
         modelBuilder.Entity<CharacterName>().HasKey(f => f.Id);
+        modelBuilder.Entity<AccountLastSeen>().HasKey(a => a.Id);
 
         modelBuilder.UseGuidV7Ids();
     }

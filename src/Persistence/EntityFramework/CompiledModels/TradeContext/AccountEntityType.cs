@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Account",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Account),
                 baseEntityType,
-                propertyCount: 19,
+                propertyCount: 20,
                 navigationCount: 4,
                 unnamedIndexCount: 1,
                 keyCount: 1);
@@ -101,6 +101,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 maxLength: 3);
             languageIsoCode.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
             languageIsoCode.AddAnnotation("Relational:DefaultValue", "en");
+
+            var lastSeenDate = runtimeEntityType.AddProperty(
+                "LastSeenDate",
+                typeof(DateTime),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetProperty("LastSeenDate", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Account).GetField("<LastSeenDate>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+            lastSeenDate.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var loginName = runtimeEntityType.AddProperty(
                 "LoginName",
