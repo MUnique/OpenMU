@@ -345,6 +345,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private Point _travelPathTarget;
     private Point? _shoppingTarget;
 
+    /// <summary>
+    /// The fare which the current shopping trip leaves untouched (see <see cref="GetHuntingFare"/>),
+    /// judged where the trip started - after the town scroll home, the bot stands on a map whose
+    /// hunting grounds are not the ones it has to get back to.
+    /// </summary>
+    private long _shoppingFareReserve;
+
     /// <summary>Target position of the current buff trip, or null, if there is none.</summary>
     private Point? _buffTarget;
 
@@ -1247,6 +1254,28 @@ internal sealed class BotNavigator : AsyncDisposable
         return minWarpLevel;
     }
 
+    /// <summary>
+    /// Gets the fare of the warp to the strongest hunting ground the bot can safely fight on - the Zen it
+    /// must not spend in town, or it can't get back there (see <see cref="BotShoppingHandler.HasPotionMoney"/>).
+    /// </summary>
+    /// <returns>The fare; 0 if no legal warp leads to a hunting ground outside the bot's own zone.</returns>
+    /// <remarks>
+    /// The same judgement as <see cref="TryPickBetterMap"/>, including the master experience floor, but
+    /// regardless of the money the bot holds right now: the reserve is about the trip it will want to
+    /// afford. Only the strongest ground counts, although the map choice spreads the bots over the
+    /// runners-up too - with the fare to the strongest one in its pocket, the bot can afford at least
+    /// that, whichever other entry may cost more. Like the map choice, it leaves out the zone the bot
+    /// stands in (see <see cref="GetHuntingWarps"/>): a bot shopping on its own hunting ground keeps the
+    /// fare to the next best one, a few levels lower and usually about as expensive.
+    /// </remarks>
+    internal long GetHuntingFare()
+    {
+        var floor = this.MasterExperienceFloor();
+        return (floor > 0 ? this.GetHuntingFareCore(floor) : null)
+               ?? this.GetHuntingFareCore(0)
+               ?? 0;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1822,10 +1851,12 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCheckInterval;
-        if (!BotShoppingHandler.NeedsShopping(this._player))
+        if (!BotShoppingHandler.NeedsShopping(this._player, this.GetHuntingFare))
         {
             return false;
         }
+
+        this._shoppingFareReserve = this.GetHuntingFare();
 
         if (BotShoppingHandler.FindMerchantPosition(this._player, map) is not { } merchantPosition)
         {
@@ -1871,7 +1902,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private async ValueTask TradeAndUpgradeAsync(GameMap map, Point merchantPosition)
     {
-        if (await BotShoppingHandler.TryTradeAsync(this._player, map, merchantPosition).ConfigureAwait(false))
+        if (await BotShoppingHandler.TryTradeAsync(this._player, map, merchantPosition, this._shoppingFareReserve).ConfigureAwait(false))
         {
             await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
         }
@@ -3204,6 +3235,37 @@ internal sealed class BotNavigator : AsyncDisposable
         var floor = this.MasterExperienceFloor();
         return (floor > 0 && this.TryPickBetterMapCore(escape, floor, out warp, out mapDefinition, out monsterLevel))
                || this.TryPickBetterMapCore(escape, 0, out warp, out mapDefinition, out monsterLevel);
+    }
+
+    /// <summary>
+    /// Gets the fare of the warp to the strongest hunting ground (see <see cref="GetHuntingFare"/>),
+    /// counting only monsters of at least <paramref name="minimumMonsterLevel"/>.
+    /// </summary>
+    /// <param name="minimumMonsterLevel">The lowest monster level worth counting.</param>
+    /// <returns>The fare; <c>null</c> if no legal warp leads to such a hunting ground.</returns>
+    private long? GetHuntingFareCore(int minimumMonsterLevel)
+    {
+        (int Level, long Costs)? best = null;
+        foreach (var candidate in this._player.GameContext.Configuration.Maps)
+        {
+            // The whole map is an upper bound for every part of it, and cheap to judge.
+            if (this.BestSafeLevel(candidate, minimumMonsterLevel) <= (best?.Level ?? 0)
+                || candidate.TryGetRequirementError(this._player, out _)
+                || !HasWalkableSpawnGate(candidate))
+            {
+                continue;
+            }
+
+            foreach (var (warp, level) in this.GetHuntingWarps(candidate, minimumMonsterLevel))
+            {
+                if (level > (best?.Level ?? 0))
+                {
+                    best = (level, warp.Costs);
+                }
+            }
+        }
+
+        return best?.Costs;
     }
 
     /// <summary>
