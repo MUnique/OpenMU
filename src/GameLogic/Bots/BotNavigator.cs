@@ -336,6 +336,20 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private bool _leavesMarket;
     private DateTimeOffset _lastWarpUtc = DateTimeOffset.MinValue;
+
+    /// <summary>
+    /// The time of the free warp home which the current errand (a shopping or buff trip) started with,
+    /// or <see cref="DateTimeOffset.MinValue"/>, if it started without one (see <see cref="TakeErrandHomeWarp"/>).
+    /// </summary>
+    private DateTimeOffset _errandHomeWarpUtc = DateTimeOffset.MinValue;
+
+    /// <summary>
+    /// Set in the MU Helper tick once an errand which warped the bot home is done there; the next
+    /// navigation tick then lifts the warp cooldown (see <see cref="IsInWarpCooldown"/>).
+    /// Volatile, because it is written in the MU Helper tick and read in the navigation tick.
+    /// </summary>
+    private volatile bool _isErrandAwayDone;
+
     private DateTimeOffset _nextFollowWarpSearchUtc = DateTimeOffset.MinValue;
     private Point _lastPosition;
     private DateTime _lastMoveUtc = DateTime.MinValue;
@@ -1056,6 +1070,64 @@ internal sealed class BotNavigator : AsyncDisposable
         this._nextEvaluationUtc = now + EvaluationInterval;
         this._isHopInProgress = false;
         return true;
+    }
+
+    /// <summary>
+    /// Records the free warp home which an errand (a shopping or buff trip) starts with, see
+    /// <see cref="TakeErrandHomeWarp"/>. Like every warp, it starts the warp cooldown.
+    /// </summary>
+    internal void StartErrandHomeWarp()
+    {
+        this._lastWarpUtc = this._timeProvider.GetUtcNow();
+        this._errandHomeWarpUtc = this._lastWarpUtc;
+    }
+
+    /// <summary>
+    /// Takes the free warp home the errand which ends now started with: whether there was one, and
+    /// no warp since - then the bot stands in town only for the errand, and may head back out right
+    /// after it (see <see cref="IsInWarpCooldown"/>).
+    /// </summary>
+    /// <returns>True, if the errand took the bot away from its hunting ground.</returns>
+    internal bool TakeErrandHomeWarp()
+    {
+        var isAway = this._errandHomeWarpUtc != DateTimeOffset.MinValue && this._errandHomeWarpUtc == this._lastWarpUtc;
+        this._errandHomeWarpUtc = DateTimeOffset.MinValue;
+        return isAway;
+    }
+
+    /// <summary>
+    /// Marks the errand as done, in the MU Helper tick which carried out the trade or the buff.
+    /// </summary>
+    /// <param name="isAwayFromHuntingGround">Whether the errand took the bot home (see <see cref="TakeErrandHomeWarp"/>).</param>
+    internal void EndErrandAway(bool isAwayFromHuntingGround)
+    {
+        if (isAwayFromHuntingGround)
+        {
+            this._isErrandAwayDone = true;
+        }
+    }
+
+    /// <summary>
+    /// Whether the bot warped too recently to warp to another hunting ground.
+    /// </summary>
+    /// <returns>True, if the warp cooldown is still running.</returns>
+    /// <remarks>
+    /// The cooldown keeps a bot from hopping between hunting grounds, but the warp home for an errand
+    /// is no such hop, so it ends as soon as the errand is done. Counting it sent the bot back out only
+    /// three minutes after it had warped home: it spent them hunting the level 1 monsters of its starter
+    /// map - a quarter of the time of a bot which shops every ten to fifteen minutes. The cooldown is
+    /// only lifted once the errand is done, not at the warp: a bot which arrives and finds nothing to
+    /// do there must not warp back and forth, paying the fare every time.
+    /// </remarks>
+    internal bool IsInWarpCooldown()
+    {
+        if (this._isErrandAwayDone)
+        {
+            this._isErrandAwayDone = false;
+            this._lastWarpUtc = DateTimeOffset.MinValue;
+        }
+
+        return this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown;
     }
 
     /// <summary>
@@ -1794,6 +1866,7 @@ internal sealed class BotNavigator : AsyncDisposable
                     // check interval (an unreachable merchant stays unreachable for a while; a bot
                     // retrying twice a minute wastes its hunting time on futile marches).
                     this._player.Logger.LogDebug("Bot '{Name}' gives up its shopping trip: no route to the merchant at {Target}.", this._player.Name, target);
+                    this._errandHomeWarpUtc = DateTimeOffset.MinValue;
                     this._shoppingTarget = null;
                     this._player.IsOnShoppingTrip = false;
                     this._nextShoppingCheckUtc = NextShoppingCheckUtc();
@@ -1807,7 +1880,8 @@ internal sealed class BotNavigator : AsyncDisposable
             // (the open NPC dialog only holds off the NEXT tick) - and both write through the same,
             // not-thread-safe persistence context. The same rule as for every other bot-initiated mutation,
             // see PendingBotActions. The jewels are spent right after the trade, in the same tick.
-            this._player.PendingBotActions.Enqueue(() => this.TradeAndUpgradeAsync(map, target));
+            var isAwayFromHuntingGround = this.TakeErrandHomeWarp();
+            this._player.PendingBotActions.Enqueue(() => this.TradeAndUpgradeAsync(map, target, isAwayFromHuntingGround));
 
             this._shoppingTarget = null;
             this._player.IsOnShoppingTrip = false;
@@ -1837,7 +1911,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
-                this._lastWarpUtc = this._timeProvider.GetUtcNow();
+                this.StartErrandHomeWarp();
                 this._nextShoppingCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for a shopping trip - no merchant on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
@@ -1869,12 +1943,17 @@ internal sealed class BotNavigator : AsyncDisposable
     /// potions and - still standing safely at the shop with the dialog closed - spend a few of the
     /// looted jewels on the own gear, the player-like moment for it (see <see cref="BotJewelHandler"/>).
     /// </summary>
-    private async ValueTask TradeAndUpgradeAsync(GameMap map, Point merchantPosition)
+    /// <param name="map">The current map.</param>
+    /// <param name="merchantPosition">The position of the merchant.</param>
+    /// <param name="isAwayFromHuntingGround">Whether the trip took the bot home (see <see cref="TakeErrandHomeWarp"/>).</param>
+    private async ValueTask TradeAndUpgradeAsync(GameMap map, Point merchantPosition, bool isAwayFromHuntingGround)
     {
         if (await BotShoppingHandler.TryTradeAsync(this._player, map, merchantPosition).ConfigureAwait(false))
         {
             await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
         }
+
+        this.EndErrandAway(isAwayFromHuntingGround);
     }
 
     /// <summary>
@@ -1900,6 +1979,7 @@ internal sealed class BotNavigator : AsyncDisposable
                     // check interval: an unreachable NPC stays unreachable for a while, and a bot
                     // retrying twice a minute wastes its hunting time on futile marches.
                     this._player.Logger.LogDebug("Bot '{Name}' gives up its buff trip: no route to the buff NPC at {Target}.", this._player.Name, target);
+                    this._errandHomeWarpUtc = DateTimeOffset.MinValue;
                     this._buffTarget = null;
                     this._player.IsOnBuffTrip = false;
                     this._nextBuffCheckUtc = NextBuffCheckUtc();
@@ -1911,7 +1991,8 @@ internal sealed class BotNavigator : AsyncDisposable
             // The dialog itself runs in the MU Helper tick, not here: it pauses the combat AI on the
             // next tick and applies the effect to the character, a player-state mutation which must run
             // where all other bot mutations run (see PendingBotActions).
-            this._player.PendingBotActions.Enqueue(() => this.ClaimBuffAsync(map, target));
+            var isAwayFromHuntingGround = this.TakeErrandHomeWarp();
+            this._player.PendingBotActions.Enqueue(() => this.ClaimBuffAsync(map, target, isAwayFromHuntingGround));
 
             this._buffTarget = null;
             this._player.IsOnBuffTrip = false;
@@ -1942,7 +2023,7 @@ internal sealed class BotNavigator : AsyncDisposable
             {
                 this._travelPath = null;
                 this._hasDestination = false;
-                this._lastWarpUtc = this._timeProvider.GetUtcNow();
+                this.StartErrandHomeWarp();
                 this._nextBuffCheckUtc = DateTime.UtcNow; // start the trip on the new map right away
                 this._player.Logger.LogDebug("Bot '{Name}' warps home to {Map} for its buff - no buff NPC on its map.", this._player.Name, homeMap.Name);
                 await this._player.WarpToAsync(homeGate).ConfigureAwait(false);
@@ -1975,9 +2056,11 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     /// <param name="map">The current map.</param>
     /// <param name="buffNpcPosition">The position of the buff NPC.</param>
-    private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition)
+    /// <param name="isAwayFromHuntingGround">Whether the trip took the bot home (see <see cref="TakeErrandHomeWarp"/>).</param>
+    private async ValueTask ClaimBuffAsync(GameMap map, Point buffNpcPosition, bool isAwayFromHuntingGround)
     {
         await BotBuffHandler.TryRequestBuffAsync(this._player, map, buffNpcPosition).ConfigureAwait(false);
+        this.EndErrandAway(isAwayFromHuntingGround);
     }
 
     /// <summary>
@@ -2523,7 +2606,7 @@ internal sealed class BotNavigator : AsyncDisposable
         var mapIsBarren = DateTime.UtcNow - this._player.LastAttackUtc > BarrenMapDuration;
 
         if ((plainLevel < this.GetMinWarpLevel() && !mustEscape && !mapIsBarren)
-            || this._timeProvider.GetUtcNow() - this._lastWarpUtc < WarpCooldown)
+            || this.IsInWarpCooldown())
         {
             return false;
         }
