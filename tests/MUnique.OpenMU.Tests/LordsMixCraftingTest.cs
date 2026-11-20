@@ -93,7 +93,7 @@ public class LordsMixCraftingTest
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         fixture.Context.Configuration.LordsMixLimit = 1;
         fixture.Context.Configuration.LordsMixLimitPeriod = LordsMixLimitPeriod.SiegeCycle;
-        fixture.Context.SiegeData.LordsMixCount = 1;
+        await SetPersistedCountAsync(fixture, 1, null).ConfigureAwait(false);
 
         var result = await LordsMixCrafting.CheckPreconditionsAsync(fixture.Owner, fixture.Context, Today).ConfigureAwait(false);
 
@@ -108,7 +108,7 @@ public class LordsMixCraftingTest
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         fixture.Context.Configuration.LordsMixLimit = 0;
-        fixture.Context.SiegeData.LordsMixCount = 5;
+        await SetPersistedCountAsync(fixture, 5, null).ConfigureAwait(false);
 
         var result = await LordsMixCrafting.CheckPreconditionsAsync(fixture.Owner, fixture.Context, Today).ConfigureAwait(false);
 
@@ -140,8 +140,7 @@ public class LordsMixCraftingTest
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         fixture.Context.Configuration.LordsMixLimitPeriod = LordsMixLimitPeriod.Day;
-        fixture.Context.SiegeData.LordsMixCount = 1;
-        fixture.Context.SiegeData.LordsMixCountDate = Today;
+        await SetPersistedCountAsync(fixture, 1, Today).ConfigureAwait(false);
 
         var result = await LordsMixCrafting.CheckPreconditionsAsync(fixture.Owner, fixture.Context, Today.AddHours(23)).ConfigureAwait(false);
 
@@ -156,8 +155,7 @@ public class LordsMixCraftingTest
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         fixture.Context.Configuration.LordsMixLimitPeriod = LordsMixLimitPeriod.Day;
-        fixture.Context.SiegeData.LordsMixCount = 1;
-        fixture.Context.SiegeData.LordsMixCountDate = Today.AddDays(-1);
+        await SetPersistedCountAsync(fixture, 1, Today.AddDays(-1)).ConfigureAwait(false);
 
         var result = await LordsMixCrafting.CheckPreconditionsAsync(fixture.Owner, fixture.Context, Today).ConfigureAwait(false);
 
@@ -172,14 +170,82 @@ public class LordsMixCraftingTest
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         fixture.Context.Configuration.LordsMixLimitPeriod = LordsMixLimitPeriod.Day;
-        fixture.Context.SiegeData.LordsMixCount = 3;
-        fixture.Context.SiegeData.LordsMixCountDate = Today.AddDays(-1);
+        await SetPersistedCountAsync(fixture, 3, Today.AddDays(-1)).ConfigureAwait(false);
 
         await LordsMixCrafting.CountSuccessfulMixAsync(fixture.Context, Today).ConfigureAwait(false);
 
         Assert.That(fixture.Context.SiegeData.LordsMixCount, Is.EqualTo(1));
         Assert.That(fixture.Context.SiegeData.LordsMixCountDate, Is.EqualTo(Today));
         Assert.That(fixture.Context.SiegeData.LordsMixCountDate!.Value.Kind, Is.EqualTo(DateTimeKind.Utc), "PostgreSQL only stores UTC date times");
+    }
+
+    /// <summary>
+    /// Tests that a mix counted by another game server is seen by a game server which loaded the castle siege data
+    /// before.
+    /// </summary>
+    [Test]
+    public async ValueTask MixCountedOnAnotherGameServerIsRefusedAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var otherGameServer = await CreateContextOfAnotherGameServerAsync(fixture).ConfigureAwait(false);
+
+        await LordsMixCrafting.CountSuccessfulMixAsync(otherGameServer, Today).ConfigureAwait(false);
+        var result = await LordsMixCrafting.CheckPreconditionsAsync(fixture.Owner, fixture.Context, Today).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Failed));
+    }
+
+    /// <summary>
+    /// Tests that saving the owner data on a game server, which loaded the castle siege data before another game server
+    /// counted a mix, doesn't overwrite the count of the mix.
+    /// </summary>
+    [Test]
+    public async ValueTask OwnerSaveOfAnotherGameServerKeepsTheCountAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var otherGameServer = await CreateContextOfAnotherGameServerAsync(fixture).ConfigureAwait(false);
+
+        await LordsMixCrafting.CountSuccessfulMixAsync(otherGameServer, Today).ConfigureAwait(false);
+        await fixture.Context.SaveOwnerAsync().ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewContext();
+        var persistentData = await persistenceContext.GetByIdAsync<CastleSiegeData>(fixture.Context.SiegeData.Id).ConfigureAwait(false);
+        Assert.That(persistentData?.LordsMixCount, Is.EqualTo(1));
+        Assert.That(persistentData?.LordsMixCountDate, Is.EqualTo(Today));
+    }
+
+    private static async ValueTask SetPersistedCountAsync(TestFixture fixture, int count, DateTime? date)
+    {
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewContext();
+        var persistentData = await persistenceContext.GetByIdAsync<CastleSiegeData>(fixture.Context.SiegeData.Id).ConfigureAwait(false);
+        persistentData!.LordsMixCount = count;
+        persistentData.LordsMixCountDate = date;
+        await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates the castle siege context of another game server. The in-memory persistence shares its objects, so the
+    /// persistent castle siege data is replaced by a copy first: the <see cref="TestFixture.Context"/> keeps the old
+    /// object, like a game server keeps its own copy of the data loaded from a database.
+    /// </summary>
+    private static async ValueTask<CastleSiegeContext> CreateContextOfAnotherGameServerAsync(TestFixture fixture)
+    {
+        using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewContext())
+        {
+            var original = await persistenceContext.GetByIdAsync<CastleSiegeData>(fixture.Context.SiegeData.Id).ConfigureAwait(false);
+            await persistenceContext.DeleteAsync(original!).ConfigureAwait(false);
+            var copy = persistenceContext.CreateNew<CastleSiegeData>();
+            foreach (var property in typeof(CastleSiegeData).GetProperties().Where(p => p.CanWrite && (p.PropertyType.IsValueType || p.PropertyType == typeof(string))))
+            {
+                property.SetValue(copy, property.GetValue(original));
+            }
+
+            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var context = new CastleSiegeContext(fixture.GameServerContext, fixture.Context.Configuration);
+        await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
+        return context;
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()
@@ -250,11 +316,12 @@ public class LordsMixCraftingTest
         var context = new CastleSiegeContext(gameServerContext, castleSiegeConfiguration);
         await context.InitializeAsync(new DateTime(2026, 8, 3, 12, 0, 0, DateTimeKind.Utc)).ConfigureAwait(false);
 
-        return new(persistenceContextProvider, context, owner, visitor);
+        return new(persistenceContextProvider, gameServerContext, context, owner, visitor);
     }
 
     private sealed record TestFixture(
         InMemoryPersistenceContextProvider PersistenceContextProvider,
+        GameServerContext GameServerContext,
         CastleSiegeContext Context,
         Player Owner,
         Player Visitor);

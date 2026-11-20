@@ -85,6 +85,9 @@ siege configuration (0 means no limit), per *Lord's Mix Limit Period*:
   keeps its owner. A server start after the end of the siege keeps the count of
   the current cycle.
 
+The count is kept in the database and read again for every mix, so the limit
+also holds when the castle's map runs on several game servers.
+
 The required items, the price and the possible results are those of crafting 18
 of the Senior and can be changed like those of other craftings; each result item
 can have its own excellent option chance. Existing Season 6 databases get the

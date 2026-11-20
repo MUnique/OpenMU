@@ -49,7 +49,7 @@ public class LordsMixCrafting : SimpleItemCraftingHandler
             return CraftingResult.Failed;
         }
 
-        if (IsLimitReached(context, today))
+        if (await IsLimitReachedAsync(context, today).ConfigureAwait(false))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LordsMixLimitReached)).ConfigureAwait(false);
             return CraftingResult.Failed;
@@ -68,10 +68,12 @@ public class LordsMixCrafting : SimpleItemCraftingHandler
         await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
         try
         {
+            // Another game server may have counted a mix since this one loaded the count.
+            await context.LoadLordsMixCountAsync().ConfigureAwait(false);
             context.SiegeData.LordsMixCount = GetCurrentCount(context, today) + 1;
             // The calendar date of the server's local time, stored with the UTC kind which the database requires.
             context.SiegeData.LordsMixCountDate = DateTime.SpecifyKind(today.Date, DateTimeKind.Utc);
-            await context.SaveOwnerAsync().ConfigureAwait(false);
+            await context.SaveLordsMixCountAsync().ConfigureAwait(false);
         }
         finally
         {
@@ -99,10 +101,25 @@ public class LordsMixCrafting : SimpleItemCraftingHandler
 
     private static DateTime GetToday() => DateTime.Now.Date;
 
-    private static bool IsLimitReached(CastleSiegeContext context, DateTime today)
+    private static async ValueTask<bool> IsLimitReachedAsync(CastleSiegeContext context, DateTime today)
     {
         var limit = context.Configuration.LordsMixLimit;
-        return limit > 0 && GetCurrentCount(context, today) >= limit;
+        if (limit <= 0)
+        {
+            return false;
+        }
+
+        await context.ExecutionLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            // Another game server may have counted a mix since this one loaded the count.
+            await context.LoadLordsMixCountAsync().ConfigureAwait(false);
+            return GetCurrentCount(context, today) >= limit;
+        }
+        finally
+        {
+            context.ExecutionLock.Release();
+        }
     }
 
     /// <summary>

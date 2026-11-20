@@ -358,6 +358,46 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Loads the Lord's Mix count and its date from the database into <see cref="SiegeData"/>, because the game server
+    /// which counted the last mix may be another one.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous load operation.</returns>
+    internal async ValueTask LoadLordsMixCountAsync()
+    {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
+        if (await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false) is { } persistentData)
+        {
+            this.SiegeData.LordsMixCount = persistentData.LordsMixCount;
+            this.SiegeData.LordsMixCountDate = persistentData.LordsMixCountDate;
+        }
+    }
+
+    /// <summary>
+    /// Saves only the Lord's Mix count and its date. <see cref="SaveOwnerAsync"/> doesn't save them, so that the owner
+    /// data saved by another game server doesn't overwrite the count with an older one.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous save operation.</returns>
+    internal async ValueTask SaveLordsMixCountAsync()
+    {
+        if (this.SiegeData is null)
+        {
+            return;
+        }
+
+        using var context = this._gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(CastleSiegeData), false, this._gameContext.Configuration);
+        var persistentData = await context.GetByIdAsync<CastleSiegeData>(this.SiegeData.Id).ConfigureAwait(false)
+            ?? throw new InvalidOperationException("The persistent Castle Siege state no longer exists.");
+        persistentData.LordsMixCount = this.SiegeData.LordsMixCount;
+        persistentData.LordsMixCountDate = this.SiegeData.LordsMixCountDate;
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Replaces the persistent selected-guild list with the current runtime snapshot.
     /// </summary>
     /// <returns>A task that represents the asynchronous save operation.</returns>
@@ -904,8 +944,6 @@ public class CastleSiegeContext : IEventStateProvider
         target.TaxHunt = source.TaxHunt;
         target.IsHuntZoneEnabled = source.IsHuntZoneEnabled;
         target.TributeMoney = source.TributeMoney;
-        target.LordsMixCount = source.LordsMixCount;
-        target.LordsMixCountDate = source.LordsMixCountDate;
     }
 
     private static void CopyNpcState(CastleSiegeNpcState source, CastleSiegeNpcState target)
