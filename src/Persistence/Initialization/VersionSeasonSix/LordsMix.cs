@@ -103,6 +103,7 @@ internal static class LordsMix
         (0, 21), // Dark Reign Blade
         (2, 12), // Great Lord Scepter
         (4, 20), // Arrow Viper Bow
+        (5, 11), // Staff of Kundun, seen in a video; the guide has no normal staff
         (8, 21), // Great Dragon Armor
         (8, 22), // Dark Soul Armor
         (8, 23), // Hurricane Armor

@@ -84,7 +84,7 @@ internal class LordsMixInitializationTest
         var settings = crafting.SimpleCraftingSettings!;
         var excellentResults = settings.ResultItems.Where(r => r.ExcellentOptionChance == 100).Select(r => r.ItemDefinition!).ToList();
         var normalResults = settings.ResultItems.Where(r => r.ExcellentOptionChance == 0).Select(r => (r.ItemDefinition!.Group, r.ItemDefinition.Number)).ToList();
-        (byte Group, short Number)[] expectedNormalResults = [(0, 20), (0, 21), (2, 12), (4, 20), (8, 21), (8, 22), (8, 23), (8, 24), (8, 28)];
+        (byte Group, short Number)[] expectedNormalResults = [(0, 20), (0, 21), (2, 12), (4, 20), (5, 11), (8, 21), (8, 22), (8, 23), (8, 24), (8, 28)];
 
         Assert.Multiple(() =>
         {
@@ -101,7 +101,7 @@ internal class LordsMixInitializationTest
             AssertRequiredItem(settings, 12, 31, 1, 2); // Packed Jewel of Soul, 30 jewels
             Assert.That(settings.RequiredItems, Has.Count.EqualTo(3));
 
-            Assert.That(settings.ResultItems, Has.Count.EqualTo(75));
+            Assert.That(settings.ResultItems, Has.Count.EqualTo(76));
             Assert.That(settings.ResultItems.Select(r => r.ExcellentOptionChance), Is.All.EqualTo(100).Or.EqualTo(0));
             Assert.That(excellentResults, Has.Count.EqualTo(66), "18 weapons and shields, 48 pieces of 10 armor sets");
             Assert.That(excellentResults, Is.Unique);
