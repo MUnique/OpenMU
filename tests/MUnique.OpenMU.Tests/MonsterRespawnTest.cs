@@ -36,14 +36,16 @@ public class MonsterRespawnTest
         await monster.ApplyDamageAsync(killer, 1_000_000).ConfigureAwait(false);
         Assert.That(monster.IsAlive, Is.False);
 
+        var map = monster.CurrentMap;
         var deadline = DateTime.UtcNow.AddSeconds(10);
-        while (!monster.IsAlive && DateTime.UtcNow < deadline)
+        var isMonsterOnMap = map.GetNpcsInRange(SpawnPoint, 1).Contains(monster);
+        while ((!monster.IsAlive || !isMonsterOnMap) && DateTime.UtcNow < deadline)
         {
             await Task.Delay(50).ConfigureAwait(false);
         }
 
         Assert.That(monster.IsAlive, Is.True);
-        Assert.That(monster.CurrentMap.GetNpcsInRange(SpawnPoint, 1), Does.Contain(monster));
+        Assert.That(map.GetNpcsInRange(SpawnPoint, 1), Does.Contain(monster));
     }
 
     /// <summary>

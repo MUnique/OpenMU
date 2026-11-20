@@ -195,6 +195,18 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
             }
         }
         
+        public static string ShowAllLanguages {
+            get {
+                return ResourceManager.GetString("ShowAllLanguages", resourceCulture);
+            }
+        }
+
+        public static string ShowSelectedLanguageOnly {
+            get {
+                return ResourceManager.GetString("ShowSelectedLanguageOnly", resourceCulture);
+            }
+        }
+
         public static string PleaseSelectItemDefinition {
             get {
                 return ResourceManager.GetString("PleaseSelectItemDefinition", resourceCulture);

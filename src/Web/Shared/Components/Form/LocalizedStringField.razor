@@ -12,24 +12,38 @@
 <div class="mb-3">
   <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
-  @foreach (var culture in this.GetCultures())
+  @{
+    var visibleCultures = this.GetVisibleCultures();
+  }
+  @foreach (var culture in visibleCultures)
   {
-    <div class="mb-1 localized-value">
-      <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
-             class="@(this.GetInputClass(culture))"
-             value="@GetValueForCulture(culture)"
-             @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))"
-      />
-      <span class="badge @(this.GetBadge(culture))">@culture.Name</span>
+    <div class="mb-1">
+      <div class="input-group">
+        <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
+              class="@(this.GetInputClass(culture))"
+              value="@GetValueForCulture(culture)"
+              @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))" />
+        @if (this.GetCultures().Count > 1)
+        {
+          <button type="button" class="btn btn-secondary language-toggle" title="@(this._showAllLanguages ? MUnique.OpenMU.Web.Shared.Properties.Resources.ShowSelectedLanguageOnly : MUnique.OpenMU.Web.Shared.Properties.Resources.ShowAllLanguages)" @onclick="this.ToggleAllLanguages">
+            <i class="me-2 oi @(this._showAllLanguages ? "oi-chevron-top" : "oi-chevron-bottom")" aria-hidden="true"></i>
+            <span class="input-group-text badge @(this.GetBadge(culture))">@culture.Name</span>
+          </button>
+        }
+        else
+        {
+          <span class="input-group-text badge language-badge @(this.GetBadge(culture))">@culture.Name</span>
+        }
+      </div>
     </div>
   }
-    
 </div>
 <ValidationMessage For="@this.ValueExpression" />
 
 @code {
 
     private ValidationMessageStore? _validationMessageStore;
+    private bool _showAllLanguages;
 
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
@@ -104,6 +118,43 @@
                 // Unknown to the culture data of this host (e.g. a container without the full ICU data).
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the languages to show fields for: only the selected one, or all if the user expanded them.
+    /// </summary>
+    private List<CultureInfo> GetVisibleCultures()
+    {
+        var cultures = this.GetCultures();
+        if (this._showAllLanguages || cultures.Count == 0)
+        {
+            return cultures;
+        }
+
+        return [GetSelectedCulture(cultures)];
+    }
+
+    /// <summary>
+    /// Gets the culture of the selected admin panel language, like the culture selector does:
+    /// the current UI culture or its nearest parent, otherwise the neutral language.
+    /// </summary>
+    private static CultureInfo GetSelectedCulture(List<CultureInfo> cultures)
+    {
+        for (var culture = CultureInfo.CurrentUICulture; !string.IsNullOrEmpty(culture.Name); culture = culture.Parent)
+        {
+            var match = cultures.FirstOrDefault(c => string.Equals(c.Name, culture.Name, StringComparison.OrdinalIgnoreCase));
+            if (match is not null)
+            {
+                return match;
+            }
+        }
+
+        return cultures.FirstOrDefault(c => c.TwoLetterISOLanguageName == MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode) ?? cultures[0];
+    }
+
+    private void ToggleAllLanguages()
+    {
+        this._showAllLanguages = !this._showAllLanguages;
     }
 
     private string GetValueForCulture(CultureInfo culture)
