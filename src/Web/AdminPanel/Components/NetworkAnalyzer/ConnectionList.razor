@@ -3,14 +3,11 @@
 @using MUnique.OpenMU.Web.AdminPanel.Properties
 
 <div class="d-flex flex-column h-100">
-    <div class="input-group input-group-sm mb-2">
-        <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-        <input type="text" class="form-control" placeholder="@Resources.Search" value="@this.SearchTerm"
-               @oninput="e => this.OnSearchChanged(e.Value?.ToString())"/>
+    <SearchInput Small="true" Class="mb-2" Value="@(this.SearchTerm ?? string.Empty)" ValueChanged="this.OnSearchChanged">
         <button type="button" class="btn btn-outline-secondary" title="@Resources.Refresh" @onclick="this.OnRefresh">
             <span class="oi oi-reload" aria-hidden="true"></span>
         </button>
-    </div>
+    </SearchInput>
 
     @if (!this.FilteredGroups.Any())
     {

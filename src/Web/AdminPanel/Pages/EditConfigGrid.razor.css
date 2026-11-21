@@ -21,8 +21,8 @@
     font-weight: bold;
 }
 
-.col-search {
-    width: 50%;
+.grid-search {
+    max-width: 24rem;
 }
 
 .add-new-bar {
