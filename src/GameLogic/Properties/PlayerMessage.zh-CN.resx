@@ -45,4 +45,7 @@
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>限时物品不能在此使用。</value>
   </data>
+  <data name="MoneyPickupLimitReached" xml:space="preserve">
+    <value>你无法携带更多的金币。</value>
+  </data>
 </root>

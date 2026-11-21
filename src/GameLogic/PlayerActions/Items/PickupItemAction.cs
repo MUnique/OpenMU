@@ -49,9 +49,15 @@ public class PickupItemAction
                             : "nobody could take the money (no eligible party member)";
                     LogRefusal(player, droppedMoney, refusalReason);
 
-                    // The client shows "carrying too much zen" for this reason, instead of the generic "can't pick that up".
-                    var reason = moneyLimitReached ? ItemPickFailReason.MaximumInventoryMoneyReached : ItemPickFailReason.General;
-                    await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(reason)).ConfigureAwait(false);
+                    // The protocol has no failure reason for the money limit: the code of MaximumInventoryMoneyReached
+                    // (254) is the one of the money update, which carries the new amount. A client which gets it without
+                    // the amount drops the reply and keeps waiting for the pick up to finish, so it doesn't pick up
+                    // anything else. So the reply is the general failure, and a message tells the reason.
+                    await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
+                    if (moneyLimitReached)
+                    {
+                        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MoneyPickupLimitReached)).ConfigureAwait(false);
+                    }
                 }
 
                 break;
