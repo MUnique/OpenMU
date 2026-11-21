@@ -67,6 +67,42 @@ public partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configura
         }
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="ResultItemExcellentOptionCountTable" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("resultItemExcellentOptionCountTable")]
+    public WeightedValueTable RawResultItemExcellentOptionCountTable
+    {
+        get => base.ResultItemExcellentOptionCountTable as WeightedValueTable;
+        set => base.ResultItemExcellentOptionCountTable = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.WeightedValueTable ResultItemExcellentOptionCountTable
+    {
+        get => base.ResultItemExcellentOptionCountTable;
+        set => base.ResultItemExcellentOptionCountTable = value;
+    }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ResultItemSocketCountTable" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("resultItemSocketCountTable")]
+    public WeightedValueTable RawResultItemSocketCountTable
+    {
+        get => base.ResultItemSocketCountTable as WeightedValueTable;
+        set => base.ResultItemSocketCountTable = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Configuration.WeightedValueTable ResultItemSocketCountTable
+    {
+        get => base.ResultItemSocketCountTable;
+        set => base.ResultItemSocketCountTable = value;
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

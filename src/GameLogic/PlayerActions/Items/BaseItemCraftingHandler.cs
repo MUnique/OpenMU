@@ -28,6 +28,11 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
             return (CraftingResult.Failed, null);
         }
 
+        if (await this.CheckPreconditionsAsync(player).ConfigureAwait(false) is { } preconditionError)
+        {
+            return (preconditionError, null);
+        }
+
         var (error, items, successRate, price) = this.GetRequiredItemsAndPrice(player);
         if (error is not null)
         {
@@ -119,6 +124,17 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
         }
 
         return (byte)Math.Clamp(successRate + bonus, 1, 100);
+    }
+
+    /// <summary>
+    /// Checks the preconditions of the crafting which don't depend on the items, before the price is paid,
+    /// e.g. whether the player is allowed to use it at all.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The error, if the player can't do the crafting; otherwise, <c>null</c>.</returns>
+    protected virtual ValueTask<CraftingResult?> CheckPreconditionsAsync(Player player)
+    {
+        return ValueTask.FromResult<CraftingResult?>(null);
     }
 
     /// <summary>

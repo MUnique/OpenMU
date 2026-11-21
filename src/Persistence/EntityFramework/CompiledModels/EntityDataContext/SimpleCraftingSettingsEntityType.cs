@@ -21,8 +21,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings),
                 baseEntityType,
-                propertyCount: 17,
-                navigationCount: 2,
+                propertyCount: 19,
+                navigationCount: 4,
+                foreignKeyCount: 2,
+                unnamedIndexCount: 2,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -84,6 +86,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 sentinel: (byte)0);
             resultItemExcellentOptionChance.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var resultItemExcellentOptionCountTableId = runtimeEntityType.AddProperty(
+                "ResultItemExcellentOptionCountTableId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings).GetProperty("ResultItemExcellentOptionCountTableId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings).GetField("<ResultItemExcellentOptionCountTableId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            resultItemExcellentOptionCountTableId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var resultItemLuckOptionChance = runtimeEntityType.AddProperty(
                 "ResultItemLuckOptionChance",
                 typeof(byte),
@@ -115,6 +125,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings).GetField("<ResultItemSkillChance>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: (byte)0);
             resultItemSkillChance.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var resultItemSocketCountTableId = runtimeEntityType.AddProperty(
+                "ResultItemSocketCountTableId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings).GetProperty("ResultItemSocketCountTableId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings).GetField("<ResultItemSocketCountTableId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            resultItemSocketCountTableId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var successPercent = runtimeEntityType.AddProperty(
                 "SuccessPercent",
@@ -168,7 +186,43 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 new[] { id });
             runtimeEntityType.SetPrimaryKey(key);
 
+            var index = runtimeEntityType.AddIndex(
+                new[] { resultItemExcellentOptionCountTableId });
+
+            var index0 = runtimeEntityType.AddIndex(
+                new[] { resultItemSocketCountTableId });
+
             return runtimeEntityType;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey1(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("ResultItemExcellentOptionCountTableId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawResultItemExcellentOptionCountTable = declaringEntityType.AddNavigation("RawResultItemExcellentOptionCountTable",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WeightedValueTable),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings).GetProperty("RawResultItemExcellentOptionCountTable", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("ResultItemSocketCountTableId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType);
+
+            var rawResultItemSocketCountTable = declaringEntityType.AddNavigation("RawResultItemSocketCountTable",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WeightedValueTable),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings).GetProperty("RawResultItemSocketCountTable", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
         }
 
         public static void CreateAnnotations(RuntimeEntityType runtimeEntityType)

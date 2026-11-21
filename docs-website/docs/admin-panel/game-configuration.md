@@ -134,6 +134,21 @@ selected with the same chance between 1 and the maximum sockets. A drop group
 can override the table for the items it drops, see
 [Item drops](item-drops.md#map-drop-groups).
 
+### Excellent options and sockets of crafted items
+
+The crafting settings of an NPC crafting can have two more weighted value tables
+for their result items. The **result item excellent option count table**
+decides how many excellent options a result item gets, once the
+*result item excellent option chance* hits; without it, each option is added by
+that chance, up to the maximum options per item. The **result item socket count
+table** decides how many sockets a socket result item gets, and such a socket
+result item gets no excellent options, as for drops; without the table, result
+items get no sockets. A result item can also have its own **excellent option
+chance**, instead of the one of the crafting, so that a crafting gives some of
+its results as excellent items and others as normal items. The Lord's Mix of the
+castle siege uses the excellent option count table and the chance per result
+item, see [Castle Siege](../server-features/castle-siege.md#lords-mix).
+
 ### Item prices
 
 The price of an item is used by the NPC merchants (buying, selling, repairing)

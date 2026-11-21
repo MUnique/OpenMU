@@ -70,6 +70,15 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>
+        ///   Looks up a localized string similar to Lord&apos;s Mix.
+        /// </summary>
+        public static string LordsMix {
+            get {
+                return ResourceManager.GetString("LordsMix", resourceCulture);
+            }
+        }
+        
         /// <summary>Gets Plus11ItemCombination from the configuration name resources.</summary>
         public static string Plus11ItemCombination {
             get {

@@ -104,4 +104,24 @@ public partial class SimpleCraftingSettings
     /// Gets or sets the maximum excellent options in the random result item.
     /// </summary>
     public byte ResultItemMaxExcOptionCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table from which the number of excellent options of a result item is selected,
+    /// when it gets excellent options by <see cref="ResultItemExcellentOptionChance"/>.
+    /// </summary>
+    /// <remarks>
+    /// If <c>null</c>, every further option is added by <see cref="ResultItemExcellentOptionChance"/> up to the maximum
+    /// options per item of the item's excellent option definition. With a table, the selected number of options is added,
+    /// up to the number of options which the definition offers, e.g. 2 to 4 for the Lord's Mix of the castle owner.
+    /// </remarks>
+    public virtual WeightedValueTable? ResultItemExcellentOptionCountTable { get; set; }
+
+    /// <summary>
+    /// Gets or sets the table from which the number of sockets of a socket result item is selected.
+    /// </summary>
+    /// <remarks>
+    /// Values above the <see cref="Items.ItemDefinition.MaximumSockets"/> of the item are never selected.
+    /// If <c>null</c>, the number is selected uniformly between 1 and the maximum sockets of the item, like for a drop.
+    /// </remarks>
+    public virtual WeightedValueTable? ResultItemSocketCountTable { get; set; }
 }

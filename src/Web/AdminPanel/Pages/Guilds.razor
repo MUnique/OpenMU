@@ -16,14 +16,9 @@
             <th class="col-1">@Resources.Score</th>
             <th class="col-3">@Resources.Alliance</th>
         </TableHeader>
-        <FilterHeader>
-            <th colspan="4">
-                <div class="input-group">
-                    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-                    <input class="form-control small" type="search" autofocus @bind="@this._guildService.SearchFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
-                </div>
-            </th>
-        </FilterHeader>
+        <SearchHeader>
+            <SearchInput @bind-Value="this._guildService.SearchFilter" AutoFocus="true" />
+        </SearchHeader>
         <ItemTemplate Context="item">
             <td>
                 <span class="d-inline-flex align-items-center">

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -31,7 +32,10 @@ public class LostConnectionDetectionPlugIn : IPeriodicTaskPlugIn, ISupportCustom
     /// </summary>
     private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(10);
 
-    private DateTime _nextCheckUtc = DateTime.UtcNow;
+    /// <summary>
+    /// The time of the next check, for each game server: the plugin instance is shared by the game servers of a process.
+    /// </summary>
+    private readonly PerServerSchedule _schedule = new();
 
     /// <inheritdoc />
     public LostConnectionDetectionConfiguration? Configuration { get; set; }
@@ -41,12 +45,11 @@ public class LostConnectionDetectionPlugIn : IPeriodicTaskPlugIn, ISupportCustom
     {
         var now = DateTime.UtcNow;
         var timeout = (this.Configuration ??= new LostConnectionDetectionConfiguration()).Timeout;
-        if (now < this._nextCheckUtc || timeout <= TimeSpan.Zero)
+        if (timeout <= TimeSpan.Zero || !this._schedule.TryStartRun(gameContext, CheckInterval))
         {
             return;
         }
 
-        this._nextCheckUtc = now + CheckInterval;
         var players = await gameContext.GetPlayersAsync().ConfigureAwait(false);
         foreach (var player in players)
         {
@@ -65,7 +68,7 @@ public class LostConnectionDetectionPlugIn : IPeriodicTaskPlugIn, ISupportCustom
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextCheckUtc = DateTime.MinValue;
+        this._schedule.ForceStart();
     }
 
     /// <inheritdoc />

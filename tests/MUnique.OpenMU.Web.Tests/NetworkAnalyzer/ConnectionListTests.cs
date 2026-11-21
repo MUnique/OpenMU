@@ -66,7 +66,7 @@ public class ConnectionListTests
 
         var component = context.Render<ConnectionList>(parameters => parameters
             .Add(list => list.Connections, connections));
-        component.Find("input[type=text]").Input("alph");
+        component.Find("input[type=search]").Input("alph");
 
         var entries = component.FindAll(".list-group-item");
         Assert.That(entries, Has.Count.EqualTo(1));

@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.WaitingItems;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -26,7 +27,10 @@ using MUnique.OpenMU.PlugIns;
 [Guid("112A4B4F-814B-415B-9A35-FB3C08C0AA87")]
 public class WaitingItemsDeliveryPlugIn : IPeriodicTaskPlugIn, IPlayerStateChangedPlugIn, ISupportCustomConfiguration<WaitingItemsDeliveryPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
-    private DateTime _nextRunUtc = DateTime.UtcNow;
+    /// <summary>
+    /// The time of the next delivery check, for each game server: the plugin instance is shared by the game servers of a process.
+    /// </summary>
+    private readonly PerServerSchedule _schedule = new();
 
     /// <inheritdoc />
     public WaitingItemsDeliveryPlugInConfiguration? Configuration { get; set; }
@@ -84,13 +88,11 @@ public class WaitingItemsDeliveryPlugIn : IPeriodicTaskPlugIn, IPlayerStateChang
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        var now = DateTime.UtcNow;
-        if (now < this._nextRunUtc)
+        if (!this._schedule.TryStartRun(gameContext, this.CurrentConfiguration.CheckInterval))
         {
             return;
         }
 
-        this._nextRunUtc = now + this.CurrentConfiguration.CheckInterval;
         foreach (var player in await gameContext.GetPlayersAsync().ConfigureAwait(false))
         {
             // Reading the count is safe without the lock; the items are only looked at while holding it,
@@ -128,7 +130,7 @@ public class WaitingItemsDeliveryPlugIn : IPeriodicTaskPlugIn, IPlayerStateChang
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.UtcNow;
+        this._schedule.ForceStart();
     }
 
     /// <inheritdoc />

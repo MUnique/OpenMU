@@ -1,0 +1,80 @@
+@using MUnique.OpenMU.Web.Shared.Properties
+
+<nav aria-label="@Resources.Navigation">
+    <ul class="pagination pagination flex-wrap justify-content-end my-2">
+        <li class="page-item @(this.CanGoToPrevious ? null : "disabled")">
+            <button type="button" class="page-link" aria-label="@Resources.Previous" title="@Resources.Previous"
+                    disabled="@(!this.CanGoToPrevious)" @onclick="() => this.GoToAsync(this.Current - 1)">
+                <span aria-hidden="true">&laquo;</span>
+            </button>
+        </li>
+        @foreach (var page in PageWindow.Create(this.Current, this.TotalPages, this.HasNextPage))
+        {
+            if (page is { } number)
+            {
+                <li class="page-item @(number == this.Current ? "active" : null)" aria-current="@(number == this.Current ? "page" : null)">
+                    <button type="button" class="page-link" disabled="@this.Disabled" @onclick="() => this.GoToAsync(number)">@number</button>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled" aria-hidden="true"><span class="page-link">&hellip;</span></li>
+            }
+        }
+        <li class="page-item @(this.CanGoToNext ? null : "disabled")">
+            <button type="button" class="page-link" aria-label="@Resources.Next" title="@Resources.Next"
+                    disabled="@(!this.CanGoToNext)" @onclick="() => this.GoToAsync(this.Current + 1)">
+                <span aria-hidden="true">&raquo;</span>
+            </button>
+        </li>
+    </ul>
+</nav>
+
+@code {
+    /// <summary>
+    /// Gets or sets the current, one-based page number.
+    /// </summary>
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the total number of pages, if known.
+    /// </summary>
+    [Parameter]
+    public int? TotalPages { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether there is a page after the current one.
+    /// Only used when <see cref="TotalPages"/> is unknown.
+    /// </summary>
+    [Parameter]
+    public bool HasNextPage { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the page can currently not be changed, for example while loading.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback which is invoked with the requested, one-based page number.
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> PageChanged { get; set; }
+
+    private int Current => Math.Max(1, this.CurrentPage);
+
+    private bool CanGoToPrevious => !this.Disabled && this.Current > 1;
+
+    private bool CanGoToNext => !this.Disabled && (this.TotalPages is { } total ? this.Current < total : this.HasNextPage);
+
+    private async Task GoToAsync(int page)
+    {
+        if (this.Disabled || page < 1 || page == this.Current || (this.TotalPages is { } total && page > total))
+        {
+            return;
+        }
+
+        await this.PageChanged.InvokeAsync(page).ConfigureAwait(true);
+    }
+}
