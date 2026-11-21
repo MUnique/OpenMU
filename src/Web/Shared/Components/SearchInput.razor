@@ -1,0 +1,95 @@
+<div class="input-group search-input @(this.Small ? "input-group-sm" : null) @this.Class">
+    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
+    <input @key="this._inputVersion"
+           class="form-control small"
+           type="search"
+           id="@this.Id"
+           autofocus="@this.AutoFocus"
+           autocomplete="off"
+           aria-label="@Resources.Search"
+           placeholder="@(this.Placeholder ?? $"{Resources.Search}...")"
+           value="@this._renderedValue"
+           @oninput="this.OnInputAsync" />
+    @this.ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the current search text. Use with <c>@bind-Value</c>.
+    /// </summary>
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the callback which is invoked on every change of the search text.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the id of the input element.
+    /// </summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the placeholder. When not set, a localized "Search ..." is shown.
+    /// </summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the input should get the focus when the page is loaded.
+    /// </summary>
+    [Parameter]
+    public bool AutoFocus { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the smaller variant of the input group should be used.
+    /// </summary>
+    [Parameter]
+    public bool Small { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional css classes of the input group.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional content (e.g. buttons) which is shown behind the input, inside of the input group.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    // The text the user typed, or the last value which was set from outside.
+    private string _currentText = string.Empty;
+
+    // The text which is rendered into the input. It's deliberately only changed when the value is set from outside:
+    // While the user types, the browser already has the newer text. Rendering the (older) text of a previous
+    // keystroke would overwrite what has been typed in the meantime, which makes fast typing lose characters.
+    private string _renderedValue = string.Empty;
+
+    // Recreates the input element when the value was set from outside, so it also shows a value which equals the last rendered one.
+    private int _inputVersion;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        var incoming = this.Value ?? string.Empty;
+        if (string.Equals(incoming, this._currentText, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        this._currentText = incoming;
+        this._renderedValue = incoming;
+        this._inputVersion++;
+    }
+
+    private async Task OnInputAsync(ChangeEventArgs e)
+    {
+        this._currentText = e.Value?.ToString() ?? string.Empty;
+        await this.ValueChanged.InvokeAsync(this._currentText).ConfigureAwait(false);
+    }
+}

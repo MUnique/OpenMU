@@ -39,10 +39,7 @@
         <option value="@StateFilter.OnlyActive">@Resources.OnlyActive</option>
         <option value="@StateFilter.OnlyInactive">@Resources.OnlyInactive</option>
     </select>
-    <div class="flex-grow-1">
-        <input type="search" class="form-control" placeholder="@($"{Resources.Search}...")"
-               @bind="this._filter" @bind:event="oninput" />
-    </div>
+    <SearchInput Class="flex-grow-1" @bind-Value="this._filter" />
     <button type="button" class="btn btn-success" @onclick="() => this.SetActiveOfShownEntries(true)">@Resources.ActivateAllShown</button>
     <button type="button" class="btn btn-warning" @onclick="() => this.SetActiveOfShownEntries(false)">@Resources.DeactivateAllShown</button>
     <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>

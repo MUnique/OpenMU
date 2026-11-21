@@ -56,7 +56,7 @@ else if (this._selectedPackage is not { } package)
             <h2>@Resources.CashShopPackages</h2>
             <div class="row g-2 mb-2 align-items-center">
                 <div class="col-auto">
-                    <input type="search" class="form-control" id="packageSearch" placeholder="@Resources.Search" @bind="this._searchText" @bind:event="oninput" />
+                    <SearchInput Id="packageSearch" @bind-Value="this._searchText" />
                 </div>
                 <div class="col-auto form-check">
                     <input type="checkbox" class="form-check-input" id="onlyForSale" @bind="this._onlyForSale" />
