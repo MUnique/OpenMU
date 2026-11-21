@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("4a8d8cd9-7aaf-4427-892d-fd7262a8fcbb"), entityTypeCount: 133)
+            : base(skipDetectChanges: false, modelId: new Guid("379a65c9-7c08-4185-abb5-748c0f4fa2ea"), entityTypeCount: 133)
         {
         }
 
@@ -394,6 +394,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             QuestRewardEntityType.CreateForeignKey2(questReward, item);
             QuestRewardEntityType.CreateForeignKey3(questReward, questDefinition);
             QuestRewardEntityType.CreateForeignKey4(questReward, skill);
+            SimpleCraftingSettingsEntityType.CreateForeignKey1(simpleCraftingSettings, weightedValueTable);
+            SimpleCraftingSettingsEntityType.CreateForeignKey2(simpleCraftingSettings, weightedValueTable);
             SkillEntityType.CreateForeignKey1(skill, areaSkillSettings);
             SkillEntityType.CreateForeignKey2(skill, attributeDefinition);
             SkillEntityType.CreateForeignKey3(skill, gameConfiguration);

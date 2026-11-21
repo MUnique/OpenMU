@@ -84,6 +84,8 @@ public class ChaosMixes : InitializerBase
 
         var david = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CombineLuckyItem);
         david.ItemCraftings.Add(new LuckyItems(this.Context, this.GameConfiguration).CreateTicketExchangeCrafting());
+
+        LordsMix.AddIfMissing(this.Context, this.GameConfiguration);
     }
 
     private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel)

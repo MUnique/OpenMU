@@ -6547,4 +6547,40 @@
   <data name="WeightedValue_Weight_Caption" xml:space="preserve">
     <value>权重</value>
   </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionCountTable_Caption" xml:space="preserve">
+    <value>结果物品卓越属性数量表</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSocketCountTable_Caption" xml:space="preserve">
+    <value>结果物品镶嵌孔数量表</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimit_Caption" xml:space="preserve">
+    <value>领主合成次数上限</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCount_Caption" xml:space="preserve">
+    <value>领主合成次数</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Caption" xml:space="preserve">
+    <value>领主合成次数上限周期</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Description" xml:space="preserve">
+    <value>领主合成次数上限的周期：每天（服务器本地时间午夜重置）或每个攻城周期（攻城结束时重置）。</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Caption" xml:space="preserve">
+    <value>领主合成计数日期</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Description" xml:space="preserve">
+    <value>最后一次计入的领主合成的日期（服务器本地时间），用于每天的次数上限。</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Caption" xml:space="preserve">
+    <value>卓越属性几率</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Description" xml:space="preserve">
+    <value>此结果物品的卓越属性几率（百分比），代替合成的几率。为空时，使用合成的几率。</value>
+  </data>
+  <data name="LordsMixLimitPeriod_Day_Caption" xml:space="preserve">
+    <value>天</value>
+  </data>
+  <data name="LordsMixLimitPeriod_SiegeCycle_Caption" xml:space="preserve">
+    <value>攻城周期</value>
+  </data>
 </root>
