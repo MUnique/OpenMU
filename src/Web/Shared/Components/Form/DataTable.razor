@@ -2,28 +2,12 @@
 
 @typeparam TItem where TItem : class
 
-<div class="btn-toolbar" role="toolbar" aria-label="@Resources.Toolbar">
-    <div class="btn-group" role="group" aria-label="@Resources.Navigation">
-        <button disabled="@(this.Page <= 1 || this._isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetPreviousPageAsync><span class="oi oi-arrow-thick-left" aria-hidden="true" /></button>
-        <button class="btn btn-sm btn-secondary" disabled>
-            @if (this._isLoading)
-            {
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span class="visually-hidden">@Resources.Loading</span>
-            }
-            else
-            {
-                <span>@string.Format(Resources.PageNumber, this.Page)</span>
-            }
-        </button>
-        <button disabled="@(!this._hasMoreEntries || this._isLoading)" class="btn btn-sm btn-primary" @onclick=@this.GetNextPageAsync><span class="oi oi-arrow-thick-right" aria-hidden="true" /></button>
-    </div>
-</div>
-
 @if (this.SearchHeader != null)
 {
     <div class="data-table-search d-flex flex-wrap align-items-center gap-2 my-2">@SearchHeader</div>
 }
+
+<Pager CurrentPage="@this.Page" HasNextPage="@this._hasMoreEntries" Disabled="@this._isLoading" PageChanged="@this.GetPageIfIdleAsync" />
 
 <table class="table table-striped table-hover">
     <thead>
@@ -50,6 +34,9 @@
         <tr>@TableFooter</tr>
     </tfoot>
 </table>
+
+<Pager CurrentPage="@this.Page" HasNextPage="@this._hasMoreEntries" Disabled="@this._isLoading" PageChanged="@this.GetPageIfIdleAsync" />
+
 @code {
     private bool _hasMoreEntries;
 
@@ -120,24 +107,14 @@
         return this.GetPageAsync(this.Page);
     }
 
-    private Task GetNextPageAsync()
+    private Task GetPageIfIdleAsync(int page)
     {
         if (this._isLoading)
         {
             return Task.CompletedTask;
         }
 
-        return this.GetPageAsync(this.Page + 1);
-    }
-
-    private Task GetPreviousPageAsync()
-    {
-        if (this._isLoading)
-        {
-            return Task.CompletedTask;
-        }
-
-        return this.GetPageAsync(this.Page - 1);
+        return this.GetPageAsync(page);
     }
 
     private async Task GetPageAsync(int page)

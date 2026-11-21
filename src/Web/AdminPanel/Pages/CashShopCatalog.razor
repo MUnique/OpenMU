@@ -64,6 +64,7 @@ else if (this._selectedPackage is not { } package)
                 </div>
             </div>
             @* Every cell needs content: the shared grid style hides rows with an empty cell, which are QuickGrid's filler rows. *@
+            <GridPager State="@this._pagination" />
             <div class="table-responsive">
             <QuickGrid Items="@this.FilteredPackages" Pagination="@this._pagination" Theme="none" Class="table table-striped table-sm">
                 <PropertyColumn Title="@Resources.CashShopPackageSequence" Property="@(p => p.PackageSequence)" Sortable="true" />
@@ -88,7 +89,7 @@ else if (this._selectedPackage is not { } package)
                 </TemplateColumn>
             </QuickGrid>
             </div>
-            <LocalizedPaginator State="@this._pagination" />
+            <GridPager State="@this._pagination" />
 
             <div class="mt-3">
                 <button type="button" class="btn btn-success me-1" @onclick="this.OnAddPackage">@Resources.CashShopAddPackage</button>
