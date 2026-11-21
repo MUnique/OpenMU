@@ -138,4 +138,7 @@
   <data name="LuckyItemExchange" xml:space="preserve">
     <value>Lucky Item Exchange</value>
   </data>
+  <data name="LordsMix" xml:space="preserve">
+    <value>Lord's Mix</value>
+  </data>
 </root>

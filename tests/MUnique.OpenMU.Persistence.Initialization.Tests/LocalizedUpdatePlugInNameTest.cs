@@ -66,6 +66,19 @@ public class LocalizedUpdatePlugInNameTest
         AssertLocalized(new AddSocketCountTablesUpdatePlugIn(), culture, expectedName);
     }
 
+    /// <summary>
+    /// Tests the name and description of the update which adds the Lord's Mix.
+    /// </summary>
+    /// <param name="culture">The culture of the user interface.</param>
+    /// <param name="expectedName">The expected name.</param>
+    [TestCase("en", "Lord's Mix")]
+    [TestCase("de", "Lord's Mix")]
+    [TestCase("zh-CN", "领主合成")]
+    public void LordsMixUpdateIsLocalized(string culture, string expectedName)
+    {
+        AssertLocalized(new AddLordsMixUpdatePlugIn(), culture, expectedName);
+    }
+
     private static void AssertLocalized(UpdatePlugInBase updatePlugIn, string culture, string expectedName)
     {
         var previousCulture = CultureInfo.CurrentUICulture;

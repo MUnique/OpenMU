@@ -24,4 +24,10 @@
   <data name="SocketCountTwoHandedDescription" xml:space="preserve">
     <value>The number of sockets of dropped two-handed socket weapons: one socket is common, five are very rare.</value>
   </data>
+  <data name="LordsMixExcellentOptionCount" xml:space="preserve">
+    <value>Excellent Option Count (Lord's Mix)</value>
+  </data>
+  <data name="LordsMixExcellentOptionCountDescription" xml:space="preserve">
+    <value>The number of excellent options of an excellent result item of the Lord's Mix: two, three or four, equally likely.</value>
+  </data>
 </root>

@@ -1210,4 +1210,10 @@ Extensões de inventário: {18}</value>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Um item do mesmo tipo já está em uso. Pare de usá-lo primeiro e tente novamente.</value>
   </data>
+  <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
+    <value>Somente o mestre da guilda dona do castelo pode usar o Lord's Mix.</value>
+  </data>
+  <data name="LordsMixLimitReached" xml:space="preserve">
+    <value>O limite do Lord's Mix foi atingido; ele pode ser usado novamente no próximo período.</value>
+  </data>
 </root>

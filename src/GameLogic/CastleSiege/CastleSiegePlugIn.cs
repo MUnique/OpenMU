@@ -530,6 +530,12 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context.NextMiniMapUpdateUtc = utcNow + MiniMapUpdateInterval;
                 break;
             case CastleSiegeState.End:
+                if (!isStartup && context.Configuration.LordsMixLimitPeriod == LordsMixLimitPeriod.SiegeCycle)
+                {
+                    // The owner of the new cycle may use the Lord's Mix again; CheckResultAsync saves the owner data.
+                    context.SiegeData.LordsMixCount = 0;
+                }
+
                 await CastleSiegeCrownMechanics.CheckResultAsync(context).ConfigureAwait(false);
                 if (!isStartup)
                 {

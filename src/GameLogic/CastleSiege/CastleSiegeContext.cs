@@ -904,6 +904,8 @@ public class CastleSiegeContext : IEventStateProvider
         target.TaxHunt = source.TaxHunt;
         target.IsHuntZoneEnabled = source.IsHuntZoneEnabled;
         target.TributeMoney = source.TributeMoney;
+        target.LordsMixCount = source.LordsMixCount;
+        target.LordsMixCountDate = source.LordsMixCountDate;
     }
 
     private static void CopyNpcState(CastleSiegeNpcState source, CastleSiegeNpcState target)

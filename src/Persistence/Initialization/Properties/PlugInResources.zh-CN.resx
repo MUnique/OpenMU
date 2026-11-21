@@ -533,4 +533,10 @@
   <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加鹰雕像、山羊雕像以及（黄金）橡树和枫树护符，它们在背包中使用时提供加成。</value>
   </data>
+  <data name="AddLordsMixUpdatePlugIn_Name" xml:space="preserve">
+    <value>领主合成</value>
+  </data>
+  <data name="AddLordsMixUpdatePlugIn_Description" xml:space="preserve">
+    <value>为城堡的长老添加领主合成：每天一次，占领城堡的战盟的盟主可将30个守护宝石、一个祝福宝石组合和一个灵魂宝石组合（各30个宝石）以及1,000,000,000金币合成为一件带有两到四个卓越属性的卓越武器或防具，或一件普通物品。如果还没有限制，则设置每天一次的限制。</value>
+  </data>
 </root>

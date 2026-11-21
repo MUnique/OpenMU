@@ -24,4 +24,10 @@
   <data name="SocketCountTwoHandedDescription" xml:space="preserve">
     <value>掉落的双手镶嵌武器的孔数：一个孔很常见，五个孔非常少见。</value>
   </data>
+  <data name="LordsMixExcellentOptionCount" xml:space="preserve">
+    <value>卓越属性数量（领主合成）</value>
+  </data>
+  <data name="LordsMixExcellentOptionCountDescription" xml:space="preserve">
+    <value>领主合成的卓越结果物品的卓越属性数量：两个、三个或四个，概率相同。</value>
+  </data>
 </root>
