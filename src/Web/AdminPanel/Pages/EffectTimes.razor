@@ -15,10 +15,7 @@
 }
 
 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
-    <div class="flex-grow-1">
-        <input type="search" class="form-control" placeholder="@($"{Resources.Search}...")"
-               @bind="this.Filter" @bind:event="oninput" />
-    </div>
+    <SearchInput Class="flex-grow-1" @bind-Value="this.Filter" />
     <button type="button" class="btn btn-success" title="@Resources.AllShownEffectsHint" @onclick="() => this.SetSendsTimeOfShownEntries(true)">@Resources.AllOn</button>
     <button type="button" class="btn btn-warning" title="@Resources.AllShownEffectsHint" @onclick="() => this.SetSendsTimeOfShownEntries(false)">@Resources.AllOff</button>
     @if (this._defaults is not null)
