@@ -5,7 +5,9 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.PlugIns;
 
@@ -18,24 +20,27 @@ using MUnique.OpenMU.PlugIns;
 public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
 {
     /// <summary>
-    /// The weather of the maps which existed at the last run. It's replaced as a whole on every run, so that
+    /// The weather of the maps of each game server, which existed at its last run. The plugin instance is shared by
+    /// the game servers of a process, and every server has its own maps. It's replaced as a whole on every run, so that
     /// a map which is gone in the meantime (e.g. the map of a finished mini game) isn't kept alive by it.
     /// </summary>
-    private IReadOnlyDictionary<GameMap, (byte, byte)> _weatherStates = new Dictionary<GameMap, (byte, byte)>();
+    private readonly ConditionalWeakTable<IGameContext, IReadOnlyDictionary<GameMap, (byte, byte)>> _weatherStates = new();
 
-    private DateTime _nextRunUtc = DateTime.UtcNow;
-
-    private bool _isRunning;
+    /// <summary>
+    /// The time of the next weather change, for each game server.
+    /// </summary>
+    private readonly PerServerSchedule _schedule = new();
 
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        if (this._nextRunUtc > DateTime.UtcNow || this._isRunning)
+        // Taken for longer than a run lasts, so that the next calls of the timer don't start another one meanwhile;
+        // the next run is scheduled from the end of this one.
+        if (!this._schedule.TryStartRun(gameContext, TimeSpan.FromMinutes(1)))
         {
             return;
         }
 
-        this._isRunning = true;
         try
         {
             var weatherStates = new Dictionary<GameMap, (byte, byte)>();
@@ -46,7 +51,7 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
                 weatherStates[map] = (weather, variation);
             }
 
-            this._weatherStates = weatherStates;
+            this._weatherStates.AddOrUpdate(gameContext, weatherStates);
 
             await gameContext.ForEachPlayerAsync(this.TrySendPlayerUpdateAsync).ConfigureAwait(false);
         }
@@ -56,15 +61,14 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
         }
         finally
         {
-            this._isRunning = false;
-            this._nextRunUtc = DateTime.UtcNow.AddSeconds(Rand.NextInt(10, 20));
+            this._schedule.ScheduleNextRun(gameContext, TimeSpan.FromSeconds(Rand.NextInt(10, 20)));
         }
     }
 
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.UtcNow;
+        this._schedule.ForceStart();
     }
 
     /// <inheritdoc />
@@ -89,7 +93,8 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     {
         if (player.CurrentMap is { } map
             && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
-            && this._weatherStates.TryGetValue(map, out var weather))
+            && this._weatherStates.TryGetValue(player.GameContext, out var weatherStates)
+            && weatherStates.TryGetValue(map, out var weather))
         {
             try
             {
