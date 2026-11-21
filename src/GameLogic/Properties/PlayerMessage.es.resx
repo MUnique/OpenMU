@@ -1204,4 +1204,10 @@ Extensiones de inventario: {18}</value>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Ya estás usando un item del mismo tipo. Deja de usarlo primero y vuelve a intentarlo.</value>
   </data>
+  <data name="ItemHasExpired" xml:space="preserve">
+    <value>{0} ha expirado.</value>
+  </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>Un item por tiempo limitado no se puede usar aquí.</value>
+  </data>
 </root>

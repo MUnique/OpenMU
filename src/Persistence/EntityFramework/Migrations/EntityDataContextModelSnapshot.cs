@@ -2295,6 +2295,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<double>("Durability")
                         .HasColumnType("double precision");
 
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("HasSkill")
                         .HasColumnType("boolean");
 
@@ -2607,6 +2610,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsSellableToNpc")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSellableWhenExpired")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsStorable")

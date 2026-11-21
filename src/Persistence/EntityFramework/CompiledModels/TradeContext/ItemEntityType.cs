@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Item",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Item),
                 baseEntityType,
-                propertyCount: 12,
+                propertyCount: 13,
                 navigationCount: 2,
                 keyCount: 1);
 
@@ -52,6 +52,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Item).GetField("<Durability>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0.0);
             durability.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var expiresAt = runtimeEntityType.AddProperty(
+                "ExpiresAt",
+                typeof(DateTime?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Item).GetProperty("ExpiresAt", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Item).GetField("<ExpiresAt>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            expiresAt.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var hasSkill = runtimeEntityType.AddProperty(
                 "HasSkill",

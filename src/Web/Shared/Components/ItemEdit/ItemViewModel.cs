@@ -5,11 +5,13 @@
 namespace MUnique.OpenMU.Web.Shared.Components.ItemEdit;
 
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence;
 using Nito.AsyncEx.Synchronous;
 using Nito.Disposables.Internals;
@@ -17,7 +19,7 @@ using Nito.Disposables.Internals;
 /// <summary>
 /// The view model for an <see cref="Item"/>.
 /// </summary>
-public class ItemViewModel : INotifyPropertyChanged
+public class ItemViewModel : INotifyPropertyChanged, IValidatableObject
 {
     private readonly IContext _persistenceContext;
 
@@ -158,6 +160,55 @@ public class ItemViewModel : INotifyPropertyChanged
             var maxDurability = this.Item.IsStackable() ? this.Definition?.Durability ?? 0 : this.Item.GetMaximumDurabilityOfOnePiece();
 
             this.Item.Durability = Math.Min(value, maxDurability);
+            this.OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this item is time-limited, i.e. it has an <see cref="Item.ExpiresAt"/>.
+    /// Switching it on lets the item expire in one day, which can be changed with <see cref="ExpiresAt"/>.
+    /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_IsTimeLimited), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
+    public bool IsTimeLimited
+    {
+        get
+        {
+            return this.Item.ExpiresAt is not null;
+        }
+
+        set
+        {
+            if (this.IsTimeLimited == value)
+            {
+                return;
+            }
+
+            this.Item.ExpiresAt = value ? DateTime.UtcNow.AddDays(1) : null;
+            this.OnPropertyChanged();
+            this.OnPropertyChanged(nameof(this.ExpiresAt));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the timestamp (UTC) at which a time-limited item expires.
+    /// </summary>
+    [System.ComponentModel.DataAnnotations.Display(Name = nameof(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_ExpiresAt), ResourceType = typeof(MUnique.OpenMU.Web.Shared.Properties.Resources))]
+    public DateTime ExpiresAt
+    {
+        get
+        {
+            return this.Item.ExpiresAt ?? DateTime.UtcNow;
+        }
+
+        set
+        {
+            var utcValue = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+            if (!this.IsTimeLimited || this.Item.ExpiresAt == utcValue)
+            {
+                return;
+            }
+
+            this.Item.ExpiresAt = utcValue;
             this.OnPropertyChanged();
         }
     }
@@ -753,6 +804,19 @@ public class ItemViewModel : INotifyPropertyChanged
                 .Where(isi => isi.ItemDefinition == this.Definition)
                 .Where(isi => isi.AncientSetDiscriminator > 0)
                 ?? Enumerable.Empty<ItemOfItemSet>();
+        }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// A time-limited item must be one which can expire: worn, not consumed, and droppable or sellable once it expired.
+    /// Otherwise, it would stay in the inventory forever.
+    /// </remarks>
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (this.IsTimeLimited && this.Definition is { } definition && !definition.CanBeTimeLimited())
+        {
+            yield return new ValidationResult(MUnique.OpenMU.Web.Shared.Properties.Resources.ItemEdit_CannotBeTimeLimited, [nameof(this.IsTimeLimited)]);
         }
     }
 

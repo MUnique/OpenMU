@@ -788,7 +788,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeCommandHandlerPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Guild Command Handler.
         /// </summary>
@@ -797,16 +797,16 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeCommandHandlerPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Forwards an alliance master's directional guild command to same-side players..
+        ///   Looks up a localized string similar to Forwards an alliance master&apos;s directional guild command to same-side players..
         /// </summary>
         public static string CastleSiegeCommandPlugIn_Description {
             get {
                 return ResourceManager.GetString("CastleSiegeCommandPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Guild Command View.
         /// </summary>
@@ -815,7 +815,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeCommandPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sends Castle Siege Crown capture progress to the game client..
         /// </summary>
@@ -1105,6 +1105,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends Castle Siege Life Stone creation progress to the game client..
+        /// </summary>
+        public static string CastleSiegeLifeStoneStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Life Stone state view.
+        /// </summary>
+        public static string CastleSiegeLifeStoneStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Routes Castle Siege warfare-machine packet subcodes..
         /// </summary>
         public static string CastleSiegeMachineGroupHandlerPlugIn_Description {
@@ -1238,7 +1256,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeMiniMapPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Castle Siege Mini-Map View.
         /// </summary>
@@ -1247,7 +1265,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("CastleSiegeMiniMapPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Routes Castle Siege NPC-list packet subcodes..
         /// </summary>
@@ -1776,69 +1794,6 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ChaosCastleStateViewPlugIn_Description {
             get {
                 return ResourceManager.GetString("ChaosCastleStateViewPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to IllusionTemple Enter Handler.
-        /// </summary>
-        public static string IllusionTempleEnterHandlerPlugIn_Description {
-            get {
-                                return ResourceManager.GetString("IllusionTempleEnterHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to IllusionTemple Enter Handler.
-        /// </summary>
-        public static string IllusionTempleEnterHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("IllusionTempleEnterHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handler for illusion temple reward request packets, sent when the player closes the result dialog..
-        /// </summary>
-        public static string IllusionTempleRewardRequestHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("IllusionTempleRewardRequestHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IllusionTemple Reward Request Handler.
-        /// </summary>
-        public static string IllusionTempleRewardRequestHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("IllusionTempleRewardRequestHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Handler for illusion temple special skill request packets..
-        /// </summary>
-        public static string IllusionTempleSkillRequestHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("IllusionTempleSkillRequestHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IllusionTemple Skill Request Handler.
-        /// </summary>
-        public static string IllusionTempleSkillRequestHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("IllusionTempleSkillRequestHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The default implementation of the IChaosCastleStateViewPlugin which is forwarding everything to the game client with specific data packets..
-        /// </summary>
-        public static string IllusionTempleStateViewPlugIn_Description {
-            get {
-                return ResourceManager.GetString("IllusionTempleStateViewPlugIn_Description", resourceCulture);
             }
         }
         
@@ -2662,6 +2617,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for the request to enter the doppelganger event through the NPC Lugard..
+        /// </summary>
+        public static string DoppelgangerEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger Enter Request Handler.
+        /// </summary>
+        public static string DoppelgangerEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the doppelganger event packets (0xBF 0x0F - 0x14) to the client..
+        /// </summary>
+        public static string DoppelgangerEventViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DoppelgangerEventViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Doppelganger Event View.
+        /// </summary>
+        public static string DoppelgangerEventViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DoppelgangerEventViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for drop item packets..
         /// </summary>
         public static string DropItemHandlerPlugIn_Description {
@@ -2928,6 +2919,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string DuelStopResponseHandlerPlugIn_Name {
             get {
                 return ResourceManager.GetString("DuelStopResponseHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler which warps a player between Lorencia and the Loren Market when using the &apos;Warp&apos; button of Market Union Member Julia..
+        /// </summary>
+        public static string EnterMarketPlace_Description {
+            get {
+                return ResourceManager.GetString("EnterMarketPlace_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Market Place Handler.
+        /// </summary>
+        public static string EnterMarketPlace_Name {
+            get {
+                return ResourceManager.GetString("EnterMarketPlace_Name", resourceCulture);
             }
         }
         
@@ -3490,6 +3499,60 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for illusion temple enter request packets..
+        /// </summary>
+        public static string IllusionTempleEnterHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleEnterHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IllusionTemple Enter Handler.
+        /// </summary>
+        public static string IllusionTempleEnterHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleEnterHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for illusion temple reward request packets, sent when the player closes the result dialog..
+        /// </summary>
+        public static string IllusionTempleRewardRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleRewardRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IllusionTemple Reward Request Handler.
+        /// </summary>
+        public static string IllusionTempleRewardRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleRewardRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for illusion temple special skill request packets..
+        /// </summary>
+        public static string IllusionTempleSkillRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleSkillRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IllusionTemple Skill Request Handler.
+        /// </summary>
+        public static string IllusionTempleSkillRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleSkillRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the request to enter the imperial guardian event, which is sent by the window of Jerint..
         /// </summary>
         public static string ImperialGuardianEnterRequestHandlerPlugIn_Description {
@@ -3580,6 +3643,60 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for the request to start or stop using an item inside the inventory, like a figurine or a charm..
+        /// </summary>
+        public static string InventoryItemEquipRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory item use request handler.
+        /// </summary>
+        public static string InventoryItemEquipRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the IInventoryItemUseChangedPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string InventoryItemUseChangedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryItemUseChangedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory item use changed.
+        /// </summary>
+        public static string InventoryItemUseChangedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryItemUseChangedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles inventory refresh requests (0xF3, 0x10) by returning the current inventory, with configurable per-player throttling..
+        /// </summary>
+        public static string InventoryRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("InventoryRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inventory - Request inventory snapshot.
+        /// </summary>
+        public static string InventoryRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("InventoryRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IItemAppearPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ItemAppearPlugIn_Description {
@@ -3630,6 +3747,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ItemDurabilityChangedPlugIn_Name {
             get {
                 return ResourceManager.GetString("ItemDurabilityChangedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the expiration dates of the time-limited items to the client (D2 11 and D2 12), which shows the time left..
+        /// </summary>
+        public static string ItemExpirationViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemExpirationViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item expiration view.
+        /// </summary>
+        public static string ItemExpirationViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemExpirationViewPlugIn_Name", resourceCulture);
             }
         }
         
@@ -3940,42 +4075,6 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Handler for the request to enter the doppelganger event through the NPC Lugard..
-        /// </summary>
-        public static string DoppelgangerEnterRequestHandlerPlugIn_Description {
-            get {
-                return ResourceManager.GetString("DoppelgangerEnterRequestHandlerPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Doppelganger Enter Request Handler.
-        /// </summary>
-        public static string DoppelgangerEnterRequestHandlerPlugIn_Name {
-            get {
-                return ResourceManager.GetString("DoppelgangerEnterRequestHandlerPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sends the doppelganger event packets (0xBF 0x0F - 0x14) to the client..
-        /// </summary>
-        public static string DoppelgangerEventViewPlugIn_Description {
-            get {
-                return ResourceManager.GetString("DoppelgangerEventViewPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Doppelganger Event View.
-        /// </summary>
-        public static string DoppelgangerEventViewPlugIn_Name {
-            get {
-                return ResourceManager.GetString("DoppelgangerEventViewPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Sends Kanturu event state/result/HUD packets (0xD1 group) to the client..
         /// </summary>
         public static string KanturuEventViewPlugIn_Description {
@@ -4264,6 +4363,78 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handler for the request of the count of the registered lucky coins, sent when the lucky coin registration dialog of the NPC Delgado opens..
+        /// </summary>
+        public static string LuckyCoinCountRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinCountRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky coin count request handler.
+        /// </summary>
+        public static string LuckyCoinCountRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyCoinCountRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for the request to exchange lucky coins for an item at the NPC Delgado..
+        /// </summary>
+        public static string LuckyCoinExchangeRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky coin exchange request handler.
+        /// </summary>
+        public static string LuckyCoinExchangeRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handler for the request to register a lucky coin at the NPC Delgado..
+        /// </summary>
+        public static string LuckyCoinRegistrationRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinRegistrationRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky coin registration request handler.
+        /// </summary>
+        public static string LuckyCoinRegistrationRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyCoinRegistrationRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default implementation of the ILuckyCoinViewPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string LuckyCoinViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyCoinViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky coin view.
+        /// </summary>
+        public static string LuckyCoinViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyCoinViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handler for magic effect cancel packets..
         /// </summary>
         public static string MagicEffectCancelHandlerPlugIn_Description {
@@ -4289,7 +4460,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("MapChangeExtendedPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Map Change Extended.
         /// </summary>
@@ -4298,7 +4469,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("MapChangeExtendedPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IMapChangePlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
@@ -5034,6 +5205,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string PickupItemHandlerPlugIn075_Name {
             get {
                 return ResourceManager.GetString("PickupItemHandlerPlugIn075_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the ping which the client sends periodically, which reports that it&apos;s alive..
+        /// </summary>
+        public static string PingHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ping Handler.
+        /// </summary>
+        public static string PingHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PingHandlerPlugIn_Name", resourceCulture);
             }
         }
         
@@ -6514,6 +6703,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets..
+        /// </summary>
+        public static string ShowItemCraftingPreviewExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowItemCraftingPreviewExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Item Crafting Preview Extended.
+        /// </summary>
+        public static string ShowItemCraftingPreviewExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowItemCraftingPreviewExtendedPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The default implementation of the IShowItemCraftingResultPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ShowItemCraftingResultPlugIn_Description {
@@ -6820,24 +7027,6 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets..
-        /// </summary>
-        public static string ShowItemCraftingPreviewExtendedPlugIn_Description {
-            get {
-                return ResourceManager.GetString("ShowItemCraftingPreviewExtendedPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Show Item Crafting Preview Extended.
-        /// </summary>
-        public static string ShowItemCraftingPreviewExtendedPlugIn_Name {
-            get {
-                return ResourceManager.GetString("ShowItemCraftingPreviewExtendedPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The extended implementation of the IShowShopCurrenciesPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
         public static string ShowShopCurrenciesExtendedPlugIn_Description {
@@ -6852,24 +7041,6 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ShowShopCurrenciesExtendedPlugIn_Name {
             get {
                 return ResourceManager.GetString("ShowShopCurrenciesExtendedPlugIn_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files, followed by the minimum master level and resets of the warps which require them..
-        /// </summary>
-        public static string ShowWarpListExtendedPlugIn_Description {
-            get {
-                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Show warp list (extended).
-        /// </summary>
-        public static string ShowWarpListExtendedPlugIn_Name {
-            get {
-                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Name", resourceCulture);
             }
         }
         
@@ -7068,6 +7239,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ShowVaultPlugIn_Name {
             get {
                 return ResourceManager.GetString("ShowVaultPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the warp list of the server to the open source client, which shows it in its warp window instead of the warp list of its data files, followed by the minimum master level and resets of the warps which require them..
+        /// </summary>
+        public static string ShowWarpListExtendedPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show warp list (extended).
+        /// </summary>
+        public static string ShowWarpListExtendedPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ShowWarpListExtendedPlugIn_Name", resourceCulture);
             }
         }
         
@@ -7295,7 +7484,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("TeleportExtendedPlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Teleport Extended.
         /// </summary>
@@ -7304,7 +7493,7 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("TeleportExtendedPlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The default implementation of the ITeleportPlugIn which is forwarding everything to the game client with specific data packets..
         /// </summary>
@@ -8042,75 +8231,5 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("WhisperedChatMessageHandlerPlugIn_Name", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Sends Castle Siege Life Stone creation progress to the game client.
-        /// </summary>
-        public static string CastleSiegeLifeStoneStatePlugIn_Description {
-            get {
-                return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Description", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Castle Siege Life Stone state view.
-        /// </summary>
-        public static string CastleSiegeLifeStoneStatePlugIn_Name {
-            get {
-                return ResourceManager.GetString("CastleSiegeLifeStoneStatePlugIn_Name", resourceCulture);
-            }
-        }
-        /// <summary>Gets the localized EnterMarketPlace_Name text.</summary>
-        public static string EnterMarketPlace_Name => ResourceManager.GetString("EnterMarketPlace_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized EnterMarketPlace_Description text.</summary>
-        public static string EnterMarketPlace_Description => ResourceManager.GetString("EnterMarketPlace_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized PingHandlerPlugIn_Name text.</summary>
-        public static string PingHandlerPlugIn_Name => ResourceManager.GetString("PingHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
-        public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinViewPlugIn_Name text.</summary>
-        public static string LuckyCoinViewPlugIn_Name => ResourceManager.GetString("LuckyCoinViewPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinViewPlugIn_Description text.</summary>
-        public static string LuckyCoinViewPlugIn_Description => ResourceManager.GetString("LuckyCoinViewPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinCountRequestHandlerPlugIn_Name text.</summary>
-        public static string LuckyCoinCountRequestHandlerPlugIn_Name => ResourceManager.GetString("LuckyCoinCountRequestHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinCountRequestHandlerPlugIn_Description text.</summary>
-        public static string LuckyCoinCountRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinCountRequestHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinRegistrationRequestHandlerPlugIn_Name text.</summary>
-        public static string LuckyCoinRegistrationRequestHandlerPlugIn_Name => ResourceManager.GetString("LuckyCoinRegistrationRequestHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinRegistrationRequestHandlerPlugIn_Description text.</summary>
-        public static string LuckyCoinRegistrationRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinRegistrationRequestHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinExchangeRequestHandlerPlugIn_Name text.</summary>
-        public static string LuckyCoinExchangeRequestHandlerPlugIn_Name => ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized LuckyCoinExchangeRequestHandlerPlugIn_Description text.</summary>
-        public static string LuckyCoinExchangeRequestHandlerPlugIn_Description => ResourceManager.GetString("LuckyCoinExchangeRequestHandlerPlugIn_Description", resourceCulture)!;
-        /// <summary>Gets the localized InventoryRequestHandlerPlugIn_Name text.</summary>
-        public static string InventoryRequestHandlerPlugIn_Name => ResourceManager.GetString("InventoryRequestHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized InventoryRequestHandlerPlugIn_Description text.</summary>
-        public static string InventoryRequestHandlerPlugIn_Description => ResourceManager.GetString("InventoryRequestHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized InventoryItemEquipRequestHandlerPlugIn_Name text.</summary>
-        public static string InventoryItemEquipRequestHandlerPlugIn_Name => ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized InventoryItemEquipRequestHandlerPlugIn_Description text.</summary>
-        public static string InventoryItemEquipRequestHandlerPlugIn_Description => ResourceManager.GetString("InventoryItemEquipRequestHandlerPlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized InventoryItemUseChangedPlugIn_Name text.</summary>
-        public static string InventoryItemUseChangedPlugIn_Name => ResourceManager.GetString("InventoryItemUseChangedPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized InventoryItemUseChangedPlugIn_Description text.</summary>
-        public static string InventoryItemUseChangedPlugIn_Description => ResourceManager.GetString("InventoryItemUseChangedPlugIn_Description", resourceCulture)!;
     }
 }

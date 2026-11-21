@@ -161,7 +161,7 @@ public class TradeButtonAction : BaseTradeAction
 
     private async ValueTask<bool> CheckItemsAreTradableAsync(ITrader trader, IEnumerable<Item> items)
     {
-        var notTradable = items.FirstOrDefault(item => item.Definition is { IsTradable: false });
+        var notTradable = items.FirstOrDefault(item => item.Definition is { IsTradable: false } || item.IsTimeLimited());
         if (notTradable is null)
         {
             return true;

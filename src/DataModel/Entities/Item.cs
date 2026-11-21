@@ -82,6 +82,15 @@ public partial class Item
     public int PetExperience { get; set; }
 
     /// <summary>
+    /// Gets or sets the timestamp (UTC) at which the item expires; <c>null</c>, if it doesn't expire.
+    /// </summary>
+    /// <remarks>
+    /// A time-limited item, e.g. a pet rented in the cash shop, works like a normal item until then.
+    /// An expired item stays in the inventory, but has no effect and can't be equipped.
+    /// </remarks>
+    public DateTime? ExpiresAt { get; set; }
+
+    /// <summary>
     /// Assigns the values of another item to this item.
     /// </summary>
     /// <param name="otherItem">The other item.</param>
@@ -93,6 +102,7 @@ public partial class Item
         this.HasSkill = otherItem.HasSkill;
         this.SocketCount = otherItem.SocketCount;
         this.PetExperience = otherItem.PetExperience;
+        this.ExpiresAt = otherItem.ExpiresAt;
         if (otherItem.ItemOptions != null && otherItem.ItemOptions.Any())
         {
             this.ItemOptions.Clear();
