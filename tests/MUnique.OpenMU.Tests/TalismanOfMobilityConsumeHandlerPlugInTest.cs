@@ -259,6 +259,36 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
         Assert.That(eventArgs.Cancel, Is.EqualTo(blocked));
     }
 
+    /// <summary>
+    /// Duel spectators cannot save a location, and a bookmark cannot bypass arena admission.
+    /// </summary>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task DuelSpectatorMapRejectsMobilityAsync(bool returning)
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var handler = new TalismanOfMobilityConsumeHandlerPlugIn();
+        var talisman = CreateTalisman();
+        var map = player.CurrentMap!.Definition;
+        if (returning)
+        {
+            Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.True);
+
+            // Use a different configured map as the saved arena, while the player stays outside.
+            map = new BasicModel.GameMapDefinition { Number = 31, IsActive = true, TerrainData = map.TerrainData };
+            player.GameContext.Configuration.Maps.Add(map);
+            Assert.That(await player.GameContext.GetMapAsync((ushort)map.Number).ConfigureAwait(false), Is.Not.Null);
+            player.SelectedCharacter!.Attributes.Single(a => a.Definition == Stats.MobilityTalismanMap).Value = map.Number + 1;
+        }
+
+        var duelConfiguration = new BasicModel.DuelConfiguration();
+        duelConfiguration.DuelAreas.Add(new BasicModel.DuelArea { SpectatorsGate = new BasicModel.ExitGate { Map = map } });
+        player.GameContext.Configuration.DuelConfiguration = duelConfiguration;
+
+        Assert.That(await handler.ConsumeItemAsync(player, talisman, null, FruitUsage.Undefined).ConfigureAwait(false), Is.False);
+        Assert.That(talisman.Durability, Is.EqualTo(returning ? 1 : 2));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

@@ -61,7 +61,8 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, 
             || player.SelectedCharacter is not { } character
             || player.CurrentMap is not { } currentMap
             || player.CurrentMiniGame is not null
-            || player.DuelRoom is not null)
+            || player.DuelRoom is not null
+            || IsDuelMap(player, currentMap.Definition))
         {
             return false;
         }
@@ -87,6 +88,11 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, 
         if (GetSavedMap(player, character) is not { } savedMap)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MobilityTalismanNoPlaceSaved)).ConfigureAwait(false);
+            return false;
+        }
+
+        if (IsDuelMap(player, savedMap))
+        {
             return false;
         }
 
@@ -132,6 +138,14 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, 
         await this.ConsumeSourceItemAsync(player, item).ConfigureAwait(false);
         await player.WarpToAsync(gate).ConfigureAwait(false);
         return true;
+    }
+
+    private static bool IsDuelMap(Player player, GameMapDefinition map)
+    {
+        return player.GameContext.Configuration.DuelConfiguration?.DuelAreas?.Any(area =>
+            area.FirstPlayerGate?.Map?.Number == map.Number
+            || area.SecondPlayerGate?.Map?.Number == map.Number
+            || area.SpectatorsGate?.Map?.Number == map.Number) ?? false;
     }
 
     private static bool HasOtherHalfUsedTalisman(Player player, Item item)

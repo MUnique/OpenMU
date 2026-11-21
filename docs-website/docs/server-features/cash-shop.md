@@ -289,7 +289,8 @@ puts its packages on sale.
 The Talisman of Mobility can be used twice. The first use saves the place of
 the character, the second one warps the character back to it and uses the
 talisman up. The place is kept when the character leaves the game; saving
-another place replaces it. The talisman can't be used in mini games and duels.
+another place replaces it. The talisman can't be used in mini games or on configured duel maps, including
+spectator areas. It can't return a character to a duel map.
 If the character doesn't fulfill the requirements of the saved map anymore,
 e.g. it saved a place in Icarus and lost its wings, it gets a message and
 keeps the talisman and the saved place. The same applies while the saved map
