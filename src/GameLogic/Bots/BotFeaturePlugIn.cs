@@ -29,6 +29,18 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     private static readonly TimeSpan StartupDelay = TimeSpan.FromSeconds(15);
 
     private static readonly TimeSpan MaintenanceInterval = TimeSpan.FromSeconds(60);
+
+    /// <summary>
+    /// How often a game server which waits for another server to carry out a requested reset
+    /// (<see cref="BotConfiguration.ResetBots"/>) checks whether it is done.
+    /// </summary>
+    private static readonly TimeSpan ResetPollInterval = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// How often a game server which still waits for a reset repeats its warning about it.
+    /// </summary>
+    private static readonly TimeSpan ResetWaitWarningInterval = TimeSpan.FromMinutes(5);
+
     private static readonly TimeSpan PartyReformInterval = TimeSpan.FromMinutes(60);
 
     /// <summary>
@@ -119,15 +131,17 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             return;
         }
 
+        var isDeferred = false;
         try
         {
-            await this.SpawnPopulationAsync(gameContext, state, configuration).ConfigureAwait(false);
+            isDeferred = !await this.SpawnPopulationAsync(gameContext, state, configuration).ConfigureAwait(false);
         }
         finally
         {
             // Like before: the startup runs once, even when parts of it failed (the errors are
-            // logged); the maintenance pass takes over from here.
-            Interlocked.Exchange(ref state.StartupState, (int)StartupPhase.Done);
+            // logged); the maintenance pass takes over from here. Only a startup which waits for a
+            // reset on another server runs again, at the NextRunUtc it set.
+            Interlocked.Exchange(ref state.StartupState, isDeferred ? (int)StartupPhase.NotStarted : (int)StartupPhase.Done);
         }
     }
 
@@ -146,6 +160,43 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         return CreateDefaultConfiguration();
     }
 
+    /// <summary>
+    /// Determines whether a requested reset (<see cref="BotConfiguration.ResetBots"/>) is still pending
+    /// in the database. The generator server clears the flag there right after it deleted the accounts,
+    /// so this tells the other servers when they may spawn their share again. The database is asked,
+    /// not the configuration in memory: with one process per game server, the generator server can't
+    /// change the configuration of the others.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="logger">The logger.</param>
+    /// <returns><c>true</c> when the reset is still pending, or the flag could not be read.</returns>
+    internal static async ValueTask<bool> IsResetPendingAsync(IGameContext gameContext, ILogger logger)
+    {
+        try
+        {
+            // Only the plugin configurations, and not from a cache: this runs every few seconds while
+            // the server waits, and has to see what the generator server wrote meanwhile.
+            using var context = gameContext.PersistenceContextProvider.CreateNewTypedContext(typeof(PlugInConfiguration), false);
+            var typeId = typeof(BotFeaturePlugIn).GUID;
+            var entity = (await context.GetAsync<PlugInConfiguration>().ConfigureAwait(false)).FirstOrDefault(c => c.TypeId == typeId);
+            if (entity is null)
+            {
+                // Without a configuration row, the generator server can't clear the flag there either.
+                // Waiting would never end, so this server starts like before.
+                logger.LogWarning("Could not find the bot plugin configuration row to check the requested reset.");
+                return false;
+            }
+
+            return entity.GetConfiguration<BotConfiguration>(gameContext.PlugInManager.CustomConfigReferenceHandler)?.ResetBots ?? false;
+        }
+        catch (Exception ex)
+        {
+            // Retried on the next check; spawning without knowing could bring back the bots of deleted accounts.
+            logger.LogError(ex, "Failed to check whether the requested bot reset is done.");
+            return true;
+        }
+    }
+
     private static BotConfiguration CreateDefaultConfiguration()
     {
         return new BotConfiguration();
@@ -161,6 +212,28 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
     /// <returns><c>true</c> when the server is shutting down or gone.</returns>
     private static bool IsServerShuttingDown(GameContext gameContext)
         => gameContext.IsDisposed || gameContext.IsDisposing || gameContext.ArePeriodicTasksStopped;
+
+    /// <summary>
+    /// Logs that this server waits for a reset: when the wait starts, and as a warning when it takes
+    /// long, e.g. because the generator server is not running or its reset failed.
+    /// </summary>
+    private static void LogResetWait(ServerState state, ILogger logger)
+    {
+        var now = DateTime.UtcNow;
+        if (state.ResetWaitStartUtc is not { } waitStart)
+        {
+            state.ResetWaitStartUtc = now;
+            state.NextResetWaitWarningUtc = now + ResetWaitWarningInterval;
+            logger.LogInformation("Reset requested: another game server of the deployment carries it out; this server spawns its bots once it is done.");
+        }
+        else if (now >= state.NextResetWaitWarningUtc)
+        {
+            state.NextResetWaitWarningUtc = now + ResetWaitWarningInterval;
+            logger.LogWarning(
+                "Still waiting since {Minutes:0} minute(s) for another game server to carry out the requested bot reset - is the first game server running, and did its reset fail? This server spawns no bots until the reset flag is cleared.",
+                (now - waitStart).TotalMinutes);
+        }
+    }
 
     /// <summary>
     /// Stops every bot this server animates and puts it back to the state before the startup pass, so
@@ -270,7 +343,17 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
     }
 
-    private async ValueTask SpawnPopulationAsync(GameContext gameContext, ServerState state, BotConfiguration configuration)
+    /// <summary>
+    /// Generates (on the generator server) and spawns this server's share of the bot population.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="state">The state of this server.</param>
+    /// <param name="configuration">The bot configuration.</param>
+    /// <returns>
+    /// <c>false</c> when the startup is deferred, because another game server still has to carry out a
+    /// requested reset; <c>true</c> otherwise.
+    /// </returns>
+    private async ValueTask<bool> SpawnPopulationAsync(GameContext gameContext, ServerState state, BotConfiguration configuration)
     {
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         using var scope = logger.BeginScope(gameContext);
@@ -280,8 +363,20 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
 
         if (configuration.ResetBots && !partition.IsGenerator)
         {
-            // Not silent: the flag is set, but this server is not the one which acts on it.
-            logger.LogInformation("Reset requested: another game server of the deployment carries it out.");
+            if (await IsResetPendingAsync(gameContext, logger).ConfigureAwait(false))
+            {
+                // The accounts of this server's share are about to be deleted by the generator server.
+                // Spawning them now would leave bots of deleted accounts online, which fail on every save.
+                LogResetWait(state, logger);
+                state.NextRunUtc = DateTime.UtcNow + ResetPollInterval;
+                return false;
+            }
+
+            // The generator server cleared the flag in the database. In a deployment with one process
+            // per game server, it could not clear it in this server's configuration, so it's done here.
+            configuration.ResetBots = false;
+            state.ResetWaitStartUtc = null;
+            logger.LogInformation("Reset done by another game server of the deployment; spawning this server's bots.");
         }
 
         if (configuration.ResetBots && partition.IsGenerator)
@@ -386,6 +481,7 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         }
 
         this.LogBufferShortage(state, logger);
+        return true;
     }
 
     /// <summary>
@@ -725,6 +821,17 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
         /// Gets or sets the time of this server's (single) startup pass.
         /// </summary>
         public DateTime NextRunUtc { get; set; } = DateTime.UtcNow + StartupDelay;
+
+        /// <summary>
+        /// Gets or sets the time since which this server waits for another server to carry out a
+        /// requested reset, or <c>null</c> when it doesn't wait.
+        /// </summary>
+        public DateTime? ResetWaitStartUtc { get; set; }
+
+        /// <summary>
+        /// Gets or sets the time of the next warning about a long wait for a reset.
+        /// </summary>
+        public DateTime NextResetWaitWarningUtc { get; set; }
 
         /// <summary>
         /// Gets or sets the time of this server's next maintenance pass.
