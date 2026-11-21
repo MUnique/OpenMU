@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -15,7 +16,10 @@ using MUnique.OpenMU.PlugIns;
 [Guid("CEBBD5BD-B0DF-4768-816D-AF8DF78888B2")]
 public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfiguration<PeriodicSaveProgressPlugInConfiguration>, ISupportDefaultCustomConfiguration
 {
-    private DateTime _nextRunUtc = DateTime.UtcNow;
+    /// <summary>
+    /// The time of the next save, for each game server: the plugin instance is shared by the game servers of a process.
+    /// </summary>
+    private readonly PerServerSchedule _schedule = new();
 
     /// <inheritdoc />
     public PeriodicSaveProgressPlugInConfiguration? Configuration { get; set; }
@@ -23,13 +27,11 @@ public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomCon
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        if (DateTime.UtcNow < this._nextRunUtc)
+        var configuration = this.Configuration ??= CreateDefaultConfiguration();
+        if (!this._schedule.TryStartRun(gameContext, configuration.Interval))
         {
             return;
         }
-
-        var configuration = this.Configuration ??= CreateDefaultConfiguration();
-        this._nextRunUtc = DateTime.UtcNow + configuration.Interval;
 
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         using var scope = logger.BeginScope(gameContext);
@@ -70,7 +72,7 @@ public class PeriodicSaveProgressPlugIn : IPeriodicTaskPlugIn, ISupportCustomCon
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.UtcNow;
+        this._schedule.ForceStart();
     }
 
     /// <inheritdoc />
