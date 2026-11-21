@@ -1848,6 +1848,7 @@ internal sealed class BasicModelConverter
         target.StorePriceItemDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.StorePriceItemDefinition)!;
         target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
+        target.ExpiresAt = source.ExpiresAt;
         return target;
     }
 
@@ -1994,6 +1995,7 @@ internal sealed class BasicModelConverter
         target.IsSellableToNpc = source.IsSellableToNpc;
         target.IsPersonalStoreSellable = source.IsPersonalStoreSellable;
         target.IsRepairable = source.IsRepairable;
+        target.IsSellableWhenExpired = source.IsSellableWhenExpired;
         target.Name = source.Name;
         target.IsActive = source.IsActive;
         target.IntroducedIn = source.IntroducedIn;

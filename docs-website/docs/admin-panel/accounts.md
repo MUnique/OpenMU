@@ -52,6 +52,13 @@ If the player is currently online, the ban does not kick them by itself — use 
 everything that belongs to it: the characters with their stats, inventory and
 skills, the vault, and the account's settings.
 
+The item editor of a worn item has **Time-limited** and **Expires at (UTC)**: a
+time-limited item stops working at that time, like a pet rented in the cash shop
+(see [time-limited items](../server-features/cash-shop.md#time-limited-items)).
+Switching it on lets the item expire in one day. An item which can't be dropped
+or sold to an NPC once it expired can't be made time-limited, because the player
+couldn't get rid of it.
+
 :::warning[Technical view]
 This is the [generic edit page](game-configuration.md#the-generic-edit-pages),
 i.e. a direct view of the data model. It is powerful and it is easy to create

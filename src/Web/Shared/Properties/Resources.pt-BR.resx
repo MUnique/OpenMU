@@ -668,4 +668,13 @@ Nível: {2} - {3}</value>
   <data name="ZoomOut" xml:space="preserve">
     <value>Diminuir zoom</value>
   </data>
+  <data name="ItemEdit_IsTimeLimited" xml:space="preserve">
+    <value>Tempo limitado</value>
+  </data>
+  <data name="ItemEdit_ExpiresAt" xml:space="preserve">
+    <value>Expira em (UTC)</value>
+  </data>
+  <data name="ItemEdit_CannotBeTimeLimited" xml:space="preserve">
+    <value>Este item não pode ter tempo limitado: apenas um item que é equipado, não é consumido e pode ser descartado ou vendido a um NPC após expirar.</value>
+  </data>
 </root>

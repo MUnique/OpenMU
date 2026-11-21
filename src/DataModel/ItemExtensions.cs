@@ -105,13 +105,13 @@ public static class ItemExtensions
     /// inventory): it must be wearable, and its definition must allow it (<see cref="ItemDefinition.IsRepairable"/>).
     /// The durability of an item which can't be worn is its number of pieces, so repairing it would reduce a
     /// stack to one piece. Other ways to restore the durability, like a Jewel of Bless on a Horn of Fenrir,
-    /// don't use this check.
+    /// don't use this check. A time-limited item can't be repaired, like in the client.
     /// </summary>
     /// <param name="item">The item.</param>
     /// <returns>
     ///   <c>true</c> if the specified item can be repaired; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanBeRepaired(this Item item) => item.IsWearable() && item.Definition!.IsRepairable;
+    public static bool CanBeRepaired(this Item item) => item.IsWearable() && item.Definition!.IsRepairable && !item.IsTimeLimited();
 
     /// <summary>
     /// Determines whether this item is stackable.
@@ -124,6 +124,7 @@ public static class ItemExtensions
 
     /// <summary>
     /// Determines whether this item can be completely stacked on the specified other item.
+    /// Items with different expirations (<see cref="Item.ExpiresAt"/>) can't be stacked.
     /// After stacking, this item is destroyed.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -131,10 +132,11 @@ public static class ItemExtensions
     /// <returns>
     ///   <c>true</c> if this item can be completely stacked on the specified other item; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && (item.Durability + otherItem.Durability) <= item.Definition?.Durability;
+    public static bool CanCompletelyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && item.ExpiresAt == otherItem.ExpiresAt && (item.Durability + otherItem.Durability) <= item.Definition?.Durability;
 
     /// <summary>
     /// Determines whether this item can be partially stacked on the specified other item.
+    /// Items with different expirations (<see cref="Item.ExpiresAt"/>) can't be stacked.
     /// After stacking, this item is left with the rest of its durability.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -142,7 +144,7 @@ public static class ItemExtensions
     /// <returns>
     ///   <c>true</c> if this item can be partially stacked on the specified other item; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && otherItem.Durability < otherItem.Definition?.Durability;
+    public static bool CanPartiallyStackOn(this Item item, Item otherItem) => item.IsStackable() && item.IsSameItemAs(otherItem) && item.ExpiresAt == otherItem.ExpiresAt && otherItem.Durability < otherItem.Definition?.Durability;
 
     /// <summary>
     /// Determines whether this item is of the same type as the specified other item.
@@ -196,4 +198,41 @@ public static class ItemExtensions
         item.Durability = Math.Max(item.Durability - decrement, 0.0);
         return item.Durability() != previousWholeDurability;
     }
+
+    /// <summary>
+    /// Determines whether the item is time-limited, i.e. it has an <see cref="Item.ExpiresAt"/>.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns><c>true</c>, if the item is time-limited; otherwise, <c>false</c>.</returns>
+    public static bool IsTimeLimited(this Item item) => item.ExpiresAt is not null;
+
+    /// <summary>
+    /// Determines whether the time-limited item has expired at the specified timestamp.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="utcNow">The current timestamp (UTC).</param>
+    /// <returns><c>true</c>, if the item is time-limited and has expired; otherwise, <c>false</c>.</returns>
+    public static bool IsExpired(this Item item, DateTime utcNow) => item.ExpiresAt is { } expiresAt && expiresAt <= utcNow;
+
+    /// <summary>
+    /// Determines whether the item has an effect when it's equipped: it has durability left, and it isn't an
+    /// expired time-limited item. Every effect of an equipped item (power-ups, skills, a mount, a pet) depends on it.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="utcNow">The current timestamp (UTC).</param>
+    /// <returns><c>true</c>, if the item has an effect; otherwise, <c>false</c>.</returns>
+    public static bool HasEffect(this Item item, DateTime utcNow) => item.Durability > 0 && !item.IsExpired(utcNow);
+
+    /// <summary>
+    /// Determines whether a player can get rid of an expired time-limited item of this kind: by dropping it
+    /// or by selling it to an NPC merchant.
+    /// </summary>
+    /// <remarks>
+    /// An expired item has no effect, but stays in the inventory until the player gets rid of it.
+    /// So an item which allows neither must not become time-limited.
+    /// </remarks>
+    /// <param name="definition">The item definition.</param>
+    /// <returns><c>true</c>, if an expired item of this kind can be dropped or sold; otherwise, <c>false</c>.</returns>
+    public static bool CanBeDisposedOfWhenExpired(this ItemDefinition definition)
+        => definition.IsDroppable || definition.IsSellableToNpc || definition.IsSellableWhenExpired;
 }

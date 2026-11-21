@@ -289,6 +289,37 @@ public class PowerUpFactoryTest
         Assert.That(bonusOptions.Count(), Is.EqualTo(5));
     }
 
+    /// <summary>
+    /// Tests that an expired time-limited item has no power-ups, and that a valid one has them.
+    /// </summary>
+    [Test]
+    public void ExpiredItemHasNoPowerUps()
+    {
+        var factory = this.GetPowerUpFactory();
+        var item = this.GetItemWithBasePowerUp();
+
+        item.ExpiresAt = DateTime.UtcNow.AddDays(1);
+        Assert.That(factory.GetPowerUps(item, this.GetAttributeSystem()), Is.Not.Empty);
+
+        item.ExpiresAt = DateTime.UtcNow.AddSeconds(-1);
+        Assert.That(factory.GetPowerUps(item, this.GetAttributeSystem()), Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that an expired item doesn't count for the set bonus.
+    /// </summary>
+    [Test]
+    public void ExpiredItemDoesNotCountForSet()
+    {
+        var factory = this.GetPowerUpFactory();
+        var items = this.GetAncientSet(6, 5).ToList();
+        items[0].ExpiresAt = DateTime.UtcNow.AddSeconds(-1);
+
+        var result = factory.GetSetPowerUps(items, this.GetAttributeSystem(), new GameConfiguration());
+
+        Assert.That(result.Count(), Is.LessThan(6));
+    }
+
     private IItemPowerUpFactory GetPowerUpFactory()
     {
         return new ItemPowerUpFactory(new NullLogger<ItemPowerUpFactory>(), TestItemStatProfiles.Configuration);

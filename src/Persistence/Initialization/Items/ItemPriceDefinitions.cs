@@ -109,6 +109,21 @@ internal class ItemPriceDefinitions : InitializerBase
     ];
 
     /// <summary>
+    /// The prices of the items which are rented in the cash shop. They can only be sold to an NPC once they
+    /// expired (<see cref="ItemDefinition.IsSellableWhenExpired"/>), for the small fixed price the client shows:
+    /// a third of the buying price, rounded to tens, without a reduction by the durability.
+    /// </summary>
+    /// <remarks>
+    /// They come after the other prices, so that the numbers (and GUIDs) of the existing definitions don't change.
+    /// </remarks>
+    private static readonly IReadOnlyList<SpecialPrice> RentalPrices =
+    [
+        new(nameof(ItemPriceDefinitionNames.RentalItems), "3000", Rounding: ItemPriceRounding.Tens, Items: [(13, 64), (13, 65), (13, 76), (13, 80), (13, 109), (13, 110), (13, 111), (13, 112), (13, 113), (13, 114), (13, 115)]),
+        new(nameof(ItemPriceDefinitionNames.SkeletonRentalItems), "6000", Rounding: ItemPriceRounding.Tens, Items: [(13, 122), (13, 123)]),
+        new(nameof(ItemPriceDefinitionNames.SmallWingsAndCapes), "240", Rounding: ItemPriceRounding.Tens, Items: [(12, 130), (12, 131), (12, 132), (12, 133), (12, 134), (12, 135)]),
+    ];
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ItemPriceDefinitions"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -117,6 +132,8 @@ internal class ItemPriceDefinitions : InitializerBase
         : base(context, gameConfiguration)
     {
     }
+
+    private static IEnumerable<SpecialPrice> AllPrices => SpecialPrices.Concat(GeneralPrices).Concat(RentalPrices);
 
     /// <summary>
     /// Creates all price definitions and assigns them to the items which don't have one yet.
@@ -128,12 +145,12 @@ internal class ItemPriceDefinitions : InitializerBase
     /// </remarks>
     public override void Initialize()
     {
-        foreach (var price in SpecialPrices.Concat(GeneralPrices))
+        foreach (var price in AllPrices)
         {
             this.GetOrCreateDefinition(price);
         }
 
-        var specialPrices = SpecialPrices
+        var specialPrices = SpecialPrices.Concat(RentalPrices)
             .SelectMany(price => price.Items.Select(item => (Key: GetKey(item.Group, item.Number), Price: price)))
             .ToDictionary(entry => entry.Key, entry => entry.Price);
         foreach (var item in this.GameConfiguration.Items.Where(item => item.PriceDefinition is null))
@@ -141,6 +158,32 @@ internal class ItemPriceDefinitions : InitializerBase
             if (this.GetPrice(item, specialPrices) is { } price)
             {
                 item.PriceDefinition = this.GetOrCreateDefinition(price);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Assigns the prices of the rented items (see <see cref="RentalPrices"/>) to the items of an existing configuration,
+    /// which got the general price of the accessories before.
+    /// </summary>
+    /// <remarks>
+    /// An item which has another price definition keeps it, because a server owner chose it.
+    /// </remarks>
+    public void AssignRentalPrices()
+    {
+        var accessoriesName = ItemPriceDefinitionNames.ResourceManager.GetLocalizedString(AccessoriesName);
+        foreach (var price in RentalPrices)
+        {
+            var definition = this.GetOrCreateDefinition(price);
+            foreach (var (group, number) in price.Items)
+            {
+                if (this.GameConfiguration.Items.FirstOrDefault(item => item.Group == group && item.Number == number) is { } item
+                    && (item.PriceDefinition is null
+                        || item.PriceDefinition.Name.SourceKey == accessoriesName.SourceKey
+                        || item.PriceDefinition.Name.ValueInNeutralLanguage == accessoriesName.ValueInNeutralLanguage))
+                {
+                    item.PriceDefinition = definition;
+                }
             }
         }
     }
@@ -205,7 +248,7 @@ internal class ItemPriceDefinitions : InitializerBase
             return existingDefinition;
         }
 
-        var number = (short)(SpecialPrices.Concat(GeneralPrices).ToList().IndexOf(price) + 1);
+        var number = (short)(AllPrices.ToList().IndexOf(price) + 1);
         var definition = this.Context.CreateNew<ItemPriceDefinition>();
         definition.SetGuid(number);
         definition.Name = name;
