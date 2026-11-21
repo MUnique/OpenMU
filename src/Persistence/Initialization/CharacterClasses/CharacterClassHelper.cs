@@ -48,13 +48,16 @@ public static class CharacterClassHelper
         var characterClasses = gameConfiguration.CharacterClasses;
         foreach (var characterClassNumber in NumberMapping.Where(c => classes.HasFlag(c.Classes)).Select(c => c.Number))
         {
-            if (characterClasses.FirstOrDefault(c => c.Number == (int)characterClassNumber) is { } characterClass)
+            var characterClass = characterClasses.FirstOrDefault(c => c.Number == (int)characterClassNumber);
+            if (characterClass is not null)
             {
                 yield return characterClass;
+                continue;
             }
-            else if (!ignoreMissing)
+
+            if (!ignoreMissing)
             {
-                yield return characterClasses.First(c => c.Number == (int)characterClassNumber);
+                throw new InvalidOperationException($"Character class {characterClassNumber} is missing in the game configuration.");
             }
         }
     }
