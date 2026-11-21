@@ -1,0 +1,79 @@
+@using System.Runtime.CompilerServices
+@using Microsoft.AspNetCore.Components.QuickGrid
+@implements IDisposable
+
+@if (this.State.TotalItemCount is not null)
+{
+    <Pager CurrentPage="@(this.State.CurrentPageIndex + 1)"
+           TotalPages="@((this.State.LastPageIndex ?? 0) + 1)"
+           PageChanged="this.OnPageChangedAsync" />
+}
+
+@code {
+    // QuickGrid only notifies about changes of the total item count. The notifier lets multiple pagers of the
+    // same state (e.g. above and below a table) know that one of them has changed the page.
+    private static readonly ConditionalWeakTable<PaginationState, PageChangeNotifier> Notifiers = new();
+
+    private PaginationState? _subscribedState;
+    private PageChangeNotifier? _notifier;
+
+    /// <summary>
+    /// Gets or sets the pagination state of the <see cref="QuickGrid{TGridItem}"/>.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public PaginationState State { get; set; } = null!;
+
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        if (this._subscribedState == this.State)
+        {
+            return;
+        }
+
+        this.Dispose();
+        this._subscribedState = this.State;
+        this._subscribedState.TotalItemCountChanged += this.OnStateChanged;
+        this._notifier = Notifiers.GetOrCreateValue(this.State);
+        this._notifier.Changed += this.OnPageChanged;
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (this._subscribedState is { } state)
+        {
+            state.TotalItemCountChanged -= this.OnStateChanged;
+            this._subscribedState = null;
+        }
+
+        if (this._notifier is { } notifier)
+        {
+            notifier.Changed -= this.OnPageChanged;
+            this._notifier = null;
+        }
+    }
+
+    private async Task OnPageChangedAsync(int page)
+    {
+        await this.State.SetCurrentPageIndexAsync(page - 1).ConfigureAwait(true);
+        this._notifier?.Notify();
+    }
+
+    private void OnStateChanged(object? sender, int? totalItemCount)
+    {
+        this.OnPageChanged();
+    }
+
+    private void OnPageChanged()
+    {
+        _ = this.InvokeAsync(this.StateHasChanged);
+    }
+
+    private sealed class PageChangeNotifier
+    {
+        public event Action? Changed;
+
+        public void Notify() => this.Changed?.Invoke();
+    }
+}

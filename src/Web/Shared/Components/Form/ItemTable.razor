@@ -29,14 +29,9 @@
                 @if (this._showSearch)
                 {
                     <div class="auto-form-container">
-                        <div class="mb-3 auto-form-search-group">
-                        <input type="text"
-                               class="form-control"
-                                   placeholder="@($"{Resources.Search}...")"
-                                   @bind="this._searchTerm"
-                                   @bind:event="oninput" />
-                            <span class="oi oi-magnifying-glass search-icon"></span>
-                        </div>
+                        <SearchInput Class="mb-3"
+                                     Value="@(this._searchTerm ?? string.Empty)"
+                                     ValueChanged="@(value => this._searchTerm = value)" />
                     </div>
                 }
                 <table class="table table-striped table-hover">

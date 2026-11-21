@@ -1228,4 +1228,10 @@ Inventory Extensions: {18}</value>
   <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
     <value>You can't warp onto the siege map while the battle is running.</value>
   </data>
+  <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
+    <value>Only the guild master of the guild which owns the castle can use the Lord's Mix.</value>
+  </data>
+  <data name="LordsMixLimitReached" xml:space="preserve">
+    <value>The limit of the Lord's Mix is reached; it can be used again in the next period.</value>
+  </data>
 </root>

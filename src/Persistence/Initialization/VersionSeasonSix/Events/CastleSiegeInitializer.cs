@@ -70,6 +70,8 @@ internal sealed class CastleSiegeInitializer : InitializerBase
         configuration.GateRepairCostPerHealthPoint = 5;
         configuration.StatueRepairCostPerHealthPoint = 3;
         configuration.RepairCostPerUpgradeLevel = 1_000_000;
+        configuration.LordsMixLimit = LordsMix.Limit;
+        configuration.LordsMixLimitPeriod = LordsMix.LimitPeriod;
         configuration.CastleSiegeMapDefinition = this.GameConfiguration.Maps.Single(map => map.Number == ValleyOfLoren.Number);
         configuration.LandOfTrialsMapDefinition = this.GameConfiguration.Maps.Single(map => map.Number == LandOfTrials.Number);
 

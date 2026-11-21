@@ -3717,4 +3717,31 @@
   <data name="WeightedValue_Weight_Caption" xml:space="preserve">
     <value>Gewichtung</value>
   </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionCountTable_Caption" xml:space="preserve">
+    <value>Tabelle der Anzahl exzellenter Optionen des Ergebnisses</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSocketCountTable_Caption" xml:space="preserve">
+    <value>Tabelle der Sockelanzahl des Ergebnisses</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimit_Caption" xml:space="preserve">
+    <value>Lord's-Mix-Limit</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCount_Caption" xml:space="preserve">
+    <value>Anzahl der Lord's Mixes</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Caption" xml:space="preserve">
+    <value>Zeitraum des Lord's-Mix-Limits</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Caption" xml:space="preserve">
+    <value>Datum der Lord's-Mix-Anzahl</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Caption" xml:space="preserve">
+    <value>Chance auf exzellente Optionen</value>
+  </data>
+  <data name="LordsMixLimitPeriod_Day_Caption" xml:space="preserve">
+    <value>Tag</value>
+  </data>
+  <data name="LordsMixLimitPeriod_SiegeCycle_Caption" xml:space="preserve">
+    <value>Belagerungszyklus</value>
+  </data>
 </root>

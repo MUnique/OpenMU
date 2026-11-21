@@ -763,6 +763,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adds the Lord&apos;s Mix to the castle senior: once per day, the guild master of the guild which owns the castle mixes 30 Jewels of Guardian, a Packed Jewel of Bless and a Packed Jewel of Soul (30 jewels each) and 1,000,000,000 zen into an excellent weapon or armor with two to four excellent options, or a normal one. Sets the limit of one mix per day, if there&apos;s no limit yet..
+        /// </summary>
+        public static string AddLordsMixUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddLordsMixUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lord&apos;s Mix.
+        /// </summary>
+        public static string AddLordsMixUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddLordsMixUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Makes Market Union Member Julia (547) a working warp NPC between Lorencia and the Loren Market, on both sides, instead of an empty merchant..
         /// </summary>
         public static string AddLorenMarketJuliaWarpPlugIn_Description {
