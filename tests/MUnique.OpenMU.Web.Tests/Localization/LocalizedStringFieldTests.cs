@@ -34,6 +34,7 @@ public class LocalizedStringFieldTests
                 .Add(parameter => parameter.ValueExpression, () => model.Name)
                 .Add(parameter => parameter.ValueChanged, (LocalizedString value) => model.Name = value)));
 
+        component.Find("button").Click(); // shows all languages
         Assert.That(component.FindAll(".badge").Select(badge => badge.TextContent), Is.EqualTo(new[] { "en", "zh-CN", "zh-TW" }));
         Assert.That(component.FindAll("input").Select(input => input.Id), Is.EqualTo(new[] { "Name", "Name_zh-CN", "Name_zh-TW" }));
         Assert.That(component.Find("#Name_zh-CN").GetAttribute("value"), Is.EqualTo("铠"));
@@ -42,5 +43,38 @@ public class LocalizedStringFieldTests
         Assert.That(model.Name.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-CN")), Is.EqualTo("自定义铠"));
         Assert.That(model.Name.GetOwnTranslation(CultureInfo.GetCultureInfo("zh-TW")), Is.EqualTo("鎧"));
         Assert.That(model.Name.ValueInNeutralLanguage, Is.EqualTo("Armor"));
+    }
+
+    /// <summary>By default, only the neutral language and the selected language are shown, until all languages are requested.</summary>
+    [Test]
+    public void OnlyNeutralAndSelectedLanguageAreShownByDefault()
+    {
+        using var context = new BunitContext();
+        context.Services.Configure<RequestLocalizationOptions>(options => options.AddSupportedUICultures("en", "de", "pt-BR"));
+        context.Services.AddSingleton<IChangeNotificationService, ChangeNotificationService>();
+        var model = new ItemOptionType { Name = "Armor||de=Rüstung||pt-BR=Armadura" };
+        var previousCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de");
+        try
+        {
+            var component = context.Render<CascadingValue<EditContext>>(parameters => parameters
+                .Add(parameter => parameter.Value, new EditContext(model))
+                .AddChildContent<LocalizedStringField>(field => field
+                    .Add(parameter => parameter.Value, model.Name)
+                    .Add(parameter => parameter.ValueExpression, () => model.Name)
+                    .Add(parameter => parameter.ValueChanged, (LocalizedString value) => model.Name = value)));
+
+            Assert.That(component.FindAll("input").Select(input => input.Id), Is.EqualTo(new[] { "Name", "Name_de" }));
+            component.Find("#Name_de").Change("Panzer");
+            Assert.That(model.Name.GetOwnTranslation(CultureInfo.GetCultureInfo("de")), Is.EqualTo("Panzer"));
+            Assert.That(model.Name.GetOwnTranslation(CultureInfo.GetCultureInfo("pt-BR")), Is.EqualTo("Armadura"));
+
+            component.Find("button").Click();
+            Assert.That(component.FindAll("input").Count, Is.EqualTo(3));
+        }
+        finally
+        {
+            CultureInfo.CurrentUICulture = previousCulture;
+        }
     }
 }
