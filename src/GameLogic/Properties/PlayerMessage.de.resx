@@ -1057,4 +1057,22 @@ Inventarerweiterungen: {18}</value>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Ein Gegenstand der gleichen Art wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
   </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>Der Ort wurde gespeichert. Benutze den Talisman erneut, um zu ihm zurückzukehren.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>Mit einem Talisman der Mobilität wurde kein Ort gespeichert.</value>
+  </data>
+  <data name="LandOfTrialsClosed" xml:space="preserve">
+    <value>Das Land der Prüfungen ist nur für die Allianz des Burgbesitzers geöffnet.</value>
+  </data>
+  <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
+    <value>Der Weg zurück zum gespeicherten Ort wird von einem geschlossenen Tor versperrt.</value>
+  </data>
+  <data name="MobilityTalismanReturnPending" xml:space="preserve">
+    <value>Ein anderer Talisman der Mobilität muss noch zum gespeicherten Ort zurückkehren. Benutze zuerst diesen.</value>
+  </data>
+  <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
+    <value>Während der Schlacht kannst du nicht auf die Belagerungskarte teleportieren.</value>
+  </data>
 </root>

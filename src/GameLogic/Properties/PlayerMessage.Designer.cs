@@ -3306,5 +3306,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("YourChatBanRemovedByGameMaster", resourceCulture);
             }
         }
+
+        /// <summary>Gets the localized CastleSiegeWarpNotPossible text.</summary>
+        public static string CastleSiegeWarpNotPossible => ResourceManager.GetString("CastleSiegeWarpNotPossible", resourceCulture)!;
+
+        /// <summary>Gets the localized LandOfTrialsClosed text.</summary>
+        public static string LandOfTrialsClosed => ResourceManager.GetString("LandOfTrialsClosed", resourceCulture)!;
+
+        /// <summary>Gets the localized MobilityTalismanNoPlaceSaved text.</summary>
+        public static string MobilityTalismanNoPlaceSaved => ResourceManager.GetString("MobilityTalismanNoPlaceSaved", resourceCulture)!;
+
+        /// <summary>Gets the localized MobilityTalismanPlaceSaved text.</summary>
+        public static string MobilityTalismanPlaceSaved => ResourceManager.GetString("MobilityTalismanPlaceSaved", resourceCulture)!;
+
+        /// <summary>Gets the localized MobilityTalismanReturnBlocked text.</summary>
+        public static string MobilityTalismanReturnBlocked => ResourceManager.GetString("MobilityTalismanReturnBlocked", resourceCulture)!;
+
+        /// <summary>Gets the localized MobilityTalismanReturnPending text.</summary>
+        public static string MobilityTalismanReturnPending => ResourceManager.GetString("MobilityTalismanReturnPending", resourceCulture)!;
     }
 }

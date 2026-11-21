@@ -25,7 +25,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("B7F62FA9-59E6-49E9-B499-0358A14957CF")]
-public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn, IPlayerSpawnGateSelectionPlugIn, IPlayerKillPenaltyExemptionPlugIn, IPlayerTeleportRestrictionPlugIn, IPlayerAttackRestrictionPlugIn
+public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IPlayerStateChangedPlugIn, IPlayerSpawnGateSelectionPlugIn, IPlayerKillPenaltyExemptionPlugIn, IPlayerTeleportRestrictionPlugIn, IPlayerAttackRestrictionPlugIn, IWarpGateEnteringPlugIn
 {
     private static readonly TimeSpan EconomySaveInterval = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan NpcSaveInterval = TimeSpan.FromMinutes(2);
@@ -33,6 +33,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     private static readonly TimeSpan MiniMapUpdateInterval = TimeSpan.FromSeconds(3);
 
     private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
+    private readonly CastleSiegeTaxProvider _taxProvider = new();
     private readonly TimeProvider _timeProvider;
 
     private int _forceRequestVersion;
@@ -172,6 +173,52 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         {
             eventArgs.Cancel = true;
         }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Warps which aren't through the configured gates, e.g. by the Talisman of Mobility, must not bypass the siege:
+    /// During the battle, they can't lead onto the siege map, e.g. to a place saved behind the castle gates.
+    /// The Land of Trials is entered through its guard, which only lets the alliance of the castle owner
+    /// or, while the hunt zone is public, everyone else in who pays the hunt fee.
+    /// </remarks>
+    public async ValueTask WarpGateEnteringAsync(Player player, ExitGate targetGate, CancelEventArgs eventArgs)
+    {
+        if (this.GetContext(player.GameContext) is not { Configuration.Enabled: true } context
+            || targetGate.Map is not { } targetMap)
+        {
+            return;
+        }
+
+        if (context.IsEventRunning
+            && targetMap.Number == context.Configuration.CastleSiegeMapDefinition?.Number
+            && !targetMap.ExitGates.Any(gate => ReferenceEquals(gate, targetGate)))
+        {
+            eventArgs.Cancel = true;
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CastleSiegeWarpNotPossible)).ConfigureAwait(false);
+            return;
+        }
+
+        if (targetMap.Number != context.Configuration.LandOfTrialsMapDefinition?.Number)
+        {
+            return;
+        }
+
+        // Like at the guard, everyone outside the owner alliance pays the hunt fee for each entrance.
+        if (await this._taxProvider.TryPayHuntEntryFeeAsync(player, context).ConfigureAwait(false))
+        {
+            return;
+        }
+
+        eventArgs.Cancel = true;
+        if (context.SiegeData.IsHuntZoneEnabled
+            && await this._taxProvider.GetHuntEntryFeeAsync(player, context).ConfigureAwait(false) > player.Money)
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.NotEnoughMoneyToEnter), targetMap.Name.GetTranslation(player.Culture)).ConfigureAwait(false);
+            return;
+        }
+
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LandOfTrialsClosed)).ConfigureAwait(false);
     }
 
     /// <summary>

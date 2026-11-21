@@ -1210,4 +1210,22 @@ Inventory Extensions: {18}</value>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>An item of the same kind is already in use. Stop using it first, and then try again.</value>
   </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>The place has been saved. Use the talisman again to return to it.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>No place has been saved with a Talisman of Mobility.</value>
+  </data>
+  <data name="LandOfTrialsClosed" xml:space="preserve">
+    <value>The Land of Trials is only open to the alliance of the castle owner.</value>
+  </data>
+  <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
+    <value>The way back to the saved place is blocked by a closed gate.</value>
+  </data>
+  <data name="MobilityTalismanReturnPending" xml:space="preserve">
+    <value>Another Talisman of Mobility still has to return to the saved place. Use it first.</value>
+  </data>
+  <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
+    <value>You can't warp onto the siege map while the battle is running.</value>
+  </data>
 </root>

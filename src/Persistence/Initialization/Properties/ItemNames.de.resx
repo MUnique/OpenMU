@@ -2286,4 +2286,7 @@
   <data name="GoldenMapleCharm" xml:space="preserve">
     <value>Goldener Ahorntalisman</value>
   </data>
+  <data name="TalismanOfMobility" xml:space="preserve">
+    <value>Talisman der Mobilität</value>
+  </data>
 </root>

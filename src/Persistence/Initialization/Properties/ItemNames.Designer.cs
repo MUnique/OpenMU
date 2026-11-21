@@ -5550,5 +5550,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GoldenMapleCharm", resourceCulture);
             }
         }
+
+        /// <summary>Gets the localized TalismanOfMobility text.</summary>
+        public static string TalismanOfMobility => ResourceManager.GetString("TalismanOfMobility", resourceCulture)!;
     }
 }

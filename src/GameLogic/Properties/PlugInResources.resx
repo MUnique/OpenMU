@@ -2319,4 +2319,10 @@
   <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Description" xml:space="preserve">
     <value>Only one item of the same exclusive group can be in use at the same time, e.g. either the Hawk or the Goat Figurine. With 0, only another item of the same definition is excluded.</value>
   </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Talisman of Mobility Consume Handler</value>
+  </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin which handles the Talisman of Mobility. The first usage saves the place of the character, the second one warps it back to the saved place.</value>
+  </data>
 </root>

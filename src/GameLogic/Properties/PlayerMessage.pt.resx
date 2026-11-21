@@ -1210,4 +1210,22 @@ Extensões de inventário: {18}</value>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Um item do mesmo tipo já está em uso. Pare de usá-lo primeiro e tente novamente.</value>
   </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>O local foi salvo. Use o talismã novamente para voltar a ele.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>Nenhum local foi salvo com um Talismã da Mobilidade.</value>
+  </data>
+  <data name="LandOfTrialsClosed" xml:space="preserve">
+    <value>A Terra das Provações está aberta apenas para a aliança do dono do castelo.</value>
+  </data>
+  <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
+    <value>O caminho de volta ao local salvo está bloqueado por um portão fechado.</value>
+  </data>
+  <data name="MobilityTalismanReturnPending" xml:space="preserve">
+    <value>Outro Talismã da Mobilidade ainda precisa retornar ao local salvo. Use-o primeiro.</value>
+  </data>
+  <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
+    <value>Você não pode se teleportar para o mapa do cerco durante a batalha.</value>
+  </data>
 </root>

@@ -2370,4 +2370,7 @@
   <data name="GoldenMapleCharm" xml:space="preserve">
     <value>黄金枫树护符</value>
   </data>
+  <data name="TalismanOfMobility" xml:space="preserve">
+    <value>机动护身符</value>
+  </data>
 </root>
