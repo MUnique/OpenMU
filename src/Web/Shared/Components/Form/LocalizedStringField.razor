@@ -7,10 +7,10 @@
 @inherits NotifyableInputBase<MUnique.OpenMU.Interfaces.LocalizedString>
 
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
-@inject IOptions<MUnique.OpenMU.Web.Shared.ContentLanguageOptions> ContentLanguageOptions
+@inject IOptions<ContentLanguageOptions> ContentLanguageOptions
 
 <div class="mb-3">
-  <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+  <FieldLabel Text="@Label" ValueExpression="@(this.ValueExpression!)" />
 
   @{
     var cultures = this.GetCultures();
@@ -27,7 +27,7 @@
               @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))" />
         @if (canToggle)
         {
-          <button type="button" class="btn btn-secondary language-toggle" title="@(this._showAllLanguages ? MUnique.OpenMU.Web.Shared.Properties.Resources.ShowSelectedLanguageOnly : MUnique.OpenMU.Web.Shared.Properties.Resources.ShowAllLanguages)" @onclick="this.ToggleAllLanguages">
+          <button type="button" class="btn btn-secondary language-toggle" title="@(this._showAllLanguages ? Resources.ShowSelectedLanguageOnly : Resources.ShowAllLanguages)" @onclick="this.ToggleAllLanguages">
             <i class="me-2 oi @(this._showAllLanguages ? "oi-chevron-top" : "oi-chevron-bottom")" aria-hidden="true"></i>
             <span class="input-group-text badge @(this.GetBadge(culture))">@culture.Name</span>
           </button>
@@ -59,7 +59,7 @@
     {
         base.OnParametersSet();
 
-        if (this.EditContext is not null && this._validationMessageStore is null)
+        if (this._validationMessageStore is null)
         {
             this._validationMessageStore = new ValidationMessageStore(this.EditContext);
         }
@@ -72,7 +72,6 @@
         {
             result = new(string.Empty);
             validationErrorMessage = string.Empty;
-            // validationErrorMessage = string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culMUnique.OpenMU.Interfaces.LocalizedString.Separator);
             return false;
         }
 
@@ -201,21 +200,20 @@
     {
         var existingError = this._validationMessageStore?[this.FieldIdentifier].FirstOrDefault(message => message.StartsWith(culture.Name + ":"));
 
-      if (this.EditContext is not null
-          && this._validationMessageStore is not null
+      if (this._validationMessageStore is not null
           && newValue is not null
           && existingError is null
           && newValue.Contains(OpenMU.Interfaces.LocalizedString.Separator, StringComparison.Ordinal))
       {
             this._validationMessageStore.Add(
               this.FieldIdentifier,
-              string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culture.Name, MUnique.OpenMU.Interfaces.LocalizedString.Separator));
+              string.Format(Resources.TheValueMustNotContain, culture.Name, Interfaces.LocalizedString.Separator));
 
         // Notify the EditContext that validation state changed
         this.EditContext.NotifyValidationStateChanged();
       }
 
-      if (this.EditContext is not null && this._validationMessageStore is not null)
+      if (this._validationMessageStore is not null)
       {
         var otherErrors = this._validationMessageStore[this.FieldIdentifier].Where(message => message != existingError).ToList();
 
