@@ -36,13 +36,51 @@ public class ItemSerializerTests : ItemSerializerTests<ItemSerializer>
         var serializedBits = (array[1] & 0b11) | ((array[3] >> 4) & 0b100);
         Assert.That(serializedBits, Is.EqualTo(optionBits));
     }
+
+    /// <summary>
+    /// Tests that a time-limited item has the period flag (0x02) in byte 5, and an expired one also the expired
+    /// flag (0x04), like the client reads them. The deserialization ignores them.
+    /// </summary>
+    /// <param name="hoursUntilExpiration">The hours until the expiration; <c>null</c> for a permanent item.</param>
+    /// <param name="expectedFlags">The expected flags of byte 5.</param>
+    [TestCase(null, 0)]
+    [TestCase(24, 0x02)]
+    [TestCase(-1, 0x06)]
+    public void PeriodItemFlags(int? hoursUntilExpiration, int expectedFlags)
+    {
+        var (item, data, deserialized) = this.SerializePetPanda(hoursUntilExpiration is { } hours ? DateTime.UtcNow.AddHours(hours) : null);
+
+        Assert.That(data[5] & 0x06, Is.EqualTo(expectedFlags));
+        Assert.That(deserialized.Definition, Is.SameAs(item.Definition));
+        Assert.That(deserialized.ExpiresAt, Is.Null);
+    }
 }
 
 /// <summary>
 /// Unit tests for the <see cref="ItemSerializerExtended"/>.
 /// </summary>
 [TestFixture]
-public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExtended>;
+public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExtended>
+{
+    /// <summary>
+    /// Tests that a time-limited item has the flag 0x40 in the level byte, and an expired one also 0x80, like the
+    /// open source client reads them. The level stays in the lower 6 bits, and the deserialization ignores the flags.
+    /// </summary>
+    /// <param name="hoursUntilExpiration">The hours until the expiration; <c>null</c> for a permanent item.</param>
+    /// <param name="expectedFlags">The expected flags of the level byte.</param>
+    [TestCase(null, 0)]
+    [TestCase(24, 0x40)]
+    [TestCase(-1, 0xC0)]
+    public void PeriodItemFlags(int? hoursUntilExpiration, int expectedFlags)
+    {
+        var (item, data, deserialized) = this.SerializePetPanda(hoursUntilExpiration is { } hours ? DateTime.UtcNow.AddHours(hours) : null);
+
+        Assert.That(data[2] & 0xC0, Is.EqualTo(expectedFlags));
+        Assert.That(data[2] & 0x3F, Is.EqualTo(item.Level));
+        Assert.That(deserialized.Level, Is.EqualTo(item.Level));
+        Assert.That(deserialized.ExpiresAt, Is.Null);
+    }
+}
 
 /// <summary>
 /// Generic unit tests for the <see cref="IItemSerializer"/>s.
@@ -268,6 +306,24 @@ public class ItemSerializerTests<T>
         var deserializedOptionLink = deserializedItem.ItemOptions.Single(link => link.ItemOption!.OptionType == ItemOptionTypes.SocketOption);
         Assert.That(deserializedOptionLink.ItemOption, Is.SameAs(socketOption.ItemOption));
         Assert.That(deserializedOptionLink.Level, Is.EqualTo(ItemSerializerHelper.MaximumSphereLevelIndex + 1));
+    }
+
+    /// <summary>
+    /// Serializes and deserializes a Pet Panda with the specified expiration.
+    /// </summary>
+    /// <param name="expiresAt">The expiration; <c>null</c> for a permanent item.</param>
+    /// <returns>The item, its data and the deserialized item.</returns>
+    protected (Item Item, byte[] Data, Item Deserialized) SerializePetPanda(DateTime? expiresAt)
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var item = context.CreateNew<Item>();
+        item.Definition = this._gameConfiguration.Items.First(i => i is { Group: 13, Number: 80 });
+        item.Durability = 255;
+        item.ExpiresAt = expiresAt;
+        var array = new byte[this._itemSerializer.NeededSpace];
+        this._itemSerializer.SerializeItem(array, item);
+        var deserializedItem = this._itemSerializer.DeserializeItem(array, this._gameConfiguration, context);
+        return (item, array, deserializedItem);
     }
 
     /// <summary>

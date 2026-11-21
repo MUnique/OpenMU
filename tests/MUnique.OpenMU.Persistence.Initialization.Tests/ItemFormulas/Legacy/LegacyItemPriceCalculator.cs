@@ -217,7 +217,39 @@ internal class LegacyItemPriceCalculator
         { (int)SpecialItems.CherryBlossomRiceCake, item => 300 * item.Durability() },
         { (int)SpecialItems.CherryBlossomFlowerPetal, item => 300 * item.Durability() },
         { (int)SpecialItems.GoldenCherryBlossomBranch, item => 300 * item.Durability() },
+        // Intentional change with the item expiration: the items which are rented in the cash shop have the small fixed
+        // prices of the client (a third of them is the selling price, see RentalItemIds).
+        { GetId(13, 64), _ => 3000 },
+        { GetId(13, 65), _ => 3000 },
+        { GetId(13, 76), _ => 3000 },
+        { GetId(13, 80), _ => 3000 },
+        { GetId(13, 109), _ => 3000 },
+        { GetId(13, 110), _ => 3000 },
+        { GetId(13, 111), _ => 3000 },
+        { GetId(13, 112), _ => 3000 },
+        { GetId(13, 113), _ => 3000 },
+        { GetId(13, 114), _ => 3000 },
+        { GetId(13, 115), _ => 3000 },
+        { GetId(13, 122), _ => 6000 },
+        { GetId(13, 123), _ => 6000 },
+        { GetId(12, 130), _ => 240 },
+        { GetId(12, 131), _ => 240 },
+        { GetId(12, 132), _ => 240 },
+        { GetId(12, 133), _ => 240 },
+        { GetId(12, 134), _ => 240 },
+        { GetId(12, 135), _ => 240 },
     };
+
+    /// <summary>
+    /// The items which are rented in the cash shop. Intentional change with the item expiration: they are sold for a third
+    /// of their fixed buying price, rounded to tens, without a reduction by the durability.
+    /// </summary>
+    private static readonly HashSet<int> RentalItemIds =
+    [
+        GetId(13, 64), GetId(13, 65), GetId(13, 76), GetId(13, 80), GetId(13, 109), GetId(13, 110), GetId(13, 111), GetId(13, 112),
+        GetId(13, 113), GetId(13, 114), GetId(13, 115), GetId(13, 122), GetId(13, 123),
+        GetId(12, 130), GetId(12, 131), GetId(12, 132), GetId(12, 133), GetId(12, 134), GetId(12, 135),
+    ];
 
     private enum SpecialItems
     {
@@ -328,6 +360,11 @@ internal class LegacyItemPriceCalculator
         if (item.Definition.Group == 14 && item.Definition.Number <= 8)
         {
             // Potions + Antidote
+            return sellingPrice / 10 * 10;
+        }
+
+        if (RentalItemIds.Contains(GetId(item.Definition.Group, item.Definition.Number)))
+        {
             return sellingPrice / 10 * 10;
         }
 

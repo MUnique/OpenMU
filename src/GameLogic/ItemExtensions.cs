@@ -266,6 +266,19 @@ public static class ItemExtensions
     }
 
     /// <summary>
+    /// Determines whether an equipped item is part of the appearance of its owner, which other players see.
+    /// An expired time-limited item isn't, in any slot: it has no effect, so its owner looks as if the slot was empty,
+    /// e.g. without the wings, and without the pet which accompanied it.
+    /// </summary>
+    /// <param name="item">The equipped item.</param>
+    /// <param name="utcNow">The current timestamp (UTC).</param>
+    /// <returns><c>true</c>, if the item is shown in the appearance; otherwise, <c>false</c>.</returns>
+    public static bool IsShownInAppearance(this Item item, DateTime utcNow)
+    {
+        return !item.IsExpired(utcNow);
+    }
+
+    /// <summary>
     /// Determines whether this instance's durability decays with time.
     /// </summary>
     /// <param name="item">The item.</param>

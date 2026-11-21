@@ -34,8 +34,11 @@ internal sealed class InventoryProductDelivery : ICashShopProductDeliveryPlugIn
             return CashShopUseResult.CannotUse;
         }
 
+        // The period of a time-limited product starts now, when it's used from the storage, not when it was bought.
+        DateTime? expiresAt = product.Duration > TimeSpan.Zero ? DateTime.UtcNow + product.Duration : null;
         foreach (var item in CreateItems(player, definition, product.ItemLevel, product.Quantity))
         {
+            item.ExpiresAt = expiresAt;
             if (!await inventory.AddItemAsync(item).ConfigureAwait(false))
             {
                 await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);

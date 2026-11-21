@@ -3198,6 +3198,18 @@
   <data name="ItemDefinition_IsRepairable_Description" xml:space="preserve">
     <value>Ob dieser Gegenstand von einem NPC oder über die Reparaturfunktion des Inventars repariert werden kann. Spezielle Methoden zur Wiederherstellung der Haltbarkeit sind davon nicht betroffen.</value>
   </data>
+  <data name="ItemDefinition_IsSellableWhenExpired_Caption" xml:space="preserve">
+    <value>Nach Ablauf verkaufbar</value>
+  </data>
+  <data name="ItemDefinition_IsSellableWhenExpired_Description" xml:space="preserve">
+    <value>Ob ein abgelaufener zeitlich begrenzter Gegenstand dieser Art an einen NPC-Händler verkauft werden kann, auch wenn er sonst nicht verkaufbar ist, wie die im Cash Shop gemieteten Gegenstände.</value>
+  </data>
+  <data name="Item_ExpiresAt_Caption" xml:space="preserve">
+    <value>Läuft ab am (UTC)</value>
+  </data>
+  <data name="Item_ExpiresAt_Description" xml:space="preserve">
+    <value>Der Zeitpunkt (UTC), an dem der Gegenstand abläuft; leer, wenn er nicht abläuft. Ein abgelaufener Gegenstand bleibt im Inventar, hat aber keine Wirkung und kann nicht angelegt werden.</value>
+  </data>
   <data name="MiniGameTerrainChange_StartX_Caption" xml:space="preserve">
     <value>Start-X</value>
   </data>

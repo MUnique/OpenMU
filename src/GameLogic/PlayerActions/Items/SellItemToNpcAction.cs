@@ -47,7 +47,7 @@ public class SellItemToNpcAction
             return false;
         }
 
-        if (item.Definition is { IsSellableToNpc: false })
+        if (!CanBeSold(item))
         {
             player.Logger.LogWarning(
                 "Player {0} tried to sell {1} to an npc, which its item definition doesn't allow. The client item data may differ from the server.",
@@ -65,6 +65,28 @@ public class SellItemToNpcAction
         }
 
         return await this.SellItemAsync(player, item).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Determines whether the item can be sold to an NPC by its item definition. A time-limited item can only be
+    /// sold once it expired, and then also if its definition allows it only for expired items, like the items
+    /// rented in the cash shop.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns><c>true</c>, if the item can be sold; otherwise, <c>false</c>.</returns>
+    private static bool CanBeSold(Item item)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return true;
+        }
+
+        if (item.IsTimeLimited())
+        {
+            return item.IsExpired(DateTime.UtcNow) && (definition.IsSellableWhenExpired || definition.IsSellableToNpc);
+        }
+
+        return definition.IsSellableToNpc;
     }
 
     private async ValueTask<bool> SellItemAsync(Player player, Item item)

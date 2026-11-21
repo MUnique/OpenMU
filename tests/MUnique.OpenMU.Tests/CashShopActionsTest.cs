@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Moq;
+using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -30,6 +31,7 @@ public class CashShopActionsTest
     private const int TimeLimitedPackage = 300;
     private const int NotForSalePackage = 400;
     private const int UseTestsPackage = 500;
+    private const int RentalPackage = 600;
     private const string SenderName = "Sender";
     private const string RecipientName = "Recipient";
 
@@ -186,6 +188,7 @@ public class CashShopActionsTest
     [TestCase(OptionsPackage, 0, CashShopCoinType.WCoinC, CashShopBuyResult.InvalidPriceOption)]
     [TestCase(OptionsPackage, 21, CashShopCoinType.WCoinC, CashShopBuyResult.InvalidPriceOption)]
     [TestCase(999, 11, CashShopCoinType.WCoinC, CashShopBuyResult.PackageNotFound)]
+    // The item of the time-limited product isn't worn, so it can't expire.
     [TestCase(TimeLimitedPackage, 31, CashShopCoinType.WCoinP, CashShopBuyResult.NotForSale)]
     [TestCase(NotForSalePackage, 41, CashShopCoinType.WCoinC, CashShopBuyResult.NotForSale)]
     public async Task BuyIsRefusedAsync(int packageSequence, int priceSequence, CashShopCoinType? coinType, CashShopBuyResult expectedResult)
@@ -236,6 +239,43 @@ public class CashShopActionsTest
         Assert.That(item.Level, Is.EqualTo(3));
         var storage = await player.PersistenceContext.GetCashShopStorageItemsAsync(player.Account.GetId()).ConfigureAwait(false);
         Assert.That(storage, Is.Empty);
+    }
+
+    /// <summary>
+    /// Tests that a time-limited product with an item which can expire can be bought, and that using it
+    /// delivers an item which expires after the product's duration, counted from the use.
+    /// </summary>
+    [Test]
+    public async Task UseOfTimeLimitedProductDeliversItemWhichExpiresAsync()
+    {
+        var player = await this.CreateOpenedCashShopPlayerAsync().ConfigureAwait(false);
+        player.Account!.WCoinC = 100;
+        await this._actions.BuyAsync(player, RentalPackage, 71, CashShopCoinType.WCoinC).ConfigureAwait(false);
+        GetView(player).Verify(v => v.ShowBuyResultAsync(CashShopBuyResult.Success), Times.Once);
+
+        var before = DateTime.UtcNow;
+        await this._actions.UseStorageItemAsync(player, 0, 71).ConfigureAwait(false);
+        var after = DateTime.UtcNow;
+
+        GetView(player).Verify(v => v.ShowUseResultAsync(CashShopUseResult.Success), Times.Once);
+        var item = player.Inventory!.Items.Single();
+        Assert.That(item.ExpiresAt, Is.Not.Null);
+        Assert.That(item.ExpiresAt!.Value, Is.InRange(before.AddDays(7), after.AddDays(7)));
+    }
+
+    /// <summary>
+    /// Tests that a permanent product delivers an item which doesn't expire.
+    /// </summary>
+    [Test]
+    public async Task UseOfPermanentProductDeliversPermanentItemAsync()
+    {
+        var player = await this.CreateOpenedCashShopPlayerAsync().ConfigureAwait(false);
+        player.Account!.WCoinC = 100;
+        await this._actions.BuyAsync(player, OptionsPackage, 11, CashShopCoinType.WCoinC).ConfigureAwait(false);
+
+        await this._actions.UseStorageItemAsync(player, 0, 11).ConfigureAwait(false);
+
+        Assert.That(player.Inventory!.Items.Single().ExpiresAt, Is.Null);
     }
 
     /// <summary>
@@ -668,6 +708,13 @@ public class CashShopActionsTest
             ItemDefinition = new ItemDefinition { Width = 1, Height = 1, Durability = 10 },
         });
         configuration.Packages.Add(useTests);
+
+        // A rented pet: worn in the pet slot, droppable, so it can expire.
+        var rental = CreatePackage(RentalPackage, CashShopCoinType.WCoinC, 0, isBundle: false, (8, 71, 10, TimeSpan.FromDays(7)));
+        var petSlot = new BasicModel.ItemSlotType();
+        petSlot.ItemSlots.Add(InventoryConstants.PetSlot);
+        rental.Products.Single().ItemDefinition!.ItemSlot = petSlot;
+        configuration.Packages.Add(rental);
         return configuration;
     }
 

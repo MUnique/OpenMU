@@ -77,7 +77,7 @@ public static class CashShopCatalogCheck
             {
                 issues.Add(string.Format(Resources.CashShopIssueMissingItem, product.PriceSequence));
             }
-            else if (product.Duration > TimeSpan.Zero)
+            else if (product.Duration > TimeSpan.Zero && !product.ItemDefinition.CanBeTimeLimited())
             {
                 issues.Add(string.Format(Resources.CashShopIssueTimeLimited, product.PriceSequence));
             }

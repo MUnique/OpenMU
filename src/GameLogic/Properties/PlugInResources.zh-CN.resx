@@ -1867,6 +1867,12 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>列出的等待物品数量，每条消息一件。</value>
   </data>
+  <data name="ItemExpirationPlugIn_Name" xml:space="preserve">
+    <value>限时物品过期</value>
+  </data>
+  <data name="ItemExpirationPlugIn_Description" xml:space="preserve">
+    <value>当玩家的限时物品（例如在商城租用的宠物）过期时通知玩家，移除其效果，并在客户端中显示为已过期。过期的物品会留在背包中。</value>
+  </data>
   <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
     <value>在背包中使用的物品</value>
   </data>

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -54,5 +55,11 @@ public class ItemMoveFailedPlugIn : IItemMoveFailedPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+
+        if (item is not null && this._player.Inventory?.Items.Contains(item) == true)
+        {
+            // The client puts the item back by creating it again, so it needs the expiration of a time-limited item again.
+            await this._player.InvokeViewPlugInAsync<IItemExpirationViewPlugIn>(p => p.ShowExpirationAsync(item)).ConfigureAwait(false);
+        }
     }
 }

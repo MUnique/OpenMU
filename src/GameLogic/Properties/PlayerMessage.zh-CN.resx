@@ -39,4 +39,10 @@
   <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
     <value>该角色有等待中的物品，但其物品类型已不存在，无法删除。请联系管理员。</value>
   </data>
+  <data name="ItemHasExpired" xml:space="preserve">
+    <value>{0} 已过期。</value>
+  </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>限时物品不能在此使用。</value>
+  </data>
 </root>

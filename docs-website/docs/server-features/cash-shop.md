@@ -13,7 +13,8 @@ balance of these three coins, and a storage which holds the bought and the
 gifted items until the player uses them.
 
 :::note
-Not implemented yet: the event item list and items which expire.
+Not implemented yet: the event item list, and time-limited consumables like
+seals and scrolls.
 :::
 
 ## Settings
@@ -78,8 +79,10 @@ for sale:
 
 * packages with items which aren't defined in the game configuration — most
   special cash shop items, like talismans;
-* packages with time-limited items (for example pets or seals for 1 day),
-  because items can't expire yet;
+* packages with time-limited consumables (for example seals or scrolls for
+  1 day), because their effect would have to last as long as the product;
+  time-limited pets, rings, necklaces and wings are sold, see
+  [time-limited items](#time-limited-items);
 * packages with a [special item](#special-items) whose plugin is deactivated.
 
 ### Editing the catalog
@@ -89,7 +92,8 @@ edits the catalog:
 
 * The list shows every package with its coin type, price and flags. The column
   *Sellable* shows whether a player can buy it, or why not: a product without
-  item, a time-limited product, no products, or a number used twice.
+  item, a time-limited product whose item can't expire, no products, or a number
+  used twice.
 * **Edit** opens a package: number, name, coin type, bundle price, the flags,
   and its products with their numbers, price, item, item level, quantity and
   duration.
@@ -120,6 +124,34 @@ uses it with any character of the account. Using it puts its items into the
 inventory, with the item level and quantity of the product. If the inventory
 doesn't have space for all of them, nothing is added and the item stays in the
 storage.
+
+### Time-limited items
+
+Many products are sold for a limited time, for example a pet for 1, 7 or 30
+days. The time starts when the player uses the product from the storage, not
+when it's bought, so a gift or purchase can wait in the storage. The tooltip of
+the item shows the time left. Buying the same product again gives another item.
+
+While it's valid, a time-limited item works like any other one. It stays in the
+inventory of its owner: it can be moved within the inventory and equipped, but
+not stored in the vault, traded, offered in a personal store, used in a crafting
+window, dropped, sold or repaired, and it doesn't wear out with time.
+
+When it expires, the player gets a message. The item stays in the inventory,
+shown as expired, and has no effect anymore, also if it's equipped. It can't be
+equipped again. The player gets rid of it by selling it to an NPC, which pays
+the small amount the client shows (for example 1000 zen for a Pet Panda), or by
+dropping it, as far as the item allows it.
+
+Only items which are worn can be time-limited, and only if they can be dropped
+or sold once they expired; otherwise they would stay in the inventory forever.
+The server doesn't sell other time-limited products, and the catalog editor
+shows why.
+
+The plugin *Expiration of time-limited items* checks for expired items every
+minute (*Check Interval* in its configuration). Existing databases get the rules
+and prices of the rented items, and their packages on sale, with the mandatory
+configuration update *Sell the rented items of the cash shop*.
 
 ### Gold and Silver Keys
 
@@ -176,8 +208,8 @@ potions*.
 
 The rings and necklaces of the shop are defined as items with fixed bonuses,
 like the game client shows them. They can't be upgraded, traded, dropped or
-repaired. A player can sell them to an NPC, for example to get rid of one which
-wore out.
+repaired. A permanent one can be sold to an NPC, for example to get rid of one
+which wore out.
 
 | Item | Bonus |
 |---|---|
@@ -190,9 +222,9 @@ wore out.
 | Emerald Necklace | automatic HP recovery 3%, attack speed +7 |
 | Sapphire Necklace | automatic HP recovery 3%, mana after hunting monsters +mana/8 |
 
-The shop sells them only for a limited time, so their packages can't be sold yet
-(see [product catalog](#product-catalog)). An administrator can still give them
-to a character. Existing databases get them with the configuration update *Add
+The shop sells them for a limited time (see
+[time-limited items](#time-limited-items)); once expired, they can be sold to an
+NPC for 1000 zen. Existing databases get them with the configuration update *Add
 cash shop rings and necklaces*.
 
 ### Crafting talismans
@@ -346,9 +378,9 @@ with the configuration update *Add the protection talismans*.
 
 The items and their packages exist in a new Season 6 database. Existing
 databases get the items with the configuration update *Add buff items*. Their
-packages in the cash shop are time-limited, so they can't be sold until items
-can expire. An administrator can still give the items to players, for example
-in a merchant store.
+packages in the cash shop are time-limited, and a time-limited consumable isn't
+supported yet, so they can't be sold. An administrator can still give the items
+to players, for example in a merchant store.
 
 ### Kalima Ticket
 
