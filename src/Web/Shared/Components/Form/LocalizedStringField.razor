@@ -13,7 +13,9 @@
   <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
 
   @{
-    var visibleCultures = this.GetVisibleCultures();
+    var cultures = this.GetCultures();
+    var visibleCultures = this.GetVisibleCultures(cultures);
+    var canToggle = this.CanToggleAllLanguages(cultures);
   }
   @foreach (var culture in visibleCultures)
   {
@@ -23,7 +25,7 @@
               class="@(this.GetInputClass(culture))"
               value="@GetValueForCulture(culture)"
               @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))" />
-        @if (this.GetCultures().Count > 1)
+        @if (canToggle)
         {
           <button type="button" class="btn btn-secondary language-toggle" title="@(this._showAllLanguages ? MUnique.OpenMU.Web.Shared.Properties.Resources.ShowSelectedLanguageOnly : MUnique.OpenMU.Web.Shared.Properties.Resources.ShowAllLanguages)" @onclick="this.ToggleAllLanguages">
             <i class="me-2 oi @(this._showAllLanguages ? "oi-chevron-top" : "oi-chevron-bottom")" aria-hidden="true"></i>
@@ -121,17 +123,44 @@
     }
 
     /// <summary>
-    /// Gets the languages to show fields for: only the selected one, or all if the user expanded them.
+    /// Gets the languages to show fields for: the neutral language plus the selected one when collapsed,
+    /// or all available languages when expanded.
     /// </summary>
-    private List<CultureInfo> GetVisibleCultures()
+    private List<CultureInfo> GetVisibleCultures(List<CultureInfo>? cultures = null)
     {
-        var cultures = this.GetCultures();
-        if (this._showAllLanguages || cultures.Count == 0)
+        cultures ??= this.GetCultures();
+        if (this._showAllLanguages || cultures.Count <= 1)
         {
             return cultures;
         }
 
-        return [GetSelectedCulture(cultures)];
+        return this.GetCollapsedCultures(cultures);
+    }
+
+    /// <summary>
+    /// Gets the collapsed languages: the neutral language and the selected one (or just one when they are the same).
+    /// </summary>
+    private List<CultureInfo> GetCollapsedCultures(List<CultureInfo> cultures)
+    {
+        if (cultures.Count == 0)
+        {
+            return cultures;
+        }
+
+        var neutralCulture = cultures.FirstOrDefault(c => c.TwoLetterISOLanguageName == MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode) ?? cultures[0];
+        var selectedCulture = GetSelectedCulture(cultures);
+
+        if (string.Equals(neutralCulture.Name, selectedCulture.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            return [neutralCulture];
+        }
+
+        return [neutralCulture, selectedCulture];
+    }
+
+    private bool CanToggleAllLanguages(List<CultureInfo> cultures)
+    {
+        return cultures.Count > this.GetCollapsedCultures(cultures).Count;
     }
 
     /// <summary>

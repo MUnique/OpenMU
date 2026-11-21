@@ -45,9 +45,9 @@ public class LocalizedStringFieldTests
         Assert.That(model.Name.ValueInNeutralLanguage, Is.EqualTo("Armor"));
     }
 
-    /// <summary>By default, only the field of the selected language is shown, until all languages are requested.</summary>
+    /// <summary>By default, only the neutral language and the selected language are shown, until all languages are requested.</summary>
     [Test]
-    public void OnlySelectedLanguageIsShownByDefault()
+    public void OnlyNeutralAndSelectedLanguageAreShownByDefault()
     {
         using var context = new BunitContext();
         context.Services.Configure<RequestLocalizationOptions>(options => options.AddSupportedUICultures("en", "de", "pt-BR"));
@@ -64,7 +64,7 @@ public class LocalizedStringFieldTests
                     .Add(parameter => parameter.ValueExpression, () => model.Name)
                     .Add(parameter => parameter.ValueChanged, (LocalizedString value) => model.Name = value)));
 
-            Assert.That(component.FindAll("input").Select(input => input.Id), Is.EqualTo(new[] { "Name_de" }));
+            Assert.That(component.FindAll("input").Select(input => input.Id), Is.EqualTo(new[] { "Name", "Name_de" }));
             component.Find("#Name_de").Change("Panzer");
             Assert.That(model.Name.GetOwnTranslation(CultureInfo.GetCultureInfo("de")), Is.EqualTo("Panzer"));
             Assert.That(model.Name.GetOwnTranslation(CultureInfo.GetCultureInfo("pt-BR")), Is.EqualTo("Armadura"));
