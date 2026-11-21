@@ -533,4 +533,10 @@
   <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加鹰雕像、山羊雕像以及（黄金）橡树和枫树护符，它们在背包中使用时提供加成。</value>
   </data>
+  <data name="AddWornHorseshoeUpdatePlugIn_Name" xml:space="preserve">
+    <value>添加破旧的马蹄铁</value>
+  </data>
+  <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
+    <value>此更新添加破旧的马蹄铁，在背包中使用时使物品掉落率提高 20%。</value>
+  </data>
 </root>
