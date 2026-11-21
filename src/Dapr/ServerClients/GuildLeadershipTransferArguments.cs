@@ -7,4 +7,6 @@ namespace MUnique.OpenMU.ServerClients;
 /// <summary>
 /// Arguments for a guild leadership transfer.
 /// </summary>
+/// <param name="GuildId">The guild identifier.</param>
+/// <param name="CharacterName">The character name of the new guild master.</param>
 public record GuildLeadershipTransferArguments(uint GuildId, string CharacterName);
