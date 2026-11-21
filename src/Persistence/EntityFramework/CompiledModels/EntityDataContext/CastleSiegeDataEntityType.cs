@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeData),
                 baseEntityType,
-                propertyCount: 8,
+                propertyCount: 10,
                 navigationCount: 2,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 1,
@@ -54,6 +54,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.CastleSiegeData).GetField("<IsOccupied>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: false);
             isOccupied.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var lordsMixCount = runtimeEntityType.AddProperty(
+                "LordsMixCount",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.CastleSiegeData).GetProperty("LordsMixCount", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.CastleSiegeData).GetField("<LordsMixCount>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            lordsMixCount.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var lordsMixCountDate = runtimeEntityType.AddProperty(
+                "LordsMixCountDate",
+                typeof(DateTime?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.CastleSiegeData).GetProperty("LordsMixCountDate", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.CastleSiegeData).GetField("<LordsMixCountDate>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            lordsMixCountDate.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var ownerGuildId = runtimeEntityType.AddProperty(
                 "OwnerGuildId",

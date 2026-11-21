@@ -18,7 +18,7 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"BannerSaleZone\", \"BannerYear\", \"BannerYearId\", \"ScriptSaleZone\", \"ScriptYear\", \"ScriptYearId\" from config.\"CashShopConfiguration\"",
         "select \"Id\", \"CashShopConfigurationId\", \"CoinType\", \"IsBundle\", \"IsForSale\", \"IsGiftable\", \"Name\", \"PackageSequence\", \"Price\" from config.\"CashShopPackage\"",
         "select \"Id\", \"CashShopPackageId\", \"Duration\", \"ItemDefinitionId\", \"ItemLevel\", \"Price\", \"PriceSequence\", \"ProductSequence\", \"Quantity\" from config.\"CashShopProduct\"",
-        "select \"Id\", \"AttackRespawnAreaId\", \"CastleSiegeMapDefinitionId\", \"CrownHoldTimeSeconds\", \"DefenseRespawnAreaId\", \"Enabled\", \"GateBuyPrice\", \"GateRepairCostPerHealthPoint\", \"GuildScoreCastleSiege\", \"GuildScoreCastleSiegeMembers\", \"LandOfTrialsMapDefinitionId\", \"MaxAttackingGuilds\", \"ParticipantRewardMinSeconds\", \"RegisterMinLevel\", \"RegisterMinMembers\", \"RepairCostPerUpgradeLevel\", \"RewardItemDefinitionId\", \"SignOfLordItemDefinitionId\", \"SignOfLordItemLevel\", \"StatueBuyPrice\", \"StatueRepairCostPerHealthPoint\" from config.\"CastleSiegeConfiguration\"",
+        "select \"Id\", \"AttackRespawnAreaId\", \"CastleSiegeMapDefinitionId\", \"CrownHoldTimeSeconds\", \"DefenseRespawnAreaId\", \"Enabled\", \"GateBuyPrice\", \"GateRepairCostPerHealthPoint\", \"GuildScoreCastleSiege\", \"GuildScoreCastleSiegeMembers\", \"LandOfTrialsMapDefinitionId\", \"LordsMixLimit\", \"LordsMixLimitPeriod\", \"MaxAttackingGuilds\", \"ParticipantRewardMinSeconds\", \"RegisterMinLevel\", \"RegisterMinMembers\", \"RepairCostPerUpgradeLevel\", \"RewardItemDefinitionId\", \"SignOfLordItemDefinitionId\", \"SignOfLordItemLevel\", \"StatueBuyPrice\", \"StatueRepairCostPerHealthPoint\" from config.\"CastleSiegeConfiguration\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"CastleSiegeConfigurationId1\", \"X1\", \"X2\", \"Y1\", \"Y2\" from config.\"CastleSiegeZoneDefinition\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"CastleSiegeConfigurationId1\", \"CastleSiegeConfigurationId2\", \"CastleSiegeConfigurationId3\", \"CastleSiegeConfigurationId4\", \"Level\", \"RequiredJewelOfGuardianCount\", \"RequiredZen\", \"Value\" from config.\"CastleSiegeUpgradeDefinition\"",
         "select \"Id\", \"CastleSiegeConfigurationId\", \"DefaultSide\", \"Direction\", \"InstanceId\", \"IsPersistedToDatabase\", \"MonsterDefinitionId\", \"SpawnX\", \"SpawnY\" from config.\"CastleSiegeNpcDefinition\"",
@@ -73,9 +73,9 @@ internal sealed partial class GameConfigurationLoader
         "select \"Id\", \"AttributeDefinitionId\", \"MonsterDefinitionId\", \"Value\" from config.\"MonsterAttribute\"",
         "select \"Id\", \"MagicEffectDefinitionId\", \"MaximumLevel\", \"MinimumLevel\", \"MonsterDefinitionId\" from config.\"Buff\"",
         "select \"Id\", \"ItemCraftingHandlerClassName\", \"MonsterDefinitionId\", \"Name\", \"Number\", \"SimpleCraftingSettingsId\" from config.\"ItemCrafting\"",
-        "select \"Id\", \"MaximumSuccessPercent\", \"Money\", \"MoneyPerFinalSuccessPercentage\", \"MultipleAllowed\", \"NpcPriceDivisor\", \"ResultItemExcellentOptionChance\", \"ResultItemLuckOptionChance\", \"ResultItemMaxExcOptionCount\", \"ResultItemSelect\", \"ResultItemSkillChance\", \"SuccessPercent\", \"SuccessPercentageAdditionForAncientItem\", \"SuccessPercentageAdditionForExcellentItem\", \"SuccessPercentageAdditionForGuardianItem\", \"SuccessPercentageAdditionForLuck\", \"SuccessPercentageAdditionForSocketItem\" from config.\"SimpleCraftingSettings\"",
+        "select \"Id\", \"MaximumSuccessPercent\", \"Money\", \"MoneyPerFinalSuccessPercentage\", \"MultipleAllowed\", \"NpcPriceDivisor\", \"ResultItemExcellentOptionChance\", \"ResultItemExcellentOptionCountTableId\", \"ResultItemLuckOptionChance\", \"ResultItemMaxExcOptionCount\", \"ResultItemSelect\", \"ResultItemSkillChance\", \"ResultItemSocketCountTableId\", \"SuccessPercent\", \"SuccessPercentageAdditionForAncientItem\", \"SuccessPercentageAdditionForExcellentItem\", \"SuccessPercentageAdditionForGuardianItem\", \"SuccessPercentageAdditionForLuck\", \"SuccessPercentageAdditionForSocketItem\" from config.\"SimpleCraftingSettings\"",
         "select \"Id\", \"AddPercentage\", \"FailResult\", \"MaximumAmount\", \"MaximumItemLevel\", \"MinimumAmount\", \"MinimumItemLevel\", \"NpcPriceDivisor\", \"Reference\", \"SimpleCraftingSettingsId\", \"SuccessResult\" from config.\"ItemCraftingRequiredItem\"",
-        "select \"Id\", \"AddLevel\", \"Durability\", \"ItemDefinitionId\", \"RandomMaximumLevel\", \"RandomMinimumLevel\", \"Reference\", \"SimpleCraftingSettingsId\" from config.\"ItemCraftingResultItem\"",
+        "select \"Id\", \"AddLevel\", \"Durability\", \"ExcellentOptionChance\", \"ItemDefinitionId\", \"RandomMaximumLevel\", \"RandomMinimumLevel\", \"Reference\", \"SimpleCraftingSettingsId\" from config.\"ItemCraftingResultItem\"",
         "select \"Id\", \"Money\" from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))",
         "select \"Id\", \"DefinitionId\", \"Durability\", \"ExpiresAt\", \"HasSkill\", \"ItemSlot\", \"ItemStorageId\", \"Level\", \"PetExperience\", \"SocketCount\", \"StorePrice\", \"StorePriceCoinType\", \"StorePriceItemDefinitionId\" from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))",
         "select \"Id\", \"Index\", \"ItemId\", \"ItemOptionId\", \"Level\" from data.\"ItemOptionLink\" where (\"ItemId\" in (select \"Id\" from (select * from data.\"Item\" where (\"ItemStorageId\" in (select \"Id\" from (select * from data.\"ItemStorage\" where (\"Id\" in (select \"MerchantStoreId\" from config.\"MonsterDefinition\"))) \"ItemStorage\") or \"Id\" in (select \"ItemRewardId\" from config.\"QuestReward\"))) \"Item\"))",
@@ -225,7 +225,7 @@ internal sealed partial class GameConfigurationLoader
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCrafting> _ItemCrafting = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCrafting Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _ItemCraftingRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings> _SimpleCraftingSettings = new();
-    private readonly global::System.Collections.Generic.List<global::MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings> _SimpleCraftingSettingsRows = new();
+    private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.SimpleCraftingSettings Entity, global::System.Guid? Key0, global::System.Guid? Key1)> _SimpleCraftingSettingsRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem> _ItemCraftingRequiredItem = new();
     private readonly global::System.Collections.Generic.List<(global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingRequiredItem Entity, global::System.Guid? Key0)> _ItemCraftingRequiredItemRows = new();
     private readonly global::System.Collections.Generic.Dictionary<global::System.Guid, global::MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingResultItem> _ItemCraftingResultItem = new();
@@ -494,18 +494,20 @@ internal sealed partial class GameConfigurationLoader
             entity.GuildScoreCastleSiege = reader.GetInt32(8);
             entity.GuildScoreCastleSiegeMembers = reader.GetInt32(9);
             if (!reader.IsDBNull(10)) { entity.LandOfTrialsMapDefinitionId = reader.GetGuid(10); }
-            entity.MaxAttackingGuilds = reader.GetInt32(11);
-            entity.ParticipantRewardMinSeconds = reader.GetInt32(12);
-            entity.RegisterMinLevel = reader.GetInt32(13);
-            entity.RegisterMinMembers = reader.GetInt32(14);
-            entity.RepairCostPerUpgradeLevel = reader.GetInt32(15);
-            if (!reader.IsDBNull(16)) { entity.RewardItemDefinitionId = reader.GetGuid(16); }
-            if (!reader.IsDBNull(17)) { entity.SignOfLordItemDefinitionId = reader.GetGuid(17); }
-            entity.SignOfLordItemLevel = (global::System.Byte)reader.GetInt16(18);
-            entity.StatueBuyPrice = reader.GetInt32(19);
-            entity.StatueRepairCostPerHealthPoint = reader.GetInt32(20);
+            entity.LordsMixLimit = reader.GetInt32(11);
+            entity.LordsMixLimitPeriod = (global::MUnique.OpenMU.DataModel.Configuration.LordsMixLimitPeriod)reader.GetInt32(12);
+            entity.MaxAttackingGuilds = reader.GetInt32(13);
+            entity.ParticipantRewardMinSeconds = reader.GetInt32(14);
+            entity.RegisterMinLevel = reader.GetInt32(15);
+            entity.RegisterMinMembers = reader.GetInt32(16);
+            entity.RepairCostPerUpgradeLevel = reader.GetInt32(17);
+            if (!reader.IsDBNull(18)) { entity.RewardItemDefinitionId = reader.GetGuid(18); }
+            if (!reader.IsDBNull(19)) { entity.SignOfLordItemDefinitionId = reader.GetGuid(19); }
+            entity.SignOfLordItemLevel = (global::System.Byte)reader.GetInt16(20);
+            entity.StatueBuyPrice = reader.GetInt32(21);
+            entity.StatueRepairCostPerHealthPoint = reader.GetInt32(22);
             this._CastleSiegeConfiguration[entity.Id] = entity;
-            this._CastleSiegeConfigurationRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(4) ? null : reader.GetGuid(4), reader.IsDBNull(10) ? null : reader.GetGuid(10), reader.IsDBNull(16) ? null : reader.GetGuid(16), reader.IsDBNull(17) ? null : reader.GetGuid(17)));
+            this._CastleSiegeConfigurationRows.Add((entity, reader.IsDBNull(1) ? null : reader.GetGuid(1), reader.IsDBNull(2) ? null : reader.GetGuid(2), reader.IsDBNull(4) ? null : reader.GetGuid(4), reader.IsDBNull(10) ? null : reader.GetGuid(10), reader.IsDBNull(18) ? null : reader.GetGuid(18), reader.IsDBNull(19) ? null : reader.GetGuid(19)));
         }
     }
 
@@ -1461,18 +1463,20 @@ internal sealed partial class GameConfigurationLoader
             entity.MultipleAllowed = reader.GetBoolean(4);
             entity.NpcPriceDivisor = reader.GetInt32(5);
             entity.ResultItemExcellentOptionChance = (global::System.Byte)reader.GetInt16(6);
-            entity.ResultItemLuckOptionChance = (global::System.Byte)reader.GetInt16(7);
-            entity.ResultItemMaxExcOptionCount = (global::System.Byte)reader.GetInt16(8);
-            entity.ResultItemSelect = (global::MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ResultItemSelection)reader.GetInt32(9);
-            entity.ResultItemSkillChance = (global::System.Byte)reader.GetInt16(10);
-            entity.SuccessPercent = (global::System.Byte)reader.GetInt16(11);
-            entity.SuccessPercentageAdditionForAncientItem = reader.GetInt32(12);
-            entity.SuccessPercentageAdditionForExcellentItem = reader.GetInt32(13);
-            entity.SuccessPercentageAdditionForGuardianItem = reader.GetInt32(14);
-            entity.SuccessPercentageAdditionForLuck = reader.GetInt32(15);
-            entity.SuccessPercentageAdditionForSocketItem = reader.GetInt32(16);
+            if (!reader.IsDBNull(7)) { entity.ResultItemExcellentOptionCountTableId = reader.GetGuid(7); }
+            entity.ResultItemLuckOptionChance = (global::System.Byte)reader.GetInt16(8);
+            entity.ResultItemMaxExcOptionCount = (global::System.Byte)reader.GetInt16(9);
+            entity.ResultItemSelect = (global::MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ResultItemSelection)reader.GetInt32(10);
+            entity.ResultItemSkillChance = (global::System.Byte)reader.GetInt16(11);
+            if (!reader.IsDBNull(12)) { entity.ResultItemSocketCountTableId = reader.GetGuid(12); }
+            entity.SuccessPercent = (global::System.Byte)reader.GetInt16(13);
+            entity.SuccessPercentageAdditionForAncientItem = reader.GetInt32(14);
+            entity.SuccessPercentageAdditionForExcellentItem = reader.GetInt32(15);
+            entity.SuccessPercentageAdditionForGuardianItem = reader.GetInt32(16);
+            entity.SuccessPercentageAdditionForLuck = reader.GetInt32(17);
+            entity.SuccessPercentageAdditionForSocketItem = reader.GetInt32(18);
             this._SimpleCraftingSettings[entity.Id] = entity;
-            this._SimpleCraftingSettingsRows.Add(entity);
+            this._SimpleCraftingSettingsRows.Add((entity, reader.IsDBNull(7) ? null : reader.GetGuid(7), reader.IsDBNull(12) ? null : reader.GetGuid(12)));
         }
     }
 
@@ -1504,12 +1508,13 @@ internal sealed partial class GameConfigurationLoader
             entity.Id = reader.GetGuid(0);
             entity.AddLevel = (global::System.Byte)reader.GetInt16(1);
             if (!reader.IsDBNull(2)) { entity.Durability = (global::System.Byte)reader.GetInt16(2); }
-            if (!reader.IsDBNull(3)) { entity.ItemDefinitionId = reader.GetGuid(3); }
-            entity.RandomMaximumLevel = (global::System.Byte)reader.GetInt16(4);
-            entity.RandomMinimumLevel = (global::System.Byte)reader.GetInt16(5);
-            entity.Reference = (global::System.Byte)reader.GetInt16(6);
+            if (!reader.IsDBNull(3)) { entity.ExcellentOptionChance = (global::System.Byte)reader.GetInt16(3); }
+            if (!reader.IsDBNull(4)) { entity.ItemDefinitionId = reader.GetGuid(4); }
+            entity.RandomMaximumLevel = (global::System.Byte)reader.GetInt16(5);
+            entity.RandomMinimumLevel = (global::System.Byte)reader.GetInt16(6);
+            entity.Reference = (global::System.Byte)reader.GetInt16(7);
             this._ItemCraftingResultItem[entity.Id] = entity;
-            this._ItemCraftingResultItemRows.Add((entity, reader.IsDBNull(3) ? null : reader.GetGuid(3), reader.IsDBNull(7) ? null : reader.GetGuid(7)));
+            this._ItemCraftingResultItemRows.Add((entity, reader.IsDBNull(4) ? null : reader.GetGuid(4), reader.IsDBNull(8) ? null : reader.GetGuid(8)));
         }
     }
 
@@ -2389,11 +2394,27 @@ internal sealed partial class GameConfigurationLoader
             }
         }
 
+        foreach (var row in this._SimpleCraftingSettingsRows)
+        {
+            if (row.Key0 is { } id)
+            {
+                row.Entity.RawResultItemExcellentOptionCountTable = this.GetWeightedValueTable(id);
+            }
+        }
+
         foreach (var row in this._ItemCraftingResultItemRows)
         {
             if (row.Key0 is { } id)
             {
                 row.Entity.RawItemDefinition = this.GetItemDefinition(id);
+            }
+        }
+
+        foreach (var row in this._SimpleCraftingSettingsRows)
+        {
+            if (row.Key1 is { } id)
+            {
+                row.Entity.RawResultItemSocketCountTable = this.GetWeightedValueTable(id);
             }
         }
 

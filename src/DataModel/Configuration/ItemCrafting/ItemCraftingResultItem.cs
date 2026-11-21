@@ -50,6 +50,16 @@ public partial class ItemCraftingResultItem
     /// </remarks>
     public byte AddLevel { get; set; }
 
+    /// <summary>
+    /// Gets or sets the chance of excellent options of this result item, in percent, instead of the
+    /// <see cref="SimpleCraftingSettings.ResultItemExcellentOptionChance"/> of the crafting.
+    /// If <c>null</c>, the chance of the crafting applies.
+    /// </summary>
+    /// <remarks>
+    /// So a crafting can give some of its result items as excellent items and others as normal items.
+    /// </remarks>
+    public byte? ExcellentOptionChance { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

@@ -74,9 +74,9 @@ internal class SocketCountTablesTest
 
     private static void AssertSocketCountTables(GameConfiguration gameConfiguration)
     {
-        Assert.That(gameConfiguration.WeightedValueTables, Has.Count.EqualTo(2));
         var socketItems = GetSocketItems(gameConfiguration);
         Assert.That(socketItems, Is.Not.Empty);
+        Assert.That(socketItems.Select(item => item.SocketCountTable).Distinct().Count(), Is.EqualTo(2), "one table for one-handed and one for two-handed items");
         Assert.Multiple(() =>
         {
             foreach (var socketItem in socketItems)
