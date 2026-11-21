@@ -2128,6 +2128,12 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>The number of waiting items which are named, one per message.</value>
   </data>
+  <data name="ItemExpirationPlugIn_Name" xml:space="preserve">
+    <value>Expiration of time-limited items</value>
+  </data>
+  <data name="ItemExpirationPlugIn_Description" xml:space="preserve">
+    <value>Tells the players when one of their time-limited items expired, e.g. a pet rented in the cash shop, removes its effect and shows it as expired in the client. An expired item stays in the inventory.</value>
+  </data>
   <data name="BotMerchantPlugIn_Name" xml:space="preserve"><value>Bot merchants</value></data>
   <data name="BotMerchantPlugIn_Description" xml:space="preserve"><value>Lets server-side bots sell the goods of their personal store on the market map (Loren Market) for a while, then go back hunting.</value></data>
   <data name="BotMerchantConfiguration_MarketMapNumber_Name" xml:space="preserve"><value>Market map number</value></data>

@@ -1008,6 +1008,12 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt die Ehre des Gladiators hinzu, welche die Erfahrung in Vulcanus 30 Minuten lang um 20 % erhöht.</value>
   </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Gemietete Gegenstände des Cash Shops verkaufen</value>
+  </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update bietet die zeitlich begrenzten Begleiter, Ringe, Halsketten und kleinen Flügel des Cash Shops zum Verkauf an, die als ablaufende Gegenstände geliefert werden, und erlaubt es, sie nach ihrem Ablauf für den kleinen festen Preis, den der Client anzeigt, an einen NPC zu verkaufen.</value>
+  </data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve">
     <value>Season-6-NPC-Spawns</value>
   </data>

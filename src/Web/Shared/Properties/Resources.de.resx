@@ -628,4 +628,13 @@ Stufe: {2} - {3}</value>
   <data name="ZoomOut" xml:space="preserve">
     <value>Verkleinern</value>
   </data>
+  <data name="ItemEdit_IsTimeLimited" xml:space="preserve">
+    <value>Zeitlich begrenzt</value>
+  </data>
+  <data name="ItemEdit_ExpiresAt" xml:space="preserve">
+    <value>Läuft ab am (UTC)</value>
+  </data>
+  <data name="ItemEdit_CannotBeTimeLimited" xml:space="preserve">
+    <value>Dieser Gegenstand kann nicht zeitlich begrenzt sein: nur ein Gegenstand, der angelegt und nicht verbraucht wird und nach Ablauf fallen gelassen oder an einen NPC verkauft werden kann.</value>
+  </data>
 </root>

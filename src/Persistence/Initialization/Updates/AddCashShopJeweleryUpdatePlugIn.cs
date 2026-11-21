@@ -17,8 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// Topaz and Amethyst Rings and the Ruby, Emerald and Sapphire Necklaces.
 /// </summary>
 /// <remarks>
-/// The products of the in-game shop which contain them get them as item. Their packages stay not for sale,
-/// because all of these products are time-limited, which isn't supported yet.
+/// The products of the in-game shop which contain them get them as item. Their packages stay not for sale here,
+/// because all of these products are time-limited; <see cref="AddRentalItemRulesUpdatePlugIn"/> puts them on sale.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.AddCashShopJeweleryUpdatePlugIn_Name), Description = nameof(PlugInResources.AddCashShopJeweleryUpdatePlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -67,7 +67,7 @@ public class AddCashShopJeweleryUpdatePlugIn : UpdatePlugInBase
 
     /// <summary>
     /// Assigns the added items to the products of the in-game shop, which were created without them.
-    /// The packages stay as they are: their products are time-limited, so they can't be delivered yet.
+    /// The packages stay as they are: their products are time-limited, see <see cref="AddRentalItemRulesUpdatePlugIn"/>.
     /// The product sequences only identify these products in the script which comes with the game client,
     /// so a configuration which uses a custom script stays untouched.
     /// </summary>

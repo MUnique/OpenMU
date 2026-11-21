@@ -20,9 +20,9 @@ using MUnique.OpenMU.Interfaces;
 /// e.g. 'Box of Kundun +3' or 'Bundle of Jewel of Soul (30)'.
 /// The products of the Talisman of Luck define a rate (1, 5 or 10 %) instead of a quantity.
 /// It's delivered as the durability of the talisman, so it's used as quantity.
-/// Products whose item isn't defined in this configuration can't be delivered, and
-/// time-limited products neither, because items which expire aren't supported yet.
-/// Their packages are therefore initialized as not for sale.
+/// Products whose item isn't defined in this configuration can't be delivered, and time-limited
+/// products only if their item can expire (equipped items like pets and rings, but not the
+/// consumable seals and scrolls). Their packages are therefore initialized as not for sale.
 /// </remarks>
 internal sealed class CashShopInitializer : InitializerBase
 {

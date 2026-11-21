@@ -50,7 +50,7 @@ public sealed class SkillList : ISkillList, IDisposable
         this._availableSkills = this.CreateAvailableSkills();
         this._itemSkills = new List<SkillEntry>();
         this._player.Inventory.EquippedItems
-            .Where(item => item.HasSkill)
+            .Where(item => item.HasSkill && item.HasEffect(DateTime.UtcNow))
             .Where(item => (item.Definition ?? throw Error.NotInitializedProperty(item, nameof(item.Definition))).Skill != null)
             .ForEach(item => this.TryAddItemSkill(item.Definition!.Skill!));
         this._inventory = this._player.Inventory;
@@ -320,7 +320,7 @@ public sealed class SkillList : ISkillList, IDisposable
             return;
         }
 
-        if (!eventArgs.IsEquipped || item.Durability == 0.0)
+        if (!eventArgs.IsEquipped || !item.HasEffect(DateTime.UtcNow))
         {
             await this.RemoveItemSkillAsync(item.Definition.Skill.Number.ToUnsigned()).ConfigureAwait(false);
             return;

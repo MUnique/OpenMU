@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -87,5 +88,7 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+
+        await this._player.InvokeViewPlugInAsync<IItemExpirationViewPlugIn>(p => p.ShowExpirationsAsync(items)).ConfigureAwait(false);
     }
 }

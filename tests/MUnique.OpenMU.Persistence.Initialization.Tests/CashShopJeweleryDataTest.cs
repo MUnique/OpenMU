@@ -37,18 +37,25 @@ internal class CashShopJeweleryDataTest
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
 
-        AssertItemData(gameConfiguration);
+        AssertItemData(gameConfiguration, true);
     }
 
     /// <summary>
     /// Tests that the update adds the items to a database which was created before they existed,
     /// and assigns them to the products of the in-game shop. Applying it twice doesn't add the items twice.
+    /// The packages stay not for sale, until the update of the rented items puts them on sale.
     /// </summary>
     [Test]
     public async Task UpdateAddsItemsToExistingDatabaseAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
+        foreach (var package in gameConfiguration.CashShopConfiguration!.Packages.Where(p => JeweleryPackages.Contains(p.PackageSequence)))
+        {
+            // A database which was created before these items existed has their packages not for sale.
+            package.IsForSale = false;
+        }
+
         foreach (var product in gameConfiguration.CashShopConfiguration!.Packages.SelectMany(p => p.Products).Where(p => p.ItemDefinition is { } item && IsJewelery(item)))
         {
             product.ItemDefinition = null;
@@ -59,8 +66,10 @@ internal class CashShopJeweleryDataTest
         var update = new AddCashShopJeweleryUpdatePlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        AssertItemData(gameConfiguration, false);
 
-        AssertItemData(gameConfiguration);
+        await new AddRentalItemRulesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        AssertItemData(gameConfiguration, true);
     }
 
     /// <summary>
@@ -89,7 +98,7 @@ internal class CashShopJeweleryDataTest
 
     private static bool IsJewelery(ItemDefinition item) => item.Group == 13 && (RingNumbers.Contains(item.Number) || NecklaceNumbers.Contains(item.Number));
 
-    private static void AssertItemData(GameConfiguration gameConfiguration)
+    private static void AssertItemData(GameConfiguration gameConfiguration, bool packagesForSale)
     {
         var items = gameConfiguration.Items.Where(IsJewelery).ToList();
         Assert.That(items.Select(item => item.Number), Is.EquivalentTo(RingNumbers.Concat(NecklaceNumbers)));
@@ -124,8 +133,10 @@ internal class CashShopJeweleryDataTest
         // Per coin type: two products in each of the eight packages of a single item, and two in the Gladiator Package.
         Assert.That(packages.SelectMany(p => p.Products).Count(p => p.ItemDefinition is { } item && IsJewelery(item)), Is.EqualTo(36));
 
-        // The products are time-limited, which isn't supported yet.
-        Assert.That(packages, Has.None.Matches<CashShopPackage>(p => p.IsForSale));
+        // The products are time-limited; they can be sold since the items can expire. The Gladiator Package
+        // (162 and 163) also contains time-limited scrolls, which can't be delivered, so it stays not for sale.
+        Assert.That(packages.Where(p => p.PackageSequence is not (162 or 163)), Has.All.Matches<CashShopPackage>(p => p.IsForSale == packagesForSale));
+        Assert.That(packages.Where(p => p.PackageSequence is 162 or 163), Has.None.Matches<CashShopPackage>(p => p.IsForSale));
     }
 
     private static float? PowerUp(IEnumerable<ItemDefinition> items, short number, AttributeDefinition attribute)

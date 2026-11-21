@@ -187,6 +187,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t delete a character while items wait for it whose item type doesn&apos;t exist anymore. Please ask an admin..
+        /// </summary>
+        public static string CantDeleteCharacterWithUndeliverableWaitingItems {
+            get {
+                return ResourceManager.GetString("CantDeleteCharacterWithUndeliverableWaitingItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t delete a character while items wait for space in its inventory. Enter the game with it and make room first..
+        /// </summary>
+        public static string CantDeleteCharacterWithWaitingItems {
+            get {
+                return ResourceManager.GetString("CantDeleteCharacterWithWaitingItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t delete a guild member. Remove the character from guild first..
+        /// </summary>
+        public static string CantDeleteGuildMember {
+            get {
+                return ResourceManager.GetString("CantDeleteGuildMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t enter event with equipped item &apos;{0}&apos;..
+        /// </summary>
+        public static string CantEnterEventWithItem {
+            get {
+                return ResourceManager.GetString("CantEnterEventWithItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t equip this item during the event..
+        /// </summary>
+        public static string CantEquipItemDuringEvent {
+            get {
+                return ResourceManager.GetString("CantEquipItemDuringEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is only possible in a safezone..
+        /// </summary>
+        public static string CantResetStatsNotInSafezone {
+            get {
+                return ResourceManager.GetString("CantResetStatsNotInSafezone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot reset stats with any windows opened..
+        /// </summary>
+        public static string CantResetStatsWithOpenedWindows {
+            get {
+                return ResourceManager.GetString("CantResetStatsWithOpenedWindows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot do reset with any windows opened..
+        /// </summary>
+        public static string CantResetWithOpenedWindows {
+            get {
+                return ResourceManager.GetString("CantResetWithOpenedWindows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You can now create a character of the class {0}..
         /// </summary>
         public static string CashShopCharacterClassUnlocked {
@@ -210,6 +282,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CashShopVaultExtended {
             get {
                 return ResourceManager.GetString("CashShopVaultExtended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The character has no stat attribute &apos;{0}&apos;..
+        /// </summary>
+        public static string CharacterHasNoStatAttribute {
+            get {
+                return ResourceManager.GetString("CharacterHasNoStatAttribute", resourceCulture);
             }
         }
         
@@ -244,6 +325,150 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string CharacterInfoFormat {
             get {
                 return ResourceManager.GetString("CharacterInfoFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A character with the same name already exists..
+        /// </summary>
+        public static string CharacterNameAlreadyExists {
+            get {
+                return ResourceManager.GetString("CharacterNameAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character name is required..
+        /// </summary>
+        public static string CharacterNameIsRequired {
+            get {
+                return ResourceManager.GetString("CharacterNameIsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character name is required..
+        /// </summary>
+        public static string CharacterNameRequired {
+            get {
+                return ResourceManager.GetString("CharacterNameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character &apos;{0}&apos; not found..
+        /// </summary>
+        public static string CharacterNotFound {
+            get {
+                return ResourceManager.GetString("CharacterNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not strong enough for this yet..
+        /// </summary>
+        public static string CharacterNotStrongEnoughMessage {
+            get {
+                return ResourceManager.GetString("CharacterNotStrongEnoughMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You&apos;re strong enough on your own..
+        /// </summary>
+        public static string CharacterTooStrongMessage {
+            get {
+                return ResourceManager.GetString("CharacterTooStrongMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A character with the same name already exists..
+        /// </summary>
+        public static string CharacterWithNameAlreadyExists {
+            get {
+                return ResourceManager.GetString("CharacterWithNameAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Ban: {0} minute(s) remaining..
+        /// </summary>
+        public static string ChatBanMinutesRemaining {
+            get {
+                return ResourceManager.GetString("ChatBanMinutesRemaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}] The chat ban for the account from {1} has been removed..
+        /// </summary>
+        public static string ChatBanRemoved {
+            get {
+                return ResourceManager.GetString("ChatBanRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat Ban: {0} second(s) remaining..
+        /// </summary>
+        public static string ChatBanSecondsRemaining {
+            get {
+                return ResourceManager.GetString("ChatBanSecondsRemaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The command &apos;{0}&apos; does not exist..
+        /// </summary>
+        public static string CommandDoesNotExist {
+            get {
+                return ResourceManager.GetString("CommandDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The required argument named {0} was not used..
+        /// </summary>
+        public static string CommandExtensions_RequiredArgumentMissing {
+            get {
+                return ResourceManager.GetString("CommandExtensions_RequiredArgumentMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The argument {0} was given a invalid type, it expects the value to be of the type {1}..
+        /// </summary>
+        public static string CommandExtensionsArgumentInvalidType {
+            get {
+                return ResourceManager.GetString("CommandExtensionsArgumentInvalidType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The command needs {0} arguments and was given {1}..
+        /// </summary>
+        public static string CommandExtensionsInvalidArgumentCount {
+            get {
+                return ResourceManager.GetString("CommandExtensionsInvalidArgumentCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The command needs {0} arguments and was given {1}..
+        /// </summary>
+        public static string CommandNeedsArguments {
+            get {
+                return ResourceManager.GetString("CommandNeedsArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}] {1} has been disconnected..
+        /// </summary>
+        public static string CommandResultPlayerDisconnected {
+            get {
+                return ResourceManager.GetString("CommandResultPlayerDisconnected", resourceCulture);
             }
         }
         
@@ -572,6 +797,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You got disconnected by an administrator..
+        /// </summary>
+        public static string DisconnectedByAdmin {
+            get {
+                return ResourceManager.GetString("DisconnectedByAdmin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You got disconnected by a game master..
+        /// </summary>
+        public static string DisconnectedByGameMaster {
+            get {
+                return ResourceManager.GetString("DisconnectedByGameMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Your code to link Discord is {0}. In Discord, choose the command /link of the bot from the list and enter the code within {1} minutes..
         /// </summary>
         public static string DiscordLinkCode {
@@ -640,6 +883,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string DoppelgangerIceWalkerKilled {
             get {
                 return ResourceManager.GetString("DoppelgangerIceWalkerKilled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle begins in {0} seconds.
+        /// </summary>
+        public static string DuelBattleBeginsInSecondsFormat {
+            get {
+                return ResourceManager.GetString("DuelBattleBeginsInSecondsFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The duel channel is full..
+        /// </summary>
+        public static string DuelChannelIsFull {
+            get {
+                return ResourceManager.GetString("DuelChannelIsFull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only duel players which are in the same map..
+        /// </summary>
+        public static string DuelRequestMustBeOnSameMap {
+            get {
+                return ResourceManager.GetString("DuelRequestMustBeOnSameMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duration must be longer than 0 minutes..
+        /// </summary>
+        public static string DurationMustBeLongerThan0 {
+            get {
+                return ResourceManager.GetString("DurationMustBeLongerThan0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The equipment has been changed..
+        /// </summary>
+        public static string EquipmentHasChangedMessage {
+            get {
+                return ResourceManager.GetString("EquipmentHasChangedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oops, some error happened during sending the Letter..
+        /// </summary>
+        public static string ErrorDuringSendingLetter {
+            get {
+                return ResourceManager.GetString("ErrorDuringSendingLetter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event map is created on entrance. No fixed time table..
+        /// </summary>
+        public static string EventMapCreatedOnEntranceWithoutTimetable {
+            get {
+                return ResourceManager.GetString("EventMapCreatedOnEntranceWithoutTimetable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This event is not implemented yet..
+        /// </summary>
+        public static string EventNotImplementedYet {
+            get {
+                return ResourceManager.GetString("EventNotImplementedYet", resourceCulture);
             }
         }
         
@@ -743,510 +1058,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
-        /// </summary>
-        public static string ImperialGuardianLevelTooLow {
-            get {
-                return ResourceManager.GetString("ImperialGuardianLevelTooLow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} item(s) wait for space in your inventory. They are put into it as soon as they fit:.
-        /// </summary>
-        public static string ItemsWaitForSpace {
-            get {
-                return ResourceManager.GetString("ItemsWaitForSpace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
-        /// </summary>
-        public static string KanturuRequiredItemDestroyed {
-            get {
-                return ResourceManager.GetString("KanturuRequiredItemDestroyed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The barrier opens — the tower awaits!.
-        /// </summary>
-        public static string KanturuBarrierOpening {
-            get {
-                return ResourceManager.GetString("KanturuBarrierOpening", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Both hands of Maya have appeared! Defeat them both!.
-        /// </summary>
-        public static string KanturuBothMayaHandsAppeared {
-            get {
-                return ResourceManager.GetString("KanturuBothMayaHandsAppeared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Maya (Left Hand) has appeared! Destroy her!.
-        /// </summary>
-        public static string KanturuMayaLeftHandAppeared {
-            get {
-                return ResourceManager.GetString("KanturuMayaLeftHandAppeared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Maya's hands have fallen! Collect your loot — the Nightmare awakens in 10 seconds....
-        /// </summary>
-        public static string KanturuMayaHandsFallen {
-            get {
-                return ResourceManager.GetString("KanturuMayaHandsFallen", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Maya rises from the depths of the Refinery Tower!.
-        /// </summary>
-        public static string KanturuMayaRises {
-            get {
-                return ResourceManager.GetString("KanturuMayaRises", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Maya (Right Hand) has appeared! Destroy her!.
-        /// </summary>
-        public static string KanturuMayaRightHandAppeared {
-            get {
-                return ResourceManager.GetString("KanturuMayaRightHandAppeared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to NIGHTMARE has appeared! Defeat him to claim victory!.
-        /// </summary>
-        public static string KanturuNightmareAppeared {
-            get {
-                return ResourceManager.GetString("KanturuNightmareAppeared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Nightmare's guardians have appeared! NIGHTMARE awakens in 3 seconds!.
-        /// </summary>
-        public static string KanturuNightmareGuardiansAppeared {
-            get {
-                return ResourceManager.GetString("KanturuNightmareGuardiansAppeared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Nightmare has teleported! He recovers his full strength!.
-        /// </summary>
-        public static string KanturuNightmareTeleport2 {
-            get {
-                return ResourceManager.GetString("KanturuNightmareTeleport2", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Nightmare teleports again! He is more powerful than ever!.
-        /// </summary>
-        public static string KanturuNightmareTeleport3 {
-            get {
-                return ResourceManager.GetString("KanturuNightmareTeleport3", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Nightmare is at his last stand! Finish him!.
-        /// </summary>
-        public static string KanturuNightmareTeleport4 {
-            get {
-                return ResourceManager.GetString("KanturuNightmareTeleport4", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Phase 1 cleared! Phase 2 begins in 2 minutes....
-        /// </summary>
-        public static string KanturuPhase1Cleared {
-            get {
-                return ResourceManager.GetString("KanturuPhase1Cleared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Phase 1: Defeat the monsters to unseal Maya's power!.
-        /// </summary>
-        public static string KanturuPhase1Start {
-            get {
-                return ResourceManager.GetString("KanturuPhase1Start", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Phase 2 cleared! Phase 3 begins in 2 minutes....
-        /// </summary>
-        public static string KanturuPhase2Cleared {
-            get {
-                return ResourceManager.GetString("KanturuPhase2Cleared", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Phase 2: More of Maya's minions have arrived!.
-        /// </summary>
-        public static string KanturuPhase2Start {
-            get {
-                return ResourceManager.GetString("KanturuPhase2Start", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Phase 3: The final wave approaches!.
-        /// </summary>
-        public static string KanturuPhase3Start {
-            get {
-                return ResourceManager.GetString("KanturuPhase3Start", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to The Kanturu Tower has closed..
-        /// </summary>
-        public static string KanturuTowerClosed {
-            get {
-                return ResourceManager.GetString("KanturuTowerClosed", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to The Kanturu Event has ended. Better luck next time!.
-        /// </summary>
-        public static string KanturuDefeat {
-            get {
-                return ResourceManager.GetString("KanturuDefeat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to The Kanturu Tower closes in 5 minutes!.
-        /// </summary>
-        public static string KanturuTowerClosingWarning {
-            get {
-                return ResourceManager.GetString("KanturuTowerClosingWarning", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to The Kanturu Refinery Tower is conquered! The tower is now open..
-        /// </summary>
-        public static string KanturuTowerConquered {
-            get {
-                return ResourceManager.GetString("KanturuTowerConquered", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Nightmare has been defeated! The Kanturu Refinery Tower is yours!.
-        /// </summary>
-        public static string KanturuVictory {
-            get {
-                return ResourceManager.GetString("KanturuVictory", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t delete a character while items wait for it whose item type doesn&apos;t exist anymore. Please ask an admin..
-        /// </summary>
-        public static string CantDeleteCharacterWithUndeliverableWaitingItems {
-            get {
-                return ResourceManager.GetString("CantDeleteCharacterWithUndeliverableWaitingItems", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t delete a character while items wait for space in its inventory. Enter the game with it and make room first..
-        /// </summary>
-        public static string CantDeleteCharacterWithWaitingItems {
-            get {
-                return ResourceManager.GetString("CantDeleteCharacterWithWaitingItems", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t delete a guild member. Remove the character from guild first..
-        /// </summary>
-        public static string CantDeleteGuildMember {
-            get {
-                return ResourceManager.GetString("CantDeleteGuildMember", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t enter event with equipped item &apos;{0}&apos;..
-        /// </summary>
-        public static string CantEnterEventWithItem {
-            get {
-                return ResourceManager.GetString("CantEnterEventWithItem", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You can&apos;t equip this item during the event..
-        /// </summary>
-        public static string CantEquipItemDuringEvent {
-            get {
-                return ResourceManager.GetString("CantEquipItemDuringEvent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot do reset with any windows opened..
-        /// </summary>
-        public static string CantResetWithOpenedWindows {
-            get {
-                return ResourceManager.GetString("CantResetWithOpenedWindows", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The character has no stat attribute &apos;{0}&apos;..
-        /// </summary>
-        public static string CharacterHasNoStatAttribute {
-            get {
-                return ResourceManager.GetString("CharacterHasNoStatAttribute", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A character with the same name already exists..
-        /// </summary>
-        public static string CharacterNameAlreadyExists {
-            get {
-                return ResourceManager.GetString("CharacterNameAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character name is required..
-        /// </summary>
-        public static string CharacterNameIsRequired {
-            get {
-                return ResourceManager.GetString("CharacterNameIsRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character name is required..
-        /// </summary>
-        public static string CharacterNameRequired {
-            get {
-                return ResourceManager.GetString("CharacterNameRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Character &apos;{0}&apos; not found..
-        /// </summary>
-        public static string CharacterNotFound {
-            get {
-                return ResourceManager.GetString("CharacterNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A character with the same name already exists..
-        /// </summary>
-        public static string CharacterWithNameAlreadyExists {
-            get {
-                return ResourceManager.GetString("CharacterWithNameAlreadyExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chat Ban: {0} minute(s) remaining..
-        /// </summary>
-        public static string ChatBanMinutesRemaining {
-            get {
-                return ResourceManager.GetString("ChatBanMinutesRemaining", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [{0}] The chat ban for the account from {1} has been removed..
-        /// </summary>
-        public static string ChatBanRemoved {
-            get {
-                return ResourceManager.GetString("ChatBanRemoved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Chat Ban: {0} second(s) remaining..
-        /// </summary>
-        public static string ChatBanSecondsRemaining {
-            get {
-                return ResourceManager.GetString("ChatBanSecondsRemaining", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The command &apos;{0}&apos; does not exist..
-        /// </summary>
-        public static string CommandDoesNotExist {
-            get {
-                return ResourceManager.GetString("CommandDoesNotExist", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The required argument named {0} was not used..
-        /// </summary>
-        public static string CommandExtensions_RequiredArgumentMissing {
-            get {
-                return ResourceManager.GetString("CommandExtensions_RequiredArgumentMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The argument {0} was given a invalid type, it expects the value to be of the type {1}..
-        /// </summary>
-        public static string CommandExtensionsArgumentInvalidType {
-            get {
-                return ResourceManager.GetString("CommandExtensionsArgumentInvalidType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The command needs {0} arguments and was given {1}..
-        /// </summary>
-        public static string CommandExtensionsInvalidArgumentCount {
-            get {
-                return ResourceManager.GetString("CommandExtensionsInvalidArgumentCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The command needs {0} arguments and was given {1}..
-        /// </summary>
-        public static string CommandNeedsArguments {
-            get {
-                return ResourceManager.GetString("CommandNeedsArguments", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [{0}] {1} has been disconnected..
-        /// </summary>
-        public static string CommandResultPlayerDisconnected {
-            get {
-                return ResourceManager.GetString("CommandResultPlayerDisconnected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You got disconnected by an administrator..
-        /// </summary>
-        public static string DisconnectedByAdmin {
-            get {
-                return ResourceManager.GetString("DisconnectedByAdmin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You got disconnected by a game master..
-        /// </summary>
-        public static string DisconnectedByGameMaster {
-            get {
-                return ResourceManager.GetString("DisconnectedByGameMaster", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The battle begins in {0} seconds.
-        /// </summary>
-        public static string DuelBattleBeginsInSecondsFormat {
-            get {
-                return ResourceManager.GetString("DuelBattleBeginsInSecondsFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The duel channel is full..
-        /// </summary>
-        public static string DuelChannelIsFull {
-            get {
-                return ResourceManager.GetString("DuelChannelIsFull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You can only duel players which are in the same map..
-        /// </summary>
-        public static string DuelRequestMustBeOnSameMap {
-            get {
-                return ResourceManager.GetString("DuelRequestMustBeOnSameMap", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Duration must be longer than 0 minutes..
-        /// </summary>
-        public static string DurationMustBeLongerThan0 {
-            get {
-                return ResourceManager.GetString("DurationMustBeLongerThan0", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You&apos;re strong enough on your own..
-        /// </summary>
-        public static string CharacterTooStrongMessage {
-            get {
-                return ResourceManager.GetString("CharacterTooStrongMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The equipment has been changed..
-        /// </summary>
-        public static string EquipmentHasChangedMessage {
-            get {
-                return ResourceManager.GetString("EquipmentHasChangedMessage", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Oops, some error happened during sending the Letter..
-        /// </summary>
-        public static string ErrorDuringSendingLetter {
-            get {
-                return ResourceManager.GetString("ErrorDuringSendingLetter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event map is created on entrance. No fixed time table..
-        /// </summary>
-        public static string EventMapCreatedOnEntranceWithoutTimetable {
-            get {
-                return ResourceManager.GetString("EventMapCreatedOnEntranceWithoutTimetable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This event is not implemented yet..
-        /// </summary>
-        public static string EventNotImplementedYet {
-            get {
-                return ResourceManager.GetString("EventNotImplementedYet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to [{0}] {1} has been disconnected..
         /// </summary>
         public static string GuildDisconnectResult {
@@ -1270,6 +1081,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string HappyHourEventHasBeenStarted {
             get {
                 return ResourceManager.GetString("HappyHourEventHasBeenStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle has begun!.
+        /// </summary>
+        public static string IllusionTempleBattleStartedMessage {
+            get {
+                return ResourceManager.GetString("IllusionTempleBattleStartedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} dropped the holy relic!.
+        /// </summary>
+        public static string IllusionTempleRelicDroppedFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleRelicDroppedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has taken the holy relic!.
+        /// </summary>
+        public static string IllusionTempleRelicPickedUpFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleRelicPickedUpFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Score - Allied Forces: {0} | Illusion Forces: {1}.
+        /// </summary>
+        public static string IllusionTempleScoreFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleScoreFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A new sacred relic has appeared!.
+        /// </summary>
+        public static string IllusionTempleStatueSpawnedMessage {
+            get {
+                return ResourceManager.GetString("IllusionTempleStatueSpawnedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need at least level {0} to enter the Fortress of Imperial Guardian..
+        /// </summary>
+        public static string ImperialGuardianLevelTooLow {
+            get {
+                return ResourceManager.GetString("ImperialGuardianLevelTooLow", resourceCulture);
             }
         }
         
@@ -1364,6 +1229,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} has defeated the {1} {2}!.
+        /// </summary>
+        public static string InvasionMonsterDefeated {
+            get {
+                return ResourceManager.GetString("InvasionMonsterDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Inventory is full.
         /// </summary>
         public static string InventoryFull {
@@ -1382,11 +1256,74 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} has defeated the {1} {2}!.
+        ///   Looks up a localized string similar to You need to be level {0} to open this box..
         /// </summary>
-        public static string InvasionMonsterDefeated {
+        public static string ItemBoxRequiresLevel {
             get {
-                return ResourceManager.GetString("InvasionMonsterDefeated", resourceCulture);
+                return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be dropped..
+        /// </summary>
+        public static string ItemCannotBeDropped {
+            get {
+                return ResourceManager.GetString("ItemCannotBeDropped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be repaired..
+        /// </summary>
+        public static string ItemCannotBeRepaired {
+            get {
+                return ResourceManager.GetString("ItemCannotBeRepaired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be sold in a personal store..
+        /// </summary>
+        public static string ItemCannotBeSoldInPersonalStore {
+            get {
+                return ResourceManager.GetString("ItemCannotBeSoldInPersonalStore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be sold..
+        /// </summary>
+        public static string ItemCannotBeSoldToNpc {
+            get {
+                return ResourceManager.GetString("ItemCannotBeSoldToNpc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be stored in the vault..
+        /// </summary>
+        public static string ItemCannotBeStored {
+            get {
+                return ResourceManager.GetString("ItemCannotBeStored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be traded..
+        /// </summary>
+        public static string ItemCannotBeTraded {
+            get {
+                return ResourceManager.GetString("ItemCannotBeTraded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This item can&apos;t be used on this map..
+        /// </summary>
+        public static string ItemCantBeUsedOnThisMap {
+            get {
+                return ResourceManager.GetString("ItemCantBeUsedOnThisMap", resourceCulture);
             }
         }
         
@@ -1400,14 +1337,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This item doesn't belong to you..
+        ///   Looks up a localized string similar to This item doesn&apos;t belong to you..
         /// </summary>
         public static string ItemDoesNotBelongToYou {
             get {
                 return ResourceManager.GetString("ItemDoesNotBelongToYou", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Effect for item not found..
         /// </summary>
@@ -1427,56 +1364,11 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This item can't be dropped..
+        ///   Looks up a localized string similar to {0} has expired..
         /// </summary>
-        public static string ItemCannotBeDropped {
+        public static string ItemHasExpired {
             get {
-                return ResourceManager.GetString("ItemCannotBeDropped", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item can't be repaired..
-        /// </summary>
-        public static string ItemCannotBeRepaired {
-            get {
-                return ResourceManager.GetString("ItemCannotBeRepaired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item can't be sold in a personal store..
-        /// </summary>
-        public static string ItemCannotBeSoldInPersonalStore {
-            get {
-                return ResourceManager.GetString("ItemCannotBeSoldInPersonalStore", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item can't be sold..
-        /// </summary>
-        public static string ItemCannotBeSoldToNpc {
-            get {
-                return ResourceManager.GetString("ItemCannotBeSoldToNpc", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item can't be stored in the vault..
-        /// </summary>
-        public static string ItemCannotBeStored {
-            get {
-                return ResourceManager.GetString("ItemCannotBeStored", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item can't be traded..
-        /// </summary>
-        public static string ItemCannotBeTraded {
-            get {
-                return ResourceManager.GetString("ItemCannotBeTraded", resourceCulture);
+                return ResourceManager.GetString("ItemHasExpired", resourceCulture);
             }
         }
         
@@ -1499,6 +1391,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} item(s) wait for space in your inventory. They are put into it as soon as they fit:.
+        /// </summary>
+        public static string ItemsWaitForSpace {
+            get {
+                return ResourceManager.GetString("ItemsWaitForSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Item Unknown.
         /// </summary>
         public static string ItemUnknown {
@@ -1513,6 +1414,213 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string KalimaEntranceNotFound {
             get {
                 return ResourceManager.GetString("KalimaEntranceNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The barrier opens — the tower awaits!.
+        /// </summary>
+        public static string KanturuBarrierOpening {
+            get {
+                return ResourceManager.GetString("KanturuBarrierOpening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Both hands of Maya have appeared! Defeat them both!.
+        /// </summary>
+        public static string KanturuBothMayaHandsAppeared {
+            get {
+                return ResourceManager.GetString("KanturuBothMayaHandsAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Event has ended. Better luck next time!.
+        /// </summary>
+        public static string KanturuDefeat {
+            get {
+                return ResourceManager.GetString("KanturuDefeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maya&apos;s hands have fallen! Collect your loot — the Nightmare awakens in 10 seconds....
+        /// </summary>
+        public static string KanturuMayaHandsFallen {
+            get {
+                return ResourceManager.GetString("KanturuMayaHandsFallen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maya (Left Hand) has appeared! Destroy her!.
+        /// </summary>
+        public static string KanturuMayaLeftHandAppeared {
+            get {
+                return ResourceManager.GetString("KanturuMayaLeftHandAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maya (Right Hand) has appeared! Destroy her!.
+        /// </summary>
+        public static string KanturuMayaRightHandAppeared {
+            get {
+                return ResourceManager.GetString("KanturuMayaRightHandAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maya rises from the depths of the Refinery Tower!.
+        /// </summary>
+        public static string KanturuMayaRises {
+            get {
+                return ResourceManager.GetString("KanturuMayaRises", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NIGHTMARE has appeared! Defeat him to claim victory!.
+        /// </summary>
+        public static string KanturuNightmareAppeared {
+            get {
+                return ResourceManager.GetString("KanturuNightmareAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare&apos;s guardians have appeared! NIGHTMARE awakens in 3 seconds!.
+        /// </summary>
+        public static string KanturuNightmareGuardiansAppeared {
+            get {
+                return ResourceManager.GetString("KanturuNightmareGuardiansAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare has teleported! Don&apos;t let him escape!.
+        /// </summary>
+        public static string KanturuNightmareTeleport2 {
+            get {
+                return ResourceManager.GetString("KanturuNightmareTeleport2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare teleports again! Keep up the attack!.
+        /// </summary>
+        public static string KanturuNightmareTeleport3 {
+            get {
+                return ResourceManager.GetString("KanturuNightmareTeleport3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare is at his last stand! Finish him!.
+        /// </summary>
+        public static string KanturuNightmareTeleport4 {
+            get {
+                return ResourceManager.GetString("KanturuNightmareTeleport4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 1 cleared! Phase 2 begins in 2 minutes....
+        /// </summary>
+        public static string KanturuPhase1Cleared {
+            get {
+                return ResourceManager.GetString("KanturuPhase1Cleared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 1: Defeat the monsters to unseal Maya&apos;s power!.
+        /// </summary>
+        public static string KanturuPhase1Start {
+            get {
+                return ResourceManager.GetString("KanturuPhase1Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 2 cleared! Phase 3 begins in 2 minutes....
+        /// </summary>
+        public static string KanturuPhase2Cleared {
+            get {
+                return ResourceManager.GetString("KanturuPhase2Cleared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 2: More of Maya&apos;s minions have arrived!.
+        /// </summary>
+        public static string KanturuPhase2Start {
+            get {
+                return ResourceManager.GetString("KanturuPhase2Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phase 3: The final wave approaches!.
+        /// </summary>
+        public static string KanturuPhase3Start {
+            get {
+                return ResourceManager.GetString("KanturuPhase3Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your {0} has been destroyed! You are falling out of the Kanturu Refinery Tower..
+        /// </summary>
+        public static string KanturuRequiredItemDestroyed {
+            get {
+                return ResourceManager.GetString("KanturuRequiredItemDestroyed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Tower has closed..
+        /// </summary>
+        public static string KanturuTowerClosed {
+            get {
+                return ResourceManager.GetString("KanturuTowerClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Tower closes in 5 minutes!.
+        /// </summary>
+        public static string KanturuTowerClosingWarning {
+            get {
+                return ResourceManager.GetString("KanturuTowerClosingWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Kanturu Refinery Tower is conquered! The tower is now open..
+        /// </summary>
+        public static string KanturuTowerConquered {
+            get {
+                return ResourceManager.GetString("KanturuTowerConquered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nightmare has been defeated! The Kanturu Refinery Tower is yours!.
+        /// </summary>
+        public static string KanturuVictory {
+            get {
+                return ResourceManager.GetString("KanturuVictory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Killed {0} monster(s)..
+        /// </summary>
+        public static string KillAllMonstersFormat {
+            get {
+                return ResourceManager.GetString("KillAllMonstersFormat", resourceCulture);
             }
         }
         
@@ -1661,335 +1769,38 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Killed {0} monster(s)..
+        ///   Looks up a localized string similar to Your level is too high. You need to be at most level {0} to enter this event..
         /// </summary>
-        public static string KillAllMonstersFormat {
+        public static string MiniGameCharacterLevelTooHighFormat {
             get {
-                return ResourceManager.GetString("KillAllMonstersFormat", resourceCulture);
+                return ResourceManager.GetString("MiniGameCharacterLevelTooHighFormat", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ... and {0} more. /waiting lists more of them..
+        ///   Looks up a localized string similar to Your level is too low. You need to be at least level {0} to enter this event..
         /// </summary>
-        public static string MoreWaitingItems {
+        public static string MiniGameCharacterLevelTooLowFormat {
             get {
-                return ResourceManager.GetString("MoreWaitingItems", resourceCulture);
+                return ResourceManager.GetString("MiniGameCharacterLevelTooLowFormat", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ... and {0} more..
+        ///   Looks up a localized string similar to You can&apos;t enter this event..
         /// </summary>
-        public static string MoreWaitingItemsNotNamed {
+        public static string MiniGameEnterFailed {
             get {
-                return ResourceManager.GetString("MoreWaitingItemsNotNamed", resourceCulture);
+                return ResourceManager.GetString("MiniGameEnterFailed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No items wait for space in your inventory..
+        ///   Looks up a localized string similar to You need {0} zen to enter this event..
         /// </summary>
-        public static string NoWaitingItems {
+        public static string MiniGameEntranceFeeRequiredFormat {
             get {
-                return ResourceManager.GetString("NoWaitingItems", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Close your store to change its prices..
-        /// </summary>
-        public static string PlayerShopCloseToChangePrices {
-            get {
-                return ResourceManager.GetString("PlayerShopCloseToChangePrices", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You paid {0} {1}..
-        /// </summary>
-        public static string PlayerShopCoinsPaid {
-            get {
-                return ResourceManager.GetString("PlayerShopCoinsPaid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You received {0} {1} for an item of your store..
-        /// </summary>
-        public static string PlayerShopCoinsReceived {
-            get {
-                return ResourceManager.GetString("PlayerShopCoinsReceived", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Prices in {0} are not allowed in personal stores..
-        /// </summary>
-        public static string PlayerShopCurrencyNotAllowed {
-            get {
-                return ResourceManager.GetString("PlayerShopCurrencyNotAllowed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your store is empty..
-        /// </summary>
-        public static string PlayerShopIsEmpty {
-            get {
-                return ResourceManager.GetString("PlayerShopIsEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your items can&apos;t pay exactly {0} {1}. Bundles are not split, and there is no change..
-        /// </summary>
-        public static string PlayerShopItemPriceNotPayableExactly {
-            get {
-                return ResourceManager.GetString("PlayerShopItemPriceNotPayableExactly", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You need {0} {1} to buy this item..
-        /// </summary>
-        public static string PlayerShopNotEnoughCurrency {
-            get {
-                return ResourceManager.GetString("PlayerShopNotEnoughCurrency", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Usage: {0} [position 1-32] [amount] [currency]. Without arguments, the prices of your store are listed..
-        /// </summary>
-        public static string PlayerShopPriceCommandUsage {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceCommandUsage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no item at position {0} of your store..
-        /// </summary>
-        public static string PlayerShopPriceItemNotFound {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceItemNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your character level is too low to sell items in a personal store..
-        /// </summary>
-        public static string PlayerShopPriceLevelTooLow {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceLevelTooLow", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #{0} {1} - {2} {3}.
-        /// </summary>
-        public static string PlayerShopPriceListEntry {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceListEntry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to #{0} {1} - no price.
-        /// </summary>
-        public static string PlayerShopPriceListEntryWithoutPrice {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceListEntryWithoutPrice", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The price of the item at position {0} has been removed..
-        /// </summary>
-        public static string PlayerShopPriceRemoved {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceRemoved", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The price of the item at position {0} is now {1} {2}..
-        /// </summary>
-        public static string PlayerShopPriceSet {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceSet", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The price can be at most {0} {1}..
-        /// </summary>
-        public static string PlayerShopPriceTooHigh {
-            get {
-                return ResourceManager.GetString("PlayerShopPriceTooHigh", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unknown currency &apos;{0}&apos;. Available: {1}..
-        /// </summary>
-        public static string PlayerShopUnknownCurrency {
-            get {
-                return ResourceManager.GetString("PlayerShopUnknownCurrency", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
-        /// </summary>
-        public static string RaklionBattleFailed {
-            get {
-                return ResourceManager.GetString("RaklionBattleFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} hour(s) {1} minute(s).
-        /// </summary>
-        public static string RaklionDurationHoursMinutes {
-            get {
-                return ResourceManager.GetString("RaklionDurationHoursMinutes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} minute(s).
-        /// </summary>
-        public static string RaklionDurationMinutes {
-            get {
-                return ResourceManager.GetString("RaklionDurationMinutes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Hatchery Gate is closed..
-        /// </summary>
-        public static string RaklionHatcheryClosed {
-            get {
-                return ResourceManager.GetString("RaklionHatcheryClosed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Hatchery Gate is closed, you cannot enter..
-        /// </summary>
-        public static string RaklionHatcheryIsClosed {
-            get {
-                return ResourceManager.GetString("RaklionHatcheryIsClosed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Hatchery Gate is opened..
-        /// </summary>
-        public static string RaklionHatcheryOpened {
-            get {
-                return ResourceManager.GetString("RaklionHatcheryOpened", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Hatchery Gates will open in {0}..
-        /// </summary>
-        public static string RaklionHatcheryOpensIn {
-            get {
-                return ResourceManager.GetString("RaklionHatcheryOpensIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s)..
-        /// </summary>
-        public static string RaklionSelupanAppeared {
-            get {
-                return ResourceManager.GetString("RaklionSelupanAppeared", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} defeated Selupan! The Hatchery Gates will open in {1}..
-        /// </summary>
-        public static string RaklionSelupanDefeated {
-            get {
-                return ResourceManager.GetString("RaklionSelupanDefeated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Goblin Points.
-        /// </summary>
-        public static string ShopCurrencyGoblinPoints {
-            get {
-                return ResourceManager.GetString("ShopCurrencyGoblinPoints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to WCoin (C).
-        /// </summary>
-        public static string ShopCurrencyWCoinC {
-            get {
-                return ResourceManager.GetString("ShopCurrencyWCoinC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to WCoin (P).
-        /// </summary>
-        public static string ShopCurrencyWCoinP {
-            get {
-                return ResourceManager.GetString("ShopCurrencyWCoinP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Zen.
-        /// </summary>
-        public static string ShopCurrencyZen {
-            get {
-                return ResourceManager.GetString("ShopCurrencyZen", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You need to be inside a mini game event to skip the waiting time..
-        /// </summary>
-        public static string SkipWaitNotInMiniGame {
-            get {
-                return ResourceManager.GetString("SkipWaitNotInMiniGame", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The current waiting time was skipped..
-        /// </summary>
-        public static string SkipWaitRequested {
-            get {
-                return ResourceManager.GetString("SkipWaitRequested", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The waiting time was skipped by {0}. The event continues!..
-        /// </summary>
-        public static string SkipWaitAnnouncedFormat {
-            get {
-                return ResourceManager.GetString("SkipWaitAnnouncedFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is currently no waiting time to skip. The event is already running..
-        /// </summary>
-        public static string SkipWaitNothingToSkip {
-            get {
-                return ResourceManager.GetString("SkipWaitNothingToSkip", resourceCulture);
+                return ResourceManager.GetString("MiniGameEntranceFeeRequiredFormat", resourceCulture);
             }
         }
         
@@ -2010,7 +1821,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MiniGameForceStartInitiatedFormat", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The {0} event is not available on this game server..
         /// </summary>
@@ -2021,11 +1832,56 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This event isn&apos;t configured on this server and can&apos;t be started..
+        /// </summary>
+        public static string MiniGameNotConfigured {
+            get {
+                return ResourceManager.GetString("MiniGameNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t enter this event during a guild war..
+        /// </summary>
+        public static string MiniGameNotDuringGuildWar {
+            get {
+                return ResourceManager.GetString("MiniGameNotDuringGuildWar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not open right now..
+        /// </summary>
+        public static string MiniGameNotOpenFormat {
+            get {
+                return ResourceManager.GetString("MiniGameNotOpenFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Killers can&apos;t enter!.
+        /// </summary>
+        public static string MiniGamePlayerKillersCantEnter {
+            get {
+                return ResourceManager.GetString("MiniGamePlayerKillersCantEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} starts in {1} minutes..
         /// </summary>
         public static string MiniGameStartsInMinutesFormat {
             get {
                 return ResourceManager.GetString("MiniGameStartsInMinutesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need a ticket to enter this event..
+        /// </summary>
+        public static string MiniGameTicketRequired {
+            get {
+                return ResourceManager.GetString("MiniGameTicketRequired", resourceCulture);
             }
         }
         
@@ -2080,6 +1936,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string MonsterNotFoundByNumber {
             get {
                 return ResourceManager.GetString("MonsterNotFoundByNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ... and {0} more. /waiting lists more of them..
+        /// </summary>
+        public static string MoreWaitingItems {
+            get {
+                return ResourceManager.GetString("MoreWaitingItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ... and {0} more..
+        /// </summary>
+        public static string MoreWaitingItemsNotNamed {
+            get {
+                return ResourceManager.GetString("MoreWaitingItemsNotNamed", resourceCulture);
             }
         }
         
@@ -2255,20 +2129,20 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot create kalima gate in safe zone..
-        /// </summary>
-        public static string NoKalimaGateInSafezone {
-            get {
-                return ResourceManager.GetString("NoKalimaGateInSafezone", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot create kalima gate in Kalima..
         /// </summary>
         public static string NoKalimaGateInKalima {
             get {
                 return ResourceManager.GetString("NoKalimaGateInKalima", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create kalima gate in safe zone..
+        /// </summary>
+        public static string NoKalimaGateInSafezone {
+            get {
+                return ResourceManager.GetString("NoKalimaGateInSafezone", resourceCulture);
             }
         }
         
@@ -2282,20 +2156,29 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not enough level up points available..
-        /// </summary>
-        public static string NotEnoughLevelUpPointsAvailable {
-            get {
-                return ResourceManager.GetString("NotEnoughLevelUpPointsAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You don&apos;t have enough required items for reset, required {0} x {1}..
         /// </summary>
         public static string NotEnoughItemsForReset {
             get {
                 return ResourceManager.GetString("NotEnoughItemsForReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough required items for stat reset, required {0} x {1}..
+        /// </summary>
+        public static string NotEnoughItemsForStatReset {
+            get {
+                return ResourceManager.GetString("NotEnoughItemsForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not enough level up points available..
+        /// </summary>
+        public static string NotEnoughLevelUpPointsAvailable {
+            get {
+                return ResourceManager.GetString("NotEnoughLevelUpPointsAvailable", resourceCulture);
             }
         }
         
@@ -2314,6 +2197,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string NotEnoughMoneyForReset {
             get {
                 return ResourceManager.GetString("NotEnoughMoneyForReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You don&apos;t have enough money for stat reset, required zen is {0}..
+        /// </summary>
+        public static string NotEnoughMoneyForStatReset {
+            get {
+                return ResourceManager.GetString("NotEnoughMoneyForStatReset", resourceCulture);
             }
         }
         
@@ -2363,6 +2255,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No items wait for space in your inventory..
+        /// </summary>
+        public static string NoWaitingItems {
+            get {
+                return ResourceManager.GetString("NoWaitingItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No warehouse NPC found.
         /// </summary>
         public static string NoWarehouseNpcFound {
@@ -2395,6 +2296,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string NpcRemovedById {
             get {
                 return ResourceManager.GetString("NpcRemovedById", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline leveling is already active for this account..
+        /// </summary>
+        public static string OfflineLevelingAlreadyActive {
+            get {
+                return ResourceManager.GetString("OfflineLevelingAlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not start offline leveling. Try again in a safe spot..
+        /// </summary>
+        public static string OfflineLevelingFailed {
+            get {
+                return ResourceManager.GetString("OfflineLevelingFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can not start offline leveling during an event..
+        /// </summary>
+        public static string OfflineLevelingInMiniGame {
+            get {
+                return ResourceManager.GetString("OfflineLevelingInMiniGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MU Helper must be running to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingMuHelperNotRunning {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must be alive to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingMustBeAlive {
+            get {
+                return ResourceManager.GetString("OfflineLevelingMustBeAlive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No character is selected..
+        /// </summary>
+        public static string OfflineLevelingNoCharacterSelected {
+            get {
+                return ResourceManager.GetString("OfflineLevelingNoCharacterSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You must be on a map to start offline leveling..
+        /// </summary>
+        public static string OfflineLevelingNotOnMap {
+            get {
+                return ResourceManager.GetString("OfflineLevelingNotOnMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offline leveling started. You can log back in at any time to stop it..
+        /// </summary>
+        public static string OfflineLevelingStarted {
+            get {
+                return ResourceManager.GetString("OfflineLevelingStarted", resourceCulture);
             }
         }
         
@@ -2444,20 +2417,20 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{0}] {1} kills have been cleaned..
-        /// </summary>
-        public static string PkClearedResult {
-            get {
-                return ResourceManager.GetString("PkClearedResult", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This command is only available to Game Masters..
         /// </summary>
         public static string PkClearCommandOnlyForGameMasters {
             get {
                 return ResourceManager.GetString("PkClearCommandOnlyForGameMasters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}] {1} kills have been cleaned..
+        /// </summary>
+        public static string PkClearedResult {
+            get {
+                return ResourceManager.GetString("PkClearedResult", resourceCulture);
             }
         }
         
@@ -2552,11 +2525,236 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close your store to change its prices..
+        /// </summary>
+        public static string PlayerShopCloseToChangePrices {
+            get {
+                return ResourceManager.GetString("PlayerShopCloseToChangePrices", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You paid {0} {1}..
+        /// </summary>
+        public static string PlayerShopCoinsPaid {
+            get {
+                return ResourceManager.GetString("PlayerShopCoinsPaid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You received {0} {1} for an item of your store..
+        /// </summary>
+        public static string PlayerShopCoinsReceived {
+            get {
+                return ResourceManager.GetString("PlayerShopCoinsReceived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prices in {0} are not allowed in personal stores..
+        /// </summary>
+        public static string PlayerShopCurrencyNotAllowed {
+            get {
+                return ResourceManager.GetString("PlayerShopCurrencyNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your store is empty..
+        /// </summary>
+        public static string PlayerShopIsEmpty {
+            get {
+                return ResourceManager.GetString("PlayerShopIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your items can&apos;t pay exactly {0} {1}. Bundles are not split, and there is no change..
+        /// </summary>
+        public static string PlayerShopItemPriceNotPayableExactly {
+            get {
+                return ResourceManager.GetString("PlayerShopItemPriceNotPayableExactly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need {0} {1} to buy this item..
+        /// </summary>
+        public static string PlayerShopNotEnoughCurrency {
+            get {
+                return ResourceManager.GetString("PlayerShopNotEnoughCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Usage: {0} [position 1-32] [amount] [currency]. Without arguments, the prices of your store are listed..
+        /// </summary>
+        public static string PlayerShopPriceCommandUsage {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceCommandUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no item at position {0} of your store..
+        /// </summary>
+        public static string PlayerShopPriceItemNotFound {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceItemNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your character level is too low to sell items in a personal store..
+        /// </summary>
+        public static string PlayerShopPriceLevelTooLow {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceLevelTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #{0} {1} - {2} {3}.
+        /// </summary>
+        public static string PlayerShopPriceListEntry {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceListEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #{0} {1} - no price.
+        /// </summary>
+        public static string PlayerShopPriceListEntryWithoutPrice {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceListEntryWithoutPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of the item at position {0} has been removed..
+        /// </summary>
+        public static string PlayerShopPriceRemoved {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price of the item at position {0} is now {1} {2}..
+        /// </summary>
+        public static string PlayerShopPriceSet {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The price can be at most {0} {1}..
+        /// </summary>
+        public static string PlayerShopPriceTooHigh {
+            get {
+                return ResourceManager.GetString("PlayerShopPriceTooHigh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown currency &apos;{0}&apos;. Available: {1}..
+        /// </summary>
+        public static string PlayerShopUnknownCurrency {
+            get {
+                return ResourceManager.GetString("PlayerShopUnknownCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Player&apos;s Store not open..
         /// </summary>
         public static string PlayerStoreNotOpen {
             get {
                 return ResourceManager.GetString("PlayerStoreNotOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle against Selupan has failed. The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionBattleFailed {
+            get {
+                return ResourceManager.GetString("RaklionBattleFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} hour(s) {1} minute(s).
+        /// </summary>
+        public static string RaklionDurationHoursMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationHoursMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} minute(s).
+        /// </summary>
+        public static string RaklionDurationMinutes {
+            get {
+                return ResourceManager.GetString("RaklionDurationMinutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is closed..
+        /// </summary>
+        public static string RaklionHatcheryClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is closed, you cannot enter..
+        /// </summary>
+        public static string RaklionHatcheryIsClosed {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryIsClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gate is opened..
+        /// </summary>
+        public static string RaklionHatcheryOpened {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Hatchery Gates will open in {0}..
+        /// </summary>
+        public static string RaklionHatcheryOpensIn {
+            get {
+                return ResourceManager.GetString("RaklionHatcheryOpensIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selupan has appeared. The Hatchery Gates will be closed in {0} minute(s)..
+        /// </summary>
+        public static string RaklionSelupanAppeared {
+            get {
+                return ResourceManager.GetString("RaklionSelupanAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} defeated Selupan! The Hatchery Gates will open in {1}..
+        /// </summary>
+        public static string RaklionSelupanDefeated {
+            get {
+                return ResourceManager.GetString("RaklionSelupanDefeated", resourceCulture);
             }
         }
         
@@ -2597,6 +2795,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Required level for stat reset is {0}..
+        /// </summary>
+        public static string RequiredLevelForStatReset {
+            get {
+                return ResourceManager.GetString("RequiredLevelForStatReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset is not configured..
         /// </summary>
         public static string ResetNotConfigured {
@@ -2629,6 +2836,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string ResetSystemInactive {
             get {
                 return ResourceManager.GetString("ResetSystemInactive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An item of the same kind is already in use. Stop using it first, and then try again..
+        /// </summary>
+        public static string SameItemAlreadyInUse {
+            get {
+                return ResourceManager.GetString("SameItemAlreadyInUse", resourceCulture);
             }
         }
         
@@ -2732,6 +2948,78 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Goblin Points.
+        /// </summary>
+        public static string ShopCurrencyGoblinPoints {
+            get {
+                return ResourceManager.GetString("ShopCurrencyGoblinPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WCoin (C).
+        /// </summary>
+        public static string ShopCurrencyWCoinC {
+            get {
+                return ResourceManager.GetString("ShopCurrencyWCoinC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WCoin (P).
+        /// </summary>
+        public static string ShopCurrencyWCoinP {
+            get {
+                return ResourceManager.GetString("ShopCurrencyWCoinP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen.
+        /// </summary>
+        public static string ShopCurrencyZen {
+            get {
+                return ResourceManager.GetString("ShopCurrencyZen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The waiting time was skipped by {0}. The event continues!.
+        /// </summary>
+        public static string SkipWaitAnnouncedFormat {
+            get {
+                return ResourceManager.GetString("SkipWaitAnnouncedFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is currently no waiting time to skip. The event is already running..
+        /// </summary>
+        public static string SkipWaitNothingToSkip {
+            get {
+                return ResourceManager.GetString("SkipWaitNothingToSkip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to be inside a mini game event to skip the waiting time..
+        /// </summary>
+        public static string SkipWaitNotInMiniGame {
+            get {
+                return ResourceManager.GetString("SkipWaitNotInMiniGame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current waiting time was skipped..
+        /// </summary>
+        public static string SkipWaitRequested {
+            get {
+                return ResourceManager.GetString("SkipWaitRequested", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warning: Unusual activity detected (speed check). Repeated violations will result in account restriction..
         /// </summary>
         public static string SpeedHackWarning {
@@ -2755,6 +3043,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string StatPointInfo {
             get {
                 return ResourceManager.GetString("StatPointInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The /resetstats command is disabled..
+        /// </summary>
+        public static string StatResetChatCommandDisabled {
+            get {
+                return ResourceManager.GetString("StatResetChatCommandDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is not configured..
+        /// </summary>
+        public static string StatResetNotConfigured {
+            get {
+                return ResourceManager.GetString("StatResetNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat reset is not enabled..
+        /// </summary>
+        public static string StatResetNotEnabled {
+            get {
+                return ResourceManager.GetString("StatResetNotEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your stats have been reset. You have {0} level-up points available..
+        /// </summary>
+        public static string StatsResetSuccessfully {
+            get {
+                return ResourceManager.GetString("StatsResetSuccessfully", resourceCulture);
             }
         }
         
@@ -2784,133 +3108,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("TalkingNotImplementedFormat", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to {0} has taken the holy relic!.
-        /// </summary>
-        public static string IllusionTempleRelicPickedUpFormat {
-            get {
-                return ResourceManager.GetString("IllusionTempleRelicPickedUpFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to {0} dropped the holy relic!.
-        /// </summary>
-        public static string IllusionTempleRelicDroppedFormat {
-            get {
-                return ResourceManager.GetString("IllusionTempleRelicDroppedFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Score - Allied Forces: {0} | Illusion Forces: {1}.
-        /// </summary>
-        public static string IllusionTempleScoreFormat {
-            get {
-                return ResourceManager.GetString("IllusionTempleScoreFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to A new sacred relic has appeared!.
-        /// </summary>
-        public static string IllusionTempleStatueSpawnedMessage {
-            get {
-                return ResourceManager.GetString("IllusionTempleStatueSpawnedMessage", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You can&apos;t enter this event..
-        /// </summary>
-        public static string MiniGameEnterFailed {
-            get {
-                return ResourceManager.GetString("MiniGameEnterFailed", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to This event isn&apos;t configured on this server and can&apos;t be started..
-        /// </summary>
-        public static string MiniGameNotConfigured {
-            get {
-                return ResourceManager.GetString("MiniGameNotConfigured", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Your level is too low. You need to be at least level {0} to enter this event..
-        /// </summary>
-        public static string MiniGameCharacterLevelTooLowFormat {
-            get {
-                return ResourceManager.GetString("MiniGameCharacterLevelTooLowFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Your level is too high. You need to be at most level {0} to enter this event..
-        /// </summary>
-        public static string MiniGameCharacterLevelTooHighFormat {
-            get {
-                return ResourceManager.GetString("MiniGameCharacterLevelTooHighFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You need a ticket to enter this event..
-        /// </summary>
-        public static string MiniGameTicketRequired {
-            get {
-                return ResourceManager.GetString("MiniGameTicketRequired", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You need {0} zen to enter this event..
-        /// </summary>
-        public static string MiniGameEntranceFeeRequiredFormat {
-            get {
-                return ResourceManager.GetString("MiniGameEntranceFeeRequiredFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Killers can&apos;t enter!.
-        /// </summary>
-        public static string MiniGamePlayerKillersCantEnter {
-            get {
-                return ResourceManager.GetString("MiniGamePlayerKillersCantEnter", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You can&apos;t enter this event during a guild war..
-        /// </summary>
-        public static string MiniGameNotDuringGuildWar {
-            get {
-                return ResourceManager.GetString("MiniGameNotDuringGuildWar", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to {0} is not open right now..
-        /// </summary>
-        public static string MiniGameNotOpenFormat {
-            get {
-                return ResourceManager.GetString("MiniGameNotOpenFormat", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to The battle has begun!.
-        /// </summary>
-        public static string IllusionTempleBattleStartedMessage {
-            get {
-                return ResourceManager.GetString("IllusionTempleBattleStartedMessage", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Your account has been temporarily banned by a game master..
         /// </summary>
@@ -2926,6 +3124,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string TheVaultIsLocked {
             get {
                 return ResourceManager.GetString("TheVaultIsLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A time-limited item can&apos;t be used here..
+        /// </summary>
+        public static string TimeLimitedItemCannotBeMixed {
+            get {
+                return ResourceManager.GetString("TimeLimitedItemCannotBeMixed", resourceCulture);
             }
         }
         
@@ -3097,195 +3304,6 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         public static string YourChatBanRemovedByGameMaster {
             get {
                 return ResourceManager.GetString("YourChatBanRemovedByGameMaster", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Offline leveling started. You can log back in at any time to stop it..
-        /// </summary>
-        public static string OfflineLevelingStarted {
-            get {
-                return ResourceManager.GetString("OfflineLevelingStarted", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Could not start offline leveling. Try again in a safe spot..
-        /// </summary>
-        public static string OfflineLevelingFailed {
-            get {
-                return ResourceManager.GetString("OfflineLevelingFailed", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Offline leveling is already active for this account..
-        /// </summary>
-        public static string OfflineLevelingAlreadyActive {
-            get {
-                return ResourceManager.GetString("OfflineLevelingAlreadyActive", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You must be alive to start offline leveling..
-        /// </summary>
-        public static string OfflineLevelingMustBeAlive {
-            get {
-                return ResourceManager.GetString("OfflineLevelingMustBeAlive", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You can not start offline leveling during an event..
-        /// </summary>
-        public static string OfflineLevelingInMiniGame {
-            get {
-                return ResourceManager.GetString("OfflineLevelingInMiniGame", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You must be on a map to start offline leveling..
-        /// </summary>
-        public static string OfflineLevelingNotOnMap {
-            get {
-                return ResourceManager.GetString("OfflineLevelingNotOnMap", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to No character is selected..
-        /// </summary>
-        public static string OfflineLevelingNoCharacterSelected {
-            get {
-                return ResourceManager.GetString("OfflineLevelingNoCharacterSelected", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mu Helper is not running..
-        /// </summary>
-        public static string OfflineLevelingMuHelperNotRunning {
-            get {
-                return ResourceManager.GetString("OfflineLevelingMuHelperNotRunning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stat reset is not enabled..
-        /// </summary>
-        public static string StatResetNotEnabled {
-            get {
-                return ResourceManager.GetString("StatResetNotEnabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stat reset is not configured..
-        /// </summary>
-        public static string StatResetNotConfigured {
-            get {
-                return ResourceManager.GetString("StatResetNotConfigured", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Required level for stat reset is {0}..
-        /// </summary>
-        public static string RequiredLevelForStatReset {
-            get {
-                return ResourceManager.GetString("RequiredLevelForStatReset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You don&apos;t have enough money for stat reset, required zen is {0}..
-        /// </summary>
-        public static string NotEnoughMoneyForStatReset {
-            get {
-                return ResourceManager.GetString("NotEnoughMoneyForStatReset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You don&apos;t have enough required items for stat reset, required {0} x {1}..
-        /// </summary>
-        public static string NotEnoughItemsForStatReset {
-            get {
-                return ResourceManager.GetString("NotEnoughItemsForStatReset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stat reset is only possible in a safezone..
-        /// </summary>
-        public static string CantResetStatsNotInSafezone {
-            get {
-                return ResourceManager.GetString("CantResetStatsNotInSafezone", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot reset stats with any windows opened..
-        /// </summary>
-        public static string CantResetStatsWithOpenedWindows {
-            get {
-                return ResourceManager.GetString("CantResetStatsWithOpenedWindows", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The /resetstats command is disabled..
-        /// </summary>
-        public static string StatResetChatCommandDisabled {
-            get {
-                return ResourceManager.GetString("StatResetChatCommandDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your stats have been reset. You have {0} level-up points available..
-        /// </summary>
-        public static string StatsResetSuccessfully {
-            get {
-                return ResourceManager.GetString("StatsResetSuccessfully", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You are not strong enough for this buff yet..
-        /// </summary>
-        public static string CharacterNotStrongEnoughMessage {
-            get {
-                return ResourceManager.GetString("CharacterNotStrongEnoughMessage", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to You need to be level {0} to open this box..
-        /// </summary>
-        public static string ItemBoxRequiresLevel {
-            get {
-                return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This item can't be used on this map..
-        /// </summary>
-        public static string ItemCantBeUsedOnThisMap {
-            get {
-                return ResourceManager.GetString("ItemCantBeUsedOnThisMap", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to An item of the same kind is already in use. Stop using it first, and then try again..
-        /// </summary>
-        public static string SameItemAlreadyInUse {
-            get {
-                return ResourceManager.GetString("SameItemAlreadyInUse", resourceCulture);
             }
         }
     }
