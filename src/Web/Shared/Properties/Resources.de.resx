@@ -183,6 +183,12 @@
   <data name="TheValueMustNotContain" xml:space="preserve">
     <value>{0}: Der Wert darf "{1}" nicht enthalten.</value>
   </data>
+  <data name="ShowAllLanguages" xml:space="preserve">
+    <value>Alle Sprachen anzeigen</value>
+  </data>
+  <data name="ShowSelectedLanguageOnly" xml:space="preserve">
+    <value>Nur ausgewählte Sprache anzeigen</value>
+  </data>
   <data name="PleaseSelectItemDefinition" xml:space="preserve">
     <value>&lt;Bitte eine Definition auswählen&gt;</value>
   </data>
