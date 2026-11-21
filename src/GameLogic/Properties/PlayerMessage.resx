@@ -1207,6 +1207,9 @@ Inventory Extensions: {18}</value>
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>A time-limited item can't be used here.</value>
   </data>
+  <data name="QuestZenLimitReached" xml:space="preserve">
+    <value>You have reached your Zen limit. Can't complete the quest.</value>
+  </data>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>An item of the same kind is already in use. Stop using it first, and then try again.</value>
   </data>

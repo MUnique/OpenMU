@@ -22,4 +22,14 @@ public interface IQuestCompletionResponsePlugIn : IViewPlugIn
     /// The success/state of the quest can be determined by inspecting the player object.
     /// </remarks>
     ValueTask QuestCompletedAsync(QuestDefinition quest);
+
+    /// <summary>
+    /// Shows that the completion of the specified quest was refused, although its requirements are met.
+    /// </summary>
+    /// <param name="quest">The quest.</param>
+    /// <param name="refusal">The reason of the refusal.</param>
+    /// <remarks>
+    /// View plug-ins of other assemblies which don't implement it show nothing for a refusal.
+    /// </remarks>
+    ValueTask QuestCompletionRefusedAsync(QuestDefinition quest, QuestCompletionRefusal refusal) => ValueTask.CompletedTask;
 }

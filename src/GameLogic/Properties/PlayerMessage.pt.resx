@@ -1207,6 +1207,9 @@ Extensões de inventário: {18}</value>
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>Um item com tempo limitado não pode ser usado aqui.</value>
   </data>
+  <data name="QuestZenLimitReached" xml:space="preserve">
+    <value>Você atingiu o seu limite de Zen. Não é possível concluir a missão.</value>
+  </data>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Um item do mesmo tipo já está em uso. Pare de usá-lo primeiro e tente novamente.</value>
   </data>

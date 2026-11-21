@@ -2849,6 +2849,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have reached your Zen limit. Can&apos;t complete the quest..
+        /// </summary>
+        public static string QuestZenLimitReached {
+            get {
+                return ResourceManager.GetString("QuestZenLimitReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Selected Item is not a stacked Jewel..
         /// </summary>
         public static string SelectedItemIsNotStackedJewel {
