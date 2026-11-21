@@ -21,6 +21,8 @@
 
 <SearchInput Class="grid-search mb-2" @bind-Value="this.NameFilter" AutoFocus="true" />
 
+<GridPager State="@_pagination" />
+
 <div>
     <QuickGrid Items="@this.ViewModels" Pagination="@_pagination" Theme="none" >
         @if (this.HasNumbers)
@@ -47,7 +49,7 @@
         </TemplateColumn>
     </QuickGrid>
 </div>
-<LocalizedPaginator State="@_pagination" />
+<GridPager State="@_pagination" />
 <div class="add-new-bar">
     <hr />
     <button type="button" class="btn btn-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> @Resources.AddNew</button>

@@ -30,9 +30,9 @@ public class DataTableTests
             .Add(table => table.TableHeader, (RenderFragment)(_ => { }))
             .Add(table => table.ItemTemplate, item => builder => builder.AddContent(0, item.Number)));
 
-        // The buttons are: previous page, page number, next page.
-        component.FindAll("button")[2].Click();
-        component.FindAll("button")[2].Click();
+        // The first pager is the one above the table, its last button is "next page".
+        component.Find("nav li:last-child button").Click();
+        component.Find("nav li:last-child button").Click();
         component.WaitForAssertion(() => Assert.That(component.Instance.Page, Is.EqualTo(3)));
 
         dataService.SetItems(Enumerable.Range(1, 3).Select(i => new Item(i)));
