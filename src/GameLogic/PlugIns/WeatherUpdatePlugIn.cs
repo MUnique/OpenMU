@@ -34,8 +34,8 @@ public class WeatherUpdatePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        // Taken for longer than a run lasts, so that the next calls of the timer don't start another one meanwhile;
-        // the next run is scheduled from the end of this one.
+        // Taken for longer than a run lasts, so that the next calls of the timer don't start another one meanwhile.
+        // The next run is scheduled from the end of this one.
         if (!this._schedule.TryStartRun(gameContext, TimeSpan.FromMinutes(1)))
         {
             return;
