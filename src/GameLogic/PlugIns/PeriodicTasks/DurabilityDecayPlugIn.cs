@@ -45,7 +45,8 @@ public class DurabilityDecayPlugIn : IPeriodicTaskPlugIn
                 && !player.PlayerState.CurrentState.IsDisconnectedOrFinished()
                 && player.Attributes is { } attributes)
             {
-                foreach (var item in player.Inventory?.EquippedItems.Where(item => item.IsTimeDecaying()) ?? [])
+                // A time-limited item doesn't wear out with time; its period ends it instead.
+                foreach (var item in player.Inventory?.EquippedItems.Where(item => item.IsTimeDecaying() && !item.IsTimeLimited()) ?? [])
                 {
                     if (item.Durability > 0.0)
                     {

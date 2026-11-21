@@ -22,6 +22,11 @@
     @if (this.Item.IsWearable())
     {
         <NumberField @bind-Value="@this._viewModel.Durability" Min="1" Max="@this.Item.GetMaximumDurabilityOfOnePiece()"/>
+        <BooleanField @bind-Value="@this._viewModel.IsTimeLimited" />
+        @if (this._viewModel.IsTimeLimited)
+        {
+            <DateTimeField @bind-Value="@this._viewModel.ExpiresAt" />
+        }
     }
     else if (this.Item.IsStackable())
     {

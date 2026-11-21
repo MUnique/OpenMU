@@ -345,6 +345,13 @@ internal sealed class BotNavigator : AsyncDisposable
     private Point _travelPathTarget;
     private Point? _shoppingTarget;
 
+    /// <summary>
+    /// The fare which the current shopping trip leaves untouched (see <see cref="GetHuntingFare"/>),
+    /// judged where the trip started - after the town scroll home, the bot stands on a map whose
+    /// hunting grounds are not the ones it has to get back to.
+    /// </summary>
+    private long _shoppingFareReserve;
+
     /// <summary>Target position of the current buff trip, or null, if there is none.</summary>
     private Point? _buffTarget;
 
@@ -377,6 +384,12 @@ internal sealed class BotNavigator : AsyncDisposable
     private GameConfiguration? _warpFloorConfiguration;
     private CharacterClass? _warpFloorClass;
     private int _minWarpLevel = FallbackMinWarpLevel;
+
+    /// <summary>
+    /// The warps with requirements, which count for the warp floor only while the bot fulfills them;
+    /// cached with <see cref="_minWarpLevel"/>.
+    /// </summary>
+    private WarpInfo[] _warpsWithRequirements = [];
     private Guid _leaderMapId;
     private DateTimeOffset _leaderOnMapSinceUtc = DateTimeOffset.MinValue;
     private DateTimeOffset _nextEvaluationUtc = DateTimeOffset.MinValue;
@@ -1203,6 +1216,66 @@ internal sealed class BotNavigator : AsyncDisposable
         }
     }
 
+    /// <summary>
+    /// Lowest level at which this bot warps on its own: its lowest
+    /// class-reduced warp requirement, so special classes keep their edge.
+    /// Warps with requirements (e.g. a minimum master level) count only while the bot fulfills them.
+    /// The floor of the other warps and the warps with requirements are cached per configuration and class;
+    /// both change rarely. Without such warps (as in the default configuration) nothing is evaluated per call.
+    /// </summary>
+    internal int GetMinWarpLevel()
+    {
+        var configuration = this._player.GameContext.Configuration;
+        var characterClass = this._player.SelectedCharacter?.CharacterClass;
+        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
+            || !ReferenceEquals(characterClass, this._warpFloorClass))
+        {
+            this._warpFloorConfiguration = configuration;
+            this._warpFloorClass = characterClass;
+            this._minWarpLevel = configuration.WarpList
+                .Where(warp => warp.Requirements is not { Count: > 0 })
+                .Select(this.GetEffectiveLevelRequirement)
+                .DefaultIfEmpty(FallbackMinWarpLevel)
+                .Min();
+            this._warpsWithRequirements = configuration.WarpList
+                .Where(warp => warp.Requirements is { Count: > 0 })
+                .ToArray();
+        }
+
+        var minWarpLevel = this._minWarpLevel;
+        foreach (var warp in this._warpsWithRequirements)
+        {
+            if (warp.GetMissingRequirement(this._player) is null)
+            {
+                minWarpLevel = Math.Min(minWarpLevel, this.GetEffectiveLevelRequirement(warp));
+            }
+        }
+
+        return minWarpLevel;
+    }
+
+    /// <summary>
+    /// Gets the fare of the warp to the strongest hunting ground the bot can safely fight on - the Zen it
+    /// must not spend in town, or it can't get back there (see <see cref="BotShoppingHandler.HasPotionMoney"/>).
+    /// </summary>
+    /// <returns>The fare; 0 if no legal warp leads to a hunting ground outside the bot's own zone.</returns>
+    /// <remarks>
+    /// The same judgement as <see cref="TryPickBetterMap"/>, including the master experience floor, but
+    /// regardless of the money the bot holds right now: the reserve is about the trip it will want to
+    /// afford. Only the strongest ground counts, although the map choice spreads the bots over the
+    /// runners-up too - with the fare to the strongest one in its pocket, the bot can afford at least
+    /// that, whichever other entry may cost more. Like the map choice, it leaves out the zone the bot
+    /// stands in (see <see cref="GetHuntingWarps"/>): a bot shopping on its own hunting ground keeps the
+    /// fare to the next best one, a few levels lower and usually about as expensive.
+    /// </remarks>
+    internal long GetHuntingFare()
+    {
+        var floor = this.MasterExperienceFloor();
+        return (floor > 0 ? this.GetHuntingFareCore(floor) : null)
+               ?? this.GetHuntingFareCore(0)
+               ?? 0;
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
@@ -1778,10 +1851,12 @@ internal sealed class BotNavigator : AsyncDisposable
         }
 
         this._nextShoppingCheckUtc = DateTime.UtcNow + ShoppingCheckInterval;
-        if (!BotShoppingHandler.NeedsShopping(this._player))
+        if (!BotShoppingHandler.NeedsShopping(this._player, this.GetHuntingFare))
         {
             return false;
         }
+
+        this._shoppingFareReserve = this.GetHuntingFare();
 
         if (BotShoppingHandler.FindMerchantPosition(this._player, map) is not { } merchantPosition)
         {
@@ -1827,7 +1902,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// </summary>
     private async ValueTask TradeAndUpgradeAsync(GameMap map, Point merchantPosition)
     {
-        if (await BotShoppingHandler.TryTradeAsync(this._player, map, merchantPosition).ConfigureAwait(false))
+        if (await BotShoppingHandler.TryTradeAsync(this._player, map, merchantPosition, this._shoppingFareReserve).ConfigureAwait(false))
         {
             await BotJewelHandler.TryUpgradeGearAsync(this._player).ConfigureAwait(false);
         }
@@ -2789,8 +2864,9 @@ internal sealed class BotNavigator : AsyncDisposable
     /// Gets the gate through which the bot may legally warp to the given map, exactly like a player
     /// using the in-game warp window: the map must have an entry in the server's warp list whose level
     /// requirement (class-reduced, see <see cref="CharacterExtensions.GetEffectiveMoveLevelRequirement"/>)
-    /// is met by the bot's PLAIN character level. The reset-aware effective level intentionally plays
-    /// no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
+    /// is met by the bot's PLAIN character level, and whose own requirements (e.g. a minimum master level,
+    /// see <see cref="WarpInfo.Requirements"/>) the bot fulfills. The reset-aware effective level intentionally
+    /// plays no role here - a freshly reset veteran cannot warp to high maps either, no matter its strength.
     /// </summary>
     /// <param name="mapDefinition">The target map.</param>
     /// <param name="warp">The warp info, if a legal entry exists.</param>
@@ -2833,7 +2909,7 @@ internal sealed class BotNavigator : AsyncDisposable
 
     private IEnumerable<WarpInfo> GetLegalWarps(GameMapDefinition mapDefinition)
     {
-        if (this._player.SelectedCharacter is not { } character
+        if (this._player.SelectedCharacter is null
             || BotFeaturePlugIn.GetConfiguration(this._player.GameContext)?.IsMapForbidden(mapDefinition) == true)
         {
             // A map forbidden for bots has no legal warp at all: no hunting ground, no leader to follow
@@ -2857,32 +2933,12 @@ internal sealed class BotNavigator : AsyncDisposable
 
         // Select the identity tier before applying access requirements. Otherwise an exact entry
         // which is too high-level could incorrectly fall through to an easier same-number entry.
-        var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
+        // The level and the warp's own requirements (e.g. a minimum master level), as WarpAction checks them.
+        return mapWarps.Where(w => w.IsAllowedFor(this._player));
     }
 
-    /// <summary>
-    /// Lowest level at which this bot warps on its own: its lowest
-    /// class-reduced warp requirement, so special classes keep their edge.
-    /// Cached per configuration and class; both change rarely.
-    /// </summary>
-    private int GetMinWarpLevel()
-    {
-        var configuration = this._player.GameContext.Configuration;
-        var characterClass = this._player.SelectedCharacter?.CharacterClass;
-        if (!ReferenceEquals(configuration, this._warpFloorConfiguration)
-            || !ReferenceEquals(characterClass, this._warpFloorClass))
-        {
-            this._warpFloorConfiguration = configuration;
-            this._warpFloorClass = characterClass;
-            this._minWarpLevel = configuration.WarpList
-                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement)
-                .DefaultIfEmpty(FallbackMinWarpLevel)
-                .Min();
-        }
-
-        return this._minWarpLevel;
-    }
+    private int GetEffectiveLevelRequirement(WarpInfo warp)
+        => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement;
 
     /// <summary>
     /// Whether the bot can pay the warp's fare. A bot travels on the same terms as a player - it pays
@@ -3179,6 +3235,37 @@ internal sealed class BotNavigator : AsyncDisposable
         var floor = this.MasterExperienceFloor();
         return (floor > 0 && this.TryPickBetterMapCore(escape, floor, out warp, out mapDefinition, out monsterLevel))
                || this.TryPickBetterMapCore(escape, 0, out warp, out mapDefinition, out monsterLevel);
+    }
+
+    /// <summary>
+    /// Gets the fare of the warp to the strongest hunting ground (see <see cref="GetHuntingFare"/>),
+    /// counting only monsters of at least <paramref name="minimumMonsterLevel"/>.
+    /// </summary>
+    /// <param name="minimumMonsterLevel">The lowest monster level worth counting.</param>
+    /// <returns>The fare; <c>null</c> if no legal warp leads to such a hunting ground.</returns>
+    private long? GetHuntingFareCore(int minimumMonsterLevel)
+    {
+        (int Level, long Costs)? best = null;
+        foreach (var candidate in this._player.GameContext.Configuration.Maps)
+        {
+            // The whole map is an upper bound for every part of it, and cheap to judge.
+            if (this.BestSafeLevel(candidate, minimumMonsterLevel) <= (best?.Level ?? 0)
+                || candidate.TryGetRequirementError(this._player, out _)
+                || !HasWalkableSpawnGate(candidate))
+            {
+                continue;
+            }
+
+            foreach (var (warp, level) in this.GetHuntingWarps(candidate, minimumMonsterLevel))
+            {
+                if (level > (best?.Level ?? 0))
+                {
+                    best = (level, warp.Costs);
+                }
+            }
+        }
+
+        return best?.Costs;
     }
 
     /// <summary>

@@ -19,8 +19,12 @@ public interface IItemPowerUpFactory
     /// </summary>
     /// <param name="item">The item.</param>
     /// <param name="attributeSystem">The attribute system of the player who equipped the item.</param>
+    /// <param name="isInUseInsideInventory">
+    /// If set to <c>true</c>, the item isn't equipped, but in use inside the inventory, see <see cref="InventoryItemUseConfiguration"/>.
+    /// Otherwise, an item which isn't equipped has no power ups.
+    /// </param>
     /// <returns>The created power ups.</returns>
-    IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem);
+    IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem, bool isInUseInsideInventory = false);
 
     /// <summary>
     /// Gets the set power ups, which are created for existing <see cref="ItemSetGroup"/>s in the equipped items.

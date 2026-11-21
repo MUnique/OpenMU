@@ -122,8 +122,9 @@ high-end maps. An agility build's dodge therefore counts as the defense it
 really is, and better gear opens tougher maps, exactly like for a player.
 
 Map access follows the game's warp list, and a bot travels on a player's terms:
-it enters a map only if its level may legally warp there, it meets the map's own
-requirements, and it pays the warp's fare out of its own Zen. A bot which finds
+it enters a map only if its level may legally warp there, it meets the
+requirements of the map and of the warp, and it pays the warp's fare out of its
+own Zen. A bot which finds
 itself on a map it may not be on (after a reset, for instance) leaves for the
 best map it may use. The map it reached is persisted, so a restarted bot wakes up
 where it stopped.

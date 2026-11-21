@@ -10,6 +10,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler;
@@ -148,9 +149,10 @@ public class CharacterMoveTest
     public async ValueTask TestStopPositionOutsideOfTheWalkEndsTheWalkAndResynchronizesAsync()
     {
         var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
+        var maxAllowedOffset = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration?.MaxAllowedWalkStartOffset ?? 5;
         var walkPoints = await GetWalkPointsAsync(player).ConfigureAwait(false);
         var position = player.Position;
-        var offPathPoint = new Point(position.X, (byte)(position.Y - 6));
+        var offPathPoint = new Point(position.X, (byte)(position.Y + maxAllowedOffset + 1));
         Assert.That(walkPoints, Does.Not.Contain(offPathPoint), "The test needs a position the walk doesn't pass through.");
 
         await HandleStopPacketAsync(player, offPathPoint).ConfigureAwait(false);
@@ -262,7 +264,8 @@ public class CharacterMoveTest
     public async ValueTask TestStopPositionTooFarAwayIsNotTakenAsync()
     {
         var player = await this.DoTheSlowWalkAsync().ConfigureAwait(false);
-        var farAway = new Point((byte)(StartPoint.X + 10), StartPoint.Y);
+        var maxAllowedOffset = player.GameContext.FeaturePlugIns.GetPlugIn<SpeedHackDetectPlugIn>()?.Configuration?.MaxAllowedWalkStartOffset ?? 5;
+        var farAway = new Point((byte)(EndPoint.X + maxAllowedOffset + 1), EndPoint.Y);
         player.Position = farAway;
 
         await HandleStopPacketAsync(player, EndPoint).ConfigureAwait(false);
@@ -420,13 +423,16 @@ public class CharacterMoveTest
     {
         var packet = new byte[] { 0xC1, 0x08, (byte)PacketType.Walk, 0x93, 0x78, 0x44, 0x33, 0x44 };
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+
+        // Moves the player on the map: setting the position of the character leaves the player in the bucket
+        // of its spawn point, and the first move would then drop its observation of itself.
+        await player.MoveAsync(StartPoint).ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IObjectMovedPlugIn>()!).Invocations.Clear();
         if (movementSpeedFactor is { } factor)
         {
             player.Attributes!.AddElement(new SimpleElement(factor, AggregateType.AddRaw), Stats.MovementSpeedFactor);
         }
 
-        player.SelectedCharacter!.PositionX = StartPoint.X;
-        player.SelectedCharacter.PositionY = StartPoint.Y;
         var moveHandler = new CharacterWalkHandlerPlugIn();
         await moveHandler.HandlePacketAsync(player, packet).ConfigureAwait(false);
 

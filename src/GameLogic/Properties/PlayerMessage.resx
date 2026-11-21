@@ -684,6 +684,9 @@
   <data name="MissingMapRequirement" xml:space="preserve">
     <value>Missing requirement to enter the map: {0}</value>
   </data>
+  <data name="MissingWarpRequirement" xml:space="preserve">
+    <value>Missing requirement for this warp: {0}</value>
+  </data>
   <data name="UnexpectedErrorDuringClosingTrade" xml:space="preserve">
     <value>An unexpected error occured during closing the trade.</value>
   </data>
@@ -1197,6 +1200,15 @@ Inventory Extensions: {18}</value>
   </data>
   <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
     <value>Can't delete a character while items wait for it whose item type doesn't exist anymore. Please ask an admin.</value>
+  </data>
+  <data name="ItemHasExpired" xml:space="preserve">
+    <value>{0} has expired.</value>
+  </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>A time-limited item can't be used here.</value>
+  </data>
+  <data name="SameItemAlreadyInUse" xml:space="preserve">
+    <value>An item of the same kind is already in use. Stop using it first, and then try again.</value>
   </data>
   <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
     <value>The place has been saved. Use the talisman again to return to it.</value>

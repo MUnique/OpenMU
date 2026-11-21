@@ -69,6 +69,7 @@ public class TranslationCoverageTests
     /// <summary>Checks that the player messages of a culture are complete and keep the format arguments of the neutral resources.</summary>
     /// <param name="culture">The culture of the translations.</param>
     [TestCase("pt")]
+    [TestCase("es")]
     public void PlayerMessagesAreCompleteAndMatchNeutralPlaceholders(string culture)
     {
         // A separate manager, so that disposing the sets doesn't affect the shared one.
@@ -89,6 +90,7 @@ public class TranslationCoverageTests
     /// <param name="culture">The culture of the player.</param>
     /// <param name="expected">The expected message.</param>
     [TestCase("pt", "O MU Helper requer 1000 zen.")]
+    [TestCase("es", "El MU Helper requiere 1000 zen.")]
     public void PlayerMessageIsResolvedInCulture(string culture, string expected)
     {
         var format = MUnique.OpenMU.GameLogic.Properties.PlayerMessage.ResourceManager.GetString(nameof(MUnique.OpenMU.GameLogic.Properties.PlayerMessage.MuHelperRequiresMoney), CultureInfo.GetCultureInfo(culture));

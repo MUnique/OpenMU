@@ -2352,6 +2352,24 @@
   <data name="GladiatorsHonor" xml:space="preserve">
     <value>Gladiator's Honor</value>
   </data>
+  <data name="HawkFigurine" xml:space="preserve">
+    <value>Hawk Figurine</value>
+  </data>
+  <data name="GoatFigurine" xml:space="preserve">
+    <value>Goat Figurine</value>
+  </data>
+  <data name="OakCharm" xml:space="preserve">
+    <value>Oak Charm</value>
+  </data>
+  <data name="MapleCharm" xml:space="preserve">
+    <value>Maple Charm</value>
+  </data>
+  <data name="GoldenOakCharm" xml:space="preserve">
+    <value>Golden Oak Charm</value>
+  </data>
+  <data name="GoldenMapleCharm" xml:space="preserve">
+    <value>Golden Maple Charm</value>
+  </data>
   <data name="TalismanOfMobility" xml:space="preserve">
     <value>Talisman of Mobility</value>
   </data>

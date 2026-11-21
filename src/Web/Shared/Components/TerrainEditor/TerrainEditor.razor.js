@@ -45,6 +45,7 @@ class TerrainEditor {
         this.lastTile = null;
         this.startTile = null;
         this.pan = null;
+        this.zoomNotifyTimer = null;
 
         canvas.width = SIZE;
         canvas.height = SIZE;
@@ -158,6 +159,7 @@ class TerrainEditor {
     }
 
     dispose() {
+        clearTimeout(this.zoomNotifyTimer);
         this.host.removeEventListener("mousedown", this.onMouseDown);
         this.host.removeEventListener("mouseleave", this.onMouseLeave);
         this.host.removeEventListener("wheel", this.onWheel);
@@ -182,7 +184,9 @@ class TerrainEditor {
         this.applyZoom();
         this.host.scrollLeft = contentX * newZoom - offsetX;
         this.host.scrollTop = contentY * newZoom - offsetY;
-        this.dotNetRef?.invokeMethodAsync("OnZoomChanged", this.zoom);
+        clearTimeout(this.zoomNotifyTimer);
+        this.zoomNotifyTimer = setTimeout(
+            () => this.dotNetRef?.invokeMethodAsync("OnZoomChanged", this.zoom), 150);
     }
 
     applyZoom() {

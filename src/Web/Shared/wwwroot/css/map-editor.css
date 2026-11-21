@@ -61,11 +61,16 @@
 }
 
 .map-content {
+  --map-scale: 3px;
   position: relative;
+  width: calc(var(--map-scale) * 256);
+  height: calc(var(--map-scale) * 256);
 }
 
 .map-content img {
   display: block;
+  width: 100%;
+  height: 100%;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -80,6 +85,7 @@
   height: 100%;
   pointer-events: none;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 1px, transparent 1px);
+  background-size: var(--map-scale) var(--map-scale);
 }
 
 .map-coordinates-overlay {

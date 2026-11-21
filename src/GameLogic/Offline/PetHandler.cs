@@ -64,7 +64,7 @@ internal sealed class PetHandler
 
         try
         {
-            if (this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is { Durability: 0 })
+            if (this._player.Inventory?.GetItem(InventoryConstants.PetSlot) is { } pet && !pet.HasEffect(DateTime.UtcNow))
             {
                 await this.PetCommandManager.SetBehaviourAsync(PetBehaviour.Idle, null).ConfigureAwait(false);
             }

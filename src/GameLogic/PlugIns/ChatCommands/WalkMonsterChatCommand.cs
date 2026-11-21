@@ -29,7 +29,7 @@ internal class WalkMonsterChatCommand : ChatCommandPlugInBase<MoveMonsterCommand
     /// <inheritdoc />
     protected override async ValueTask DoHandleCommandAsync(Player player, MoveMonsterCommandArgs arguments)
     {
-        var monster = player.ObservingBuckets.SelectMany(b => b).OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
+        var monster = player.GetObservedLocateables().OfType<Monster>().FirstOrDefault(m => m.Id == arguments.Id);
         if (monster is null)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MonsterNotFoundById), arguments.Id).ConfigureAwait(false);

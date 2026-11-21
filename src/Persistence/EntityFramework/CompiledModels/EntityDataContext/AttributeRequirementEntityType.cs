@@ -23,10 +23,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement),
                 baseEntityType,
-                propertyCount: 9,
+                propertyCount: 10,
                 navigationCount: 1,
-                foreignKeyCount: 6,
-                unnamedIndexCount: 6,
+                foreignKeyCount: 7,
+                unnamedIndexCount: 7,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -94,6 +94,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             skillId1.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var warpInfoId = runtimeEntityType.AddProperty(
+                "WarpInfoId",
+                typeof(Guid?),
+                nullable: true);
+            warpInfoId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var key = runtimeEntityType.AddKey(
                 new[] { id });
             runtimeEntityType.SetPrimaryKey(key);
@@ -115,6 +121,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
 
             var index4 = runtimeEntityType.AddIndex(
                 new[] { skillId1 });
+
+            var index5 = runtimeEntityType.AddIndex(
+                new[] { warpInfoId });
 
             return runtimeEntityType;
         }
@@ -215,6 +224,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(System.Collections.Generic.ICollection<MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement>),
                 propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Skill).GetProperty("RawRequirements", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Skill).GetField("<RawRequirements>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey7(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("WarpInfoId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Cascade);
+
+            var rawRequirements = principalEntityType.AddNavigation("RawRequirements",
+                runtimeForeignKey,
+                onDependent: false,
+                typeof(System.Collections.Generic.ICollection<MUnique.OpenMU.Persistence.EntityFramework.Model.AttributeRequirement>),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo).GetProperty("RawRequirements", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo).GetField("<RawRequirements>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
 
             return runtimeForeignKey;
         }

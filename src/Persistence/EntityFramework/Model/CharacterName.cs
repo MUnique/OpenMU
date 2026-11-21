@@ -19,6 +19,11 @@ public class CharacterName
     public Guid Id { get; private set; }
 
     /// <summary>
+    /// Gets the identifier of the account.
+    /// </summary>
+    public Guid? AccountId { get; private set; }
+
+    /// <summary>
     /// Gets the name.
     /// </summary>
     public string Name { get; private set; } = string.Empty;

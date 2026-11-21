@@ -10,6 +10,7 @@ using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 using MUnique.OpenMU.GameLogic.NPC;
@@ -434,9 +435,10 @@ public class CastleSiegeEconomyTests
     /// <summary>
     /// Warp-list entry checks and the combined cost must pass before a visitor pays a hunt fee.
     /// </summary>
-    [TestCase(400, 500)]
-    [TestCase(0, 600)]
-    public async ValueTask RejectedWarpToLandOfTrialsKeepsMoneyAsync(int levelRequirement, int warpCost)
+    [TestCase(400, 500, false)]
+    [TestCase(0, 600, false)]
+    [TestCase(0, 500, true)]
+    public async ValueTask RejectedWarpToLandOfTrialsKeepsMoneyAsync(int levelRequirement, int warpCost, bool hasMissingRequirement)
     {
         var fixture = await CreateFixtureAsync().ConfigureAwait(false);
         var landOfTrials = new BasicModel.GameMapDefinition { Number = 31, IsActive = true };
@@ -450,12 +452,17 @@ public class CastleSiegeEconomyTests
         var player = fixture.Visitor;
         player.Money = 1_500;
         var sourceMap = player.CurrentMap;
-        var warp = new WarpInfo
+        var warp = new BasicModel.WarpInfo
         {
             Gate = new BasicModel.ExitGate { Map = landOfTrials },
             LevelRequirement = levelRequirement,
             Costs = warpCost,
         };
+
+        if (hasMissingRequirement)
+        {
+            warp.Requirements.Add(new BasicModel.AttributeRequirement { Attribute = Stats.Level, MinimumValue = 400 });
+        }
 
         await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
 

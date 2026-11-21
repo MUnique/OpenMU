@@ -44,7 +44,7 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
     }
 
     /// <inheritdoc/>
-    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem)
+    public IEnumerable<PowerUpWrapper> GetPowerUps(Item item, AttributeSystem attributeSystem, bool isInUseInsideInventory = false)
     {
         if (item.Definition is null)
         {
@@ -52,12 +52,14 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
             yield break;
         }
 
-        if (item.Durability <= 0)
+        if (!item.HasEffect(DateTime.UtcNow))
         {
+            // An item without durability or an expired time-limited item has no effect.
             yield break;
         }
 
-        if (item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex)
+        if ((item.ItemSlot < InventoryConstants.FirstEquippableItemSlotIndex || item.ItemSlot > InventoryConstants.LastEquippableItemSlotIndex)
+            && !isInUseInsideInventory)
         {
             yield break;
         }
@@ -111,8 +113,9 @@ public class ItemPowerUpFactory : IItemPowerUpFactory
         AttributeSystem attributeSystem,
         GameConfiguration gameConfiguration)
     {
+        var now = DateTime.UtcNow;
         var activeItems = equippedItems
-            .Where(i => i.Durability > 0)
+            .Where(i => i.HasEffect(now))
             .ToList();
         var itemGroups = activeItems
             .SelectMany(i => i.ItemSetGroups)

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Captions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.CashShop;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
 
@@ -123,8 +124,8 @@ internal class CashShopUpdateTest
         Assert.That(configuration.Packages, Has.All.Matches<CashShopPackage>(p => p.Products.Select(product => product.PriceSequence).Distinct().Count() == p.Products.Count));
         Assert.That(
             configuration.Packages.Where(p => p.IsForSale).SelectMany(p => p.Products),
-            Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is not null && product.Duration == TimeSpan.Zero));
-        Assert.That(configuration.Packages.Count(p => p.IsForSale), Is.EqualTo(64));
+            Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is { } item && (product.Duration == TimeSpan.Zero || item.CanBeTimeLimited())));
+        Assert.That(configuration.Packages.Count(p => p.IsForSale), Is.EqualTo(106));
         Assert.That(configuration.Packages.Where(p => DeliveryPackages.Contains(p.PackageSequence)), Has.All.Matches<CashShopPackage>(p => p.IsForSale));
 
         var seal = configuration.Packages.Single(p => p.PackageSequence == 122);
@@ -180,7 +181,7 @@ internal class CashShopUpdateTest
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.That(gameConfiguration.Items.Count(IsDeliveryItem), Is.EqualTo(4));
-        Assert.That(configuration.Packages.Count(p => p.IsForSale), Is.EqualTo(64));
+        Assert.That(configuration.Packages.Count(p => p.IsForSale), Is.EqualTo(106));
         Assert.That(
             configuration.Packages.Where(p => DeliveryPackages.Contains(p.PackageSequence)).SelectMany(p => p.Products),
             Has.All.Matches<CashShopProduct>(product => product.ItemDefinition is { } item && IsDeliveryItem(item)));

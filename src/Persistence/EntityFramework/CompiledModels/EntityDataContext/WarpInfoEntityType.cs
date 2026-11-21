@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo),
                 baseEntityType,
                 propertyCount: 8,
-                navigationCount: 1,
+                navigationCount: 2,
                 foreignKeyCount: 2,
                 unnamedIndexCount: 2,
                 keyCount: 1);

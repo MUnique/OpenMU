@@ -613,7 +613,7 @@ public sealed class ScriptedIntelligence : IAsyncDisposable
                     // WarpAction answers a refused warp with a blue message only; the map tells us.
                     return ActorCommandResult.Failure(
                         ActorErrorCodes.WarpRefused,
-                        $"The warp to '{warpInfo.Name}' was refused (level, zen or map rules).");
+                        $"The warp to '{warpInfo.Name}' was refused (level, zen, map or warp requirements).");
                 }
 
                 this._player.Logger.LogInformation(

@@ -29,6 +29,15 @@ internal partial class WarpInfo : MUnique.OpenMU.DataModel.Configuration.WarpInf
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="Requirements" />.
+    /// </summary>
+    public ICollection<AttributeRequirement> RawRequirements { get; } = new EntityFramework.List<AttributeRequirement>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement> Requirements => base.Requirements ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement, AttributeRequirement>(this.RawRequirements);
+
+    /// <summary>
     /// Gets or sets the identifier of <see cref="Gate"/>.
     /// </summary>
     public Guid? GateId { get; set; }

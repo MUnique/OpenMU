@@ -194,7 +194,8 @@ public sealed class CrywolfAltar
     /// </summary>
     private static bool IsMounted(Player player)
     {
-        return player.Inventory?.GetItem(InventoryConstants.PetSlot)?.Definition is { Group: 13, Number: 2 or 3 or 37 };
+        return player.Inventory?.GetItem(InventoryConstants.PetSlot) is { Definition: { Group: 13, Number: 2 or 3 or 37 } } mount
+               && !mount.IsExpired(DateTime.UtcNow);
     }
 
     private static bool IsAtAltar(Player player, NonPlayerCharacter altar)

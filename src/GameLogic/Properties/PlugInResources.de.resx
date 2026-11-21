@@ -2079,6 +2079,54 @@
   <data name="WaitingItemsCommandConfiguration_ItemsNamed_Description" xml:space="preserve">
     <value>Die Anzahl der wartenden Gegenstände, die genannt werden, einer pro Nachricht.</value>
   </data>
+  <data name="ItemExpirationPlugIn_Name" xml:space="preserve">
+    <value>Ablauf zeitlich begrenzter Gegenstände</value>
+  </data>
+  <data name="ItemExpirationPlugIn_Description" xml:space="preserve">
+    <value>Teilt den Spielern mit, wenn einer ihrer zeitlich begrenzten Gegenstände abgelaufen ist, z. B. ein im Cash Shop gemieteter Begleiter, entfernt seine Wirkung und zeigt ihn im Client als abgelaufen an. Ein abgelaufener Gegenstand bleibt im Inventar.</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Name" xml:space="preserve">
+    <value>Im Inventar benutzte Gegenstände</value>
+  </data>
+  <data name="InventoryItemUseFeaturePlugIn_Description" xml:space="preserve">
+    <value>Gegenstände wie die Figuren und Talismane werden im Inventar benutzt. Solange so ein Gegenstand benutzt wird, gelten seine Boni.</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_Items_Name" xml:space="preserve">
+    <value>Gegenstände</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_Items_Description" xml:space="preserve">
+    <value>Die Gegenstände, die im Inventar benutzt statt ausgerüstet werden, z.B. die Figuren und Talismane. Gegenstände derselben exklusiven Gruppe können nicht gleichzeitig benutzt werden.</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_InUseDurability_Name" xml:space="preserve">
+    <value>Haltbarkeit in Benutzung</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_InUseDurability_Description" xml:space="preserve">
+    <value>Die Haltbarkeit eines Gegenstands, der benutzt wird. Der Spiel-Client erkennt daran, ob er benutzt wird, daher muss sie zum Client passen (Standard 254).</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_NotInUseDurability_Name" xml:space="preserve">
+    <value>Haltbarkeit ohne Benutzung</value>
+  </data>
+  <data name="InventoryItemUseConfiguration_NotInUseDurability_Description" xml:space="preserve">
+    <value>Die Haltbarkeit eines Gegenstands, der nicht benutzt wird, und eines neuen Gegenstands. Sie muss zum Spiel-Client passen (Standard 255).</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Group_Name" xml:space="preserve">
+    <value>Gruppe</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Group_Description" xml:space="preserve">
+    <value>Die Gruppe der Gegenstandsdefinition.</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Number_Name" xml:space="preserve">
+    <value>Nummer</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_Number_Description" xml:space="preserve">
+    <value>Die Nummer der Gegenstandsdefinition.</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Name" xml:space="preserve">
+    <value>Exklusive Gruppe</value>
+  </data>
+  <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Description" xml:space="preserve">
+    <value>Nur ein Gegenstand derselben exklusiven Gruppe kann gleichzeitig benutzt werden, z.B. entweder die Falken- oder die Ziegenfigur. Mit 0 ist nur ein weiterer Gegenstand derselben Definition ausgeschlossen.</value>
+  </data>
   <data name="TalismanOfMobilityConsumeHandlerPlugIn_Name" xml:space="preserve">
     <value>Verbrauch des Talismans der Mobilität</value>
   </data>

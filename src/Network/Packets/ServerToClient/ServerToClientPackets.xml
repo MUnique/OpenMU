@@ -13060,6 +13060,56 @@
       </Structures>
     </Packet>
     <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>0B</SubCode>
+      <Name>WarpRequirementsExtended</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Right after the WarpListExtended, when the client is the open source client and at least one warp of the list requires a minimum master level or a minimum number of resets. It contains only the warps which have such a requirement.</SentWhen>
+      <CausedReaction>The client remembers the minimums of these warps and shows a warp in its warp window as unavailable (greyed out) while the character doesn't reach them. Warps which aren't in this message have no such requirement. The server checks the requirements again when the character asks for the warp.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>WarpRequirementEntry</TypeName>
+          <Name>Requirements</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+      <Structures>
+        <Structure>
+          <Name>WarpRequirementEntry</Name>
+          <Description>The minimum master level and number of resets which a warp requires.</Description>
+          <Length>8</Length>
+          <Fields>
+            <Field>
+              <Index>0</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>Index</Name>
+              <Description>The index of the warp, as in the WarpListExtended.</Description>
+            </Field>
+            <Field>
+              <Index>2</Index>
+              <Type>ShortLittleEndian</Type>
+              <Name>MasterLevel</Name>
+              <Description>The minimum master level; 0 when the warp doesn't require one.</Description>
+            </Field>
+            <Field>
+              <Index>4</Index>
+              <Type>IntegerLittleEndian</Type>
+              <Name>Resets</Name>
+              <Description>The minimum number of resets; 0 when the warp doesn't require one.</Description>
+            </Field>
+          </Fields>
+        </Structure>
+      </Structures>
+    </Packet>
+    <Packet>
       <HeaderType>C1Header</HeaderType>
       <Code>94</Code>
       <Name>EventChipRegistrationResult</Name>

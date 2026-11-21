@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -53,5 +54,8 @@ public class ItemAppearPlugIn : IItemAppearPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+
+        // The client takes the expiration of a time-limited item for the item which is in the slot.
+        await this._player.InvokeViewPlugInAsync<IItemExpirationViewPlugIn>(p => p.ShowExpirationAsync(newItem)).ConfigureAwait(false);
     }
 }

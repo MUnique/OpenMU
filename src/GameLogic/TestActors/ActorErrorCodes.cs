@@ -46,7 +46,7 @@ public static class ActorErrorCodes
     /// <summary>The requested warp list entry does not exist.</summary>
     public static readonly string UnknownGate = "unknown_gate";
 
-    /// <summary>The warp was refused by the game's level, zen or map rules.</summary>
+    /// <summary>The warp was refused by the game's level, zen, map or warp requirements.</summary>
     public static readonly string WarpRefused = "warp_refused";
 
     /// <summary>The drop is not there any more, or could not be picked up.</summary>

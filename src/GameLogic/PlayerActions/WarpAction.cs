@@ -72,10 +72,9 @@ public class WarpAction
     {
         errorMessage = null;
 
-        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.LevelRequirement);
-        if (requirement > player.Attributes?[Stats.Level])
+        if (!warpInfo.IsLevelReachedBy(player))
         {
-            errorMessage = $"You need to be level {requirement} in order to warp";
+            errorMessage = $"You need to be level {warpInfo.GetLevelRequirementFor(player)} in order to warp";
             return false;
         }
 
@@ -88,6 +87,12 @@ public class WarpAction
         if (warpInfo.Gate.Map.TryGetRequirementError(player, out var message))
         {
             errorMessage = message;
+            return false;
+        }
+
+        if (warpInfo.GetMissingRequirement(player) is { } missing)
+        {
+            errorMessage = player.GetLocalizedMessage(nameof(PlayerMessage.MissingWarpRequirement), missing.GetDisplayText(player));
             return false;
         }
 

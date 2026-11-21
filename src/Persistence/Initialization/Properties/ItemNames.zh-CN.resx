@@ -2352,6 +2352,24 @@
   <data name="GladiatorsHonor" xml:space="preserve">
     <value>角斗士的荣耀</value>
   </data>
+  <data name="HawkFigurine" xml:space="preserve">
+    <value>鹰雕像</value>
+  </data>
+  <data name="GoatFigurine" xml:space="preserve">
+    <value>山羊雕像</value>
+  </data>
+  <data name="OakCharm" xml:space="preserve">
+    <value>橡树护符</value>
+  </data>
+  <data name="MapleCharm" xml:space="preserve">
+    <value>枫树护符</value>
+  </data>
+  <data name="GoldenOakCharm" xml:space="preserve">
+    <value>黄金橡树护符</value>
+  </data>
+  <data name="GoldenMapleCharm" xml:space="preserve">
+    <value>黄金枫树护符</value>
+  </data>
   <data name="TalismanOfMobility" xml:space="preserve">
     <value>机动护身符</value>
   </data>

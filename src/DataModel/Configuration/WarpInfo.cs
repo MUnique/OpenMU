@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.DataModel.Configuration;
 
 using MUnique.OpenMU.Annotations;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 
 /// <summary>
 /// Defines a warp list entry.
@@ -42,6 +43,18 @@ public partial class WarpInfo
     /// original client doesn't offer in its warp window, like Crywolf, which is reached by walking.
     /// </remarks>
     public bool IsWarpable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the requirements which a character needs to fulfill so that it can use this warp,
+    /// in addition to the <see cref="LevelRequirement"/> and the requirements of the target map.
+    /// </summary>
+    /// <remarks>
+    /// The open source client learns the minimum master level and the minimum number of resets,
+    /// so that it can show which warps the character can't use yet. Requirements of other
+    /// attributes are only checked by the server.
+    /// </remarks>
+    [MemberOfAggregate]
+    public virtual ICollection<AttributeRequirement> Requirements { get; protected set; } = null!;
 
     /// <summary>
     /// Gets or sets the gate.

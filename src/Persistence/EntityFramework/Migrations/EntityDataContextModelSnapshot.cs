@@ -57,6 +57,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("character varying(3)")
                         .HasDefaultValue("en");
 
+                    b.Property<DateTime>("LastSeenDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LoginName")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -383,6 +386,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("SkillId1")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("WarpInfoId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AttributeId");
@@ -396,6 +402,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("SkillId");
 
                     b.HasIndex("SkillId1");
+
+                    b.HasIndex("WarpInfoId");
 
                     b.ToTable("AttributeRequirement", "config");
                 });
@@ -2287,6 +2295,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<double>("Durability")
                         .HasColumnType("double precision");
 
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("HasSkill")
                         .HasColumnType("boolean");
 
@@ -2599,6 +2610,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsSellableToNpc")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSellableWhenExpired")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsStorable")
@@ -4905,6 +4919,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasForeignKey("SkillId1")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", null)
+                        .WithMany("RawRequirements")
+                        .HasForeignKey("WarpInfoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("RawAttribute");
                 });
 
@@ -7068,6 +7087,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.SkillComboDefinition", b =>
                 {
                     b.Navigation("RawSteps");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WarpInfo", b =>
+                {
+                    b.Navigation("RawRequirements");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.WeightedValueTable", b =>

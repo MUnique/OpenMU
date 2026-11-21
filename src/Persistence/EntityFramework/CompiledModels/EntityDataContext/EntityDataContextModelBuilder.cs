@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("d4262486-5716-4a98-8e25-27ec8df841bd"), entityTypeCount: 133)
+            : base(skipDetectChanges: false, modelId: new Guid("4a8d8cd9-7aaf-4427-892d-fd7262a8fcbb"), entityTypeCount: 133)
         {
         }
 
@@ -173,6 +173,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             AttributeRequirementEntityType.CreateForeignKey4(attributeRequirement, itemDefinition);
             AttributeRequirementEntityType.CreateForeignKey5(attributeRequirement, skill);
             AttributeRequirementEntityType.CreateForeignKey6(attributeRequirement, skill);
+            AttributeRequirementEntityType.CreateForeignKey7(attributeRequirement, warpInfo);
             BattleZoneDefinitionEntityType.CreateForeignKey1(battleZoneDefinition, rectangle);
             BattleZoneDefinitionEntityType.CreateForeignKey2(battleZoneDefinition, rectangle);
             BattleZoneDefinitionEntityType.CreateForeignKey3(battleZoneDefinition, rectangle);

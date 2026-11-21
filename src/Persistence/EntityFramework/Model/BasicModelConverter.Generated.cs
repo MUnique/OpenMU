@@ -189,6 +189,7 @@ internal sealed class BasicModelConverter
         }
 
         target.RegistrationDate = source.RegistrationDate;
+        target.LastSeenDate = source.LastSeenDate;
         target.State = source.State;
         target.TimeZone = source.TimeZone;
         target.VaultPassword = source.VaultPassword;
@@ -1847,6 +1848,7 @@ internal sealed class BasicModelConverter
         target.StorePriceItemDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.StorePriceItemDefinition)!;
         target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
+        target.ExpiresAt = source.ExpiresAt;
         return target;
     }
 
@@ -1993,6 +1995,7 @@ internal sealed class BasicModelConverter
         target.IsSellableToNpc = source.IsSellableToNpc;
         target.IsPersonalStoreSellable = source.IsPersonalStoreSellable;
         target.IsRepairable = source.IsRepairable;
+        target.IsSellableWhenExpired = source.IsSellableWhenExpired;
         target.Name = source.Name;
         target.IsActive = source.IsActive;
         target.IntroducedIn = source.IntroducedIn;
@@ -3350,6 +3353,14 @@ internal sealed class BasicModelConverter
         target.Costs = source.Costs;
         target.LevelRequirement = source.LevelRequirement;
         target.IsWarpable = source.IsWarpable;
+        if (source.Requirements is { } requirementsItems)
+        {
+            foreach (var item in requirementsItems)
+            {
+                target.Requirements.Add((MUnique.OpenMU.DataModel.Configuration.Items.AttributeRequirement)this.ConvertObject(item)!);
+            }
+        }
+
         target.Gate = (MUnique.OpenMU.DataModel.Configuration.ExitGate)this.ConvertObject(source.Gate)!;
         return target;
     }

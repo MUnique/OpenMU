@@ -23,6 +23,7 @@ services:
 # the port 80 - and we solve this by separating the server configs.
   nginx-443:
     image: nginx:alpine
+    pull_policy: always
     container_name: nginx-443
     restart: "unless-stopped"
     environment:

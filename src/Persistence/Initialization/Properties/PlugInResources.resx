@@ -474,6 +474,12 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Gladiator's Honor, which increases the experience in Vulcanus by 20 % for 30 minutes.</value>
   </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Sell the rented items of the cash shop</value>
+  </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update puts the time-limited pets, rings, necklaces and small wings of the cash shop on sale, which are delivered as items which expire, and lets them be sold to an NPC once they expired, for the small fixed price which the client shows.</value>
+  </data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>Season 6 NPC spawns</value></data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn't have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golden Archer of Lorencia; Lugard, Priest Devin and Mirage of Devias, which Season 6 has only in Elvenland and Crywolf Fortress; and the second Crown of Valley of Loren. Customized positions and directions of these NPCs are overwritten.</value></data>
   <data name="IllusionTempleDataUpdatePlugIn_Name" xml:space="preserve">
@@ -488,4 +494,10 @@
   <data name="NpcSpawnsUpdatePlugIn095d_Description" xml:space="preserve"><value>Brings the NPCs of 0.95d to the Season 6 data: removes the two Potion Girls of Noria, the Potion Girl and the Safety Guardian of Lost Tower, the Safety Guardians of Arena and Atlans and the Crossbow Guard at 114/125 in Lorencia, moves the Soccer Ball and the Arena Guard of Arena to their Season 6 positions and the Golden Archer from Lorencia to Devias (226/66).</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Name" xml:space="preserve"><value>Socket count tables</value></data>
   <data name="AddSocketCountTablesUpdatePlugIn_Description" xml:space="preserve"><value>Socket items drop with one socket most of the time and with three (five for two-handed weapons) rarely, instead of with any number up to the maximum at the same chance. Raises the maximum sockets of the socket items to five; the tables restrict the drops. Socket items which already have a socket count table keep it.</value></data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the figurines and charms</value>
+  </data>
+  <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory.</value>
+  </data>
 </root>
