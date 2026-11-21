@@ -31,7 +31,7 @@ using MUnique.OpenMU.PlugIns;
 [Guid("23071045-4323-4B5F-B26B-5283EEB130C1")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.TalismanOfMobilityConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.TalismanOfMobilityConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
-public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
+public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, IItemMovingPlugIn
 {
     /// <summary>
     /// The durability of an unused talisman. With it, the place is saved; with less, the character returns to it.
@@ -40,6 +40,19 @@ public class TalismanOfMobilityConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
 
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.TalismanOfMobility;
+
+    /// <inheritdoc />
+    public void ItemMoving(Player player, Item item, Storages targetStorage, int slot, CancelEventArgs eventArgs)
+    {
+        if (targetStorage == Storages.Vault
+            && item.Durability is > 0 and < UnusedDurability
+            && item.Definition is { } definition
+            && new ItemIdentifier(definition.Number, definition.Group) == this.Key)
+        {
+            // The return location is stored on this character, while the vault is shared.
+            eventArgs.Cancel = true;
+        }
+    }
 
     /// <inheritdoc />
     public override async ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)

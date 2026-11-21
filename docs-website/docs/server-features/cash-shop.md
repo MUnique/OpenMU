@@ -294,6 +294,8 @@ If the character doesn't fulfill the requirements of the saved map anymore,
 e.g. it saved a place in Icarus and lost its wings, it gets a message and
 keeps the talisman and the saved place. The same applies while the saved map
 is deactivated or unavailable; the return can be retried when it is available again.
+A half-used talisman cannot be put in the account vault because the saved place
+belongs to the character that used it.
 The plugin *Talisman of Mobility Consume Handler* can be deactivated on the
 **Plugins** page.
 

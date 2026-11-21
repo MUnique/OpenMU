@@ -241,6 +241,24 @@ public class TalismanOfMobilityConsumeHandlerPlugInTest
         Assert.That((player.SelectedCharacter.PositionX, player.SelectedCharacter.PositionY), Is.EqualTo((SavedPosition.X, SavedPosition.Y)));
     }
 
+    /// <summary>
+    /// Only a half-used mobility talisman is blocked from entering the account vault.
+    /// </summary>
+    [TestCase(70, 1, Storages.Vault, true)]
+    [TestCase(70, 2, Storages.Vault, false)]
+    [TestCase(70, 1, Storages.Inventory, false)]
+    [TestCase(71, 1, Storages.Vault, false)]
+    public async Task VaultMoveKeepsBookmarkWithCharacterAsync(short number, int durability, Storages storage, bool blocked)
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var item = new BasicModel.Item { Definition = new BasicModel.ItemDefinition { Group = 13, Number = number }, Durability = durability };
+        var eventArgs = new CancelEventArgs();
+
+        new TalismanOfMobilityConsumeHandlerPlugIn().ItemMoving(player, item, storage, 0, eventArgs);
+
+        Assert.That(eventArgs.Cancel, Is.EqualTo(blocked));
+    }
+
     private static async ValueTask<Player> CreatePlayerAsync()
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
