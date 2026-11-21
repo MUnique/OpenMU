@@ -225,14 +225,19 @@ public class BotFeaturePlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCus
             state.ResetWaitStartUtc = now;
             state.NextResetWaitWarningUtc = now + ResetWaitWarningInterval;
             logger.LogInformation("Reset requested: another game server of the deployment carries it out; this server spawns its bots once it is done.");
+            return;
         }
-        else if (now >= state.NextResetWaitWarningUtc)
+
+        if (now < state.NextResetWaitWarningUtc)
         {
-            state.NextResetWaitWarningUtc = now + ResetWaitWarningInterval;
-            logger.LogWarning(
-                "Still waiting since {Minutes:0} minute(s) for another game server to carry out the requested bot reset - is the first game server running, and did its reset fail? This server spawns no bots until the reset flag is cleared.",
-                (now - waitStart).TotalMinutes);
+            // Warned recently enough; the wait goes on silently until the next warning.
+            return;
         }
+
+        state.NextResetWaitWarningUtc = now + ResetWaitWarningInterval;
+        logger.LogWarning(
+            "Still waiting since {Minutes:0} minute(s) for another game server to carry out the requested bot reset - is the first game server running, and did its reset fail? This server spawns no bots until the reset flag is cleared.",
+            (now - waitStart).TotalMinutes);
     }
 
     /// <summary>
