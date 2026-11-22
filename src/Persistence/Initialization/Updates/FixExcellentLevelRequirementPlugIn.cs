@@ -21,7 +21,7 @@ using MUnique.OpenMU.PlugIns;
 /// <see cref="ExcellentLevelRequirement"/>).
 /// </remarks>
 [PlugIn]
-[Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixExcellentLevelRequirementPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixExcellentLevelRequirementPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
+[Display(Name = nameof(PlugInResources.FixExcellentLevelRequirementPlugIn_Name), Description = nameof(PlugInResources.FixExcellentLevelRequirementPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("ED3D4F9D-301E-48FA-9EA6-F85E47FDDD73")]
 public class FixExcellentLevelRequirementPlugIn : UpdatePlugInBase
 {
