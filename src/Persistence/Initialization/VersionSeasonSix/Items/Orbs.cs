@@ -44,17 +44,17 @@ public class Orbs : InitializerBase
         this.CreateOrb(10, SkillNumber.GreaterDamage, 1, LocalizedString.FromResource(() => ItemNames.OrbOfGreaterDamage), 18, 0, 100, 0, 0, 0, 7000, CharacterClasses.AllElfs);
         var summonOrb = this.CreateOrb(11, SkillNumber.SummonGoblin, 1, LocalizedString.FromResource(() => ItemNames.OrbOfSummoning), 3, 0, 0, 0, 0, 0, 150, CharacterClasses.AllElfs);
         summonOrb.MaximumItemLevel = 6;
-        this.CreateOrb(12, SkillNumber.RagefulBlow, 1, LocalizedString.FromResource(() => ItemNames.OrbOfRagefulBlow), 78, 170, 0, 0, 0, 0, 150000, CharacterClasses.BladeKnightAndBladeMaster);
+        this.CreateOrb(12, SkillNumber.RagefulBlow, 1, LocalizedString.FromResource(() => ItemNames.OrbOfRagefulBlow), 78, 170, 0, 0, 0, 0, 150000, CharacterClasses.AllKnights);
         this.CreateOrb(13, SkillNumber.Impale, 1, LocalizedString.FromResource(() => ItemNames.OrbOfImpale), 20, 28, 0, 0, 0, 0, 10000, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
         this.CreateOrb(14, SkillNumber.SwellLife, 1, LocalizedString.FromResource(() => ItemNames.OrbOfGreaterFortitude), 60, 120, 0, 0, 0, 0, 43000, CharacterClasses.AllKnights);
         this.CreateOrb(16, SkillNumber.FireSlash, 1, LocalizedString.FromResource(() => ItemNames.OrbOfFireSlash), 60, 0, 0, 320, 0, 0, 51000, CharacterClasses.AllMGs);
         this.CreateOrb(17, SkillNumber.Penetration, 1, LocalizedString.FromResource(() => ItemNames.OrbOfPenetration), 64, 130, 0, 0, 0, 0, 72000, CharacterClasses.AllElfs);
-        this.CreateOrb(18, SkillNumber.IceArrow, 1, LocalizedString.FromResource(() => ItemNames.OrbOfIceArrow), 81, 0, 0, 0, 258, 0, 195000, CharacterClasses.MuseElfAndHighElf);
-        this.CreateOrb(19, SkillNumber.DeathStab, 1, LocalizedString.FromResource(() => ItemNames.OrbOfDeathStab), 72, 160, 0, 0, 0, 0, 85000, CharacterClasses.BladeKnightAndBladeMaster);
-        var strikeOfDestruction = this.CreateOrb(44, SkillNumber.StrikeofDestruction, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfDestruction), 100, 220, 0, 0, 0, 0, 380000, CharacterClasses.BladeKnightAndBladeMaster);
+        this.CreateOrb(18, SkillNumber.IceArrow, 1, LocalizedString.FromResource(() => ItemNames.OrbOfIceArrow), 81, 0, 0, 0, 258, 0, 195000, CharacterClasses.AllElfs);
+        this.CreateOrb(19, SkillNumber.DeathStab, 1, LocalizedString.FromResource(() => ItemNames.OrbOfDeathStab), 72, 160, 0, 0, 0, 0, 85000, CharacterClasses.AllKnights);
+        var strikeOfDestruction = this.CreateOrb(44, SkillNumber.StrikeofDestruction, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfDestruction), 100, 220, 0, 0, 0, 0, 380000, CharacterClasses.AllKnights);
         this.CreateItemRequirementIfNeeded(strikeOfDestruction, Stats.GainHeroStatusQuestCompleted, 1);
-        this.CreateOrb(45, SkillNumber.MultiShot, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfMultiShot), 100, 220, 0, 0, 0, 0, 380000, CharacterClasses.MuseElfAndHighElf);
-        this.CreateOrb(46, SkillNumber.Recovery, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfRecovery), 100, 220, 37, 0, 0, 0, 250000, CharacterClasses.MuseElfAndHighElf);
+        this.CreateOrb(45, SkillNumber.MultiShot, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfMultiShot), 100, 220, 0, 0, 0, 0, 380000, CharacterClasses.AllElfs);
+        this.CreateOrb(46, SkillNumber.Recovery, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfRecovery), 100, 220, 37, 0, 0, 0, 250000, CharacterClasses.AllElfs);
         this.CreateOrb(47, SkillNumber.FlameStrike, 1, LocalizedString.FromResource(() => ItemNames.CrystalOfFlameStrike), 100, 220, 0, 0, 0, 0, 380000, CharacterClasses.AllMGs);
 
         // The next ones are actually no "Orbs", but are defined in the same group
