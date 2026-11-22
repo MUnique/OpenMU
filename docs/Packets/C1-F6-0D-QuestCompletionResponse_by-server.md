@@ -2,11 +2,11 @@
 
 ## Is sent when
 
-The server acknowledges the completion of a quest.
+The server acknowledges the completion of a quest, or refuses it because the rewards don't fit.
 
 ## Causes the following actions on the client side
 
-The client shows the success and possibly requests for the next available quests.
+When the quest was completed, the client shows the success and possibly requests for the next available quests. When it was refused, the client shows a message and disables the button to complete the quest.
 
 ## Structure
 
@@ -18,4 +18,15 @@ The client shows the success and possibly requests for the next available quests
 | 3 | 1 |    Byte   | 0x0D  | Packet header - sub packet type identifier |
 | 4 | 2 | ShortLittleEndian |  | QuestNumber |
 | 6 | 2 | ShortLittleEndian |  | QuestGroup |
-| 8 | 1 | Boolean |  | IsQuestCompleted |
+| 8 | 1 | QuestCompletionResult |  | Result |
+
+### QuestCompletionResult Enum
+
+Defines the result of a quest completion request.
+
+| Value | Name | Description |
+|-------|------|-------------|
+| 0 | NotCompleted | The quest wasn't completed. |
+| 1 | Completed | The quest was completed. |
+| 2 | ZenLimitReached | The quest wasn't completed, because the money of the rewards would exceed the money limit of the inventory. |
+| 3 | InventoryFull | The quest wasn't completed, because the item rewards don't fit into the inventory. |

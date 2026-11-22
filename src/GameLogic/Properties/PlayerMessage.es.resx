@@ -1204,6 +1204,9 @@ Extensiones de inventario: {18}</value>
   <data name="MissingWarpRequirement" xml:space="preserve">
     <value>Te falta un requisito para este warp: {0}</value>
   </data>
+  <data name="QuestZenLimitReached" xml:space="preserve">
+    <value>Alcanzaste tu límite de zen. No se puede completar la misión.</value>
+  </data>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Ya estás usando un item del mismo tipo. Deja de usarlo primero y vuelve a intentarlo.</value>
   </data>
