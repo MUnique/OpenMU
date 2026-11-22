@@ -61,7 +61,9 @@ public class WarpAction
         {
             if (!admitted)
             {
-                player.TryAddMoney(warpInfo.Costs);
+                // Restored unconditionally, because TryAddMoney refuses it at the money limit.
+                // It never exceeds the limit, as it was part of the money before.
+                player.Money = checked(player.Money + warpInfo.Costs);
             }
         }
 
