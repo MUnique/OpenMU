@@ -7238,6 +7238,34 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RoundTripResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="token">The token of the request.</param>
+    /// <remarks>
+    /// Is sent by the server when: Right after the client sent a RoundTripRequest.
+    /// Causes reaction on client side: The client takes the time since it sent the request with this token as the round trip time, e.g. to show the player's ping.
+    /// </remarks>
+    public static async ValueTask SendRoundTripResponseAsync(this IConnection? connection, uint @token)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RoundTripResponseRef.Length;
+            var packet = new RoundTripResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Token = @token;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ExternalChatMessage" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
