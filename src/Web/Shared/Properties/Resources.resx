@@ -753,7 +753,7 @@ Level: {2} - {3}</value>
     <value>Export and import map objects</value>
   </data>
   <data name="MapExportImportInfo" xml:space="preserve">
-    <value>Select the kinds of objects to export. When importing, you can choose again which of the kinds contained in the file are imported; all other kinds stay untouched.</value>
+    <value>Choose which kinds of objects to export. When importing, you can pick again from the kinds found in the file.</value>
   </data>
   <data name="MapExportImportGatesInfo" xml:space="preserve">
     <value>Gates reference other maps, so they are only exported and imported together with all maps.</value>

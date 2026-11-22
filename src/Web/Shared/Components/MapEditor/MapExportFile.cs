@@ -14,9 +14,9 @@ namespace MUnique.OpenMU.Web.Shared.Components.MapEditor;
 public sealed record MapExportFile
 {
     /// <summary>
-    /// The current format version written by the exporter.
+    /// Gets the current format version written by the exporter.
     /// </summary>
-    public const string CurrentFormatVersion = "2.0";
+    public static string CurrentFormatVersion { get; } = "2.0";
 
     /// <summary>
     /// Gets or sets the format version of the file.

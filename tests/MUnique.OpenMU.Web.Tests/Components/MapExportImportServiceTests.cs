@@ -20,7 +20,6 @@ public class MapExportImportServiceTests
 {
     private readonly MapExportImportService _service = new();
 
-    private InMemoryPersistenceContextProvider _persistence = null!;
     private IContext _context = null!;
 
     /// <summary>
@@ -29,8 +28,8 @@ public class MapExportImportServiceTests
     [SetUp]
     public void Setup()
     {
-        this._persistence = new InMemoryPersistenceContextProvider();
-        this._context = this._persistence.CreateNewContext();
+        var persistence = new InMemoryPersistenceContextProvider();
+        this._context = persistence.CreateNewContext();
     }
 
     /// <summary>

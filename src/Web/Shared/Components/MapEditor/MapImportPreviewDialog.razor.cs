@@ -15,7 +15,6 @@ using MUnique.OpenMU.Web.Shared.Properties;
 public partial class MapImportPreviewDialog
 {
     private HashSet<MapObjectKind> _selectedKinds = new();
-    private IReadOnlyDictionary<MapObjectKind, int> _counts = new Dictionary<MapObjectKind, int>();
 
     /// <summary>
     /// Gets or sets the preview which is shown.
@@ -31,6 +30,8 @@ public partial class MapImportPreviewDialog
     [EditorRequired]
     public ModalInstance Modal { get; set; } = null!;
 
+    private IReadOnlyDictionary<MapObjectKind, int> Counts { get; set; } = new Dictionary<MapObjectKind, int>();
+
     private int ImportCount => this.Preview.CountImported(this._selectedKinds);
 
     private bool CanImport => this.ImportCount > 0;
@@ -39,7 +40,7 @@ public partial class MapImportPreviewDialog
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this._counts = MapObjectKindExtensions.All.ToDictionary(kind => kind, kind => this.Preview.GetCount(kind));
+        this.Counts = MapObjectKindExtensions.All.ToDictionary(kind => kind, kind => this.Preview.GetCount(kind));
         if (this._selectedKinds.Count == 0)
         {
             this._selectedKinds = new HashSet<MapObjectKind>(this.Preview.DeclaredKinds);

@@ -1998,7 +1998,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the kinds of objects to export. When importing, you can choose again which of the kinds contained in the file are imported; all other kinds stay untouched..
+        ///   Looks up a localized string similar to Choose which kinds of objects to export. When importing, you can pick again from the kinds found in the file.
         /// </summary>
         public static string MapExportImportInfo {
             get {
@@ -2007,7 +2007,7 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gates reference other maps, so they are only exported and imported together with all maps..
+        ///   Looks up a localized string similar to Gates reference other maps, so they are only exported and imported together with all maps.
         /// </summary>
         public static string MapExportImportGatesInfo {
             get {

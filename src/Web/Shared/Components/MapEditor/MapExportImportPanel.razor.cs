@@ -21,7 +21,7 @@ using MUnique.OpenMU.Web.Shared.Services;
 public partial class MapExportImportPanel
 {
     private readonly MapExportImportService _exportImportService = new();
-    private readonly HashSet<MapObjectKind> _kinds = new(MapObjectKindExtensions.All);
+    private readonly HashSet<MapObjectKind> _kinds = new() { MapObjectKind.Monsters };
 
     /// <summary>
     /// Gets or sets all maps which can be exported or imported.
