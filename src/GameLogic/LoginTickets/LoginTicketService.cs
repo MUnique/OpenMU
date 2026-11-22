@@ -18,11 +18,6 @@ using MUnique.OpenMU.Persistence;
 /// </remarks>
 public sealed class LoginTicketService : ILoginTicketService
 {
-    /// <summary>
-    /// The length of a token: 256 random bits as base64url without padding.
-    /// </summary>
-    public static int TokenLength { get; } = 43;
-
     private const int TokenBytes = 32;
 
     private readonly Func<IPlayerContext> _createContext;
@@ -45,6 +40,11 @@ public sealed class LoginTicketService : ILoginTicketService
         this.Lifetime = lifetime ?? DefaultLifetime;
         this._timeProvider = timeProvider ?? TimeProvider.System;
     }
+
+    /// <summary>
+    /// Gets the length of a token: 256 random bits as base64url without padding.
+    /// </summary>
+    public static int TokenLength { get; } = 43;
 
     /// <summary>
     /// Gets the default time in which a ticket has to be redeemed.

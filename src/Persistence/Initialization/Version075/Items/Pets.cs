@@ -67,7 +67,7 @@ public class Pets : InitializerBase
         pet.DropsFromMonsters = true;
         pet.Durability = 255;
         pet.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(st => st.ItemSlots.Contains(8));
-        this.GameConfiguration.DetermineCharacterClasses(true, true, true).ForEach(pet.QualifiedCharacters.Add);
+        this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.DarkWizard | CharacterClasses.DarkKnight | CharacterClasses.FairyElf).ForEach(pet.QualifiedCharacters.Add);
 
         this.CreateItemRequirementIfNeeded(pet, Stats.Level, dropLevelAndLevelRequirement);
 
