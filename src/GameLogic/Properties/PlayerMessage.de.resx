@@ -1060,4 +1060,10 @@ Inventarerweiterungen: {18}</value>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Ein Gegenstand der gleichen Art wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
   </data>
+  <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
+    <value>Nur der Gildenmeister der Gilde, der die Burg gehört, kann den Lord's Mix verwenden.</value>
+  </data>
+  <data name="LordsMixLimitReached" xml:space="preserve">
+    <value>Das Limit des Lord's Mix ist erreicht; er kann im nächsten Zeitraum wieder verwendet werden.</value>
+  </data>
 </root>

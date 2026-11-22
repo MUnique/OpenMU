@@ -1697,6 +1697,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The limit of the Lord&apos;s Mix is reached; it can be used again in the next period..
+        /// </summary>
+        public static string LordsMixLimitReached {
+            get {
+                return ResourceManager.GetString("LordsMixLimitReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only the guild master of the guild which owns the castle can use the Lord&apos;s Mix..
+        /// </summary>
+        public static string LordsMixOnlyForCastleOwner {
+            get {
+                return ResourceManager.GetString("LordsMixOnlyForCastleOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This map is not available..
         /// </summary>
         public static string MapIsNotActive {

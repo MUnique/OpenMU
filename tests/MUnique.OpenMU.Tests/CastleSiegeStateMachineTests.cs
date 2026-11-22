@@ -792,6 +792,91 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// Verifies that with a limit per siege cycle, the Lord's Mix count is reset and saved when a running siege enters the
+    /// <see cref="CastleSiegeState.End"/>.
+    /// </summary>
+    [Test]
+    public async ValueTask LordsMixCountIsResetWhenTheSiegeEndsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 8, 21, 59, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        context.Configuration.LordsMixLimitPeriod = LordsMixLimitPeriod.SiegeCycle;
+        context.SiegeData.LordsMixCount = 1;
+
+        timeProvider.Advance(TimeSpan.FromMinutes(2));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegeData),
+            false,
+            fixture.GameConfiguration);
+        var savedData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.End));
+            Assert.That(context.SiegeData.LordsMixCount, Is.Zero);
+            Assert.That(savedData.LordsMixCount, Is.Zero);
+        });
+    }
+
+    /// <summary>
+    /// Verifies that with a limit per day, the end of a siege doesn't reset the Lord's Mix count.
+    /// </summary>
+    [Test]
+    public async ValueTask DailyLordsMixCountIsKeptWhenTheSiegeEndsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 8, 21, 59, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        context.Configuration.LordsMixLimitPeriod = LordsMixLimitPeriod.Day;
+        context.SiegeData.LordsMixCount = 1;
+
+        timeProvider.Advance(TimeSpan.FromMinutes(2));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.End));
+            Assert.That(context.SiegeData.LordsMixCount, Is.EqualTo(1));
+        });
+    }
+
+    /// <summary>
+    /// Verifies that a server start during the <see cref="CastleSiegeState.End"/> keeps the Lord's Mix count, because the
+    /// siege of this cycle already ended before.
+    /// </summary>
+    [Test]
+    public async ValueTask LordsMixCountIsKeptOnStartupInEndStateAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        using (var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+                   typeof(CastleSiegeData),
+                   false,
+                   fixture.GameConfiguration))
+        {
+            var siegeData = (await persistenceContext.GetAsync<CastleSiegeData>().ConfigureAwait(false)).Single();
+            siegeData.LordsMixCount = 1;
+            await persistenceContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 8, 22, 2, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.End));
+            Assert.That(context.SiegeData.LordsMixCount, Is.EqualTo(1));
+        });
+    }
+
+    /// <summary>
     /// Verifies that EndCycle clears registrations and immediately opens the next registration phase.
     /// </summary>
     [Test]

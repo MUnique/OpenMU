@@ -6664,4 +6664,52 @@
   <data name="WeightedValue_Weight_Description" xml:space="preserve">
     <value>The weight, relative to the other values of the table. A value with a weight of 0 is never selected.</value>
   </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionCountTable_Caption" xml:space="preserve">
+    <value>Result Item Excellent Option Count Table</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionCountTable_Description" xml:space="preserve">
+    <value>The table from which the number of excellent options of a result item is selected, when it gets excellent options. If empty, each further option is added by the excellent option chance, up to the maximum of the item.</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSocketCountTable_Caption" xml:space="preserve">
+    <value>Result Item Socket Count Table</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSocketCountTable_Description" xml:space="preserve">
+    <value>The table from which the number of sockets of a socket result item is selected. Such a socket result item gets no excellent options. If empty, result items get no sockets.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimit_Caption" xml:space="preserve">
+    <value>Lord's Mix Limit</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimit_Description" xml:space="preserve">
+    <value>The number of successful Lord's Mixes which the guild master of the castle owner guild may do per period. 0 means no limit.</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCount_Caption" xml:space="preserve">
+    <value>Lord's Mix Count</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCount_Description" xml:space="preserve">
+    <value>The number of successful Lord's Mixes of the current period.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Caption" xml:space="preserve">
+    <value>Lord's Mix Limit Period</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Description" xml:space="preserve">
+    <value>The period of the Lord's Mix limit: per day (reset at midnight, server local time) or per siege cycle (reset when a siege ends).</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Caption" xml:space="preserve">
+    <value>Lord's Mix Count Date</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Description" xml:space="preserve">
+    <value>The date (server local time) of the last counted Lord's Mix, for a limit per day.</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Caption" xml:space="preserve">
+    <value>Excellent Option Chance</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Description" xml:space="preserve">
+    <value>The chance of excellent options of this result item, in percent, instead of the chance of the crafting. If empty, the chance of the crafting applies.</value>
+  </data>
+  <data name="LordsMixLimitPeriod_Day_Caption" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="LordsMixLimitPeriod_SiegeCycle_Caption" xml:space="preserve">
+    <value>Siege Cycle</value>
+  </data>
 </root>

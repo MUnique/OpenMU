@@ -14,7 +14,7 @@ else
     /// Gets or sets the text which should be shown.
     /// </summary>
     [Parameter]
-    public string Text { get; set; } = string.Empty;
+    public string? Text { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the marked part of the <see cref="Text"/>.
@@ -27,7 +27,7 @@ else
     {
         base.OnParametersSet();
         this._elements?.Clear();
-        if (string.IsNullOrEmpty(this.Marked))
+        if (string.IsNullOrEmpty(this.Marked) || string.IsNullOrEmpty(this.Text))
         {
             return;
         }

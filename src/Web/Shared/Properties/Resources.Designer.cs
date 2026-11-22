@@ -1197,6 +1197,24 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show All Languages.
+        /// </summary>
+        public static string ShowAllLanguages {
+            get {
+                return ResourceManager.GetString("ShowAllLanguages", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Show Selected Language Only.
+        /// </summary>
+        public static string ShowSelectedLanguageOnly {
+            get {
+                return ResourceManager.GetString("ShowSelectedLanguageOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;Please select a definition&gt;.
         /// </summary>
         public static string PleaseSelectItemDefinition {

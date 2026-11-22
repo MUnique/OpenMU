@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration),
                 baseEntityType,
-                propertyCount: 21,
+                propertyCount: 23,
                 navigationCount: 15,
                 foreignKeyCount: 6,
                 unnamedIndexCount: 6,
@@ -120,6 +120,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.CastleSiegeConfiguration).GetField("<LandOfTrialsMapDefinitionId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             landOfTrialsMapDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var lordsMixLimit = runtimeEntityType.AddProperty(
+                "LordsMixLimit",
+                typeof(int),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration).GetProperty("LordsMixLimit", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration).GetField("<LordsMixLimit>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0);
+            lordsMixLimit.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var lordsMixLimitPeriod = runtimeEntityType.AddProperty(
+                "LordsMixLimitPeriod",
+                typeof(MUnique.OpenMU.DataModel.Configuration.LordsMixLimitPeriod),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration).GetProperty("LordsMixLimitPeriod", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.CastleSiegeConfiguration).GetField("<LordsMixLimitPeriod>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+            lordsMixLimitPeriod.SetSentinelFromProviderValue(0);
+            lordsMixLimitPeriod.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var maxAttackingGuilds = runtimeEntityType.AddProperty(
                 "MaxAttackingGuilds",

@@ -19,6 +19,7 @@
 
 @if (this._selectedMerchant is null)
 {
+    <GridPager State="@_merchantPagination" />
     <div>
         <QuickGrid Items="@this.ViewModels" Pagination="@_merchantPagination" Theme="none">
             <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(c => c.Name)" Sortable="true">
@@ -29,7 +30,7 @@
             </TemplateColumn>
         </QuickGrid>
     </div>
-    <LocalizedPaginator State="@_merchantPagination"/>
+    <GridPager State="@_merchantPagination" />
 }
 else
 {

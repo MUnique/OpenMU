@@ -48,4 +48,10 @@
   <data name="MoneyPickupLimitReached" xml:space="preserve">
     <value>你无法携带更多的金币。</value>
   </data>
+  <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
+    <value>只有拥有城堡的战盟的盟主才能使用领主合成。</value>
+  </data>
+  <data name="LordsMixLimitReached" xml:space="preserve">
+    <value>领主合成的次数已达上限，下一个周期可再次使用。</value>
+  </data>
 </root>

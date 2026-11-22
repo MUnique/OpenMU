@@ -1213,4 +1213,10 @@ Extensiones de inventario: {18}</value>
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>Un item por tiempo limitado no se puede usar aquí.</value>
   </data>
+  <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
+    <value>Solo el guild master de la guild dueña del castillo puede usar el Lord's Mix.</value>
+  </data>
+  <data name="LordsMixLimitReached" xml:space="preserve">
+    <value>Se alcanzó el límite del Lord's Mix; se puede volver a usar en el próximo período.</value>
+  </data>
 </root>
