@@ -2023,7 +2023,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lets the excellent version of the 380 items and the Horn of Fenrir need the same level as the normal one..
+        ///   Looks up a localized string similar to Switches off &quot;Excellent Raises Level Requirement&quot; for the weapons, shields and armor pieces with a level requirement and for the Horn of Fenrir, so that their excellent version needs the same level as the normal one, as on the original game servers..
         /// </summary>
         public static string FixExcellentLevelRequirementPlugIn_Description {
             get {

@@ -312,7 +312,7 @@
     <value>Level-Anforderung exzellenter Gegenstände korrigieren</value>
   </data>
   <data name="FixExcellentLevelRequirementPlugIn_Description" xml:space="preserve">
-    <value>Lässt die exzellente Version der 380er-Gegenstände und des Horns des Fenrir dasselbe Level benötigen wie die normale.</value>
+    <value>Schaltet „Exzellent erhöht Level-Anforderung“ für die Waffen, Schilde und Rüstungsteile mit Level-Anforderung und für das Horn des Fenrir aus, sodass ihre exzellente Version dasselbe Level benötigt wie die normale, wie auf den originalen Spielservern.</value>
   </data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve">
     <value>Buff-Fähigkeiten des Beschwörers hinzufügen</value>

@@ -33,7 +33,7 @@ public class FixExcellentLevelRequirementPlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "Lets the excellent version of the 380 items and the Horn of Fenrir need the same level as the normal one.";
+    internal const string PlugInDescription = "Switches off \"Excellent Raises Level Requirement\" for the weapons, shields and armor pieces with a level requirement and for the Horn of Fenrir, so that their excellent version needs the same level as the normal one, as on the original game servers.";
 
     /// <inheritdoc />
     public override string Name => PlugInName;
@@ -45,6 +45,10 @@ public class FixExcellentLevelRequirementPlugIn : UpdatePlugInBase
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Mandatory, because the value was wrong in the data, and the item exchange file carries it to MuEditor, which would
+    /// otherwise offer to change these items in the client to the wrong value.
+    /// </remarks>
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
