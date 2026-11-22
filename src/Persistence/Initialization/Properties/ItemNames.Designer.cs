@@ -5550,5 +5550,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GoldenMapleCharm", resourceCulture);
             }
         }
+
+        /// <summary>Gets WornHorseshoe from the configuration name resources.</summary>
+        public static string WornHorseshoe {
+            get {
+                return ResourceManager.GetString("WornHorseshoe", resourceCulture);
+            }
+        }
     }
 }

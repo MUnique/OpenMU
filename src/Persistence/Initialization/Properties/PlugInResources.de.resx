@@ -1052,4 +1052,10 @@
   <data name="AddLordsMixUpdatePlugIn_Description" xml:space="preserve">
     <value>Fügt dem Senior der Burg den Lord's Mix hinzu: einmal pro Tag mischt der Gildenmeister der Gilde, der die Burg gehört, 30 Juwelen des Wächters, ein gepacktes Juwel des Segens und ein gepacktes Juwel der Seele (je 30 Juwelen) und 1.000.000.000 Zen zu einer exzellenten Waffe oder Rüstung mit zwei bis vier exzellenten Optionen oder einer normalen. Setzt die Grenze auf einen Mix pro Tag, wenn es noch keine Grenze gibt.</value>
   </data>
+  <data name="AddWornHorseshoeUpdatePlugIn_Name" xml:space="preserve">
+    <value>Abgenutztes Hufeisen hinzufügen</value>
+  </data>
+  <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
+    <value>Dieses Update fügt das abgenutzte Hufeisen hinzu, das die Item-Droprate um 20 % erhöht, während es im Inventar benutzt wird.</value>
+  </data>
 </root>
