@@ -4,72 +4,50 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Persistence.Initialization.Items;
 
 /// <summary>
-/// The Season 6 items whose excellent version needs the same level as the normal one: their
+/// Decides which Season 6 items need the same level for their excellent version as for the normal one: their
 /// <see cref="ItemDefinition.ExcellentRaisesLevel"/> is <c>false</c>.
 /// </summary>
 /// <remarks>
-/// The original game server doesn't raise the level requirement of an excellent weapon or armor piece (groups 0 to 11),
-/// and it handles the Horn of Fenrir as not excellent. The client leaves the raise out for the items listed here (and for
-/// the lucky items, see <see cref="LuckyItems"/>), so it shows the level which the server requires.
+/// The original game servers (1.00.90, 1.00.93 and the common Season 6 emulator) never raise the level requirement of
+/// an excellent weapon, shield or armor piece (groups 0 to 11), and they handle the Horn of Fenrir as not excellent. Only
+/// these items and the wings and other items of the later groups have a level requirement which the raise could
+/// change; most weapons and armor pieces have none at all.
+/// The client of version 1.04d leaves the raise out only for a part of these items: the 380 items up to the Aura (Storm
+/// Blitz) set, the lucky items and the Horn of Fenrir. It still raises it for the Phoenix Soul set of the Rage Fighter
+/// and the socket weapons of level 380, so it shows 400 for them. Here, all of them need 380, as on the server.
 /// </remarks>
 internal static class ExcellentLevelRequirement
 {
-    /// <summary>
-    /// Gets the items, by group and number, whose excellent version needs the same level as the normal one.
-    /// </summary>
-    internal static IReadOnlyCollection<(byte Group, short Number)> ItemsWithoutRaise { get; } = new HashSet<(byte Group, short Number)>
-    {
-        (0, 22), // Bone Blade
-        (0, 23), // Explosion Blade
-        (2, 14), // Soleil Scepter
-        (4, 21), // Sylph Wind Bow
-        (5, 12), // Grand Viper Staff
-        (5, 19), // Storm Blitz Stick
-        (7, 29), // Dragon Knight Helm
-        (7, 30), // Venom Mist Helm
-        (7, 31), // Sylphid Ray Helm
-        (7, 33), // Sunlight Mask
-        (7, 43), // Storm Blitz Helm
-        (8, 29), // Dragon Knight Armor
-        (8, 30), // Venom Mist Armor
-        (8, 31), // Sylphid Ray Armor
-        (8, 32), // Volcano Armor
-        (8, 33), // Sunlight Armor
-        (8, 43), // Storm Blitz Armor
-        (9, 29), // Dragon Knight Pants
-        (9, 30), // Venom Mist Pants
-        (9, 31), // Sylphid Ray Pants
-        (9, 32), // Volcano Pants
-        (9, 33), // Sunlight Pants
-        (9, 43), // Storm Blitz Pants
-        (10, 29), // Dragon Knight Gloves
-        (10, 30), // Venom Mist Gloves
-        (10, 31), // Sylphid Ray Gloves
-        (10, 32), // Volcano Gloves
-        (10, 33), // Sunlight Gloves
-        (10, 43), // Storm Blitz Gloves
-        (11, 29), // Dragon Knight Boots
-        (11, 30), // Venom Mist Boots
-        (11, 31), // Sylphid Ray Boots
-        (11, 32), // Volcano Boots
-        (11, 33), // Sunlight Boots
-        (11, 43), // Storm Blitz Boots
-        (13, 37), // Horn of Fenrir
-    };
+    private const byte LastArmorGroup = (byte)ItemGroups.Boots;
 
     /// <summary>
-    /// Sets <see cref="ItemDefinition.ExcellentRaisesLevel"/> to <c>false</c> for the <see cref="ItemsWithoutRaise"/>.
+    /// Determines whether the excellent version of the item needs a higher level than the normal one.
+    /// </summary>
+    /// <param name="item">The item definition.</param>
+    /// <returns><c>false</c> for the weapons, shields and armor pieces with a level requirement and the Horn of Fenrir.</returns>
+    internal static bool RaisesLevel(ItemDefinition item)
+    {
+        var isHornOfFenrir = item.Group == (byte)ItemGroups.Misc1 && item.Number == 37;
+        var isEquipmentWithLevel = item.Group <= LastArmorGroup
+                                   && item.Requirements.Any(requirement => requirement.Attribute == Stats.Level && requirement.MinimumValue > 0);
+        return !isHornOfFenrir && !isEquipmentWithLevel;
+    }
+
+    /// <summary>
+    /// Sets <see cref="ItemDefinition.ExcellentRaisesLevel"/> to <c>false</c> for the items for which
+    /// <see cref="RaisesLevel"/> is <c>false</c>. The other items are left alone.
     /// </summary>
     /// <param name="gameConfiguration">The game configuration.</param>
-    internal static void Apply(GameConfiguration gameConfiguration)
+    /// <returns>The items which were changed.</returns>
+    internal static IReadOnlyList<ItemDefinition> Apply(GameConfiguration gameConfiguration)
     {
-        foreach (var item in gameConfiguration.Items.Where(item => ItemsWithoutRaise.Contains((item.Group, item.Number))))
-        {
-            item.ExcellentRaisesLevel = false;
-        }
+        var changed = gameConfiguration.Items.Where(item => item.ExcellentRaisesLevel && !RaisesLevel(item)).ToList();
+        changed.ForEach(item => item.ExcellentRaisesLevel = false);
+        return changed;
     }
 }

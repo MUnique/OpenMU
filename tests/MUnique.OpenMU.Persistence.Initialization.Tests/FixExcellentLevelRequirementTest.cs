@@ -11,54 +11,45 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
-/// Tests that the excellent version of the 380 items and the Horn of Fenrir needs the same level as the normal one in
-/// the season 6 data, and that the update gives this to existing databases.
+/// Tests that the excellent version of the weapons, shields and armor pieces and of the Horn of Fenrir needs the same
+/// level as the normal one in the season 6 data, and that the update gives this to existing databases.
 /// </summary>
 [TestFixture]
 internal class FixExcellentLevelRequirementTest
 {
-    private const byte ArmorGroup = 8;
-    private const short DragonKnightNumber = 29;
-
     /// <summary>
-    /// The items whose excellent version needs the same level as the normal one, besides the lucky items.
+    /// Items whose excellent version needs level 380 like the normal one: the Dragon Knight Armor, which the client
+    /// also shows at 380, and the Phoenix Soul Armor and the socket weapon Flameberge, which it shows at 400.
     /// </summary>
-    private static readonly (byte Group, short Number)[] ItemsWithoutRaise =
-    {
-        (0, 22), // Bone Blade
-        (0, 23), // Explosion Blade
-        (2, 14), // Soleil Scepter
-        (4, 21), // Sylph Wind Bow
-        (5, 12), // Grand Viper Staff
-        (5, 19), // Storm Blitz Stick
-        (7, 29), (7, 30), (7, 31), (7, 33), (7, 43), // Dragon Knight, Venom Mist, Sylphid Ray, Sunlight, Storm Blitz helms
-        (8, 29), (8, 30), (8, 31), (8, 32), (8, 33), (8, 43), // the armors of these sets and of the Volcano set
-        (9, 29), (9, 30), (9, 31), (9, 32), (9, 33), (9, 43), // pants
-        (10, 29), (10, 30), (10, 31), (10, 32), (10, 33), (10, 43), // gloves
-        (11, 29), (11, 30), (11, 31), (11, 32), (11, 33), (11, 43), // boots
-        (13, 37), // Horn of Fenrir
-    };
+    private static readonly (byte Group, short Number)[] ItemsOfLevel380 = [(8, 29), (8, 73), (0, 26)];
 
     /// <summary>
-    /// Tests that in a new season 6 database exactly these items and the lucky items don't raise the level requirement
-    /// of their excellent version, so an excellent Dragon Knight Armor needs level 380 like the normal one, also when
-    /// excellent items need 20 levels more, as in the original game.
+    /// Tests that in a new season 6 database exactly the weapons, shields and armor pieces with a level requirement,
+    /// the Horn of Fenrir and the lucky items don't raise the level requirement of their excellent version, so the
+    /// excellent version of the items of level 380 needs 380, also when excellent items need 20 levels more, as in the
+    /// original game.
     /// </summary>
     [Test]
-    public async Task NewDatabaseKeepsTheLevelOfThe380ItemsAsync()
+    public async Task NewDatabaseKeepsTheLevelOfWeaponsAndArmorAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
 
-        var withoutRaise = gameConfiguration.Items
-            .Where(item => !item.ExcellentRaisesLevel && !IsLuckyItem(item))
-            .Select(item => (item.Group, item.Number));
-        Assert.That(withoutRaise, Is.EquivalentTo(ItemsWithoutRaise));
+        var withoutRaise = gameConfiguration.Items.Where(item => !item.ExcellentRaisesLevel && !LuckyItems.IsLuckyItem(item)).ToList();
+        Assert.That(withoutRaise, Has.All.Matches<ItemDefinition>(item => item.Group <= 11 || (item.Group == 13 && item.Number == 37)));
+        Assert.That(withoutRaise.Select(item => (item.Group, item.Number)), Does.Contain(((byte)13, (short)37)).And.SupersetOf(ItemsOfLevel380));
+        Assert.That(
+            gameConfiguration.Items.Where(item => item.Group <= 11 && HasLevelRequirement(item)),
+            Has.None.Matches<ItemDefinition>(item => item.ExcellentRaisesLevel));
+        Assert.That(
+            gameConfiguration.Items.Where(item => item.Group == 12 && HasLevelRequirement(item)),
+            Has.Some.Matches<ItemDefinition>(item => item.ExcellentRaisesLevel));
         RaiseExcellentLevelAsInTheOriginalGame(gameConfiguration);
-        Assert.That(GetLevelRequirement(context, gameConfiguration, ArmorGroup, DragonKnightNumber, excellent: true), Is.EqualTo(380));
+        Assert.That(ItemsOfLevel380.Select(item => GetLevelRequirement(context, gameConfiguration, item.Group, item.Number, excellent: true)), Has.All.EqualTo(380));
     }
 
     /// <summary>
@@ -66,26 +57,24 @@ internal class FixExcellentLevelRequirementTest
     /// that it leaves the other items alone, and that applying it twice keeps the result.
     /// </summary>
     [Test]
-    public async Task UpdateKeepsTheLevelOfThe380ItemsAsync()
+    public async Task UpdateKeepsTheLevelOfWeaponsAndArmorAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
         using var _ = context;
-        var items = gameConfiguration.Items.Where(item => ItemsWithoutRaise.Contains((item.Group, item.Number))).ToList();
-        Assert.That(items, Has.Count.EqualTo(ItemsWithoutRaise.Length));
+        var items = gameConfiguration.Items.Where(item => !item.ExcellentRaisesLevel && !LuckyItems.IsLuckyItem(item)).ToList();
         items.ForEach(item => item.ExcellentRaisesLevel = true);
+        var others = gameConfiguration.Items.Except(items).ToDictionary(item => item, item => item.ExcellentRaisesLevel);
         RaiseExcellentLevelAsInTheOriginalGame(gameConfiguration);
-        Assert.That(GetLevelRequirement(context, gameConfiguration, ArmorGroup, DragonKnightNumber, excellent: true), Is.EqualTo(400));
+        Assert.That(ItemsOfLevel380.Select(item => GetLevelRequirement(context, gameConfiguration, item.Group, item.Number, excellent: true)), Has.All.EqualTo(400));
 
         var update = new FixExcellentLevelRequirementPlugIn();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.That(items, Has.None.Matches<ItemDefinition>(item => item.ExcellentRaisesLevel));
-        Assert.That(GetLevelRequirement(context, gameConfiguration, ArmorGroup, DragonKnightNumber, excellent: true), Is.EqualTo(380));
-        Assert.That(GetLevelRequirement(context, gameConfiguration, ArmorGroup, DragonKnightNumber, excellent: false), Is.EqualTo(380));
-        Assert.That(
-            gameConfiguration.Items.Where(item => !items.Contains(item) && !IsLuckyItem(item)),
-            Has.All.Matches<ItemDefinition>(item => item.ExcellentRaisesLevel));
+        Assert.That(ItemsOfLevel380.Select(item => GetLevelRequirement(context, gameConfiguration, item.Group, item.Number, excellent: true)), Has.All.EqualTo(380));
+        Assert.That(ItemsOfLevel380.Select(item => GetLevelRequirement(context, gameConfiguration, item.Group, item.Number, excellent: false)), Has.All.EqualTo(380));
+        Assert.That(others.Where(pair => pair.Key.ExcellentRaisesLevel != pair.Value), Is.Empty);
     }
 
     /// <summary>
@@ -97,9 +86,9 @@ internal class FixExcellentLevelRequirementTest
         gameConfiguration.ItemStatProfiles.Single(profile => profile.Name == ItemStatProfile.DefaultName).ExcellentLevelAdd = 20;
     }
 
-    private static bool IsLuckyItem(ItemDefinition item)
+    private static bool HasLevelRequirement(ItemDefinition item)
     {
-        return item.Group is >= 7 and <= 11 && item.Number is >= 62 and <= 72;
+        return item.Requirements.Any(requirement => requirement.Attribute == Stats.Level && requirement.MinimumValue > 0);
     }
 
     private static int GetLevelRequirement(IContext context, GameConfiguration gameConfiguration, byte group, short number, bool excellent)
