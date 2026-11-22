@@ -43,14 +43,14 @@ public class Wings : WingsInitializerBase
         this._defenseBonusByLevelTable = this.CreateBonusDefensePerLevel();
         this._damageIncreaseByLevelTable = this.CreateDamageIncreaseBonusPerLevelFirstAndThirdWings();
 
-        this.CreateWing(0, 3, 2, LocalizedString.FromResource(() => ItemNames.WingsOfElf), 100, 10, 200, 180, 0, 0, 1, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12);
-        this.CreateWing(1, 5, 3, LocalizedString.FromResource(() => ItemNames.WingsOfHeaven), 100, 10, 200, 180, 1, 0, 0, this.BuildOptions((0, OptionType.WizDamage)), 12, 12);
-        this.CreateWing(2, 5, 2, LocalizedString.FromResource(() => ItemNames.WingsOfSatan), 100, 20, 200, 180, 0, 1, 0, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12);
+        this.CreateWing(0, 3, 2, LocalizedString.FromResource(() => ItemNames.WingsOfElf), 100, 10, 200, 180, CharacterClasses.FairyElf, this.BuildOptions((0, OptionType.HealthRecover)), 12, 12);
+        this.CreateWing(1, 5, 3, LocalizedString.FromResource(() => ItemNames.WingsOfHeaven), 100, 10, 200, 180, CharacterClasses.DarkWizard, this.BuildOptions((0, OptionType.WizDamage)), 12, 12);
+        this.CreateWing(2, 5, 2, LocalizedString.FromResource(() => ItemNames.WingsOfSatan), 100, 20, 200, 180, CharacterClasses.DarkKnight, this.BuildOptions((0, OptionType.PhysDamage)), 12, 12);
     }
 
-    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial)
+    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, CharacterClasses qualifiedClasses, IEnumerable<IncreasableItemOption> possibleOptions, int damageIncreaseInitial, int damageAbsorbInitial)
     {
-        var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        var wing = this.CreateWing(number, width, height, name, dropLevel, defense, durability, levelRequirement, qualifiedClasses);
 
         if (damageAbsorbInitial > 0)
         {
@@ -88,7 +88,7 @@ public class Wings : WingsInitializerBase
         return wing;
     }
 
-    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    private ItemDefinition CreateWing(byte number, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, CharacterClasses qualifiedClasses)
     {
         var wing = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(wing);
@@ -114,7 +114,7 @@ public class Wings : WingsInitializerBase
             powerUp.BonusPerLevelTable = this._defenseBonusByLevelTable;
         }
 
-        var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel == 1, darkKnightClassLevel == 1, elfClassLevel == 1);
+        var classes = this.GameConfiguration.DetermineCharacterClasses(qualifiedClasses);
         foreach (var characterClass in classes)
         {
             wing.QualifiedCharacters.Add(characterClass);

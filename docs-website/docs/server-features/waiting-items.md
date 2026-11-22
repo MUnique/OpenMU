@@ -50,6 +50,28 @@ The chat command `/waiting` lists the waiting items, by default up to 10 (its
 setting **Named items**). The automatic message points to it when the command is
 active.
 
+## Quest rewards
+
+Quest rewards don't become waiting items. Instead, a quest isn't completed while
+its rewards don't fit:
+
+* the item rewards must fit into the inventory, where the items which the quest
+  takes count as free space, because they are taken first,
+* and the Zen rewards must not take the Zen of the inventory over its limit,
+  the setting **Maximum Inventory Money** of the
+  [game configuration](../admin-panel/game-configuration.md#general).
+
+Then nothing is taken, and the quest stays active, so the player can make room
+and try to complete it again. For the newer quests, the Season 6 client shows
+its own message that the inventory is full or that the Zen limit is reached,
+and disables the button to complete the quest. The older quests, i.e. the
+quests of the second and third class changes and of Marlon, get a blue message
+with the reason instead.
+
+When a reward still doesn't fit in the end, e.g. because an inventory extension
+of a plugin accepted it although it has no room, it's dropped at the feet of
+the player, not added to the waiting items.
+
 ## Deleting a character
 
 The waiting items belong to the character and are deleted with it. Because an
