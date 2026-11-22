@@ -9,11 +9,6 @@
 
 <Pager CurrentPage="@this.Page" HasNextPage="@this._hasMoreEntries" Disabled="@this._isLoading" PageChanged="@this.GetPageIfIdleAsync" />
 
-@if (this.SearchHeader != null)
-{
-    <div class="data-table-search d-flex flex-wrap align-items-center gap-2 my-2">@SearchHeader</div>
-}
-
 <table class="table table-striped table-hover">
     <thead>
         <tr>@TableHeader</tr>

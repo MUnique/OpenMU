@@ -71,6 +71,7 @@ public class LordsMixCrafting : SimpleItemCraftingHandler
             // Another game server may have counted a mix since this one loaded the count.
             await context.LoadLordsMixCountAsync().ConfigureAwait(false);
             context.SiegeData.LordsMixCount = GetCurrentCount(context, today) + 1;
+
             // The calendar date of the server's local time, stored with the UTC kind which the database requires.
             context.SiegeData.LordsMixCountDate = DateTime.SpecifyKind(today.Date, DateTimeKind.Utc);
             await context.SaveLordsMixCountAsync().ConfigureAwait(false);
@@ -128,8 +129,8 @@ public class LordsMixCrafting : SimpleItemCraftingHandler
     private static int GetCurrentCount(CastleSiegeContext context, DateTime today)
     {
         return context.Configuration.LordsMixLimitPeriod == LordsMixLimitPeriod.Day
-               && context.SiegeData.LordsMixCountDate?.Date != today.Date
-            ? 0
-            : context.SiegeData.LordsMixCount;
+            && context.SiegeData.LordsMixCountDate?.Date != today.Date
+                ? 0
+                : context.SiegeData.LordsMixCount;
     }
 }

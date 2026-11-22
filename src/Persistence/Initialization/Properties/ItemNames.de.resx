@@ -2286,4 +2286,7 @@
   <data name="GoldenMapleCharm" xml:space="preserve">
     <value>Goldener Ahorntalisman</value>
   </data>
+  <data name="WornHorseshoe" xml:space="preserve">
+    <value>Abgenutztes Hufeisen</value>
+  </data>
 </root>

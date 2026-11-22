@@ -2370,4 +2370,7 @@
   <data name="GoldenMapleCharm" xml:space="preserve">
     <value>Golden Maple Charm</value>
   </data>
+  <data name="WornHorseshoe" xml:space="preserve">
+    <value>Worn Horseshoe</value>
+  </data>
 </root>

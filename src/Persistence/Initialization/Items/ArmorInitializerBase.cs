@@ -158,12 +158,10 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="durability">The item durability.</param>
     /// <param name="strengthRequirement">The required strength attribute.</param>
     /// <param name="agilityRequirement">The required agility attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
-    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int defenseRate, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
+    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int defenseRate, byte durability, int strengthRequirement, int agilityRequirement, CharacterClasses qualifiedClasses)
     {
-        this.CreateShield(number, slot, skill, width, height, name, dropLevel, defense, defenseRate, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, 0, 0, 0, 0);
+        this.CreateShield(number, slot, skill, width, height, name, dropLevel, defense, defenseRate, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, qualifiedClasses);
     }
 
     /// <summary>
@@ -185,16 +183,10 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="energyRequirement">The required energy attribute.</param>
     /// <param name="vitalityRequirement">The required vitality attribute.</param>
     /// <param name="leadershipRequirement">The required leadership attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
-    /// <param name="magicGladiatorClassLevel">The magic gladiator class level.</param>
-    /// <param name="darkLordClassLevel">The dark lord class level.</param>
-    /// <param name="summonerClassLevel">The summoner class level.</param>
-    /// <param name="ragefighterClassLevel">The rage fighter class level.</param>
-    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
+    protected void CreateShield(byte number, byte slot, byte skill, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int defenseRate, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, CharacterClasses qualifiedClasses)
     {
-        var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel, true);
+        var shield = this.CreateArmor(number, slot, width, height, name, dropLevel, 0, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, qualifiedClasses, true);
         if (skill != 0)
         {
             shield.Skill = this.GameConfiguration.Skills.First(s => s.Number == skill);
@@ -233,13 +225,11 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="durability">The item durability.</param>
     /// <param name="strengthRequirement">The required strength attribute.</param>
     /// <param name="agilityRequirement">The required agility attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateGloves(byte number, LocalizedString name, byte dropLevel, int defense, int attackSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected ItemDefinition CreateGloves(byte number, LocalizedString name, byte dropLevel, int defense, int attackSpeed, byte durability, int strengthRequirement, int agilityRequirement, CharacterClasses qualifiedClasses)
     {
-        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, qualifiedClasses);
         if (attackSpeed > 0)
         {
             gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
@@ -261,16 +251,11 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="levelRequirement">The required character level.</param>
     /// <param name="strengthRequirement">The required strength attribute.</param>
     /// <param name="agilityRequirement">The required agility attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
-    /// <param name="magicGladiatorClassLevel">The magic gladiator class level.</param>
-    /// <param name="darkLordClassLevel">The dark lord class level.</param>
-    /// <param name="summonerClassLevel">The summoner class level.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateGloves(byte number, LocalizedString name, byte dropLevel, int defense, int attackSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel)
+    protected ItemDefinition CreateGloves(byte number, LocalizedString name, byte dropLevel, int defense, int attackSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, CharacterClasses qualifiedClasses)
     {
-        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, 0);
+        var gloves = this.CreateArmor(number, 5, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, 0, 0, 0, qualifiedClasses);
         if (attackSpeed > 0)
         {
             gloves.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.AttackSpeedAny, attackSpeed, AggregateType.AddRaw));
@@ -294,13 +279,11 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="durability">The item durability.</param>
     /// <param name="strengthRequirement">The required strength attribute.</param>
     /// <param name="agilityRequirement">The required agility attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateBoots(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int walkSpeed, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected ItemDefinition CreateBoots(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, int walkSpeed, byte durability, int strengthRequirement, int agilityRequirement, CharacterClasses qualifiedClasses)
     {
-        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel);
+        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, strengthRequirement, agilityRequirement, qualifiedClasses);
         if (walkSpeed > 0)
         {
             boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
@@ -325,17 +308,11 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="energyRequirement">The required energy attribute.</param>
     /// <param name="vitalityRequirement">The required vitality attribute.</param>
     /// <param name="leadershipRequirement">The required leadership attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
-    /// <param name="magicGladiatorClassLevel">The magic gladiator class level.</param>
-    /// <param name="darkLordClassLevel">The dark lord class level.</param>
-    /// <param name="summonerClassLevel">The summoner class level.</param>
-    /// <param name="ragefighterClassLevel">The rage fighter class level.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateBoots(byte number, LocalizedString name, byte dropLevel, int defense, int walkSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel)
+    protected ItemDefinition CreateBoots(byte number, LocalizedString name, byte dropLevel, int defense, int walkSpeed, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, CharacterClasses qualifiedClasses)
     {
-        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+        var boots = this.CreateArmor(number, 6, 2, 2, name, dropLevel, defense, durability, levelRequirement, strengthRequirement, agilityRequirement, energyRequirement, vitalityRequirement, leadershipRequirement, qualifiedClasses);
         if (walkSpeed > 0)
         {
             boots.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.WalkSpeed, walkSpeed, AggregateType.AddRaw));
@@ -358,21 +335,19 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="durability">The item durability.</param>
     /// <param name="strengthRequirement">The required strength attribute.</param>
     /// <param name="agilityRequirement">The required agility attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int strengthRequirement, int agilityRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel)
+    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int strengthRequirement, int agilityRequirement, CharacterClasses qualifiedClasses)
     {
-        var magicGladiatorClassLevel = 0;
+        // Magic gladiators wear everything but helms of dark wizards / dark knights.
+        var classes = qualifiedClasses;
         if ((slot + 5) != (int)ItemGroups.Helm
-            && (darkKnightClassLevel == 1 || darkWizardClassLevel == 1)
-            && this.GameConfiguration.CharacterClasses.Any(c => c.Number == (byte)CharacterClassNumber.MagicGladiator))
+            && (classes & (CharacterClasses.DarkKnight | CharacterClasses.DarkWizard)) != 0)
         {
-            magicGladiatorClassLevel = 1;
+            classes |= CharacterClasses.AllMGs;
         }
 
-        return this.CreateArmor(number, slot, width, height, name, dropLevel, defense, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, 0, 0, 0);
+        return this.CreateArmor(number, slot, width, height, name, dropLevel, defense, durability, 0, strengthRequirement, agilityRequirement, 0, 0, 0, classes);
     }
 
     /// <summary>
@@ -392,16 +367,10 @@ public abstract class ArmorInitializerBase : InitializerBase
     /// <param name="energyRequirement">The required energy attribute.</param>
     /// <param name="vitalityRequirement">The required vitality attribute.</param>
     /// <param name="leadershipRequirement">The required leadership attribute.</param>
-    /// <param name="darkWizardClassLevel">The dark wizard class level.</param>
-    /// <param name="darkKnightClassLevel">The dark knight class level.</param>
-    /// <param name="elfClassLevel">The elf class level.</param>
-    /// <param name="magicGladiatorClassLevel">The magic gladiator class level.</param>
-    /// <param name="darkLordClassLevel">The dark lord class level.</param>
-    /// <param name="summonerClassLevel">The summoner class level.</param>
-    /// <param name="ragefighterClassLevel">The rage fighter class level.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     /// <param name="isShield">If set to <c>true</c> the armor is considered a shield.</param>
     /// <returns>The created item definition.</returns>
-    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, int darkWizardClassLevel, int darkKnightClassLevel, int elfClassLevel, int magicGladiatorClassLevel, int darkLordClassLevel, int summonerClassLevel, int ragefighterClassLevel, bool isShield = false)
+    protected ItemDefinition CreateArmor(byte number, byte slot, byte width, byte height, LocalizedString name, byte dropLevel, int defense, byte durability, int levelRequirement, int strengthRequirement, int agilityRequirement, int energyRequirement, int vitalityRequirement, int leadershipRequirement, CharacterClasses qualifiedClasses, bool isShield = false)
     {
         var armor = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(armor);
@@ -429,7 +398,7 @@ public abstract class ArmorInitializerBase : InitializerBase
             armor.BasePowerUpAttributes.Add(powerUp);
         }
 
-        var classes = this.GameConfiguration.DetermineCharacterClasses(darkWizardClassLevel, darkKnightClassLevel, elfClassLevel, magicGladiatorClassLevel, darkLordClassLevel, summonerClassLevel, ragefighterClassLevel);
+        var classes = this.GameConfiguration.DetermineCharacterClasses(qualifiedClasses, ignoreMissing: true);
         foreach (var characterClass in classes)
         {
             armor.QualifiedCharacters.Add(characterClass);

@@ -213,17 +213,7 @@ public class Storage : IStorage
     /// <inheritdoc/>
     public bool FitsAfterRemoval(ItemDefinition definition, ICollection<Item> removedItems)
     {
-        var usedSlots = (bool[,])this._usedSlots.Clone();
-        for (var slot = this._boxOffset; slot < this.ItemArray.Length; slot++)
-        {
-            if (this.ItemArray[slot] is { } item && removedItems.Contains(item))
-            {
-                SetUsedSlots(usedSlots, item, this.GetColumnIndex(slot), this.GetRowIndex(slot), false);
-            }
-        }
-
-        return FindPlace(usedSlots, definition.Width, definition.Height) is not null
-               || this.Extensions.Any(extension => extension.FitsAfterRemoval(definition, removedItems));
+        return this.CanAddItems([new TemporaryItem { Definition = definition }], removedItems);
     }
 
     /// <inheritdoc/>
@@ -246,6 +236,12 @@ public class Storage : IStorage
         }
 
         return null;
+    }
+
+    /// <inheritdoc/>
+    public bool CanAddItems(IEnumerable<Item> items, ICollection<Item>? removedItems = null)
+    {
+        return this.TakeWhatFits(items.ToList(), removedItems ?? []).Count == 0;
     }
 
     /// <inheritdoc/>
@@ -504,6 +500,62 @@ public class Storage : IStorage
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Places the items, in their order, where <see cref="CheckInvSpace"/> would find a place for them, without changing
+    /// the storage: an item which fits into this storage takes its place here, the others go to the extensions. The
+    /// cells of the removed items which this storage holds count as free. An item without definition finds no place.
+    /// </summary>
+    /// <remarks>
+    /// An extension which isn't a <see cref="Storage"/> takes all the remaining items or none of them, so items may be
+    /// refused which would fit into it partly, but no item is accepted which finds no place.
+    /// </remarks>
+    /// <param name="items">The items.</param>
+    /// <param name="removedItems">The removed items.</param>
+    /// <returns>The items which find no place.</returns>
+    private List<Item> TakeWhatFits(List<Item> items, ICollection<Item> removedItems)
+    {
+        var usedSlots = (bool[,])this._usedSlots.Clone();
+        for (var slot = this._boxOffset; slot < this.ItemArray.Length; slot++)
+        {
+            if (this.ItemArray[slot] is { } item && removedItems.Contains(item))
+            {
+                SetUsedSlots(usedSlots, item, this.GetColumnIndex(slot), this.GetRowIndex(slot), false);
+            }
+        }
+
+        var leftovers = new List<Item>();
+        foreach (var item in items)
+        {
+            if (item.Definition is { } definition && FindPlace(usedSlots, definition.Width, definition.Height) is { } place)
+            {
+                SetUsedSlots(usedSlots, item, place.Column, place.Row, true);
+            }
+            else
+            {
+                leftovers.Add(item);
+            }
+        }
+
+        foreach (var extension in this.Extensions)
+        {
+            if (leftovers.Count == 0)
+            {
+                break;
+            }
+
+            // Of another storage, e.g. of a plug-in, it's only known whether it takes all the items or not. When it
+            // doesn't, it's assumed to take none of them, so the next extensions must take all of them.
+            leftovers = extension switch
+            {
+                Storage storage => storage.TakeWhatFits(leftovers, removedItems),
+                _ when extension.CanAddItems(leftovers, removedItems) => [],
+                _ => leftovers,
+            };
+        }
+
+        return leftovers;
     }
 
     private byte GetSlot(int column, int row)

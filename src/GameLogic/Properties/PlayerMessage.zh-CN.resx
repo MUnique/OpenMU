@@ -45,6 +45,9 @@
   <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
     <value>限时物品不能在此使用。</value>
   </data>
+  <data name="MoneyPickupLimitReached" xml:space="preserve">
+    <value>你无法携带更多的金币。</value>
+  </data>
   <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
     <value>只有拥有城堡的战盟的盟主才能使用领主合成。</value>
   </data>
