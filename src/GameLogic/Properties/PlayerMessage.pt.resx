@@ -480,6 +480,9 @@
   <data name="PickupLimitReached" xml:space="preserve">
     <value>Limite atingido para '{0}'.</value>
   </data>
+  <data name="MoneyPickupLimitReached" xml:space="preserve">
+    <value>Você não pode carregar mais zen.</value>
+  </data>
   <data name="NotEnoughMoneyToEnter" xml:space="preserve">
     <value>Zen insuficiente para entrar em {0}.</value>
   </data>

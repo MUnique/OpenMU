@@ -1931,6 +1931,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t carry more zen..
+        /// </summary>
+        public static string MoneyPickupLimitReached {
+            get {
+                return ResourceManager.GetString("MoneyPickupLimitReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monster with number {0} created, id: {1}..
         /// </summary>
         public static string MonsterCreatedByGameMaster {
