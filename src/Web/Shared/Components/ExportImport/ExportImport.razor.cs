@@ -64,6 +64,18 @@ public partial class ExportImport : IAsyncDisposable
     public EventCallback<string> OnImport { get; set; }
 
     /// <summary>
+    /// Gets or sets additional CSS classes of both buttons, e.g. to make them equally wide.
+    /// </summary>
+    [Parameter]
+    public string? ButtonClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether both buttons are disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>
     /// Gets or sets the java script runtime.
     /// </summary>
     [Inject]
@@ -144,13 +156,20 @@ public partial class ExportImport : IAsyncDisposable
         }
 
         this._isImporting = true;
-        using var loading = this.LoadingOverlay.ShowLoadingIndicator();
         try
         {
-            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
+            string content;
+            using (this.LoadingOverlay.ShowLoadingIndicator())
+            {
+                await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(false);
 
-            using var reader = new StreamReader(file.Data);
-            var content = await reader.ReadToEndAsync().ConfigureAwait(true);
+                using var reader = new StreamReader(file.Data);
+                content = await reader.ReadToEndAsync().ConfigureAwait(true);
+            }
+
+            // The parent may show a preview and wait for the user, so the loading
+            // indicator must not cover it. The parent shows its own indicator for
+            // the actual import work.
             await this.OnImport.InvokeAsync(content).ConfigureAwait(true);
         }
         finally
