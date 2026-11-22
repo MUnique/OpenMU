@@ -5,17 +5,20 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// This update lets the excellent version of the 380 items and the Horn of Fenrir need the same level as the normal one.
+/// This update lets the excellent version of the weapons, shields and armor pieces and of the Horn of Fenrir need the
+/// same level as the normal one.
 /// </summary>
 /// <remarks>
-/// The level requirement of every excellent item was raised, so e.g. an excellent Dragon Knight Armor needed level 400.
-/// The original game server doesn't raise it for weapons and armor pieces, and the client shows the level without
-/// the raise for these items (see <see cref="ExcellentLevelRequirement"/>).
+/// The data raised the level requirement of every excellent item except the lucky items. With an
+/// <see cref="ItemStatProfile.ExcellentLevelAdd"/> of 20, as in the original game, e.g. an excellent Dragon Knight Armor
+/// would need level 400. The built-in item stat profiles add no level, so with them the update changes no requirement.
+/// The original game servers don't raise it for weapons, shields and armor pieces (see
+/// <see cref="ExcellentLevelRequirement"/>).
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixExcellentLevelRequirementPlugIn_Name), Description = nameof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources.FixExcellentLevelRequirementPlugIn_Description), ResourceType = typeof(MUnique.OpenMU.Persistence.Initialization.Properties.PlugInResources))]
