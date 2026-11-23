@@ -1002,7 +1002,14 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
-        var droppedItem = new DroppedItem(relicItem, player.Position, map, player);
+        // Only the participants of the match may pick the relic up, during its whole lifetime on the ground.
+        // Without that, anybody on the map could take it as soon as the owner pickup priority of the
+        // dropped item is over.
+        var participants = this._teams.Keys.Cast<object>().ToList();
+        var droppedItem = new DroppedItem(relicItem, player.Position, map, player, participants)
+        {
+            OwnerOnly = true,
+        };
         await map.AddAsync(droppedItem).ConfigureAwait(false);
         await player.Inventory!.RemoveItemAsync(relicItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);

@@ -214,6 +214,44 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
+    /// The dropped relic can only be picked up by the participants of the match - a player who is not
+    /// part of it can't take it, no matter how long it has been on the ground.
+    /// </summary>
+    [Test]
+    public async ValueTask DroppedRelicCanOnlyBePickedUpByParticipantsAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var carrier = players[0];
+        var otherParticipant = players[1];
+        var outsider = await CreatePlayerAsync(gameContext, "Outsider").ConfigureAwait(false);
+        carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
+        await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
+
+        await InvokeProtectedAsync(illusionTemple, "OnPlayerDied", [carrier, new DeathInformation(otherParticipant.Id, otherParticipant.Name, default, 0)]).ConfigureAwait(false);
+        await WaitUntilAsync(() => GetRelicCarrier(illusionTemple) is null).ConfigureAwait(false);
+        var droppedRelic = illusionTemple.Map.GetDropsInRange(carrier.Position, 5).OfType<DroppedItem>().First(d => IsRelicItem(d.Item));
+
+        // The owner priority of 10 seconds is not what protects the relic, the owner-only flag is:
+        // it holds for the whole lifetime of the dropped item.
+        Assert.That(droppedRelic.OwnerOnly, Is.True);
+        Assert.That(droppedRelic.IsPlayerAnOwner(carrier), Is.True);
+        Assert.That(droppedRelic.IsPlayerAnOwner(otherParticipant), Is.True);
+        Assert.That(droppedRelic.IsPlayerAnOwner(outsider), Is.False);
+
+        var outsiderResult = await droppedRelic.TryPickUpByAsync(outsider).ConfigureAwait(false);
+        Assert.That(outsiderResult.Success, Is.False);
+        Assert.That(outsider.Inventory!.Items.Any(IsRelicItem), Is.False);
+
+        var participantResult = await droppedRelic.TryPickUpByAsync(otherParticipant).ConfigureAwait(false);
+        Assert.That(participantResult.Success, Is.True);
+        Assert.That(otherParticipant.Inventory!.Items.Any(IsRelicItem), Is.True);
+    }
+
+    /// <summary>
     /// Delivering the relic to the carrier's own team storage scores a point for that team and clears
     /// the carrier state, so the relic can be granted again from the next statue.
     /// </summary>
