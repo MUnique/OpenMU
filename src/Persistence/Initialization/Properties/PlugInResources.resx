@@ -386,6 +386,8 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
   <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve"><value>Let the Iron Knight use its stab</value></data>
   <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve"><value>This update lets the Iron Knight of Raklion attack with its stab, which the client shows with a combo effect.</value></data>
+  <data name="FixFlameOfCondorDropLevelUpdatePlugIn_Name" xml:space="preserve"><value>Let the Flame of Condor drop</value></data>
+  <data name="FixFlameOfCondorDropLevelUpdatePlugIn_Description" xml:space="preserve"><value>This update removes the drop level of the Flame of Condor, which was higher than the level of the monsters of the Barracks of Balgass and prevented the item from dropping.</value></data>
   <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve"><value>Add Loren Market Jeweler Raul jewel bundles</value></data>
   <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve"><value>This update lets Jeweler Raul (546) of the Loren Market open the jewel bundle window, to combine jewels into bundles and disband them, like Lahap.</value></data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>Move server ports out of the dynamic port range</value></data>
