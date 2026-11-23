@@ -341,6 +341,12 @@ public sealed class DroppedItem : AsyncDisposable, ILocateable
 
         player.Logger.LogInformation("Item '{0}' partially stacked on '{1}' of player '{2}', durability of the stack is now {3}.", this, partialTarget, player, partialTarget.Durability);
         await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(partialTarget, false)).ConfigureAwait(false);
+
+        // Like on the other stacking paths, the stack could be complete now (e.g. a symbol of kundun stack which turns into a lost map).
+        if (player.GameContext.PlugInManager.GetPlugInPoint<PlugIns.IItemStackedPlugIn>() is { } itemStackedPlugIn)
+        {
+            await itemStackedPlugIn.ItemStackedAsync(player, this.Item, partialTarget).ConfigureAwait(false);
+        }
     }
 
     private async ValueTask<bool> TryStackOnItemAsync(Player player, Item stackTarget)
