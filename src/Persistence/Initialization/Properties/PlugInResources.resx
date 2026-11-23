@@ -514,4 +514,16 @@
   <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.</value>
   </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the zen drops in the mini games</value>
+  </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Description" xml:space="preserve">
+    <value>The zen of the monsters killed in a mini game is dropped like anywhere else instead of being added to the inventory. This update removes the zen drop from the maps whose monsters give no zen (Devil Square, Illusion Temple) and marks the event monsters which drop no zen (Doppelganger, Imperial Guardian, Kanturu).</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Name" xml:space="preserve">
+    <value>Devil Square rewards for every rank</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Description" xml:space="preserve">
+    <value>Configures the Devil Square rewards by tiers, so that every ranked player gets a reward instead of only the ranks 1 to 4: up to six players by rank, with more players by rank percentage. The amounts of the ranks 1 to 4 are kept as the amounts of the tiers 1 to 4.</value>
+  </data>
 </root>

@@ -186,6 +186,40 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that a monster drops money of a money drop group, when <see cref="MonsterDefinition.DropsNoZen"/> isn't set.
+    /// </summary>
+    [Test]
+    public async ValueTask TestMonsterDropsZenByDefaultAsync()
+    {
+        var monster = this.GetMonsterWithItemAndMoneyDrop();
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.5));
+        var (items, money) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        Assert.That(items, Has.Exactly(1).Items);
+        Assert.That(money, Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Tests that a monster with <see cref="MonsterDefinition.DropsNoZen"/> drops no money, neither of its own
+    /// money drop group nor of the one of the map, but still its items.
+    /// </summary>
+    [Test]
+    public async ValueTask TestMonsterWhichDropsNoZenStillDropsItemsAsync()
+    {
+        var monster = this.GetMonsterWithItemAndMoneyDrop();
+        monster.DropsNoZen = true;
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.CurrentMap!.Definition.DropItemGroups.Add(4000, SpecialItemType.Money, false);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.1));
+        var (items, money) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+
+        Assert.That(items, Has.Exactly(1).Items);
+        Assert.That(money, Is.Null);
+    }
+
+    /// <summary>
     /// Tests that inactive items are not dropped, but the active items of the same drop group.
     /// </summary>
     [Test]
@@ -511,6 +545,14 @@ public class DropGeneratorTest
         monster.Object.NumberOfMaximumItemDrops = numberOfDrops;
         monster.Object.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.Level, Value = level });
         return monster.Object;
+    }
+
+    private MonsterDefinition GetMonsterWithItemAndMoneyDrop()
+    {
+        var monster = this.GetMonster(3, 10);
+        monster.DropItemGroups.Add(10000, SpecialItemType.RandomItem, true);
+        monster.DropItemGroups.Add(10000, SpecialItemType.Money, false);
+        return monster;
     }
 
     private IRandomizer GetRandomizer(int randomValue)

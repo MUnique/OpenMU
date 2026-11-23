@@ -403,14 +403,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory..
+        ///   Looks up a localized string similar to This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they&apos;re used inside the inventory..
         /// </summary>
         public static string AddFigurinesAndCharmsUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddFigurinesAndCharmsUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the figurines and charms.
         /// </summary>
@@ -419,7 +419,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddFigurinesAndCharmsUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Adds the Fire Blast skill (active in castle siege) to a created dark lord character..
         /// </summary>
@@ -1393,14 +1393,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.
+        ///   Looks up a localized string similar to This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it&apos;s used inside the inventory..
         /// </summary>
         public static string AddWornHorseshoeUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Add the worn horseshoe.
         /// </summary>
@@ -1409,7 +1409,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Name", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects..
         /// </summary>
@@ -1569,6 +1569,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string DataInitialization095d_Name {
             get {
                 return ResourceManager.GetString("DataInitialization095d_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configures the Devil Square rewards by tiers, so that every ranked player gets a reward instead of only the ranks 1 to 4: up to six players by rank, with more players by rank percentage. The amounts of the ranks 1 to 4 are kept as the amounts of the tiers 1 to 4..
+        /// </summary>
+        public static string DevilSquareRewardTiersUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("DevilSquareRewardTiersUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Devil Square rewards for every rank.
+        /// </summary>
+        public static string DevilSquareRewardTiersUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("DevilSquareRewardTiersUpdatePlugIn_Name", resourceCulture);
             }
         }
         
@@ -2289,6 +2307,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name {
             get {
                 return ResourceManager.GetString("FixMaxManaAndAbilityJewelryOptionsUpdateSeason6_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The zen of the monsters killed in a mini game is dropped like anywhere else instead of being added to the inventory. This update removes the zen drop from the maps whose monsters give no zen (Devil Square, Illusion Temple) and marks the event monsters which drop no zen (Doppelganger, Imperial Guardian, Kanturu)..
+        /// </summary>
+        public static string FixMiniGameZenDropsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixMiniGameZenDropsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fix the zen drops in the mini games.
+        /// </summary>
+        public static string FixMiniGameZenDropsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixMiniGameZenDropsUpdatePlugIn_Name", resourceCulture);
             }
         }
         

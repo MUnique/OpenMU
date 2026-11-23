@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameReward",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameReward),
                 baseEntityType,
-                propertyCount: 8,
+                propertyCount: 13,
                 navigationCount: 2,
                 foreignKeyCount: 3,
                 unnamedIndexCount: 3,
@@ -48,11 +48,51 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 nullable: true);
             itemRewardId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
+            var maximumRank = runtimeEntityType.AddProperty(
+                "MaximumRank",
+                typeof(int?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetProperty("MaximumRank", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetField("<MaximumRank>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            maximumRank.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var maximumRankPercentage = runtimeEntityType.AddProperty(
+                "MaximumRankPercentage",
+                typeof(int?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetProperty("MaximumRankPercentage", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetField("<MaximumRankPercentage>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            maximumRankPercentage.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var maximumRankedPlayers = runtimeEntityType.AddProperty(
+                "MaximumRankedPlayers",
+                typeof(int?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetProperty("MaximumRankedPlayers", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetField("<MaximumRankedPlayers>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            maximumRankedPlayers.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
             var miniGameDefinitionId = runtimeEntityType.AddProperty(
                 "MiniGameDefinitionId",
                 typeof(Guid?),
                 nullable: true);
             miniGameDefinitionId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var minimumRankPercentage = runtimeEntityType.AddProperty(
+                "MinimumRankPercentage",
+                typeof(int?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetProperty("MinimumRankPercentage", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetField("<MinimumRankPercentage>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            minimumRankPercentage.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var minimumRankedPlayers = runtimeEntityType.AddProperty(
+                "MinimumRankedPlayers",
+                typeof(int?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetProperty("MinimumRankedPlayers", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MiniGameReward).GetField("<MinimumRankedPlayers>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            minimumRankedPlayers.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var rank = runtimeEntityType.AddProperty(
                 "Rank",

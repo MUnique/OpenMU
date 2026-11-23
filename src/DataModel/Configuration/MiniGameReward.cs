@@ -72,6 +72,37 @@ public partial class MiniGameReward
     public int? Rank { get; set; }
 
     /// <summary>
+    /// Gets or sets the maximum rank to which this reward is applicable.
+    /// When it's set, the reward is applicable to the ranks from <see cref="Rank"/> to this rank;
+    /// otherwise, only to <see cref="Rank"/>.
+    /// </summary>
+    public int? MaximumRank { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum number of ranked players, so that this reward is applicable.
+    /// </summary>
+    public int? MinimumRankedPlayers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum number of ranked players, so that this reward is applicable.
+    /// </summary>
+    public int? MaximumRankedPlayers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the minimum rank percentage, so that this reward is applicable.
+    /// The rank percentage of a player is its rank * 100 / number of ranked players, rounded down,
+    /// so the best players have the lowest percentage.
+    /// </summary>
+    public int? MinimumRankPercentage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the maximum rank percentage, so that this reward is applicable.
+    /// The rank percentage of a player is its rank * 100 / number of ranked players, rounded down,
+    /// so the best players have the lowest percentage.
+    /// </summary>
+    public int? MaximumRankPercentage { get; set; }
+
+    /// <summary>
     /// Gets or sets the reward type.
     /// </summary>
     public MiniGameRewardType RewardType { get; set; }
@@ -105,8 +136,17 @@ public partial class MiniGameReward
         var result = new StringBuilder();
         if (this.Rank.HasValue)
         {
-            result.Append("Rank ").Append(this.Rank.Value).Append(": ");
+            result.Append("Rank ").Append(this.Rank.Value);
+            if (this.MaximumRank.HasValue)
+            {
+                result.Append('-').Append(this.MaximumRank.Value);
+            }
+
+            result.Append(": ");
         }
+
+        AppendRange(result, "Players ", this.MinimumRankedPlayers, this.MaximumRankedPlayers);
+        AppendRange(result, "Rank % ", this.MinimumRankPercentage, this.MaximumRankPercentage);
 
         if (this.RequiredSuccess > 0)
         {
@@ -121,5 +161,27 @@ public partial class MiniGameReward
         }
 
         return result.ToString();
+    }
+
+    private static void AppendRange(StringBuilder result, string caption, int? minimum, int? maximum)
+    {
+        if (!minimum.HasValue && !maximum.HasValue)
+        {
+            return;
+        }
+
+        result.Append(caption);
+        if (minimum.HasValue)
+        {
+            result.Append(minimum.Value);
+        }
+
+        result.Append('-');
+        if (maximum.HasValue)
+        {
+            result.Append(maximum.Value);
+        }
+
+        result.Append(": ");
     }
 }

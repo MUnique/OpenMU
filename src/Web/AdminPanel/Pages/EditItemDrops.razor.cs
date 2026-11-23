@@ -565,6 +565,11 @@ public partial class EditItemDrops : ComponentBase, IAsyncDisposable
                 groups.AddRange(map.DropItemGroups.Where(this.IsRelevant).Except(groups));
             }
 
+            if (monster.DropsNoZen)
+            {
+                groups.RemoveAll(group => group.ItemType == SpecialItemType.Money);
+            }
+
             this.Groups = groups.OrderByDescending(g => g.Chance).ToList();
             this.GuaranteedDrops = groups.Count(g => g.Chance >= 1.0);
             this.TotalChance = groups.Where(g => g.Chance < 1.0).Sum(g => g.Chance);

@@ -37,7 +37,10 @@ to it:
   restriction (if set) matches,
 * the groups of active **quests** of the killer (or the party).
 
-Destructible objects only use their own groups.
+Destructible objects only use their own groups. Monsters with *drops no zen*,
+e.g. the bosses of the Imperial Guardian, skip the groups of type `Money`; the
+other groups still apply. The maps of the Devil Square and the Illusion Temple
+have no money group, because their monsters give no zen.
 
 A monster then rolls up to its **maximum item drops** times:
 
@@ -66,7 +69,7 @@ The settings of the game configuration which affect all drops:
 
 | Setting | Meaning |
 |---|---|
-| Drop money | Whether monsters drop money on the ground, or add it to the inventory of the killer directly |
+| Drop money | Whether monsters drop money on the ground, or add it to the inventory of the killer directly. It applies to the mini games, too. |
 | Item drop duration | How many seconds a dropped item stays on the ground |
 | Maximum item option level | The highest item option level (+4, +8, +12, +16) a dropped item can get |
 | Excellent item drop level delta | How many levels a monster must be above the drop level of an item, so that it can drop as excellent item |

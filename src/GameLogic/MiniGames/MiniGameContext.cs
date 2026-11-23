@@ -646,15 +646,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
     /// <param name="rank">The rank of the player in the current game.</param>
+    /// <param name="rankedPlayers">The number of ranked players in the current game.</param>
     /// <param name="rewardFilter">
     /// An optional filter which selects the rewards to give. Games which hand out their rewards in
     /// more than one step (e.g. the illusion temple, which grants the experience right away but the
     /// rest only when the player claims it) use it to pick the part they're granting right now.
     /// </param>
     /// <returns>The bonus score and the given money.</returns>
-    protected Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank, Func<MiniGameReward, bool>? rewardFilter = null)
+    protected Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank, int rankedPlayers, Func<MiniGameReward, bool>? rewardFilter = null)
     {
-        return this._rewards.GiveRewardsAndGetBonusScoreAsync(player, rank, rewardFilter);
+        return this._rewards.GiveRewardsAndGetBonusScoreAsync(player, rank, rankedPlayers, rewardFilter);
     }
 
     /// <summary>
