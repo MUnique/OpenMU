@@ -47,7 +47,8 @@ public sealed class ItemBoxDroppedPlugIn : IItemDropPlugIn
 
         if (generatedItem is not null)
         {
-            var droppedItem = new DroppedItem(generatedItem, player.Position, player.CurrentMap!, player);
+            var owners = player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
+            var droppedItem = new DroppedItem(generatedItem, player.Position, player.CurrentMap!, player, owners);
             await player.CurrentMap!.AddAsync(droppedItem).ConfigureAwait(false);
         }
 

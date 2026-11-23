@@ -130,7 +130,8 @@ public abstract class BaseItemRegistrationStrategy : IItemRegistrationStrategy
                 if (droppedItem != null)
                 {
                     var dropCoordinates = player.CurrentMap!.Terrain.GetRandomCoordinate(player.Position, 2);
-                    var dropped = new DroppedItem(droppedItem, dropCoordinates, player.CurrentMap, player);
+                    var owners = player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
+                    var dropped = new DroppedItem(droppedItem, dropCoordinates, player.CurrentMap, player, owners);
                     await player.CurrentMap.AddAsync(dropped).ConfigureAwait(false);
                 }
             }
