@@ -474,6 +474,12 @@
   <data name="AddGladiatorsHonorUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Gladiator's Honor, which increases the experience in Vulcanus by 20 % for 30 minutes.</value>
   </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Sell the rented items of the cash shop</value>
+  </data>
+  <data name="AddRentalItemRulesUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update puts the time-limited pets, rings, necklaces and small wings of the cash shop on sale, which are delivered as items which expire, and lets them be sold to an NPC once they expired, for the small fixed price which the client shows.</value>
+  </data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>Season 6 NPC spawns</value></data>
   <data name="NpcSpawnsUpdatePlugInSeason6_Description" xml:space="preserve"><value>Brings the NPCs to their Season 6 positions and looking directions (Lorencia, Devias, Noria, Arena, Atlans, Elvenland, Aida, Crywolf Fortress, Valley of Loren, Karutan, Kanturu and Illusion Temple), adds the missing Elf Soldier of Devias, the two missing Elf Soldiers of Noria and the Golden Archer of Devias, and removes the NPCs which Season 6 doesn't have: of the older versions the Potion Girls of Noria and Lost Tower, the Safety Guardians of Lost Tower, Arena and Atlans, the guard at 114/125 and the Golden Archer of Lorencia; Lugard, Priest Devin and Mirage of Devias, which Season 6 has only in Elvenland and Crywolf Fortress; and the second Crown of Valley of Loren. Customized positions and directions of these NPCs are overwritten.</value></data>
   <data name="IllusionTempleDataUpdatePlugIn_Name" xml:space="preserve">
@@ -493,5 +499,17 @@
   </data>
   <data name="AddFigurinesAndCharmsUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Hawk and Goat Figurines and the (Golden) Oak and Maple Charms, which give their bonuses while they're used inside the inventory.</value>
+  </data>
+  <data name="AddLordsMixUpdatePlugIn_Name" xml:space="preserve">
+    <value>Lord's Mix</value>
+  </data>
+  <data name="AddLordsMixUpdatePlugIn_Description" xml:space="preserve">
+    <value>Adds the Lord's Mix to the castle senior: once per day, the guild master of the guild which owns the castle mixes 30 Jewels of Guardian, a Packed Jewel of Bless and a Packed Jewel of Soul (30 jewels each) and 1,000,000,000 zen into an excellent weapon or armor with two to four excellent options, or a normal one. Sets the limit of one mix per day, if there's no limit yet.</value>
+  </data>
+  <data name="AddWornHorseshoeUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the worn horseshoe</value>
+  </data>
+  <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.</value>
   </data>
 </root>

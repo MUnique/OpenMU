@@ -135,140 +135,140 @@ internal class Weapons : InitializerBase
         this._ammunitionDamageIncreaseTable = this.CreateItemBonusTable(AmmunitionDamageIncreaseByLevel, LocalizedString.FromResource(() => LevelBonusNames.DamageIncreasePercentBoltsArrows), LocalizedString.FromResource(() => LevelBonusDescriptions.AmmunitionDamageIncreasePerLevel));
         this._ammunitionManaLossAfterHitTable = this.CreateItemBonusTable(AmmunitionManaLossAfterHitByLevel, LocalizedString.FromResource(() => LevelBonusNames.ManaLossAfterHitBoltsArrows), LocalizedString.FromResource(() => LevelBonusDescriptions.AmmunitionManaLoss));
 
-        this.CreateWeapon(0, 0, 0, 0, 1, 2, true, LocalizedString.FromResource(() => ItemNames.Kris), 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, 1, 1, 1, 1, 1, 1, 1);
-        this.CreateWeapon(0, 1, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ShortSword), 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
-        this.CreateWeapon(0, 2, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Rapier), 9, 9, 15, 40, 23, 0, 0, 50, 40, 0, 0, 0, 1, 1, 1, 1, 1, 0);
-        this.CreateWeapon(0, 3, 0, 20, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Katache), 16, 16, 26, 35, 27, 0, 0, 80, 40, 0, 0, 0, 1, 0, 1, 1, 0, 0);
-        this.CreateWeapon(0, 4, 0, 21, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SwordOfAssassin), 12, 12, 18, 30, 24, 0, 0, 60, 40, 0, 0, 0, 1, 0, 1, 1, 0, 0);
-        this.CreateWeapon(0, 5, 0, 22, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Blade), 36, 36, 47, 30, 39, 0, 0, 80, 50, 0, 0, 1, 1, 1, 1, 1, 0, 0);
-        this.CreateWeapon(0, 6, 0, 20, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Gladius), 20, 20, 30, 20, 30, 0, 0, 110, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0);
-        this.CreateWeapon(0, 7, 0, 21, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Falchion), 24, 24, 34, 25, 34, 0, 0, 120, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
-        this.CreateWeapon(0, 8, 0, 21, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SerpentSword), 30, 30, 40, 20, 36, 0, 0, 130, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
-        this.CreateWeapon(0, 9, 0, 20, 2, 3, true, LocalizedString.FromResource(() => ItemNames.SwordOfSalamander), 32, 32, 46, 30, 40, 0, 0, 103, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 10, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.LightSaber), 40, 47, 61, 25, 50, 0, 0, 80, 60, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(0, 11, 0, 20, 2, 3, true, LocalizedString.FromResource(() => ItemNames.LegendarySword), 44, 56, 72, 20, 54, 0, 0, 120, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 12, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.HeliacalSword), 56, 73, 98, 25, 66, 0, 0, 140, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 13, 0, 22, 1, 3, true, LocalizedString.FromResource(() => ItemNames.DoubleBlade), 48, 48, 56, 30, 43, 0, 0, 70, 70, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(0, 14, 0, 22, 1, 3, true, LocalizedString.FromResource(() => ItemNames.LightingSword), 59, 59, 67, 30, 50, 0, 0, 90, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(0, 15, 0, 23, 2, 3, true, LocalizedString.FromResource(() => ItemNames.GiantSword), 52, 60, 85, 20, 60, 0, 0, 140, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 16, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.SwordOfDestruction), 82, 82, 90, 35, 84, 0, 0, 160, 60, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 17, 0, 23, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DarkBreaker), 104, 128, 153, 40, 89, 0, 0, 180, 50, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(0, 18, 0, 23, 2, 3, true, LocalizedString.FromResource(() => ItemNames.ThunderBlade), 105, 140, 168, 40, 86, 0, 0, 180, 50, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 19, 0, 22, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineSwordOfArchangel), 86, 220, 230, 45, 168, 0, 0, 140, 50, 0, 0, 0, 1, 0, 1, 1, 0, 0);
-        this.CreateWeapon(0, 20, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.KnightBlade), 140, 107, 115, 35, 90, 0, 0, 116, 38, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(0, 21, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DarkReignBlade), 140, 115, 142, 40, 100, 115, 0, 116, 53, 9, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 22, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.BoneBlade), 147, 122, 135, 40, 95, 0, 380, 100, 35, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(0, 23, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.ExplosionBlade), 147, 127, 155, 45, 110, 134, 380, 98, 48, 7, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 24, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Daybreak), 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(0, 25, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SwordDancer), 115, 109, 136, 40, 90, 108, 0, 136, 57, 9, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 26, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.Flamberge), 137, 115, 126, 40, 90, 0, 380, 193, 53, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(0, 27, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.SwordBreaker), 133, 91, 99, 35, 90, 0, 380, 53, 176, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(0, 28, 0, 56, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ImperialSword), 139, 98, 122, 45, 90, 109, 380, 91, 73, 17, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 31, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.RuneBlade), 100, 104, 130, 35, 93, 104, 0, 135, 62, 9, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(0, 32, 0, 260, 1, 2, true, LocalizedString.FromResource(() => ItemNames.SacredGlove), 52, 52, 58, 25, 65, 0, 0, 85, 35, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateWeapon(0, 33, 0, 261, 1, 2, true, LocalizedString.FromResource(() => ItemNames.StormHardGlove), 82, 82, 88, 30, 77, 0, 0, 100, 50, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateWeapon(0, 34, 0, 260, 1, 2, true, LocalizedString.FromResource(() => ItemNames.PiercingBladeGlove), 105, 95, 101, 35, 86, 0, 0, 120, 60, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        this.CreateWeapon(0, 35, 0, 270, 1, 2, false, LocalizedString.FromResource(() => ItemNames.PhoenixSoulStar), 147, 122, 128, 40, 98, 0, 380, 101, 51, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        this.CreateWeapon(0, 0, 0, 0, 1, 2, true, LocalizedString.FromResource(() => ItemNames.Kris), 6, 6, 11, 50, 20, 0, 0, 40, 40, 0, 0, CharacterClasses.All);
+        this.CreateWeapon(0, 1, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ShortSword), 3, 3, 7, 20, 22, 0, 0, 60, 0, 0, 0, CharacterClasses.All);
+        this.CreateWeapon(0, 2, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Rapier), 9, 9, 15, 40, 23, 0, 0, 50, 40, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllElfs | CharacterClasses.AllSummoners);
+        this.CreateWeapon(0, 3, 0, 20, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Katache), 16, 16, 26, 35, 27, 0, 0, 80, 40, 0, 0, CharacterClasses.AllKnightsLordsAndMGs);
+        this.CreateWeapon(0, 4, 0, 21, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SwordOfAssassin), 12, 12, 18, 30, 24, 0, 0, 60, 40, 0, 0, CharacterClasses.AllKnightsLordsAndMGs);
+        this.CreateWeapon(0, 5, 0, 22, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Blade), 36, 36, 47, 30, 39, 0, 0, 80, 50, 0, 0, CharacterClasses.AllMagicians | CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllElfs);
+        this.CreateWeapon(0, 6, 0, 20, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Gladius), 20, 20, 30, 20, 30, 0, 0, 110, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllElfs);
+        this.CreateWeapon(0, 7, 0, 21, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Falchion), 24, 24, 34, 25, 34, 0, 0, 120, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs);
+        this.CreateWeapon(0, 8, 0, 21, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SerpentSword), 30, 30, 40, 20, 36, 0, 0, 130, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs);
+        this.CreateWeapon(0, 9, 0, 20, 2, 3, true, LocalizedString.FromResource(() => ItemNames.SwordOfSalamander), 32, 32, 46, 30, 40, 0, 0, 103, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 10, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.LightSaber), 40, 47, 61, 25, 50, 0, 0, 80, 60, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 11, 0, 20, 2, 3, true, LocalizedString.FromResource(() => ItemNames.LegendarySword), 44, 56, 72, 20, 54, 0, 0, 120, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 12, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.HeliacalSword), 56, 73, 98, 25, 66, 0, 0, 140, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 13, 0, 22, 1, 3, true, LocalizedString.FromResource(() => ItemNames.DoubleBlade), 48, 48, 56, 30, 43, 0, 0, 70, 70, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 14, 0, 22, 1, 3, true, LocalizedString.FromResource(() => ItemNames.LightingSword), 59, 59, 67, 30, 50, 0, 0, 90, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 15, 0, 23, 2, 3, true, LocalizedString.FromResource(() => ItemNames.GiantSword), 52, 60, 85, 20, 60, 0, 0, 140, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 16, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.SwordOfDestruction), 82, 82, 90, 35, 84, 0, 0, 160, 60, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 17, 0, 23, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DarkBreaker), 104, 128, 153, 40, 89, 0, 0, 180, 50, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(0, 18, 0, 23, 2, 3, true, LocalizedString.FromResource(() => ItemNames.ThunderBlade), 105, 140, 168, 40, 86, 0, 0, 180, 50, 0, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 19, 0, 22, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineSwordOfArchangel), 86, 220, 230, 45, 168, 0, 0, 140, 50, 0, 0, CharacterClasses.AllKnightsLordsAndMGs);
+        this.CreateWeapon(0, 20, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.KnightBlade), 140, 107, 115, 35, 90, 0, 0, 116, 38, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(0, 21, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DarkReignBlade), 140, 115, 142, 40, 100, 115, 0, 116, 53, 9, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 22, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.BoneBlade), 147, 122, 135, 40, 95, 0, 380, 100, 35, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(0, 23, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.ExplosionBlade), 147, 127, 155, 45, 110, 134, 380, 98, 48, 7, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 24, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Daybreak), 115, 182, 218, 40, 90, 0, 0, 192, 30, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(0, 25, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SwordDancer), 115, 109, 136, 40, 90, 108, 0, 136, 57, 9, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 26, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.Flamberge), 137, 115, 126, 40, 90, 0, 380, 193, 53, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(0, 27, 0, 22, 1, 4, true, LocalizedString.FromResource(() => ItemNames.SwordBreaker), 133, 91, 99, 35, 90, 0, 380, 53, 176, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(0, 28, 0, 56, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ImperialSword), 139, 98, 122, 45, 90, 109, 380, 91, 73, 17, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 31, 0, 56, 2, 4, true, LocalizedString.FromResource(() => ItemNames.RuneBlade), 100, 104, 130, 35, 93, 104, 0, 135, 62, 9, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(0, 32, 0, 260, 1, 2, true, LocalizedString.FromResource(() => ItemNames.SacredGlove), 52, 52, 58, 25, 65, 0, 0, 85, 35, 0, 0, CharacterClasses.AllFighters);
+        this.CreateWeapon(0, 33, 0, 261, 1, 2, true, LocalizedString.FromResource(() => ItemNames.StormHardGlove), 82, 82, 88, 30, 77, 0, 0, 100, 50, 0, 0, CharacterClasses.AllFighters);
+        this.CreateWeapon(0, 34, 0, 260, 1, 2, true, LocalizedString.FromResource(() => ItemNames.PiercingBladeGlove), 105, 95, 101, 35, 86, 0, 0, 120, 60, 0, 0, CharacterClasses.AllFighters);
+        this.CreateWeapon(0, 35, 0, 270, 1, 2, false, LocalizedString.FromResource(() => ItemNames.PhoenixSoulStar), 147, 122, 128, 40, 98, 0, 380, 101, 51, 0, 0, CharacterClasses.AllFighters);
 
-        this.CreateWeapon(1, 0, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SmallAxe), 1, 1, 6, 20, 18, 0, 0, 50, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
-        this.CreateWeapon(1, 1, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.HandAxe), 4, 4, 9, 30, 20, 0, 0, 70, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1);
-        this.CreateWeapon(1, 2, 0, 19, 1, 3, true, LocalizedString.FromResource(() => ItemNames.DoubleAxe), 14, 14, 24, 20, 26, 0, 0, 90, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0);
-        this.CreateWeapon(1, 3, 0, 19, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Tomahawk), 18, 18, 28, 30, 28, 0, 0, 100, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1);
-        this.CreateWeapon(1, 4, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ElvenAxe), 26, 26, 38, 40, 32, 0, 0, 50, 70, 0, 0, 1, 0, 1, 1, 0, 1, 0);
-        this.CreateWeapon(1, 5, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.BattleAxe), 30, 36, 44, 20, 36, 0, 0, 120, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(1, 6, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.NikkeaAxe), 34, 38, 50, 30, 44, 0, 0, 130, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(1, 7, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.LarkanAxe), 46, 54, 67, 25, 55, 0, 0, 140, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(1, 8, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.CrescentAxe), 54, 69, 89, 30, 65, 0, 0, 100, 40, 0, 0, 1, 1, 0, 1, 0, 0, 0);
+        this.CreateWeapon(1, 0, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SmallAxe), 1, 1, 6, 20, 18, 0, 0, 50, 0, 0, 0, CharacterClasses.All);
+        this.CreateWeapon(1, 1, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.HandAxe), 4, 4, 9, 30, 20, 0, 0, 70, 0, 0, 0, CharacterClasses.All);
+        this.CreateWeapon(1, 2, 0, 19, 1, 3, true, LocalizedString.FromResource(() => ItemNames.DoubleAxe), 14, 14, 24, 20, 26, 0, 0, 90, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs);
+        this.CreateWeapon(1, 3, 0, 19, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Tomahawk), 18, 18, 28, 30, 28, 0, 0, 100, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllFighters);
+        this.CreateWeapon(1, 4, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ElvenAxe), 26, 26, 38, 40, 32, 0, 0, 50, 70, 0, 0, CharacterClasses.AllMagicians | CharacterClasses.AllElfs | CharacterClasses.AllSummoners);
+        this.CreateWeapon(1, 5, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.BattleAxe), 30, 36, 44, 20, 36, 0, 0, 120, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(1, 6, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.NikkeaAxe), 34, 38, 50, 30, 44, 0, 0, 130, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(1, 7, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.LarkanAxe), 46, 54, 67, 25, 55, 0, 0, 140, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(1, 8, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.CrescentAxe), 54, 69, 89, 30, 65, 0, 0, 100, 40, 0, 0, CharacterClasses.AllMagicians | CharacterClasses.AllKnights);
 
-        this.CreateWeapon(2, 0, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Mace), 7, 7, 13, 15, 21, 0, 0, 100, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1);
-        this.CreateWeapon(2, 1, 0, 19, 1, 3, true, LocalizedString.FromResource(() => ItemNames.MorningStar), 13, 13, 22, 15, 25, 0, 0, 100, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1);
-        this.CreateWeapon(2, 2, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Flail), 22, 22, 32, 15, 32, 0, 0, 80, 50, 0, 0, 0, 1, 0, 1, 1, 0, 1);
-        this.CreateWeapon(2, 3, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.GreatHammer), 38, 45, 56, 15, 50, 0, 0, 150, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
-        this.CreateWeapon(2, 4, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.CrystalMorningStar), 66, 78, 107, 30, 72, 0, 0, 130, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1);
-        this.CreateWeapon(2, 5, 0, 23, 2, 4, true, LocalizedString.FromResource(() => ItemNames.CrystalSword), 72, 89, 120, 40, 76, 0, 0, 130, 70, 0, 0, 1, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(2, 6, 0, 23, 2, 4, false, LocalizedString.FromResource(() => ItemNames.ChaosDragonAxe), 75, 102, 130, 35, 80, 0, 0, 140, 50, 0, 0, 0, 1, 0, 1, 0, 0, 0);
-        this.CreateWeapon(2, 7, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ElementalMace), 90, 62, 80, 50, 50, 0, 0, 15, 42, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(2, 8, 0, 66, 1, 3, true, LocalizedString.FromResource(() => ItemNames.BattleScepter), 54, 41, 52, 45, 40, 3, 0, 80, 17, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 9, 0, 66, 1, 3, true, LocalizedString.FromResource(() => ItemNames.MasterScepter), 72, 57, 68, 45, 45, 20, 0, 87, 18, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 10, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.GreatScepter), 82, 74, 85, 45, 65, 35, 0, 100, 21, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 11, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.LordScepter), 98, 91, 102, 40, 72, 52, 0, 105, 23, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 12, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.GreatLordScepter), 140, 108, 120, 40, 84, 67, 0, 90, 20, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 13, 0, 66, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineScepterOfArchangel), 150, 200, 223, 45, 90, 138, 0, 75, 16, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 14, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.SoleilScepter), 146, 130, 153, 40, 95, 84, 380, 80, 15, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 15, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ShiningScepter), 110, 99, 111, 40, 78, 60, 0, 108, 22, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 16, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.FrostMace), 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(2, 17, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.AbsoluteScepter), 135, 114, 132, 40, 90, 72, 0, 119, 24, 0, 0, 0, 0, 0, 0, 1, 0, 0);
-        this.CreateWeapon(2, 18, 0, 66, 1, 4, false, LocalizedString.FromResource(() => ItemNames.StrykerScepter), 147, 112, 124, 40, 86, 70, 0, 87, 20, 0, 0, 0, 0, 0, 0, 1, 0, 0);
+        this.CreateWeapon(2, 0, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Mace), 7, 7, 13, 15, 21, 0, 0, 100, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllFighters);
+        this.CreateWeapon(2, 1, 0, 19, 1, 3, true, LocalizedString.FromResource(() => ItemNames.MorningStar), 13, 13, 22, 15, 25, 0, 0, 100, 0, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllFighters);
+        this.CreateWeapon(2, 2, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.Flail), 22, 22, 32, 15, 32, 0, 0, 80, 50, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllFighters);
+        this.CreateWeapon(2, 3, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.GreatHammer), 38, 45, 56, 15, 50, 0, 0, 150, 0, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs | CharacterClasses.AllFighters);
+        this.CreateWeapon(2, 4, 0, 19, 2, 3, true, LocalizedString.FromResource(() => ItemNames.CrystalMorningStar), 66, 78, 107, 30, 72, 0, 0, 130, 0, 0, 0, CharacterClasses.AllMagicians | CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllFighters);
+        this.CreateWeapon(2, 5, 0, 23, 2, 4, true, LocalizedString.FromResource(() => ItemNames.CrystalSword), 72, 89, 120, 40, 76, 0, 0, 130, 70, 0, 0, CharacterClasses.AllMagicians | CharacterClasses.AllKnights | CharacterClasses.AllElfs);
+        this.CreateWeapon(2, 6, 0, 23, 2, 4, false, LocalizedString.FromResource(() => ItemNames.ChaosDragonAxe), 75, 102, 130, 35, 80, 0, 0, 140, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
+        this.CreateWeapon(2, 7, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.ElementalMace), 90, 62, 80, 50, 50, 0, 0, 15, 42, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(2, 8, 0, 66, 1, 3, true, LocalizedString.FromResource(() => ItemNames.BattleScepter), 54, 41, 52, 45, 40, 3, 0, 80, 17, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 9, 0, 66, 1, 3, true, LocalizedString.FromResource(() => ItemNames.MasterScepter), 72, 57, 68, 45, 45, 20, 0, 87, 18, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 10, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.GreatScepter), 82, 74, 85, 45, 65, 35, 0, 100, 21, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 11, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.LordScepter), 98, 91, 102, 40, 72, 52, 0, 105, 23, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 12, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.GreatLordScepter), 140, 108, 120, 40, 84, 67, 0, 90, 20, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 13, 0, 66, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineScepterOfArchangel), 150, 200, 223, 45, 90, 138, 0, 75, 16, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 14, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.SoleilScepter), 146, 130, 153, 40, 95, 84, 380, 80, 15, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 15, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ShiningScepter), 110, 99, 111, 40, 78, 60, 0, 108, 22, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 16, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.FrostMace), 121, 106, 146, 50, 80, 0, 0, 27, 19, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(2, 17, 0, 66, 1, 4, true, LocalizedString.FromResource(() => ItemNames.AbsoluteScepter), 135, 114, 132, 40, 90, 72, 0, 119, 24, 0, 0, CharacterClasses.AllLords);
+        this.CreateWeapon(2, 18, 0, 66, 1, 4, false, LocalizedString.FromResource(() => ItemNames.StrykerScepter), 147, 112, 124, 40, 86, 70, 0, 87, 20, 0, 0, CharacterClasses.AllLords);
 
-        // this.CreateWeapon(2, 22, 0, 0, 1, 3, true, "Mace of The king", 54, 132, 153, 45, 40, 3, 0, 80, 17, 0, 0, 0, 1, 1, 1, 1, 0, 0);
-        this.CreateWeapon(3, 0, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.LightSpear), 42, 50, 63, 25, 56, 0, 0, 60, 70, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 1, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Spear), 23, 30, 41, 30, 42, 0, 0, 70, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 2, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DragonLance), 15, 21, 33, 30, 34, 0, 0, 70, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 3, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.GiantTrident), 29, 35, 43, 25, 44, 0, 0, 90, 30, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 4, 0, 20, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SerpentSpear), 46, 58, 80, 20, 58, 0, 0, 90, 30, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 5, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DoublePoleaxe), 13, 19, 31, 30, 38, 0, 0, 70, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 6, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Halberd), 19, 25, 35, 30, 40, 0, 0, 70, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 7, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Berdysh), 37, 42, 54, 30, 54, 0, 0, 80, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 8, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.GreatScythe), 54, 71, 92, 25, 68, 0, 0, 90, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 9, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.BillOfBalrog), 63, 76, 102, 25, 74, 0, 0, 80, 50, 0, 0, 0, 1, 1, 1, 0, 0, 0);
-        this.CreateWeapon(3, 10, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DragonSpear), 92, 112, 140, 35, 85, 0, 0, 170, 60, 0, 0, 0, 2, 0, 0, 0, 0, 0);
-        this.CreateWeapon(3, 11, 0, 22, 2, 4, false, LocalizedString.FromResource(() => ItemNames.Beuroba), 147, 190, 226, 40, 90, 0, 0, 152, 25, 0, 0, 0, 2, 0, 1, 0, 0, 0);
+        // this.CreateWeapon(2, 22, 0, 0, 1, 3, true, "Mace of The king", 54, 132, 153, 45, 40, 3, 0, 80, 17, 0, 0, CharacterClasses.AllKnightsLordsAndMGs | CharacterClasses.AllElfs);
+        this.CreateWeapon(3, 0, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.LightSpear), 42, 50, 63, 25, 56, 0, 0, 60, 70, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 1, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Spear), 23, 30, 41, 30, 42, 0, 0, 70, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 2, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DragonLance), 15, 21, 33, 30, 34, 0, 0, 70, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 3, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.GiantTrident), 29, 35, 43, 25, 44, 0, 0, 90, 30, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 4, 0, 20, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SerpentSpear), 46, 58, 80, 20, 58, 0, 0, 90, 30, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 5, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DoublePoleaxe), 13, 19, 31, 30, 38, 0, 0, 70, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 6, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Halberd), 19, 25, 35, 30, 40, 0, 0, 70, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 7, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.Berdysh), 37, 42, 54, 30, 54, 0, 0, 80, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 8, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.GreatScythe), 54, 71, 92, 25, 68, 0, 0, 90, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 9, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.BillOfBalrog), 63, 76, 102, 25, 74, 0, 0, 80, 50, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllElfs | CharacterClasses.AllMGs);
+        this.CreateWeapon(3, 10, 0, 22, 2, 4, true, LocalizedString.FromResource(() => ItemNames.DragonSpear), 92, 112, 140, 35, 85, 0, 0, 170, 60, 0, 0, CharacterClasses.AllKnights);
+        this.CreateWeapon(3, 11, 0, 22, 2, 4, false, LocalizedString.FromResource(() => ItemNames.Beuroba), 147, 190, 226, 40, 90, 0, 0, 152, 25, 0, 0, CharacterClasses.AllKnights | CharacterClasses.AllMGs);
 
-        this.CreateWeapon(4, 0, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.ShortBow), 2, 3, 5, 30, 20, 0, 0, 20, 80, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 1, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.Bow), 8, 9, 13, 30, 24, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 2, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.ElvenBow), 16, 17, 24, 30, 28, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 3, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.BattleBow), 26, 28, 37, 30, 36, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 4, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.TigerBow), 40, 42, 52, 30, 43, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 5, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SilverBow), 56, 59, 71, 40, 48, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 6, 1, 24, 2, 4, false, LocalizedString.FromResource(() => ItemNames.ChaosNatureBow), 75, 88, 106, 35, 68, 0, 0, 40, 150, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 7, 1, 0, 1, 1, false, LocalizedString.FromResource(() => ItemNames.Bolt), 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 8, 0, 24, 2, 2, true, LocalizedString.FromResource(() => ItemNames.Crossbow), 4, 5, 8, 40, 22, 0, 0, 20, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 9, 0, 24, 2, 2, true, LocalizedString.FromResource(() => ItemNames.GoldenCrossbow), 12, 13, 19, 40, 26, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 10, 0, 24, 2, 2, true, LocalizedString.FromResource(() => ItemNames.Arquebus), 20, 22, 30, 40, 31, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 11, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.LightCrossbow), 32, 35, 44, 40, 40, 0, 0, 30, 90, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 12, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.SerpentCrossbow), 48, 50, 61, 40, 45, 0, 0, 30, 100, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 13, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.BluewingCrossbow), 68, 68, 82, 40, 56, 0, 0, 40, 110, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 14, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.AquagoldCrossbow), 72, 78, 92, 30, 60, 0, 0, 50, 130, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 15, 0, 0, 1, 1, false, LocalizedString.FromResource(() => ItemNames.Arrows), 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 16, 0, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SaintCrossbow), 84, 102, 127, 35, 72, 0, 0, 50, 160, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 17, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.CelestialBow), 92, 127, 155, 35, 76, 0, 0, 54, 198, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 18, 0, 24, 2, 3, false, LocalizedString.FromResource(() => ItemNames.DivineCrossbowOfArchangel), 100, 224, 246, 45, 200, 0, 0, 40, 110, 0, 0, 0, 0, 1, 0, 0, 0, 0);
-        this.CreateWeapon(4, 19, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.GreatReignCrossbow), 100, 150, 172, 40, 80, 0, 0, 61, 285, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 20, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.ArrowViperBow), 135, 166, 190, 45, 86, 0, 0, 52, 245, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 21, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SylphWindBow), 147, 177, 200, 45, 93, 0, 380, 46, 210, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 22, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.AlbatrossBow), 110, 155, 177, 45, 70, 0, 0, 60, 265, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 23, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.StingerBow), 134, 162, 184, 45, 80, 0, 0, 32, 209, 0, 0, 0, 0, 2, 0, 0, 0, 0);
-        this.CreateWeapon(4, 24, 1, 24, 2, 4, false, LocalizedString.FromResource(() => ItemNames.AirLynBow), 147, 170, 194, 45, 88, 0, 0, 49, 226, 0, 0, 0, 0, 2, 0, 0, 0, 0);
+        this.CreateWeapon(4, 0, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.ShortBow), 2, 3, 5, 30, 20, 0, 0, 20, 80, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 1, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.Bow), 8, 9, 13, 30, 24, 0, 0, 30, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 2, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.ElvenBow), 16, 17, 24, 30, 28, 0, 0, 30, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 3, 1, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.BattleBow), 26, 28, 37, 30, 36, 0, 0, 30, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 4, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.TigerBow), 40, 42, 52, 30, 43, 0, 0, 30, 100, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 5, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SilverBow), 56, 59, 71, 40, 48, 0, 0, 30, 100, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 6, 1, 24, 2, 4, false, LocalizedString.FromResource(() => ItemNames.ChaosNatureBow), 75, 88, 106, 35, 68, 0, 0, 40, 150, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 7, 1, 0, 1, 1, false, LocalizedString.FromResource(() => ItemNames.Bolt), 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 8, 0, 24, 2, 2, true, LocalizedString.FromResource(() => ItemNames.Crossbow), 4, 5, 8, 40, 22, 0, 0, 20, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 9, 0, 24, 2, 2, true, LocalizedString.FromResource(() => ItemNames.GoldenCrossbow), 12, 13, 19, 40, 26, 0, 0, 30, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 10, 0, 24, 2, 2, true, LocalizedString.FromResource(() => ItemNames.Arquebus), 20, 22, 30, 40, 31, 0, 0, 30, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 11, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.LightCrossbow), 32, 35, 44, 40, 40, 0, 0, 30, 90, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 12, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.SerpentCrossbow), 48, 50, 61, 40, 45, 0, 0, 30, 100, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 13, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.BluewingCrossbow), 68, 68, 82, 40, 56, 0, 0, 40, 110, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 14, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.AquagoldCrossbow), 72, 78, 92, 30, 60, 0, 0, 50, 130, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 15, 0, 0, 1, 1, false, LocalizedString.FromResource(() => ItemNames.Arrows), 0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 16, 0, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SaintCrossbow), 84, 102, 127, 35, 72, 0, 0, 50, 160, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 17, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.CelestialBow), 92, 127, 155, 35, 76, 0, 0, 54, 198, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 18, 0, 24, 2, 3, false, LocalizedString.FromResource(() => ItemNames.DivineCrossbowOfArchangel), 100, 224, 246, 45, 200, 0, 0, 40, 110, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 19, 0, 24, 2, 3, true, LocalizedString.FromResource(() => ItemNames.GreatReignCrossbow), 100, 150, 172, 40, 80, 0, 0, 61, 285, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 20, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.ArrowViperBow), 135, 166, 190, 45, 86, 0, 0, 52, 245, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 21, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.SylphWindBow), 147, 177, 200, 45, 93, 0, 380, 46, 210, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 22, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.AlbatrossBow), 110, 155, 177, 45, 70, 0, 0, 60, 265, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 23, 1, 24, 2, 4, true, LocalizedString.FromResource(() => ItemNames.StingerBow), 134, 162, 184, 45, 80, 0, 0, 32, 209, 0, 0, CharacterClasses.AllElfs);
+        this.CreateWeapon(4, 24, 1, 24, 2, 4, false, LocalizedString.FromResource(() => ItemNames.AirLynBow), 147, 170, 194, 45, 88, 0, 0, 49, 226, 0, 0, CharacterClasses.AllElfs);
 
-        this.CreateWeapon(5, 0, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SkullStaff), 6, 3, 4, 20, 20, 6, 0, 40, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0);
-        this.CreateWeapon(5, 1, 0, 0, 2, 3, true, LocalizedString.FromResource(() => ItemNames.AngelicStaff), 18, 10, 12, 25, 38, 20, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 2, 0, 0, 2, 3, true, LocalizedString.FromResource(() => ItemNames.SerpentStaff), 30, 17, 18, 25, 50, 34, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 3, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.ThunderStaff), 42, 23, 25, 25, 60, 46, 0, 40, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 4, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.GorgonStaff), 52, 29, 32, 25, 65, 58, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 5, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.LegendaryStaff), 59, 29, 31, 25, 66, 59, 0, 50, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 6, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.StaffOfResurrection), 70, 35, 39, 25, 70, 70, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 7, 0, 0, 2, 4, false, LocalizedString.FromResource(() => ItemNames.ChaosLightningStaff), 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 8, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.StaffOfDestruction), 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 9, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.DragonSoulStaff), 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineStaffOfArchangel), 104, 153, 165, 30, 182, 156, 0, 36, 4, 0, 0, 1, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 11, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.StaffOfKundun), 140, 55, 61, 30, 95, 110, 0, 45, 16, 0, 0, 2, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 12, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.GrandViperStaff), 147, 66, 74, 30, 100, 130, 380, 39, 13, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 13, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.PlatinaStaff), 110, 51, 53, 30, 78, 120, 0, 50, 16, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 14, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.MisteryStick), 28, 17, 18, 25, 50, 34, 0, 34, 14, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 15, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ViolentWindStick), 42, 23, 25, 25, 60, 46, 0, 33, 17, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 16, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.RedWingStick), 59, 29, 31, 25, 65, 59, 0, 36, 14, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 17, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.AncientStick), 78, 38, 40, 25, 81, 76, 0, 50, 19, 0, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 18, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.DemonicStick), 100, 46, 48, 30, 91, 92, 0, 54, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateWeapon(5, 19, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.StormBlitzStick), 110, 51, 53, 30, 95, 110, 380, 64, 15, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateWeapon(5, 20, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.EternalWingStick), 147, 66, 74, 30, 100, 106, 380, 57, 13, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateWeapon(5, 21, 1, 223, 1, 2, true, LocalizedString.FromResource(() => ItemNames.BookOfSahamutt), 52, 0, 0, 25, 60, 46, 0, 0, 20, 135, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 22, 1, 224, 1, 2, true, LocalizedString.FromResource(() => ItemNames.BookOfNeil), 59, 0, 0, 25, 65, 59, 0, 0, 25, 168, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 23, 1, 225, 1, 2, true, LocalizedString.FromResource(() => ItemNames.BookOfLagle), 65, 0, 0, 25, 50, 72, 0, 0, 30, 201, 0, 0, 0, 0, 0, 0, 1, 0);
-        this.CreateWeapon(5, 30, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.DeadlyStaff), 138, 57, 59, 30, 91, 126, 380, 47, 18, 0, 0, 0, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 31, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ImperialStaff), 137, 57, 61, 30, 182, 124, 380, 48, 14, 0, 0, 2, 0, 0, 0, 0, 0, 0);
-        this.CreateWeapon(5, 33, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.ChromaticStaff), 147, 55, 57, 30, 78, 124, 0, 50, 12, 0, 0, 2, 0, 0, 1, 0, 0, 0);
-        this.CreateWeapon(5, 34, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.RavenStick), 147, 70, 78, 30, 98, 130, 0, 50, 14, 0, 0, 0, 0, 0, 0, 0, 2, 0);
-        this.CreateWeapon(5, 36, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineStickOfArchangel), 104, 153, 165, 30, 182, 146, 0, 55, 13, 0, 0, 0, 0, 0, 0, 0, 1, 0);
+        this.CreateWeapon(5, 0, 0, 0, 1, 3, true, LocalizedString.FromResource(() => ItemNames.SkullStaff), 6, 3, 4, 20, 20, 6, 0, 40, 0, 0, 0, CharacterClasses.AllMagicians | CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 1, 0, 0, 2, 3, true, LocalizedString.FromResource(() => ItemNames.AngelicStaff), 18, 10, 12, 25, 38, 20, 0, 50, 0, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 2, 0, 0, 2, 3, true, LocalizedString.FromResource(() => ItemNames.SerpentStaff), 30, 17, 18, 25, 50, 34, 0, 50, 0, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 3, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.ThunderStaff), 42, 23, 25, 25, 60, 46, 0, 40, 10, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 4, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.GorgonStaff), 52, 29, 32, 25, 65, 58, 0, 50, 0, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 5, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.LegendaryStaff), 59, 29, 31, 25, 66, 59, 0, 50, 0, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 6, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.StaffOfResurrection), 70, 35, 39, 25, 70, 70, 0, 60, 10, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 7, 0, 0, 2, 4, false, LocalizedString.FromResource(() => ItemNames.ChaosLightningStaff), 75, 47, 48, 30, 70, 94, 0, 60, 10, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 8, 0, 0, 2, 4, true, LocalizedString.FromResource(() => ItemNames.StaffOfDestruction), 90, 50, 54, 30, 85, 101, 0, 60, 10, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 9, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.DragonSoulStaff), 100, 46, 48, 30, 91, 92, 0, 52, 16, 0, 0, CharacterClasses.AllWizards);
+        this.CreateWeapon(5, 10, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineStaffOfArchangel), 104, 153, 165, 30, 182, 156, 0, 36, 4, 0, 0, CharacterClasses.AllMagicians);
+        this.CreateWeapon(5, 11, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.StaffOfKundun), 140, 55, 61, 30, 95, 110, 0, 45, 16, 0, 0, CharacterClasses.AllWizards | CharacterClasses.AllMGs);
+        this.CreateWeapon(5, 12, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.GrandViperStaff), 147, 66, 74, 30, 100, 130, 380, 39, 13, 0, 0, CharacterClasses.AllWizards);
+        this.CreateWeapon(5, 13, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.PlatinaStaff), 110, 51, 53, 30, 78, 120, 0, 50, 16, 0, 0, CharacterClasses.AllWizards);
+        this.CreateWeapon(5, 14, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.MisteryStick), 28, 17, 18, 25, 50, 34, 0, 34, 14, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 15, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ViolentWindStick), 42, 23, 25, 25, 60, 46, 0, 33, 17, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 16, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.RedWingStick), 59, 29, 31, 25, 65, 59, 0, 36, 14, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 17, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.AncientStick), 78, 38, 40, 25, 81, 76, 0, 50, 19, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 18, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.DemonicStick), 100, 46, 48, 30, 91, 92, 0, 54, 15, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 19, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.StormBlitzStick), 110, 51, 53, 30, 95, 110, 380, 64, 15, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 20, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.EternalWingStick), 147, 66, 74, 30, 100, 106, 380, 57, 13, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 21, 1, 223, 1, 2, true, LocalizedString.FromResource(() => ItemNames.BookOfSahamutt), 52, 0, 0, 25, 60, 46, 0, 0, 20, 135, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 22, 1, 224, 1, 2, true, LocalizedString.FromResource(() => ItemNames.BookOfNeil), 59, 0, 0, 25, 65, 59, 0, 0, 25, 168, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 23, 1, 225, 1, 2, true, LocalizedString.FromResource(() => ItemNames.BookOfLagle), 65, 0, 0, 25, 50, 72, 0, 0, 30, 201, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 30, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.DeadlyStaff), 138, 57, 59, 30, 91, 126, 380, 47, 18, 0, 0, CharacterClasses.AllMGs);
+        this.CreateWeapon(5, 31, 0, 0, 1, 4, true, LocalizedString.FromResource(() => ItemNames.ImperialStaff), 137, 57, 61, 30, 182, 124, 380, 48, 14, 0, 0, CharacterClasses.AllWizards);
+        this.CreateWeapon(5, 33, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.ChromaticStaff), 147, 55, 57, 30, 78, 124, 0, 50, 12, 0, 0, CharacterClasses.AllWizards | CharacterClasses.AllMGs);
+        this.CreateWeapon(5, 34, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.RavenStick), 147, 70, 78, 30, 98, 130, 0, 50, 14, 0, 0, CharacterClasses.AllSummoners);
+        this.CreateWeapon(5, 36, 0, 0, 1, 4, false, LocalizedString.FromResource(() => ItemNames.DivineStickOfArchangel), 104, 153, 165, 30, 182, 146, 0, 55, 13, 0, 0, CharacterClasses.AllSummoners);
 
         this.AddGuardianOptions();
     }
@@ -295,13 +295,7 @@ internal class Weapons : InitializerBase
     /// <param name="agilityRequirement">The agility requirement.</param>
     /// <param name="energyRequirement">The energy requirement.</param>
     /// <param name="vitalityRequirement">The vitality requirement.</param>
-    /// <param name="wizardClass">The wizard class.</param>
-    /// <param name="knightClass">The knight class.</param>
-    /// <param name="elfClass">The elf class.</param>
-    /// <param name="magicGladiatorClass">The magic gladiator class.</param>
-    /// <param name="darkLordClass">The dark lord class.</param>
-    /// <param name="summonerClass">The summoner class.</param>
-    /// <param name="ragefighterClass">The ragefighter class.</param>
+    /// <param name="qualifiedClasses">The qualified character classes.</param>
     protected void CreateWeapon(
         byte @group,
         byte number,
@@ -322,13 +316,7 @@ internal class Weapons : InitializerBase
         int agilityRequirement,
         int energyRequirement,
         int vitalityRequirement,
-        int wizardClass,
-        int knightClass,
-        int elfClass,
-        int magicGladiatorClass,
-        int darkLordClass,
-        int summonerClass,
-        int ragefighterClass)
+        CharacterClasses qualifiedClasses)
     {
         var item = this.Context.CreateNew<ItemDefinition>();
         this.GameConfiguration.Items.Add(item);
@@ -342,7 +330,7 @@ internal class Weapons : InitializerBase
         item.MaximumItemLevel = MaximumItemLevel;
         item.DropsFromMonsters = dropsFromMonsters;
         item.SetGuid(item.Group, item.Number);
-        if (slot == 0 && (knightClass > 0 || magicGladiatorClass > 0 || ragefighterClass > 0) && width == 1)
+        if (slot == 0 && (qualifiedClasses & (CharacterClasses.AllKnights | CharacterClasses.AllMGs | CharacterClasses.AllFighters)) != 0 && width == 1)
         {
             item.ItemSlot = this.GameConfiguration.ItemSlotTypes.First(t => t.ItemSlots.Contains(0) && t.ItemSlots.Contains(1));
         }
@@ -358,7 +346,7 @@ internal class Weapons : InitializerBase
         }
 
         item.Durability = durability;
-        var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(wizardClass, knightClass, elfClass, magicGladiatorClass, darkLordClass, summonerClass, ragefighterClass);
+        var qualifiedCharacterClasses = this.GameConfiguration.DetermineCharacterClasses(qualifiedClasses, ignoreMissing: true);
         qualifiedCharacterClasses.ToList().ForEach(item.QualifiedCharacters.Add);
 
         // Bolts and arrows.
@@ -398,7 +386,7 @@ internal class Weapons : InitializerBase
 
         item.PossibleItemOptions.Add(this.Luck);
 
-        if (magicPower == 0 || darkLordClass > 0 || group == (int)ItemGroups.Swords)
+        if (magicPower == 0 || (qualifiedClasses & CharacterClasses.AllLords) != 0 || group == (int)ItemGroups.Swords)
         {
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.PhysicalAttackOptionsName));
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.PhysicalAttackOptionsName));
@@ -429,7 +417,7 @@ internal class Weapons : InitializerBase
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == ExcellentOptions.WizardryAttackOptionsName));
             item.PossibleItemOptions.Add(this.GameConfiguration.ItemOptions.Single(o => o.Name.ValueInNeutralLanguage == HarmonyOptions.WizardryAttackOptionsName));
 
-            if (summonerClass > 0 && slot == 1)
+            if ((qualifiedClasses & CharacterClasses.AllSummoners) != 0 && slot == 1)
             {
                 item.PossibleItemOptions.Add(this.CurseDamageOption);
 
@@ -473,7 +461,7 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Swords)
         {
-            if (ragefighterClass == 0 || number < 2)
+            if ((qualifiedClasses & CharacterClasses.AllFighters) == 0 || number < 2)
             {
                 if (width == 1)
                 {
@@ -501,7 +489,7 @@ internal class Weapons : InitializerBase
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsScepterEquipped, 1, AggregateType.AddRaw));
             }
-            else if (knightClass > 0 && number < 5)
+            else if ((qualifiedClasses & CharacterClasses.AllKnights) != 0 && number < 5)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsMaceEquipped, 1, AggregateType.AddRaw));
             }
@@ -518,11 +506,11 @@ internal class Weapons : InitializerBase
 
         if (group == (int)ItemGroups.Staff)
         {
-            if (wizardClass == 0 && summonerClass > 0 && slot == 0)
+            if ((qualifiedClasses & CharacterClasses.AllWizards) == 0 && (qualifiedClasses & CharacterClasses.AllSummoners) != 0 && slot == 0)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.IsStickEquipped, 1, AggregateType.AddRaw));
             }
-            else if (wizardClass > 0 || magicGladiatorClass > 0)
+            else if ((qualifiedClasses & (CharacterClasses.AllWizards | CharacterClasses.AllMGs)) != 0)
             {
                 item.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(width == 1 ? Stats.IsOneHandedStaffEquipped : Stats.IsTwoHandedStaffEquipped, 1, AggregateType.AddRaw));
             }

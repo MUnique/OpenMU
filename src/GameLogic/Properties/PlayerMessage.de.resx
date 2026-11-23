@@ -480,6 +480,9 @@
   <data name="PickupLimitReached" xml:space="preserve">
     <value>Limit für '{0}' erreicht.</value>
   </data>
+  <data name="MoneyPickupLimitReached" xml:space="preserve">
+    <value>Sie können nicht mehr Zen tragen.</value>
+  </data>
   <data name="NotEnoughMoneyToEnter" xml:space="preserve">
     <value>Nicht genug Zen, um {0} zu betreten.</value>
   </data>
@@ -1048,7 +1051,22 @@ Inventarerweiterungen: {18}</value>
   <data name="CantDeleteCharacterWithUndeliverableWaitingItems" xml:space="preserve">
     <value>Ein Charakter, für den Gegenstände warten, deren Gegenstandsart es nicht mehr gibt, kann nicht gelöscht werden. Bitte wenden Sie sich an einen Admin.</value>
   </data>
+  <data name="ItemHasExpired" xml:space="preserve">
+    <value>{0} ist abgelaufen.</value>
+  </data>
+  <data name="TimeLimitedItemCannotBeMixed" xml:space="preserve">
+    <value>Ein zeitlich begrenzter Gegenstand kann hier nicht verwendet werden.</value>
+  </data>
+  <data name="QuestZenLimitReached" xml:space="preserve">
+    <value>Sie haben Ihr Zen-Limit erreicht. Die Quest kann nicht abgeschlossen werden.</value>
+  </data>
   <data name="SameItemAlreadyInUse" xml:space="preserve">
     <value>Ein Gegenstand der gleichen Art wird bereits benutzt. Beende zuerst dessen Benutzung und versuche es dann erneut.</value>
+  </data>
+  <data name="LordsMixOnlyForCastleOwner" xml:space="preserve">
+    <value>Nur der Gildenmeister der Gilde, der die Burg gehört, kann den Lord's Mix verwenden.</value>
+  </data>
+  <data name="LordsMixLimitReached" xml:space="preserve">
+    <value>Das Limit des Lord's Mix ist erreicht; er kann im nächsten Zeitraum wieder verwendet werden.</value>
   </data>
 </root>

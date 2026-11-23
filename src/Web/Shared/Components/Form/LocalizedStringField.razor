@@ -7,29 +7,45 @@
 @inherits NotifyableInputBase<MUnique.OpenMU.Interfaces.LocalizedString>
 
 @inject IOptions<RequestLocalizationOptions> LocalizationOptions
-@inject IOptions<MUnique.OpenMU.Web.Shared.ContentLanguageOptions> ContentLanguageOptions
+@inject IOptions<ContentLanguageOptions> ContentLanguageOptions
 
 <div class="mb-3">
-  <FieldLabel Text="@Label" ValueExpression="@this.ValueExpression" />
+  <FieldLabel Text="@Label" ValueExpression="@(this.ValueExpression!)" />
 
-  @foreach (var culture in this.GetCultures())
+  @{
+    var cultures = this.GetCultures();
+    var visibleCultures = this.GetVisibleCultures(cultures);
+    var canToggle = this.CanToggleAllLanguages(cultures);
+  }
+  @foreach (var culture in visibleCultures)
   {
-    <div class="mb-1 localized-value">
-      <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
-             class="@(this.GetInputClass(culture))"
-             value="@GetValueForCulture(culture)"
-             @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))"
-      />
-      <span class="badge @(this.GetBadge(culture))">@culture.Name</span>
+    <div class="mb-1">
+      <div class="input-group">
+        <input id="@(MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode == culture.TwoLetterISOLanguageName ? this.FieldIdentifier.FieldName : this.FieldIdentifier.FieldName + "_" + culture.Name)"
+              class="@(this.GetInputClass(culture))"
+              value="@GetValueForCulture(culture)"
+              @onchange="(e => SetValueForCulture(culture, e.Value?.ToString()))" />
+        @if (canToggle)
+        {
+          <button type="button" class="btn btn-secondary language-toggle" title="@(this._showAllLanguages ? Resources.ShowSelectedLanguageOnly : Resources.ShowAllLanguages)" @onclick="this.ToggleAllLanguages">
+            <i class="me-2 oi @(this._showAllLanguages ? "oi-chevron-top" : "oi-chevron-bottom")" aria-hidden="true"></i>
+            <span class="input-group-text badge @(this.GetBadge(culture))">@culture.Name</span>
+          </button>
+        }
+        else
+        {
+          <span class="input-group-text badge language-badge @(this.GetBadge(culture))">@culture.Name</span>
+        }
+      </div>
     </div>
   }
-    
 </div>
 <ValidationMessage For="@this.ValueExpression" />
 
 @code {
 
     private ValidationMessageStore? _validationMessageStore;
+    private bool _showAllLanguages;
 
     /// <summary>
     /// Gets or sets the label which should be displayed. If it's not explicitly provided, the component shows the
@@ -43,7 +59,7 @@
     {
         base.OnParametersSet();
 
-        if (this.EditContext is not null && this._validationMessageStore is null)
+        if (this._validationMessageStore is null)
         {
             this._validationMessageStore = new ValidationMessageStore(this.EditContext);
         }
@@ -56,7 +72,6 @@
         {
             result = new(string.Empty);
             validationErrorMessage = string.Empty;
-            // validationErrorMessage = string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culMUnique.OpenMU.Interfaces.LocalizedString.Separator);
             return false;
         }
 
@@ -106,6 +121,70 @@
         }
     }
 
+    /// <summary>
+    /// Gets the languages to show fields for: the neutral language plus the selected one when collapsed,
+    /// or all available languages when expanded.
+    /// </summary>
+    private List<CultureInfo> GetVisibleCultures(List<CultureInfo>? cultures = null)
+    {
+        cultures ??= this.GetCultures();
+        if (this._showAllLanguages || cultures.Count <= 1)
+        {
+            return cultures;
+        }
+
+        return this.GetCollapsedCultures(cultures);
+    }
+
+    /// <summary>
+    /// Gets the collapsed languages: the neutral language and the selected one (or just one when they are the same).
+    /// </summary>
+    private List<CultureInfo> GetCollapsedCultures(List<CultureInfo> cultures)
+    {
+        if (cultures.Count == 0)
+        {
+            return cultures;
+        }
+
+        var neutralCulture = cultures.FirstOrDefault(c => c.TwoLetterISOLanguageName == MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode) ?? cultures[0];
+        var selectedCulture = GetSelectedCulture(cultures);
+
+        if (string.Equals(neutralCulture.Name, selectedCulture.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            return [neutralCulture];
+        }
+
+        return [neutralCulture, selectedCulture];
+    }
+
+    private bool CanToggleAllLanguages(List<CultureInfo> cultures)
+    {
+        return cultures.Count > this.GetCollapsedCultures(cultures).Count;
+    }
+
+    /// <summary>
+    /// Gets the culture of the selected admin panel language, like the culture selector does:
+    /// the current UI culture or its nearest parent, otherwise the neutral language.
+    /// </summary>
+    private static CultureInfo GetSelectedCulture(List<CultureInfo> cultures)
+    {
+        for (var culture = CultureInfo.CurrentUICulture; !string.IsNullOrEmpty(culture.Name); culture = culture.Parent)
+        {
+            var match = cultures.FirstOrDefault(c => string.Equals(c.Name, culture.Name, StringComparison.OrdinalIgnoreCase));
+            if (match is not null)
+            {
+                return match;
+            }
+        }
+
+        return cultures.FirstOrDefault(c => c.TwoLetterISOLanguageName == MUnique.OpenMU.Interfaces.LocalizedString.NeutralLanguageCode) ?? cultures[0];
+    }
+
+    private void ToggleAllLanguages()
+    {
+        this._showAllLanguages = !this._showAllLanguages;
+    }
+
     private string GetValueForCulture(CultureInfo culture)
     {
       if (this.Value.Value is null)
@@ -121,21 +200,20 @@
     {
         var existingError = this._validationMessageStore?[this.FieldIdentifier].FirstOrDefault(message => message.StartsWith(culture.Name + ":"));
 
-      if (this.EditContext is not null
-          && this._validationMessageStore is not null
+      if (this._validationMessageStore is not null
           && newValue is not null
           && existingError is null
           && newValue.Contains(OpenMU.Interfaces.LocalizedString.Separator, StringComparison.Ordinal))
       {
             this._validationMessageStore.Add(
               this.FieldIdentifier,
-              string.Format(MUnique.OpenMU.Web.Shared.Properties.Resources.TheValueMustNotContain, culture.Name, MUnique.OpenMU.Interfaces.LocalizedString.Separator));
+              string.Format(Resources.TheValueMustNotContain, culture.Name, Interfaces.LocalizedString.Separator));
 
         // Notify the EditContext that validation state changed
         this.EditContext.NotifyValidationStateChanged();
       }
 
-      if (this.EditContext is not null && this._validationMessageStore is not null)
+      if (this._validationMessageStore is not null)
       {
         var otherErrors = this._validationMessageStore[this.FieldIdentifier].Where(message => message != existingError).ToList();
 

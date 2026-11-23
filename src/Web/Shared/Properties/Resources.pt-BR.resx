@@ -192,6 +192,12 @@
   <data name="TheValueMustNotContain" xml:space="preserve">
     <value>{0}: o valor não deve conter "{1}".</value>
   </data>
+  <data name="ShowAllLanguages" xml:space="preserve">
+    <value>Mostrar todos os idiomas</value>
+  </data>
+  <data name="ShowSelectedLanguageOnly" xml:space="preserve">
+    <value>Mostrar apenas o idioma selecionado</value>
+  </data>
   <data name="PleaseSelectItemDefinition" xml:space="preserve">
     <value>&lt;Selecione uma definição&gt;</value>
   </data>
@@ -667,5 +673,14 @@ Nível: {2} - {3}</value>
   </data>
   <data name="ZoomOut" xml:space="preserve">
     <value>Diminuir zoom</value>
+  </data>
+  <data name="ItemEdit_IsTimeLimited" xml:space="preserve">
+    <value>Tempo limitado</value>
+  </data>
+  <data name="ItemEdit_ExpiresAt" xml:space="preserve">
+    <value>Expira em (UTC)</value>
+  </data>
+  <data name="ItemEdit_CannotBeTimeLimited" xml:space="preserve">
+    <value>Este item não pode ter tempo limitado: apenas um item que é equipado, não é consumido e pode ser descartado ou vendido a um NPC após expirar.</value>
   </data>
 </root>

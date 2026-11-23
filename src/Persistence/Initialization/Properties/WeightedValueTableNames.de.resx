@@ -24,4 +24,10 @@
   <data name="SocketCountTwoHandedDescription" xml:space="preserve">
     <value>Die Sockelanzahl fallen gelassener Zweihand-Sockelwaffen: ein Sockel ist häufig, fünf sind sehr selten.</value>
   </data>
+  <data name="LordsMixExcellentOptionCount" xml:space="preserve">
+    <value>Anzahl exzellenter Optionen (Lord's Mix)</value>
+  </data>
+  <data name="LordsMixExcellentOptionCountDescription" xml:space="preserve">
+    <value>Die Anzahl exzellenter Optionen eines exzellenten Ergebnisgegenstands des Lord's Mix: zwei, drei oder vier, gleich wahrscheinlich.</value>
+  </data>
 </root>

@@ -46,6 +46,58 @@ internal partial class SimpleCraftingSettings : MUnique.OpenMU.DataModel.Configu
     [NotMapped]
     public override ICollection<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem> ResultItems => base.ResultItems ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem, ItemCraftingResultItem>(this.RawResultItems);
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="ResultItemExcellentOptionCountTable"/>.
+    /// </summary>
+    public Guid? ResultItemExcellentOptionCountTableId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ResultItemExcellentOptionCountTable" />.
+    /// </summary>
+    [ForeignKey(nameof(ResultItemExcellentOptionCountTableId))]
+    public WeightedValueTable RawResultItemExcellentOptionCountTable
+    {
+        get => base.ResultItemExcellentOptionCountTable as WeightedValueTable;
+        set => base.ResultItemExcellentOptionCountTable = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.WeightedValueTable ResultItemExcellentOptionCountTable
+    {
+        get => base.ResultItemExcellentOptionCountTable;set
+        {
+            base.ResultItemExcellentOptionCountTable = value;
+            this.ResultItemExcellentOptionCountTableId = this.RawResultItemExcellentOptionCountTable?.Id;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="ResultItemSocketCountTable"/>.
+    /// </summary>
+    public Guid? ResultItemSocketCountTableId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="ResultItemSocketCountTable" />.
+    /// </summary>
+    [ForeignKey(nameof(ResultItemSocketCountTableId))]
+    public WeightedValueTable RawResultItemSocketCountTable
+    {
+        get => base.ResultItemSocketCountTable as WeightedValueTable;
+        set => base.ResultItemSocketCountTable = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Configuration.WeightedValueTable ResultItemSocketCountTable
+    {
+        get => base.ResultItemSocketCountTable;set
+        {
+            base.ResultItemSocketCountTable = value;
+            this.ResultItemSocketCountTableId = this.RawResultItemSocketCountTable?.Id;
+        }
+    }
+
     /// <inheritdoc />
     public override MUnique.OpenMU.DataModel.Configuration.ItemCrafting.SimpleCraftingSettings Clone(MUnique.OpenMU.DataModel.Configuration.GameConfiguration gameConfiguration)
     {

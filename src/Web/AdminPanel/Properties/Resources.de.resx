@@ -1945,7 +1945,7 @@
     <value>Produkt {0} hat keinen Gegenstand.</value>
   </data>
   <data name="CashShopIssueTimeLimited" xml:space="preserve">
-    <value>Produkt {0} ist zeitlich begrenzt, was noch nicht unterstützt wird.</value>
+    <value>Produkt {0} ist zeitlich begrenzt, aber sein Gegenstand kann nicht ablaufen: nur ein Gegenstand, der angelegt und nicht verbraucht wird und nach Ablauf fallen gelassen oder an einen NPC verkauft werden kann.</value>
   </data>
   <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
     <value>Der Bündelpreis ist negativ.</value>

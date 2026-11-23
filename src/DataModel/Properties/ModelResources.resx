@@ -70,6 +70,12 @@
   <data name="Account_RegistrationDate_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="Account_LastSeenDate_Caption" xml:space="preserve">
+    <value>Last Seen Date</value>
+  </data>
+  <data name="Account_LastSeenDate_Description" xml:space="preserve">
+    <value>The date and time when the account was last seen in the game: when a character entered the world, and when the player left the game.</value>
+  </data>
   <data name="Account_State_Caption" xml:space="preserve">
     <value>State</value>
   </data>
@@ -2419,6 +2425,12 @@
   <data name="Item_PetExperience_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="Item_ExpiresAt_Caption" xml:space="preserve">
+    <value>Expires At (UTC)</value>
+  </data>
+  <data name="Item_ExpiresAt_Description" xml:space="preserve">
+    <value>The timestamp (UTC) at which the item expires; empty, if it doesn't expire. An expired item stays in the inventory, but has no effect and can't be equipped.</value>
+  </data>
   <data name="ItemAppearance_TypeCaption" xml:space="preserve">
     <value>Item Appearance</value>
   </data>
@@ -2730,6 +2742,12 @@
   </data>
   <data name="ItemDefinition_IsRepairable_Description" xml:space="preserve">
     <value>Whether this item can be repaired by an NPC or through the inventory repair function. Special durability restoration methods are not affected.</value>
+  </data>
+  <data name="ItemDefinition_IsSellableWhenExpired_Caption" xml:space="preserve">
+    <value>Sellable when Expired</value>
+  </data>
+  <data name="ItemDefinition_IsSellableWhenExpired_Description" xml:space="preserve">
+    <value>Whether an expired time-limited item of this kind can be sold to an NPC merchant, even if it isn't sellable otherwise, like the items which are rented in the cash shop.</value>
   </data>
   <data name="ItemDefinition_Name_Caption" xml:space="preserve">
     <value>Name</value>
@@ -6645,5 +6663,53 @@
   </data>
   <data name="WeightedValue_Weight_Description" xml:space="preserve">
     <value>The weight, relative to the other values of the table. A value with a weight of 0 is never selected.</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionCountTable_Caption" xml:space="preserve">
+    <value>Result Item Excellent Option Count Table</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemExcellentOptionCountTable_Description" xml:space="preserve">
+    <value>The table from which the number of excellent options of a result item is selected, when it gets excellent options. If empty, each further option is added by the excellent option chance, up to the maximum of the item.</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSocketCountTable_Caption" xml:space="preserve">
+    <value>Result Item Socket Count Table</value>
+  </data>
+  <data name="SimpleCraftingSettings_ResultItemSocketCountTable_Description" xml:space="preserve">
+    <value>The table from which the number of sockets of a socket result item is selected. Such a socket result item gets no excellent options. If empty, result items get no sockets.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimit_Caption" xml:space="preserve">
+    <value>Lord's Mix Limit</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimit_Description" xml:space="preserve">
+    <value>The number of successful Lord's Mixes which the guild master of the castle owner guild may do per period. 0 means no limit.</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCount_Caption" xml:space="preserve">
+    <value>Lord's Mix Count</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCount_Description" xml:space="preserve">
+    <value>The number of successful Lord's Mixes of the current period.</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Caption" xml:space="preserve">
+    <value>Lord's Mix Limit Period</value>
+  </data>
+  <data name="CastleSiegeConfiguration_LordsMixLimitPeriod_Description" xml:space="preserve">
+    <value>The period of the Lord's Mix limit: per day (reset at midnight, server local time) or per siege cycle (reset when a siege ends).</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Caption" xml:space="preserve">
+    <value>Lord's Mix Count Date</value>
+  </data>
+  <data name="CastleSiegeData_LordsMixCountDate_Description" xml:space="preserve">
+    <value>The date (server local time) of the last counted Lord's Mix, for a limit per day.</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Caption" xml:space="preserve">
+    <value>Excellent Option Chance</value>
+  </data>
+  <data name="ItemCraftingResultItem_ExcellentOptionChance_Description" xml:space="preserve">
+    <value>The chance of excellent options of this result item, in percent, instead of the chance of the crafting. If empty, the chance of the crafting applies.</value>
+  </data>
+  <data name="LordsMixLimitPeriod_Day_Caption" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="LordsMixLimitPeriod_SiegeCycle_Caption" xml:space="preserve">
+    <value>Siege Cycle</value>
   </data>
 </root>

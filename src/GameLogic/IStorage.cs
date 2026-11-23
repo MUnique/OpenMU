@@ -84,6 +84,29 @@ public interface IStorage
     bool FitsAfterRemoval(ItemDefinition definition, ICollection<Item> removedItems) => this.CheckInvSpace(new TemporaryItem { Definition = definition }) is not null;
 
     /// <summary>
+    /// Determines whether all the items would fit into this storage (including extensions),
+    /// after the other items were removed, without changing the storage.
+    /// </summary>
+    /// <param name="items">The items which would be added, in this order, each at the slot which <see cref="CheckInvSpace"/> would find.</param>
+    /// <param name="removedItems">The items of this storage which would be removed before.</param>
+    /// <returns><c>true</c>, if all the items would fit; otherwise, <c>false</c>, also when an item has no definition.</returns>
+    /// <remarks>
+    /// By default, e.g. for storages of plug-in assemblies, a single item is checked with <see cref="FitsAfterRemoval"/>,
+    /// and more than one item are refused, because it isn't known whether they fit together. That may refuse items
+    /// which would fit, but never accepts one which finds no place. <see cref="Storage"/> places them together.
+    /// </remarks>
+    bool CanAddItems(IEnumerable<Item> items, ICollection<Item>? removedItems = null)
+    {
+        var firstItems = items.Take(2).ToList();
+        return firstItems.Count switch
+        {
+            0 => true,
+            1 => firstItems[0].Definition is { } definition && this.FitsAfterRemoval(definition, removedItems ?? []),
+            _ => false,
+        };
+    }
+
+    /// <summary>
     /// Checks if the items of another storage will fit into this storage (including extensions), and adds them if possible.
     /// </summary>
     /// <param name="anotherStorage">The other storage.</param>

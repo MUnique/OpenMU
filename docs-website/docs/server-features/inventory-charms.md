@@ -17,12 +17,17 @@ right click stops the use.
 | Maple Charm              | 13/131 | +50 maximum mana               |
 | Golden Oak Charm         | 13/132 | +100 health, +500 shield       |
 | Golden Maple Charm       | 13/133 | +150 mana, +50 ability (AG)    |
+| Worn Horseshoe           | 13/134 | +20% item drop rate            |
 
 The values are the ones which the game client shows in the item tooltip. For
 the Golden Oak Charm, the Season 6 Episode 3 client shows +100 health and +500
 shield, which matches its `ItemAddOption.bmd`; older clients showed +150 and
 +50. The values are stored as power-ups of the item definitions, so they can
 be changed in the admin panel.
+
+The Worn Horseshoe adds 0.2 to *Bonus Item Drop Rate*, the same attribute
+which the seals use. A monster rolls its item drops with the rate 1.0 plus
+this bonus.
 
 ## Rules
 
@@ -59,13 +64,12 @@ products of the cash shop to them. Their packages were not for sale before,
 because their products had no item. The update leaves them that way, so the
 administrator can put them on sale in the admin panel.
 
+The update *Add the worn horseshoe* adds the item and links its cash shop
+products. Its time-limited packages stay off sale. The update depends on
+the seal item drop rate and figurines and charms updates.
+
 ## Protocol
 
 The client sends the request `C1 BF 20` with the inventory slot and the
 requested state. The server answers with the same packet and the new state of
 the item.
-
-:::note
-The Worn Horseshoe (13/134) is not added yet, because there is no attribute
-for the item drop rate yet.
-:::

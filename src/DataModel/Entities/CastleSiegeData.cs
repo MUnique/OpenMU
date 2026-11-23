@@ -52,6 +52,23 @@ public class CastleSiegeData
     public long TributeMoney { get; set; }
 
     /// <summary>
+    /// Gets or sets the number of successful Lord's Mixes of the current period.
+    /// </summary>
+    /// <remarks>
+    /// It's limited by <see cref="Configuration.CastleSiegeConfiguration.LordsMixLimit"/>. Per siege cycle, it's reset when a
+    /// siege ends; per day, a count of an earlier <see cref="LordsMixCountDate"/> doesn't count.
+    /// </remarks>
+    public int LordsMixCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date (server local time) of the last counted Lord's Mix, for a limit per day.
+    /// </summary>
+    /// <remarks>
+    /// It's a calendar date, not a point in time: midnight with <see cref="DateTimeKind.Utc"/>, as the database requires.
+    /// </remarks>
+    public DateTime? LordsMixCountDate { get; set; }
+
+    /// <summary>
     /// Gets or sets the persisted states of all castle NPCs.
     /// </summary>
     [MemberOfAggregate]

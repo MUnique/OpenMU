@@ -169,6 +169,21 @@ public partial class CastleSiegeConfiguration
     [MemberOfAggregate]
     public virtual CastleSiegeZoneDefinition? AttackRespawnArea { get; set; }
 
+    /// <summary>
+    /// Gets or sets the number of successful Lord's Mixes which the guild master of the castle owner guild may do
+    /// per <see cref="LordsMixLimitPeriod"/>. 0 means no limit.
+    /// </summary>
+    /// <remarks>
+    /// The Lord's Mix is a crafting of the castle senior NPC, only for the guild master of the castle owner guild.
+    /// The mixes are counted in <see cref="Entities.CastleSiegeData.LordsMixCount"/>.
+    /// </remarks>
+    public int LordsMixLimit { get; set; }
+
+    /// <summary>
+    /// Gets or sets the period of the <see cref="LordsMixLimit"/>: per day, or per siege cycle.
+    /// </summary>
+    public LordsMixLimitPeriod LordsMixLimitPeriod { get; set; }
+
     /// <inheritdoc />
     public override string ToString()
     {

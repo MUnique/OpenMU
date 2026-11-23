@@ -69,6 +69,7 @@ public class TranslationCoverageTests
     /// <summary>Checks that the player messages of a culture are complete and keep the format arguments of the neutral resources.</summary>
     /// <param name="culture">The culture of the translations.</param>
     [TestCase("pt")]
+    [TestCase("es")]
     public void PlayerMessagesAreCompleteAndMatchNeutralPlaceholders(string culture)
     {
         // A separate manager, so that disposing the sets doesn't affect the shared one.
@@ -89,6 +90,7 @@ public class TranslationCoverageTests
     /// <param name="culture">The culture of the player.</param>
     /// <param name="expected">The expected message.</param>
     [TestCase("pt", "O MU Helper requer 1000 zen.")]
+    [TestCase("es", "El MU Helper requiere 1000 zen.")]
     public void PlayerMessageIsResolvedInCulture(string culture, string expected)
     {
         var format = MUnique.OpenMU.GameLogic.Properties.PlayerMessage.ResourceManager.GetString(nameof(MUnique.OpenMU.GameLogic.Properties.PlayerMessage.MuHelperRequiresMoney), CultureInfo.GetCultureInfo(culture));
@@ -149,7 +151,7 @@ public class TranslationCoverageTests
 
     /// <summary>Checks actual paging and refreshes when the total changes, without replacing pagination state.</summary>
     [Test]
-    public async Task ChinesePaginatorUsesTheOriginalGridStateAsync()
+    public async Task ChineseGridPagerUsesTheOriginalGridStateAsync()
     {
         var previous = CultureInfo.CurrentUICulture;
         try
@@ -162,21 +164,25 @@ public class TranslationCoverageTests
             var grid = context.Render<QuickGrid<int>>(parameters => parameters
                 .Add(p => p.Items, items.AsQueryable())
                 .Add(p => p.Pagination, state));
-            var component = context.Render<LocalizedPaginator>(parameters => parameters.Add(p => p.State, state));
-            Assert.That(component.Find("div").TextContent, Does.Contain("共 21 条"));
-            var next = component.FindAll("button").Single(b => b.TextContent == "下一页");
-            next.Click();
+            var component = context.Render<GridPager>(parameters => parameters.Add(p => p.State, state));
+            Assert.That(component.Find("nav").GetAttribute("aria-label"), Is.EqualTo("导航"));
+            Assert.That(component.FindAll("button.page-link").Select(b => b.TextContent), Is.EqualTo(new[] { "«", "1", "2", "3", "»" }));
+
+            component.Find("button[aria-label='下一页']").Click();
             Assert.That(state.CurrentPageIndex, Is.EqualTo(1));
-            Assert.That(component.Find("div").TextContent, Does.Contain("第 2 页，共 3 页"));
-            component.FindAll("button").Single(b => b.TextContent == "末页").Click();
+            component.WaitForAssertion(() => Assert.That(component.Find("li.active").TextContent, Is.EqualTo("2")));
+
+            component.FindAll("button.page-link").Single(b => b.TextContent == "3").Click();
             Assert.That(state.CurrentPageIndex, Is.EqualTo(2));
-            Assert.That(component.FindAll("button").Single(b => b.TextContent == "下一页").HasAttribute("disabled"), Is.True);
-            component.FindAll("button").Single(b => b.TextContent == "首页").Click();
+            component.WaitForAssertion(() => Assert.That(component.Find("button[aria-label='下一页']").HasAttribute("disabled"), Is.True));
+
+            component.FindAll("button.page-link").Single(b => b.TextContent == "1").Click();
+            Assert.That(state.CurrentPageIndex, Is.EqualTo(0));
             items.Clear();
             await grid.InvokeAsync(() => grid.Instance.RefreshDataAsync());
-            component.WaitForAssertion(() => Assert.That(component.Find("div").TextContent, Does.Contain("共 0 条")));
-            Assert.That(component.Find("div").TextContent, Does.Contain("第 1 页，共 1 页"));
-            Assert.That(component.FindAll("button").All(button => button.HasAttribute("disabled")), Is.True);
+            component.WaitForAssertion(() => Assert.That(component.FindAll("button.page-link").Select(b => b.TextContent), Is.EqualTo(new[] { "«", "1", "»" })));
+            Assert.That(component.Find("button[aria-label='上一页']").HasAttribute("disabled"), Is.True);
+            Assert.That(component.Find("button[aria-label='下一页']").HasAttribute("disabled"), Is.True);
         }
         finally
         {

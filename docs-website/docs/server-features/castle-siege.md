@@ -66,3 +66,29 @@ skill to cross it. The gate blocks a teleport when the straight line between
 the start and the target passes through its area. An opened or destroyed gate
 doesn't block teleports. The castle walls are ordinary terrain and are not
 covered by this rule.
+
+## Lord's Mix
+
+The Senior offers the Lord's Mix to the guild master of the castle owner guild.
+It needs 30 Jewels of Guardian, a Packed Jewel of Bless and a Packed Jewel of
+Soul (30 jewels each) and 1,000,000,000 zen, and always succeeds. The result is
+a random item of its list: in the Season 6 data, excellent weapons and armor
+with two to four excellent options, and a few normal ones. Other players,
+including the assistant master, get a message and nothing is taken.
+
+The number of successful mixes is limited by *Lord's Mix Limit* of the castle
+siege configuration (0 means no limit), per *Lord's Mix Limit Period*:
+
+- **Day** (Season 6 data, one mix): the count starts again at midnight, server
+  local time.
+- **Siege Cycle:** the count is reset when a siege ends, also when the castle
+  keeps its owner. A server start after the end of the siege keeps the count of
+  the current cycle.
+
+The count is kept in the database and read again for every mix, so the limit
+also holds when the castle's map runs on several game servers.
+
+The required items, the price and the possible results are those of crafting 18
+of the Senior and can be changed like those of other craftings; each result item
+can have its own excellent option chance. Existing Season 6 databases get the
+Lord's Mix with the optional update "Lord's Mix".

@@ -195,19 +195,40 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
     }
 
     /// <summary>
-    /// Randomly adds an excellent option to the <paramref name="resultItem"/>.
+    /// Randomly adds an excellent option to the <paramref name="resultItem"/>, by the
+    /// <see cref="SimpleCraftingSettings.ResultItemExcellentOptionChance"/> of the crafting.
     /// </summary>
     /// <param name="resultItem">The result item.</param>
     /// <param name="player">The player.</param>
     protected virtual void AddRandomExcellentOptions(Item resultItem, Player player)
     {
-        if (this._settings.ResultItemExcellentOptionChance > 0
+        this.AddRandomExcellentOptions(resultItem, player, this._settings.ResultItemExcellentOptionChance);
+    }
+
+    /// <summary>
+    /// Randomly adds an excellent option to the <paramref name="resultItem"/>, by the <paramref name="excellentOptionChance"/>.
+    /// When the crafting has a <see cref="SimpleCraftingSettings.ResultItemSocketCountTable"/>, its socket result items
+    /// get sockets instead, and like dropped socket items they can't be excellent.
+    /// </summary>
+    /// <param name="resultItem">The result item.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="excellentOptionChance">The chance of excellent options, in percent.</param>
+    protected virtual void AddRandomExcellentOptions(Item resultItem, Player player, byte excellentOptionChance)
+    {
+        if (excellentOptionChance > 0
+            && !this.GetsSockets(resultItem)
             && resultItem.Definition!.PossibleItemOptions.FirstOrDefault(o =>
                     o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Excellent || p.OptionType == ItemOptionTypes.Wing))
                 is { } optionDefinition)
         {
+            if (this._settings.ResultItemExcellentOptionCountTable is { } countTable)
+            {
+                this.AddExcellentOptionsByTable(resultItem, player, optionDefinition, countTable, excellentOptionChance);
+                return;
+            }
+
             for (int j = 0;
-                j < optionDefinition.MaximumOptionsPerItem && Rand.NextRandomBool(this._settings.ResultItemExcellentOptionChance);
+                j < optionDefinition.MaximumOptionsPerItem && Rand.NextRandomBool(excellentOptionChance);
                 j++)
             {
                 var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
@@ -221,6 +242,24 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Selects the number of sockets of a socket <paramref name="resultItem"/> by the
+    /// <see cref="SimpleCraftingSettings.ResultItemSocketCountTable"/>, or uniformly between 1 and its maximum sockets
+    /// if the table has no selectable value. Without a table, result items get no sockets.
+    /// </summary>
+    /// <param name="resultItem">The result item.</param>
+    protected virtual void AddRandomSockets(Item resultItem)
+    {
+        if (!this.GetsSockets(resultItem))
+        {
+            return;
+        }
+
+        var maximumSockets = resultItem.Definition!.MaximumSockets;
+        resultItem.SocketCount = this._settings.ResultItemSocketCountTable!.SelectRandomValue(Rand.GetRandomizer(), 1, maximumSockets)
+                                 ?? Rand.NextInt(1, maximumSockets + 1);
     }
 
     /// <summary>
@@ -267,6 +306,43 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
         }
     }
 
+    private bool GetsSockets(Item resultItem)
+    {
+        return this._settings.ResultItemSocketCountTable is not null && resultItem.Definition is { MaximumSockets: > 0 };
+    }
+
+    /// <summary>
+    /// Adds excellent options to the <paramref name="resultItem"/>, if it gets them by the <paramref name="excellentOptionChance"/>,
+    /// as many as selected from the <paramref name="countTable"/>, up to the number of options of the definition.
+    /// </summary>
+    private void AddExcellentOptionsByTable(Item resultItem, Player player, ItemOptionDefinition optionDefinition, WeightedValueTable countTable, byte excellentOptionChance)
+    {
+        if (!Rand.NextRandomBool(excellentOptionChance))
+        {
+            return;
+        }
+
+        var optionCount = countTable.SelectRandomValue(Rand.GetRandomizer(), 1, optionDefinition.PossibleOptions.Count) ?? 1;
+        for (int j = 0; j < optionCount; j++)
+        {
+            var remainingOptions = optionDefinition.PossibleOptions.Except(resultItem.ItemOptions.Select(io => io.ItemOption)).ToList();
+            if (remainingOptions.Count == 0)
+            {
+                break;
+            }
+
+            var link = player.PersistenceContext.CreateNew<ItemOptionLink>();
+            link.ItemOption = remainingOptions.SelectRandom();
+            resultItem.ItemOptions.Add(link);
+        }
+
+        if (resultItem.Definition!.Skill != null)
+        {
+            // Excellent items always have skill.
+            resultItem.HasSkill = true;
+        }
+    }
+
     private async ValueTask<List<Item>> CreateResultItemsAsync(Player player, IList<CraftingRequiredItemLink> referencedItems, ItemCraftingResultItem craftingResultItem, byte successRate)
     {
         int resultItemCount = this._settings.MultipleAllowed
@@ -286,7 +362,16 @@ public class SimpleItemCraftingHandler : BaseItemCraftingHandler
             this.AddRandomLuckOption(resultItem, player, successRate);
             this.AddRandomItemOption(resultItem, player, successRate);
             this.AddRandomSkill(resultItem, successRate);
-            this.AddRandomExcellentOptions(resultItem, player);
+            if (craftingResultItem.ExcellentOptionChance is { } excellentOptionChance)
+            {
+                this.AddRandomExcellentOptions(resultItem, player, excellentOptionChance);
+            }
+            else
+            {
+                this.AddRandomExcellentOptions(resultItem, player);
+            }
+
+            this.AddRandomSockets(resultItem);
 
             resultItem.Durability = craftingResultItem.Durability ?? resultItem.GetMaximumDurabilityOfOnePiece();
 

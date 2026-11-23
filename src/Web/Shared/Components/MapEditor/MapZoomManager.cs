@@ -10,6 +10,8 @@ using Microsoft.JSInterop;
 /// <summary>
 /// Manages zoom state and delegates zoom operations to the map editor's
 /// JavaScript module, keeping zoom logic isolated from the Blazor component.
+/// Mouse wheel zooming is handled entirely in the browser (no server round trip) and
+/// reported back to <see cref="SyncZoomLevel"/> once the user stopped zooming.
 /// </summary>
 public sealed class MapZoomManager
 {
@@ -90,41 +92,11 @@ public sealed class MapZoomManager
     }
 
     /// <summary>
-    /// Handles a mouse wheel event to zoom in or out centered on the cursor position.
-    /// </summary>
-    /// <param name="deltaY">The vertical scroll delta from the wheel event.</param>
-    /// <param name="clientX">The client X position of the cursor.</param>
-    /// <param name="clientY">The client Y position of the cursor.</param>
-    public async Task HandleWheelAsync(double deltaY, double clientX, double clientY)
-    {
-        var result = await this._jsModule
-            .InvokeAsync<ZoomResult>("handleWheel", this._mapHostRef, deltaY, clientX, clientY)
-            .ConfigureAwait(false);
-
-        if (result.Handled)
-        {
-            this.ZoomLevel = result.ZoomLevel;
-        }
-    }
-
-    /// <summary>
     /// Synchronizes the zoom level from a value retrieved from the JavaScript module state.
     /// </summary>
     /// <param name="zoomLevel">The zoom level as reported by the JS module.</param>
     public void SyncZoomLevel(float zoomLevel)
     {
         this.ZoomLevel = zoomLevel;
-    }
-
-    /// <summary>
-    /// Represents the result returned from the JavaScript zoom handler.
-    /// </summary>
-    private sealed class ZoomResult
-    {
-        /// <summary>Gets or sets the new zoom level after the wheel event.</summary>
-        public float ZoomLevel { get; set; }
-
-        /// <summary>Gets or sets a value indicating whether the wheel event was consumed.</summary>
-        public bool Handled { get; set; }
     }
 }

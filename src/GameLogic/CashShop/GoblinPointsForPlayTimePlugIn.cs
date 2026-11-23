@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -31,7 +32,10 @@ public class GoblinPointsForPlayTimePlugIn : IPeriodicTaskPlugIn, ISupportCustom
 
     private readonly ConditionalWeakTable<Player, StrongBox<DateTime>> _countingSince = new();
 
-    private DateTime _nextRunUtc = DateTime.UtcNow;
+    /// <summary>
+    /// The time of the next check, for each game server: the plugin instance is shared by the game servers of a process.
+    /// </summary>
+    private readonly PerServerSchedule _schedule = new();
 
     /// <inheritdoc />
     public GoblinPointsForPlayTimeConfiguration? Configuration { get; set; }
@@ -39,13 +43,12 @@ public class GoblinPointsForPlayTimePlugIn : IPeriodicTaskPlugIn, ISupportCustom
     /// <inheritdoc />
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
-        var now = DateTime.UtcNow;
-        if (now < this._nextRunUtc)
+        if (!this._schedule.TryStartRun(gameContext, CheckInterval))
         {
             return;
         }
 
-        this._nextRunUtc = now + CheckInterval;
+        var now = DateTime.UtcNow;
         if (CashShopFeaturePlugIn.GetSettings(gameContext) is null)
         {
             return;
@@ -74,7 +77,7 @@ public class GoblinPointsForPlayTimePlugIn : IPeriodicTaskPlugIn, ISupportCustom
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.UtcNow;
+        this._schedule.ForceStart();
     }
 
     /// <inheritdoc />

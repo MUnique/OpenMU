@@ -19,6 +19,10 @@
     return;
 }
 
+<SearchInput Class="grid-search mb-2" @bind-Value="this.NameFilter" AutoFocus="true" />
+
+<GridPager State="@_pagination" />
+
 <div>
     <QuickGrid Items="@this.ViewModels" Pagination="@_pagination" Theme="none" >
         @if (this.HasNumbers)
@@ -32,12 +36,6 @@
                     <div class="col-title-text">@context.Title</div>
                     <div class="sort-indicator" aria-hidden="true"></div>
                 </button>
-                <div class="col-search ms-5">
-                    <div class="input-group">
-                        <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-                        <input class="form-control small" type="search" autofocus @bind="@NameFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
-                    </div>
-                </div>
             </HeaderTemplate>
         </PropertyColumn>
 
@@ -51,7 +49,7 @@
         </TemplateColumn>
     </QuickGrid>
 </div>
-<LocalizedPaginator State="@_pagination" />
+<GridPager State="@_pagination" />
 <div class="add-new-bar">
     <hr />
     <button type="button" class="btn btn-primary" @onclick="OnCreateButtonClickAsync"><span class="oi oi-plus"></span> @Resources.AddNew</button>

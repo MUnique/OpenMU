@@ -42,14 +42,14 @@ internal static class SocketCountTables
     /// <returns>The tables for one-handed weapons, shields and armor, and for two-handed weapons.</returns>
     internal static (WeightedValueTable OneHanded, WeightedValueTable TwoHanded) GetOrCreate(IContext context, GameConfiguration gameConfiguration)
     {
-        var oneHanded = GetOrCreate(
+        var oneHanded = WeightedValueTableFactory.GetOrCreate(
             context,
             gameConfiguration,
             OneHandedTableNumber,
             LocalizedString.FromResource(() => WeightedValueTableNames.SocketCountOneHanded),
             LocalizedString.FromResource(() => WeightedValueTableNames.SocketCountOneHandedDescription),
             OneHandedWeights);
-        var twoHanded = GetOrCreate(
+        var twoHanded = WeightedValueTableFactory.GetOrCreate(
             context,
             gameConfiguration,
             TwoHandedTableNumber,
@@ -67,30 +67,5 @@ internal static class SocketCountTables
     internal static bool IsTwoHandedWeapon(ItemDefinition item)
     {
         return item.Group <= (byte)ItemGroups.Staff && item.Width == 2;
-    }
-
-    private static WeightedValueTable GetOrCreate(IContext context, GameConfiguration gameConfiguration, short tableNumber, LocalizedString name, LocalizedString description, (int SocketCount, double Weight)[] weights)
-    {
-        var id = GuidHelper.CreateGuid<WeightedValueTable>(tableNumber);
-        if (gameConfiguration.WeightedValueTables.FirstOrDefault(t => t.GetId() == id) is { } existingTable)
-        {
-            return existingTable;
-        }
-
-        var table = context.CreateNew<WeightedValueTable>();
-        table.SetGuid(tableNumber);
-        table.Name = name;
-        table.Description = description;
-        foreach (var (socketCount, weight) in weights)
-        {
-            var weightedValue = context.CreateNew<WeightedValue>();
-            weightedValue.SetGuid(tableNumber, (short)socketCount);
-            weightedValue.Value = socketCount;
-            weightedValue.Weight = weight;
-            table.Values.Add(weightedValue);
-        }
-
-        gameConfiguration.WeightedValueTables.Add(table);
-        return table;
     }
 }

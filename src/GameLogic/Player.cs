@@ -769,6 +769,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         else
         {
             this._selectedCharacter = character;
+            if (this._account is { } enteredAccount)
+            {
+                enteredAccount.LastSeenDate = DateTime.UtcNow;
+            }
+
             await this.OnPlayerEnteredWorldAsync().ConfigureAwait(false);
             await this.PlayerEnteredWorld.SafeInvokeAsync(this).ConfigureAwait(false);
 
@@ -1437,6 +1442,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         Interlocked.Exchange(ref this._lastAliveReportTicks, 0);
 
         await this.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+
+        if (this._account is { } leavingAccount)
+        {
+            leavingAccount.LastSeenDate = DateTime.UtcNow;
+        }
 
         try
         {

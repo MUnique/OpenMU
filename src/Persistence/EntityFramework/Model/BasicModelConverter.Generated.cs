@@ -189,6 +189,7 @@ internal sealed class BasicModelConverter
         }
 
         target.RegistrationDate = source.RegistrationDate;
+        target.LastSeenDate = source.LastSeenDate;
         target.State = source.State;
         target.TimeZone = source.TimeZone;
         target.VaultPassword = source.VaultPassword;
@@ -625,6 +626,8 @@ internal sealed class BasicModelConverter
 
         target.DefenseRespawnArea = (MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition)this.ConvertObject(source.DefenseRespawnArea)!;
         target.AttackRespawnArea = (MUnique.OpenMU.DataModel.Configuration.CastleSiegeZoneDefinition)this.ConvertObject(source.AttackRespawnArea)!;
+        target.LordsMixLimit = source.LordsMixLimit;
+        target.LordsMixLimitPeriod = source.LordsMixLimitPeriod;
         return target;
     }
 
@@ -645,6 +648,8 @@ internal sealed class BasicModelConverter
         target.TaxHunt = source.TaxHunt;
         target.IsHuntZoneEnabled = source.IsHuntZoneEnabled;
         target.TributeMoney = source.TributeMoney;
+        target.LordsMixCount = source.LordsMixCount;
+        target.LordsMixCountDate = source.LordsMixCountDate;
         if (source.NpcStates is { } npcStatesItems)
         {
             foreach (var item in npcStatesItems)
@@ -1847,6 +1852,7 @@ internal sealed class BasicModelConverter
         target.StorePriceItemDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.StorePriceItemDefinition)!;
         target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
+        target.ExpiresAt = source.ExpiresAt;
         return target;
     }
 
@@ -1962,6 +1968,7 @@ internal sealed class BasicModelConverter
         target.Durability = source.Durability;
         target.Reference = source.Reference;
         target.AddLevel = source.AddLevel;
+        target.ExcellentOptionChance = source.ExcellentOptionChance;
         return target;
     }
 
@@ -1993,6 +2000,7 @@ internal sealed class BasicModelConverter
         target.IsSellableToNpc = source.IsSellableToNpc;
         target.IsPersonalStoreSellable = source.IsPersonalStoreSellable;
         target.IsRepairable = source.IsRepairable;
+        target.IsSellableWhenExpired = source.IsSellableWhenExpired;
         target.Name = source.Name;
         target.IsActive = source.IsActive;
         target.IntroducedIn = source.IntroducedIn;
@@ -3144,6 +3152,8 @@ internal sealed class BasicModelConverter
         target.ResultItemSkillChance = source.ResultItemSkillChance;
         target.ResultItemExcellentOptionChance = source.ResultItemExcellentOptionChance;
         target.ResultItemMaxExcOptionCount = source.ResultItemMaxExcOptionCount;
+        target.ResultItemExcellentOptionCountTable = (MUnique.OpenMU.DataModel.Configuration.WeightedValueTable)this.ConvertObject(source.ResultItemExcellentOptionCountTable)!;
+        target.ResultItemSocketCountTable = (MUnique.OpenMU.DataModel.Configuration.WeightedValueTable)this.ConvertObject(source.ResultItemSocketCountTable)!;
         return target;
     }
 

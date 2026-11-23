@@ -207,4 +207,13 @@
   <data name="EquipmentWithSkillWithoutValue" xml:space="preserve">
     <value>Equipment with a skill without value</value>
   </data>
+  <data name="RentalItems" xml:space="preserve">
+    <value>Rental items</value>
+  </data>
+  <data name="SkeletonRentalItems" xml:space="preserve">
+    <value>Rental items (Skeleton)</value>
+  </data>
+  <data name="SmallWingsAndCapes" xml:space="preserve">
+    <value>Small wings and capes</value>
+  </data>
 </root>

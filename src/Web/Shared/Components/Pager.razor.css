@@ -1,0 +1,5 @@
+/* Page buttons have a minimum width, so that numbers with a different amount of digits don't move the other buttons. */
+.page-link {
+    min-width: 2.5rem;
+    text-align: center;
+}

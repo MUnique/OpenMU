@@ -62,5 +62,11 @@ public class ItemMovedPlugIn : IItemMovedPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+
+        if (storage == Storages.Inventory)
+        {
+            // The client creates the item again, so it needs the expiration of a time-limited item again.
+            await this._player.InvokeViewPlugInAsync<IItemExpirationViewPlugIn>(p => p.ShowExpirationAsync(item)).ConfigureAwait(false);
+        }
     }
 }

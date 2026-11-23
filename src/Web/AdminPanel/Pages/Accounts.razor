@@ -21,14 +21,9 @@
             <th class="col-2">@typeof(Account).GetPropertyCaption(nameof(Account.EMail))</th>
             <th class="col-2">@Resources.Action</th>
         </TableHeader>
-        <FilterHeader>
-            <th colspan="4">
-                <div class="input-group">
-                    <span class="input-group-text"><span class="oi oi-magnifying-glass" aria-hidden="true"></span></span>
-                    <input class="form-control small" type="search" autofocus @bind="@this._accountService.SearchFilter" @bind:event="oninput" placeholder="@Resources.Search ..."/>
-                </div>
-            </th>
-        </FilterHeader>
+        <SearchHeader>
+            <SearchInput @bind-Value="this._accountService.SearchFilter" AutoFocus="true" />
+        </SearchHeader>
         <ItemTemplate Context="item">
             <td>@item.LoginName</td>
             <td>@item.State.GetEnumCaption()</td>

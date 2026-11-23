@@ -29,7 +29,8 @@ public enum ItemPickFailReason
     /// The maximum inventory money has been reached, so the money wasn't picked up.
     /// </summary>
     /// <remarks>
-    /// Unused, because we never drop money and therefore can't pick it up.
+    /// Don't send it to the client: its code (254) is the one of the money update, which carries the new amount,
+    /// and the client drops the reply without it. A refused money pick up replies <see cref="General"/>.
     /// </remarks>
     MaximumInventoryMoneyReached,
 }

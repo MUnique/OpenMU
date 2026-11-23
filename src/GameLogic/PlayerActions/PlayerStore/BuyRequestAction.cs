@@ -56,7 +56,7 @@ public class BuyRequestAction
 
         // Checked here, and not only when the item is moved into the store: the store may
         // contain it since before the item rules existed.
-        if (item.Definition is { IsPersonalStoreSellable: false })
+        if (item.Definition is { IsPersonalStoreSellable: false } || item.IsTimeLimited())
         {
             player.Logger.LogWarning(
                 "Player {0} tried to buy {1} from the store of {2}, which its item definition doesn't allow to sell in a personal store.",

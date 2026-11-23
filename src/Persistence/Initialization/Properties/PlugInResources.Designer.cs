@@ -465,187 +465,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /// <summary>Gets the localized HideSkillEffectTimesPlugIn_Name text.</summary>
-        public static string HideSkillEffectTimesPlugIn_Name => ResourceManager.GetString("HideSkillEffectTimesPlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized HideSkillEffectTimesPlugIn_Description text.</summary>
-        public static string HideSkillEffectTimesPlugIn_Description => ResourceManager.GetString("HideSkillEffectTimesPlugIn_Description", resourceCulture)!;
-
-
-
-
-
-
-
-
         /// <summary>
         ///   Looks up a localized string similar to Add free event tickets.
         /// </summary>
@@ -944,6 +763,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adds the Lord&apos;s Mix to the castle senior: once per day, the guild master of the guild which owns the castle mixes 30 Jewels of Guardian, a Packed Jewel of Bless and a Packed Jewel of Soul (30 jewels each) and 1,000,000,000 zen into an excellent weapon or armor with two to four excellent options, or a normal one. Sets the limit of one mix per day, if there&apos;s no limit yet..
+        /// </summary>
+        public static string AddLordsMixUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddLordsMixUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lord&apos;s Mix.
+        /// </summary>
+        public static string AddLordsMixUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddLordsMixUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Makes Market Union Member Julia (547) a working warp NPC between Lorencia and the Loren Market, on both sides, instead of an empty merchant..
         /// </summary>
         public static string AddLorenMarketJuliaWarpPlugIn_Description {
@@ -1192,6 +1029,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string AddRenaItemUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("AddRenaItemUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This update puts the time-limited pets, rings, necklaces and small wings of the cash shop on sale, which are delivered as items which expire, and lets them be sold to an NPC once they expired, for the small fixed price which the client shows..
+        /// </summary>
+        public static string AddRentalItemRulesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddRentalItemRulesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sell the rented items of the cash shop.
+        /// </summary>
+        public static string AddRentalItemRulesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddRentalItemRulesUpdatePlugIn_Name", resourceCulture);
             }
         }
         
@@ -1537,6 +1392,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.
+        /// </summary>
+        public static string AddWornHorseshoeUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the worn horseshoe.
+        /// </summary>
+        public static string AddWornHorseshoeUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddWornHorseshoeUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects..
         /// </summary>
@@ -2590,20 +2463,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         
-
-
-
-
-
-
-
-
-        /// <summary>Gets the localized MonsterResistancesUpdatePlugInBase_Name text.</summary>
-        public static string MonsterResistancesUpdatePlugInBase_Name => ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized MonsterResistancesUpdatePlugInBase_Description text.</summary>
-        public static string MonsterResistancesUpdatePlugInBase_Description => ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Description", resourceCulture)!;
-        
         /// <summary>
         ///   Looks up a localized string similar to Fix Warrior Morning Star.
         /// </summary>
@@ -2613,28 +2472,6 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         
-
-
-
-
-        /// <summary>Gets the localized IllusionTempleDataUpdatePlugIn_Name text.</summary>
-        public static string IllusionTempleDataUpdatePlugIn_Name => ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized IllusionTempleDataUpdatePlugIn_Description text.</summary>
-        public static string IllusionTempleDataUpdatePlugIn_Description => ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn075_Name text.</summary>
-        public static string NpcSpawnsUpdatePlugIn075_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn075_Description text.</summary>
-        public static string NpcSpawnsUpdatePlugIn075_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Description", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn095d_Name text.</summary>
-        public static string NpcSpawnsUpdatePlugIn095d_Name => ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Name", resourceCulture)!;
-
-        /// <summary>Gets the localized NpcSpawnsUpdatePlugIn095d_Description text.</summary>
-        public static string NpcSpawnsUpdatePlugIn095d_Description => ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Description", resourceCulture)!;
-
         /// <summary>
         ///   Looks up a localized string similar to This update fixes weapons (staff) rise percentage.
         /// </summary>
@@ -2708,6 +2545,42 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switches off sending the duration of the skill effects which the Season 6 data sent it for: Infinite Arrow and the defense reductions of Fire Slash and Beast Uppercut. The original game shows no time for skill effects. It overwrites the current setting, also one made on the Effect times page..
+        /// </summary>
+        public static string HideSkillEffectTimesPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HideSkillEffectTimesPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide Skill Effect Times.
+        /// </summary>
+        public static string HideSkillEffectTimesPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HideSkillEffectTimesPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This update creates the configuration data for the illusion temple event and assigns the event dialog to the Mirage NPC. If the items 13/50 and 13/51 have swapped data (Scroll of Blood and Illusion Sorcerer Covenant), it gives them their original data back: names, sizes, durability, levels and drops, the drop item groups, the temple tickets and the merchant items of 13/51. If both have their original names, but the sizes are still swapped, Lumen the Barmaid sells 13/51 instead of 13/50, or a drop item group [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string IllusionTempleDataUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple Data.
+        /// </summary>
+        public static string IllusionTempleDataUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleDataUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update adds the infinity arrow skill as quest reward for &apos;Gain Hero Status (Muse Elf)&apos;..
         /// </summary>
         public static string InfinityArrowSkillOnQuestCompletionPlugIn_Description {
@@ -2744,6 +2617,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Converts the elemental resistances of the monsters to whole numbers from 0 to 255, which the resistance check expects; until now, monsters resisted ice, poison and lightning effects in only about 1 to 2 % of the hits. Corrects the resistances which the import of the monster data assigned to the wrong elements (ice and poison swapped, lightning stored as water) and sets the Season 6 values. Customized resistances are converted to the new scale, but not changed otherwise..
+        /// </summary>
+        public static string MonsterResistancesUpdatePlugInBase_Description {
+            get {
+                return ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster elemental resistances.
+        /// </summary>
+        public static string MonsterResistancesUpdatePlugInBase_Name {
+            get {
+                return ResourceManager.GetString("MonsterResistancesUpdatePlugInBase_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets level, health, damage, defense, attack and defense rate, ranges, delays and respawn times of the monsters to the Season 6 data, which this version uses as well. It corrects field monsters, invasion monsters and guards and, in Season 6, Chaos Castle 4 and 7 and Devil Square 7. Customized values of these stats are overwritten. In Season 6, renames the monster 275 of Kalima 7 from &quot;Illusion of Kundun 7&quot; to &quot;Kundun&quot;..
         /// </summary>
         public static string MonsterStatsUpdatePlugInBase_Description {
@@ -2776,6 +2667,42 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string MoveServerPortsOutOfDynamicRangePlugInBase_Name {
             get {
                 return ResourceManager.GetString("MoveServerPortsOutOfDynamicRangePlugInBase_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brings the NPCs of 0.75 to the Season 6 data: removes the two Potion Girls of Noria, the Potion Girl and the Safety Guardian of Lost Tower, the Safety Guardians of Arena and Atlans and the Crossbow Guard at 114/125 in Lorencia, and moves the Soccer Ball and the Arena Guard of Arena to their Season 6 positions..
+        /// </summary>
+        public static string NpcSpawnsUpdatePlugIn075_Description {
+            get {
+                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0.75 NPC spawns.
+        /// </summary>
+        public static string NpcSpawnsUpdatePlugIn075_Name {
+            get {
+                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn075_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brings the NPCs of 0.95d to the Season 6 data: removes the two Potion Girls of Noria, the Potion Girl and the Safety Guardian of Lost Tower, the Safety Guardians of Arena and Atlans and the Crossbow Guard at 114/125 in Lorencia, moves the Soccer Ball and the Arena Guard of Arena to their Season 6 positions and the Golden Archer from Lorencia to Devias (226/66)..
+        /// </summary>
+        public static string NpcSpawnsUpdatePlugIn095d_Description {
+            get {
+                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0.95d NPC spawns.
+        /// </summary>
+        public static string NpcSpawnsUpdatePlugIn095d_Name {
+            get {
+                return ResourceManager.GetString("NpcSpawnsUpdatePlugIn095d_Name", resourceCulture);
             }
         }
         

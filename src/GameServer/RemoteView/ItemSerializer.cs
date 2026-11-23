@@ -35,6 +35,16 @@ public class ItemSerializer : IItemSerializer
 
     private const byte GuardianOptionFlag = 0x08;
 
+    /// <summary>
+    /// The flag of byte 5 for a time-limited item, which the client calls a period item.
+    /// </summary>
+    private const byte TimeLimitedFlag = 0x02;
+
+    /// <summary>
+    /// The flag of byte 5 for an expired time-limited item.
+    /// </summary>
+    private const byte ExpiredFlag = 0x04;
+
     private const byte AncientBonusLevelMask = 0b1100;
     private const byte AncientDiscriminatorMask = 0b0011;
     private const byte AncientMask = AncientBonusLevelMask | AncientDiscriminatorMask;
@@ -109,6 +119,15 @@ public class ItemSerializer : IItemSerializer
         if (item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption))
         {
             target[5] |= GuardianOptionFlag;
+        }
+
+        if (item.IsTimeLimited())
+        {
+            target[5] |= TimeLimitedFlag;
+            if (item.IsExpired(DateTime.UtcNow))
+            {
+                target[5] |= ExpiredFlag;
+            }
         }
 
         target[6] = (byte)(GetHarmonyByte(item) | GetSocketBonusByte(item));

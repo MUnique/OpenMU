@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingResultItem",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCraftingResultItem),
                 baseEntityType,
-                propertyCount: 8,
+                propertyCount: 9,
                 navigationCount: 1,
                 foreignKeyCount: 2,
                 unnamedIndexCount: 2,
@@ -55,6 +55,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem).GetField("<Durability>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 nullable: true);
             durability.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var excellentOptionChance = runtimeEntityType.AddProperty(
+                "ExcellentOptionChance",
+                typeof(byte?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem).GetProperty("ExcellentOptionChance", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.ItemCrafting.ItemCraftingResultItem).GetField("<ExcellentOptionChance>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            excellentOptionChance.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var itemDefinitionId = runtimeEntityType.AddProperty(
                 "ItemDefinitionId",

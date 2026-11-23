@@ -3,15 +3,9 @@
 <div class="auto-form-container">
     @if (ShowSearch)
     {
-        <div class="mb-3 auto-form-search-group">
-            <input type="text"
-                   id="auto-form-search"
-                   class="form-control"
-                   placeholder="@($"{Resources.Search}...")"
-                   @bind="this._currentSearchTerm"
-                   @bind:event="oninput" />
-            <span class="oi oi-magnifying-glass search-icon"></span>
-        </div>
+        <SearchInput Class="mb-3"
+                     Value="@(this._currentSearchTerm ?? string.Empty)"
+                     ValueChanged="@(value => this._currentSearchTerm = value)" />
     }
 
     <EditForm Model="@Model" OnValidSubmit="OnValidSubmit" class="auto-form">

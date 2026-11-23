@@ -216,6 +216,34 @@ public class GuildServer : IGuildServer
     }
 
     /// <inheritdoc />
+    public async ValueTask<bool> TransferLeadershipAsync(uint guildId, string characterName)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<GuildLeadershipTransferArguments, bool>(this._targetAppId, GetMethodName(nameof(this.TransferLeadershipAsync)), new GuildLeadershipTransferArguments(guildId, characterName)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when sending a guild leadership transfer.");
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<GuildMasterInactivityResult>> RemoveInactiveGuildMastersAsync(TimeSpan inactivityLimit, int maximumGuilds)
+    {
+        try
+        {
+            return await this._daprClient.InvokeMethodAsync<GuildMasterInactivityArguments, List<GuildMasterInactivityResult>>(this._targetAppId, GetMethodName(nameof(this.RemoveInactiveGuildMastersAsync)), new GuildMasterInactivityArguments(inactivityLimit, maximumGuilds)).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Unexpected error when sending the handling of inactive guild masters.");
+            return [];
+        }
+    }
+
+    /// <inheritdoc />
     public ValueTask PlayerEnteredGameAsync(Guid characterId, string characterName, byte serverId)
     {
         // Handled by EventPublisher, through pub/sub component.

@@ -61,7 +61,9 @@ internal static class BotShoppingHandler
     /// or a potion stack is running low (and there is Zen to restock with).
     /// </summary>
     /// <param name="player">The bot player.</param>
-    public static bool NeedsShopping(OfflinePlayer player)
+    /// <param name="getFareReserve">Gets the Zen the bot keeps for the warp to its hunting ground (see <see cref="HasPotionMoney"/>).
+    /// Only called while a potion stack runs low - judging the hunting grounds of every map is not free.</param>
+    public static bool NeedsShopping(OfflinePlayer player, Func<long> getFareReserve)
     {
         if (player.Inventory is not { } inventory)
         {
@@ -79,7 +81,7 @@ internal static class BotShoppingHandler
         // The emergency refill (see BotNavigator) keeps it alive meanwhile, at a stock deliberately
         // below this target - which is exactly what made the loop permanent rather than occasional.
         if (GetLowPotionKinds(player).Any()
-            && (player.Money >= MinPotionMoney || GetSellableJunk(player, inventory).Count > 0))
+            && (HasPotionMoney(player.Money, getFareReserve()) || GetSellableJunk(player, inventory).Count > 0))
         {
             return true;
         }
@@ -131,8 +133,9 @@ internal static class BotShoppingHandler
     /// <param name="player">The bot player.</param>
     /// <param name="map">The game map.</param>
     /// <param name="merchantPosition">The position of the merchant.</param>
+    /// <param name="fareReserve">The Zen the potion purchases leave untouched (see <see cref="HasPotionMoney"/>).</param>
     /// <returns>True, if a merchant was found and the trade ran; false if no merchant is there.</returns>
-    public static async ValueTask<bool> TryTradeAsync(OfflinePlayer player, GameMap map, Point merchantPosition)
+    public static async ValueTask<bool> TryTradeAsync(OfflinePlayer player, GameMap map, Point merchantPosition, long fareReserve)
     {
         var merchant = map.GetNpcsInRange(merchantPosition, 4)
             .FirstOrDefault(n => n.Definition is { ObjectKind: NpcObjectKind.PassiveNpc, MerchantStore.Items.Count: > 0 });
@@ -168,7 +171,7 @@ internal static class BotShoppingHandler
             var (sold, unsold) = await SellJunkAsync(player, inventory).ConfigureAwait(false);
 
             var store = player.OpenedNpc.Definition.MerchantStore;
-            var boughtPotions = store is null ? 0 : await BuyPotionsAsync(player, store).ConfigureAwait(false);
+            var boughtPotions = store is null ? 0 : await BuyPotionsAsync(player, store, fareReserve).ConfigureAwait(false);
             var boughtJewels = store is null ? 0 : await BuyJewelsAsync(player, store).ConfigureAwait(false);
 
             // Only now, with every purchase of this visit paid for, is it settled how much room the
@@ -199,6 +202,22 @@ internal static class BotShoppingHandler
 
         return true;
     }
+
+    /// <summary>
+    /// Whether the bot has Zen to spend on potions beyond the fare to its hunting ground.
+    /// </summary>
+    /// <param name="money">The Zen the bot holds.</param>
+    /// <param name="fareReserve">The fare of the warp to the bot's hunting ground; 0 if it needs none.</param>
+    /// <returns>True, if a potion trip can buy anything.</returns>
+    /// <remarks>
+    /// Spending the fare on potions trapped the bot in town: a potion trip from a map without a
+    /// merchant takes it home for free, the purchase left it a few dozen Zen, and the warp back to its
+    /// hunting ground became unaffordable. On the starter map it could not earn the fare either -
+    /// the next trip spent whatever it had picked up. High-level bots ended up farming level 1
+    /// monsters in Lorencia and Noria for good. Below the reserve the free emergency refill
+    /// (see BotNavigator) keeps the bot supplied until its loot pays for the next trip.
+    /// </remarks>
+    internal static bool HasPotionMoney(long money, long fareReserve) => money >= MinPotionMoney + fareReserve;
 
     /// <summary>
     /// Destroys the wings in the backpack of the bot instead of selling them. A bot's wings are granted
@@ -429,7 +448,7 @@ internal static class BotShoppingHandler
     /// of the best kind the merchant offers. Merchants often carry the same potion as a small and a large
     /// stack; taking the first match would buy the tiny one twenty times over.
     /// </summary>
-    private static async ValueTask<int> BuyPotionsAsync(OfflinePlayer player, ItemStorage store)
+    private static async ValueTask<int> BuyPotionsAsync(OfflinePlayer player, ItemStorage store, long fareReserve)
     {
         var target = GetPotionStockTarget(player);
         var bought = 0;
@@ -437,7 +456,7 @@ internal static class BotShoppingHandler
         {
             for (var i = 0; i < MaxPurchasesPerKind && GetCharges(player, priority) < target; i++)
             {
-                if (FindBestOffer(player, store, priority) is not { } offer)
+                if (FindBestOffer(player, store, priority, fareReserve) is not { } offer)
                 {
                     break; // the merchant has none of this kind, or none the bot can afford.
                 }
@@ -520,14 +539,15 @@ internal static class BotShoppingHandler
     /// afford, and of that kind the biggest stack - one purchase of a 255 charge stack beats twenty
     /// purchases of a stack of three, in Zen spent per charge as well as in backpack slots used.
     /// </summary>
-    private static Item? FindBestOffer(Player player, ItemStorage store, ItemIdentifier[] priority)
+    private static Item? FindBestOffer(Player player, ItemStorage store, ItemIdentifier[] priority, long fareReserve)
     {
         foreach (var identifier in priority)
         {
-            // No reserve for potions on purpose: they are what keeps the bot alive and hunting, so
-            // spending the last coin on them is right. Holding a reserve back here meant a bot which
-            // the repair had left just under it walked to the merchant and bought nothing at all.
-            if (FindAffordableOffer(player, store, identifier, 0) is { } offer)
+            // Only the fare is held back, no general reserve: potions are what keeps the bot alive and
+            // hunting. A general reserve meant a bot which the repair had left just under it walked to
+            // the merchant and bought nothing at all - the trip trigger now asks for the same money
+            // (see HasPotionMoney), so it can't go shopping for what it may not spend.
+            if (FindAffordableOffer(player, store, identifier, fareReserve) is { } offer)
             {
                 return offer;
             }
@@ -536,7 +556,7 @@ internal static class BotShoppingHandler
         return null;
     }
 
-    private static Item? FindAffordableOffer(Player player, ItemStorage store, ItemIdentifier identifier, int reserve)
+    private static Item? FindAffordableOffer(Player player, ItemStorage store, ItemIdentifier identifier, long reserve)
     {
         return store.Items
             .Where(i => Matches(i, identifier))

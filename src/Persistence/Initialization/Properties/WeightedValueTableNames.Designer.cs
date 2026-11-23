@@ -55,6 +55,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Excellent Option Count (Lord&apos;s Mix).
+        /// </summary>
+        public static string LordsMixExcellentOptionCount {
+            get {
+                return ResourceManager.GetString("LordsMixExcellentOptionCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of excellent options of an excellent result item of the Lord&apos;s Mix: two, three or four, equally likely..
+        /// </summary>
+        public static string LordsMixExcellentOptionCountDescription {
+            get {
+                return ResourceManager.GetString("LordsMixExcellentOptionCountDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Socket Count (One-Handed Weapons, Shields, Armor).
         /// </summary>
         public static string SocketCountOneHanded {

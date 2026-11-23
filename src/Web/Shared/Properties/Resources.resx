@@ -192,6 +192,12 @@
   <data name="TheValueMustNotContain" xml:space="preserve">
     <value>{0}: The value must not contain "{1}".</value>
   </data>
+  <data name="ShowAllLanguages" xml:space="preserve">
+    <value>Show all languages</value>
+  </data>
+  <data name="ShowSelectedLanguageOnly" xml:space="preserve">
+    <value>Show selected language only</value>
+  </data>
   <data name="PleaseSelectItemDefinition" xml:space="preserve">
     <value>&lt;Please select a definition&gt;</value>
   </data>
@@ -667,5 +673,14 @@ Level: {2} - {3}</value>
   </data>
   <data name="ZoomOut" xml:space="preserve">
     <value>Zoom out</value>
+  </data>
+  <data name="ItemEdit_IsTimeLimited" xml:space="preserve">
+    <value>Time-limited</value>
+  </data>
+  <data name="ItemEdit_ExpiresAt" xml:space="preserve">
+    <value>Expires at (UTC)</value>
+  </data>
+  <data name="ItemEdit_CannotBeTimeLimited" xml:space="preserve">
+    <value>This item can't be time-limited: only an item which is worn, isn't consumed, and can be dropped or sold to an NPC once it expired.</value>
   </data>
 </root>

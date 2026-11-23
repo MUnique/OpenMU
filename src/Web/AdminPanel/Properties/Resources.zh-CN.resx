@@ -2075,7 +2075,7 @@
     <value>商品 {0} 未配置物品。</value>
   </data>
   <data name="CashShopIssueTimeLimited" xml:space="preserve">
-    <value>商品 {0} 为限时商品，目前尚不支持。</value>
+    <value>商品 {0} 为限时商品，但其物品不能过期：只有可装备、不会被消耗、且过期后可丢弃或出售给 NPC 的物品才能限时。</value>
   </data>
   <data name="CashShopIssueNegativeBundlePrice" xml:space="preserve">
     <value>组合售价不能为负数。</value>
