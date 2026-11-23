@@ -65,20 +65,24 @@ public class ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn : UpdatePlugInBas
     private static void ConfigureIfNpcIsNotSet(IContext context, GameConfiguration gameConfiguration, NpcTalkPlugInBase plugIn)
     {
         var typeId = plugIn.GetType().GUID;
-        if (gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId) is not { } plugInConfiguration)
-        {
-            plugInConfiguration = context.CreateNew<PlugInConfiguration>();
-            plugInConfiguration.SetGuid(typeId);
-            plugInConfiguration.TypeId = typeId;
-            plugInConfiguration.IsActive = true;
-            gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
-        }
-        else if (IsNpcSet(plugInConfiguration))
+        var existingConfiguration = gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId);
+        if (existingConfiguration is not null && IsNpcSet(existingConfiguration))
         {
             return;
         }
 
+        var plugInConfiguration = existingConfiguration ?? CreateConfiguration(context, gameConfiguration, typeId);
         plugInConfiguration.SetConfiguration(plugIn.CreateDefaultConfig(gameConfiguration), new ConfigureNpcTalkPlugInsPlugInBase.IdReferenceHandler());
+    }
+
+    private static PlugInConfiguration CreateConfiguration(IContext context, GameConfiguration gameConfiguration, Guid typeId)
+    {
+        var plugInConfiguration = context.CreateNew<PlugInConfiguration>();
+        plugInConfiguration.SetGuid(typeId);
+        plugInConfiguration.TypeId = typeId;
+        plugInConfiguration.IsActive = true;
+        gameConfiguration.PlugInConfigurations.Add(plugInConfiguration);
+        return plugInConfiguration;
     }
 
     private static bool IsNpcSet(PlugInConfiguration plugInConfiguration)
