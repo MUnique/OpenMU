@@ -437,8 +437,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         // so that money follows the same distribution as the experience it is derived from.
         var shares = MoneyDistribution.CreateShares(amount, experienceShares);
 
-        // We don't drop money in Devil Square, etc.
-        var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
+        // We don't drop money in Devil Square, etc., but e.g. in Blood Castle.
+        var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney
+                              && killer.CurrentMiniGame is null or { DropsMoneyOnTheGround: true };
         if (!shouldDropMoney)
         {
             if (killer.Party is { } party)

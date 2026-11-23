@@ -142,6 +142,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public virtual bool AllowPlayerKilling { get; }
 
     /// <summary>
+    /// Gets a value indicating whether killed monsters drop their money on the ground, like outside
+    /// of a mini game. When it's <c>false</c>, the money is added to the inventory of the killer
+    /// (or shared with the party) directly, which is the default, because e.g. the monsters of the
+    /// Devil Square drop no money.
+    /// </summary>
+    public virtual bool DropsMoneyOnTheGround => false;
+
+    /// <summary>
     /// Gets a value indicating whether players may still enter while the game is
     /// already running (<see cref="MiniGameState.Playing"/>), or while it passes through
     /// <see cref="MiniGameState.Closed"/> on an instant start, e.g. to rejoin an

@@ -91,6 +91,13 @@ public sealed class BloodCastleContext : MiniGameContext
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Like on the other maps, the monsters of the Blood Castle drop their money on the ground,
+    /// where it needs to be picked up.
+    /// </remarks>
+    public override bool DropsMoneyOnTheGround => true;
+
+    /// <inheritdoc />
     protected override Player? Winner => this._winner;
 
     /// <inheritdoc />

@@ -71,6 +71,10 @@ The settings of the game configuration which affect all drops:
 | Maximum item option level | The highest item option level (+4, +8, +12, +16) a dropped item can get |
 | Excellent item drop level delta | How many levels a monster must be above the drop level of an item, so that it can drop as excellent item |
 
+Inside of events, *Drop money* only applies to Blood Castle, where the monsters
+drop their money on the ground like on the other maps. In the other events,
+such as Devil Square, the money always goes to the inventory of the killer.
+
 ### Drop chance overview per monster
 
 A read-only overview which shows, for each map, the monsters which spawn there
