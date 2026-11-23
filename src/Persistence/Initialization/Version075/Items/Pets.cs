@@ -44,7 +44,7 @@ public class Pets : InitializerBase
             28,
             (Stats.IsImpEquipped, 1.0f, AggregateType.AddRaw),
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate),
-            (Stats.HealthLossAfterHit, 3.0f, AggregateType.AddRaw));
+            (Stats.HealthLossAfterDealtHit, 3.0f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(
             2,

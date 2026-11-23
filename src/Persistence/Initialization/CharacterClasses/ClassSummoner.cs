@@ -137,7 +137,7 @@ internal partial class CharacterClassInitialization
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 7, Stats.TotalVitality));
         result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, 1.0f / 3, Stats.TotalEnergy));
 
-        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.HealthLossAfterHit, 1, Stats.IsWingEquipped));
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.HealthLossAfterDealtHit, 1, Stats.IsWingEquipped));
 
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(39, Stats.MaximumHealth));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(6, Stats.MaximumMana));

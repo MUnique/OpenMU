@@ -863,8 +863,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
         }
 
-        this.Attributes[Stats.CurrentHealth] -= this.Attributes[Stats.HealthLossUponReceivedHit];
-
+        this.Attributes[Stats.CurrentHealth] -= this.Attributes[Stats.HealthLossAfterHit];
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
             this.Attributes[Stats.CurrentHealth] = this.Attributes[Stats.MaximumHealth];
@@ -908,18 +907,18 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="target">The target player.</param>
     public async ValueTask AfterHitTargetAsync(float targetDefense, SkillEntry? skill, Player? target = null)
     {
-        var healthLossAfterHit = this.Attributes![Stats.HealthLossAfterHit];
-        if (skill?.EnsureSkillAttributes(this.Attributes) is { } skillAttributes && skillAttributes[Stats.SkillHealthLossAfterHit] > 0)
+        var healthLossAfterDealtHit = this.Attributes![Stats.HealthLossAfterDealtHit];
+        if (skill?.EnsureSkillAttributes(this.Attributes) is { } skillAttributes && skillAttributes[Stats.SkillHealthLossAfterDealtHit] > 0)
         {
-            healthLossAfterHit = skillAttributes[Stats.SkillHealthLossAfterHit];
+            healthLossAfterDealtHit = skillAttributes[Stats.SkillHealthLossAfterDealtHit];
         }
 
-        if (target?.Attributes is { } targetAttributes && targetAttributes[Stats.IsDinorantEquipped] > 0)
+        if (target?.Attributes?[Stats.IsDinorantEquipped] > 0)
         {
-            healthLossAfterHit += this.Attributes[Stats.TargetHasDinorantHealthToll];
+            healthLossAfterDealtHit += this.Attributes[Stats.TargetHasDinorantHealthToll];
         }
 
-        this.Attributes[Stats.CurrentHealth] -= healthLossAfterHit;
+        this.Attributes[Stats.CurrentHealth] -= healthLossAfterDealtHit;
         if (this.Attributes[Stats.CurrentHealth] < 1)
         {
             this.LastDeath = new DeathInformation(0, string.Empty, default, 0);

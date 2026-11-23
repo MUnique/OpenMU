@@ -87,9 +87,9 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsWingEquipped);
-        this.AddStatIfNotExists(context, gameConfiguration, Stats.HealthLossAfterReceivedHit);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.HealthLossAfterHit);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsImpEquipped);
-        this.AddStatIfNotExists(context, gameConfiguration, Stats.SkillHealthLossAfterHit);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.SkillHealthLossAfterDealtHit);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.TargetHasDinorantHealthToll);
 
         this.AddGlobalBaseAttributeValueIfNotExists(context, gameConfiguration, Stats.TargetHasDinorantHealthToll, 1);
@@ -164,17 +164,17 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
         foreach (var imp in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 1))
         {
             this.SetItemPowerUp(context, gameConfiguration, imp, Stats.IsImpEquipped, 1, AggregateType.AddRaw);
-            this.SetItemPowerUp(context, gameConfiguration, imp, Stats.HealthLossAfterHit, 3, AggregateType.AddRaw);
+            this.SetItemPowerUp(context, gameConfiguration, imp, Stats.HealthLossAfterDealtHit, 3, AggregateType.AddRaw);
         }
 
         foreach (var dinorant in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 3))
         {
-            this.SetItemPowerUp(context, gameConfiguration, dinorant, Stats.HealthLossAfterHit, 1, AggregateType.AddRaw);
+            this.SetItemPowerUp(context, gameConfiguration, dinorant, Stats.HealthLossAfterDealtHit, 1, AggregateType.AddRaw);
         }
 
         foreach (var darkHorse in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 4))
         {
-            this.SetItemPowerUp(context, gameConfiguration, darkHorse, Stats.HealthLossAfterReceivedHit, 1, AggregateType.AddRaw);
+            this.SetItemPowerUp(context, gameConfiguration, darkHorse, Stats.HealthLossAfterHit, 1, AggregateType.AddRaw);
         }
     }
 

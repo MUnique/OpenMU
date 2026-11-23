@@ -40,6 +40,6 @@ public class UpdateWingAndPetHitTollsPlugInSeasonSix : UpdateWingAndPetHitTollsP
 
     private static void SetSkillToll(IContext context, GameConfiguration gameConfiguration, ICollection<AttributeRelationship> relationships, float toll, AttributeDefinition inputAttribute)
     {
-        SetAttributeRelationship(context, relationships, gameConfiguration, Stats.SkillHealthLossAfterHit, toll, inputAttribute);
+        SetAttributeRelationship(context, relationships, gameConfiguration, Stats.SkillHealthLossAfterDealtHit, toll, inputAttribute);
     }
 }

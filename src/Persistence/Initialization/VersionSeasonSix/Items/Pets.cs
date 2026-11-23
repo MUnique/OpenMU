@@ -66,7 +66,7 @@ public class Pets : InitializerBase
             true,
             (Stats.IsImpEquipped, 1.0f, AggregateType.AddRaw),
             (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate),
-            (Stats.HealthLossAfterHit, 3.0f, AggregateType.AddRaw));
+            (Stats.HealthLossAfterDealtHit, 3.0f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(
             2,
@@ -97,7 +97,7 @@ public class Pets : InitializerBase
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate),
-            (Stats.HealthLossAfterHit, 1.0f, AggregateType.AddRaw));
+            (Stats.HealthLossAfterDealtHit, 1.0f, AggregateType.AddRaw));
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(
@@ -113,7 +113,7 @@ public class Pets : InitializerBase
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
-            (Stats.HealthLossAfterReceivedHit, 1.0f, AggregateType.AddRaw));
+            (Stats.HealthLossAfterHit, 1.0f, AggregateType.AddRaw));
         this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;
