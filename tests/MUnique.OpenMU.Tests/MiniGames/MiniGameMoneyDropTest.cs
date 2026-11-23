@@ -39,7 +39,10 @@ public class MiniGameMoneyDropTest
         await monster.ApplyDamageAsync(killer, 1_000_000).ConfigureAwait(false);
         await WaitForAsync(() => !plugIn.Drops.IsEmpty).ConfigureAwait(false);
 
-        Assert.That(plugIn.Drops.Single().Amount, Is.EqualTo(MoneyAmount));
+        var (droppingMonster, reportedKiller, droppedMoney) = plugIn.Drops.Single();
+        Assert.That(droppingMonster, Is.SameAs(monster));
+        Assert.That(reportedKiller, Is.SameAs(killer));
+        Assert.That(droppedMoney.Amount, Is.EqualTo(MoneyAmount));
         Assert.That(killer.Money, Is.EqualTo(moneyBefore));
     }
 
@@ -135,11 +138,11 @@ public class MiniGameMoneyDropTest
     [Guid("5B5AC954-A8DC-4937-9895-CE7259E222A7")]
     private sealed class RecordingPlugIn : IMonsterMoneyDroppedPlugIn
     {
-        public System.Collections.Concurrent.ConcurrentBag<DroppedMoney> Drops { get; } = new();
+        public System.Collections.Concurrent.ConcurrentBag<(AttackableNpcBase Monster, Player Killer, DroppedMoney Money)> Drops { get; } = new();
 
         public ValueTask MonsterMoneyDroppedAsync(AttackableNpcBase monster, Player killer, DroppedMoney droppedMoney)
         {
-            this.Drops.Add(droppedMoney);
+            this.Drops.Add((monster, killer, droppedMoney));
             return ValueTask.CompletedTask;
         }
     }

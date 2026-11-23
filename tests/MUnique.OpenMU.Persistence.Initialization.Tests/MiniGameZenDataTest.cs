@@ -123,7 +123,7 @@ internal class MiniGameZenDataTest
         customized.RewardAmount = 12345;
         var amounts = devilSquare.Rewards.ToDictionary(reward => (reward.Rank!.Value, reward.RewardType), reward => reward.RewardAmount);
 
-        var update = new DevilSquareRewardTiersUpdatePlugIn095d();
+        var update = new DevilSquareRewardTiersUpdatePlugIn095D();
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
