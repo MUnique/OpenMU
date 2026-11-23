@@ -116,6 +116,42 @@ public class CastleSiegeTeleportTests
     }
 
     /// <summary>
+    /// Verifies that during the battle, warps onto the siege map are only possible through its configured gates,
+    /// so that e.g. the Talisman of Mobility can't lead to a place saved behind the castle gates.
+    /// </summary>
+    [Test]
+    public async ValueTask WarpOntoSiegeMapOnlyThroughConfiguredGatesDuringBattleAsync()
+    {
+        var fixture = await SiegeFixture.CreateAsync().ConfigureAwait(false);
+        var player = await fixture.CreatePlayerAsync(1, CastleSiegeJoinSide.Attack1).ConfigureAwait(false);
+        player.SetCurrentMapSilently(fixture.OtherMap);
+        var siegeMap = fixture.Map.Definition;
+        var configuredGate = new BasicModel.ExitGate { Map = siegeMap, X1 = 10, Y1 = 10, X2 = 12, Y2 = 12 };
+        siegeMap.ExitGates.Add(configuredGate);
+        var savedPlace = new BasicModel.ExitGate { Map = siegeMap, X1 = 92, Y1 = 104, X2 = 92, Y2 = 104 };
+        var plugInPoint = fixture.GameContext.PlugInManager.GetPlugInPoint<IWarpGateEnteringPlugIn>()!;
+
+        async ValueTask<bool> IsDeniedAsync(ExitGate gate)
+        {
+            var eventArgs = new CancelEventArgs();
+            await plugInPoint.WarpGateEnteringAsync(player, gate, eventArgs).ConfigureAwait(false);
+            return eventArgs.Cancel;
+        }
+
+        var savedPlaceDuringBattle = await IsDeniedAsync(savedPlace).ConfigureAwait(false);
+        var configuredGateDuringBattle = await IsDeniedAsync(configuredGate).ConfigureAwait(false);
+        fixture.Context.CurrentState = CastleSiegeState.Ready;
+        var savedPlaceBeforeBattle = await IsDeniedAsync(savedPlace).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(savedPlaceDuringBattle, Is.True);
+            Assert.That(configuredGateDuringBattle, Is.False);
+            Assert.That(savedPlaceBeforeBattle, Is.False);
+        });
+    }
+
+    /// <summary>
     /// Verifies that the teleport skill doesn't consume mana and reports the failed teleport when the
     /// line crosses a closed gate, and still works beside the gate.
     /// </summary>

@@ -2975,5 +2975,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("WizEnhanceAndRagefighterSkillsUpdatePlugIn_Name", resourceCulture);
             }
         }
+
+        /// <summary>Gets the localized AddTalismanOfMobilityUpdatePlugIn_Description text.</summary>
+        public static string AddTalismanOfMobilityUpdatePlugIn_Description => ResourceManager.GetString("AddTalismanOfMobilityUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddTalismanOfMobilityUpdatePlugIn_Name text.</summary>
+        public static string AddTalismanOfMobilityUpdatePlugIn_Name => ResourceManager.GetString("AddTalismanOfMobilityUpdatePlugIn_Name", resourceCulture)!;
     }
 }

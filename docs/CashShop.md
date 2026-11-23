@@ -289,14 +289,14 @@ catalog is initialized. They have no item rules (`ItemRules`), because they neve
 reach the inventory: a delivery plugin applies them, or they stay in the storage.
 
 Packages with a product that can't be delivered are initialized as not for sale.
-That leaves 104 packages for sale: the time-limited pets, transformation rings,
+That leaves 106 packages for sale: the time-limited pets, transformation rings,
 rings, necklaces and small wings and capes (also in bundles without other
 time-limited items), jewel bundles, Kundun boxes, Cherry Blossom
 items and the Talisman of Luck 10% for Goblin Points, and the character cards,
 the Magic Backpack, the Vault Expansion Certificate, the free tickets of Devil
 Square, Blood Castle and Illusion Temple, the Kalima tickets, the reset fruits,
-the elite potions, the Talisman of Luck and the Talisman of Resurrection for
-WCoin (C) and (P), and the ten
+the elite potions, the Talisman of Luck, the Talisman of Resurrection and the
+Talisman of Mobility for WCoin (C) and (P), and the ten
 lucky item tickets and the Gold Key and Silver Key for WCoin (P). Most cash shop
 items, like seals, scrolls and most talismans, aren't defined in the item
 configuration yet.
@@ -455,7 +455,7 @@ the catalog or the plugin settings in the admin panel. Loading the catalog from
 PostgreSQL needs `IntervalAsTimeSpanJsonConverter`, because PostgreSQL writes a
 product duration of a day or more as e.g. `"7 days"` into the JSON.
 
-What can be bought: 104 of 205 packages (see
+What can be bought: 106 of 205 packages (see
 [Catalog initialization](#catalog-initialization)). The others have items OpenMU
 doesn't define, or time-limited consumables.
 

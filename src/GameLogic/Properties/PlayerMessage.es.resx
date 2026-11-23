@@ -1222,4 +1222,22 @@ Extensiones de inventario: {18}</value>
   <data name="LordsMixLimitReached" xml:space="preserve">
     <value>Se alcanzó el límite del Lord's Mix; se puede volver a usar en el próximo período.</value>
   </data>
+  <data name="CastleSiegeWarpNotPossible" xml:space="preserve">
+    <value>No puedes teletransportarte al mapa del asedio mientras se está librando la batalla.</value>
+  </data>
+  <data name="LandOfTrialsClosed" xml:space="preserve">
+    <value>La Tierra de las Pruebas solo está abierta a la alianza del dueño del castillo.</value>
+  </data>
+  <data name="MobilityTalismanNoPlaceSaved" xml:space="preserve">
+    <value>No se ha guardado ninguna ubicación con un Talismán de Movilidad.</value>
+  </data>
+  <data name="MobilityTalismanPlaceSaved" xml:space="preserve">
+    <value>Se ha guardado la ubicación. Usa el talismán de nuevo para volver a ella.</value>
+  </data>
+  <data name="MobilityTalismanReturnBlocked" xml:space="preserve">
+    <value>Una puerta cerrada bloquea el camino de vuelta a la ubicación guardada.</value>
+  </data>
+  <data name="MobilityTalismanReturnPending" xml:space="preserve">
+    <value>Otro Talismán de Movilidad aún tiene pendiente el regreso a la ubicación guardada. Úsalo primero.</value>
+  </data>
 </root>
