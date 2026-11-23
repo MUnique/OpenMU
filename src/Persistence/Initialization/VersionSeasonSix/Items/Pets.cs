@@ -113,7 +113,7 @@ public class Pets : InitializerBase
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
-            (Stats.HorseOwnerReceivedDamageHealthToll, 1.0f, AggregateType.AddRaw));
+            (Stats.HealthLossAfterReceivedHit, 1.0f, AggregateType.AddRaw));
         this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;

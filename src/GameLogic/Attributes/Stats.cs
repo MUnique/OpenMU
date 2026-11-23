@@ -801,12 +801,6 @@ public class Stats
     public static AttributeDefinition IsHorseEquipped { get; } = new(new Guid("4CDC3CCC-9266-4EEE-9C91-0E6AAFA8B636"), "Is Horse Equipped", string.Empty);
 
     /// <summary>
-    /// Gets the horse owner received damage health toll.
-    /// </summary>
-    /// <remarks>The health loss caused on the horse's owner just by getting hit.</remarks>
-    public static AttributeDefinition HorseOwnerReceivedDamageHealthToll { get; } = new(new Guid("E6EB76C4-4464-42E7-9BEB-6E192D0F15EE"), "Horse Owner Received Damage Health Toll", "The health loss caused on the horse's owner just by getting hit");
-
-    /// <summary>
     /// Gets the is a glove weapon equipped.
     /// </summary>
     public static AttributeDefinition IsGloveWeaponEquipped { get; } = new(new Guid("BC8FFFCA-A593-4B64-BE37-BF7EDC97CA1E"), "Is Glove Weapon Equipped", string.Empty);
@@ -1496,6 +1490,12 @@ public class Stats
     /// Gets the health loss after hit definition.
     /// </summary>
     public static AttributeDefinition HealthLossAfterHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings, dinorant, imp");
+
+    /// <summary>
+    /// Gets the health loss after received hit.
+    /// </summary>
+    /// <remarks>A health toll apart from received damage, e.g., by equipping a dark horse.</remarks>
+    public static AttributeDefinition HealthLossAfterReceivedHit { get; } = new(new Guid("E6EB76C4-4464-42E7-9BEB-6E192D0F15EE"), "Health Loss After Received Hit", "A health toll just by getting hit");
 
     /// <summary>
     /// Gets the skill extra mana cost definition.

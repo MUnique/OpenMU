@@ -87,7 +87,7 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsWingEquipped);
-        this.AddStatIfNotExists(context, gameConfiguration, Stats.HorseOwnerReceivedDamageHealthToll);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.HealthLossAfterReceivedHit);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsImpEquipped);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.SkillHealthLossAfterHit);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.TargetHasDinorantHealthToll);
@@ -174,7 +174,7 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
 
         foreach (var darkHorse in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 4))
         {
-            this.SetItemPowerUp(context, gameConfiguration, darkHorse, Stats.HorseOwnerReceivedDamageHealthToll, 1, AggregateType.AddRaw);
+            this.SetItemPowerUp(context, gameConfiguration, darkHorse, Stats.HealthLossAfterReceivedHit, 1, AggregateType.AddRaw);
         }
     }
 

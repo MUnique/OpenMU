@@ -109,6 +109,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
         if (this.Definition.ObjectKind == NpcObjectKind.Guard
+            || !this.IsAlive
             || this.IsAttackBlockedBySafezone(attacker)
             || !this.CanBeAttackedBy(attacker))
         {

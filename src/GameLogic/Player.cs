@@ -811,7 +811,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             throw new InvalidOperationException("AttributeSystem not set.");
         }
 
-        if (this.IsAttackBlockedBySafezone(attacker)
+        if (!this.IsAlive
+            || this.IsAttackBlockedBySafezone(attacker)
             || this.IsAttackPreventedByPlugIns(attacker))
         {
             return null;
@@ -857,7 +858,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             await this.MagicEffectList.ClearAllEffectsProducingSpecificStatAsync(Stats.IsAsleep).ConfigureAwait(false);
         }
 
-        this.Attributes[Stats.CurrentHealth] -= this.Attributes[Stats.HorseOwnerReceivedDamageHealthToll];
+        this.Attributes[Stats.CurrentHealth] -= this.Attributes[Stats.HealthLossUponReceivedHit];
 
         if (Rand.NextRandomBool(this.Attributes[Stats.FullyRecoverHealthAfterHitChance]))
         {
