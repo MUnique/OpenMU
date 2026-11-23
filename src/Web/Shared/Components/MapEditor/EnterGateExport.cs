@@ -11,9 +11,6 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 public sealed record EnterGateExport
 {
-    /// <summary>Gets or sets the original entity id.</summary>
-    public Guid Id { get; set; }
-
     /// <summary>Gets or sets the top-left X coordinate.</summary>
     public byte X1 { get; set; }
 
@@ -33,7 +30,7 @@ public sealed record EnterGateExport
     public short Number { get; set; }
 
     /// <summary>
-    /// Gets or sets the original <see cref="ExitGate"/> id this enter gate targets.
+    /// Gets or sets the file-local key of the <see cref="ExitGate"/> this enter gate targets.
     /// </summary>
-    public Guid? TargetGateId { get; set; }
+    public int? TargetGateKey { get; set; }
 }

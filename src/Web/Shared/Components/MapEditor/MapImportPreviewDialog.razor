@@ -1,0 +1,56 @@
+@using System.Globalization
+@using MUnique.OpenMU.Web.Shared.Components.MapEditor
+@using MUnique.OpenMU.Web.Shared.Components.Modal
+@using MUnique.OpenMU.Web.Shared.Properties
+
+<p class="mb-2">@Resources.SelectKindsToImport</p>
+<MapObjectKindSelector AvailableKinds="@this.Preview.DeclaredKinds"
+                       Counts="@this.Counts"
+                       SelectedKinds="@this._selectedKinds"
+                       SelectedKindsChanged="@this.OnSelectedKindsChanged" />
+
+<table class="table table-sm mt-3">
+    <thead>
+        <tr>
+            <th>@Resources.Map</th>
+            @foreach (var kind in MapObjectKindExtensions.All)
+            {
+                <th class="@this.GetColumnClass(kind)">@kind.GetCaption()</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var map in this.Preview.Maps)
+        {
+            <tr>
+                <td>@map.Map</td>
+                @foreach (var kind in MapObjectKindExtensions.All)
+                {
+                    <td class="@this.GetColumnClass(kind)">@map.GetObjectCount(kind)</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (this.Preview.Warnings.Count > 0)
+{
+    <h6>@Resources.Warnings</h6>
+    <ul class="small text-warning">
+        @foreach (var warning in this.Preview.Warnings)
+        {
+            <li>@GetWarningText(warning)</li>
+        }
+    </ul>
+}
+
+<div class="float-end" role="toolbar" aria-label="@Resources.Toolbar">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-primary" disabled="@(!this.CanImport)" @onclick="@this.ConfirmAsync">
+            @($"{Resources.Import} ({this.ImportCount})")
+        </button>
+        <button type="button" class="btn btn-secondary" @onclick="@this.Modal.CancelAsync">
+            @Resources.Cancel
+        </button>
+    </div>
+</div>

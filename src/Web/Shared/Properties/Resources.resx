@@ -313,10 +313,10 @@
     <value>DELETE to remove selected object</value>
   </data>
   <data name="ExportMap" xml:space="preserve">
-    <value>Export Map</value>
+    <value>Export map</value>
   </data>
   <data name="ImportMap" xml:space="preserve">
-    <value>Import Map</value>
+    <value>Import map</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
@@ -682,5 +682,83 @@ Level: {2} - {3}</value>
   </data>
   <data name="ItemEdit_CannotBeTimeLimited" xml:space="preserve">
     <value>This item can't be time-limited: only an item which is worn, isn't consumed, and can be dropped or sold to an NPC once it expired.</value>
+  </data>
+  <data name="ExportAllMaps" xml:space="preserve">
+    <value>Export all maps</value>
+  </data>
+  <data name="ImportAllMaps" xml:space="preserve">
+    <value>Import all maps</value>
+  </data>
+  <data name="GatesRequireAllMaps" xml:space="preserve">
+    <value>Gates can only be exported and imported for all maps at once.</value>
+  </data>
+  <data name="ImportPreview" xml:space="preserve">
+    <value>Import preview</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Warnings" xml:space="preserve">
+    <value>Warnings</value>
+  </data>
+  <data name="ImportInvalidJson" xml:space="preserve">
+    <value>The file is not a valid map export.</value>
+  </data>
+  <data name="ImportUnsupportedFormatVersion" xml:space="preserve">
+    <value>The format version of the file is not supported.</value>
+  </data>
+  <data name="ImportNoMaps" xml:space="preserve">
+    <value>The file does not contain any maps.</value>
+  </data>
+  <data name="ImportNoKinds" xml:space="preserve">
+    <value>The file does not declare any object kinds.</value>
+  </data>
+  <data name="ImportMapNotFound" xml:space="preserve">
+    <value>The file does not contain the selected map.</value>
+  </data>
+  <data name="NothingToImport" xml:space="preserve">
+    <value>There is nothing to import.</value>
+  </data>
+  <data name="ImportSucceeded" xml:space="preserve">
+    <value>Imported {0} objects.</value>
+  </data>
+  <data name="ImportCompletedWithWarnings" xml:space="preserve">
+    <value>The import completed with {0} warnings.</value>
+  </data>
+  <data name="ImportWarningUnknownMap" xml:space="preserve">
+    <value>Map {0} is not available in this database and was skipped.</value>
+  </data>
+  <data name="ImportWarningUnknownMonster" xml:space="preserve">
+    <value>Monster {0} on map {1} is unknown and was skipped.</value>
+  </data>
+  <data name="ImportWarningKindMismatch" xml:space="preserve">
+    <value>A {0} spawn on map {1} refers to a {2} and was skipped.</value>
+  </data>
+  <data name="ImportWarningKindNotDeclared" xml:space="preserve">
+    <value>A {0} spawn on map {1} is not declared in the file and was skipped.</value>
+  </data>
+  <data name="ImportWarningUnresolvedGate" xml:space="preserve">
+    <value>An enter gate on map {0} targets exit gate {1}, which is not part of the file; it was skipped.</value>
+  </data>
+  <data name="MapObjectKinds" xml:space="preserve">
+    <value>Object kinds</value>
+  </data>
+  <data name="SelectKindsToImport" xml:space="preserve">
+    <value>Select which kinds of objects should be imported:</value>
+  </data>
+  <data name="KindNotAvailable" xml:space="preserve">
+    <value>This kind is not available for this import.</value>
+  </data>
+  <data name="MapExportImportTitle" xml:space="preserve">
+    <value>Export and import map objects</value>
+  </data>
+  <data name="MapExportImportInfo" xml:space="preserve">
+    <value>Choose which kinds of objects to export. When importing, you can pick again from the kinds found in the file.</value>
+  </data>
+  <data name="MapExportImportGatesInfo" xml:space="preserve">
+    <value>Gates reference other maps, so they are only exported and imported together with all maps.</value>
+  </data>
+  <data name="AllMaps" xml:space="preserve">
+    <value>All maps</value>
   </data>
 </root>

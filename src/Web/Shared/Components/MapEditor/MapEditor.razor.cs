@@ -32,7 +32,6 @@ public partial class MapEditor : IAsyncDisposable
     private readonly MapObjectSelector _objectSelector = new();
     private readonly MapEditorHistory _history = new();
     private readonly List<object> _pendingDeletions = new();
-    private readonly MapExportImportService _exportImportService = new();
     private readonly MapFilterService _filterService = new();
 
     private MapCrudOperationsService? _crudService;
@@ -103,9 +102,6 @@ public partial class MapEditor : IAsyncDisposable
     /// </summary>
     [Inject]
     private IChangeNotificationService NotificationService { get; set; } = null!;
-
-    [Inject]
-    private LoadingOverlayService LoadingOverlay { get; set; } = null!;
 
     /// <summary>
     /// Gets the current zoom level expressed as a rounded percentage.
@@ -763,15 +759,8 @@ public partial class MapEditor : IAsyncDisposable
         this.StateHasChanged();
     }
 
-    private string BuildExportContent()
+    private void OnMapObjectsImported()
     {
-        return this._exportImportService.BuildExport(this.SelectedMap);
-    }
-
-    private async Task ImportContentAsync(string json)
-    {
-        await this._exportImportService.ApplyImportAsync(this.SelectedMap, json, this.PersistenceContext).ConfigureAwait(true);
-
         this._history.Clear();
         this._pendingDeletions.Clear();
         this._focusedObject = null;

@@ -11,8 +11,10 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 public sealed record ExitGateExport
 {
-    /// <summary>Gets or sets the original entity id.</summary>
-    public Guid Id { get; set; }
+    /// <summary>
+    /// Gets or sets the file-local key which <see cref="EnterGateExport.TargetGateKey"/> refers to.
+    /// </summary>
+    public int Key { get; set; }
 
     /// <summary>Gets or sets the top-left X coordinate.</summary>
     public byte X1 { get; set; }

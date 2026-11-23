@@ -1,0 +1,34 @@
+@using MUnique.OpenMU.Web.Shared.Components.MapEditor
+@using MUnique.OpenMU.Web.Shared.Properties
+
+<div class="card mb-3 map-export-import-panel">
+    <div class="card-body">
+        <h6 class="card-title mb-1">@Resources.MapExportImportTitle</h6>
+        <p class="text-muted small mb-2">@Resources.MapExportImportInfo</p>
+
+        <MapObjectKindSelector SelectedKinds="@this._kinds" SelectedKindsChanged="@this.OnKindsChanged" />
+        <p class="text-muted small mt-1 mb-3">@Resources.MapExportImportGatesInfo</p>
+
+        <div class="row g-3">
+            <div class="col-12 col-xl-6">
+                <div class="small fw-bold mb-1">@Resources.SelectedMap: @this.SelectedMap</div>
+                <ExportImport ExportText="@Resources.ExportMap"
+                              ImportText="@Resources.ImportMap"
+                              ButtonClass="flex-fill"
+                              Disabled="@(!this.HasSpawnKinds)"
+                              ExportFileName="@this.SingleMapFileName"
+                              ExportContentProvider="@this.BuildSingleMapExport"
+                              OnImport="@this.ImportSingleMapAsync" />
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="small fw-bold mb-1">@Resources.AllMaps</div>
+                <ExportImport ExportText="@Resources.ExportAllMaps"
+                              ImportText="@Resources.ImportAllMaps"
+                              ButtonClass="flex-fill"
+                              ExportFileName="@this.AllMapsFileName"
+                              ExportContentProvider="@this.BuildAllMapsExport"
+                              OnImport="@this.ImportAllMapsAsync" />
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,6 @@
 namespace MUnique.OpenMU.Web.Shared.Components.MapEditor;
 
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic;
 
 /// <summary>
 /// Performs hit-testing against map objects to determine which object,
@@ -266,28 +265,13 @@ public sealed class MapObjectSelector
             return true;
         }
 
-        var objectKind = spawn.MonsterDefinition?.ObjectKind;
-        var result = false;
-
-        if (filter.HasFlag(ObjectTypeFilter.Monsters))
+        return MapObjectKindClassifier.Classify(spawn) switch
         {
-            result |= objectKind == NpcObjectKind.Monster;
-        }
-
-        if (filter.HasFlag(ObjectTypeFilter.Npcs))
-        {
-            result |= objectKind == NpcObjectKind.PassiveNpc || objectKind == NpcObjectKind.Guard;
-        }
-
-        if (filter.HasFlag(ObjectTypeFilter.Others))
-        {
-            result |= objectKind == NpcObjectKind.Trap
-                      || objectKind == NpcObjectKind.Statue
-                      || objectKind == NpcObjectKind.SoccerBall
-                      || objectKind == NpcObjectKind.Destructible;
-        }
-
-        return result;
+            MapObjectKind.Monsters => filter.HasFlag(ObjectTypeFilter.Monsters),
+            MapObjectKind.Npcs => filter.HasFlag(ObjectTypeFilter.Npcs),
+            MapObjectKind.Others => filter.HasFlag(ObjectTypeFilter.Others),
+            _ => false,
+        };
     }
 
     /// <summary>

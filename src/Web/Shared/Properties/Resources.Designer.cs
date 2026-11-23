@@ -1789,5 +1789,239 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
                 return ResourceManager.GetString("ZoomOut", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export all maps.
+        /// </summary>
+        public static string ExportAllMaps {
+            get {
+                return ResourceManager.GetString("ExportAllMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gates can only be exported and imported for all maps at once..
+        /// </summary>
+        public static string GatesRequireAllMaps {
+            get {
+                return ResourceManager.GetString("GatesRequireAllMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import.
+        /// </summary>
+        public static string Import {
+            get {
+                return ResourceManager.GetString("Import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import all maps.
+        /// </summary>
+        public static string ImportAllMaps {
+            get {
+                return ResourceManager.GetString("ImportAllMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The import completed with {0} warnings..
+        /// </summary>
+        public static string ImportCompletedWithWarnings {
+            get {
+                return ResourceManager.GetString("ImportCompletedWithWarnings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file is not a valid map export..
+        /// </summary>
+        public static string ImportInvalidJson {
+            get {
+                return ResourceManager.GetString("ImportInvalidJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file does not contain the selected map..
+        /// </summary>
+        public static string ImportMapNotFound {
+            get {
+                return ResourceManager.GetString("ImportMapNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file does not declare any object kinds..
+        /// </summary>
+        public static string ImportNoKinds {
+            get {
+                return ResourceManager.GetString("ImportNoKinds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file does not contain any maps..
+        /// </summary>
+        public static string ImportNoMaps {
+            get {
+                return ResourceManager.GetString("ImportNoMaps", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import preview.
+        /// </summary>
+        public static string ImportPreview {
+            get {
+                return ResourceManager.GetString("ImportPreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imported {0} objects..
+        /// </summary>
+        public static string ImportSucceeded {
+            get {
+                return ResourceManager.GetString("ImportSucceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format version of the file is not supported..
+        /// </summary>
+        public static string ImportUnsupportedFormatVersion {
+            get {
+                return ResourceManager.GetString("ImportUnsupportedFormatVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A {0} spawn on map {1} refers to a {2} and was skipped..
+        /// </summary>
+        public static string ImportWarningKindMismatch {
+            get {
+                return ResourceManager.GetString("ImportWarningKindMismatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A {0} spawn on map {1} is not declared in the file and was skipped..
+        /// </summary>
+        public static string ImportWarningKindNotDeclared {
+            get {
+                return ResourceManager.GetString("ImportWarningKindNotDeclared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map {0} is not available in this database and was skipped..
+        /// </summary>
+        public static string ImportWarningUnknownMap {
+            get {
+                return ResourceManager.GetString("ImportWarningUnknownMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster {0} on map {1} is unknown and was skipped..
+        /// </summary>
+        public static string ImportWarningUnknownMonster {
+            get {
+                return ResourceManager.GetString("ImportWarningUnknownMonster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An enter gate on map {0} targets exit gate {1}, which is not part of the file; it was skipped..
+        /// </summary>
+        public static string ImportWarningUnresolvedGate {
+            get {
+                return ResourceManager.GetString("ImportWarningUnresolvedGate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is nothing to import..
+        /// </summary>
+        public static string NothingToImport {
+            get {
+                return ResourceManager.GetString("NothingToImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warnings.
+        /// </summary>
+        public static string Warnings {
+            get {
+                return ResourceManager.GetString("Warnings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Object kinds.
+        /// </summary>
+        public static string MapObjectKinds {
+            get {
+                return ResourceManager.GetString("MapObjectKinds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select which kinds of objects should be imported:.
+        /// </summary>
+        public static string SelectKindsToImport {
+            get {
+                return ResourceManager.GetString("SelectKindsToImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This kind is not available for this import..
+        /// </summary>
+        public static string KindNotAvailable {
+            get {
+                return ResourceManager.GetString("KindNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export and import map objects.
+        /// </summary>
+        public static string MapExportImportTitle {
+            get {
+                return ResourceManager.GetString("MapExportImportTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose which kinds of objects to export. When importing, you can pick again from the kinds found in the file.
+        /// </summary>
+        public static string MapExportImportInfo {
+            get {
+                return ResourceManager.GetString("MapExportImportInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gates reference other maps, so they are only exported and imported together with all maps.
+        /// </summary>
+        public static string MapExportImportGatesInfo {
+            get {
+                return ResourceManager.GetString("MapExportImportGatesInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All maps.
+        /// </summary>
+        public static string AllMaps {
+            get {
+                return ResourceManager.GetString("AllMaps", resourceCulture);
+            }
+        }
     }
 }

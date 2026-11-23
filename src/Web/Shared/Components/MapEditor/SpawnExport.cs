@@ -11,8 +11,13 @@ using MUnique.OpenMU.DataModel.Configuration;
 /// </summary>
 public sealed record SpawnExport
 {
-    /// <summary>Gets or sets the original entity id.</summary>
-    public Guid Id { get; set; }
+    /// <summary>
+    /// Gets or sets the kind of the spawn area.
+    /// </summary>
+    /// <remarks>
+    /// During import, it is checked against the kind of the target monster definition.
+    /// </remarks>
+    public required MapObjectKind Kind { get; set; }
 
     /// <summary>Gets or sets the top-left X coordinate.</summary>
     public byte X1 { get; set; }

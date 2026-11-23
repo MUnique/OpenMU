@@ -1,0 +1,16 @@
+@using MUnique.OpenMU.Web.Shared.Components.MapEditor
+@using MUnique.OpenMU.Web.Shared.Properties
+
+<div class="map-object-kind-selector d-flex align-items-center flex-wrap gap-2" role="group" aria-label="@Resources.MapObjectKinds">
+    @foreach (var kind in MapObjectKindExtensions.All)
+    {
+        <label class="form-check form-check-inline mb-0" title="@this.GetTooltip(kind)">
+            <input type="checkbox"
+                   class="form-check-input"
+                   checked="@this.IsSelected(kind)"
+                   disabled="@(!this.IsEnabled(kind))"
+                   @onchange="@(_ => this.ToggleAsync(kind))" />
+            <span class="form-check-label">@this.GetLabel(kind)</span>
+        </label>
+    }
+</div>
