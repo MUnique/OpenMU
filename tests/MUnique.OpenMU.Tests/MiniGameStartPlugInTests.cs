@@ -568,10 +568,32 @@ public class MiniGameStartPlugInTests
         public MiniGameContext? GameToCreate { get; set; }
 
         /// <inheritdoc />
-        public event EventHandler<GameMap>? GameMapCreated;
+        public event EventHandler<GameMap>? GameMapCreated
+        {
+            add
+            {
+                // The event is never raised, so there is nothing to subscribe to.
+            }
+
+            remove
+            {
+                // The event is never raised, so there is nothing to unsubscribe from.
+            }
+        }
 
         /// <inheritdoc />
-        public event EventHandler<GameMap>? GameMapRemoved;
+        public event EventHandler<GameMap>? GameMapRemoved
+        {
+            add
+            {
+                // The event is never raised, so there is nothing to subscribe to.
+            }
+
+            remove
+            {
+                // The event is never raised, so there is nothing to unsubscribe from.
+            }
+        }
 
         /// <inheritdoc />
         public IReadOnlyList<GameMap> Maps => this.Games.Select(game => game.Map).ToList();

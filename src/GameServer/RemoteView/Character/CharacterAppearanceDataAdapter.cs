@@ -29,7 +29,18 @@ internal class CharacterAppearanceDataAdapter : IAppearanceData
     /// Occurs when the appearance of the player changed.
     /// </summary>
     /// <remarks>This never happens in this implementation.</remarks>
-    public event EventHandler? AppearanceChanged;
+    public event EventHandler? AppearanceChanged
+    {
+        add
+        {
+            // The event is never raised, so there is nothing to subscribe to.
+        }
+
+        remove
+        {
+            // The event is never raised, so there is nothing to unsubscribe from.
+        }
+    }
 
     /// <inheritdoc/>
     public CharacterClass? CharacterClass => this._character?.CharacterClass;

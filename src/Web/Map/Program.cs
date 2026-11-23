@@ -36,7 +36,18 @@ public class Program
     private class NullGameServer : IObservableGameServer
     {
         /// <inheritdoc />
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged
+        {
+            add
+            {
+                // The event is never raised, so there is nothing to subscribe to.
+            }
+
+            remove
+            {
+                // The event is never raised, so there is nothing to unsubscribe from.
+            }
+        }
 
         /// <inheritdoc />
         public int Id { get; }

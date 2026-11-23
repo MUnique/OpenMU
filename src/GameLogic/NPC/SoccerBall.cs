@@ -37,7 +37,18 @@ public sealed class SoccerBall : NonPlayerCharacter, IAttackable, IMovable
     public event AsyncEventHandler<(Point From, Point To)>? Moved;
 
     /// <inheritdoc />
-    public event EventHandler<DeathInformation>? Died;
+    public event EventHandler<DeathInformation>? Died
+    {
+        add
+        {
+            // The event is never raised, so there is nothing to subscribe to.
+        }
+
+        remove
+        {
+            // The event is never raised, so there is nothing to unsubscribe from.
+        }
+    }
 
     /// <inheritdoc />
     public IAttributeSystem Attributes { get; }
