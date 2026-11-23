@@ -190,6 +190,7 @@
   * [C1 F5 02 - DiscordIntegrationInfoRequest (by client)](C1-F5-02-DiscordIntegrationInfoRequest_by-client.md)
   * [C1 F5 04 - DiscordLinkCodeRequest (by client)](C1-F5-04-DiscordLinkCodeRequest_by-client.md)
   * [C1 F5 06 - DiscordUnlinkRequest (by client)](C1-F5-06-DiscordUnlinkRequest_by-client.md)
+  * [C1 F5 0C - RoundTripRequest (by client)](C1-F5-0C-RoundTripRequest_by-client.md)
   * [C1 F6 0A - QuestSelectRequest (by client)](C1-F6-0A-QuestSelectRequest_by-client.md)
   * [C1 F6 0B - QuestProceedRequest (by client)](C1-F6-0B-QuestProceedRequest_by-client.md)
   * [C1 F6 0D - QuestCompletionRequest (by client)](C1-F6-0D-QuestCompletionRequest_by-client.md)

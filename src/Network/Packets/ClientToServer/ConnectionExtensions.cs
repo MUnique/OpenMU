@@ -5727,6 +5727,34 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="RoundTripRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="token">A value of the client's choice, which the server sends back unchanged, so that the client can match the response to its request.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client measures the time a message needs to the server and back, e.g. to show the player's ping.
+    /// Causes reaction on server side: The server sends a RoundTripResponse with the same token right away.
+    /// </remarks>
+    public static async ValueTask SendRoundTripRequestAsync(this IConnection? connection, uint @token)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RoundTripRequestRef.Length;
+            var packet = new RoundTripRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Token = @token;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="CharacterRenameRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

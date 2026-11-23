@@ -4045,6 +4045,24 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for RoundTripRequest.
+    /// </summary>
+    [Test]
+    public void RoundTripRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = RoundTripRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Token' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Token' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for CharacterRenameRequest.
     /// </summary>
     [Test]

@@ -2581,6 +2581,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Round trip request handler.
+        /// </summary>
+        public static string RoundTripRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RoundTripRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers the round trip request with which the client measures its ping (F5 0C)..
+        /// </summary>
+        public static string RoundTripRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RoundTripRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Round trip view.
+        /// </summary>
+        public static string RoundTripViewPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RoundTripViewPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Answers the round trip requests of the game client..
+        /// </summary>
+        public static string RoundTripViewPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RoundTripViewPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the request of a code to link the account to a Discord user (F5 04)..
         /// </summary>
         public static string DiscordLinkCodeRequestHandlerPlugIn_Description {
