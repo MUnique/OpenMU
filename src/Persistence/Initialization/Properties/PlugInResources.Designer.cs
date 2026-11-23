@@ -1483,6 +1483,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Illusion Temple update left the NPC of the stone statue and of the two item storages unset in the configuration of their talk plug-ins, so talking to them did nothing. This update sets the NPCs which are still unset...
+        /// </summary>
+        public static string ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure Illusion Temple NPCs.
+        /// </summary>
+        public static string ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel..
         /// </summary>
         public static string ConfigureNpcTalkPlugInsPlugIn_Description {
