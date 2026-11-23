@@ -326,6 +326,131 @@ public class TradeTest
         Assert.That(trader2.TradingPartner, Is.Null);
     }
 
+    /// <summary>
+    /// Tests that the zen of the player who requested the trade comes back when the trade is cancelled by the other side.
+    /// </summary>
+    [Test]
+    public async ValueTask CancelReturnsZenOfRequesterAsync()
+    {
+        var (requester, accepter) = await this.OpenTradeWithMoneyAsync().ConfigureAwait(false);
+        await new TradeMoneyAction().TradeMoneyAsync(requester, 500_000).ConfigureAwait(false);
+        Assert.That(requester.Money, Is.EqualTo(19_500_000));
+
+        await new TradeCancelAction().CancelTradeAsync(accepter).ConfigureAwait(false);
+
+        Assert.That(requester.Money, Is.EqualTo(20_000_000));
+        Assert.That(accepter.Money, Is.EqualTo(20_000_000));
+        Assert.That(requester.TradingMoney, Is.Zero);
+    }
+
+    /// <summary>
+    /// Tests that the zen of the player who accepted the trade comes back when the trade is cancelled by the same player.
+    /// </summary>
+    [Test]
+    public async ValueTask CancelReturnsZenOfAccepterAsync()
+    {
+        var (requester, accepter) = await this.OpenTradeWithMoneyAsync().ConfigureAwait(false);
+        await new TradeMoneyAction().TradeMoneyAsync(accepter, 750_000).ConfigureAwait(false);
+        Assert.That(accepter.Money, Is.EqualTo(19_250_000));
+
+        await new TradeCancelAction().CancelTradeAsync(accepter).ConfigureAwait(false);
+
+        Assert.That(accepter.Money, Is.EqualTo(20_000_000));
+        Assert.That(requester.Money, Is.EqualTo(20_000_000));
+    }
+
+    /// <summary>
+    /// Tests that the zen comes back when it was changed more than once, and when both sides put zen into the trade.
+    /// </summary>
+    [Test]
+    public async ValueTask CancelReturnsZenWhenChangedTwiceAndByBothAsync()
+    {
+        var (requester, accepter) = await this.OpenTradeWithMoneyAsync().ConfigureAwait(false);
+        var moneyAction = new TradeMoneyAction();
+        await moneyAction.TradeMoneyAsync(requester, 500_000).ConfigureAwait(false);
+        await moneyAction.TradeMoneyAsync(requester, 200_000).ConfigureAwait(false);
+        await moneyAction.TradeMoneyAsync(accepter, 1_000_000).ConfigureAwait(false);
+        Assert.That(requester.Money, Is.EqualTo(19_800_000));
+        Assert.That(accepter.Money, Is.EqualTo(19_000_000));
+
+        await new TradeCancelAction().CancelTradeAsync(requester).ConfigureAwait(false);
+
+        Assert.That(requester.Money, Is.EqualTo(20_000_000));
+        Assert.That(accepter.Money, Is.EqualTo(20_000_000));
+    }
+
+    /// <summary>
+    /// Tests that a finished trade still moves the zen to the partner, and nothing else changes.
+    /// </summary>
+    [Test]
+    public async ValueTask FinishedTradeStillMovesZenAsync()
+    {
+        var (requester, accepter) = await this.OpenTradeWithMoneyAsync().ConfigureAwait(false);
+        await new TradeMoneyAction().TradeMoneyAsync(requester, 500_000).ConfigureAwait(false);
+
+        var tradeButtonHandler = new TradeButtonAction();
+        await tradeButtonHandler.TradeButtonChangedAsync(requester, TradeButtonState.Checked).ConfigureAwait(false);
+        await tradeButtonHandler.TradeButtonChangedAsync(accepter, TradeButtonState.Checked).ConfigureAwait(false);
+
+        Assert.That(requester.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        Assert.That(requester.Money, Is.EqualTo(19_500_000));
+        Assert.That(accepter.Money, Is.EqualTo(20_500_000));
+
+        // The zen of the window must not stay behind, otherwise a later cancellation without a backup
+        // (e.g. a declined request) would report zen that was already delivered.
+        Assert.That(requester.TradingMoney, Is.Zero);
+        Assert.That(accepter.TradingMoney, Is.Zero);
+    }
+
+    /// <summary>
+    /// Tests that the backups of both traders exist at the moment the trade state allows to put zen or items into the trade.
+    /// Otherwise, zen which is put in between would be part of the backup, and get lost on cancellation.
+    /// </summary>
+    [Test]
+    public async ValueTask BackupExistsBeforeTradeStateAllowsZenAsync()
+    {
+        var requester = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var accepter = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        requester.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
+        requester.Money = 20_000_000;
+        accepter.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
+        accepter.Money = 20_000_000;
+        await new TradeRequestAction().RequestTradeAsync(requester, accepter).ConfigureAwait(false);
+
+        var openedWithoutBackup = new List<string>();
+        foreach (var player in new[] { requester, accepter })
+        {
+            player.PlayerState.StateChanged += args =>
+            {
+                if (args.CurrentStateState == PlayerState.TradeOpened && (requester.BackupInventory is null || accepter.BackupInventory is null))
+                {
+                    openedWithoutBackup.Add(player.Name);
+                }
+
+                return ValueTask.CompletedTask;
+            };
+        }
+
+        await new TradeAcceptAction().HandleTradeAcceptAsync(accepter, true).ConfigureAwait(false);
+
+        Assert.That(requester.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(accepter.PlayerState.CurrentState, Is.EqualTo(PlayerState.TradeOpened));
+        Assert.That(openedWithoutBackup, Is.Empty);
+    }
+
+    private async ValueTask<(Player Requester, Player Accepter)> OpenTradeWithMoneyAsync()
+    {
+        var requester = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var accepter = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        requester.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
+        requester.Money = 20_000_000;
+        accepter.GameContext.Configuration.MaximumInventoryMoney = int.MaxValue;
+        accepter.Money = 20_000_000;
+        await new TradeRequestAction().RequestTradeAsync(requester, accepter).ConfigureAwait(false);
+        await new TradeAcceptAction().HandleTradeAcceptAsync(accepter, true).ConfigureAwait(false);
+        return (requester, accepter);
+    }
+
     private Item GetItem()
     {
         var item = new Mock<Item>();

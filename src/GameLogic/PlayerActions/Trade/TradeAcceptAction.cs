@@ -21,27 +21,32 @@ public class TradeAcceptAction : BaseTradeAction
         var tradePartner = tradeAccepter.TradingPartner;
         if (accept && tradePartner != null)
         {
-            if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
+            try
             {
-                ////Something bad happened here...
-                await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
-                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
-                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
-                await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
-            }
-            else
-            {
-                try
+                // The backups of both traders have to exist before the state allows to put zen or items
+                // into the trade. Otherwise, zen or items which are put into the trade in between would
+                // already be missing in the backup, and wouldn't come back when the trade is cancelled.
+                await this.PrepareTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.PrepareTradeAsync(tradePartner).ConfigureAwait(false);
+
+                if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
                 {
-                    await this.OpenTradeAsync(tradeAccepter).ConfigureAwait(false);
-                    await this.OpenTradeAsync(tradePartner).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    tradeAccepter.Logger.LogError(ex, "Error while opening a trade between {tradeAccepter} and {tradePartner}", tradeAccepter, tradePartner);
+                    ////Something bad happened here...
                     await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
                     await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
+                    await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+                    await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);
+                    return;
                 }
+
+                await tradeAccepter.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);
+                await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                tradeAccepter.Logger.LogError(ex, "Error while opening a trade between {tradeAccepter} and {tradePartner}", tradeAccepter, tradePartner);
+                await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
+                await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
             }
         }
         else
@@ -58,10 +63,12 @@ public class TradeAcceptAction : BaseTradeAction
     }
 
     /// <summary>
-    /// Opens the trade.
+    /// Prepares the trade of a trader: saves the progress and creates the backup of the inventory,
+    /// which is restored when the trade is cancelled. It has to be done before the trader is allowed
+    /// to add zen or items to the trade.
     /// </summary>
-    /// <param name="trader">Trader for which the trade should be opened.</param>
-    internal async ValueTask OpenTradeAsync(ITrader trader)
+    /// <param name="trader">Trader for which the trade should be prepared.</param>
+    internal async ValueTask PrepareTradeAsync(ITrader trader)
     {
         // first make sure that all items which could be transferred are already present in the database
         await trader.SaveProgressAsync().ConfigureAwait(false);
@@ -78,6 +85,5 @@ public class TradeAcceptAction : BaseTradeAction
 
         trader.BackupInventory = new BackupItemStorage(trader.Inventory!.ItemStorage);
         trader.TradingMoney = 0;
-        await trader.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(true)).ConfigureAwait(false);
     }
 }
