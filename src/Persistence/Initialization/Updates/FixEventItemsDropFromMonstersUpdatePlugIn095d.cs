@@ -19,12 +19,12 @@ public class FixEventItemsDropFromMonstersUpdatePlugIn095d : FixEventItemsDropFr
     /// <summary>
     /// The plug in name.
     /// </summary>
-    internal const string PlugInName = "Fix Event Items DropsFromMonsters 0.95d";
+    internal new const string PlugInName = "Fix Event Items DropsFromMonsters 0.95d";
 
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups.";
+    internal new const string PlugInDescription = "This update fixes event items that have DropsFromMonsters set to true, causing them to drop at level 0 instead of using their dedicated DropItemGroups.";
 
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
