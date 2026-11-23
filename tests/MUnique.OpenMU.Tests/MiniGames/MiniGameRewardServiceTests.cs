@@ -40,7 +40,7 @@ public class MiniGameRewardServiceTests
         var observer = new EntranceObserver(async miniGame =>
         {
             Assert.That(miniGame.GameContext, Is.SameAs(world.Player.GameContext));
-            var reward = world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1);
+            var reward = world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1, 1);
             attempted.TrySetResult(reward.IsCompleted);
             var result = await reward.ConfigureAwait(false);
             completed.TrySetResult(result.BonusScore);
@@ -85,7 +85,7 @@ public class MiniGameRewardServiceTests
         world.Reward.RewardAmount = 1;
 
         var operation = world.Player.RunPersistenceExclusiveAsync(async () =>
-            await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1).ConfigureAwait(false));
+            await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1, 1).ConfigureAwait(false));
 
         var result = await operation.AsTask().WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
         Assert.That(result.BonusScore, Is.EqualTo(1));
@@ -107,7 +107,7 @@ public class MiniGameRewardServiceTests
         try
         {
             await acquired.Task.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-            reward = world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1);
+            reward = world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1, 1);
 
             // Generator, factory, inventory, and mock view all complete synchronously in this fixture.
             // With no persistence gate the entire reward completes before this assertion; no sleep is needed.
@@ -153,7 +153,7 @@ public class MiniGameRewardServiceTests
             Assert.That(slot, Is.EqualTo(InventoryConstants.FirstExtensionItemSlotIndex));
         }
 
-        await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1).ConfigureAwait(false);
+        await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1, 1).ConfigureAwait(false);
 
         var item = (EfModel.Item)world.Player.Inventory.GetItem(slot!.Value)!;
         Assert.Multiple(() =>
@@ -183,7 +183,7 @@ public class MiniGameRewardServiceTests
         await world.FillMainInventoryAsync().ConfigureAwait(false);
         Assert.That(world.Player.Inventory!.CheckInvSpace(world.GeneratedSample), Is.Null);
 
-        await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1).ConfigureAwait(false);
+        await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1, 1).ConfigureAwait(false);
 
         var drop = world.Drops.Single();
         Assert.Multiple(() =>
@@ -218,7 +218,7 @@ public class MiniGameRewardServiceTests
         await using var world = await RewardWorld.CreateAsync().ConfigureAwait(false);
         world.Reward.RewardType = MiniGameRewardType.ItemDrop;
 
-        await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1).ConfigureAwait(false);
+        await world.Service.GiveRewardsAndGetBonusScoreAsync(world.Player, 1, 1).ConfigureAwait(false);
 
         Assert.Multiple(() =>
         {
@@ -241,7 +241,7 @@ public class MiniGameRewardServiceTests
         };
         Assert.That(player.Inventory, Is.Null);
 
-        await world.Service.GiveRewardsAndGetBonusScoreAsync(player, 1).ConfigureAwait(false);
+        await world.Service.GiveRewardsAndGetBonusScoreAsync(player, 1, 1).ConfigureAwait(false);
 
         var drop = world.Drops.Single();
         Assert.That(drop.Item, Is.TypeOf<TemporaryItem>());

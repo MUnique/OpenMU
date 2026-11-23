@@ -2768,6 +2768,11 @@ internal sealed class BasicModelConverter
         this._converted.Add(source, target);
         target.Id = source.Id;
         target.Rank = source.Rank;
+        target.MaximumRank = source.MaximumRank;
+        target.MinimumRankedPlayers = source.MinimumRankedPlayers;
+        target.MaximumRankedPlayers = source.MaximumRankedPlayers;
+        target.MinimumRankPercentage = source.MinimumRankPercentage;
+        target.MaximumRankPercentage = source.MaximumRankPercentage;
         target.RewardType = source.RewardType;
         target.RewardAmount = source.RewardAmount;
         target.RequiredSuccess = source.RequiredSuccess;
@@ -2851,6 +2856,7 @@ internal sealed class BasicModelConverter
         target.RespawnDelay = source.RespawnDelay;
         target.Attribute = source.Attribute;
         target.NumberOfMaximumItemDrops = source.NumberOfMaximumItemDrops;
+        target.DropsNoZen = source.DropsNoZen;
         target.NpcWindow = source.NpcWindow;
         target.ObjectKind = source.ObjectKind;
         target.IntelligenceTypeName = source.IntelligenceTypeName;

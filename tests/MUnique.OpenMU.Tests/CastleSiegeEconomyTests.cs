@@ -4,14 +4,17 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
@@ -382,6 +385,89 @@ public class CastleSiegeEconomyTests
             Assert.That(fixture.Context.SiegeData.TaxHunt, Is.EqualTo(allowed && taxType == CastleSiegeTaxType.HuntZone ? rate : 100u));
             Assert.That(fixture.Context.SiegeData.TributeMoney, Is.EqualTo(500));
         });
+    }
+
+    /// <summary>
+    /// Verifies that warping into the Land of Trials, e.g. by the Talisman of Mobility, follows the same access rules
+    /// as its guard: the owner alliance may always enter, everyone else only while the hunt zone is public and by paying the hunt fee.
+    /// </summary>
+    [Test]
+    public async ValueTask WarpToLandOfTrialsHonorsHuntZoneAccessAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var landOfTrials = new BasicModel.GameMapDefinition { Number = 31 };
+        var otherMap = fixture.GameServerContext.Configuration.Maps.First(map => map.Number == 0);
+        fixture.Context.Configuration.LandOfTrialsMapDefinition = landOfTrials;
+        var plugIn = new CastleSiegePlugIn();
+        await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+        var siegeData = plugIn.GetContext(fixture.GameServerContext)!.SiegeData;
+
+        async ValueTask<bool> IsDeniedAsync(Player player, GameMapDefinition map)
+        {
+            var eventArgs = new CancelEventArgs();
+            await plugIn.WarpGateEnteringAsync(player, new BasicModel.ExitGate { Map = map }, eventArgs).ConfigureAwait(false);
+            return eventArgs.Cancel;
+        }
+
+        siegeData.IsHuntZoneEnabled = false;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.True, "Closed hunt zone");
+        Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.False, "Owner");
+        Assert.That(await IsDeniedAsync(fixture.Visitor, otherMap).ConfigureAwait(false), Is.False, "Other map");
+
+        siegeData.IsHuntZoneEnabled = true;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.False, "Public hunt zone");
+
+        // Like at the guard, a visitor pays the hunt fee for each entrance, the owner alliance doesn't.
+        siegeData.TaxHunt = 1_000;
+        fixture.Visitor.Money = 500;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.True, "Hunt fee not affordable");
+        Assert.That(fixture.Visitor.Money, Is.EqualTo(500));
+        fixture.Visitor.Money = 1_500;
+        Assert.That(await IsDeniedAsync(fixture.Visitor, landOfTrials).ConfigureAwait(false), Is.False, "Hunt fee paid");
+        Assert.That(fixture.Visitor.Money, Is.EqualTo(500));
+        fixture.Owner.Money = 0;
+        Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.False, "Owner pays no hunt fee");
+
+        siegeData.IsOccupied = false;
+        Assert.That(await IsDeniedAsync(fixture.Owner, landOfTrials).ConfigureAwait(false), Is.True, "Unoccupied castle");
+    }
+
+    /// <summary>
+    /// Warp-list entry checks and the combined cost must pass before a visitor pays a hunt fee.
+    /// </summary>
+    [TestCase(400, 500, false)]
+    [TestCase(0, 600, false)]
+    [TestCase(0, 500, true)]
+    public async ValueTask RejectedWarpToLandOfTrialsKeepsMoneyAsync(int levelRequirement, int warpCost, bool hasMissingRequirement)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var landOfTrials = new BasicModel.GameMapDefinition { Number = 31, IsActive = true };
+        fixture.Context.Configuration.LandOfTrialsMapDefinition = landOfTrials;
+        var plugIn = new CastleSiegePlugIn();
+        await plugIn.ExecuteTaskAsync(fixture.GameServerContext).ConfigureAwait(false);
+        fixture.GameServerContext.PlugInManager.RegisterPlugInAtPlugInPoint<MUnique.OpenMU.GameLogic.PlugIns.IWarpGateEnteringPlugIn>(plugIn);
+        var siegeData = plugIn.GetContext(fixture.GameServerContext)!.SiegeData;
+        siegeData.IsHuntZoneEnabled = true;
+        siegeData.TaxHunt = 1_000;
+        var player = fixture.Visitor;
+        player.Money = 1_500;
+        var sourceMap = player.CurrentMap;
+        var warp = new BasicModel.WarpInfo
+        {
+            Gate = new BasicModel.ExitGate { Map = landOfTrials },
+            LevelRequirement = levelRequirement,
+            Costs = warpCost,
+        };
+
+        if (hasMissingRequirement)
+        {
+            warp.Requirements.Add(new BasicModel.AttributeRequirement { Attribute = Stats.Level, MinimumValue = 400 });
+        }
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        Assert.That(player.Money, Is.EqualTo(1_500));
+        Assert.That(player.CurrentMap, Is.SameAs(sourceMap));
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()

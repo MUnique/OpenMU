@@ -271,6 +271,12 @@ entry requirements, ticket items, the spawn waves, rewards and the schedule at
 which they start. The time-of-day entries are interpreted in the time zone
 configured under [System](#system).
 
+A reward applies to a rank, or to a range of ranks with a *maximum rank*. It can
+be limited to a range of ranked players and to a range of rank percentages
+(rank × 100 / ranked players, rounded down). The Devil Square uses them for its
+four reward tiers: up to six players by rank, with more players by rank
+percentage, so that every ranked player gets a reward.
+
 ## Warp list
 
 Route `edit-config-grid/…WarpInfo/`

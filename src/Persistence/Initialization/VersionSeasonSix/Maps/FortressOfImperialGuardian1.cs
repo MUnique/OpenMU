@@ -33,6 +33,12 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
     }
 
     /// <summary>
+    /// Gets the numbers of the monsters which drop no zen: the bosses (504 to 511), the trap (523),
+    /// the gates and the statue (524 to 528). The other monsters of the fortress drop zen as usual.
+    /// </summary>
+    internal static IReadOnlyCollection<short> MonsterNumbersWithoutZen { get; } = [504, 505, 506, 507, 508, 509, 510, 511, 523, 524, 525, 526, 527, 528];
+
+    /// <summary>
     /// Gets the name of the map.
     /// </summary>
     internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.FortressOfImperialGuardian1);
@@ -774,6 +780,11 @@ internal class FortressOfImperialGuardian1 : BaseMapInitializer
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
+        }
+
+        foreach (var monster in this.GameConfiguration.Monsters.Where(monster => MonsterNumbersWithoutZen.Contains(monster.Number)))
+        {
+            monster.DropsNoZen = true;
         }
     }
 

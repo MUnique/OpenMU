@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -400,6 +402,28 @@ public class WarpListTests
         Assert.That(navigator.GetMinWarpLevel(), Is.EqualTo(expected));
     }
 
+    /// <summary>
+    /// Tests that a warp which a <see cref="IWarpGateEnteringPlugIn"/> refuses costs nothing,
+    /// even when the player has the maximum inventory money, at which the money can't be added anymore.
+    /// </summary>
+    [Test]
+    public async Task RefusedWarpCostsNothingAtTheMoneyLimitAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.GameContext.Configuration.MaximumInventoryMoney = 100000;
+        player.Money = 100000;
+        var plugIn = new RefusingWarpGateEnteringPlugIn();
+        player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IWarpGateEnteringPlugIn>(plugIn);
+        var warp = CreateWarp(1, "Lorencia", 0, 0, 10000);
+
+        await new WarpAction().WarpToAsync(player, warp).ConfigureAwait(false);
+
+        Assert.That(plugIn.RefusedPlayer, Is.SameAs(player));
+        Assert.That(plugIn.RefusedGate, Is.SameAs(warp.Gate));
+        Assert.That(player.Money, Is.EqualTo(100000));
+        Assert.That(player.PlayerState.CurrentState, Is.Not.EqualTo(PlayerState.ChangingMap));
+    }
+
     private static WarpInfo CreateWarp(int index, string name, short mapNumber, int level, int costs, params (AttributeDefinition Attribute, int MinimumValue)[] requirements)
     {
         var warp = new Persistence.BasicModel.WarpInfo
@@ -416,5 +440,31 @@ public class WarpListTests
         }
 
         return warp;
+    }
+
+    /// <summary>
+    /// A plug-in which refuses every warp.
+    /// </summary>
+    [Guid("5E2C1B0A-3F47-4C8D-9A61-7B2E4D9F0C13")]
+    private sealed class RefusingWarpGateEnteringPlugIn : IWarpGateEnteringPlugIn
+    {
+        /// <summary>
+        /// Gets the player whose warp was refused.
+        /// </summary>
+        public Player? RefusedPlayer { get; private set; }
+
+        /// <summary>
+        /// Gets the gate of the refused warp.
+        /// </summary>
+        public ExitGate? RefusedGate { get; private set; }
+
+        /// <inheritdoc />
+        public ValueTask WarpGateEnteringAsync(Player player, ExitGate targetGate, CancelEventArgs eventArgs)
+        {
+            this.RefusedPlayer = player;
+            this.RefusedGate = targetGate;
+            eventArgs.Cancel = true;
+            return ValueTask.CompletedTask;
+        }
     }
 }

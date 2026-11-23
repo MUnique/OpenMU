@@ -2127,4 +2127,10 @@
   <data name="InventoryUsedItemIdentifier_ExclusiveGroup_Description" xml:space="preserve">
     <value>Nur ein Gegenstand derselben exklusiven Gruppe kann gleichzeitig benutzt werden, z.B. entweder die Falken- oder die Ziegenfigur. Mit 0 ist nur ein weiterer Gegenstand derselben Definition ausgeschlossen.</value>
   </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Verbrauch des Talismans der Mobilität</value>
+  </data>
+  <data name="TalismanOfMobilityConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Plugin, das den Talisman der Mobilität verarbeitet. Die erste Benutzung speichert den Ort des Charakters, die zweite versetzt ihn an den gespeicherten Ort zurück.</value>
+  </data>
 </root>

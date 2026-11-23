@@ -84,12 +84,13 @@ internal sealed class MiniGameRewardService
     /// </summary>
     /// <param name="player">The player who should receive the rewards.</param>
     /// <param name="rank">The rank of the player in the current game.</param>
+    /// <param name="rankedPlayers">The number of ranked players in the current game.</param>
     /// <param name="rewardFilter">
     /// An optional filter which selects the rewards to give, for games which hand out their rewards
     /// in more than one step. When it's <c>null</c>, every applying reward is given.
     /// </param>
     /// <returns>The bonus score and the given money.</returns>
-    public async Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank, Func<MiniGameReward, bool>? rewardFilter = null)
+    public async Task<(int BonusScore, int GivenMoney)> GiveRewardsAndGetBonusScoreAsync(Player player, int rank, int rankedPlayers, Func<MiniGameReward, bool>? rewardFilter = null)
     {
         return await player.RunPersistenceExclusiveAsync(async () =>
         {
@@ -97,7 +98,7 @@ internal sealed class MiniGameRewardService
             int givenMoney = 0;
             var rewards = this._definition.Rewards
                 .Where(r => rewardFilter?.Invoke(r) is not false)
-                .Where(r => this.DoesRewardApply(player, rank, r));
+                .Where(r => this.DoesRewardApply(player, rank, rankedPlayers, r));
             foreach (var reward in rewards)
             {
                 var result = await this.GiveRewardAsync(player, reward).ConfigureAwait(false);
@@ -227,10 +228,10 @@ internal sealed class MiniGameRewardService
         }
     }
 
-    private bool DoesRewardApply(Player player, int playerRank, MiniGameReward reward)
+    private bool DoesRewardApply(Player player, int playerRank, int rankedPlayers, MiniGameReward reward)
     {
         var winner = this._winnerProvider();
-        if (reward.Rank is not null && reward.Rank != playerRank)
+        if (!reward.IsApplicableToRank(playerRank, rankedPlayers))
         {
             return false;
         }

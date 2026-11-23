@@ -49,6 +49,28 @@ internal class CashShopItems : InitializerBase
         this.CreateFigurinesAndCharms();
         this.CreateWornHorseshoe();
         this.CreateTalismanOfResurrection();
+        this.CreateTalismanOfMobility();
+    }
+
+    /// <summary>
+    /// Creates the Talisman of Mobility, if it doesn't exist yet. Like in the client, it has a durability of 2:
+    /// the first usage saves the place of the character, the second one warps it back,
+    /// see <see cref="GameLogic.PlayerActions.ItemConsumeActions.TalismanOfMobilityConsumeHandlerPlugIn"/>.
+    /// It gets the rules of the <see cref="ItemRules"/> which block trading and selling it, and the attributes
+    /// in which a character keeps the saved place are added, so that every update which creates it is complete.
+    /// </summary>
+    /// <returns>The created item, or <c>null</c>, if it already existed.</returns>
+    internal ItemDefinition? CreateTalismanOfMobility()
+    {
+        this.AddMobilityTalismanAttributes();
+        var talisman = this.CreateItem(13, 70, LocalizedString.FromResource(() => ItemNames.TalismanOfMobility));
+        if (talisman is not null)
+        {
+            talisman.Durability = CashShopInitializer.TalismanOfMobilityDurability;
+            ItemRules.Apply([talisman]);
+        }
+
+        return talisman;
     }
 
     /// <summary>
@@ -152,6 +174,20 @@ internal class CashShopItems : InitializerBase
         }
 
         return item;
+    }
+
+    /// <summary>
+    /// Adds the attributes in which a character keeps the place which it saved with the Talisman of Mobility.
+    /// </summary>
+    private void AddMobilityTalismanAttributes()
+    {
+        foreach (var attribute in new[] { Stats.MobilityTalismanMap, Stats.MobilityTalismanX, Stats.MobilityTalismanY })
+        {
+            if (this.GameConfiguration.Attributes.All(a => a.Id != attribute.Id))
+            {
+                this.GameConfiguration.Attributes.Add(this.Context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description));
+            }
+        }
     }
 
     private ItemDefinition? CreateItem(byte group, short number, LocalizedString name)

@@ -494,7 +494,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         if (this._claimedRewards.TryAdd(player, true) && this.IsWinner(player))
         {
             var rank = this._winnerRanks.GetValueOrDefault(player, 1);
-            await this.GiveRewardsAndGetBonusScoreAsync(player, rank, reward => !IsExperienceReward(reward)).ConfigureAwait(false);
+            await this.GiveRewardsAndGetBonusScoreAsync(player, rank, this._winnerRanks.Count, reward => !IsExperienceReward(reward)).ConfigureAwait(false);
         }
 
         await this.RemoveRelicFromInventoryAsync(player).ConfigureAwait(false);
@@ -801,7 +801,8 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// </remarks>
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
-        foreach (var winner in finishers.Where(this.IsWinner))
+        var winners = finishers.Where(this.IsWinner).ToList();
+        foreach (var winner in winners)
         {
             var rank = this._winnerRanks.Count + 1;
             this._winnerRanks[winner] = rank;
@@ -811,7 +812,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             // seconds, and the experience itself still runs through the server's experience rates and
             // the maximum level.
             var experienceBefore = winner.SelectedCharacter?.Experience ?? 0;
-            await this.GiveRewardsAndGetBonusScoreAsync(winner, rank, IsExperienceReward).ConfigureAwait(false);
+            await this.GiveRewardsAndGetBonusScoreAsync(winner, rank, winners.Count, IsExperienceReward).ConfigureAwait(false);
             var experienceAfter = winner.SelectedCharacter?.Experience ?? 0;
             this._grantedExperience[winner] = (int)Math.Clamp(experienceAfter - experienceBefore, 0, int.MaxValue);
         }

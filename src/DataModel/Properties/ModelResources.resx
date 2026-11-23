@@ -4087,6 +4087,36 @@
   <data name="MiniGameReward_Rank_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MiniGameReward_MaximumRank_Caption" xml:space="preserve">
+    <value>Maximum Rank</value>
+  </data>
+  <data name="MiniGameReward_MaximumRank_Description" xml:space="preserve">
+    <value>If set, the reward applies to the ranks from Rank to this rank; otherwise, only to Rank.</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankedPlayers_Caption" xml:space="preserve">
+    <value>Minimum Ranked Players</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankedPlayers_Description" xml:space="preserve">
+    <value>The reward applies only when at least this number of players is ranked.</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankedPlayers_Caption" xml:space="preserve">
+    <value>Maximum Ranked Players</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankedPlayers_Description" xml:space="preserve">
+    <value>The reward applies only when at most this number of players is ranked.</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankPercentage_Caption" xml:space="preserve">
+    <value>Minimum Rank Percentage</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankPercentage_Description" xml:space="preserve">
+    <value>The reward applies only when the rank percentage (rank * 100 / ranked players, rounded down) is at least this value.</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankPercentage_Caption" xml:space="preserve">
+    <value>Maximum Rank Percentage</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankPercentage_Description" xml:space="preserve">
+    <value>The reward applies only when the rank percentage (rank * 100 / ranked players, rounded down) is at most this value.</value>
+  </data>
   <data name="MiniGameReward_RewardType_Caption" xml:space="preserve">
     <value>Reward Type</value>
   </data>
@@ -4503,6 +4533,12 @@
   </data>
   <data name="MonsterDefinition_NumberOfMaximumItemDrops_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="MonsterDefinition_DropsNoZen_Caption" xml:space="preserve">
+    <value>Drops No Zen</value>
+  </data>
+  <data name="MonsterDefinition_DropsNoZen_Description" xml:space="preserve">
+    <value>If checked, the monster drops no zen when it died; its item drops are unaffected. For monsters which are rewarded by their event only.</value>
   </data>
   <data name="MonsterDefinition_NpcWindow_Caption" xml:space="preserve">
     <value>Npc Window</value>

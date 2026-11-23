@@ -386,6 +386,8 @@
   <data name="ConfigureNpcTalkPlugInsPlugIn_Description" xml:space="preserve"><value>This update configures the NPCs of the plugins which handle talking to an NPC, e.g. the reset NPC or the Blood Castle Archangel.</value></data>
   <data name="AddIronKnightStabUpdatePlugIn_Name" xml:space="preserve"><value>Let the Iron Knight use its stab</value></data>
   <data name="AddIronKnightStabUpdatePlugIn_Description" xml:space="preserve"><value>This update lets the Iron Knight of Raklion attack with its stab, which the client shows with a combo effect.</value></data>
+  <data name="FixFlameOfCondorDropLevelUpdatePlugIn_Name" xml:space="preserve"><value>Let the Flame of Condor drop</value></data>
+  <data name="FixFlameOfCondorDropLevelUpdatePlugIn_Description" xml:space="preserve"><value>This update removes the drop level of the Flame of Condor, which was higher than the level of the monsters of the Barracks of Balgass and prevented the item from dropping.</value></data>
   <data name="AddLorenMarketRaulJewelBundlePlugIn_Name" xml:space="preserve"><value>Add Loren Market Jeweler Raul jewel bundles</value></data>
   <data name="AddLorenMarketRaulJewelBundlePlugIn_Description" xml:space="preserve"><value>This update lets Jeweler Raul (546) of the Loren Market open the jewel bundle window, to combine jewels into bundles and disband them, like Lahap.</value></data>
   <data name="MoveServerPortsOutOfDynamicRangePlugInBase_Name" xml:space="preserve"><value>Move server ports out of the dynamic port range</value></data>
@@ -396,6 +398,8 @@
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
+  <data name="ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Illusion Temple NPCs</value></data>
+  <data name="ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The Illusion Temple update left the NPC of the stone statue and of the two item storages unset in the configuration of their talk plug-ins, so talking to them did nothing. This update sets the NPCs which are still unset.</value></data>
   <data name="AddItemStatProfilesUpdatePlugIn_Name" xml:space="preserve">
     <value>Add item stat profiles</value>
   </data>
@@ -448,6 +452,8 @@
   <data name="FixKanturuRuins3LandingUpdatePlugIn_Description" xml:space="preserve"><value>Narrows the original Kanturu Ruins 3 warp landing area to walkable terrain. Customized destinations and unrelated settings are kept.</value></data>
   <data name="AddSealItemDropRateUpdatePlugIn_Name" xml:space="preserve"><value>Add the item drop rate of seals</value></data>
   <data name="AddSealItemDropRateUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the item drop rate of 150 % to the Seals of Wealth and Divinity and the Master Seal of Wealth, and adds the second Seal of Wealth (13/116), which only raises the item drop rate.</value></data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Name" xml:space="preserve"><value>Add the Talisman of Mobility</value></data>
+  <data name="AddTalismanOfMobilityUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the Talisman of Mobility, which saves a place and warps the character back to it. The packages of the in-game shop which contain it are put on sale.</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Name" xml:space="preserve"><value>Adjust Ice Arrow freeze duration</value></data>
   <data name="AdjustIceArrowFreezeDurationUpdatePlugIn_Description" xml:space="preserve"><value>Extends the default Ice Arrow freeze duration, and adds its reduction on successful hits. Customized durations are left unchanged. Also aligns Ice Arrow Str, Chain Drive Str, Strike of Destruction Str and Poison Str with their base skills magic effects.</value></data>
   <data name="FieldMonsterSpawnsUpdatePlugInSeason6_Name" xml:space="preserve"><value>Season 6 monster spawns of the field maps</value></data>
@@ -509,5 +515,17 @@
   </data>
   <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Worn Horseshoe, which increases the item drop rate by 20 % while it's used inside the inventory.</value>
+  </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the zen drops in the mini games</value>
+  </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Description" xml:space="preserve">
+    <value>The zen of the monsters killed in a mini game is dropped like anywhere else instead of being added to the inventory. This update removes the zen drop from the maps whose monsters give no zen (Devil Square, Illusion Temple) and marks the event monsters which drop no zen (Doppelganger, Imperial Guardian, Kanturu).</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Name" xml:space="preserve">
+    <value>Devil Square rewards for every rank</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Description" xml:space="preserve">
+    <value>Configures the Devil Square rewards by tiers, so that every ranked player gets a reward instead of only the ranks 1 to 4: up to six players by rank, with more players by rank percentage. The amounts of the ranks 1 to 4 are kept as the amounts of the tiers 1 to 4.</value>
   </data>
 </root>

@@ -58,6 +58,12 @@ internal class KanturuEvent : BaseMapInitializer
     }
 
     /// <summary>
+    /// Gets the numbers of the monsters of the event which drop no zen: Maya, her hands and Nightmare
+    /// are rewarded by their item drops only.
+    /// </summary>
+    internal static IReadOnlyCollection<short> MonsterNumbersWithoutZen { get; } = [MayaBodyNumber, MayaLeftHandNumber, MayaRightHandNumber, NightmareNumber];
+
+    /// <summary>
     /// Gets the name of the map.
     /// </summary>
     internal static LocalizedString Name => LocalizedString.FromResource(() => MapNames.KanturuEvent);
@@ -328,6 +334,11 @@ internal class KanturuEvent : BaseMapInitializer
             };
             monster.AddAttributes(attributes, this.Context, this.GameConfiguration);
             monster.SetGuid(monster.Number);
+        }
+
+        foreach (var monster in this.GameConfiguration.Monsters.Where(monster => MonsterNumbersWithoutZen.Contains(monster.Number)))
+        {
+            monster.DropsNoZen = true;
         }
     }
 }

@@ -203,7 +203,9 @@ public class Wings : WingsInitializerBase
         feather.MaximumItemLevel = 1;
         feather.Number = 52;
         feather.Group = 13;
-        feather.DropLevel = 120;
+        // The drop group of the Barracks of Balgass is the only source of this item. A drop level above the level of the
+        // monsters (117 to 119) would make DefaultDropGenerator refuse it for every kill, so it has no drop level.
+        feather.DropLevel = 0;
         feather.Width = 1;
         feather.Height = 2;
         feather.Durability = 1;
