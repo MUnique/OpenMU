@@ -396,6 +396,8 @@
   <data name="AddRageFighterAncientSetsUpdatePlugIn_Description" xml:space="preserve"><value>This update adds the ancient sets Vega and Chamer of the Sacred items.</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Castle Siege guards</value></data>
   <data name="ConfigureCastleSiegeGuardTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The guardsmen at the bridge of the Castle Siege map open the registration window, and the guard at the Land of Trials entrance becomes a passive NPC which opens the Land of Trials dialog.</value></data>
+  <data name="ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Name" xml:space="preserve"><value>Configure Illusion Temple NPCs</value></data>
+  <data name="ConfigureIllusionTempleNpcTalkPlugInsUpdatePlugIn_Description" xml:space="preserve"><value>The Illusion Temple update left the NPC of the stone statue and of the two item storages unset in the configuration of their talk plug-ins, so talking to them did nothing. This update sets the NPCs which are still unset.</value></data>
   <data name="AddItemStatProfilesUpdatePlugIn_Name" xml:space="preserve">
     <value>Add item stat profiles</value>
   </data>
