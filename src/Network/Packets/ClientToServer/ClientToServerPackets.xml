@@ -4397,6 +4397,25 @@
       <CausedReaction>The server removes the link and sends an updated DiscordIntegrationInfo message.</CausedReaction>
       <Fields />
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>0C</SubCode>
+      <Name>RoundTripRequest</Name>
+      <Caption>Round trip request</Caption>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client measures the time a message needs to the server and back, e.g. to show the player's ping.</SentWhen>
+      <CausedReaction>The server sends a RoundTripResponse with the same token right away.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Token</Name>
+          <Description>A value of the client's choice, which the server sends back unchanged, so that the client can match the response to its request.</Description>
+        </Field>
+      </Fields>
+    </Packet>
   <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>F3</Code>

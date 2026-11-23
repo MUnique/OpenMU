@@ -2673,6 +2673,18 @@
   <data name="DiscordIntegrationViewPlugIn_Description" xml:space="preserve">
     <value>Sendet die Discord-Integrationsinfo, den Verknüpfungscode und die in Discord geschriebenen Nachrichten an den Game-Client.</value>
   </data>
+  <data name="RoundTripRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Handler für Round-Trip-Anfragen</value>
+  </data>
+  <data name="RoundTripRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Beantwortet die Round-Trip-Anfrage, mit der der Client seinen Ping misst (F5 0C).</value>
+  </data>
+  <data name="RoundTripViewPlugIn_Name" xml:space="preserve">
+    <value>Round-Trip-Ansicht</value>
+  </data>
+  <data name="RoundTripViewPlugIn_Description" xml:space="preserve">
+    <value>Beantwortet die Round-Trip-Anfragen des Game-Clients.</value>
+  </data>
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Name" xml:space="preserve">
     <value>Vorschau der Herstellung anzeigen (erweitert)</value>
   </data>

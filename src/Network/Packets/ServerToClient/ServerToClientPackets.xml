@@ -12957,6 +12957,24 @@
       </Enums>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>F5</Code>
+      <SubCode>0D</SubCode>
+      <Name>RoundTripResponse</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Right after the client sent a RoundTripRequest.</SentWhen>
+      <CausedReaction>The client takes the time since it sent the request with this token as the round trip time, e.g. to show the player's ping.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Token</Name>
+          <Description>The token of the request.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>F5</Code>
       <SubCode>07</SubCode>

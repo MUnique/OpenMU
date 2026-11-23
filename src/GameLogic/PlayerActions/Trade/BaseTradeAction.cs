@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Trade;
 
 using System.Diagnostics.Metrics;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -45,6 +46,7 @@ public class BaseTradeAction
                 return;
             }
 
+            var zenBefore = trader.Money;
             trader.TradingMoney = 0;
             if (trader.BackupInventory != null)
             {
@@ -75,6 +77,11 @@ public class BaseTradeAction
 
                 trader.Inventory.ItemStorage.Money = trader.BackupInventory.Money;
                 trader.BackupInventory = null;
+                if (trader.Money != zenBefore)
+                {
+                    // The zen of the trade window is back in the inventory, so the client needs to know.
+                    await trader.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);
+                }
             }
         }
 
@@ -88,6 +95,7 @@ public class BaseTradeAction
     protected void ResetTradeState(ITrader trader)
     {
         trader.TradingPartner = null;
+        trader.TradingMoney = 0;
         trader.BackupInventory = null;
         trader.TemporaryStorage!.Clear();
     }

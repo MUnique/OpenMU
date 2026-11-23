@@ -48,6 +48,12 @@ public class ChangeLanguageChatCommandPlugIn : ChatCommandPlugInBase<ChangeLangu
         else
         {
             player.Culture = requestedCulture;
+            if (player.Account is { } account)
+            {
+                // Remember the choice for the next login, which takes the culture from the account.
+                account.LanguageIsoCode = requestedCulture.TwoLetterISOLanguageName;
+            }
+
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LanguageChanged), requestedCulture.NativeName, requestedCulture.Name).ConfigureAwait(false);
         }
     }

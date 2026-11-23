@@ -7283,6 +7283,24 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for RoundTripResponse.
+    /// </summary>
+    [Test]
+    public void RoundTripResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = RoundTripResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Token' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Token' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ExternalChatMessage.
     /// </summary>
     [Test]

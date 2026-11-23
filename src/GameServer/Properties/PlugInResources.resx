@@ -2747,6 +2747,18 @@
   <data name="DiscordIntegrationViewPlugIn_Description" xml:space="preserve">
     <value>Sends the Discord integration info, the link code and the messages written in Discord to the game client.</value>
   </data>
+  <data name="RoundTripRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Round trip request handler</value>
+  </data>
+  <data name="RoundTripRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Answers the round trip request with which the client measures its ping (F5 0C).</value>
+  </data>
+  <data name="RoundTripViewPlugIn_Name" xml:space="preserve">
+    <value>Round trip view</value>
+  </data>
+  <data name="RoundTripViewPlugIn_Description" xml:space="preserve">
+    <value>Answers the round trip requests of the game client.</value>
+  </data>
   <data name="CastleSiegeOwnerLogoHandlerPlugIn_Name" xml:space="preserve">
     <value>Castle Siege owner logo request handler</value>
   </data>

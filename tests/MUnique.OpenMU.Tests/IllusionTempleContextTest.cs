@@ -156,6 +156,56 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
+    /// After the game start, every player has a team which plugins can read; a player who
+    /// is not part of the match has none.
+    /// </summary>
+    [Test]
+    public async ValueTask GameStartAssignsEveryPlayerATeamAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        var outsider = await CreatePlayerAsync(gameContext, "Outsider").ConfigureAwait(false);
+
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+
+        foreach (var player in players)
+        {
+            Assert.That(illusionTemple.GetTeam(player), Is.EqualTo(GetTeamOf(illusionTemple, player)));
+        }
+
+        Assert.That(players.Select(p => illusionTemple.GetTeam(p)).Distinct().Count(), Is.EqualTo(2));
+        Assert.That(illusionTemple.GetTeam(outsider), Is.Null);
+    }
+
+    /// <summary>
+    /// Only the members of the leading team are winners.
+    /// </summary>
+    [Test]
+    public async ValueTask OnlyTheLeadingTeamIsInTheWinningTeamAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        var outsider = await CreatePlayerAsync(gameContext, "Outsider").ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var allied = players.First(p => illusionTemple.GetTeam(p) == IllusionTempleTeam.AlliedForces);
+        var illusion = players.First(p => illusionTemple.GetTeam(p) == IllusionTempleTeam.IllusionForces);
+
+        // Tied: nobody leads.
+        Assert.That(illusionTemple.IsInWinningTeam(allied), Is.False);
+        Assert.That(illusionTemple.IsInWinningTeam(illusion), Is.False);
+
+        illusionTemple.Score.IncreaseScore(IllusionTempleTeam.IllusionForces, 2);
+
+        Assert.That(illusionTemple.IsInWinningTeam(illusion), Is.True);
+        Assert.That(illusionTemple.IsInWinningTeam(allied), Is.False);
+        Assert.That(illusionTemple.IsInWinningTeam(outsider), Is.False);
+    }
+
+    /// <summary>
     /// Talking to the stone statue grants the sacred relic item and marks the player as its carrier -
     /// the client is informed who the new carrier is.
     /// </summary>
@@ -211,6 +261,44 @@ public class IllusionTempleContextTest
 
         Assert.That(GetRelicCarrier(illusionTemple), Is.EqualTo(otherPlayer));
 
+    }
+
+    /// <summary>
+    /// The dropped relic can only be picked up by the participants of the match - a player who is not
+    /// part of it can't take it, no matter how long it has been on the ground.
+    /// </summary>
+    [Test]
+    public async ValueTask DroppedRelicCanOnlyBePickedUpByParticipantsAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var carrier = players[0];
+        var otherParticipant = players[1];
+        var outsider = await CreatePlayerAsync(gameContext, "Outsider").ConfigureAwait(false);
+        carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
+        await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
+
+        await InvokeProtectedAsync(illusionTemple, "OnPlayerDied", [carrier, new DeathInformation(otherParticipant.Id, otherParticipant.Name, default, 0)]).ConfigureAwait(false);
+        await WaitUntilAsync(() => GetRelicCarrier(illusionTemple) is null).ConfigureAwait(false);
+        var droppedRelic = illusionTemple.Map.GetDropsInRange(carrier.Position, 5).OfType<DroppedItem>().First(d => IsRelicItem(d.Item));
+
+        // The owner priority of 10 seconds is not what protects the relic, the owner-only flag is:
+        // it holds for the whole lifetime of the dropped item.
+        Assert.That(droppedRelic.OwnerOnly, Is.True);
+        Assert.That(droppedRelic.IsPlayerAnOwner(carrier), Is.True);
+        Assert.That(droppedRelic.IsPlayerAnOwner(otherParticipant), Is.True);
+        Assert.That(droppedRelic.IsPlayerAnOwner(outsider), Is.False);
+
+        var outsiderResult = await droppedRelic.TryPickUpByAsync(outsider).ConfigureAwait(false);
+        Assert.That(outsiderResult.Success, Is.False);
+        Assert.That(outsider.Inventory!.Items.Any(IsRelicItem), Is.False);
+
+        var participantResult = await droppedRelic.TryPickUpByAsync(otherParticipant).ConfigureAwait(false);
+        Assert.That(participantResult.Success, Is.True);
+        Assert.That(otherParticipant.Inventory!.Items.Any(IsRelicItem), Is.True);
     }
 
     /// <summary>
