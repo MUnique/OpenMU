@@ -77,7 +77,7 @@ public class MemoryRepository<TValue> : IRepository<TValue>, IMemoryRepository
     }
 
     /// <inheritdoc/>
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }

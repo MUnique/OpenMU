@@ -62,7 +62,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     }
 
     /// <inheritdoc/>
-    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken)
     {
         return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -99,7 +99,7 @@ internal abstract class GenericRepositoryBase<T> : IRepository<T>, ILoadByProper
     }
 
     /// <inheritdoc/>
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }

@@ -51,6 +51,7 @@ public static class GameMasterItemFactory
     {
         var item = new TemporaryItem();
         item.Definition = itemDefinition;
+
         // The mobility talisman's durability represents remaining uses rather than quantity.
         var identifier = new ItemIdentifier(itemDefinition.Number, itemDefinition.Group);
         item.Durability = item.IsStackable() && identifier != ItemConstants.TalismanOfMobility

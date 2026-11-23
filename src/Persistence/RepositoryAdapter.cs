@@ -38,7 +38,7 @@ public class RepositoryAdapter<T> : IRepository<T>
     }
 
     /// <inheritdoc />
-    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken)
     {
         return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -56,7 +56,7 @@ public class RepositoryAdapter<T> : IRepository<T>
     }
 
     /// <inheritdoc />
-    ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return this._repository.GetByIdAsync(id, cancellationToken);
     }
