@@ -2077,6 +2077,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This update removes the drop level of the Flame of Condor, which was higher than the level of the monsters of the Barracks of Balgass and prevented the item from dropping..
+        /// </summary>
+        public static string FixFlameOfCondorDropLevelUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixFlameOfCondorDropLevelUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Let the Flame of Condor drop.
+        /// </summary>
+        public static string FixFlameOfCondorDropLevelUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixFlameOfCondorDropLevelUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update adds Dark Horse options, fixes Gold Fenrir options and Soul Barrier effects..
         /// </summary>
         public static string FixHorseFenrirOptionsSoulBarrierPlugIn_Description {
