@@ -89,16 +89,6 @@ body {
   color: var(--omu-error-text);
 }
 
-[data-bs-theme=dark] .creation-panel-body .form-actions {
-  background-color: var(--omu-surface) !important;
-  border-top: 1px solid var(--omu-border) !important;
-}
-
-[data-bs-theme=dark] .sticky-footer {
-  background-color: var(--omu-surface) !important;
-  border-top: var(--bs-border-width) solid var(--omu-border) !important;
-}
-
 [data-bs-theme=dark] .multi-lookup-field__selected-items {
   background: var(--omu-surface-2);
   border-color: var(--omu-border);

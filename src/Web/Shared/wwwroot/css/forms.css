@@ -77,7 +77,7 @@ label > details.info-popup > div {
   position: sticky;
   bottom: 0;
   z-index: var(--omu-z-sticky-footer);
-  background-color: var(--omu-surface-2);
+  background-color: var(--omu-footer-bg, var(--bs-body-bg));
   padding: 1rem;
   border-top: var(--bs-border-width) solid var(--omu-border);
   box-sizing: border-box;
