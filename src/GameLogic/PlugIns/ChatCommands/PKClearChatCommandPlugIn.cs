@@ -96,6 +96,11 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
         if (!isGameMaster)
         {
             var cost = (long)targetCharacter.PlayerKillCount * configuration.ZenCostPerKill;
+            if (cost > configuration.MaximumZenCost)
+            {
+                cost = configuration.MaximumZenCost;
+            }
+
             if (cost > int.MaxValue)
             {
                 cost = int.MaxValue;
@@ -137,5 +142,15 @@ public class PkClearChatCommandPlugIn : ChatCommandPlugInBase<PkClearChatCommand
         /// </summary>
         [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_AllowRegularPlayers_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_AllowRegularPlayers_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
         public bool AllowRegularPlayers { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets the maximum Zen a regular player has to pay to clear the PK status, no matter how many kills the character has.
+        /// </summary>
+        /// <remarks>
+        /// The cost is proportional to the kill count, so without a ceiling a character with very many kills could never afford it.
+        /// The default value of <see cref="int.MaxValue"/> means that the cost is not limited.
+        /// </remarks>
+        [Display(Name = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_MaximumZenCost_Name), Description = nameof(MUnique.OpenMU.GameLogic.Properties.PlugInResources.PKClearConfiguration_MaximumZenCost_Description), ResourceType = typeof(MUnique.OpenMU.GameLogic.Properties.PlugInResources))]
+        public int MaximumZenCost { get; set; } = int.MaxValue;
     }
 }

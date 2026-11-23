@@ -1448,6 +1448,8 @@
   <data name="PKClearConfiguration_ZenCostPerKill_Description" xml:space="preserve"><value>The amount of Zen required to clear one PK count.</value></data>
   <data name="PKClearConfiguration_AllowRegularPlayers_Name" xml:space="preserve"><value>Allow Regular Players</value></data>
   <data name="PKClearConfiguration_AllowRegularPlayers_Description" xml:space="preserve"><value>Allows regular players to use this command to clear their own PK status for Zen.</value></data>
+  <data name="PKClearConfiguration_MaximumZenCost_Name" xml:space="preserve"><value>Maximum Zen Cost</value></data>
+  <data name="PKClearConfiguration_MaximumZenCost_Description" xml:space="preserve"><value>The maximum amount of Zen a regular player pays to clear the PK status, regardless of the PK count. The default value does not limit the cost.</value></data>
   <data name="LostMapDroppedPlugIn_Name" xml:space="preserve"><value>LostMapDroppedPlugIn</value></data>
   <data name="LostMapDroppedPlugIn_Description" xml:space="preserve"><value>This plugin handles the drop of the lost map item. It creates the gate to the kalima map.</value></data>
   <data name="ItemBoxDroppedPlugIn_Name" xml:space="preserve"><value>ItemBoxDroppedPlugIn</value></data>

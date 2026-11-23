@@ -212,4 +212,72 @@ public class PKClearChatCommandPlugInTest
         Assert.That(player.SelectedCharacter.State, Is.EqualTo(HeroState.PlayerKiller2ndStage));
         Assert.That(player.Money, Is.EqualTo(int.MaxValue - 1));
     }
+
+    /// <summary>
+    /// Verifies that the cost is limited by the configured maximum, so a character with very many kills can still pay it.
+    /// </summary>
+    [Test]
+    public async ValueTask RegularPlayerCostIsCappedByMaximumZenCostAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.SelectedCharacter!.CharacterStatus = CharacterStatus.Normal;
+        player.SelectedCharacter.PlayerKillCount = 200;
+        player.SelectedCharacter.State = HeroState.PlayerKiller2ndStage;
+        player.Money = 678_524_095;
+
+        var plugin = new PkClearChatCommandPlugIn
+        {
+            Configuration = new PkClearChatCommandPlugIn.PKClearConfiguration
+            {
+                AllowRegularPlayers = true,
+                ZenCostPerKill = 10_000_000,
+                MaximumZenCost = 500_000_000,
+            }
+        };
+
+        await plugin.HandleCommandAsync(player, "/pkclear").ConfigureAwait(false);
+
+        Assert.That(player.SelectedCharacter.PlayerKillCount, Is.EqualTo(0));
+        Assert.That(player.SelectedCharacter.State, Is.EqualTo(HeroState.Normal));
+        Assert.That(player.Money, Is.EqualTo(178_524_095));
+    }
+
+    /// <summary>
+    /// Verifies that the maximum does not change the cost below the limit, and that the capped cost still has to be paid.
+    /// </summary>
+    [Test]
+    public async ValueTask MaximumZenCostDoesNotAffectCheaperClearsAndIsStillChargedAsync()
+    {
+        var plugin = new PkClearChatCommandPlugIn
+        {
+            Configuration = new PkClearChatCommandPlugIn.PKClearConfiguration
+            {
+                AllowRegularPlayers = true,
+                ZenCostPerKill = 10_000_000,
+                MaximumZenCost = 500_000_000,
+            }
+        };
+
+        var cheap = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        cheap.SelectedCharacter!.CharacterStatus = CharacterStatus.Normal;
+        cheap.SelectedCharacter.PlayerKillCount = 30;
+        cheap.SelectedCharacter.State = HeroState.PlayerKiller2ndStage;
+        cheap.Money = 400_000_000;
+
+        await plugin.HandleCommandAsync(cheap, "/pkclear").ConfigureAwait(false);
+
+        Assert.That(cheap.SelectedCharacter.PlayerKillCount, Is.EqualTo(0));
+        Assert.That(cheap.Money, Is.EqualTo(100_000_000));
+
+        var poor = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        poor.SelectedCharacter!.CharacterStatus = CharacterStatus.Normal;
+        poor.SelectedCharacter.PlayerKillCount = 200;
+        poor.SelectedCharacter.State = HeroState.PlayerKiller2ndStage;
+        poor.Money = 499_999_999;
+
+        await plugin.HandleCommandAsync(poor, "/pkclear").ConfigureAwait(false);
+
+        Assert.That(poor.SelectedCharacter.PlayerKillCount, Is.EqualTo(200));
+        Assert.That(poor.Money, Is.EqualTo(499_999_999));
+    }
 }
