@@ -3814,8 +3814,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid?>("ItemRewardId")
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("MaximumRank")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaximumRankPercentage")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaximumRankedPlayers")
+                        .HasColumnType("integer");
+
                     b.Property<Guid?>("MiniGameDefinitionId")
                         .HasColumnType("uuid");
+
+                    b.Property<int?>("MinimumRankPercentage")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MinimumRankedPlayers")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("Rank")
                         .HasColumnType("integer");
@@ -3958,6 +3973,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<string>("Designation")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("DropsNoZen")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("GameConfigurationId")
                         .HasColumnType("uuid");

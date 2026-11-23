@@ -1785,6 +1785,36 @@
   <data name="MiniGameReward_Rank_Caption" xml:space="preserve">
     <value>Rang</value>
   </data>
+  <data name="MiniGameReward_MaximumRank_Caption" xml:space="preserve">
+    <value>Maximaler Rang</value>
+  </data>
+  <data name="MiniGameReward_MaximumRank_Description" xml:space="preserve">
+    <value>Wenn gesetzt, gilt die Belohnung für die Ränge von Rang bis zu diesem Rang; andernfalls nur für Rang.</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankedPlayers_Caption" xml:space="preserve">
+    <value>Minimale Anzahl platzierter Spieler</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankedPlayers_Description" xml:space="preserve">
+    <value>Die Belohnung gilt nur, wenn mindestens so viele Spieler platziert sind.</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankedPlayers_Caption" xml:space="preserve">
+    <value>Maximale Anzahl platzierter Spieler</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankedPlayers_Description" xml:space="preserve">
+    <value>Die Belohnung gilt nur, wenn höchstens so viele Spieler platziert sind.</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankPercentage_Caption" xml:space="preserve">
+    <value>Minimaler Rang-Prozentsatz</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankPercentage_Description" xml:space="preserve">
+    <value>Die Belohnung gilt nur, wenn der Rang-Prozentsatz (Rang * 100 / platzierte Spieler, abgerundet) mindestens diesen Wert hat.</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankPercentage_Caption" xml:space="preserve">
+    <value>Maximaler Rang-Prozentsatz</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankPercentage_Description" xml:space="preserve">
+    <value>Die Belohnung gilt nur, wenn der Rang-Prozentsatz (Rang * 100 / platzierte Spieler, abgerundet) höchstens diesen Wert hat.</value>
+  </data>
   <data name="MiniGameReward_RewardType_Caption" xml:space="preserve">
     <value>Belohnungstyp</value>
   </data>
@@ -1982,6 +2012,12 @@
   </data>
   <data name="MonsterDefinition_NumberOfMaximumItemDrops_Caption" xml:space="preserve">
     <value>Maximale Anzahl an Gegenstands-Drops</value>
+  </data>
+  <data name="MonsterDefinition_DropsNoZen_Caption" xml:space="preserve">
+    <value>Lässt kein Zen fallen</value>
+  </data>
+  <data name="MonsterDefinition_DropsNoZen_Description" xml:space="preserve">
+    <value>Wenn aktiviert, lässt das Monster beim Tod kein Zen fallen; die Gegenstands-Drops bleiben unverändert. Für Monster, die nur durch ihr Event belohnt werden.</value>
   </data>
   <data name="MonsterDefinition_NpcWindow_Caption" xml:space="preserve">
     <value>NPC-Fenster</value>

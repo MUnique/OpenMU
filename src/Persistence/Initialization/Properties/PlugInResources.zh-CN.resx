@@ -545,4 +545,16 @@
   <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加破旧的马蹄铁，在背包中使用时使物品掉落率提高 20%。</value>
   </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Name" xml:space="preserve">
+    <value>修复小游戏中的金币掉落</value>
+  </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Description" xml:space="preserve">
+    <value>在小游戏中被击杀的怪物的金币会像其他地方一样掉落，而不是直接加入背包。此更新会移除怪物不给金币的地图（恶魔广场、幻影寺院）上的金币掉落，并标记不掉落金币的活动怪物（多普尔根格、帝国守护者、坎特鲁）。</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Name" xml:space="preserve">
+    <value>恶魔广场所有名次的奖励</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Description" xml:space="preserve">
+    <value>按档次配置恶魔广场的奖励，使每位排名玩家都能获得奖励，而不仅是第 1 到 4 名：六名及以下玩家按名次，更多玩家按名次百分比。第 1 到 4 名的奖励数量保留为第 1 到 4 档的数量。</value>
+  </data>
 </root>

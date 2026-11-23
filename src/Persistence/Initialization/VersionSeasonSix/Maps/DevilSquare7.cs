@@ -46,6 +46,12 @@ internal class DevilSquare7 : BaseMapInitializer
     protected override byte Discriminator => 7;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Devil Square gives no zen for the killed monsters, only the rank reward of the event pays zen.
+    /// </remarks>
+    protected override bool MonstersDropZen => false;
+
+    /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Noria.Number;
 
     /// <inheritdoc/>

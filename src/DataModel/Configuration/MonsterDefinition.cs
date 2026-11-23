@@ -313,6 +313,16 @@ public partial class MonsterDefinition
     public int NumberOfMaximumItemDrops { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether an instance of this monster drops no zen when it died.
+    /// The drop groups of type <see cref="SpecialItemType.Money"/> are skipped then, the item drops are unaffected.
+    /// </summary>
+    /// <remarks>
+    /// It's for monsters which are only rewarded by their event, e.g. the bosses of the Imperial Guardian,
+    /// while the other monsters of the same map drop zen as usual.
+    /// </remarks>
+    public bool DropsNoZen { get; set; }
+
+    /// <summary>
     /// Gets or sets the id of the npc window.
     /// </summary>
     public NpcWindow NpcWindow { get; set; }

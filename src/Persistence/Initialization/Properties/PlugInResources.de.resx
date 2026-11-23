@@ -1058,4 +1058,16 @@
   <data name="AddWornHorseshoeUpdatePlugIn_Description" xml:space="preserve">
     <value>Dieses Update fügt das abgenutzte Hufeisen hinzu, das die Item-Droprate um 20 % erhöht, während es im Inventar benutzt wird.</value>
   </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Zen-Drops in den Minispielen korrigieren</value>
+  </data>
+  <data name="FixMiniGameZenDropsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Das Zen der in einem Minispiel getöteten Monster wird wie überall sonst fallen gelassen, statt dem Inventar hinzugefügt zu werden. Dieses Update entfernt den Zen-Drop von den Karten, deren Monster kein Zen geben (Devil Square, Illusion Temple), und markiert die Event-Monster, die kein Zen fallen lassen (Doppelganger, Imperial Guardian, Kanturu).</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Name" xml:space="preserve">
+    <value>Devil-Square-Belohnungen für jeden Rang</value>
+  </data>
+  <data name="DevilSquareRewardTiersUpdatePlugIn_Description" xml:space="preserve">
+    <value>Konfiguriert die Belohnungen des Devil Square in Stufen, sodass jeder platzierte Spieler eine Belohnung erhält statt nur die Ränge 1 bis 4: bis zu sechs Spieler nach Rang, bei mehr Spielern nach Rang-Prozentsatz. Die Beträge der Ränge 1 bis 4 bleiben als Beträge der Stufen 1 bis 4 erhalten.</value>
+  </data>
 </root>

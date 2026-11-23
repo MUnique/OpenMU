@@ -437,9 +437,9 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         // so that money follows the same distribution as the experience it is derived from.
         var shares = MoneyDistribution.CreateShares(amount, experienceShares);
 
-        // We don't drop money in Devil Square, etc.
-        var shouldDropMoney = killer.GameContext.Configuration.ShouldDropMoney && killer.CurrentMiniGame is null;
-        if (!shouldDropMoney)
+        // Mini games aren't special here: where an event gives no zen for its monsters (e.g. Devil Square),
+        // its maps or monsters have no money drop configured (see MonsterDefinition.DropsNoZen).
+        if (!killer.GameContext.Configuration.ShouldDropMoney)
         {
             if (killer.Party is { } party)
             {

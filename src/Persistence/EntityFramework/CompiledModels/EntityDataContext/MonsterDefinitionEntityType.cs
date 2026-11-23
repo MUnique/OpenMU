@@ -25,7 +25,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition),
                 baseEntityType,
-                propertyCount: 19,
+                propertyCount: 20,
                 navigationCount: 7,
                 foreignKeyCount: 3,
                 unnamedIndexCount: 3,
@@ -84,6 +84,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 LocalizedString (string value) => new LocalizedString(value)));
             designation.SetSentinelFromProviderValue("");
             designation.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var dropsNoZen = runtimeEntityType.AddProperty(
+                "DropsNoZen",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MonsterDefinition).GetProperty("DropsNoZen", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Configuration.MonsterDefinition).GetField("<DropsNoZen>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            dropsNoZen.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var gameConfigurationId = runtimeEntityType.AddProperty(
                 "GameConfigurationId",

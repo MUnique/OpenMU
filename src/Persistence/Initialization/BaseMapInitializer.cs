@@ -87,6 +87,13 @@ internal abstract class BaseMapInitializer : IMapInitializer
     protected virtual byte Discriminator { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the monsters of this map drop zen.
+    /// If not, the default money drop group isn't added to the map, e.g. for the Devil Square,
+    /// where only the rank reward of the event pays zen.
+    /// </summary>
+    protected virtual bool MonstersDropZen => true;
+
+    /// <summary>
     /// Gets the map number of the safezone map where a player respawns after death.
     /// </summary>
     protected virtual byte SafezoneMapNumber => (byte)(this._mapDefinition?.ExitGates.Any(g => g.IsSpawnGate) ?? false ? this._mapDefinition.Number : Version075.Maps.Lorencia.Number);
@@ -176,7 +183,13 @@ internal abstract class BaseMapInitializer : IMapInitializer
             throw new InvalidOperationException("MapDefiniton not set yet.");
         }
 
-        DefaultDropItemGroups.ForEach(this._mapDefinition.DropItemGroups.Add);
+        foreach (var group in DefaultDropItemGroups)
+        {
+            if (this.MonstersDropZen || group.ItemType != SpecialItemType.Money)
+            {
+                this._mapDefinition.DropItemGroups.Add(group);
+            }
+        }
     }
 
     /// <summary>

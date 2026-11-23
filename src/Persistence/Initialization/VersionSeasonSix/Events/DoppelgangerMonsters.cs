@@ -43,6 +43,12 @@ internal class DoppelgangerMonsters : InitializerBase
     {
     }
 
+    /// <summary>
+    /// Gets the numbers of the monsters of the doppelganger event which drop no zen:
+    /// the Terrible Butcher, the Mad Butcher and the Ice Walker.
+    /// </summary>
+    internal static IReadOnlyCollection<short> MonsterNumbersWithoutZen { get; } = [529, 530, 531];
+
     /// <inheritdoc />
     public override void Initialize()
     {
@@ -57,6 +63,12 @@ internal class DoppelgangerMonsters : InitializerBase
         this.CreateMonster(537, LocalizedString.FromResource(() => MonsterNames.DoppelgangerMagicGladiator), 14, 500, 65, 70, 30, 700, 500, 2, 4, 4, 400, 1400, 2, SkillNumber.PowerSlash, 10, 10);
         this.CreateMonster(538, LocalizedString.FromResource(() => MonsterNames.DoppelgangerDarkLord), 17, 900, 85, 90, 55, 900, 800, 3, 4, 6, 400, 1600, 2, SkillNumber.Earthshake, 15, 15);
         this.CreateMonster(539, LocalizedString.FromResource(() => MonsterNames.DoppelgangerSummoner), 14, 500, 65, 70, 30, 500, 300, 3, 2, 4, 400, 1600, 2, SkillNumber.LightningShock, 10, 10);
+
+        // The butchers and the ice walker drop no zen, unlike the larvas and the doppelgangers.
+        foreach (var number in MonsterNumbersWithoutZen)
+        {
+            this.GameConfiguration.Monsters.First(monster => monster.Number == number).DropsNoZen = true;
+        }
 
         this.ConfigureRewardChests();
     }

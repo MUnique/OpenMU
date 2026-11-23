@@ -155,7 +155,7 @@ internal class DevilSquareInitializer : InitializerBase
 
     private void CreateRewards(byte level, MiniGameDefinition devilSquare)
     {
-        for (int rank = 1; rank <= 4; rank++)
+        for (int rank = 1; rank <= DevilSquareRewardTiers.TierCount; rank++)
         {
             var rewardTableEntry = RewardTable.First(tuple => tuple.Rank == rank && tuple.GameLevel == level);
 
@@ -171,6 +171,8 @@ internal class DevilSquareInitializer : InitializerBase
             moneyReward.RewardAmount = rewardTableEntry.Money;
             devilSquare.Rewards.Add(moneyReward);
         }
+
+        DevilSquareRewardTiers.Apply(this.Context, devilSquare);
     }
 
     private void CreateWaves(MiniGameDefinition devilSquare)

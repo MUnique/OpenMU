@@ -3751,6 +3751,36 @@
   <data name="MiniGameReward_Rank_Description" xml:space="preserve">
     <value></value>
   </data>
+  <data name="MiniGameReward_MaximumRank_Caption" xml:space="preserve">
+    <value>最高名次</value>
+  </data>
+  <data name="MiniGameReward_MaximumRank_Description" xml:space="preserve">
+    <value>设置后，奖励适用于从奖励名次到此名次的所有名次；否则仅适用于奖励名次。</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankedPlayers_Caption" xml:space="preserve">
+    <value>最少排名玩家数</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankedPlayers_Description" xml:space="preserve">
+    <value>仅当排名玩家数量不少于此值时奖励才适用。</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankedPlayers_Caption" xml:space="preserve">
+    <value>最多排名玩家数</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankedPlayers_Description" xml:space="preserve">
+    <value>仅当排名玩家数量不多于此值时奖励才适用。</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankPercentage_Caption" xml:space="preserve">
+    <value>最小名次百分比</value>
+  </data>
+  <data name="MiniGameReward_MinimumRankPercentage_Description" xml:space="preserve">
+    <value>仅当名次百分比（名次 * 100 / 排名玩家数，向下取整）不小于此值时奖励才适用。</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankPercentage_Caption" xml:space="preserve">
+    <value>最大名次百分比</value>
+  </data>
+  <data name="MiniGameReward_MaximumRankPercentage_Description" xml:space="preserve">
+    <value>仅当名次百分比（名次 * 100 / 排名玩家数，向下取整）不大于此值时奖励才适用。</value>
+  </data>
   <data name="MiniGameReward_RewardType_Caption" xml:space="preserve">
     <value>奖励类型</value>
   </data>
@@ -4155,6 +4185,12 @@
   </data>
   <data name="MonsterDefinition_NumberOfMaximumItemDrops_Description" xml:space="preserve">
     <value></value>
+  </data>
+  <data name="MonsterDefinition_DropsNoZen_Caption" xml:space="preserve">
+    <value>不掉落金币</value>
+  </data>
+  <data name="MonsterDefinition_DropsNoZen_Description" xml:space="preserve">
+    <value>勾选后，怪物死亡时不掉落金币；物品掉落不受影响。用于只由活动奖励的怪物。</value>
   </data>
   <data name="MonsterDefinition_NpcWindow_Caption" xml:space="preserve">
     <value>NPC 窗口</value>

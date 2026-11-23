@@ -93,6 +93,12 @@ public class DefaultDropGenerator : IDropGenerator
             this.PartitionDropGroups(await GetQuestItemGroupsAsync(player).ConfigureAwait(false) ?? [], monster);
         }
 
+        if (monster.DropsNoZen)
+        {
+            this._guaranteedDropGroups.RemoveAll(static group => group.ItemType == SpecialItemType.Money);
+            this._chanceDropGroups.RemoveAll(static group => group.ItemType == SpecialItemType.Money);
+        }
+
         uint money = 0;
         var itemDropRate = 1.0 + (player.Attributes?[Stats.BonusItemDropRate] ?? 0);
         var (droppedItems, moneyResult) = this.GenerateDrops(monster, gainedExperience, itemDropRate);

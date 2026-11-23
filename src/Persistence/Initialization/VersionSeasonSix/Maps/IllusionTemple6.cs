@@ -40,6 +40,12 @@ internal class IllusionTemple6 : BaseMapInitializer
     protected override LocalizedString MapName => Name;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Illusion Temple gives no zen for the killed monsters.
+    /// </remarks>
+    protected override bool MonstersDropZen => false;
+
+    /// <inheritdoc/>
     protected override byte SafezoneMapNumber => Devias.Number;
 
     /// <inheritdoc/>

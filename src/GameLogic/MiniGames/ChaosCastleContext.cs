@@ -217,13 +217,13 @@ public sealed class ChaosCastleContext : MiniGameContext
             this._winner ??= state.Player;
             rank++;
             state.Rank = rank;
-            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank).ConfigureAwait(false);
+            var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank, sortedFinishers.Count).ConfigureAwait(false);
             state.AddScore(bonusScore);
 
             scoreList.Add((
                 state.Player.Name,
                 state.Score,
-                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && (r.Rank is null || r.Rank == rank))?.RewardAmount ?? 0,
+                this.Definition.Rewards.FirstOrDefault(r => r.RewardType == MiniGameRewardType.Experience && r.IsApplicableToRank(rank, sortedFinishers.Count))?.RewardAmount ?? 0,
                 givenMoney));
         }
 
