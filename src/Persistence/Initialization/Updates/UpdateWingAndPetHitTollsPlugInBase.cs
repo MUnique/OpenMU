@@ -140,7 +140,7 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
                     or CharacterClassNumber.FistMaster => 3,
                 _ => 1,
             };
-            SetAttributeRelationship(context, characterClass.AttributeCombinations, gameConfiguration, Stats.HealthLossAfterHit, healthToll, Stats.IsWingEquipped);
+            SetAttributeRelationship(context, characterClass.AttributeCombinations, gameConfiguration, Stats.HealthLossAfterDealtHit, healthToll, Stats.IsWingEquipped);
         }
     }
 
