@@ -577,6 +577,8 @@ internal sealed class Program : IDisposable
 
     private async ValueTask OnDatabaseInitializedAsync(IServiceProvider services)
     {
+        await this.DiscardStaleConfigurationAsync(services).ConfigureAwait(false);
+
         try
         {
             if (services.GetService<PlugInManager>() is not { } plugInManager
@@ -601,6 +603,22 @@ internal sealed class Program : IDisposable
         catch (Exception ex)
         {
             this._logger.Error(ex, "Error when applying the plugin configurations after the database initialization.");
+        }
+    }
+
+    private async ValueTask DiscardStaleConfigurationAsync(IServiceProvider services)
+    {
+        try
+        {
+            // The shared data source still holds entities of the dropped database; reload them on next access.
+            if (services.GetService<IDataSource<GameConfiguration>>() is { } dataSource)
+            {
+                await dataSource.ForceDiscardChangesAsync().ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            this._logger.Error(ex, "Error when discarding the stale game configuration after the database initialization.");
         }
     }
 
