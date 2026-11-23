@@ -64,6 +64,7 @@ public static class PlayerTestHelper
         map.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
         map.Object.TerrainData = new byte[ushort.MaxValue + 3];
         gameConfig.Object.RecoveryInterval = int.MaxValue;
+        gameConfig.Object.ItemDropDuration = TimeSpan.FromMinutes(1);
         gameConfig.Object.Maps.Add(map.Object);
         return gameConfig.Object;
     }
