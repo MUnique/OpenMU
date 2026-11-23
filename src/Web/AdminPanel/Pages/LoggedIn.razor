@@ -67,12 +67,12 @@
           <td><GuildLink GuildId="@item.GuildId" GuildName="@item.GuildName" EmptyText="@Resources.EmptyValue" /></td>
           <td><PartyBadge PartyMaster="@item.PartyMaster" PartySize="@item.PartySize" /></td>
           <td>
-            <button class="btn btn-warning btn-sm" type="button" @onclick="() => this.SetAccountOfflineAsync(item)">
+            <button class="btn btn-warning btn-sm me-1" type="button" @onclick="() => this.SetAccountOfflineAsync(item)">
               <span class="oi oi-bolt" aria-hidden="true" /> @Resources.Disconnect
             </button>
             @if (this.IsNetworkAnalyzerAvailable)
             {
-              <a class="btn btn-secondary btn-sm ms-1" title="@Resources.AnalyzeTraffic"
+              <a class="btn btn-secondary btn-sm" title="@Resources.AnalyzeTraffic"
                  href="@($"{NetworkAnalyzer.PlayerRoute}{item.Server}/{Uri.EscapeDataString(item.LoginName)}")">
                 <span class="oi oi-pulse" aria-hidden="true" /> @Resources.NetworkAnalyzer
               </a>

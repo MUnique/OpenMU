@@ -18,11 +18,17 @@
                 {
                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                 }
+                @if (!this.IsProcessing)
+                {
+                    <span class="oi oi-cloud-upload" aria-hidden="true"></span>
+                }
                 @Resources.Save
             </button>
-            @if (this.OnRefresh != null)
+            @if (this.OnReload != null)
             {
-                <button type="button" class="btn btn-secondary" @onclick="this.OnRefresh.Value" >@Resources.Refresh</button>
+                <button type="button" class="btn btn-secondary" disabled="@this.IsProcessing" @onclick="this.OnReload.Value">
+                    <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload
+                </button>
             }
             @if (this.OnCancel != null)
             {

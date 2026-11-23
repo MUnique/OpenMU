@@ -342,7 +342,7 @@ after commit. Agent reads use persisted data even while the panel has pending
 edits. Panel caches reload after a write when clean; pending graphical edits
 are preserved, and the panel reloads after those edits are saved or discarded.
 If an open editor's context was replaced before any edits were pending, Save
-asks you to copy unsaved edits and use Refresh before saving again. Closing
+asks you to copy unsaved edits and use Reload before saving again. Closing
 the stale page does not discard changes in the replacement context.
 Previews run without the write gate or a serializable transaction; each caller
 may hold at most 64 outstanding confirmations (1,024 total).
@@ -578,8 +578,8 @@ dotnet test tests/MUnique.OpenMU.Web.Tests -c Release -p:ci=true --no-build \
 
 Verify the preview/apply flow with two agent clients. In the panel, also check
 “open a configuration editor without editing → apply an MCP change → edit and
-save”: Save must request a refresh, and Refresh must load the committed value.
-Copy the pending edit before refreshing, then reapply it and save normally.
+save”: Save must request a reload, and Reload must load the committed value.
+Copy the pending edit before reloading, then reapply it and save normally.
 
 Player-list enrichment reads one best-effort scalar snapshot per owning server,
 then filters and pages the combined result. It does not wait for player progress

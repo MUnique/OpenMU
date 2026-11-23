@@ -49,7 +49,7 @@ public partial class EditAccount : EditBase
     {
         [nameof(AutoForm<object>.Model)] = this.Model,
         [nameof(AutoForm<object>.OnValidSubmit)] = EventCallback.Factory.Create(this, this.SaveChangesAsync),
-        [nameof(AutoForm<object>.OnRefresh)] = EventCallback.Factory.Create(this, this.RefreshAsync),
+        [nameof(AutoForm<object>.OnReload)] = EventCallback.Factory.Create(this, this.ReloadAsync),
     };
 
     /// <inheritdoc />

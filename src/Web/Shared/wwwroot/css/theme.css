@@ -94,7 +94,7 @@ body {
   border-top: 1px solid var(--omu-border) !important;
 }
 
-[data-bs-theme=dark] .add-new-bar {
+[data-bs-theme=dark] .sticky-footer {
   background-color: var(--omu-surface) !important;
   border-top: var(--bs-border-width) solid var(--omu-border) !important;
 }

@@ -65,19 +65,27 @@ label > details.info-popup > div {
   white-space: normal;
 }
 
+/* Sticky footers: every bar pinned to the bottom (.sticky-footer, .form-actions) shares this
+   look and layer. The z-index has to stay above the active/focused page button of the pagination (3), but
+   below popups inside forms (5). Contexts only add their own margins. */
+:root {
+  --omu-z-sticky-footer: 4;
+}
+
+.sticky-footer,
 .form-actions {
   position: sticky;
   bottom: 0;
-  z-index: 3;
+  z-index: var(--omu-z-sticky-footer);
   background-color: var(--omu-surface-2);
-  padding: 1rem 1.5rem;
+  padding: 1rem;
   border-top: var(--bs-border-width) solid var(--omu-border);
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-start;
   box-sizing: border-box;
 }
 
-.form-actions .btn-secondary {
-  margin-left: 1rem;
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
 }
+

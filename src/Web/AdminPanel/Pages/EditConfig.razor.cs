@@ -52,7 +52,7 @@ public sealed partial class EditConfig : EditBase
         [nameof(AutoForm<object>.HideCollections)] = this.HideCollections,
         [nameof(AutoForm<object>.SearchTerm)] = this.SearchTerm,
         [nameof(AutoForm<object>.OnValidSubmit)] = EventCallback.Factory.Create(this, this.SaveChangesAsync),
-        [nameof(AutoForm<object>.OnRefresh)] = EventCallback.Factory.Create(this, this.RefreshAsync),
+        [nameof(AutoForm<object>.OnReload)] = EventCallback.Factory.Create(this, this.ReloadAsync),
     };
 
     /// <inheritdoc />

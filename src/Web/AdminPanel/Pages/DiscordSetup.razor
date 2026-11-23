@@ -139,7 +139,7 @@
                        placeholder="@(settings.Bot.Token is null ? null : Resources.DiscordSecretSet)" @bind="this._newToken" @bind:event="oninput"/>
                 @if (settings.Bot.Token is not null)
                 {
-                    <button type="button" class="btn btn-outline-danger" @onclick="this.RemoveToken">@Resources.Remove</button>
+                    <button type="button" class="btn btn-danger" @onclick="this.RemoveToken">@Resources.Remove</button>
                 }
             </div>
         }
@@ -401,7 +401,7 @@
                                            value="@this._newWebhooks.GetValueOrDefault(category)" @onchange="e => this._newWebhooks[category] = e.Value?.ToString() ?? string.Empty"/>
                                     @if (settings.Webhooks.ContainsKey(category))
                                     {
-                                        <button type="button" class="btn btn-outline-danger" @onclick="() => this.RemoveWebhook(category)">@Resources.Remove</button>
+                                        <button type="button" class="btn btn-danger" @onclick="() => this.RemoveWebhook(category)">@Resources.Remove</button>
                                     }
                                 </div>
                             }
@@ -515,8 +515,8 @@
         {
             <div class="alert alert-warning" role="alertdialog" aria-label="@UiText("DiscordUnbindChat")">
                 <p>@UiText("DiscordConfirmUnbind")</p>
-                <button class="btn btn-danger btn-sm" @onclick="async () => { await this.RemoveChatBindingAsync(removingBinding); this._bindingToRemove = null; }">@UiText("DiscordUnbindChat")</button>
-                <button class="btn btn-secondary btn-sm" @onclick="() => this._bindingToRemove = null">@Resources.Cancel</button>
+                <button type="button" class="btn btn-danger me-1" @onclick="async () => { await this.RemoveChatBindingAsync(removingBinding); this._bindingToRemove = null; }">@UiText("DiscordUnbindChat")</button>
+                <button type="button" class="btn btn-secondary" @onclick="() => this._bindingToRemove = null">@Resources.Cancel</button>
             </div>
         }
         @if (this._chatBindings is not { } chatBindings)
@@ -624,7 +624,7 @@
     </div>
 </details>
 
-<div class="mb-3 py-2 sticky-bottom bg-body">
+<div class="sticky-footer mb-3">
     @if (this.HasUnsavedChanges)
     {
         <div class="alert alert-warning py-2 mb-2" role="alert">@Resources.DiscordUnsavedChanges</div>
@@ -634,12 +634,12 @@
     {
         <div class="alert alert-warning py-2" role="alertdialog" aria-label="@UiText("DiscordDiscardChanges")">
             <p>@UiText("DiscordConfirmDiscard")</p>
-            <button class="btn btn-danger btn-sm" @onclick="this.LoadAsync">@UiText("DiscordDiscardChanges")</button>
-            <button class="btn btn-secondary btn-sm" @onclick="() => this.ConfirmDiscard = false">@UiText("DiscordKeepEditing")</button>
+            <button type="button" class="btn btn-danger me-1" @onclick="this.LoadAsync">@UiText("DiscordDiscardChanges")</button>
+            <button type="button" class="btn btn-secondary" @onclick="() => this.ConfirmDiscard = false">@UiText("DiscordKeepEditing")</button>
         </div>
     }
-    <button type="button" class="btn btn-primary" disabled="@(this._isSaving || this._isSettingUp || this.IsCheckingServer || this._runningTests.Count > 0 || !this.HasUnsavedChanges)" @onclick="this.SaveAsync">
-        <span class="oi oi-check" aria-hidden="true"></span> @(this._isSaving ? UiText("DiscordApplying") : UiText("DiscordSaveApply"))
+    <button type="button" class="btn btn-primary me-1" disabled="@(this._isSaving || this._isSettingUp || this.IsCheckingServer || this._runningTests.Count > 0 || !this.HasUnsavedChanges)" @onclick="this.SaveAsync">
+        <span class="oi oi-cloud-upload" aria-hidden="true"></span> @(this._isSaving ? UiText("DiscordApplying") : UiText("DiscordSaveApply"))
     </button>
     <button type="button" class="btn btn-secondary" disabled="@this._isSaving" @onclick="this.RequestDiscardAsync">
         <span class="oi oi-reload" aria-hidden="true"></span> @(this.HasUnsavedChanges ? UiText("DiscordDiscardChanges") : Resources.Reload)

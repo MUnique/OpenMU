@@ -78,16 +78,16 @@
             <td class="text-nowrap">
                 @if (item.IsActive)
                 {
-                    <button class="btn btn-warning me-1" @onclick="async () => await this.ChatCommandController.SetActiveAsync(item, false)">@Resources.Deactivate</button>
+                    <button type="button" class="btn btn-warning me-1" @onclick="async () => await this.ChatCommandController.SetActiveAsync(item, false)">@Resources.Deactivate</button>
                 }
                 else
                 {
-                    <button class="btn btn-success me-1" @onclick="async () => await this.ChatCommandController.SetActiveAsync(item, true)">@Resources.Activate</button>
+                    <button type="button" class="btn btn-success me-1" @onclick="async () => await this.ChatCommandController.SetActiveAsync(item, true)">@Resources.Activate</button>
                 }
 
                 @if (item.PlugIn.ConfigurationType is { })
                 {
-                    <button class="btn btn-secondary" @onclick="async () => await this.ChatCommandController.ShowConfigurationAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></button>
+                    <button type="button" title="@Resources.Configure" class="btn btn-secondary" @onclick="async () => await this.ChatCommandController.ShowConfigurationAsync(item)"><span class="oi oi-cog" aria-hidden="true"></span></button>
                 }
             </td>
         </ItemTemplate>

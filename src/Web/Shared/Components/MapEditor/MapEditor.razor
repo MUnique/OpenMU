@@ -42,10 +42,10 @@
     <div class="btn-group" role="group" aria-label="@Resources.ControlGroup">
         @if (this._createMode)
         {
-            <button id="applyCreate" type="button" class="btn btn-primary" @onclick="@(_ => this._createMode = false)">
+            <button id="applyCreate" type="button" title="@Resources.OK" class="btn btn-primary" @onclick="@(_ => this._createMode = false)">
                 <span class="oi oi-circle-check"></span>
             </button>
-            <button id="cancelCreate" type="button" class="btn btn-secondary" @onclick="@this.CancelCreation">
+            <button id="cancelCreate" type="button" title="@Resources.Cancel" class="btn btn-secondary" @onclick="@this.CancelCreation">
                 <span class="oi oi-circle-x"></span>
             </button>
         }
@@ -63,7 +63,7 @@
                 <button id="duplicateFocused" type="button" class="btn btn-secondary" @onclick="@this.DuplicateFocusedObject">
                     <span class="oi oi-layers"></span> @Resources.Duplicate
                 </button>
-                <button id="removeFocused" type="button" class="btn btn-secondary" @onclick="@this.RemoveFocusedObject">
+                <button id="removeFocused" type="button" class="btn btn-danger" @onclick="@this.RemoveFocusedObject">
                     <span class="oi oi-x"></span> @Resources.Remove
                 </button>
             }
@@ -124,7 +124,7 @@
 
         <div class="map-zoom-toolbar btn-toolbar my-2" role="toolbar">
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-secondary"
+                <button type="button" title="@Resources.ZoomOut" class="btn btn-secondary"
                         @onclick="@this.ZoomOutAsync"
                         disabled="@(this._zoomManager is null || this._zoomManager.IsAtMinZoom)">
                     <span class="oi oi-minus"></span>
@@ -132,7 +132,7 @@
                 <button type="button" class="btn btn-secondary zoom-display" disabled>
                     @this.ZoomPercentage%
                 </button>
-                <button type="button" class="btn btn-secondary"
+                <button type="button" title="@Resources.ZoomIn" class="btn btn-secondary"
                         @onclick="@this.ZoomInAsync"
                         disabled="@(this._zoomManager is null || this._zoomManager.IsAtMaxZoom)">
                     <span class="oi oi-plus"></span>
@@ -187,7 +187,7 @@
                        @bind="@this._filterService.SearchFilter"
                        @bind:event="oninput"
                        onauxclick="event.preventDefault();"
-                       placeholder="@Resources.Search ..." />
+                       placeholder="@Resources.Search..." />
             </div>
             <div class="map-object-select">
                 <select title="@Resources.Object"

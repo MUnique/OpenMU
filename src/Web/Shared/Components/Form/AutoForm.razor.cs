@@ -51,11 +51,12 @@ public partial class AutoForm<T>
     public EventCallback? OnCancel { get; set; }
 
     /// <summary>
-    /// Gets or sets the callback invoked when the refresh button is clicked.
-    /// When not set, the refresh button is not rendered.
+    /// Gets or sets the callback invoked when the reload button is clicked. It re-reads the saved
+    /// data and overwrites the form, discarding unsaved changes.
+    /// When not set, the reload button is not rendered.
     /// </summary>
     [Parameter]
-    public EventCallback? OnRefresh { get; set; }
+    public EventCallback? OnReload { get; set; }
 
     /// <summary>
     /// Gets or sets an optional search term used to pre-filter the form fields.

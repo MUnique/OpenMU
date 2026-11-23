@@ -84,10 +84,10 @@
                             <input class="form-check-input cursor-pointer" type="checkbox" id="liveUpdateSwitch" @onchange="this.ToggleLiveUpdate" checked="@this._liveUpdate">
                             <label class="form-check-label text-light select-none cursor-pointer" for="liveUpdateSwitch" style="font-size: 13px;">@Resources.Live</label>
                         </div>
-                        <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="this.RefreshLogLines">
+                        <button type="button" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1 py-1" @onclick="this.RefreshLogLines">
                             <span class="oi oi-reload" style="font-size: 11px;"></span> @Resources.Refresh
                         </button>
-                        <button class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="this.CloseViewer">
+                        <button type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center gap-1 py-1" @onclick="this.CloseViewer">
                             <span class="oi oi-x" style="font-size: 11px;"></span> @Resources.Close
                         </button>
                     </div>
@@ -100,7 +100,7 @@
                                 <input type="text" class="form-control bg-secondary text-white border-0" placeholder="@Resources.FilterLogEntries" value="@this._searchText" @oninput="this.OnSearchInput" style="background-color: #2b2b30 !important; color: #fff !important;" />
                                 @if (!string.IsNullOrEmpty(this._searchText))
                                 {
-                                    <button class="btn btn-secondary border-0" @onclick="this.ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
+                                    <button type="button" title="@Resources.Close" class="btn btn-secondary border-0" @onclick="this.ClearSearch"><span class="oi oi-x" aria-hidden="true"></span></button>
                                 }
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                         <div>
                             @string.Format(Resources.ShowingXOfYLines, this._filteredLines.Count, this._logLines.Count, MaxLogLinesToRead)
                         </div>
-                        <button class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="this.ScrollToBottomAsync">
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" style="font-size: 12px; color: #a0a0a8;" @onclick="this.ScrollToBottomAsync">
                             <span class="oi oi-arrow-bottom" aria-hidden="true"></span> @Resources.ScrollToBottom
                         </button>
                     </div>

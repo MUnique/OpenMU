@@ -282,8 +282,8 @@
   <data name="DiscardEntryQuestion" xml:space="preserve">
     <value>No momento você está criando um '{0}'. Você quer descartá-lo e começar um novo?</value>
   </data>
-  <data name="Refresh" xml:space="preserve">
-    <value>Atualizar</value>
+  <data name="Reload" xml:space="preserve">
+    <value>Recarregar</value>
   </data>
   <data name="ToggleTheme" xml:space="preserve">
     <value>Alternar tema</value>
@@ -529,10 +529,6 @@ Nível: {2} - {3}</value>
   <data name="FileLoaded" xml:space="preserve">
     <value>Carregado {0} com {1} bytes.</value>
   </data>
-  <data name="PaginationItems" xml:space="preserve"><value>{0} itens</value></data>
-  <data name="PaginationPage" xml:space="preserve"><value>Página {0} de {1}</value></data>
-  <data name="FirstPage" xml:space="preserve"><value>Primeira página</value></data>
-  <data name="LastPage" xml:space="preserve"><value>Última página</value></data>
   <data name="InvalidNumber" xml:space="preserve"><value>O campo {0} deve ser um número.</value></data>
   <data name="MonsterLabel" xml:space="preserve"><value>Monstro</value></data>
   <data name="MapsLabel" xml:space="preserve"><value>Mapas</value></data>

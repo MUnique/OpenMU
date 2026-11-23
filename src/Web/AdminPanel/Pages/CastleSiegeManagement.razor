@@ -12,7 +12,7 @@
 <Breadcrumb IsFirstFromRoot="true" Caption="@Resources.CastleSiege" />
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="mb-0">@Resources.CastleSiege</h1>
-    <button type="button" class="btn btn-outline-secondary" @onclick="this.RefreshAsync" disabled="@this._isWorking">
+    <button type="button" class="btn btn-secondary" @onclick="this.RefreshAsync" disabled="@this._isWorking">
         <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Refresh
     </button>
 </div>
@@ -105,7 +105,7 @@ else
                             <label for="castle-siege-owner" class="form-label">@Resources.CastleSiegeChangeOwner</label>
                             <div class="input-group">
                                 <input id="castle-siege-owner" type="text" class="form-control" placeholder="@Resources.CastleSiegeGuildName" @bind="this.OwnerGuildName" disabled="@this._isWorking" />
-                                <button type="button" class="btn btn-primary" @onclick="this.SetOwnerAsync" disabled="@this._isWorking">@Resources.Save</button>
+                                <button type="button" class="btn btn-primary" @onclick="this.SetOwnerAsync" disabled="@this._isWorking"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.Save</button>
                             </div>
                             <div class="form-text">@Resources.CastleSiegeChangeOwnerHint</div>
                         </div>
@@ -134,7 +134,7 @@ else
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-primary" @onclick="this.SaveTaxesAsync" disabled="@this._isWorking">@Resources.CastleSiegeSaveTaxes</button>
+                            <button type="button" class="btn btn-primary" @onclick="this.SaveTaxesAsync" disabled="@this._isWorking"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.CastleSiegeSaveTaxes</button>
                             <button type="button" class="btn btn-outline-danger" @onclick="this.ClearTributeAsync" disabled="@this._isWorking">@Resources.CastleSiegeClearTribute</button>
                         </div>
                     </div>
@@ -175,7 +175,7 @@ else
                                         <td>@registration.Marks</td>
                                         <td>@registration.RegistrationOrder</td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => this.RemoveRegistrationAsync(registration.GuildId, registration.GuildName)" disabled="@this._isWorking">@Resources.Remove</button>
+                                            <button type="button" class="btn btn-sm btn-danger" @onclick="() => this.RemoveRegistrationAsync(registration.GuildId, registration.GuildName)" disabled="@this._isWorking">@Resources.Remove</button>
                                         </td>
                                     </tr>
                                 }

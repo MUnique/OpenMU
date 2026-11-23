@@ -11,7 +11,7 @@
         <div class="card-body card-text">
             @if (this.CurrentValue is null)
             {
-                <button type="button" class="btn btn-primary" @onclick="this.OnCreateClick">@Resources.Create</button>
+                <button type="button" class="btn btn-primary" @onclick="this.OnCreateClick"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.Create</button>
             }
             else
             {

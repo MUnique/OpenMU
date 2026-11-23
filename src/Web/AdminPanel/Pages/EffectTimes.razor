@@ -22,7 +22,7 @@
     {
         <button type="button" class="btn btn-outline-primary" title="@string.Format(CultureInfo.CurrentCulture, Resources.DefaultsHintFormat, this.DefaultsName)" @onclick="this.SetDefaultsOfShownEntries">@string.Format(CultureInfo.CurrentCulture, Resources.DefaultsFormat, this.DefaultsName)</button>
     }
-    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.SaveChanges</button>
     <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClick">@Resources.DiscardChanges</button>
 </div>
 

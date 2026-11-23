@@ -1959,7 +1959,7 @@
     <value>Apenas pacotes à venda</value>
   </data>
   <data name="CashShopPackageSequence" xml:space="preserve">
-    <value>Número do pacote</value>
+    <value>Sequência</value>
   </data>
   <data name="CashShopProductSequence" xml:space="preserve">
     <value>Número do produto</value>
@@ -2655,8 +2655,6 @@
   <data name="AuditOperation" xml:space="preserve"><value>Operação</value></data>
   <data name="AuditArguments" xml:space="preserve"><value>Argumentos</value></data>
   <data name="AuditOutcome" xml:space="preserve"><value>Resultado</value></data>
-  <data name="AuditPrevious" xml:space="preserve"><value>Anterior</value></data>
-  <data name="AuditNext" xml:space="preserve"><value>Próximo</value></data>
   <data name="Leaderboards" xml:space="preserve">
     <value>Tabelas de classificação</value>
   </data>
@@ -2795,5 +2793,8 @@
   </data>
   <data name="SocketCountTableHint" xml:space="preserve">
     <value>Define a quantidade de sockets dos itens com socket que este grupo dropa, inclusive acima dos três de um drop normal, até o máximo de sockets do item. Vazio significa que vale a tabela do item.</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>Configurar</value>
   </data>
 </root>

@@ -282,8 +282,8 @@
   <data name="DiscardEntryQuestion" xml:space="preserve">
     <value>您正在创建“{0}”，是否放弃并重新创建？</value>
   </data>
-  <data name="Refresh" xml:space="preserve">
-    <value>刷新</value>
+  <data name="Reload" xml:space="preserve">
+    <value>重新加载</value>
   </data>
   <data name="ToggleTheme" xml:space="preserve">
     <value>切换主题</value>
@@ -498,10 +498,6 @@
   <data name="FileLoaded" xml:space="preserve">
     <value>已加载 {0}，共 {1} 字节。</value>
   </data>
-  <data name="PaginationItems" xml:space="preserve"><value>共 {0} 条</value></data>
-  <data name="PaginationPage" xml:space="preserve"><value>第 {0} 页，共 {1} 页</value></data>
-  <data name="FirstPage" xml:space="preserve"><value>首页</value></data>
-  <data name="LastPage" xml:space="preserve"><value>末页</value></data>
   <data name="InvalidNumber" xml:space="preserve"><value>{0}必须是数字。</value></data>
   <data name="MonsterLabel" xml:space="preserve"><value>怪物</value></data>
   <data name="MapsLabel" xml:space="preserve"><value>地图</value></data>

@@ -69,10 +69,10 @@ else
 
     <ValidationSummary/>
     <div>
-        <button type="submit" class="btn btn-primary">@Resources.Save</button>
+        <button type="submit" class="btn btn-primary me-1"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.Save</button>
         @if (this.OnCancel != null)
         {
-            <button type="button" onClick=@this.OnCancel>@Resources.Cancel</button>
+            <button type="button" class="btn btn-secondary" onClick=@this.OnCancel>@Resources.Cancel</button>
         }
     </div>
 

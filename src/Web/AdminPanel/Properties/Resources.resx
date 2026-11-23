@@ -1965,7 +1965,7 @@
     <value>Only packages for sale</value>
   </data>
   <data name="CashShopPackageSequence" xml:space="preserve">
-    <value>Package number</value>
+    <value>Sequence</value>
   </data>
   <data name="CashShopProductSequence" xml:space="preserve">
     <value>Product number</value>
@@ -2661,8 +2661,6 @@
   <data name="AuditOperation" xml:space="preserve"><value>Operation</value></data>
   <data name="AuditArguments" xml:space="preserve"><value>Arguments</value></data>
   <data name="AuditOutcome" xml:space="preserve"><value>Outcome</value></data>
-  <data name="AuditPrevious" xml:space="preserve"><value>Previous</value></data>
-  <data name="AuditNext" xml:space="preserve"><value>Next</value></data>
   <data name="Leaderboards" xml:space="preserve">
     <value>Leaderboards</value>
   </data>
@@ -2834,5 +2832,8 @@
   </data>
   <data name="SocketCountTableHint" xml:space="preserve">
     <value>Selects the number of sockets of the socket items this group drops, also above the three of a normal drop, up to the maximum sockets of the item. Empty means that the table of the item applies.</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>Configure</value>
   </data>
 </root>

@@ -108,7 +108,7 @@ public sealed class EffectTimesPageTests
         cut.FindAll("tbody tr").Single(row => row.TextContent.Contains("Infinite Arrow")).QuerySelector("input")!.Change(true);
         Assert.That(this._infiniteArrow.SendDuration, Is.False);
 
-        cut.FindAll("button").Single(b => b.TextContent == Resources.SaveChanges).Click();
+        cut.FindAll("button").Single(b => b.TextContent.Contains(Resources.SaveChanges)).Click();
 
         cut.WaitForState(() => this._infiniteArrow.SendDuration, LoadTimeout);
         Assert.That(this._greaterDamage.SendDuration, Is.True);
@@ -124,8 +124,8 @@ public sealed class EffectTimesPageTests
     {
         var cut = this.RenderLoaded();
 
-        cut.FindAll("button").Single(b => b.TextContent == Resources.AllOff).Click();
-        cut.FindAll("button").Single(b => b.TextContent == Resources.SaveChanges).Click();
+        cut.FindAll("button").Single(b => b.TextContent.Contains(Resources.AllOff)).Click();
+        cut.FindAll("button").Single(b => b.TextContent.Contains(Resources.SaveChanges)).Click();
 
         cut.WaitForState(() => !this._greaterDamage.SendDuration, LoadTimeout);
         Assert.That(this._custom.SendDuration, Is.False);
@@ -140,8 +140,8 @@ public sealed class EffectTimesPageTests
     {
         var cut = this.RenderLoaded();
 
-        cut.FindAll("button").Single(b => b.TextContent == string.Format(CultureInfo.CurrentCulture, Resources.DefaultsFormat, "Season 6")).Click();
-        cut.FindAll("button").Single(b => b.TextContent == Resources.SaveChanges).Click();
+        cut.FindAll("button").Single(b => b.TextContent.Contains(string.Format(CultureInfo.CurrentCulture, Resources.DefaultsFormat, "Season 6"))).Click();
+        cut.FindAll("button").Single(b => b.TextContent.Contains(Resources.SaveChanges)).Click();
 
         cut.WaitForState(() => this._infiniteArrow.SendDuration, LoadTimeout);
         Assert.That(this._greaterDamage.SendDuration, Is.False);

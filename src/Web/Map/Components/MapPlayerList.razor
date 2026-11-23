@@ -17,7 +17,7 @@
         <tr class="player-row" @onclick="() => this.OnSelectPlayer.InvokeAsync(player.Id)" title="@(Resources.SelectPlayer)">
             <td>@player.Name</td>
             <td>@player.Id</td>
-            <td class="d-flex gap-1">
+            <td class="d-flex gap-2">
                 <button type="button" class="btn btn-secondary btn-sm" @onclick:stopPropagation="true" @onclick=@(async () => await player.DisconnectAsync()) title="@(Resources.Disconnect)"><i class="oi oi-account-logout"></i></button>
                 <button type="button" class="btn btn-secondary btn-sm" @onclick:stopPropagation="true" @onclick=@(async () => { if (player.Account is not null) { player.Account.State = AccountState.TemporarilyBanned; } await player.DisconnectAsync(); }) title="@(Resources.TemporarilyBan)"><i class="oi oi-ban"></i></button>
                 @if (!string.IsNullOrEmpty(this.NetworkAnalyzerRoute) && !string.IsNullOrEmpty(player.Name))

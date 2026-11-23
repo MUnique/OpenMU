@@ -25,15 +25,6 @@
     max-width: 24rem;
 }
 
-.add-new-bar {
-    position: sticky;
-    bottom: 0;
-    background-color: var(--omu-surface-2);
-    padding: 0.5rem 1.5rem;
+.sticky-footer {
     margin: 1rem -1.5rem -1rem -1.5rem;
-    border-top: var(--bs-border-width) solid var(--omu-border);
-}
-
-.add-new-bar hr {
-    display: none;
 }

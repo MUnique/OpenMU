@@ -2003,7 +2003,7 @@
     <value>仅显示已上架商品包</value>
   </data>
   <data name="CashShopPackageSequence" xml:space="preserve">
-    <value>商品包编号</value>
+    <value>序号</value>
   </data>
   <data name="CashShopProductSequence" xml:space="preserve">
     <value>商品编号</value>
@@ -2155,12 +2155,6 @@
   </data>
   <data name="AuditOutcome" xml:space="preserve">
     <value>执行结果</value>
-  </data>
-  <data name="AuditPrevious" xml:space="preserve">
-    <value>上一页</value>
-  </data>
-  <data name="AuditNext" xml:space="preserve">
-    <value>下一页</value>
   </data>
   <data name="ContentActivation" xml:space="preserve">
     <value>内容启用</value>
@@ -2854,5 +2848,8 @@
   </data>
   <data name="SocketCountTableHint" xml:space="preserve">
     <value>决定此组掉落的镶嵌物品的孔数，可超过普通掉落的三个孔，最多到物品的最大孔数。留空表示使用物品的数量表。</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>配置</value>
   </data>
 </root>

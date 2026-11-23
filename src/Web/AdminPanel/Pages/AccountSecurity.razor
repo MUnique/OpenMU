@@ -14,7 +14,7 @@ else if (this._user is null)
     @* Nobody is signed in and no user exists yet - there is no own account to secure. *@
     <div class="alert alert-warning" style="max-width: 40rem;" role="alert">
         <p class="mb-2">@Resources.NoAdminUserWarning</p>
-        <a class="btn btn-primary btn-sm" href="@AdminUsers.CreateUserUrl">@Resources.CreateFirstUser</a>
+        <a class="btn btn-primary btn-sm" href="@AdminUsers.CreateUserUrl"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.CreateFirstUser</a>
     </div>
 }
 else
@@ -47,7 +47,7 @@ else
                     <span class="oi oi-shield" aria-hidden="true"></span> @Resources.TwoFactorEnabled
                 </p>
                 <p class="small text-secondary">@Resources.RemainingRecoveryCodes: @this._remainingRecoveryCodes</p>
-                <button class="btn btn-secondary btn-sm me-2" type="button" disabled="@this._isBusy" @onclick="@this.GenerateRecoveryCodesAsync">@Resources.GenerateNewRecoveryCodes</button>
+                <button class="btn btn-secondary btn-sm me-1" type="button" disabled="@this._isBusy" @onclick="@this.GenerateRecoveryCodesAsync">@Resources.GenerateNewRecoveryCodes</button>
                 <button class="btn btn-outline-danger btn-sm" type="button" disabled="@this._isBusy" @onclick="@this.DisableTwoFactorAsync">@Resources.DisableTwoFactor</button>
             }
             else
