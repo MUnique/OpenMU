@@ -47,6 +47,7 @@ public static class PlayerQuestExtensions
                 .Where(q => q.Group == group)
                 .Where(q => q.QualifiedCharacter is null || Equals(q.QualifiedCharacter, player.SelectedCharacter?.CharacterClass))
                 .Where(q => !q.EvolvesIntoInactiveClass(player))
+                .Where(q => !q.IsOfAnEvolutionAlreadyHad(player))
                 .OrderBy(q => q.Number);
 
         return possibleQuestsOfGroup?.FirstOrDefault(q => q.StartingNumber == number || q.Number == number);
@@ -65,7 +66,29 @@ public static class PlayerQuestExtensions
                    .Where(q => q.MinimumCharacterLevel <= player.Level
                                && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level))
                    .Where(q => !q.EvolvesIntoInactiveClass(player))
+                   .Where(q => !q.IsOfAnEvolutionAlreadyHad(player))
                ?? Enumerable.Empty<QuestDefinition>();
+    }
+
+    /// <summary>
+    /// Determines whether the quest belongs to a class evolution the character already has: its class is
+    /// the last generation (no <see cref="CharacterClass.NextGenerationClass"/>), and the quest's group at the opened
+    /// NPC evolves a class. A character which got its last class some other way (created so, or changed by a game
+    /// master) would otherwise be offered the third class quests again (Evidence of Strength and on).
+    /// </summary>
+    /// <param name="quest">The quest.</param>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the quest leads to an evolution the character already has; Otherwise, <c>false</c>.</returns>
+    public static bool IsOfAnEvolutionAlreadyHad(this QuestDefinition quest, Player player)
+    {
+        if (player.SelectedCharacter?.CharacterClass is not { NextGenerationClass: null })
+        {
+            return false;
+        }
+
+        return player.OpenedNpc?.Definition.Quests
+            .Where(q => q.Group == quest.Group)
+            .Any(q => q.Rewards.Any(reward => reward.RewardType is QuestRewardType.CharacterEvolutionFirstToSecond or QuestRewardType.CharacterEvolutionSecondToThird)) is true;
     }
 
     /// <summary>
