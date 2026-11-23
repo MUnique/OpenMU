@@ -42,7 +42,7 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override DateTime CreatedAt => new(2026, 11, 20, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime CreatedAt => new(2026, 11, 23, 0, 0, 0, DateTimeKind.Utc);
 
     /// <summary>
     /// Adds or updates a relationship between two attributes.
