@@ -14,7 +14,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.UpdateWingAndPetHitTollsPlugIn_Name), Description = nameof(PlugInResources.UpdateWingAndPetHitTollsPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("8455AD08-2FE4-468B-901A-F7006D099FEC")]
-public class UpdateWingAndPetHitTollsPlugIn095d : UpdateWingAndPetHitTollsPlugInBase
+public class UpdateWingAndPetHitTollsPlugIn095D : UpdateWingAndPetHitTollsPlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => Version095d.DataInitialization.Id;
