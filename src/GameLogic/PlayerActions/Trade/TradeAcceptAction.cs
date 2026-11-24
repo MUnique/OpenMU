@@ -31,7 +31,7 @@ public class TradeAcceptAction : BaseTradeAction
 
                 if (!await tradeAccepter.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false) || !await tradePartner.PlayerState.TryAdvanceToAsync(PlayerState.TradeOpened).ConfigureAwait(false))
                 {
-                    ////Something bad happened here...
+                    // Failed to open the trade because a player could not enter the TradeOpened state.
                     await this.CancelTradeAsync(tradeAccepter).ConfigureAwait(false);
                     await this.CancelTradeAsync(tradePartner).ConfigureAwait(false);
                     await tradePartner.InvokeViewPlugInAsync<IShowTradeRequestAnswerPlugIn>(p => p.ShowTradeRequestAnswerAsync(false)).ConfigureAwait(false);

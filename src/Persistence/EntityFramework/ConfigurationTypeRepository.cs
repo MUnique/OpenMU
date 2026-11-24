@@ -63,7 +63,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <inheritdoc/>
-    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
@@ -109,7 +109,7 @@ internal class ConfigurationTypeRepository<T> : IRepository<T>, IConfigurationTy
     }
 
     /// <inheritdoc />
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }

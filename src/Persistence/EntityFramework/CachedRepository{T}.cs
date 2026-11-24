@@ -37,7 +37,7 @@ public class CachedRepository<T> : IRepository<T>
     protected IRepository<T> BaseRepository { get; }
 
     /// <inheritdoc/>
-    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken = default)
+    async ValueTask<IEnumerable> IRepository.GetAllAsync(CancellationToken cancellationToken)
     {
         return await this.GetAllAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -58,7 +58,7 @@ public class CachedRepository<T> : IRepository<T>
     }
 
     /// <inheritdoc/>
-    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    async ValueTask<object?> IRepository.GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await this.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
     }
