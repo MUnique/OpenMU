@@ -156,6 +156,32 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
+    /// The barriers between the bases and the arena are the water tiles of the map. They open on the server
+    /// when the battle starts, like in the client, while the other blocked tiles stay blocked.
+    /// </summary>
+    [Test]
+    public async ValueTask GameStartOpensTheArenaBarriersAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        var terrainData = definition.Entrance!.Map!.TerrainData!;
+        terrainData[TerrainDataOffset(143, 51)] = (byte)TerrainAttributeType.Water;
+        terrainData[TerrainDataOffset(196, 118)] = (byte)TerrainAttributeType.Water;
+        terrainData[TerrainDataOffset(150, 60)] = (byte)TerrainAttributeType.Blocked;
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+        var walkMap = illusionTemple.Map.Terrain.WalkMap;
+        var barriersClosedBeforeStart = !walkMap[143, 51] && !walkMap[196, 118];
+
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+
+        Assert.That(barriersClosedBeforeStart, Is.True);
+        Assert.That(walkMap[143, 51], Is.True);
+        Assert.That(walkMap[196, 118], Is.True);
+        Assert.That(walkMap[150, 60], Is.False);
+    }
+
+    /// <summary>
     /// After the game start, every player has a team which plugins can read; a player who
     /// is not part of the match has none.
     /// </summary>
@@ -500,6 +526,11 @@ public class IllusionTempleContextTest
         npc.Initialize();
         return npc;
     }
+
+    /// <summary>
+    /// Gets the index of a tile in <see cref="GameMapDefinition.TerrainData"/>, which starts with a header of 3 bytes.
+    /// </summary>
+    private static int TerrainDataOffset(byte x, byte y) => 3 + (y * 256) + x;
 
     private static async ValueTask StartGameAsync(IllusionTempleContext context, IReadOnlyCollection<Player> players)
     {

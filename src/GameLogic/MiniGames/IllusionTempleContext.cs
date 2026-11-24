@@ -575,8 +575,8 @@ public sealed class IllusionTempleContext : MiniGameContext
         await base.OnGameStartAsync(players).ConfigureAwait(false);
 
         // The client keeps its event interface closed and the arena barriers up until it's told that
-        // the battle started - the barrier areas are hardcoded at client side, so this is the only way
-        // to open them. The two states are deliberately separated by a short delay, so the players
+        // the battle started - that's the only way to open them at client side (the server's terrain is
+        // opened by OpenArenaBarriers at the same time). The two states are deliberately separated by a short delay, so the players
         // actually get to see the preparation phase before the barriers drop - sending both back to
         // back made the client skip straight to the battle without any noticeable wait.
         var templeNumber = (byte)this.Definition.GameLevel;
@@ -594,6 +594,8 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
+        // Opened before the clients are told, so a player who walks off right away isn't set back.
+        this.OpenArenaBarriers();
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
             p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.BattleStarted)).AsTask()).ConfigureAwait(false);
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleBattleStartedMessage)).ConfigureAwait(false);
@@ -1092,6 +1094,31 @@ public sealed class IllusionTempleContext : MiniGameContext
         await player.Inventory.RemoveItemAsync(relicItem).ConfigureAwait(false);
         await player.PersistenceContext.DeleteAsync(relicItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens the barriers between the bases of the teams and the arena on the server's terrain.
+    /// </summary>
+    /// <remarks>
+    /// The barriers are the water tiles of the temple map. The client opens its own copy when it's told that
+    /// the battle started, by clearing every water tile of the map; the server does the same, so that both
+    /// agree on the configured terrain. Until then the tiles aren't walkable, and every step into the arena
+    /// is set back. They aren't closed again: the map belongs to this game and is discarded with it.
+    /// </remarks>
+    private void OpenArenaBarriers()
+    {
+        var terrain = this.Map.Terrain;
+        var attributes = terrain.AttributeMap;
+        for (var x = 0; x < attributes.GetLength(0); x++)
+        {
+            for (var y = 0; y < attributes.GetLength(1); y++)
+            {
+                if ((attributes[x, y] & (byte)TerrainAttributeType.Water) != 0)
+                {
+                    terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Water, false);
+                }
+            }
+        }
     }
 
     /// <summary>
