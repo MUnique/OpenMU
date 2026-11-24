@@ -305,7 +305,7 @@ public class IllusionTempleContextTest
         var receiver = players[0];
         var teamMate = players.Skip(1).First(p => GetTeamOf(illusionTemple, p) == GetTeamOf(illusionTemple, receiver));
         Assert.That(receiver.Id, Is.Not.EqualTo(ViewExtensions.ConstantPlayerId), "the map id must differ for this test to mean anything");
-        typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(illusionTemple, receiver);
+        SetRelicCarrier(illusionTemple, receiver);
         var view = Mock.Get(receiver.ViewPlugIns.GetPlugIn<IIllusionTempleStateViewPlugin>()!);
         view.Invocations.Clear();
 
@@ -682,6 +682,17 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
+    /// Sets the private <c>_relicCarrier</c> field of <see cref="IllusionTempleContext"/> via reflection, to test what
+    /// the state reports about the carrier without going through the statue and the pick-up.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code setting a private field of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public setter purely for tests isn't warranted for an internal implementation detail.")]
+    private static void SetRelicCarrier(IllusionTempleContext context, Player carrier)
+    {
+        var field = typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance);
+        field!.SetValue(context, carrier);
+    }
+
+    /// <summary>
     /// Reads the protected <c>GameEndedToken</c> of the <see cref="MiniGameContext"/> via reflection, which tells
     /// whether the game was finished. Test-only, like <see cref="GetRelicCarrier"/>.
     /// </summary>
@@ -703,12 +714,17 @@ public class IllusionTempleContextTest
     /// <summary>
     /// Sets the state which the game loop sets after <c>OnGameStartAsync</c>: the tests call that one directly.
     /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a private field of a type from this same solution, to set the state which the real-time game loop would set (see the class remarks). The member name is a hardcoded literal - no external input reaches this call.")]
     private static async ValueTask SetPlayingStateAsync(MiniGameContext context)
     {
         var field = typeof(MiniGameContext).GetField("_players", BindingFlags.NonPublic | BindingFlags.Instance);
         await ((MiniGamePlayerRegistry)field!.GetValue(context)!).SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Reads the private <c>_skillPoints</c> field of <see cref="IllusionTempleContext"/> via reflection.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a private field of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public accessor purely for tests isn't warranted for an internal implementation detail.")]
     private static ConcurrentDictionary<Player, byte> GetSkillPoints(IllusionTempleContext context)
     {
         var field = typeof(IllusionTempleContext).GetField("_skillPoints", BindingFlags.NonPublic | BindingFlags.Instance);
