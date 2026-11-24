@@ -25,12 +25,14 @@ public static class PlayerTestHelper
     /// <summary>
     /// Gets a test player with a new in-memory game context.
     /// </summary>
+    /// <param name="dropGenerator">The drop generator of the game context. Defaults to <see cref="NullDropGenerator"/>.</param>
     /// <returns>The test player.</returns>
-    public static async ValueTask<Player> CreatePlayerAsync()
+    public static async ValueTask<Player> CreatePlayerAsync(IDropGenerator? dropGenerator = null)
     {
+        dropGenerator ??= NullDropGenerator.Instance;
         var gameConfiguration = CreateGameConfiguration();
         var mapInitializer = new MapInitializer(gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameContext = new GameContext(gameConfiguration, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        var gameContext = new GameContext(gameConfiguration, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), dropGenerator, new ConfigurationChangeMediator());
         mapInitializer.PlugInManager = gameContext.PlugInManager;
         mapInitializer.PathFinderPool = gameContext.PathFinderPool;
         return await CreatePlayerAsync(gameContext).ConfigureAwait(false);
@@ -62,6 +64,7 @@ public static class PlayerTestHelper
         map.Setup(m => m.ExitGates).Returns(new List<ExitGate>());
         map.Object.TerrainData = new byte[ushort.MaxValue + 3];
         gameConfig.Object.RecoveryInterval = int.MaxValue;
+        gameConfig.Object.ItemDropDuration = TimeSpan.FromMinutes(1);
         gameConfig.Object.Maps.Add(map.Object);
         return gameConfig.Object;
     }

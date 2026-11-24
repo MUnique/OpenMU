@@ -270,6 +270,38 @@ public class ItemRegistrationTest
     }
 
     /// <summary>
+    /// Tests that the reward item of a completed registration can only be picked up by the registering player
+    /// (and their party) while the owner priority is active, instead of by anybody nearby.
+    /// </summary>
+    [Test]
+    public async Task RegisterAsync_RewardItemDrop_BelongsToThePlayerAsync()
+    {
+        var rewardItem = new Persistence.BasicModel.Item { Definition = new Persistence.BasicModel.ItemDefinition() };
+        var dropGenerator = new Mock<IDropGenerator>();
+        dropGenerator.Setup(g => g.GenerateItemDrop(It.IsAny<DropItemGroup>())).Returns(rewardItem);
+        var player = await CreatePlayerWithPlugInAsync(
+            requiredItemsCount: 1,
+            rewardZen: 0,
+            rewardDropItemGroup: new DropItemGroup { Chance = 1.0 },
+            dropGenerator: dropGenerator.Object).ConfigureAwait(false);
+        var otherPlayer = await PlayerTestHelper.CreatePlayerAsync(player.GameContext).ConfigureAwait(false);
+        player.OpenedNpc = new Mock<NonPlayerCharacter>(new MonsterSpawnArea(), new MonsterDefinition { Number = 236 }, player.CurrentMap!).Object;
+        var renaItem = new Item
+        {
+            Definition = new ItemDefinition { Group = 14, Number = 21, Width = 1, Height = 1 },
+            ItemSlot = 12,
+        };
+        await player.Inventory!.AddItemAsync(12, renaItem).ConfigureAwait(false);
+
+        await this._action.RegisterAsync(player).ConfigureAwait(false);
+
+        var droppedItem = player.CurrentMap!.GetDropsInRange(player.Position, 10).OfType<DroppedItem>().Single();
+        Assert.That(droppedItem.Item, Is.SameAs(rewardItem));
+        Assert.That(droppedItem.IsPlayerAnOwner(player), Is.True);
+        Assert.That(droppedItem.IsPlayerAnOwner(otherPlayer), Is.False);
+    }
+
+    /// <summary>
     /// Creates a player with the ItemRegistrationFeaturePlugIn already registered.
     /// </summary>
     private static async Task<Player> CreatePlayerWithPlugInAsync(
@@ -278,9 +310,10 @@ public class ItemRegistrationTest
         short acceptedItemNumber = 21,
         int requiredItemsCount = 1,
         int rewardZen = 5000000,
-        DropItemGroup? rewardDropItemGroup = null)
+        DropItemGroup? rewardDropItemGroup = null,
+        IDropGenerator? dropGenerator = null)
     {
-        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player = await PlayerTestHelper.CreatePlayerAsync(dropGenerator).ConfigureAwait(false);
 
         var config = new ItemRegistrationConfiguration
         {
