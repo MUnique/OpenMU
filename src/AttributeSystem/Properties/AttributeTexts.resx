@@ -792,6 +792,12 @@
   <data name="Name_OneHandedSwordBonusDamageMST" xml:space="preserve">
     <value>One Handed Sword Bonus Damage (MST)</value>
   </data>
+  <data name="Name_PartyExperienceMultiplier" xml:space="preserve">
+    <value>Party Experience Multiplier</value>
+  </data>
+  <data name="Description_PartyExperienceMultiplier" xml:space="preserve">
+    <value>Defines the experience multiplier which is added per party member, as fraction of the experience (0.01 = 1% per member).</value>
+  </data>
   <data name="Name_PetDurationIncrease" xml:space="preserve">
     <value>Pet Duration Increase</value>
   </data>
@@ -908,6 +914,12 @@
   </data>
   <data name="Description_SDRateIncrease" xml:space="preserve">
     <value>Increases the shield’s damage absorb rate in PVP according to set value.</value>
+  </data>
+  <data name="Name_SetPartyExperienceBonus" xml:space="preserve">
+    <value>Set Party Experience Bonus</value>
+  </data>
+  <data name="Description_SetPartyExperienceBonus" xml:space="preserve">
+    <value>Defines the experience bonus which is added to the experience multiplier of a set party, as fraction of the experience (0.02 = 2%).</value>
   </data>
   <data name="Name_ShieldBypassChance" xml:space="preserve">
     <value>Shield Bypass Chance</value>

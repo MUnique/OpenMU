@@ -122,6 +122,25 @@ public class Stats
     public static AttributeDefinition RandomExperienceMaxMultiplier { get; } = new(new Guid("74CE26C6-6D59-4420-AF3F-457E138AE41C"), "Random Experience Max Multiplier", "Defines the maximum multiplier for the randomized experience gain.");
 
     /// <summary>
+    /// Gets the party experience multiplier which is added for each party member.
+    /// </summary>
+    /// <remarks>
+    /// The value is a fraction which is added per party member, so 0.01 increases the experience by 1% for each member.
+    /// It can be defined in the <see cref="GameConfiguration.GlobalBaseAttributeValues"/>.
+    /// </remarks>
+    public static AttributeDefinition PartyExperienceMultiplier { get; } = new(new Guid("A086BE24-8849-4C26-8C7F-9CEF8DE27DEB"), "Party Experience Multiplier", "Defines the experience multiplier which is added per party member, as fraction of the experience (0.01 = 1% per member).");
+
+    /// <summary>
+    /// Gets the bonus experience of a set party, which is added to <see cref="PartyExperienceMultiplier"/>.
+    /// </summary>
+    /// <remarks>
+    /// A set party is a party of at least three members, in which every member belongs to a different character class line.
+    /// The value is a fraction which is added to the party experience multiplier, so 0.02 increases the experience by an additional 2%.
+    /// It can be defined in the <see cref="GameConfiguration.GlobalBaseAttributeValues"/>.
+    /// </remarks>
+    public static AttributeDefinition SetPartyExperienceBonus { get; } = new(new Guid("BAEAC94C-9B06-4C15-BA7F-6E6B062CAF27"), "Set Party Experience Bonus", "Defines the experience bonus which is added to the experience multiplier of a set party, as fraction of the experience (0.02 = 2%).");
+
+    /// <summary>
     /// Gets the bonus experience rate attribute definition, which is added to <see cref="ExperienceRate"/> or <see cref="MasterExperienceRate"/>.
     /// </summary>
     /// <remarks>So far includes skeleton xfm ring, pet panda, pet skeleton bonus.</remarks>

@@ -69,6 +69,33 @@ This is where the values live which most server operators want to change:
 * **Misc** — info range, recovery interval, letter settings, durability
   consumption
 
+### Party experience bonus
+
+A party gets more experience than its members would get alone. Every party member adds
+`Party Experience Multiplier` to the party's experience multiplier. A set party can
+additionally get a `Set Party Experience Bonus`. Both are fractions (`0.01` is 1%) and are configured
+through the *Global base attribute values* of the game configuration, which you reach through
+the full configuration tree. The defaults are:
+
+| Classification | 2 players | 3 players | 4 players | 5 players |
+|---|---|---|---|---|
+| General party | 2% | 3% | 4% | 5% |
+| Set party | — | 3% | 4% | 5% |
+
+`Party Experience Multiplier` defaults to `0.01`, so every member adds 1%.
+`Set Party Experience Bonus` defaults to `0`, so by default a set party gets no
+extra bonus on top of the general one. Set it to a positive fraction to reward
+mixed-class parties.
+
+A **set party** is a party of at least three members in which every member belongs
+to a different class line, for example a Dark Wizard (or Soul Master, Grand
+Master, …), a Dark Knight and a Fairy Elf. Every other party is a general party.
+A set party gets the general bonus plus the set party bonus. A bonus which is not
+configured, `0` or negative means no bonus.
+
+The same attributes can also be defined per map, account or character, for
+example for an event; the first member of the party decides.
+
 ## Monsters
 
 Route `edit-config-grid/…MonsterDefinition/`

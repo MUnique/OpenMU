@@ -789,6 +789,12 @@
   <data name="Name_OneHandedSwordBonusDamageMST" xml:space="preserve">
     <value>Bonusschaden für Einhandschwerter (MST)</value>
   </data>
+  <data name="Name_PartyExperienceMultiplier" xml:space="preserve">
+    <value>Erfahrungsmultiplikator der Gruppe</value>
+  </data>
+  <data name="Description_PartyExperienceMultiplier" xml:space="preserve">
+    <value>Definiert den Erfahrungsmultiplikator, der pro Gruppenmitglied addiert wird, als Anteil der Erfahrung (0,01 = 1 % pro Mitglied).</value>
+  </data>
   <data name="Name_PetDurationIncrease" xml:space="preserve">
     <value>Erhöhung der Begleiterhaltbarkeit</value>
   </data>
@@ -902,6 +908,12 @@
   </data>
   <data name="Description_SDRateIncrease" xml:space="preserve">
     <value>Erhöht die Schadensabsorptionsrate des Schilds im PvP entsprechend dem eingestellten Wert.</value>
+  </data>
+  <data name="Name_SetPartyExperienceBonus" xml:space="preserve">
+    <value>Erfahrungsbonus der Set-Gruppe</value>
+  </data>
+  <data name="Description_SetPartyExperienceBonus" xml:space="preserve">
+    <value>Definiert den Erfahrungsbonus, der zum Erfahrungsmultiplikator einer Set-Gruppe addiert wird, als Anteil der Erfahrung (0,02 = 2 %).</value>
   </data>
   <data name="Name_ShieldBypassChance" xml:space="preserve">
     <value>Chance, den Schild (SD) zu umgehen</value>
