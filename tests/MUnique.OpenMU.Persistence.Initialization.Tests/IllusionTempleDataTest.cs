@@ -357,6 +357,36 @@ internal class IllusionTempleDataTest
     }
 
     /// <summary>
+    /// Tests that the update raises the maximum level of temple 5 of a database of version four from 399 to 400, and
+    /// keeps a maximum level which the server owner chose.
+    /// </summary>
+    /// <param name="maximumLevelBefore">The maximum level of temple 5 before the update.</param>
+    /// <param name="expectedMaximumLevel">The expected maximum level after the update.</param>
+    /// <returns>The task.</returns>
+    [TestCase(399, 400)]
+    [TestCase(390, 390)]
+    public async Task UpdateLetsLevel400EnterTemple5Async(int maximumLevelBefore, int expectedMaximumLevel)
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 4;
+        var temple5 = GetTempleDefinitions(gameConfiguration).Single(d => d.GameLevel == 5);
+        temple5.MaximumCharacterLevel = maximumLevelBefore;
+        temple5.MaximumSpecialCharacterLevel = maximumLevelBefore;
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That((temple5.MaximumCharacterLevel, temple5.MaximumSpecialCharacterLevel), Is.EqualTo((expectedMaximumLevel, expectedMaximumLevel)));
+    }
+
+    /// <summary>
     /// Updating an installed version one must not replay its broad content changes over owner customizations.
     /// </summary>
     /// <returns>The task.</returns>
@@ -551,6 +581,10 @@ internal class IllusionTempleDataTest
         // Each temple covers its own level range, and the sixth one is the master class temple.
         Assert.That(definitions.Where(d => d.GameLevel < 6), Has.All.Matches<MiniGameDefinition>(d => d.MaximumCharacterLevel > d.MinimumCharacterLevel));
         Assert.That(definitions.Single(d => d.GameLevel == 6).RequiresMasterClass, Is.True);
+
+        // A character of level 400 without the master class goes to temple 5.
+        var temple5 = definitions.Single(d => d.GameLevel == 5);
+        Assert.That((temple5.MaximumCharacterLevel, temple5.MaximumSpecialCharacterLevel), Is.EqualTo((400, 400)));
 
         // Every temple rewards the winning team with experience.
         Assert.That(

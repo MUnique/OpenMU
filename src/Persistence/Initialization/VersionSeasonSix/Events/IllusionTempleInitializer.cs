@@ -54,11 +54,12 @@ internal class IllusionTempleInitializer : InitializerBase
         illusionTemple4.MinimumSpecialCharacterLevel = 351;
         illusionTemple4.MaximumSpecialCharacterLevel = 380;
 
+        // Up to 400: a character of level 400 without the master class goes to temple 5, as the client expects.
         var illusionTemple5 = this.CreateIllusionTempleDefinition(5, IllusionTemple5.Number, 7000000);
         illusionTemple5.MinimumCharacterLevel = 381;
-        illusionTemple5.MaximumCharacterLevel = 399;
+        illusionTemple5.MaximumCharacterLevel = 400;
         illusionTemple5.MinimumSpecialCharacterLevel = 381;
-        illusionTemple5.MaximumSpecialCharacterLevel = 399;
+        illusionTemple5.MaximumSpecialCharacterLevel = 400;
 
         var illusionTemple6 = this.CreateIllusionTempleDefinition(6, IllusionTemple6.Number, 8000000);
         illusionTemple6.RequiresMasterClass = true;

@@ -246,7 +246,8 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// The ticket binding repair of version two pointed the temples which reference 13/50 at 13/51, then named the
     /// covenant; the restoration still makes that move, as 13/51 becomes the Scroll of Blood.
     /// Versions one to four gave temple 5 only two arena monster variants and temple 6 none; version five adds the
-    /// missing variants (400 to 403) and their spawns (see <see cref="AddMissingArenaMonsters"/>).
+    /// missing variants (400 to 403) and their spawns (see <see cref="AddMissingArenaMonsters"/>), and lets characters of
+    /// level 400 without the master class enter temple 5 (see <see cref="AllowLevel400InTemple5"/>).
     /// </remarks>
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
     {
@@ -261,6 +262,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         if (installedVersion is null or < 5)
         {
             this.AddMissingArenaMonsters(context, gameConfiguration);
+            AllowLevel400InTemple5(gameConfiguration);
         }
     }
 
@@ -292,6 +294,29 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == MirageNpcNumber) is { } mirage)
         {
             mirage.NpcWindow = NpcWindow.IllusionTemple;
+        }
+    }
+
+    /// <summary>
+    /// Raises the maximum character level of temple 5 from 399 to 400. A character of level 400 without the master
+    /// class goes to temple 5 (the master classes to temple 6), so with 399 he couldn't enter any temple.
+    /// </summary>
+    /// <remarks>Only the values which are still the old default are changed, so an owner's own range stays.</remarks>
+    private static void AllowLevel400InTemple5(GameConfiguration gameConfiguration)
+    {
+        const int previousMaximumLevel = 399;
+        const int maximumLevel = 400;
+        foreach (var temple5 in gameConfiguration.MiniGameDefinitions.Where(d => d is { Type: MiniGameType.IllusionTemple, GameLevel: 5 }))
+        {
+            if (temple5.MaximumCharacterLevel == previousMaximumLevel)
+            {
+                temple5.MaximumCharacterLevel = maximumLevel;
+            }
+
+            if (temple5.MaximumSpecialCharacterLevel == previousMaximumLevel)
+            {
+                temple5.MaximumSpecialCharacterLevel = maximumLevel;
+            }
         }
     }
 
