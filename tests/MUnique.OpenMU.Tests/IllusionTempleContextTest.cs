@@ -629,6 +629,36 @@ public class IllusionTempleContextTest
         await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// The client closes the window of the entrance npc without telling the server, so talking to it must not
+    /// leave the player in the dialog state: afterwards, the dialog of another npc opens.
+    /// </summary>
+    [Test]
+    public async ValueTask TalkingToTheEntranceNpcDoesntBlockOtherNpcsAsync()
+    {
+        var gameContext = CreateGameContext();
+        var player = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var map = await gameContext.GetMapAsync(0).ConfigureAwait(false);
+        var entranceNpc = new NonPlayerCharacter(
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea { GameMap = map!.Definition },
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition { Number = 385, NpcWindow = NpcWindow.IllusionTemple },
+            map);
+        var otherNpc = new NonPlayerCharacter(
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea { GameMap = map.Definition },
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition { Number = 238, NpcWindow = NpcWindow.ChaosMachine },
+            map);
+        var talkAction = new TalkNpcAction();
+
+        await talkAction.TalkToNpcAsync(player, entranceNpc).ConfigureAwait(false);
+        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+
+        await talkAction.TalkToNpcAsync(player, otherNpc).ConfigureAwait(false);
+        Assert.That(player.OpenedNpc, Is.EqualTo(otherNpc));
+        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.NpcDialogOpened));
+
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+    }
+
     private static bool IsRelicItem(MUnique.OpenMU.DataModel.Entities.Item item) => item.Definition?.Group == 14 && item.Definition?.Number == 64;
 
     private static IllusionTempleTeam GetTeamOf(IllusionTempleContext context, Player player)
