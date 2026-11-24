@@ -396,7 +396,7 @@
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Name" xml:space="preserve"><value>添加合成成功率加成属性</value></data>
   <data name="AddCraftingBonusPercentageAttributePlugInBase_Description" xml:space="preserve"><value>添加用于定义物品合成成功率额外增加的百分点的属性。</value></data>
   <data name="AddPartyExperienceBonusAttributesPlugInBase_Name" xml:space="preserve"><value>添加组队经验加成属性</value></data>
-  <data name="AddPartyExperienceBonusAttributesPlugInBase_Description" xml:space="preserve"><value>添加用于定义队伍经验倍率和套装队伍经验加成的属性及其默认值（每名队伍成员1%，套装队伍加成为0，即默认关闭）。已有的值不会被更改。</value></data>
+  <data name="AddPartyExperienceBonusAttributesPlugInBase_Description" xml:space="preserve"><value>添加用于定义队伍经验的属性（每增加一名队伍成员的倍率以及套装队伍加成），其默认值保持当前的队伍经验：每增加一名成员乘以1.05，套装队伍无加成。已有的值不会被更改。</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Name" xml:space="preserve"><value>修正种子球的最大物品等级</value></data>
   <data name="FixSeedSphereMaximumItemLevelUpdatePlugIn_Description" xml:space="preserve"><value>将种子球的最大物品等级设置为其元素的最高选项编号。种子球的物品等级决定其选项，因此此前无法创建第一个选项以外的种子球，例如通过物品聊天命令。</value></data>
   <data name="AddCrystalSwordIceChanceUpdatePlugIn_Name" xml:space="preserve">

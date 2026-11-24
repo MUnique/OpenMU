@@ -71,30 +71,28 @@ This is where the values live which most server operators want to change:
 
 ### Party experience bonus
 
-A party gets more experience than its members would get alone. Every
-party member adds `Party Experience Multiplier` to the party's
-experience multiplier. A set party can additionally get a
-`Set Party Experience Bonus`. Both are fractions (`0.01` is 1%) and
-are configured through the *Global base attribute values* of the game
-configuration, which you reach through the full configuration tree.
-The defaults are:
+A party gets more experience than its members would get alone. The experience of
+a party with *n* members is multiplied by `Party Experience Multiplier`^(*n* − 1),
+so every additional member multiplies it once more. The value is configured
+through the *Global base attribute values* of the game configuration, which you
+reach through the full configuration tree.
 
-| Classification | 2 players | 3 players | 4 players | 5 players |
+The default is `1.05`, which is the party experience of all game versions
+(0.75, 0.95d and Season 6):
+
+| Members | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|
-| General party | 2% | 3% | 4% | 5% |
-| Set party | — | 3% | 4% | 5% |
+| Experience bonus | 5% | 10.25% | 15.76% | 21.55% |
 
-`Party Experience Multiplier` defaults to `0.01`, so every member adds 1%.
-`Set Party Experience Bonus` defaults to `0`, so by default a set party gets no
-extra bonus on top of the general one. Set it to a positive fraction to reward
-mixed-class parties.
+A value of `0` or less (or an attribute which isn't configured) means no bonus,
+and a single player never gets a bonus.
 
-A **set party** is a party of at least three members in which every
-member belongs to a different class line, for example a Dark Wizard
-(or Soul Master, Grand Master, …), a Dark Knight and a Fairy Elf.
-Every other party is a general party. A set party gets the general
-bonus plus the set party bonus. A bonus which is not configured, `0`
-or negative means no bonus.
+A party can additionally get a `Set Party Experience Bonus`, which is added to
+the multiplier (`0.02` adds 2%). It defaults to `0`, so it's disabled until you
+configure it. Zero or negative values are ignored. A **set party** is a party of
+at least three members in which every member belongs to a different class line,
+for example a Dark Wizard (or Soul Master, Grand Master, …), a Dark Knight and a
+Fairy Elf.
 
 The same attributes can also be defined per map, account or character, for
 example for an event; the first member of the party decides.

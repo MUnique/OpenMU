@@ -793,7 +793,7 @@
     <value>Erfahrungsmultiplikator der Gruppe</value>
   </data>
   <data name="Description_PartyExperienceMultiplier" xml:space="preserve">
-    <value>Definiert den Erfahrungsmultiplikator, der pro Gruppenmitglied addiert wird, als Anteil der Erfahrung (0,01 = 1 % pro Mitglied).</value>
+    <value>Definiert den Erfahrungsmultiplikator einer Gruppe für jedes zusätzliche Gruppenmitglied (1,05 = 5 % mehr Erfahrung für das zweite Mitglied, was für jedes weitere Mitglied multipliziert wird, d. h. eine Gruppe mit 3 Mitgliedern erhält 1,05 * 1,05). Ein Wert von 0 oder weniger deaktiviert ihn.</value>
   </data>
   <data name="Name_PetDurationIncrease" xml:space="preserve">
     <value>Erhöhung der Begleiterhaltbarkeit</value>

@@ -796,7 +796,7 @@
     <value>Party Experience Multiplier</value>
   </data>
   <data name="Description_PartyExperienceMultiplier" xml:space="preserve">
-    <value>Defines the experience multiplier which is added per party member, as fraction of the experience (0.01 = 1% per member).</value>
+    <value>Defines the experience multiplier of a party for each additional party member (1.05 = 5% more experience for the second member, which is multiplied for each further member, so a party of 3 members gets 1.05 * 1.05). A value of 0 or less disables it.</value>
   </data>
   <data name="Name_PetDurationIncrease" xml:space="preserve">
     <value>Pet Duration Increase</value>

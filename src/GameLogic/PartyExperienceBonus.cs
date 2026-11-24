@@ -11,13 +11,17 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// Determines the experience bonus of a party, depending on its size and composition.
 /// </summary>
 /// <remarks>
+/// <para>
 /// The bonuses are configurable through attributes, which are read from the attribute system of the party members,
 /// so they can be defined globally, but also per map, account or character.
 /// The first party member decides, as it does for the random experience multipliers.
-/// Every member adds <see cref="Stats.PartyExperienceMultiplier"/> to the multiplier of the party.
-/// A party with at least <see cref="MinimumSetPartySize"/> members, in which every member belongs to a different
-/// character class line (e.g. Dark Wizard, Dark Knight and Fairy Elf), is a "set party" and additionally gets
-/// <see cref="Stats.SetPartyExperienceBonus"/>.
+/// </para>
+/// <para>
+/// The experience of a party with n members is multiplied by <see cref="Stats.PartyExperienceMultiplier"/>^(n - 1),
+/// which is 1.05^(n - 1) by default. A party with at least <see cref="MinimumSetPartySize"/> members, in which every
+/// member belongs to a different character class line (e.g. Dark Wizard, Dark Knight and Fairy Elf), is a "set party"
+/// and additionally gets <see cref="Stats.SetPartyExperienceBonus"/> added, which is 0 by default.
+/// </para>
 /// </remarks>
 internal static class PartyExperienceBonus
 {
@@ -43,9 +47,14 @@ internal static class PartyExperienceBonus
             return 1;
         }
 
-        var multiplier = 1.0 + (members.Count * attributes[Stats.PartyExperienceMultiplier]);
+        var multiplier = 1.0;
+        var partyMultiplier = ToDouble(attributes[Stats.PartyExperienceMultiplier]);
+        if (partyMultiplier > 0)
+        {
+            multiplier = Math.Pow(partyMultiplier, members.Count - 1);
+        }
 
-        var setPartyBonus = attributes[Stats.SetPartyExperienceBonus];
+        var setPartyBonus = ToDouble(attributes[Stats.SetPartyExperienceBonus]);
         if (setPartyBonus > 0 && IsSetParty(members))
         {
             multiplier += setPartyBonus;
@@ -103,5 +112,18 @@ internal static class PartyExperienceBonus
         }
 
         return characterClass;
+    }
+
+    /// <summary>
+    /// Converts the attribute value to a double.
+    /// </summary>
+    /// <remarks>
+    /// The attribute values are floats, which can't represent fractions like 1.05 exactly. A plain conversion would
+    /// turn it into 1.0499999..., and the experience would differ slightly from the one calculated with
+    /// the literal 1.05. Rounding to seven decimal places, which is more than a float can hold reliably, avoids that.
+    /// </remarks>
+    private static double ToDouble(float value)
+    {
+        return Math.Round((double)value, 7);
     }
 }

@@ -796,7 +796,7 @@
     <value>队伍经验倍率</value>
   </data>
   <data name="Description_PartyExperienceMultiplier" xml:space="preserve">
-    <value>定义每名队伍成员增加的经验倍率，以经验的比例表示（0.01 = 每名成员1%）。</value>
+    <value>定义每增加一名队伍成员时队伍经验所乘的倍率（1.05 = 第二名成员增加5%经验，并对之后每名成员继续相乘，即3名成员的队伍获得 1.05 * 1.05）。值为0或更小则禁用。</value>
   </data>
   <data name="Name_PetDurationIncrease" xml:space="preserve">
     <value>宠物持续时间增加</value>

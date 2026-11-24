@@ -8,12 +8,9 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 
 /// <summary>
-/// This update adds the attributes which define the experience bonus of general parties and set parties,
-/// and assigns their default values to the global base attributes.
+/// This update adds the attributes which define the party experience, and assigns their default values
+/// to the global base attributes.
 /// </summary>
-/// <remarks>
-/// Existing values are not changed, so that a server owner can adjust the bonus and still apply this update.
-/// </remarks>
 public abstract class AddPartyExperienceBonusAttributesPlugInBase : UpdatePlugInBase
 {
     /// <inheritdoc />
