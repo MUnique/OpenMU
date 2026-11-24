@@ -24,13 +24,13 @@ public class PlayerHitTollTests
     {
         var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         attacker.Attributes![Stats.CurrentHealth] = 10;
-        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterHit);
+        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
         attacker.Attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.IsImpEquipped);
 
         var skill = new Mock<Skill>();
         skill.Setup(existing => existing.AttributeRelationships).Returns(
         [
-            new AttributeRelationship(Stats.SkillHealthLossAfterHit, 2, Stats.IsImpEquipped),
+            new AttributeRelationship(Stats.SkillHealthLossAfterDealtHit, 2, Stats.IsImpEquipped),
         ]);
         var skillEntry = new SkillEntry { Skill = skill.Object };
 
@@ -48,7 +48,7 @@ public class PlayerHitTollTests
         var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         attacker.Attributes![Stats.CurrentHealth] = 10;
-        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterHit);
+        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
         attacker.Attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.TargetHasDinorantHealthToll);
         target.Attributes!.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.IsDinorantEquipped);
 
@@ -58,17 +58,20 @@ public class PlayerHitTollTests
     }
 
     /// <summary>
-    /// A health toll cannot reduce a player's health below one.
+    /// A health toll for receiving damage is applied.
     /// </summary>
     [Test]
-    public async Task HealthTollKeepsCurrentHealthAtOneAsync()
+    public async Task HealthTollForReceivingDamageIsAppliedAsync()
     {
-        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        player.Attributes![Stats.CurrentHealth] = 1;
-        player.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterHit);
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        target.GameContext.Configuration.Maps.Single().BattleZone = new BattleZoneDefinition();
+        attacker.Attributes!.AddElement(new SimpleElement(100, AggregateType.AddRaw), Stats.AttackRatePvp);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        target.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterHit);
 
-        await player.AfterHitTargetAsync(0, null).ConfigureAwait(false);
+        await target.AttackByAsync(attacker, null, false).ConfigureAwait(false);
 
-        Assert.That(player.Attributes[Stats.CurrentHealth], Is.EqualTo(1));
+        Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(6));
     }
 }
