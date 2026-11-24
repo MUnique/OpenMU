@@ -71,7 +71,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <summary>
     /// The highest NPC number of the roaming "Illusion Sorc. Spirit" arena monsters, across all temples.
     /// </summary>
-    private const short ArenaMonsterRangeEnd = 399;
+    private const short ArenaMonsterRangeEnd = 403;
 
     /// <summary>
     /// The skill points a player starts a match with.
@@ -646,7 +646,7 @@ public sealed class IllusionTempleContext : MiniGameContext
 
     /// <inheritdoc />
     /// <remarks>
-    /// Killing one of the roaming "Illusion Sorc. Spirit" arena monsters (386 to 399) grants the killer
+    /// Killing one of the roaming "Illusion Sorc. Spirit" arena monsters (386 to 403) grants the killer
     /// skill points for the event's special skills.
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]

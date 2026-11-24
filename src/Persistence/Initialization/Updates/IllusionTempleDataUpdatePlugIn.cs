@@ -80,7 +80,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The highest NPC number of the roaming "Illusion Sorc. Spirit" arena monsters, across all temples.
     /// </summary>
-    private const short ArenaMonsterRangeEnd = 399;
+    private const short ArenaMonsterRangeEnd = 403;
 
     /// <summary>
     /// The default minimum player count for an illusion temple match, if the definition doesn't already
@@ -542,7 +542,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <summary>
-    /// Adds the 14 "Illusion Sorc. Spirit" arena monster definitions (386 to 399), if they don't exist
+    /// Adds the 18 "Illusion Sorc. Spirit" arena monster definitions (386 to 403), if they don't exist
     /// yet.
     /// </summary>
     private void AddArenaMonsterDefinitions(IContext context, GameConfiguration gameConfiguration)

@@ -4,9 +4,11 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -179,6 +181,36 @@ public class IllusionTempleContextTest
         Assert.That(walkMap[143, 51], Is.True);
         Assert.That(walkMap[196, 118], Is.True);
         Assert.That(walkMap[150, 60], Is.False);
+    }
+
+    /// <summary>
+    /// Killing one of the roaming arena monsters of any temple, from the first one (386) to the ones of
+    /// temple 6 (401 to 403), grants the killer skill points.
+    /// </summary>
+    /// <param name="monsterNumber">The number of the killed arena monster.</param>
+    [TestCase((short)386)]
+    [TestCase((short)399)]
+    [TestCase((short)400)]
+    [TestCase((short)403)]
+    public async ValueTask KillingAnArenaMonsterGrantsSkillPointsAsync(short monsterNumber)
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var killer = players[0];
+        var skillPoints = GetSkillPoints(illusionTemple);
+        var pointsBefore = skillPoints[killer];
+        var monster = await CreateMonsterAsync(illusionTemple, gameContext, monsterNumber).ConfigureAwait(false);
+
+        await InvokeProtectedAsync(
+            illusionTemple,
+            "OnMonsterDied",
+            [monster, new DeathInformation(killer.Id, killer.Name, default, 0)]).ConfigureAwait(false);
+
+        await WaitUntilAsync(() => skillPoints[killer] > pointsBefore).ConfigureAwait(false);
+        Assert.That(skillPoints[killer], Is.EqualTo(pointsBefore + 2));
     }
 
     /// <summary>
@@ -577,6 +609,30 @@ public class IllusionTempleContextTest
         var npc = new NonPlayerCharacter(spawnArea, spawnArea.MonsterDefinition!, context.Map);
         npc.Initialize();
         return npc;
+    }
+
+    private static ConcurrentDictionary<Player, byte> GetSkillPoints(IllusionTempleContext context)
+    {
+        var field = typeof(IllusionTempleContext).GetField("_skillPoints", BindingFlags.NonPublic | BindingFlags.Instance);
+        return (ConcurrentDictionary<Player, byte>)field!.GetValue(context)!;
+    }
+
+    private static async ValueTask<Monster> CreateMonsterAsync(IllusionTempleContext context, IGameContext gameContext, short number)
+    {
+        var monsterDefinition = new MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition { Number = number, ObjectKind = NpcObjectKind.Monster };
+        monsterDefinition.Attributes.Add(new MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 100 });
+        var spawnArea = CreateSpawn(context.Map.Definition, 200, monsterDefinition, 150, 80, SpawnTrigger.AutomaticDuringEvent);
+        var monster = new Monster(
+            spawnArea,
+            monsterDefinition,
+            context.Map,
+            NullDropGenerator.Instance,
+            new Mock<INpcIntelligence>().Object,
+            gameContext.PlugInManager,
+            gameContext.PathFinderPool);
+        monster.Initialize();
+        await context.Map.AddAsync(monster).ConfigureAwait(false);
+        return monster;
     }
 
     /// <summary>
