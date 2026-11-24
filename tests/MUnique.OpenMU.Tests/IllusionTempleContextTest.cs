@@ -1,4 +1,4 @@
-// <copyright file="IllusionTempleContextTest.cs" company="MUnique">
+﻿// <copyright file="IllusionTempleContextTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -18,6 +18,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Pathfinding;
 
@@ -263,6 +264,64 @@ public class IllusionTempleContextTest
         Assert.That(illusionTemple.State, Is.EqualTo(MiniGameState.Open));
         var latePlayer = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
         Assert.That(await illusionTemple.TryEnterAsync(latePlayer).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
+    }
+
+    /// <summary>
+    /// The client names its own player by the constant player id: a player who casts the Order of Protection on
+    /// himself gets it, and the result names him by that id as source and target, so his client shows the effect.
+    /// </summary>
+    [Test]
+    public async ValueTask OrderOfProtectionOnHimselfIsAnsweredWithTheConstantPlayerIdAsync()
+    {
+        const ushort orderOfProtection = 210;
+        var gameContext = CreateGameContext();
+        gameContext.Configuration.MagicEffects.Add(new MUnique.OpenMU.Persistence.BasicModel.MagicEffectDefinition { Number = (short)orderOfProtection });
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var player = players[0];
+        Assert.That(player.Id, Is.Not.EqualTo(ViewExtensions.ConstantPlayerId), "the map id must differ for this test to mean anything");
+        await SetPlayingStateAsync(illusionTemple).ConfigureAwait(false);
+
+        await illusionTemple.UseSkillAsync(player, orderOfProtection, ViewExtensions.ConstantPlayerId).ConfigureAwait(false);
+
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IIllusionTempleSkillUsageResultViewPlugin>()!);
+        view.Verify(v => v.ShowSkillUsageResultAsync(true, orderOfProtection, ViewExtensions.ConstantPlayerId, ViewExtensions.ConstantPlayerId), Times.Once);
+    }
+
+    /// <summary>
+    /// The cyclic state names the receiving player by the constant player id when he carries the relic, and his team
+    /// mates by their ids on the map, which is how his client knows them.
+    /// </summary>
+    [Test]
+    public async ValueTask StateNamesTheReceiverByTheConstantPlayerIdAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 4).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var receiver = players[0];
+        var teamMate = players.Skip(1).First(p => GetTeamOf(illusionTemple, p) == GetTeamOf(illusionTemple, receiver));
+        Assert.That(receiver.Id, Is.Not.EqualTo(ViewExtensions.ConstantPlayerId), "the map id must differ for this test to mean anything");
+        typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance)!.SetValue(illusionTemple, receiver);
+        var view = Mock.Get(receiver.ViewPlugIns.GetPlugIn<IIllusionTempleStateViewPlugin>()!);
+        view.Invocations.Clear();
+
+        await InvokePrivateAsync(illusionTemple, "UpdateStateAsync", receiver).ConfigureAwait(false);
+
+        view.Verify(
+            v => v.UpdateStateAsync(
+                It.IsAny<TimeSpan>(),
+                It.IsAny<byte>(),
+                It.IsAny<byte>(),
+                It.IsAny<IllusionTempleTeam>(),
+                It.Is<IReadOnlyCollection<(ushort PlayerId, byte MapNumber, byte PositionX, byte PositionY)>>(members =>
+                    members.Any(m => m.PlayerId == teamMate.Id)),
+                It.Is<(ushort PlayerId, byte PositionX, byte PositionY)?>(carrier =>
+                    carrier.HasValue && carrier.Value.PlayerId == ViewExtensions.ConstantPlayerId)),
+            Times.Once);
     }
 
     /// <summary>
@@ -609,6 +668,15 @@ public class IllusionTempleContextTest
         var npc = new NonPlayerCharacter(spawnArea, spawnArea.MonsterDefinition!, context.Map);
         npc.Initialize();
         return npc;
+    }
+
+    /// <summary>
+    /// Sets the state which the game loop sets after <c>OnGameStartAsync</c>: the tests call that one directly.
+    /// </summary>
+    private static async ValueTask SetPlayingStateAsync(MiniGameContext context)
+    {
+        var field = typeof(MiniGameContext).GetField("_players", BindingFlags.NonPublic | BindingFlags.Instance);
+        await ((MiniGamePlayerRegistry)field!.GetValue(context)!).SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
     }
 
     private static ConcurrentDictionary<Player, byte> GetSkillPoints(IllusionTempleContext context)

@@ -9,6 +9,7 @@ using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 
@@ -356,7 +357,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             }
 
             await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
-                vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
+                vp => vp.ShowHolyItemRelicsAsync(player.GetId(p), player.Name)).AsTask()).ConfigureAwait(false);
         }
         catch
         {
@@ -457,11 +458,12 @@ public sealed class IllusionTempleContext : MiniGameContext
         if (this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) < SkillCost(skillNumber))
         {
             await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
-                p => p.ShowSkillUsageResultAsync(false, skillNumber, player.Id, targetObjectIndex)).ConfigureAwait(false);
+                p => p.ShowSkillUsageResultAsync(false, skillNumber, player.GetId(player), targetObjectIndex)).ConfigureAwait(false);
             return;
         }
 
-        var target = player.CurrentMap?.GetObject(targetObjectIndex) as IAttackable;
+        // The client names itself by the constant player id, not by the id of its player on this map.
+        var target = player.GetObject(targetObjectIndex) as IAttackable;
         var success = skillNumber switch
         {
             OrderOfProtectionSkillNumber => await this.UseOrderOfProtectionAsync(player).ConfigureAwait(false),
@@ -477,7 +479,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         }
 
         await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
-            p => p.ShowSkillUsageResultAsync(success, skillNumber, player.Id, target?.Id ?? 0)).ConfigureAwait(false);
+            p => p.ShowSkillUsageResultAsync(success, skillNumber, player.GetId(player), target?.GetId(player) ?? 0)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -758,7 +760,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             // The client needs to be told who the new carrier is - otherwise it keeps showing the
             // previous one (or nobody) as the hero on its mini map.
             await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
-                vp => vp.ShowHolyItemRelicsAsync(args.Picker.Id, args.Picker.Name)).AsTask()).ConfigureAwait(false);
+                vp => vp.ShowHolyItemRelicsAsync(args.Picker.GetId(p), args.Picker.Name)).AsTask()).ConfigureAwait(false);
         }
     }
 
@@ -1073,7 +1075,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     {
         magicEffect.EffectTimeOut += _ => this.ForEachPlayerAsync(
             p => p.InvokeViewPlugInAsync<IIllusionTempleSkillEndedViewPlugin>(
-                view => view.ShowSkillEndedAsync(skillNumber, affectedObject.Id)).AsTask());
+                view => view.ShowSkillEndedAsync(skillNumber, affectedObject.GetId(p))).AsTask());
     }
 
     /// <summary>
@@ -1188,14 +1190,14 @@ public sealed class IllusionTempleContext : MiniGameContext
         var teamMembers = this._teams
             .Where(entry => entry.Value == ownTeam && entry.Key != player)
             .Select(entry => (
-                PlayerId: entry.Key.Id,
+                PlayerId: entry.Key.GetId(player),
                 MapNumber: (byte)(entry.Key.CurrentMap?.Definition.Number ?? 0),
                 PositionX: entry.Key.Position.X,
                 PositionY: entry.Key.Position.Y))
             .ToList();
 
         (ushort PlayerId, byte PositionX, byte PositionY)? relicCarrier = this._relicCarrier is { } carrier
-            ? (carrier.Id, carrier.Position.X, carrier.Position.Y)
+            ? (carrier.GetId(player), carrier.Position.X, carrier.Position.Y)
             : null;
 
         return player.InvokeViewPlugInAsync<IIllusionTempleStateViewPlugin>(
