@@ -203,7 +203,7 @@ public sealed class KanturuContext : MiniGameContext
     /// Tower entrants spawn at the tower entry instead of the event start.
     /// </summary>
     /// <param name="player">The player which enters.</param>
-    /// <returns>The tower entry point, or <c>null</c> to keep the warp target.</returns>
+    /// <returns>The tower entry point, or the one of the base class.</returns>
     internal override Point? GetEntrySpawnPosition(Player player)
     {
         if (this.TowerMode || this.CurrentKanturuState == KanturuState.Tower)
@@ -211,7 +211,7 @@ public sealed class KanturuContext : MiniGameContext
             return this.TowerEntryPoint;
         }
 
-        return null;
+        return base.GetEntrySpawnPosition(player);
     }
 
     /// <inheritdoc/>

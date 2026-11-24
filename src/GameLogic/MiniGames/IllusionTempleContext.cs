@@ -1,4 +1,4 @@
-// <copyright file="IllusionTempleContext.cs" company="MUnique">
+﻿// <copyright file="IllusionTempleContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -684,7 +684,9 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// warps and leave the player on two maps with duplicate map-change packets. Leaving the event is
     /// handled by <see cref="ClaimRewardAsync"/> and by the base class's exit handling, both of which
     /// respect the map's configured safezone. If fewer than <see cref="MinimumPlayerCount"/> players
-    /// remain afterwards, the match can't continue and is ended right away.
+    /// remain afterwards while the match is running, it can't continue and is ended right away. Before the
+    /// start that's not checked here: a player may leave the waiting room again, and the others can still
+    /// come in. If too few players are left at the start, the event isn't started.
     /// </remarks>
     protected override async ValueTask OnObjectRemovedFromMapAsync((GameMap Map, ILocateable Object) args)
     {
@@ -704,7 +706,7 @@ public sealed class IllusionTempleContext : MiniGameContext
 
         await base.OnObjectRemovedFromMapAsync(args).ConfigureAwait(false);
 
-        if (args.Object is Player && this.PlayerCount < this.MinimumPlayerCount)
+        if (args.Object is Player && this.State == MiniGameState.Playing && this.PlayerCount < this.MinimumPlayerCount)
         {
             this.FinishEvent();
         }

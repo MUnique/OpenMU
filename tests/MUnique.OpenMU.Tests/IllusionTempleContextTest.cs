@@ -182,6 +182,58 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
+    /// A player who enters lands on a walkable tile of the entrance gate, even if the gate contains blocked
+    /// tiles, instead of being warped out of the event to the safezone.
+    /// </summary>
+    [Test]
+    public async ValueTask EnteringPlayerLandsOnAWalkableEntranceTileAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        var entrance = definition.Entrance!;
+        var terrainData = entrance.Map!.TerrainData!;
+        var walkableTile = (X: (byte)143, Y: (byte)43);
+        for (var x = entrance.X1; x <= entrance.X2; x++)
+        {
+            for (var y = entrance.Y1; y <= entrance.Y2; y++)
+            {
+                if ((x, y) != walkableTile)
+                {
+                    terrainData[TerrainDataOffset(x, y)] = (byte)TerrainAttributeType.Blocked;
+                }
+            }
+        }
+
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+
+        var player = (await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false)).Single();
+
+        Assert.That(player.CurrentMap, Is.SameAs(illusionTemple.Map));
+        Assert.That((player.Position.X, player.Position.Y), Is.EqualTo(walkableTile));
+        Assert.That(illusionTemple.State, Is.EqualTo(MiniGameState.Open));
+    }
+
+    /// <summary>
+    /// A player who leaves the waiting room before the start doesn't end the event for the others: they can
+    /// still enter until the entrance closes.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavingBeforeTheStartKeepsTheEventOpenAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+
+        await illusionTemple.Map.RemoveAsync(players[0]).ConfigureAwait(false);
+
+        Assert.That(GetGameEndedToken(illusionTemple).IsCancellationRequested, Is.False);
+        Assert.That(illusionTemple.State, Is.EqualTo(MiniGameState.Open));
+        var latePlayer = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        Assert.That(await illusionTemple.TryEnterAsync(latePlayer).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
+    }
+
+    /// <summary>
     /// After the game start, every player has a team which plugins can read; a player who
     /// is not part of the match has none.
     /// </summary>
