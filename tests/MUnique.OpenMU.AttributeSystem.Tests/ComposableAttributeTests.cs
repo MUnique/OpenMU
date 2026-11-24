@@ -339,9 +339,18 @@ public class ComposableAttributeTests
 
         public ReentrantElement(Action onFirstRead) => this._onFirstRead = onFirstRead;
 
-#pragma warning disable CS0067 // Required by IElement, this test element never raises it.
-        public event EventHandler? ValueChanged;
-#pragma warning restore CS0067
+        public event EventHandler? ValueChanged
+        {
+            add
+            {
+                // The event is never raised, so there is nothing to subscribe to.
+            }
+
+            remove
+            {
+                // The event is never raised, so there is nothing to unsubscribe from.
+            }
+        }
 
         public AggregateType AggregateType => AggregateType.AddRaw;
 

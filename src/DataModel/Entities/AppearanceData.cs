@@ -17,7 +17,18 @@ public class AppearanceData : IAppearanceData
     /// <remarks>
     /// This never happens in this implementation.
     /// </remarks>
-    public event EventHandler? AppearanceChanged;
+    public event EventHandler? AppearanceChanged
+    {
+        add
+        {
+            // The event is never raised, so there is nothing to subscribe to.
+        }
+
+        remove
+        {
+            // The event is never raised, so there is nothing to unsubscribe from.
+        }
+    }
 
     /// <summary>
     /// Gets or sets the character class.
