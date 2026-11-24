@@ -19,6 +19,24 @@ internal class IllusionTemple6 : BaseMapInitializer
     internal const byte Number = 50;
 
     /// <summary>
+    /// The positions of the roaming "Illusion Sorc. Spirit" monsters in the arena.
+    /// </summary>
+    private static readonly (byte X, byte Y)[] SorcererSpiritPositions =
+    {
+        (131, 93), (131, 89), (131, 85),
+        (168, 123), (164, 123), (160, 123),
+        (169, 48), (169, 52), (169, 56),
+        (206, 85), (206, 81), (206, 77),
+        (158, 85), (168, 94), (169, 75),
+        (179, 85), (157, 66), (162, 66),
+        (150, 78), (150, 73), (176, 103),
+        (181, 103), (187, 98), (187, 92),
+        (197, 57), (141, 113), (193, 61),
+        (145, 109), (189, 65), (149, 105),
+        (167, 87), (171, 83),
+    };
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="IllusionTemple6"/> class.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -66,7 +84,13 @@ internal class IllusionTemple6 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(112, this.NpcDictionary[383], 141, 059, Direction.South, SpawnTrigger.AutomaticDuringEvent); // Alliance Item Storage
         yield return this.CreateMonsterSpawn(113, this.NpcDictionary[384], 194, 113, Direction.South, SpawnTrigger.AutomaticDuringEvent); // Illusion Item Storage
 
-        // Temple 6 has no roaming "Illusion Sorc. Spirit" monsters.
+        // Roaming "Illusion Sorc. Spirit" monsters (401-403) - killing them grants skill points for the
+        // event's special skills.
+        for (var i = 0; i < SorcererSpiritPositions.Length; i++)
+        {
+            var (x, y) = SorcererSpiritPositions[i];
+            yield return this.CreateMonsterSpawn((short)(120 + i), this.NpcDictionary[(short)(401 + (i % 3))], x, y, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
+        }
     }
 
     /// <inheritdoc/>

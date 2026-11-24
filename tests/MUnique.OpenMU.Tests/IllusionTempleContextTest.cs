@@ -1,12 +1,14 @@
-// <copyright file="IllusionTempleContextTest.cs" company="MUnique">
+﻿// <copyright file="IllusionTempleContextTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Tests;
 
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -16,6 +18,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Pathfinding;
 
@@ -153,6 +156,172 @@ public class IllusionTempleContextTest
             Assert.That(illusionTemple.GetSpawnGate(player), Is.Not.Null);
         }
 
+    }
+
+    /// <summary>
+    /// The barriers between the bases and the arena are the water tiles of the map. They open on the server
+    /// when the battle starts, like in the client, while the other blocked tiles stay blocked.
+    /// </summary>
+    [Test]
+    public async ValueTask GameStartOpensTheArenaBarriersAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        var terrainData = definition.Entrance!.Map!.TerrainData!;
+        terrainData[TerrainDataOffset(143, 51)] = (byte)TerrainAttributeType.Water;
+        terrainData[TerrainDataOffset(196, 118)] = (byte)TerrainAttributeType.Water;
+        terrainData[TerrainDataOffset(150, 60)] = (byte)TerrainAttributeType.Blocked;
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+        var walkMap = illusionTemple.Map.Terrain.WalkMap;
+        var barriersClosedBeforeStart = !walkMap[143, 51] && !walkMap[196, 118];
+
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+
+        Assert.That(barriersClosedBeforeStart, Is.True);
+        Assert.That(walkMap[143, 51], Is.True);
+        Assert.That(walkMap[196, 118], Is.True);
+        Assert.That(walkMap[150, 60], Is.False);
+    }
+
+    /// <summary>
+    /// Killing one of the roaming arena monsters of any temple, from the first one (386) to the ones of
+    /// temple 6 (401 to 403), grants the killer skill points.
+    /// </summary>
+    /// <param name="monsterNumber">The number of the killed arena monster.</param>
+    [TestCase((short)386)]
+    [TestCase((short)399)]
+    [TestCase((short)400)]
+    [TestCase((short)403)]
+    public async ValueTask KillingAnArenaMonsterGrantsSkillPointsAsync(short monsterNumber)
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var killer = players[0];
+        var skillPoints = GetSkillPoints(illusionTemple);
+        var pointsBefore = skillPoints[killer];
+        var monster = await CreateMonsterAsync(illusionTemple, gameContext, monsterNumber).ConfigureAwait(false);
+
+        await InvokeProtectedAsync(
+            illusionTemple,
+            "OnMonsterDied",
+            [monster, new DeathInformation(killer.Id, killer.Name, default, 0)]).ConfigureAwait(false);
+
+        await WaitUntilAsync(() => skillPoints[killer] > pointsBefore).ConfigureAwait(false);
+        Assert.That(skillPoints[killer], Is.EqualTo(pointsBefore + 2));
+    }
+
+    /// <summary>
+    /// A player who enters lands on a walkable tile of the entrance gate, even if the gate contains blocked
+    /// tiles, instead of being warped out of the event to the safezone.
+    /// </summary>
+    [Test]
+    public async ValueTask EnteringPlayerLandsOnAWalkableEntranceTileAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        var entrance = definition.Entrance!;
+        var terrainData = entrance.Map!.TerrainData!;
+        var walkableTile = (X: (byte)143, Y: (byte)43);
+        for (var x = entrance.X1; x <= entrance.X2; x++)
+        {
+            for (var y = entrance.Y1; y <= entrance.Y2; y++)
+            {
+                if ((x, y) != walkableTile)
+                {
+                    terrainData[TerrainDataOffset(x, y)] = (byte)TerrainAttributeType.Blocked;
+                }
+            }
+        }
+
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+
+        var player = (await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false)).Single();
+
+        Assert.That(player.CurrentMap, Is.SameAs(illusionTemple.Map));
+        Assert.That((player.Position.X, player.Position.Y), Is.EqualTo(walkableTile));
+        Assert.That(illusionTemple.State, Is.EqualTo(MiniGameState.Open));
+    }
+
+    /// <summary>
+    /// A player who leaves the waiting room before the start doesn't end the event for the others: they can
+    /// still enter until the entrance closes.
+    /// </summary>
+    [Test]
+    public async ValueTask LeavingBeforeTheStartKeepsTheEventOpenAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+
+        await illusionTemple.Map.RemoveAsync(players[0]).ConfigureAwait(false);
+
+        Assert.That(GetGameEndedToken(illusionTemple).IsCancellationRequested, Is.False);
+        Assert.That(illusionTemple.State, Is.EqualTo(MiniGameState.Open));
+        var latePlayer = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        Assert.That(await illusionTemple.TryEnterAsync(latePlayer).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
+    }
+
+    /// <summary>
+    /// The client names its own player by the constant player id: a player who casts the Order of Protection on
+    /// himself gets it, and the result names him by that id as source and target, so his client shows the effect.
+    /// </summary>
+    [Test]
+    public async ValueTask OrderOfProtectionOnHimselfIsAnsweredWithTheConstantPlayerIdAsync()
+    {
+        const ushort orderOfProtection = 210;
+        var gameContext = CreateGameContext();
+        gameContext.Configuration.MagicEffects.Add(new MUnique.OpenMU.Persistence.BasicModel.MagicEffectDefinition { Number = (short)orderOfProtection });
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 1);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 1).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var player = players[0];
+        Assert.That(player.Id, Is.Not.EqualTo(ViewExtensions.ConstantPlayerId), "the map id must differ for this test to mean anything");
+        await SetPlayingStateAsync(illusionTemple).ConfigureAwait(false);
+
+        await illusionTemple.UseSkillAsync(player, orderOfProtection, ViewExtensions.ConstantPlayerId).ConfigureAwait(false);
+
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IIllusionTempleSkillUsageResultViewPlugin>()!);
+        view.Verify(v => v.ShowSkillUsageResultAsync(true, orderOfProtection, ViewExtensions.ConstantPlayerId, ViewExtensions.ConstantPlayerId), Times.Once);
+    }
+
+    /// <summary>
+    /// The cyclic state names the receiving player by the constant player id when he carries the relic, and his team
+    /// mates by their ids on the map, which is how his client knows them.
+    /// </summary>
+    [Test]
+    public async ValueTask StateNamesTheReceiverByTheConstantPlayerIdAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 4).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var receiver = players[0];
+        var teamMate = players.Skip(1).First(p => GetTeamOf(illusionTemple, p) == GetTeamOf(illusionTemple, receiver));
+        Assert.That(receiver.Id, Is.Not.EqualTo(ViewExtensions.ConstantPlayerId), "the map id must differ for this test to mean anything");
+        SetRelicCarrier(illusionTemple, receiver);
+        var view = Mock.Get(receiver.ViewPlugIns.GetPlugIn<IIllusionTempleStateViewPlugin>()!);
+        view.Invocations.Clear();
+
+        await InvokePrivateAsync(illusionTemple, "UpdateStateAsync", receiver).ConfigureAwait(false);
+
+        view.Verify(
+            v => v.UpdateStateAsync(
+                It.IsAny<TimeSpan>(),
+                It.IsAny<byte>(),
+                It.IsAny<byte>(),
+                It.IsAny<IllusionTempleTeam>(),
+                It.Is<IReadOnlyCollection<(ushort PlayerId, byte MapNumber, byte PositionX, byte PositionY)>>(members =>
+                    members.Any(m => m.PlayerId == teamMate.Id)),
+                It.Is<(ushort PlayerId, byte PositionX, byte PositionY)?>(carrier =>
+                    carrier.HasValue && carrier.Value.PlayerId == ViewExtensions.ConstantPlayerId)),
+            Times.Once);
     }
 
     /// <summary>
@@ -460,6 +629,36 @@ public class IllusionTempleContextTest
         await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// The client closes the window of the entrance npc without telling the server, so talking to it must not
+    /// leave the player in the dialog state: afterwards, the dialog of another npc opens.
+    /// </summary>
+    [Test]
+    public async ValueTask TalkingToTheEntranceNpcDoesntBlockOtherNpcsAsync()
+    {
+        var gameContext = CreateGameContext();
+        var player = await CreatePlayerAsync(gameContext).ConfigureAwait(false);
+        var map = await gameContext.GetMapAsync(0).ConfigureAwait(false);
+        var entranceNpc = new NonPlayerCharacter(
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea { GameMap = map!.Definition },
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition { Number = 385, NpcWindow = NpcWindow.IllusionTemple },
+            map);
+        var otherNpc = new NonPlayerCharacter(
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterSpawnArea { GameMap = map.Definition },
+            new MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition { Number = 238, NpcWindow = NpcWindow.ChaosMachine },
+            map);
+        var talkAction = new TalkNpcAction();
+
+        await talkAction.TalkToNpcAsync(player, entranceNpc).ConfigureAwait(false);
+        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+
+        await talkAction.TalkToNpcAsync(player, otherNpc).ConfigureAwait(false);
+        Assert.That(player.OpenedNpc, Is.EqualTo(otherNpc));
+        Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.NpcDialogOpened));
+
+        await gameContext.RemovePlayerAsync(player).ConfigureAwait(false);
+    }
+
     private static bool IsRelicItem(MUnique.OpenMU.DataModel.Entities.Item item) => item.Definition?.Group == 14 && item.Definition?.Number == 64;
 
     private static IllusionTempleTeam GetTeamOf(IllusionTempleContext context, Player player)
@@ -483,6 +682,17 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
+    /// Sets the private <c>_relicCarrier</c> field of <see cref="IllusionTempleContext"/> via reflection, to test what
+    /// the state reports about the carrier without going through the statue and the pick-up.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code setting a private field of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public setter purely for tests isn't warranted for an internal implementation detail.")]
+    private static void SetRelicCarrier(IllusionTempleContext context, Player carrier)
+    {
+        var field = typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance);
+        field!.SetValue(context, carrier);
+    }
+
+    /// <summary>
     /// Reads the protected <c>GameEndedToken</c> of the <see cref="MiniGameContext"/> via reflection, which tells
     /// whether the game was finished. Test-only, like <see cref="GetRelicCarrier"/>.
     /// </summary>
@@ -500,6 +710,49 @@ public class IllusionTempleContextTest
         npc.Initialize();
         return npc;
     }
+
+    /// <summary>
+    /// Sets the state which the game loop sets after <c>OnGameStartAsync</c>: the tests call that one directly.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a private field of a type from this same solution, to set the state which the real-time game loop would set (see the class remarks). The member name is a hardcoded literal - no external input reaches this call.")]
+    private static async ValueTask SetPlayingStateAsync(MiniGameContext context)
+    {
+        var field = typeof(MiniGameContext).GetField("_players", BindingFlags.NonPublic | BindingFlags.Instance);
+        await ((MiniGamePlayerRegistry)field!.GetValue(context)!).SetStateAsync(MiniGameState.Playing).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Reads the private <c>_skillPoints</c> field of <see cref="IllusionTempleContext"/> via reflection.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a private field of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public accessor purely for tests isn't warranted for an internal implementation detail.")]
+    private static ConcurrentDictionary<Player, byte> GetSkillPoints(IllusionTempleContext context)
+    {
+        var field = typeof(IllusionTempleContext).GetField("_skillPoints", BindingFlags.NonPublic | BindingFlags.Instance);
+        return (ConcurrentDictionary<Player, byte>)field!.GetValue(context)!;
+    }
+
+    private static async ValueTask<Monster> CreateMonsterAsync(IllusionTempleContext context, IGameContext gameContext, short number)
+    {
+        var monsterDefinition = new MUnique.OpenMU.Persistence.BasicModel.MonsterDefinition { Number = number, ObjectKind = NpcObjectKind.Monster };
+        monsterDefinition.Attributes.Add(new MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 100 });
+        var spawnArea = CreateSpawn(context.Map.Definition, 200, monsterDefinition, 150, 80, SpawnTrigger.AutomaticDuringEvent);
+        var monster = new Monster(
+            spawnArea,
+            monsterDefinition,
+            context.Map,
+            NullDropGenerator.Instance,
+            new Mock<INpcIntelligence>().Object,
+            gameContext.PlugInManager,
+            gameContext.PathFinderPool);
+        monster.Initialize();
+        await context.Map.AddAsync(monster).ConfigureAwait(false);
+        return monster;
+    }
+
+    /// <summary>
+    /// Gets the index of a tile in <see cref="GameMapDefinition.TerrainData"/>, which starts with a header of 3 bytes.
+    /// </summary>
+    private static int TerrainDataOffset(byte x, byte y) => 3 + (y * 256) + x;
 
     private static async ValueTask StartGameAsync(IllusionTempleContext context, IReadOnlyCollection<Player> players)
     {

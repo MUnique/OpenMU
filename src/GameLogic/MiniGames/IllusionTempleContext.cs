@@ -1,4 +1,4 @@
-// <copyright file="IllusionTempleContext.cs" company="MUnique">
+﻿// <copyright file="IllusionTempleContext.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -9,6 +9,7 @@ using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 
@@ -71,7 +72,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <summary>
     /// The highest NPC number of the roaming "Illusion Sorc. Spirit" arena monsters, across all temples.
     /// </summary>
-    private const short ArenaMonsterRangeEnd = 399;
+    private const short ArenaMonsterRangeEnd = 403;
 
     /// <summary>
     /// The skill points a player starts a match with.
@@ -356,7 +357,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             }
 
             await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
-                vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
+                vp => vp.ShowHolyItemRelicsAsync(player.GetId(p), player.Name)).AsTask()).ConfigureAwait(false);
         }
         catch
         {
@@ -457,11 +458,12 @@ public sealed class IllusionTempleContext : MiniGameContext
         if (this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) < SkillCost(skillNumber))
         {
             await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
-                p => p.ShowSkillUsageResultAsync(false, skillNumber, player.Id, targetObjectIndex)).ConfigureAwait(false);
+                p => p.ShowSkillUsageResultAsync(false, skillNumber, player.GetId(player), targetObjectIndex)).ConfigureAwait(false);
             return;
         }
 
-        var target = player.CurrentMap?.GetObject(targetObjectIndex) as IAttackable;
+        // The client names itself by the constant player id, not by the id of its player on this map.
+        var target = player.GetObject(targetObjectIndex) as IAttackable;
         var success = skillNumber switch
         {
             OrderOfProtectionSkillNumber => await this.UseOrderOfProtectionAsync(player).ConfigureAwait(false),
@@ -477,7 +479,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         }
 
         await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
-            p => p.ShowSkillUsageResultAsync(success, skillNumber, player.Id, target?.Id ?? 0)).ConfigureAwait(false);
+            p => p.ShowSkillUsageResultAsync(success, skillNumber, player.GetId(player), target?.GetId(player) ?? 0)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -575,8 +577,8 @@ public sealed class IllusionTempleContext : MiniGameContext
         await base.OnGameStartAsync(players).ConfigureAwait(false);
 
         // The client keeps its event interface closed and the arena barriers up until it's told that
-        // the battle started - the barrier areas are hardcoded at client side, so this is the only way
-        // to open them. The two states are deliberately separated by a short delay, so the players
+        // the battle started - that's the only way to open them at client side (the server's terrain is
+        // opened by OpenArenaBarriers at the same time). The two states are deliberately separated by a short delay, so the players
         // actually get to see the preparation phase before the barriers drop - sending both back to
         // back made the client skip straight to the battle without any noticeable wait.
         var templeNumber = (byte)this.Definition.GameLevel;
@@ -594,6 +596,8 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
+        // Opened before the clients are told, so a player who walks off right away isn't set back.
+        this.OpenArenaBarriers();
         await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
             p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.BattleStarted)).AsTask()).ConfigureAwait(false);
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleBattleStartedMessage)).ConfigureAwait(false);
@@ -644,7 +648,7 @@ public sealed class IllusionTempleContext : MiniGameContext
 
     /// <inheritdoc />
     /// <remarks>
-    /// Killing one of the roaming "Illusion Sorc. Spirit" arena monsters (386 to 399) grants the killer
+    /// Killing one of the roaming "Illusion Sorc. Spirit" arena monsters (386 to 403) grants the killer
     /// skill points for the event's special skills.
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "Catching all Exceptions.")]
@@ -682,7 +686,9 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// warps and leave the player on two maps with duplicate map-change packets. Leaving the event is
     /// handled by <see cref="ClaimRewardAsync"/> and by the base class's exit handling, both of which
     /// respect the map's configured safezone. If fewer than <see cref="MinimumPlayerCount"/> players
-    /// remain afterwards, the match can't continue and is ended right away.
+    /// remain afterwards while the match is running, it can't continue and is ended right away. Before the
+    /// start that's not checked here: a player may leave the waiting room again, and the others can still
+    /// come in. If too few players are left at the start, the event isn't started.
     /// </remarks>
     protected override async ValueTask OnObjectRemovedFromMapAsync((GameMap Map, ILocateable Object) args)
     {
@@ -702,7 +708,7 @@ public sealed class IllusionTempleContext : MiniGameContext
 
         await base.OnObjectRemovedFromMapAsync(args).ConfigureAwait(false);
 
-        if (args.Object is Player && this.PlayerCount < this.MinimumPlayerCount)
+        if (args.Object is Player && this.State == MiniGameState.Playing && this.PlayerCount < this.MinimumPlayerCount)
         {
             this.FinishEvent();
         }
@@ -754,7 +760,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             // The client needs to be told who the new carrier is - otherwise it keeps showing the
             // previous one (or nobody) as the hero on its mini map.
             await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
-                vp => vp.ShowHolyItemRelicsAsync(args.Picker.Id, args.Picker.Name)).AsTask()).ConfigureAwait(false);
+                vp => vp.ShowHolyItemRelicsAsync(args.Picker.GetId(p), args.Picker.Name)).AsTask()).ConfigureAwait(false);
         }
     }
 
@@ -1069,7 +1075,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     {
         magicEffect.EffectTimeOut += _ => this.ForEachPlayerAsync(
             p => p.InvokeViewPlugInAsync<IIllusionTempleSkillEndedViewPlugin>(
-                view => view.ShowSkillEndedAsync(skillNumber, affectedObject.Id)).AsTask());
+                view => view.ShowSkillEndedAsync(skillNumber, affectedObject.GetId(p))).AsTask());
     }
 
     /// <summary>
@@ -1092,6 +1098,31 @@ public sealed class IllusionTempleContext : MiniGameContext
         await player.Inventory.RemoveItemAsync(relicItem).ConfigureAwait(false);
         await player.PersistenceContext.DeleteAsync(relicItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Opens the barriers between the bases of the teams and the arena on the server's terrain.
+    /// </summary>
+    /// <remarks>
+    /// The barriers are the water tiles of the temple map. The client opens its own copy when it's told that
+    /// the battle started, by clearing every water tile of the map; the server does the same, so that both
+    /// agree on the configured terrain. Until then the tiles aren't walkable, and every step into the arena
+    /// is set back. They aren't closed again: the map belongs to this game and is discarded with it.
+    /// </remarks>
+    private void OpenArenaBarriers()
+    {
+        var terrain = this.Map.Terrain;
+        var attributes = terrain.AttributeMap;
+        for (var x = 0; x < attributes.GetLength(0); x++)
+        {
+            for (var y = 0; y < attributes.GetLength(1); y++)
+            {
+                if ((attributes[x, y] & (byte)TerrainAttributeType.Water) != 0)
+                {
+                    terrain.ApplyTerrainAttribute((byte)x, (byte)y, TerrainAttributeType.Water, false);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -1159,14 +1190,14 @@ public sealed class IllusionTempleContext : MiniGameContext
         var teamMembers = this._teams
             .Where(entry => entry.Value == ownTeam && entry.Key != player)
             .Select(entry => (
-                PlayerId: entry.Key.Id,
+                PlayerId: entry.Key.GetId(player),
                 MapNumber: (byte)(entry.Key.CurrentMap?.Definition.Number ?? 0),
                 PositionX: entry.Key.Position.X,
                 PositionY: entry.Key.Position.Y))
             .ToList();
 
         (ushort PlayerId, byte PositionX, byte PositionY)? relicCarrier = this._relicCarrier is { } carrier
-            ? (carrier.Id, carrier.Position.X, carrier.Position.Y)
+            ? (carrier.GetId(player), carrier.Position.X, carrier.Position.Y)
             : null;
 
         return player.InvokeViewPlugInAsync<IIllusionTempleStateViewPlugin>(

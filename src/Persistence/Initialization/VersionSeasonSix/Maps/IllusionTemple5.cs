@@ -84,12 +84,12 @@ internal class IllusionTemple5 : BaseMapInitializer
         yield return this.CreateMonsterSpawn(112, this.NpcDictionary[383], 141, 059, Direction.South, SpawnTrigger.AutomaticDuringEvent); // Alliance Item Storage
         yield return this.CreateMonsterSpawn(113, this.NpcDictionary[384], 194, 113, Direction.South, SpawnTrigger.AutomaticDuringEvent); // Illusion Item Storage
 
-        // Roaming "Illusion Sorc. Spirit" monsters (398-399) - killing them grants skill points for the
+        // Roaming "Illusion Sorc. Spirit" monsters (398-400) - killing them grants skill points for the
         // event's special skills.
         for (var i = 0; i < SorcererSpiritPositions.Length; i++)
         {
             var (x, y) = SorcererSpiritPositions[i];
-            yield return this.CreateMonsterSpawn((short)(120 + i), this.NpcDictionary[(short)(398 + (i % 2))], x, y, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
+            yield return this.CreateMonsterSpawn((short)(120 + i), this.NpcDictionary[(short)(398 + (i % 3))], x, y, Direction.Undefined, SpawnTrigger.AutomaticDuringEvent);
         }
     }
 

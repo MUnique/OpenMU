@@ -361,7 +361,25 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// </summary>
     /// <param name="player">The player which enters.</param>
     /// <returns>The spawn position, or <c>null</c> to keep the warp target.</returns>
-    internal virtual Point? GetEntrySpawnPosition(Player player) => null;
+    /// <remarks>
+    /// The warp picks a random tile of the entrance gate without looking at the terrain, and some gates contain
+    /// blocked tiles (e.g. the pillars in the entrance of the illusion temples). A player who lands on one would
+    /// be warped to the safezone, out of the game he just paid for, so he gets a random walkable tile of the
+    /// entrance gate instead.
+    /// </remarks>
+    internal virtual Point? GetEntrySpawnPosition(Player player)
+    {
+        if (player.SelectedCharacter is not { } character
+            || this.Map.Terrain.WalkMap[character.PositionX, character.PositionY]
+            || this.Definition.Entrance is not { } entrance)
+        {
+            return null;
+        }
+
+        var walkMap = this.Map.Terrain.WalkMap;
+        var walkablePoints = entrance.GetPossibleLandingPoints().Where(point => walkMap[point.X, point.Y]).ToList();
+        return walkablePoints.Count > 0 ? walkablePoints[Rand.NextInt(0, walkablePoints.Count)] : null;
+    }
 
     /// <summary>
     /// Starts the game loop, unless it was started before. It can't start in the

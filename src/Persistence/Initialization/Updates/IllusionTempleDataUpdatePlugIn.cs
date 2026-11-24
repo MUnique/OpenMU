@@ -80,7 +80,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The highest NPC number of the roaming "Illusion Sorc. Spirit" arena monsters, across all temples.
     /// </summary>
-    private const short ArenaMonsterRangeEnd = 399;
+    private const short ArenaMonsterRangeEnd = 403;
 
     /// <summary>
     /// The default minimum player count for an illusion temple match, if the definition doesn't already
@@ -131,7 +131,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
 
     /// <summary>
     /// The map numbers of the six illusion temples, and the arena monster NPC number range (base id and
-    /// how many ids to cycle through) which each of them roams with - temple 6 has none.
+    /// how many ids to cycle through) which each of them roams with.
     /// </summary>
     private static readonly (byte MapNumber, short ArenaMonsterBase, int ArenaMonsterCycleLength)[] Temples =
     {
@@ -139,8 +139,8 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         (46, 389, 3),
         (47, 392, 3),
         (48, 395, 3),
-        (49, 398, 2),
-        (50, 0, 0),
+        (49, 398, 3),
+        (50, 401, 3),
     };
 
     /// <summary>
@@ -190,8 +190,8 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     };
 
     /// <summary>
-    /// The stats of the 14 "Illusion Sorc. Spirit" arena monster variants (386 to 399), one per temple
-    /// level (temples 1 to 4 have three variants each, temple 5 has two, temple 6 has none).
+    /// The stats of the 18 "Illusion Sorc. Spirit" arena monster variants (386 to 403), three per temple
+    /// level.
     /// </summary>
     private static readonly (short Number, int Level, int Hp, int MinDmg, int MaxDmg, int Defense, int AttackRate, int DefenseRate, byte AttackRange, short ViewRange, int MoveDelayMs, int AttackDelayMs)[] ArenaMonsterStats =
     {
@@ -209,6 +209,10 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         (397, 82, 19680, 520, 540, 400, 840, 280, 1, 6, 1600, 2000),
         (398, 85, 25500, 595, 615, 450, 760, 275, 4, 4, 800, 1600),
         (399, 85, 25500, 615, 635, 470, 820, 303, 4, 4, 800, 1600),
+        (400, 87, 26100, 635, 655, 490, 900, 335, 1, 6, 1600, 2000),
+        (401, 112, 36000, 720, 740, 550, 1015, 405, 4, 4, 800, 1600),
+        (402, 112, 36000, 740, 760, 570, 1080, 440, 4, 4, 800, 1600),
+        (403, 114, 36800, 760, 780, 590, 1190, 485, 1, 6, 1600, 2000),
     };
 
     /// <inheritdoc />
@@ -224,13 +228,13 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => true;
 
     /// <inheritdoc />
-    public override int Version => 4;
+    public override int Version => 5;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 07, 29, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 17, 0, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 23, 0, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     /// <remarks>
@@ -241,6 +245,9 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// it runs the restoration again on a database which has version three.
     /// The ticket binding repair of version two pointed the temples which reference 13/50 at 13/51, then named the
     /// covenant; the restoration still makes that move, as 13/51 becomes the Scroll of Blood.
+    /// Versions one to four gave temple 5 only two arena monster variants and temple 6 none; version five adds the
+    /// missing variants (400 to 403) and their spawns (see <see cref="AddMissingArenaMonsters"/>), and lets characters of
+    /// level 400 without the master class enter temple 5 (see <see cref="AllowLevel400InTemple5"/>).
     /// </remarks>
     protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
     {
@@ -251,6 +258,12 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         }
 
         RestoreTicketItems(gameConfiguration);
+
+        if (installedVersion is null or < 5)
+        {
+            this.AddMissingArenaMonsters(context, gameConfiguration);
+            AllowLevel400InTemple5(gameConfiguration);
+        }
     }
 
     /// <inheritdoc />
@@ -281,6 +294,29 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
         if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == MirageNpcNumber) is { } mirage)
         {
             mirage.NpcWindow = NpcWindow.IllusionTemple;
+        }
+    }
+
+    /// <summary>
+    /// Raises the maximum character level of temple 5 from 399 to 400. A character of level 400 without the master
+    /// class goes to temple 5 (the master classes to temple 6), so with 399 he couldn't enter any temple.
+    /// </summary>
+    /// <remarks>Only the values which are still the old default are changed, so an owner's own range stays.</remarks>
+    private static void AllowLevel400InTemple5(GameConfiguration gameConfiguration)
+    {
+        const int previousMaximumLevel = 399;
+        const int maximumLevel = 400;
+        foreach (var temple5 in gameConfiguration.MiniGameDefinitions.Where(d => d is { Type: MiniGameType.IllusionTemple, GameLevel: 5 }))
+        {
+            if (temple5.MaximumCharacterLevel == previousMaximumLevel)
+            {
+                temple5.MaximumCharacterLevel = maximumLevel;
+            }
+
+            if (temple5.MaximumSpecialCharacterLevel == previousMaximumLevel)
+            {
+                temple5.MaximumSpecialCharacterLevel = maximumLevel;
+            }
         }
     }
 
@@ -531,7 +567,7 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     }
 
     /// <summary>
-    /// Adds the 14 "Illusion Sorc. Spirit" arena monster definitions (386 to 399), if they don't exist
+    /// Adds the 18 "Illusion Sorc. Spirit" arena monster definitions (386 to 403), if they don't exist
     /// yet.
     /// </summary>
     private void AddArenaMonsterDefinitions(IContext context, GameConfiguration gameConfiguration)
@@ -580,6 +616,53 @@ public class IllusionTempleDataUpdatePlugIn : UpdatePlugInBase
     /// them - the game maps aren't recreated by <see cref="IllusionTempleInitializer"/>, only its mini
     /// game definitions are.
     /// </remarks>
+    /// <summary>
+    /// Adds the arena monsters which the versions before five didn't have: the third variant of temple 5 (400) and
+    /// the three variants of temple 6 (401 to 403), with their spawns.
+    /// </summary>
+    /// <remarks>
+    /// A spawn of temple 5 only gets the new variant when it still has the monster which the old version put there,
+    /// so a spawn which the server owner changed stays as it is. Temple 6 only gets the spawns which don't exist yet.
+    /// </remarks>
+    private void AddMissingArenaMonsters(IContext context, GameConfiguration gameConfiguration)
+    {
+        this.AddArenaMonsterDefinitions(context, gameConfiguration);
+
+        foreach (var temple in Temples.Where(t => t.MapNumber is 49 or 50))
+        {
+            if (gameConfiguration.Maps.FirstOrDefault(m => m.Number == temple.MapNumber) is not { } map)
+            {
+                continue;
+            }
+
+            for (var i = 0; i < ArenaMonsterPositions.Length; i++)
+            {
+                var monsterNumber = (short)(temple.ArenaMonsterBase + (i % temple.ArenaMonsterCycleLength));
+                if (gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == monsterNumber) is not { } monsterDefinition)
+                {
+                    continue;
+                }
+
+                var spawnNumber = (short)(120 + i);
+                var id = GuidHelper.CreateGuid<MonsterSpawnArea>(map.Number, spawnNumber);
+                if (map.MonsterSpawns.FirstOrDefault(spawn => spawn.GetId() == id) is { } existingSpawn)
+                {
+                    // Temple 5 used to alternate between 398 and 399.
+                    var previousMonsterNumber = (short)(temple.ArenaMonsterBase + (i % 2));
+                    if (temple.MapNumber == 49 && existingSpawn.MonsterDefinition?.Number == previousMonsterNumber)
+                    {
+                        existingSpawn.MonsterDefinition = monsterDefinition;
+                    }
+
+                    continue;
+                }
+
+                var (x, y) = ArenaMonsterPositions[i];
+                this.AddSpawn(context, map, spawnNumber, monsterDefinition, x, y, SpawnTrigger.AutomaticDuringEvent);
+            }
+        }
+    }
+
     private void AddMapSpawns(IContext context, GameConfiguration gameConfiguration)
     {
         var stoneStatue = gameConfiguration.Monsters.FirstOrDefault(monster => monster.Number == StoneStatueNumber);
