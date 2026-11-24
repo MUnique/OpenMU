@@ -40,6 +40,23 @@ public static class AttackableExtensions
     }
 
     /// <summary>
+    /// Gets the player who is responsible for an attack or a kill: the attacking player itself,
+    /// the owner of an attacking pet like the Dark Raven, or the player who summoned an attacking monster.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <returns>The responsible player, or <c>null</c> when no player is behind the attacker.</returns>
+    public static Player? GetResponsiblePlayer(this IAttacker? attacker)
+    {
+        return attacker switch
+        {
+            Player player => player,
+            IPlayerSurrogate surrogate => surrogate.Owner,
+            Monster { SummonedBy: { } summoner } => summoner,
+            _ => null,
+        };
+    }
+
+    /// <summary>
     /// Determines whether an attack is blocked because the target or the player attacker is in a safezone.
     /// </summary>
     /// <param name="target">The attack target.</param>

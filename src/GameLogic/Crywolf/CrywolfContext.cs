@@ -1345,7 +1345,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
                 return;
             }
 
-            var killer = this._map?.GetObject(e.KillerId) as Player;
+            var killer = (this._map?.GetObject(e.KillerId) as IAttacker).GetResponsiblePlayer();
             if (monster == this._balgass)
             {
                 await this.ShowMessageToMapPlayersAsync(nameof(PlayerMessage.CrywolfBalgassKilled), this._balgassKillerName ?? string.Empty).ConfigureAwait(false);

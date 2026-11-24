@@ -24,7 +24,7 @@ public class GuildWarKillScorePlugIn : IAttackableGotKilledPlugIn
     /// <param name="killer">The killer.</param>
     public async ValueTask AttackableGotKilledAsync(IAttackable killed, IAttacker? killer)
     {
-        if (killer is Player { GuildWarContext: not null } killerPlayer
+        if (killer.GetResponsiblePlayer() is { GuildWarContext: not null } killerPlayer
             && killed is Player { GuildWarContext: not null } killedPlayer
             && killerPlayer.GuildWarContext!.Team != killedPlayer.GuildWarContext!.Team)
         {
