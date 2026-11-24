@@ -94,19 +94,21 @@ public static class Extensions
     /// <param name="enterResult">The enter result.</param>
     /// <returns>The converted result.</returns>
     /// <remarks>
-    /// The client uses distinct result bytes for admission and ticket failures (3), a full event (4),
-    /// and a player-killer rejection (7). Preserve these messages instead of collapsing every failure
-    /// into the not-open result (1).
+    /// The client shows a text of its own for a character level which doesn't fit the temple of the ticket (3), a full
+    /// event (4) and a player-killer rejection (7), and none for the other result bytes. The server tells every refusal
+    /// in words before sending the result, so the other outcomes (a missing ticket, not enough zen, any other failure) get
+    /// a result byte without a client text (1); with 3 the client added "The admission and scroll levels do not match",
+    /// which is wrong for them.
     /// </remarks>
     public static byte ToIllusionTempleEnterResult(this EnterResult enterResult)
     {
         return enterResult switch
         {
             EnterResult.Success => 0,
-            EnterResult.NotOpen => 1,
+            EnterResult.CharacterLevelTooHigh or EnterResult.CharacterLevelTooLow => 3,
             EnterResult.Full => 4,
             EnterResult.PlayerKillerCantEnter => 7,
-            _ => 3,
+            _ => 1,
         };
     }
 
