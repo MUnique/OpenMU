@@ -29,7 +29,7 @@ public class QuestMonsterKillCountPlugIn : IAttackableGotKilledPlugIn, ISupportC
     {
         var configuration = this.Configuration ??= CreateDefaultConfiguration();
 
-        if (!(killer is Player player && killed is Monster monster)
+        if (!(killer.GetResponsiblePlayer() is { } player && killed is Monster monster)
             || player.SelectedCharacter?.QuestStates is null)
         {
             return;

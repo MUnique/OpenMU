@@ -43,7 +43,7 @@ public class ObjectGotKilledPlugIn : IObjectGotKilledPlugIn
         var isCombo = killedObject.LastDeath?.FinalHit.Attributes.HasFlag(DamageAttributes.Combo) ?? false;
         skillId = isCombo ? ShowSkillAnimationPlugIn.ComboSkillId : skillId;
         await connection.SendObjectGotKilledAsync(killedId, skillId, killerId).ConfigureAwait(false);
-        if (this._player == killedObject && killerObject is Player killerPlayer && this._player.DuelRoom is null)
+        if (this._player == killedObject && killerObject.GetResponsiblePlayer() is { } killerPlayer && this._player.DuelRoom is null)
         {
             await this._player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.YouGotKilledBy), killerPlayer.Name).ConfigureAwait(false);
         }

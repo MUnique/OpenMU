@@ -36,6 +36,12 @@ public class AttackerSurrogate : IAttacker, IWorldObserver, IPlayerSurrogate
     /// </remarks>
     public ComboStateMachine? ComboState => null;
 
+    /// <summary>
+    /// Gets the name of the owner. Kills of the pet are attributed to it, e.g. in
+    /// <see cref="DeathInformation.KillerName"/>.
+    /// </summary>
+    public string Name => this.Owner.Name;
+
     /// <inheritdoc />
     public ushort Id => this.Owner.Id;
 
