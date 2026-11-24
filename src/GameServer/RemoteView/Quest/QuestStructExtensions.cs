@@ -169,6 +169,19 @@ public static class QuestStructExtensions
         message.RewardCount = (byte)r;
     }
 
+    /// <summary>
+    /// Gets the count of the reward which is shown in the quest window of the client.
+    /// </summary>
+    /// <param name="questReward">The quest reward.</param>
+    /// <returns>
+    /// The count of the reward. An item reward gives one item when the quest is completed,
+    /// see <c>QuestCompletionAction</c>, so its count is 1. The <see cref="QuestReward.Value"/> isn't used for it.
+    /// </returns>
+    internal static uint GetRewardCount(this QuestReward questReward)
+    {
+        return questReward.RewardType == QuestRewardType.Item ? 1u : (uint)questReward.Value;
+    }
+
     private static void AssignTo(this QuestItemRequirement itemRequirement, QuestConditionRef condition, RemotePlayer player)
     {
         condition.Type = ConditionType.Item;
@@ -210,7 +223,7 @@ public static class QuestStructExtensions
     private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardRef rewardStruct, IItemSerializer itemSerializer)
     {
         rewardStruct.Type = questReward.RewardType.Convert();
-        rewardStruct.RewardCount = (uint)questReward.Value;
+        rewardStruct.RewardCount = questReward.GetRewardCount();
         if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
         {
             rewardStruct.RewardId = itemReward.Definition!.GetItemType();
@@ -221,7 +234,7 @@ public static class QuestStructExtensions
     private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardExtendedRef rewardStruct, IItemSerializer itemSerializer)
     {
         rewardStruct.Type = questReward.RewardType.Convert();
-        rewardStruct.RewardCount = (uint)questReward.Value;
+        rewardStruct.RewardCount = questReward.GetRewardCount();
         if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
         {
             rewardStruct.RewardId = itemReward.Definition!.GetItemType();
