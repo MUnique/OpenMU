@@ -19,7 +19,6 @@ public class PartyExperienceBonusTest
     private CharacterClass _darkWizard = null!;
     private CharacterClass _grandMaster = null!;
     private CharacterClass _darkKnight = null!;
-    private CharacterClass _blademaster = null!;
     private CharacterClass _fairyElf = null!;
     private CharacterClass _magicGladiator = null!;
     private CharacterClass _darkLord = null!;
@@ -33,8 +32,8 @@ public class PartyExperienceBonusTest
         this._gameContext = GameContextTestHelper.CreateGameContext();
         this._grandMaster = new CharacterClass { Number = 2 };
         this._darkWizard = new CharacterClass { Number = 0, NextGenerationClass = this._grandMaster };
-        this._blademaster = new CharacterClass { Number = 18 };
-        this._darkKnight = new CharacterClass { Number = 16, NextGenerationClass = this._blademaster };
+        var blademaster = new CharacterClass { Number = 18 };
+        this._darkKnight = new CharacterClass { Number = 16, NextGenerationClass = blademaster };
         this._fairyElf = new CharacterClass { Number = 32 };
         this._magicGladiator = new CharacterClass { Number = 48 };
         this._darkLord = new CharacterClass { Number = 64 };
@@ -43,7 +42,7 @@ public class PartyExperienceBonusTest
         classes.Add(this._darkWizard);
         classes.Add(this._grandMaster);
         classes.Add(this._darkKnight);
-        classes.Add(this._blademaster);
+        classes.Add(blademaster);
         classes.Add(this._fairyElf);
         classes.Add(this._magicGladiator);
         classes.Add(this._darkLord);
