@@ -109,12 +109,12 @@
                             <td colspan="@(3 + AdditionalColumns.Length)" class="border-bottom-0">
                                 @if (this._isAddingSupported)
                                 {
-                                    <button type="button" class="btn btn-primary" @onclick="@OnAddClickAsync">@Resources.Add</button>
+                                    <button type="button" class="btn btn-primary me-1" @onclick="@OnAddClickAsync"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.Add</button>
                                 }
 
                                 @if (this._isCreatingSupported)
                                 {
-                                    <button type="button" class="btn btn-primary" @onclick="@OnCreateClickAsync">@Resources.Create</button>
+                                    <button type="button" class="btn btn-primary" @onclick="@OnCreateClickAsync"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.Create</button>
                                 }
                             </td>
                         </tr>

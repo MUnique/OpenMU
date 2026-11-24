@@ -25,7 +25,7 @@
                 <span class="oi oi-clipboard" aria-hidden="true"></span> @Resources.CopyToClipboard
             </button>
         </div>
-        <button type="button" class="btn btn-sm btn-secondary mt-3" @onclick="@(() => this._createdKey = null)">@Resources.Close</button>
+        <button type="button" class="btn btn-secondary mt-3" @onclick="@(() => this._createdKey = null)">@Resources.Close</button>
     </div>
 }
 
@@ -68,7 +68,7 @@ else
                     <td>@MUnique.OpenMU.Web.AdminPanel.Auth.RoleCaption.Get(apiKey.Roles)</td>
                     <td>
                         <code>@apiKey.AllowedToolGroups</code>
-                        <button type="button" class="btn btn-sm btn-secondary" @onclick="@(() => this.OnEditToolGroupsAsync(apiKey))">@MUnique.OpenMU.Web.Shared.Properties.Resources.Change</button>
+                        <button type="button" class="btn btn-sm btn-secondary me-1" @onclick="@(() => this.OnEditToolGroupsAsync(apiKey))">@MUnique.OpenMU.Web.Shared.Properties.Resources.Change</button>
                     </td>
                     <td>
                         @if (apiKey.IsDisabled)
@@ -91,6 +91,6 @@ else
             }
             </tbody>
         </table>
-        <button type="button" class="btn btn-sm btn-success" @onclick="@this.OnCreateNewAsync">@Resources.CreateApiKey</button>
+        <button type="button" class="btn btn-sm btn-primary" @onclick="@this.OnCreateNewAsync"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.CreateApiKey</button>
     </div>
 }

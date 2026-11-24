@@ -69,7 +69,7 @@ else if (this._selectedPackage is not { } package)
             <QuickGrid Items="@this.FilteredPackages" Pagination="@this._pagination" Theme="none" Class="table table-striped table-sm">
                 <PropertyColumn Title="@Resources.CashShopPackageSequence" Property="@(p => p.PackageSequence)" Sortable="true" />
                 <PropertyColumn Title="@Resources.ConfigurationEntryName" Property="@(p => string.IsNullOrEmpty(GetPackageName(p)) ? NoValue : GetPackageName(p))" Sortable="true" />
-                <TemplateColumn Title="@Resources.CashShopCoinType">@CashShopCoinCaption.Get(context.CoinType)</TemplateColumn>
+                <TemplateColumn Title="@Resources.CashShopCoinType" SortBy="@(GridSort<CashShopPackage>.ByAscending(p => p.CoinType))">@CashShopCoinCaption.Get(context.CoinType)</TemplateColumn>
                 <TemplateColumn Title="@Resources.CashShopPrice">@GetPriceText(context)</TemplateColumn>
                 <TemplateColumn Title="@Resources.CashShopForSale">@GetFlagText(context.IsForSale)</TemplateColumn>
                 <TemplateColumn Title="@Resources.CashShopGiftable">@GetFlagText(context.IsGiftable)</TemplateColumn>
@@ -81,7 +81,10 @@ else if (this._selectedPackage is not { } package)
                     }
                     else
                     {
-                        <span class="text-muted">@string.Join(" ", CashShopCatalogCheck.GetIssues(configuration, context))</span>
+                        @foreach (var issue in CashShopCatalogCheck.GetIssues(configuration, context))
+                        {
+                            <span class="text-muted">@issue</span><br />
+                        }
                     }
                 </TemplateColumn>
                 <TemplateColumn>
@@ -92,8 +95,8 @@ else if (this._selectedPackage is not { } package)
             <GridPager State="@this._pagination" />
 
             <div class="mt-3">
-                <button type="button" class="btn btn-success me-1" @onclick="this.OnAddPackage">@Resources.CashShopAddPackage</button>
-                <button type="submit" class="btn btn-primary me-1">@Resources.SaveChanges</button>
+                <button type="button" class="btn btn-primary me-1" @onclick="this.OnAddPackage"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.CashShopAddPackage</button>
+                <button type="submit" class="btn btn-primary me-1"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.SaveChanges</button>
                 <button type="button" class="btn btn-secondary" @onclick="this.OnDiscardAsync">@Resources.DiscardChanges</button>
             </div>
         </EditForm>
@@ -119,7 +122,7 @@ else
                     <InputNumber class="form-control" id="packageSequence" @bind-Value="package.PackageSequence" />
                 </div>
                 <div class="col-md-4">
-                    <LocalizedStringField Label="@Resources.ConfigurationEntryName" @bind-Value="package.Name" />
+                    <LocalizedStringField class="form-control" Label="@Resources.ConfigurationEntryName" @bind-Value="package.Name" />
                 </div>
                 <div class="col-md-2">
                     <label class="form-label" for="coinType">@Resources.CashShopCoinType</label>
@@ -193,9 +196,9 @@ else
                 </tbody>
             </table>
             </div>
-            <button type="button" class="btn btn-sm btn-success mb-3" @onclick="@(() => this.OnAddProduct(package))">@Resources.CashShopAddProduct</button>
+            <button type="button" class="btn btn-primary mb-3" @onclick="@(() => this.OnAddProduct(package))"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.CashShopAddProduct</button>
             <hr />
-            <button type="submit" class="btn btn-primary me-1">@Resources.SaveChanges</button>
+            <button type="submit" class="btn btn-primary me-1"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.SaveChanges</button>
             <button type="button" class="btn btn-secondary me-1" @onclick="this.OnDiscardAsync">@Resources.DiscardChanges</button>
             <button type="button" class="btn btn-danger" @onclick="@(() => this.OnDeletePackageAsync(package))">@Resources.CashShopDeletePackage</button>
         </EditForm>

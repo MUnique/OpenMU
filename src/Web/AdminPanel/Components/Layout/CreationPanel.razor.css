@@ -6,6 +6,7 @@
     flex-shrink: 0;
     display: flex;
     flex-direction: row;
+    --omu-footer-bg: var(--omu-surface-2);
     background-color: var(--omu-surface-2);
     color: var(--omu-text);
     border-left: var(--bs-border-width) solid var(--omu-border);
@@ -56,23 +57,13 @@
 }
 
 .creation-panel-body ::deep .form-actions {
-    position: sticky;
-    bottom: 0;
-    z-index: 3;
-    background-color: var(--omu-surface-2);
     margin: 1rem -1.5rem -1rem -1.5rem;
-    padding: 1rem 1.25rem;
-    border-top: var(--bs-border-width) solid var(--omu-border);
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-start;
-    box-sizing: border-box;
 }
 
-/* Let the form controls fill the wider panel so the space is actually used. */
-.creation-panel-body ::deep input:not([type="checkbox"]):not([type="radio"]),
-.creation-panel-body ::deep select,
-.creation-panel-body ::deep textarea {
+/* Let the form controls fill the wider panel; controls in an input group keep their flex sizing. */
+.creation-panel-body ::deep input:not([type="checkbox"]):not([type="radio"]):not(.input-group > *),
+.creation-panel-body ::deep select:not(.input-group > *),
+.creation-panel-body ::deep textarea:not(.input-group > *) {
     width: 100%;
     box-sizing: border-box;
 }

@@ -30,7 +30,7 @@
         </select>
     </div>
     <div class="@(this.Compact ? "col-12" : "col-md-3")">
-        <button class="btn btn-primary w-100" @onclick="SendMessageAsync" disabled="@string.IsNullOrWhiteSpace(_message)">
+        <button type="button" class="btn btn-primary w-100" @onclick="SendMessageAsync" disabled="@string.IsNullOrWhiteSpace(_message)">
             @Resources.Send
         </button>
     </div>

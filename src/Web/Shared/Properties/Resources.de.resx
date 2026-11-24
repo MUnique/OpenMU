@@ -264,8 +264,8 @@
   <data name="DiscardEntryQuestion" xml:space="preserve">
     <value>Sie erstellen gerade ein(e) '{0}'. Möchten Sie es verwerfen und neu beginnen?</value>
   </data>
-  <data name="Refresh" xml:space="preserve">
-    <value>Aktualisieren</value>
+  <data name="Reload" xml:space="preserve">
+    <value>Neu laden</value>
   </data>
   <data name="ToggleTheme" xml:space="preserve">
     <value>Design wechseln</value>
@@ -464,18 +464,6 @@
   </data>
   <data name="FileLoaded" xml:space="preserve">
     <value>{0} mit {1} Bytes geladen.</value>
-  </data>
-  <data name="PaginationItems" xml:space="preserve">
-    <value>{0} Einträge</value>
-  </data>
-  <data name="PaginationPage" xml:space="preserve">
-    <value>Seite {0} von {1}</value>
-  </data>
-  <data name="FirstPage" xml:space="preserve">
-    <value>Erste Seite</value>
-  </data>
-  <data name="LastPage" xml:space="preserve">
-    <value>Letzte Seite</value>
   </data>
   <data name="InvalidNumber" xml:space="preserve">
     <value>Das Feld {0} muss eine Zahl sein.</value>

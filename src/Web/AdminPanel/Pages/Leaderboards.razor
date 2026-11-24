@@ -22,11 +22,14 @@ else
 {
     <div class="row g-2 align-items-end mb-3">
         <div class="col-auto">
-            <ul class="nav nav-pills">
+            <ul class="nav nav-tabs" role="tablist">
                 @foreach (var miniGameType in this.MiniGameTypes)
                 {
-                    <li class="nav-item">
-                        <button type="button" class="nav-link @(miniGameType == this._selectedType ? "active" : string.Empty)" @onclick="() => this.SelectTypeAsync(miniGameType)">
+                    <li class="nav-item" role="presentation">
+                        <button type="button" role="tab" id="@($"tab-{miniGameType}")" aria-controls="@($"panel-{miniGameType}")"
+                                aria-selected="@(miniGameType == this._selectedType ? "true" : "false")"
+                                class="nav-link @(miniGameType == this._selectedType ? "active" : null)"
+                                @onclick="() => this.SelectTypeAsync(miniGameType)">
                             @(Resources.ResourceManager.GetString($"LeaderboardMiniGame_{miniGameType}", Resources.Culture) ?? CaptionHelper.SeparateWords(miniGameType.ToString()))
                         </button>
                     </li>
@@ -42,37 +45,39 @@ else
         </div>
     </div>
 
-    <div class="table-responsive">
-    <table class="table table-striped table-sm">
-        <thead>
-        <tr>
-            <th class="text-end">#</th>
-            <th>@Resources.Character</th>
-            <th>@Resources.CharacterClass</th>
-            <th class="text-end">@Resources.LeaderboardTotalScore</th>
-            <th class="text-end">@Resources.LeaderboardBestScore</th>
-            <th class="text-end">@Resources.LeaderboardGames</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var entry in this.Entries)
-        {
+    <div class="tab-content">
+        <div class="table-responsive" role="tabpanel" id="@($"panel-{this._selectedType}")" aria-labelledby="@($"tab-{this._selectedType}")">
+        <table class="table table-striped table-sm">
+            <thead>
             <tr>
-                <td class="text-end">@entry.Rank</td>
-                <td>@entry.CharacterName</td>
-                <td>@entry.ClassName</td>
-                <td class="text-end">@entry.TotalScore.ToString("N0")</td>
-                <td class="text-end">@entry.BestScore.ToString("N0")</td>
-                <td class="text-end">@entry.GameCount.ToString("N0")</td>
+                <th class="text-end">#</th>
+                <th>@Resources.Character</th>
+                <th>@Resources.CharacterClass</th>
+                <th class="text-end">@Resources.LeaderboardTotalScore</th>
+                <th class="text-end">@Resources.LeaderboardBestScore</th>
+                <th class="text-end">@Resources.LeaderboardGames</th>
             </tr>
-        }
-        @if (this.Entries.Count == 0)
-        {
-            <tr>
-                <td colspan="6" class="text-muted">@(this.IsLoading ? Resources.Loading : Resources.LeaderboardNoEntries)</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var entry in this.Entries)
+            {
+                <tr>
+                    <td class="text-end">@entry.Rank</td>
+                    <td>@entry.CharacterName</td>
+                    <td>@entry.ClassName</td>
+                    <td class="text-end">@entry.TotalScore.ToString("N0")</td>
+                    <td class="text-end">@entry.BestScore.ToString("N0")</td>
+                    <td class="text-end">@entry.GameCount.ToString("N0")</td>
+                </tr>
+            }
+            @if (this.Entries.Count == 0)
+            {
+                <tr>
+                    <td colspan="6" class="text-muted">@(this.IsLoading ? Resources.Loading : Resources.LeaderboardNoEntries)</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
     </div>
 }

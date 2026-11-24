@@ -120,7 +120,7 @@ public class LeaderboardsPageTests
         this.CompleteNextLoad("Player");
         cut.WaitForState(() => cut.Markup.Contains("Player", StringComparison.Ordinal));
 
-        Assert.That(cut.Find(".nav-pills .nav-link").TextContent.Trim(), Is.EqualTo("血色城堡"));
+        Assert.That(cut.Find(".nav-tabs .nav-link").TextContent.Trim(), Is.EqualTo("血色城堡"));
     }
 
     private void CompleteNextLoad(string characterName)

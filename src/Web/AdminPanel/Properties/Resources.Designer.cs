@@ -607,15 +607,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Next.
-        /// </summary>
-        public static string AuditNext {
-            get {
-                return ResourceManager.GetString("AuditNext", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Operation.
         /// </summary>
         public static string AuditOperation {
@@ -639,15 +630,6 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string AuditPendingExplanation {
             get {
                 return ResourceManager.GetString("AuditPendingExplanation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Previous.
-        /// </summary>
-        public static string AuditPrevious {
-            get {
-                return ResourceManager.GetString("AuditPrevious", resourceCulture);
             }
         }
         
@@ -1480,7 +1462,7 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Package number.
+        ///   Looks up a localized string similar to Sequence.
         /// </summary>
         public static string CashShopPackageSequence {
             get {
@@ -2421,6 +2403,15 @@ namespace MUnique.OpenMU.Web.AdminPanel.Properties {
         public static string ConfigurationEntryName {
             get {
                 return ResourceManager.GetString("ConfigurationEntryName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure.
+        /// </summary>
+        public static string Configure {
+            get {
+                return ResourceManager.GetString("Configure", resourceCulture);
             }
         }
         

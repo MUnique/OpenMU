@@ -485,15 +485,6 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to First page.
-        /// </summary>
-        public static string FirstPage {
-            get {
-                return ResourceManager.GetString("FirstPage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No selection means the event runs on all game servers, including ones added later. Use Select all to pin the current servers instead..
         /// </summary>
         public static string GameServerSelection_AllServersHint {
@@ -863,15 +854,6 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Last page.
-        /// </summary>
-        public static string LastPage {
-            get {
-                return ResourceManager.GetString("LastPage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Load file.
         /// </summary>
         public static string LoadFile {
@@ -1152,24 +1134,6 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} items.
-        /// </summary>
-        public static string PaginationItems {
-            get {
-                return ResourceManager.GetString("PaginationItems", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Page {0} of {1}.
-        /// </summary>
-        public static string PaginationPage {
-            get {
-                return ResourceManager.GetString("PaginationPage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enter at least 3 characters..
         /// </summary>
         public static string PasswordMinimumLength {
@@ -1251,11 +1215,11 @@ namespace MUnique.OpenMU.Web.Shared.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Refresh.
+        ///   Looks up a localized string similar to Reload.
         /// </summary>
-        public static string Refresh {
+        public static string Reload {
             get {
-                return ResourceManager.GetString("Refresh", resourceCulture);
+                return ResourceManager.GetString("Reload", resourceCulture);
             }
         }
         

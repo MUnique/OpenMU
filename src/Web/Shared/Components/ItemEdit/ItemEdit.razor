@@ -217,7 +217,7 @@
     <div class="form-actions">
         @if (this.OnValidSubmit.HasDelegate)
         {
-            <button type="submit" class="btn btn-primary">@Resources.Save</button>
+            <button type="submit" class="btn btn-primary"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.Save</button>
         }
 
         @if (this.OnCancel.HasDelegate)

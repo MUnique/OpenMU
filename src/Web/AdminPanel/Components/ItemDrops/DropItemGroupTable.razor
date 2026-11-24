@@ -93,12 +93,12 @@
                 <td class="small">@this.UsageProvider(group)</td>
             }
             <td class="text-nowrap">
-                <button type="button" class="btn btn-sm btn-outline-secondary" title="@Resources.EditDetails" @onclick="() => this.ToggleExpanded(group)">
+                <button type="button" class="btn btn-sm btn-outline-secondary me-1" title="@Resources.EditDetails" @onclick="() => this.ToggleExpanded(group)">
                     <span class="oi @(isExpanded ? "oi-chevron-top" : "oi-chevron-bottom")" aria-hidden="true"></span>
                 </button>
                 @if (this.OnRemove.HasDelegate)
                 {
-                    <button type="button" class="btn btn-sm btn-outline-danger" title="@(this.RemoveTitle ?? Resources.Delete)" @onclick="() => this.OnRemove.InvokeAsync(group)">
+                    <button type="button" class="btn btn-sm btn-danger" title="@(this.RemoveTitle ?? Resources.Delete)" @onclick="() => this.OnRemove.InvokeAsync(group)">
                         <span class="oi oi-trash" aria-hidden="true"></span>
                     </button>
                 }

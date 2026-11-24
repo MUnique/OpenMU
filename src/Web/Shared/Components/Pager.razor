@@ -1,7 +1,7 @@
 @using MUnique.OpenMU.Web.Shared.Properties
 
 <nav aria-label="@Resources.Navigation">
-    <ul class="pagination pagination flex-wrap justify-content-end my-2">
+    <ul class="pagination flex-wrap justify-content-end my-2">
         <li class="page-item @(this.CanGoToPrevious ? null : "disabled")">
             <button type="button" class="page-link" aria-label="@Resources.Previous" title="@Resources.Previous"
                     disabled="@(!this.CanGoToPrevious)" @onclick="() => this.GoToAsync(this.Current - 1)">

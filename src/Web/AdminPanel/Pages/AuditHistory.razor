@@ -18,6 +18,7 @@
 }
 else if (this._page is { } page)
 {
+    <Pager CurrentPage="@this.CurrentPage" TotalPages="@this.TotalPages" Disabled="@this._isLoading" PageChanged="@this.GoToPageAsync" />
     <table class="table table-striped">
         <thead><tr>
             <th>@Text["AuditTime"]</th><th>@Text["AuditPrincipal"]</th><th>@Text["AuditFrontend"]</th>
@@ -34,14 +35,23 @@ else if (this._page is { } page)
         }
         </tbody>
     </table>
-    <button class="btn btn-secondary" disabled="@(this._offset == 0)" @onclick="this.PreviousAsync">@Text["AuditPrevious"]</button>
-    <button class="btn btn-secondary" disabled="@(this._offset + 50 >= page["total"]!.GetValue<int>())" @onclick="this.NextAsync">@Text["AuditNext"]</button>
+    <Pager CurrentPage="@this.CurrentPage" TotalPages="@this.TotalPages" Disabled="@this._isLoading" PageChanged="@this.GoToPageAsync" />
 }
 
 @code {
+    private const int PageSize = 50;
+
     private JsonObject? _page;
     private int _offset;
     private bool _unavailable;
+    private bool _isLoading;
+
+    private int CurrentPage => (this._offset / PageSize) + 1;
+
+    private int? TotalPages
+        => this._page?["total"] is { } total
+            ? Math.Max(1, ((total.GetValue<int>() + PageSize - 1) / PageSize))
+            : null;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -49,32 +59,37 @@ else if (this._page is { } page)
         {
             // Audit authorization needs the running circuit, which is absent during prerendering.
             await this.LoadAsync().ConfigureAwait(true);
-            this.StateHasChanged();
         }
     }
 
     private async Task LoadAsync()
     {
+        this._isLoading = true;
+        await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
         try
         {
-            this._page = await this.Audit.ListAsync(this._offset, 50, default).ConfigureAwait(true);
+            this._page = await this.Audit.ListAsync(this._offset, PageSize, default).ConfigureAwait(true);
             this._unavailable = false;
         }
         catch
         {
             this._unavailable = true;
         }
+        finally
+        {
+            this._isLoading = false;
+            await this.InvokeAsync(this.StateHasChanged).ConfigureAwait(true);
+        }
     }
 
-    private async Task NextAsync()
+    private async Task GoToPageAsync(int page)
     {
-        this._offset += 50;
-        await this.LoadAsync().ConfigureAwait(true);
-    }
+        if (this._isLoading)
+        {
+            return;
+        }
 
-    private async Task PreviousAsync()
-    {
-        this._offset = Math.Max(0, this._offset - 50);
+        this._offset = (page - 1) * PageSize;
         await this.LoadAsync().ConfigureAwait(true);
     }
 }

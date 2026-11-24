@@ -19,18 +19,18 @@ else if (!this.SetupService.CanConnectToDatabase)
 {
     <p>@Resources.DatabaseStatus: <span class="badge bg-danger">@Resources.CantConnectToTheDatabaseProbablyNotCreatedYet</span></p>
 
-    <button class="btn btn-primary" @onclick="this.OnInstallClick">@Resources.Create</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnInstallClick"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.Create</button>
 }
 else if (!this.SetupService.IsInstalled)
 {
     <p>@Resources.DatabaseStatus: <span class="badge bg-warning text-dark">@Resources.NotCreated</span></p>
 
-    <button class="btn btn-primary" @onclick="this.OnInstallClick">@Resources.Create</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnInstallClick"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.Create</button>
 }
 else if (this.SetupService.IsUpdateRequired)
 {
     <p>@Resources.DatabaseStatus: <span class="badge bg-warning text-dark">@Resources.UpdateRequired</span></p>
-    <button class="btn btn-primary" @onclick="this.OnUpdateClickAsync">@Resources.Update</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnUpdateClickAsync">@Resources.Update</button>
 }
 else if (this._dataState == DataInitializationState.NotInitialized)
 {
@@ -41,7 +41,7 @@ else if (this._dataState == DataInitializationState.NotInitialized)
   <p>@Resources.DatabaseStatus: <span class="badge bg-success">@Resources.UpToDate</span></p>
   <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
 
-  <button class="btn btn-primary" @onclick="this.OnInstallClick">@Resources.Create</button>
+  <button type="button" class="btn btn-primary" @onclick="this.OnInstallClick"><span class="oi oi-plus" aria-hidden="true"></span> @Resources.Create</button>
 }
 else
 {
@@ -55,7 +55,7 @@ else
     <p>@Resources.InitializedGameVersion: <span class="badge bg-warning text-dark">@Resources.NoInitializedDataFound</span></p>
   }
 
-  <button class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
+  <button type="button" class="btn btn-warning" @onclick="this.OnReInstallClickAsync">@Resources.ReInstall</button>
 }
 
 

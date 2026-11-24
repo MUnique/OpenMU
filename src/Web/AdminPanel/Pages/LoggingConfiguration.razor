@@ -86,7 +86,7 @@ else
                     </select>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => settings.Overrides.Remove(levelOverride)">
+                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => settings.Overrides.Remove(levelOverride)">
                         <span class="oi oi-trash" aria-hidden="true"></span> @Resources.Remove
                     </button>
                 </td>
@@ -94,14 +94,14 @@ else
         }
         </tbody>
     </table>
-    <button type="button" class="btn btn-secondary mb-3" @onclick="() => settings.Overrides.Add(new LogLevelOverride())">
+    <button type="button" class="btn btn-primary mb-3" @onclick="() => settings.Overrides.Add(new LogLevelOverride())">
         <span class="oi oi-plus" aria-hidden="true"></span> @Resources.AddNew
     </button>
 }
 
 <div>
-    <button type="button" class="btn btn-primary" disabled="@this._isSaving" @onclick="this.SaveAsync">
-        <span class="oi oi-check" aria-hidden="true"></span> @Resources.Save
+    <button type="button" class="btn btn-primary me-1" disabled="@this._isSaving" @onclick="this.SaveAsync">
+        <span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.Save
     </button>
     <button type="button" class="btn btn-secondary" disabled="@this._isSaving" @onclick="this.LoadAsync">
         <span class="oi oi-reload" aria-hidden="true"></span> @Resources.Reload

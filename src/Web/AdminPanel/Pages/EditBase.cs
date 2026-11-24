@@ -281,9 +281,9 @@ public abstract class EditBase : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
-    /// Refreshes the data by discarding changes and reloading it from the database.
+    /// Reloads the data by discarding changes and reading it from the database.
     /// </summary>
-    protected async Task RefreshAsync()
+    protected async Task ReloadAsync()
     {
         var isConfirmed = await this.JavaScript.InvokeAsync<bool>("window.confirm", Resources.UnsavedChangesQuestion).ConfigureAwait(true);
         if (!isConfirmed)

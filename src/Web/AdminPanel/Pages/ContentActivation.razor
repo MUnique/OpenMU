@@ -42,7 +42,7 @@
     <SearchInput Class="flex-grow-1" @bind-Value="this._filter" />
     <button type="button" class="btn btn-success" @onclick="() => this.SetActiveOfShownEntries(true)">@Resources.ActivateAllShown</button>
     <button type="button" class="btn btn-warning" @onclick="() => this.SetActiveOfShownEntries(false)">@Resources.DeactivateAllShown</button>
-    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync">@Resources.SaveChanges</button>
+    <button type="button" class="btn btn-primary" @onclick="this.OnSaveButtonClickAsync"><span class="oi oi-cloud-upload" aria-hidden="true"></span> @Resources.SaveChanges</button>
     <button type="button" class="btn btn-secondary" @onclick="this.OnCancelButtonClick">@Resources.DiscardChanges</button>
 </div>
 

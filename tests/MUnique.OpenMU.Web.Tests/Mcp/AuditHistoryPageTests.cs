@@ -36,6 +36,33 @@ public sealed class AuditHistoryPageTests
         Assert.That(page.Markup, Does.Contain("&lt;script&gt;"));
     }
 
+    /// <summary>The shared pager requests the selected page from the audit operation.</summary>
+    [Test]
+    public async Task PagerLoadsSelectedPageAsync()
+    {
+        using var context = new BunitContext();
+        context.Services.AddLocalization();
+        var audit = new InMemoryAdminAuditRepository();
+        for (var i = 0; i < 51; i++)
+        {
+            await audit.AddAsync(new AdminAuditEntry
+            {
+                Id = Guid.NewGuid(),
+                StartedAt = DateTime.UtcNow.AddMinutes(-i),
+                Operation = $"operation-{i:D2}",
+            }).ConfigureAwait(false);
+        }
+
+        context.Services.AddSingleton(new AuditReadOperations(AdminOperationTestServices.CreateExecutor(audit: audit), audit));
+        var page = context.Render<AuditHistory>();
+        page.WaitForAssertion(() => Assert.That(page.Markup, Does.Contain("operation-00")));
+
+        page.FindAll("button").First(button => button.TextContent == "2").Click();
+
+        page.WaitForAssertion(() => Assert.That(page.Markup, Does.Contain("operation-50")));
+        Assert.That(page.Markup, Does.Not.Contain("operation-00"));
+    }
+
     /// <summary>A caller without Administrator cannot obtain audit data even if the component is directly rendered.</summary>
     [Test]
     public async Task ViewerCannotReadAuditHistoryAsync()

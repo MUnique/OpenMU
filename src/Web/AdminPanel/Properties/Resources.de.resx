@@ -1876,7 +1876,7 @@
     <value>Nur Pakete im Verkauf</value>
   </data>
   <data name="CashShopPackageSequence" xml:space="preserve">
-    <value>Paketnummer</value>
+    <value>Sequenz</value>
   </data>
   <data name="CashShopProductSequence" xml:space="preserve">
     <value>Produktnummer</value>
@@ -2712,5 +2712,8 @@
   </data>
   <data name="SocketCountTableHint" xml:space="preserve">
     <value>Bestimmt die Sockelanzahl der Sockelgegenstände, die diese Gruppe fallen lässt, auch über die drei eines normalen Drops hinaus, bis zur maximalen Sockelanzahl des Gegenstands. Leer bedeutet, dass die Tabelle des Gegenstands gilt.</value>
+  </data>
+  <data name="Configure" xml:space="preserve">
+    <value>Konfigurieren</value>
   </data>
 </root>

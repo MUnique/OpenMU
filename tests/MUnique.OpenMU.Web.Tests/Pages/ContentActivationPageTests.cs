@@ -109,7 +109,7 @@ public sealed class ContentActivationPageTests
         cut.FindAll("tbody tr").Single(row => row.TextContent.Contains("Karutan 1")).QuerySelector("input")!.Change(false);
         Assert.That(this._karutan.IsActive, Is.True);
 
-        cut.FindAll("button").Single(b => b.TextContent == Resources.SaveChanges).Click();
+        cut.FindAll("button").Single(b => b.TextContent.Contains(Resources.SaveChanges)).Click();
 
         cut.WaitForState(() => !this._karutan.IsActive, LoadTimeout);
         Assert.That(this._lorencia.IsActive, Is.True);

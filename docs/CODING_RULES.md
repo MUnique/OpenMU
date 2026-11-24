@@ -414,6 +414,30 @@ members and one type per file — the warnings tell you what to fix. Beyond that
 * Give a chat command the minimum character status it actually needs, and be able
   to say why it needs it.
 
+### Web UI
+
+The Razor UIs have established patterns for the recurring elements. Follow them
+instead of writing a local variant.
+
+* **Reuse the shared components** from [`src/Web/Shared`](../src/Web/Shared):
+  `Pager` / `GridPager` for paging, `AutoForm` for generated editors, and the
+  modal, toast and `SearchInput` components. If one doesn't fit, extend it
+  rather than copying its markup into a page.
+* **Match the page patterns** around it: button variant (`btn-primary` for the
+  primary action, `btn-secondary` for secondary, `btn-danger` for destructive),
+  icon, spacing, disabled and loading state, order and confirmation. Start from
+  the closest existing page and keep its ARIA attributes.
+* **One label per action.** Reuse the existing `Resources` key instead of a
+  synonym, and keep the distinction the project already makes: *Save* persists
+  edits, *Reload* discards unsaved edits and re-reads stored data, *Refresh*
+  re-queries read-only or live data, *Discard changes* leaves without saving.
+* **Use Bootstrap the way the project does** (`nav-tabs` for tabs,
+  `table table-striped table-sm`, `text-end` for numbers, …) before adding
+  page-specific CSS to the `.razor.css`.
+
+When you change a shared component's look, update the pages which use it in the
+same change.
+
 ## 13. Test it, and document what a user would notice
 
 **Run your change before submitting it.** For anything non-trivial, say in the
