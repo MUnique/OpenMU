@@ -1,4 +1,4 @@
-// <copyright file="IllusionTempleDataTest.cs" company="MUnique">
+﻿// <copyright file="IllusionTempleDataTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -35,8 +35,18 @@ internal class IllusionTempleDataTest
     private static readonly short[] TempleMapNumbers = [45, 46, 47, 48, 49, 50];
 
     /// <summary>
-    /// The temples which roam with arena monsters, and the NPC numbers each of them uses. Temple 6
-    /// has none, so it is not listed here.
+    /// The number of roaming arena monster spawns of each temple.
+    /// </summary>
+    private const int ArenaMonsterSpawnCount = 32;
+
+    /// <summary>
+    /// The first spawn number of the roaming arena monsters.
+    /// </summary>
+    private const short FirstArenaMonsterSpawnNumber = 120;
+
+    /// <summary>
+    /// The temples and the NPC numbers of the arena monsters each of them roams with, in the order in which
+    /// the spawns cycle through them.
     /// </summary>
     private static readonly (short MapNumber, short[] ArenaMonsters)[] TemplesWithArenaMonsters =
     [
@@ -44,7 +54,8 @@ internal class IllusionTempleDataTest
         (46, [389, 390, 391]),
         (47, [392, 393, 394]),
         (48, [395, 396, 397]),
-        (49, [398, 399]),
+        (49, [398, 399, 400]),
+        (50, [401, 402, 403]),
     ];
 
     /// <summary>
@@ -308,6 +319,44 @@ internal class IllusionTempleDataTest
     }
 
     /// <summary>
+    /// Tests that the update gives a database of version four the arena monsters which it was missing: the third
+    /// variant of temple 5 and the three variants of temple 6, with their spawns. A temple 5 spawn which the server
+    /// owner changed stays as it is, and applying the update a second time changes nothing.
+    /// </summary>
+    /// <returns>The task.</returns>
+    [Test]
+    public async Task UpdateAddsTheMissingArenaMonstersToVersionFourAsync()
+    {
+        var contextProvider = new InMemoryPersistenceContextProvider();
+        var dataInitialization = new VersionSeasonSix.DataInitialization(contextProvider, new NullLoggerFactory());
+        await dataInitialization.CreateInitialDataAsync(1, true).ConfigureAwait(false);
+
+        using var context = contextProvider.CreateNewContext();
+        var gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        var update = new IllusionTempleDataUpdatePlugIn();
+        var installedUpdate = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(entry => entry.Key == update.Key);
+        installedUpdate.Version = 4;
+        RevertToVersionFourArenaMonsters(gameConfiguration);
+
+        // The owner put another monster on the third spawn of temple 5, which version four gave the 398.
+        var temple5 = gameConfiguration.Maps.Single(map => map.Number == 49);
+        var customizedSpawn = GetArenaMonsterSpawns(temple5)[2];
+        var customMonster = gameConfiguration.Monsters.Single(monster => monster.Number == 397);
+        customizedSpawn.MonsterDefinition = customMonster;
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var spawnCountAfterFirstApplication = gameConfiguration.Maps.Sum(map => map.MonsterSpawns.Count);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(customizedSpawn.MonsterDefinition, Is.SameAs(customMonster));
+        customizedSpawn.MonsterDefinition = gameConfiguration.Monsters.Single(monster => monster.Number == 400);
+        AssertNpcsAndEffects(gameConfiguration);
+        AssertMaps(gameConfiguration);
+        Assert.That(gameConfiguration.Maps.Sum(map => map.MonsterSpawns.Count), Is.EqualTo(spawnCountAfterFirstApplication));
+        Assert.That(installedUpdate.Version, Is.EqualTo(update.Version));
+    }
+
+    /// <summary>
     /// Updating an installed version one must not replay its broad content changes over owner customizations.
     /// </summary>
     /// <returns>The task.</returns>
@@ -361,6 +410,39 @@ internal class IllusionTempleDataTest
         return (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
     }
 
+    private static List<MonsterSpawnArea> GetArenaMonsterSpawns(GameMapDefinition map)
+    {
+        return Enumerable.Range(FirstArenaMonsterSpawnNumber, ArenaMonsterSpawnCount)
+            .Select(number => map.MonsterSpawns.SingleOrDefault(spawn => spawn.GetId() == GuidHelper.CreateGuid<MonsterSpawnArea>(map.Number, (short)number)))
+            .OfType<MonsterSpawnArea>()
+            .ToList();
+    }
+
+    /// <summary>
+    /// Changes the arena monsters to what version four of the update left: temple 5 alternated between 398 and 399,
+    /// temple 6 had none, and the definitions 400 to 403 didn't exist.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration to revert.</param>
+    private static void RevertToVersionFourArenaMonsters(GameConfiguration gameConfiguration)
+    {
+        var temple5Spawns = GetArenaMonsterSpawns(gameConfiguration.Maps.Single(map => map.Number == 49));
+        for (var i = 0; i < temple5Spawns.Count; i++)
+        {
+            temple5Spawns[i].MonsterDefinition = gameConfiguration.Monsters.Single(monster => monster.Number == 398 + (i % 2));
+        }
+
+        var temple6 = gameConfiguration.Maps.Single(map => map.Number == 50);
+        foreach (var spawn in GetArenaMonsterSpawns(temple6))
+        {
+            temple6.MonsterSpawns.Remove(spawn);
+        }
+
+        foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 400 and <= 403).ToList())
+        {
+            gameConfiguration.Monsters.Remove(monster);
+        }
+    }
+
     private static List<MiniGameDefinition> GetTempleDefinitions(GameConfiguration gameConfiguration)
     {
         return gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.IllusionTemple).ToList();
@@ -380,7 +462,7 @@ internal class IllusionTempleDataTest
 
         gameConfiguration.Items.Remove(gameConfiguration.Items.Single(item => item is { Group: 14, Number: 64 }));
 
-        foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 386 and <= 399).ToList())
+        foreach (var monster in gameConfiguration.Monsters.Where(monster => monster.Number is >= 386 and <= 403).ToList())
         {
             gameConfiguration.Monsters.Remove(monster);
         }
@@ -483,8 +565,8 @@ internal class IllusionTempleDataTest
             Is.EqualTo(NpcWindow.IllusionTemple));
 
         Assert.That(
-            gameConfiguration.Monsters.Where(monster => monster.Number is >= 386 and <= 399).Select(monster => monster.Number),
-            Is.EquivalentTo(Enumerable.Range(386, 14).Select(n => (short)n)),
+            gameConfiguration.Monsters.Where(monster => monster.Number is >= 386 and <= 403).Select(monster => monster.Number),
+            Is.EquivalentTo(Enumerable.Range(386, 18).Select(n => (short)n)),
             "the roaming arena monsters of all temples");
 
         // The two special skills which apply a lasting effect need their magic effect definitions;
@@ -528,19 +610,16 @@ internal class IllusionTempleDataTest
         foreach (var (mapNumber, arenaMonsters) in TemplesWithArenaMonsters)
         {
             var map = temples.Single(m => m.Number == mapNumber);
+            var spawns = GetArenaMonsterSpawns(map);
+            Assert.That(spawns, Has.Count.EqualTo(ArenaMonsterSpawnCount), $"map {mapNumber}: arena monster spawns");
             Assert.That(
-                map.MonsterSpawns.Where(spawn => spawn.MonsterDefinition?.Number is >= 386 and <= 399)
-                    .Select(spawn => spawn.MonsterDefinition!.Number)
-                    .Distinct(),
-                Is.EquivalentTo(arenaMonsters),
+                spawns.Select(spawn => spawn.MonsterDefinition?.Number),
+                Is.EqualTo(Enumerable.Range(0, ArenaMonsterSpawnCount).Select(i => (short?)arenaMonsters[i % arenaMonsters.Length])),
                 $"map {mapNumber}: arena monsters");
+            Assert.That(
+                map.MonsterSpawns.Count(spawn => spawn.MonsterDefinition?.Number is >= 386 and <= 403),
+                Is.EqualTo(ArenaMonsterSpawnCount),
+                $"map {mapNumber}: no other arena monster spawns");
         }
-
-        // The sixth temple is the master class one and roams with no arena monsters.
-        Assert.That(
-            temples.Single(map => map.Number == 50).MonsterSpawns
-                .Any(spawn => spawn.MonsterDefinition?.Number is >= 386 and <= 399),
-            Is.False,
-            "temple 6 has no arena monsters");
     }
 }
