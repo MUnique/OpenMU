@@ -26,6 +26,10 @@ public class PickupItemAction
 
     private static readonly ConditionalWeakTable<Player, StrongBox<long>> LastRefusalLogs = new();
 
+    private static readonly TimeSpan OwnerOnlyNoticeInterval = TimeSpan.FromSeconds(3);
+
+    private static readonly ConditionalWeakTable<Player, StrongBox<long>> LastOwnerOnlyNotices = new();
+
     /// <summary>
     /// Pickups the item.
     /// </summary>
@@ -117,6 +121,26 @@ public class PickupItemAction
 
             lastLogged.Value = now;
             return LogLevel.Information;
+        }
+    }
+
+    /// <summary>
+    /// Returns <c>true</c> at most once per <see cref="OwnerOnlyNoticeInterval"/> for the player.
+    /// </summary>
+    /// <param name="player">The player who tried to pick up an owner only drop of somebody else.</param>
+    internal static bool TryStartOwnerOnlyNotice(Player player)
+    {
+        var now = Environment.TickCount64;
+        var last = LastOwnerOnlyNotices.GetValue(player, _ => new StrongBox<long>(now - (long)OwnerOnlyNoticeInterval.TotalMilliseconds));
+        lock (last)
+        {
+            if (now - last.Value < OwnerOnlyNoticeInterval.TotalMilliseconds)
+            {
+                return false;
+            }
+
+            last.Value = now;
+            return true;
         }
     }
 
@@ -236,6 +260,19 @@ public class PickupItemAction
             && !droppedItem.IsPlayerAnOwner(player))
         {
             return await RejectAsync(player, droppedItem, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+        }
+
+        if (!droppedItem.IsPlayerAnOwner(player) && droppedItem.OwnerOnly)
+        {
+            // The refusal in the dropped item is silent, so without a message the player thinks the pick up is broken.
+            // The client can send requests continuously, so the message is limited to one per interval and player.
+            if (TryStartOwnerOnlyNotice(player))
+            {
+                return await RejectAsync(player, droppedItem, nameof(PlayerMessage.ItemDoesNotBelongToYou)).ConfigureAwait(false);
+            }
+
+            LogRefusal(player, droppedItem, "owner only drop of another player");
+            return (false, null);
         }
 
         if (!droppedItem.IsPlayerAnOwner(player) && droppedItem.IsOwnerPickupPriorityActive)
