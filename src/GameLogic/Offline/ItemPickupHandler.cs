@@ -204,6 +204,11 @@ public sealed class ItemPickupHandler
                    || Bots.BotEquipmentHandler.IsUpgradeFor(this._player, item);
         }
 
+        if (this._config.PickSocketMinimum > 0 && item.SocketCount >= this._config.PickSocketMinimum)
+        {
+            return true;
+        }
+
         if (this._config.PickUpgradeItems && Bots.BotEquipmentHandler.IsUpgradeFor(this._player, item))
         {
             // The item is class-qualified gear which beats what the bot currently wears - worth picking

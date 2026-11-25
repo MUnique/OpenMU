@@ -159,6 +159,10 @@ internal sealed class BotMuHelperSettings : IMuHelperSettings
     public bool PickExtraItems => false;
 
     /// <inheritdoc />
+    /// <remarks>Off: bots keep their own pickup rules.</remarks>
+    public int PickSocketMinimum => 0;
+
+    /// <inheritdoc />
     public IReadOnlyList<string> ExtraItemNames => Array.Empty<string>();
 
     /// <inheritdoc />

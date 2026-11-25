@@ -268,4 +268,42 @@ public class ItemPickupHandlerTests
         Assert.That(player.CurrentMap.GetObject(potionDrop.Id), Is.Not.Null, "Potion should NOT be picked up");
         Assert.That(player.CurrentMap.GetObject(eyeDrop.Id), Is.Not.Null, "Devil's Eye should NOT be picked up");
     }
+
+    /// <summary>
+    /// Tests that the minimum socket count option picks up the items with at least that many sockets, and
+    /// nothing when it's off.
+    /// </summary>
+    /// <param name="pickSocketMinimum">The minimum socket count of the settings.</param>
+    /// <param name="socketCount">The socket count of the dropped item.</param>
+    /// <returns><c>True</c>, if the item was picked up.</returns>
+    [TestCase(3, 0, ExpectedResult = false)]
+    [TestCase(3, 2, ExpectedResult = false)]
+    [TestCase(3, 3, ExpectedResult = true)]
+    [TestCase(3, 5, ExpectedResult = true)]
+    [TestCase(1, 1, ExpectedResult = true)]
+    [TestCase(5, 4, ExpectedResult = false)]
+    [TestCase(0, 5, ExpectedResult = false)]
+    public async ValueTask<bool> PickSocketMinimum_PicksUpItemsWithEnoughSocketsAsync(int pickSocketMinimum, int socketCount)
+    {
+        // Arrange
+        var player = await this.CreateOfflinePlayerAsync().ConfigureAwait(false);
+        var config = new MuHelperSettings
+        {
+            PickSelectItems = true,
+            PickSocketMinimum = pickSocketMinimum,
+            ObtainRange = 5,
+        };
+
+        var handler = new ItemPickupHandler(player, config);
+        var item = this.CreateItem(0, 26); // Flamberge, a socket sword
+        item.SocketCount = socketCount;
+        var drop = new DroppedItem(item, player.Position, player.CurrentMap!, player);
+        await player.CurrentMap!.AddAsync(drop).ConfigureAwait(false);
+
+        // Act
+        await handler.PickupItemsAsync().ConfigureAwait(false);
+
+        // Assert
+        return player.CurrentMap.GetObject(drop.Id) is null;
+    }
 }
