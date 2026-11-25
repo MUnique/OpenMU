@@ -77,6 +77,9 @@ internal class SmallWingsDataTest
     {
         var item = gameConfiguration.Items.Single(i => i.Group == 12 && i.Number == number);
         var wingsOfElf = gameConfiguration.Items.Single(i => i is { Group: 12, Number: 0 });
+        var icarusRequirement = gameConfiguration.Maps
+            .Single(map => map.Number == Version095d.Maps.Icarus.Number)
+            .MapRequirements.Single(requirement => requirement.Attribute == Stats.CanFly);
 
         Assert.Multiple(() =>
         {
@@ -93,8 +96,17 @@ internal class SmallWingsDataTest
             Assert.That(GetPowerUp(item, Stats.DefenseBase).BaseValue, Is.EqualTo(defense));
             Assert.That(GetPowerUp(item, Stats.AttackDamageIncrease).BaseValue, Is.EqualTo(1f + (damagePercent / 100f)));
             Assert.That(GetPowerUp(item, Stats.DamageReceiveDecrement).BaseValue, Is.EqualTo(1f - (damagePercent / 100f)));
-            Assert.That(GetPowerUp(item, Stats.CanFly).BaseValue, Is.EqualTo(1));
+            Assert.That(GetPowerUp(item, Stats.IsWingEquipped).BaseValue, Is.EqualTo(1));
             Assert.That(GetPowerUp(item, Stats.MovementSpeed).BaseValue, Is.EqualTo(GetPowerUp(wingsOfElf, Stats.MovementSpeed).BaseValue));
+
+            foreach (var characterClass in item.QualifiedCharacters)
+            {
+                using var attributes = new AttributeSystem([], [], characterClass.AttributeCombinations);
+                attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.IsWingEquipped);
+
+                Assert.That(attributes[Stats.CanFly], Is.GreaterThanOrEqualTo(icarusRequirement.MinimumValue), $"{characterClass.Name} can enter Icarus with these wings");
+                Assert.That(attributes[Stats.HealthLossAfterDealtHit], Is.EqualTo(GetWingHealthToll(characterClass)), $"{characterClass.Name} pays the wing health toll");
+            }
 
             // The bonus per level is the same as for the first wings.
             foreach (var attribute in new[] { Stats.DefenseBase, Stats.AttackDamageIncrease, Stats.DamageReceiveDecrement })
@@ -109,6 +121,23 @@ internal class SmallWingsDataTest
             Assert.That(item.IsPersonalStoreSellable, Is.False);
             Assert.That(item.IsRepairable, Is.False);
         });
+    }
+
+    private static float GetWingHealthToll(CharacterClass characterClass)
+    {
+        return (CharacterClassNumber)characterClass.Number switch
+        {
+            CharacterClassNumber.DarkKnight
+                or CharacterClassNumber.BladeKnight
+                or CharacterClassNumber.BladeMaster
+                or CharacterClassNumber.MagicGladiator
+                or CharacterClassNumber.DuelMaster
+                or CharacterClassNumber.DarkLord
+                or CharacterClassNumber.LordEmperor
+                or CharacterClassNumber.RageFighter
+                or CharacterClassNumber.FistMaster => 3,
+            _ => 1,
+        };
     }
 
     private static ItemBasePowerUpDefinition GetPowerUp(ItemDefinition item, AttributeDefinition attribute)

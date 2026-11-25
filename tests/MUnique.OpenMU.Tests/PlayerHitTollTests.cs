@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using Moq;
 
@@ -55,6 +56,27 @@ public class PlayerHitTollTests
         await attacker.AfterHitTargetAsync(0, null, target).ConfigureAwait(false);
 
         Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(6));
+    }
+
+    /// <summary>
+    /// A health toll for dealing a hit can kill the attacker.
+    /// </summary>
+    [Test]
+    public async Task HitTollCanKillAttackerAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        attacker.Attributes![Stats.CurrentHealth] = 3;
+        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
+
+        await attacker.AfterHitTargetAsync(0, null).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(0));
+            Assert.That(attacker.IsAlive, Is.False);
+            Assert.That(attacker.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            Assert.That(attacker.LastDeath, Is.EqualTo(new DeathInformation(0, string.Empty, default, 0)));
+        });
     }
 
     /// <summary>
