@@ -74,11 +74,7 @@ internal class CachingRepositoryProvider : RepositoryProvider
         this.RegisterRepository(new GameServerDefinitionRepository(this._parent, this.LoggerFactory));
 
         this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemOptions));
-        this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(
-            this._parent,
-            this.LoggerFactory,
-            this.ConfigurationReferences,
-            config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Distinct().ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(this._parent, this.LoggerFactory,this.ConfigurationReferences,config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Distinct().ToList()));
         this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawAttributes));
         this.RegisterRepository(new ConfigurationTypeRepository<AttributeRelationship>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawGlobalAttributeCombinations));
         this.RegisterRepository(new ConfigurationTypeRepository<ConstValueAttribute>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawGlobalBaseAttributeValues));
@@ -98,6 +94,8 @@ internal class CachingRepositoryProvider : RepositoryProvider
         this.RegisterRepository(new ConfigurationTypeRepository<PlugInConfiguration>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawPlugInConfigurations));
         this.RegisterRepository(new ConfigurationTypeRepository<QuestDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMonsters.SelectMany(m => m.RawQuests).ToList()));
         this.RegisterRepository(new ConfigurationTypeRepository<Item>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMonsters.SelectMany(m => m.RawMerchantStore?.RawItems ?? Enumerable.Empty<Item>()).ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<EnterGate>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMaps.SelectMany(map => map.RawEnterGates).ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<ExitGate>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawMaps.SelectMany(map => map.RawExitGates).ToList()));
 
         base.Initialize();
     }
