@@ -18,10 +18,10 @@ using Moq;
 public class PlayerHitTollTests
 {
     /// <summary>
-    /// A skill-specific toll replaces the regular toll.
+    /// A skill-specific toll adds to the regular toll.
     /// </summary>
     [Test]
-    public async Task SkillTollReplacesRegularTollAsync()
+    public async Task SkillTollAddsToRegularTollAsync()
     {
         var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         attacker.Attributes![Stats.CurrentHealth] = 10;
@@ -37,21 +37,20 @@ public class PlayerHitTollTests
 
         await attacker.AfterHitTargetAsync(0, skillEntry).ConfigureAwait(false);
 
-        Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(8));
+        Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(5));
     }
 
     /// <summary>
-    /// Hitting a player with a Dinorant adds the configured target toll.
+    /// Hitting a player adds the attacker health toll.
     /// </summary>
     [Test]
-    public async Task DinorantTargetTollIsAddedAsync()
+    public async Task AttackerTollIsAddedAsync()
     {
         var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         attacker.Attributes![Stats.CurrentHealth] = 10;
         attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
-        attacker.Attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.TargetHasDinorantHealthToll);
-        target.Attributes!.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.IsDinorantEquipped);
+        target.Attributes!.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.HealthLossInflictedOnAttacker);
 
         await attacker.AfterHitTargetAsync(0, null, target).ConfigureAwait(false);
 

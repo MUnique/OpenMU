@@ -97,7 +97,8 @@ public class Pets : InitializerBase
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
             (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate),
-            (Stats.HealthLossAfterDealtHit, 1.0f, AggregateType.AddRaw));
+            (Stats.HealthLossAfterDealtHit, 1.0f, AggregateType.AddRaw),
+            (Stats.HealthLossInflictedOnAttacker, 1.0f, AggregateType.AddRaw));
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(

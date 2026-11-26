@@ -22,14 +22,14 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
     /// </summary>
     protected static readonly (short SkillNumber, float Toll)[] SkillTolls =
     [
-        ((short)SkillNumber.KillingBlow, 2),
-        ((short)SkillNumber.BeastUppercut, 2),
-        ((short)SkillNumber.DragonRoar, 2),
-        ((short)SkillNumber.PhoenixShot, 2),
-        ((short)SkillNumber.DarkSide, 4),
-        ((short)SkillNumber.Charge, 4),
-        ((short)SkillNumber.ChainDrive, 4),
-        ((short)SkillNumber.DragonSlasher, 100),
+        ((short)SkillNumber.KillingBlow, -1),
+        ((short)SkillNumber.BeastUppercut, -1),
+        ((short)SkillNumber.DragonRoar, -1),
+        ((short)SkillNumber.PhoenixShot, -1),
+        ((short)SkillNumber.DarkSide, 1),
+        ((short)SkillNumber.Charge, 1),
+        ((short)SkillNumber.ChainDrive, 1),
+        ((short)SkillNumber.DragonSlasher, 97),
     ];
 
     /// <inheritdoc />
@@ -90,9 +90,8 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
         this.AddStatIfNotExists(context, gameConfiguration, Stats.HealthLossAfterHit);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.IsImpEquipped);
         this.AddStatIfNotExists(context, gameConfiguration, Stats.SkillHealthLossAfterDealtHit);
-        this.AddStatIfNotExists(context, gameConfiguration, Stats.TargetHasDinorantHealthToll);
+        this.AddStatIfNotExists(context, gameConfiguration, Stats.HealthLossInflictedOnAttacker);
 
-        this.AddGlobalBaseAttributeValueIfNotExists(context, gameConfiguration, Stats.TargetHasDinorantHealthToll, 1);
         this.UpdateCharacterClassRelationships(context, gameConfiguration);
         this.UpdateWingPowerUps(context, gameConfiguration);
         this.UpdatePetPowerUps(context, gameConfiguration);
@@ -107,17 +106,6 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
     /// <param name="gameConfiguration">The game configuration.</param>
     protected virtual void UpdateSkillTolls(IContext context, GameConfiguration gameConfiguration)
     {
-    }
-
-    private void AddGlobalBaseAttributeValueIfNotExists(IContext context, GameConfiguration gameConfiguration, AttributeDefinition attribute, float value)
-    {
-        var persistentAttribute = attribute.GetPersistent(gameConfiguration);
-        if (gameConfiguration.GlobalBaseAttributeValues.Any(existingValue => existingValue.Definition?.Id == persistentAttribute.Id))
-        {
-            return;
-        }
-
-        gameConfiguration.GlobalBaseAttributeValues.Add(context.CreateNew<ConstValueAttribute>(value, persistentAttribute, AggregateType.AddRaw));
     }
 
     private void UpdateCharacterClassRelationships(IContext context, GameConfiguration gameConfiguration)
@@ -170,6 +158,7 @@ public abstract class UpdateWingAndPetHitTollsPlugInBase : UpdatePlugInBase
         foreach (var dinorant in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 3))
         {
             this.SetItemPowerUp(context, gameConfiguration, dinorant, Stats.HealthLossAfterDealtHit, 1, AggregateType.AddRaw);
+            this.SetItemPowerUp(context, gameConfiguration, dinorant, Stats.HealthLossInflictedOnAttacker, 1, AggregateType.AddRaw);
         }
 
         foreach (var darkHorse in gameConfiguration.Items.Where(item => item.Group == 13 && item.Number == 4))

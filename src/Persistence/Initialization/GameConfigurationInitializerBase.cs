@@ -319,8 +319,5 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
 
         var hitShockDamageThreshold = this.Context.CreateNew<ConstValueAttribute>(5f, Stats.HitShockDamageThreshold.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(hitShockDamageThreshold);
-
-        var targetHasDinorantHealthToll = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.TargetHasDinorantHealthToll.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
-        this.GameConfiguration.GlobalBaseAttributeValues.Add(targetHasDinorantHealthToll);
     }
 }

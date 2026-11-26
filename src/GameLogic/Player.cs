@@ -907,18 +907,13 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// <param name="target">The target player.</param>
     public async ValueTask AfterHitTargetAsync(float targetDefense, SkillEntry? skill, Player? target = null)
     {
-        var healthLossAfterDealtHit = this.Attributes![Stats.HealthLossAfterDealtHit];
+        var healthToll = this.Attributes![Stats.HealthLossAfterDealtHit] + (target?.Attributes?[Stats.HealthLossInflictedOnAttacker] ?? 0);
         if (skill?.EnsureSkillAttributes(this.Attributes) is { } skillAttributes && skillAttributes[Stats.SkillHealthLossAfterDealtHit] > 0)
         {
-            healthLossAfterDealtHit = skillAttributes[Stats.SkillHealthLossAfterDealtHit];
+            healthToll += skillAttributes[Stats.SkillHealthLossAfterDealtHit];
         }
 
-        if (target?.Attributes?[Stats.IsDinorantEquipped] > 0)
-        {
-            healthLossAfterDealtHit += this.Attributes[Stats.TargetHasDinorantHealthToll];
-        }
-
-        this.Attributes[Stats.CurrentHealth] -= healthLossAfterDealtHit;
+        this.Attributes[Stats.CurrentHealth] -= healthToll;
         if (this.Attributes[Stats.CurrentHealth] < 1)
         {
             this.LastDeath = new DeathInformation(0, string.Empty, default, 0);

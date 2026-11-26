@@ -1496,7 +1496,13 @@ public class Stats
     /// Gets the health loss after dealt hit definition.
     /// </summary>
     /// <remarks>Wings, imp, dinorant impose a health toll to their user.</remarks>
-    public static AttributeDefinition HealthLossAfterDealtHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings, imp, dinorant");
+    public static AttributeDefinition HealthLossAfterDealtHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by equipping wings, imp, dinorant");
+
+    /// <summary>
+    /// Gets the health loss inflcited on attacker definition.
+    /// </summary>
+    /// <remarks>A health toll which is applied on the attacking player (e.g., by equipping a dinorant).</remarks>
+    public static AttributeDefinition HealthLossInflictedOnAttacker { get; } = new(new Guid("E937BDF8-3DDB-40AF-BA0C-E18E7C69B7E9"), "Health loss inflicted on attacker", "A health toll caused on an attacking a player by equipping a dinorant");
 
     /// <summary>
     /// Gets the skill extra mana cost definition.
@@ -1546,12 +1552,6 @@ public class Stats
     /// Gets the is dinorant equipped attribute definition.
     /// </summary>
     public static AttributeDefinition IsDinorantEquipped { get; } = new(new Guid("C52B5CA4-34BA-4E31-963B-E37089671C37"), "Is Dinorant Equipped", string.Empty);
-
-    /// <summary>
-    /// Gets the target has dinorant health toll.
-    /// </summary>
-    /// <remarks>The health loss caused by attacking a player wearing a dinorant.</remarks>
-    public static AttributeDefinition TargetHasDinorantHealthToll { get; } = new(new Guid("E937BDF8-3DDB-40AF-BA0C-E18E7C69B7E9"), "Target Has Dinorant Health Toll", "The health loss caused by attacking a player wearing a dinorant");
 
     /// <summary>
     /// Gets the is imp equipped attribute definition.
