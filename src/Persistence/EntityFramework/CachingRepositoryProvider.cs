@@ -74,7 +74,7 @@ internal class CachingRepositoryProvider : RepositoryProvider
         this.RegisterRepository(new GameServerDefinitionRepository(this._parent, this.LoggerFactory));
 
         this.RegisterRepository(new ConfigurationTypeRepository<ItemOptionDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemOptions));
-        this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(this._parent, this.LoggerFactory,this.ConfigurationReferences,config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Distinct().ToList()));
+        this.RegisterRepository(new ConfigurationTypeRepository<IncreasableItemOption>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawItemOptions.SelectMany(o => o.RawPossibleOptions).Distinct().ToList()));
         this.RegisterRepository(new ConfigurationTypeRepository<AttributeDefinition>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawAttributes));
         this.RegisterRepository(new ConfigurationTypeRepository<AttributeRelationship>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawGlobalAttributeCombinations));
         this.RegisterRepository(new ConfigurationTypeRepository<ConstValueAttribute>(this._parent, this.LoggerFactory, this.ConfigurationReferences, config => config.RawGlobalBaseAttributeValues));
