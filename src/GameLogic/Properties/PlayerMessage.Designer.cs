@@ -3182,6 +3182,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t change the Zen of the trade, the Zen in the window would exceed your Zen limit. Cancel the trade to get it back..
+        /// </summary>
+        public static string TradeZenChangeRefused {
+            get {
+                return ResourceManager.GetString("TradeZenChangeRefused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trade cancelled: the received Zen would exceed your Zen limit..
+        /// </summary>
+        public static string TradeZenLimitReached {
+            get {
+                return ResourceManager.GetString("TradeZenLimitReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trade cancelled: {0} can&apos;t receive that much Zen, it would exceed the Zen limit..
+        /// </summary>
+        public static string TradeZenLimitReachedByPartner {
+            get {
+                return ResourceManager.GetString("TradeZenLimitReachedByPartner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{0}] Account of {1} has been unbanned..
         /// </summary>
         public static string UnbanAccountOfCharacterResult {

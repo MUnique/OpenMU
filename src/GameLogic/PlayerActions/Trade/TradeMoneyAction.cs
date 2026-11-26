@@ -33,7 +33,14 @@ public class TradeMoneyAction
         }
 
         // Add the Money to the Trade
-        player.TryAddMoney(player.TradingMoney);
+        if (!player.TryAddMoney(player.TradingMoney))
+        {
+            // The zen of the trade window doesn't fit back, e.g. because the player gained money in the meantime.
+            // Going on would overwrite the amount in the window, and the old amount would be lost.
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TradeZenChangeRefused)).ConfigureAwait(false);
+            return;
+        }
+
         player.TryAddMoney((int)(-1 * moneyAmount));
         player.TradingMoney = (int)moneyAmount;
         await player.InvokeViewPlugInAsync<IUpdateMoneyPlugIn>(p => p.UpdateMoneyAsync()).ConfigureAwait(false);

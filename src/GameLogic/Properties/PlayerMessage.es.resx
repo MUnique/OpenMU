@@ -1240,4 +1240,13 @@ Extensiones de inventario: {18}</value>
   <data name="MobilityTalismanReturnPending" xml:space="preserve">
     <value>Otro Talismán de Movilidad aún tiene pendiente el regreso a la ubicación guardada. Úsalo primero.</value>
   </data>
+  <data name="TradeZenChangeRefused" xml:space="preserve">
+    <value>No puedes cambiar el zen del intercambio: el zen de la ventana superaría tu límite. Cancela el intercambio para recuperarlo.</value>
+  </data>
+  <data name="TradeZenLimitReached" xml:space="preserve">
+    <value>Intercambio cancelado: el zen recibido superaría tu límite de zen.</value>
+  </data>
+  <data name="TradeZenLimitReachedByPartner" xml:space="preserve">
+    <value>Intercambio cancelado: {0} no puede recibir tanto zen, superaría el límite de zen.</value>
+  </data>
 </root>
