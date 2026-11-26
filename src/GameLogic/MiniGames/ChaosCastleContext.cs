@@ -207,7 +207,11 @@ public sealed class ChaosCastleContext : MiniGameContext
         var sortedFinishers = finishers
             .Select(this.GetGameStateOfFinisher)
             .WhereNotNull()
-            .OrderByDescending(state => state.Score)
+            // Players which died stay registered until they leave the map, so the survivors must rank first.
+            // Otherwise a dead player with more points (e.g. from monster kills) outranks the last survivor,
+            // and the survivor gets the "failed" result and the rewards of a lower rank.
+            .OrderByDescending(state => state.Player.IsAlive)
+            .ThenByDescending(state => state.Score)
             .ToList();
 
         var scoreList = new List<(string Name, int Score, int BonusExp, int BonusMoney)>();
