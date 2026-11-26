@@ -104,7 +104,7 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
         // The mutation is a single, quick operation, so a bounded retry lands on a stable moment
         // instead of failing the whole save - which would otherwise leave the session unpersisted and
         // roll the player back on relog.
-        const int maxAttempts = 3;
+        const int maxAttempts = 5;
         var attempt = 0;
         while (true)
         {
@@ -477,6 +477,16 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             {
                 this.LogConcurrencyConflicts(exception);
 
+                // A row which is gone already (an item destroyed by a mix, or a dropped
+                // item which expired and was deleted by another context) made every later save of the session fail
+                // again, so all progress until logout was lost. Such entries are dropped from the tracker here; the
+                // caller's retry then saves everything else.
+                if (this._configurationEditTransaction is null
+                    && await this.ForgetEntriesWithoutRowsAsync(exception, cancellationToken).ConfigureAwait(false))
+                {
+                    throw new DbUpdateConcurrencyException("Entries without a database row were dropped; save again.", exception);
+                }
+
                 // Classify only explicit server rejections, never a lost connection during commit.
                 throw new PersistenceConflictException(exception);
             }
@@ -498,6 +508,62 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             sender = s;
             args = e;
         }
+    }
+
+    /// <summary>
+    /// Drops the entries of a concurrency conflict whose row doesn't exist in the database (anymore): a delete of
+    /// such a row is done already, and an update of it can never succeed.
+    /// </summary>
+    /// <param name="exception">The rejected save.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>true</c> if at least one entry was dropped, so a new save can succeed.</returns>
+    private async ValueTask<bool> ForgetEntriesWithoutRowsAsync(Exception exception, CancellationToken cancellationToken)
+    {
+        for (Exception? error = exception; error is not null; error = error.InnerException)
+        {
+            if (error is not DbUpdateConcurrencyException concurrencyException)
+            {
+                continue;
+            }
+
+            var dropped = 0;
+            foreach (var entry in concurrencyException.Entries)
+            {
+                if (entry.State is not (EntityState.Deleted or EntityState.Modified))
+                {
+                    continue;
+                }
+
+                if (await entry.GetDatabaseValuesAsync(cancellationToken).ConfigureAwait(false) is not null)
+                {
+                    continue;
+                }
+
+                this._logger.LogWarning(
+                    "Dropping {EntityType} from the save: its row is gone already (state was {EntityState}).",
+                    entry.Metadata.ClrType.Name,
+                    entry.State);
+                // Its members (e.g. an item's option links) are gone with it: their deletes would fail the same way.
+                var entity = entry.Entity;
+                entry.State = EntityState.Detached;
+                this.ForEachAggregate(
+                    entity,
+                    member =>
+                    {
+                        var memberEntry = this.Context.Entry(member);
+                        if (memberEntry.State is EntityState.Deleted or EntityState.Modified)
+                        {
+                            memberEntry.State = EntityState.Detached;
+                        }
+                    },
+                    stopAtSharedConfiguration: true);
+                dropped++;
+            }
+
+            return dropped > 0;
+        }
+
+        return false;
     }
 
     private void LogConcurrencyConflicts(Exception exception)
