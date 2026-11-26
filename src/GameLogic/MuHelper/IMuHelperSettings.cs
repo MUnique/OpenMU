@@ -135,6 +135,12 @@ public interface IMuHelperSettings
     /// <summary>Gets a value indicating whether pickup extra items.</summary>
     bool PickExtraItems { get; }
 
+    /// <summary>
+    /// Gets the minimum number of sockets of a dropped item to pick it up with <see cref="PickSelectItems"/>.
+    /// 0 turns this off; otherwise 1 to 5.
+    /// </summary>
+    int PickSocketMinimum { get; }
+
     /// <summary>Gets the extra item names. Up to 12 item name substrings; pick any dropped item whose name contains one of these.</summary>
     IReadOnlyList<string> ExtraItemNames { get; }
 

@@ -137,6 +137,9 @@ public sealed class MuHelperSettings : IMuHelperSettings
     /// <summary>Gets a value indicating whether to pick up extra items.</summary>
     public bool PickExtraItems { get; init; }
 
+    /// <inheritdoc />
+    public int PickSocketMinimum { get; init; }
+
     /// <summary>Gets the extra item names. Up to 12 item name substrings; pick any dropped item whose name contains one of these.</summary>
     public IReadOnlyList<string> ExtraItemNames { get; init; } = [];
 
