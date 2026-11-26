@@ -925,6 +925,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adds the attributes which define the party experience (the multiplier for each additional party member, and a bonus for set parties) with default values which keep the current party experience: 1.05 for each additional member, and no set party bonus. Existing values are not changed..
+        /// </summary>
+        public static string AddPartyExperienceBonusAttributesPlugInBase_Description {
+            get {
+                return ResourceManager.GetString("AddPartyExperienceBonusAttributesPlugInBase_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add party experience bonus attributes.
+        /// </summary>
+        public static string AddPartyExperienceBonusAttributesPlugInBase_Name {
+            get {
+                return ResourceManager.GetString("AddPartyExperienceBonusAttributesPlugInBase_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update adds the attribute PointsPerReset..
         /// </summary>
         public static string AddPointsPerResetAttributePlugIn_Description {

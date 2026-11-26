@@ -311,6 +311,12 @@ public abstract class GameConfigurationInitializerBase : InitializerBase
         var randomExperienceMaxMultiplier = this.Context.CreateNew<ConstValueAttribute>(1.2f, Stats.RandomExperienceMaxMultiplier.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(randomExperienceMaxMultiplier);
 
+        foreach (var (attribute, value) in PartyExperienceBonusDefaults.Values)
+        {
+            var partyExperienceBonus = this.Context.CreateNew<ConstValueAttribute>(value, attribute.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
+            this.GameConfiguration.GlobalBaseAttributeValues.Add(partyExperienceBonus);
+        }
+
         var movementSpeedFactor = this.Context.CreateNew<ConstValueAttribute>(1f, Stats.MovementSpeedFactor.GetPersistent(this.GameConfiguration), AggregateType.AddRaw);
         this.GameConfiguration.GlobalBaseAttributeValues.Add(movementSpeedFactor);
 

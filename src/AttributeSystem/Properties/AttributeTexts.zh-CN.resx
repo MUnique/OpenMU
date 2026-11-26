@@ -792,6 +792,12 @@
   <data name="Name_OneHandedSwordBonusDamageMST" xml:space="preserve">
     <value>单手剑伤害加成（大师技能）</value>
   </data>
+  <data name="Name_PartyExperienceMultiplier" xml:space="preserve">
+    <value>队伍经验倍率</value>
+  </data>
+  <data name="Description_PartyExperienceMultiplier" xml:space="preserve">
+    <value>定义每增加一名队伍成员时队伍经验所乘的倍率（1.05 = 第二名成员增加5%经验，并对之后每名成员继续相乘，即3名成员的队伍获得 1.05 * 1.05）。值为0或更小则禁用。</value>
+  </data>
   <data name="Name_PetDurationIncrease" xml:space="preserve">
     <value>宠物持续时间增加</value>
   </data>
@@ -908,6 +914,12 @@
   </data>
   <data name="Description_SDRateIncrease" xml:space="preserve">
     <value>对玩家战斗时，按设定值提高防护值的伤害吸收比例。</value>
+  </data>
+  <data name="Name_SetPartyExperienceBonus" xml:space="preserve">
+    <value>套装队伍经验加成</value>
+  </data>
+  <data name="Description_SetPartyExperienceBonus" xml:space="preserve">
+    <value>定义在套装队伍的经验倍率基础上额外增加的经验加成，以经验的比例表示（0.02 = 2%）。</value>
   </data>
   <data name="Name_ShieldBypassChance" xml:space="preserve">
     <value>无视防护值概率</value>
