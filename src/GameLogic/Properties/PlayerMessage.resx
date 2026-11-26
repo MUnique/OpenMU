@@ -1240,4 +1240,13 @@ Inventory Extensions: {18}</value>
   <data name="LordsMixLimitReached" xml:space="preserve">
     <value>The limit of the Lord's Mix is reached; it can be used again in the next period.</value>
   </data>
+  <data name="TradeZenChangeRefused" xml:space="preserve">
+    <value>You can't change the Zen of the trade, the Zen in the window would exceed your Zen limit. Cancel the trade to get it back.</value>
+  </data>
+  <data name="TradeZenLimitReached" xml:space="preserve">
+    <value>Trade cancelled: the received Zen would exceed your Zen limit.</value>
+  </data>
+  <data name="TradeZenLimitReachedByPartner" xml:space="preserve">
+    <value>Trade cancelled: {0} can't receive that much Zen, it would exceed the Zen limit.</value>
+  </data>
 </root>

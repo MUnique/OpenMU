@@ -65,6 +65,31 @@ public class TradeButtonAction : BaseTradeAction
         return true;
     }
 
+    private static bool ExceedsMoneyLimit(ITrader receiver, int receivedMoney)
+    {
+        // Calculated as long, because the sum may not fit into an int, and would wrap to a negative value.
+        var maximum = receiver.GameContext?.Configuration?.MaximumInventoryMoney ?? int.MaxValue;
+        return receivedMoney > 0 && (long)receiver.Money + receivedMoney > maximum;
+    }
+
+    private static async ValueTask SendMoneyLimitMessagesAsync(ITrader receiver, ITrader giver)
+    {
+        if (!ExceedsMoneyLimit(receiver, giver.TradingMoney))
+        {
+            return;
+        }
+
+        if (receiver is Player receivingPlayer)
+        {
+            await receivingPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TradeZenLimitReached)).ConfigureAwait(false);
+        }
+
+        if (giver is Player givingPlayer)
+        {
+            await givingPlayer.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.TradeZenLimitReachedByPartner), receiver.Name).ConfigureAwait(false);
+        }
+    }
+
     private async ValueTask<TradeResult> InternalFinishTradeAsync(ITrader trader, ITrader tradingPartner)
     {
         await using var context = await trader.PlayerState.TryBeginAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
@@ -74,6 +99,15 @@ public class TradeButtonAction : BaseTradeAction
             context.Allowed = false;
             partnerContext.Allowed = false;
             (trader as Player)?.Logger.LogDebug($"Unexpected player states. {trader.Name}:{trader.PlayerState}, {tradingPartner.Name}:{tradingPartner.PlayerState}");
+            return TradeResult.Cancelled;
+        }
+
+        // Checked before anything is moved, so that the cancellation gives everything back. It's checked here,
+        // and not only when the money is put into the trade, because the receiver may gain money in between.
+        if (ExceedsMoneyLimit(trader, tradingPartner.TradingMoney) || ExceedsMoneyLimit(tradingPartner, trader.TradingMoney))
+        {
+            await SendMoneyLimitMessagesAsync(trader, tradingPartner).ConfigureAwait(false);
+            await SendMoneyLimitMessagesAsync(tradingPartner, trader).ConfigureAwait(false);
             return TradeResult.Cancelled;
         }
 
