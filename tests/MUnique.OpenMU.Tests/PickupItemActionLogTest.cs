@@ -29,6 +29,20 @@ internal class PickupItemActionLogTest
     }
 
     /// <summary>
+    /// Tests that the "doesn't belong to you" notice for owner only drops is shown once per interval and player.
+    /// </summary>
+    [Test]
+    public async ValueTask OwnerOnlyNoticeIsLimitedPerPlayerAsync()
+    {
+        var player1 = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var player2 = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+
+        Assert.That(PickupItemAction.TryStartOwnerOnlyNotice(player1), Is.True);
+        Assert.That(Enumerable.Range(0, 100).Count(_ => PickupItemAction.TryStartOwnerOnlyNotice(player1)), Is.Zero);
+        Assert.That(PickupItemAction.TryStartOwnerOnlyNotice(player2), Is.True);
+    }
+
+    /// <summary>
     /// Tests that the first refusal of each player is logged as information.
     /// </summary>
     [Test]
