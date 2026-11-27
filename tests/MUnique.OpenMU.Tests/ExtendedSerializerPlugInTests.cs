@@ -30,13 +30,13 @@ public class ExtendedSerializerPlugInTests
     [Test]
     public void SerializersOfAPlayerCallThePlugIns()
     {
-        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer(Version);
+        var (player, _) = PlayerTestHelper.CreateRemotePlayer(Version);
         var manager = player.GameContext.PlugInManager;
         manager.RegisterPlugIn<IItemSerializer, ItemSerializerExtended>();
         manager.RegisterPlugIn<IAppearanceSerializer, AppearanceSerializerExtended>();
         manager.RegisterPlugIn<IExtendedItemSerializedPlugIn, AppendingPlugIn>();
         manager.RegisterPlugIn<IExtendedAppearanceSerializedPlugIn, MarkingPlugIn>();
-        (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer((IGameServerContext)player.GameContext, Version);
+        (player, _) = PlayerTestHelper.CreateRemotePlayer((IGameServerContext)player.GameContext, Version);
 
         var itemSerializer = player.ViewPlugIns.GetPlugIn<IItemSerializer>()!;
         var appearanceSerializer = player.ViewPlugIns.GetPlugIn<IAppearanceSerializer>()!;
@@ -66,7 +66,7 @@ public class ExtendedSerializerPlugInTests
     [Test]
     public void SerializersWithoutPlugInsKeepTheData()
     {
-        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer(Version);
+        var (player, _) = PlayerTestHelper.CreateRemotePlayer(Version);
         using var context = new InMemoryPersistenceContextProvider().CreateNewContext();
         var item = context.CreateNew<Item>();
         item.Definition = context.CreateNew<ItemDefinition>();
