@@ -20,7 +20,7 @@ public class GensRemoteViewTests
     [Test]
     public async Task ResultsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new GensViewPlugIn(player);
 
         await view.ShowJoinResultAsync(GensJoinResult.Success, GensType.Vanert).ConfigureAwait(false);
@@ -51,7 +51,7 @@ public class GensRemoteViewTests
     [Test]
     public async Task GensInfoAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new GensViewPlugIn(player);
 
         await view.ShowGensInfoAsync().ConfigureAwait(false);
@@ -75,7 +75,7 @@ public class GensRemoteViewTests
     [Test]
     public async Task AssignPlayersToGensAsync()
     {
-        var (observer, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (observer, output) = PlayerTestHelper.CreateRemotePlayer();
         var member = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
         member.Id = 0x1234;
         member.GensMember = new GensMember { Gens = GensType.Vanert, RankingPosition = 5, Rank = 2, Contribution = 300 };

@@ -24,7 +24,7 @@ public class ShowMessagePlugInTests
     [Test]
     public async ValueTask SlideNoticeIsSentAsSlideNoticePacketAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(Season6);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(Season6);
 
         await new ShowMessagePlugIn(player).ShowMessageAsync("Hola ñ", MessageType.SlideNotice).ConfigureAwait(false);
 
@@ -52,7 +52,7 @@ public class ShowMessagePlugInTests
     [Test]
     public async ValueTask SlideNoticeFallsBackToGoldenNoticeForOldClientsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(new ClientVersion(0, 75, ClientLanguage.Invariant));
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(new ClientVersion(0, 75, ClientLanguage.Invariant));
 
         await new ShowMessagePlugIn(player).ShowMessageAsync("Hi", MessageType.SlideNotice).ConfigureAwait(false);
 

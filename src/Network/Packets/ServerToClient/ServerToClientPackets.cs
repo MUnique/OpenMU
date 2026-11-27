@@ -11075,6 +11075,11 @@ public readonly struct NpcWindowResponse
             DoorkeeperTitusDuelWatch = 33,
 
         /// <summary>
+        /// The moss merchant window.
+        /// </summary>
+            MossMerchant = 34,
+
+        /// <summary>
         /// The lugard doppelganger entry window.
         /// </summary>
             LugardDoppelgangerEntry = 35,

@@ -21,7 +21,7 @@ public class CastleSiegeNpcRemoteViewTests
     [Test]
     public async ValueTask SerializeNpcListsAndOperationResultsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         await new CastleSiegeNpcListPlugIn(player)
             .ShowNpcListAsync(
                 [

@@ -4131,6 +4131,11 @@
               <Value>33</Value>
             </EnumValue>
             <EnumValue>
+              <Name>MossMerchant</Name>
+              <Description>The moss merchant window.</Description>
+              <Value>34</Value>
+            </EnumValue>
+            <EnumValue>
               <Name>LugardDoppelgangerEntry</Name>
               <Description>The lugard doppelganger entry window.</Description>
               <Value>35</Value>

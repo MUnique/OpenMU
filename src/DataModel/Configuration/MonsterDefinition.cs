@@ -14,6 +14,9 @@ using MUnique.OpenMU.Interfaces;
 /// Type of the window which will be openend when talking to the npc.
 /// TODO: Maybe change to a class and do it data-driven.
 /// </summary>
+/// <remarks>
+/// The values are persisted, so new members must be appended at the end.
+/// </remarks>
 public enum NpcWindow
 {
     /// <summary>
@@ -180,6 +183,11 @@ public enum NpcWindow
     /// The castle siege guardsman window, which shows the castle siege status and the guild registration.
     /// </summary>
     CastleSiegeGuardsman,
+
+    /// <summary>
+    /// The moss merchant window.
+    /// </summary>
+    MossMerchant,
 }
 
 /// <summary>

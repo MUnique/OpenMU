@@ -115,7 +115,7 @@ public class CastleSiegeOwnerLogoTests
     [Test]
     public async ValueTask SerializeLogoAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var logo = Enumerable.Range(1, 32).Select(value => (byte)value).ToArray();
 
         await new CastleSiegeOwnerLogoPlugIn(player).ShowOwnerLogoAsync(logo).ConfigureAwait(false);
@@ -136,7 +136,7 @@ public class CastleSiegeOwnerLogoTests
     [Test]
     public async ValueTask SerializeEmptyAndOversizedLogoAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CastleSiegeOwnerLogoPlugIn(player);
 
         await view.ShowOwnerLogoAsync(ReadOnlyMemory<byte>.Empty).ConfigureAwait(false);

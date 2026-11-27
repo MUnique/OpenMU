@@ -23,7 +23,7 @@ public class RaklionRemoteViewTests
     [Test]
     public async Task StatePacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new RaklionEventViewPlugIn(player);
 
         await view.ShowStateInfoAsync(RaklionState.StartBattle, SelupanState.Pattern3, true, TimeSpan.FromSeconds(125.7)).ConfigureAwait(false);
@@ -73,7 +73,7 @@ public class RaklionRemoteViewTests
     [Test]
     public async Task SelupanSkillPacketAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new RaklionEventViewPlugIn(player);
         var selupan = new Mock<IAttacker>();
         selupan.Setup(s => s.Id).Returns(0x1234);
@@ -102,7 +102,7 @@ public class RaklionRemoteViewTests
     [Test]
     public async Task IronKnightStabPacketAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new RaklionEventViewPlugIn(player);
         var ironKnight = new Mock<IAttacker>();
         ironKnight.Setup(s => s.Id).Returns(0x1234);

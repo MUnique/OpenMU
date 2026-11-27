@@ -24,7 +24,7 @@ public class CastleSiegeGuildSelectionRemoteViewTests
     [Test]
     public async ValueTask IgnoreJoinSideNotificationAfterDisconnectAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.DisconnectAsync().ConfigureAwait(false);
         var outputLengthAfterDisconnect = output.Length;
@@ -43,7 +43,7 @@ public class CastleSiegeGuildSelectionRemoteViewTests
     [Test]
     public async ValueTask SerializeGuildSelectionResponsesAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         BasicModel.CastleSiegeGuildRegistration[] registrations =
         [
             new()

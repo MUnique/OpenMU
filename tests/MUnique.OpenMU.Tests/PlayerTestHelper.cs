@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using System.IO;
+using System.IO.Pipelines;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.AttributeSystem;
@@ -14,8 +16,14 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameServer;
+using MUnique.OpenMU.GameServer.RemoteView;
+using MUnique.OpenMU.Network;
+using MUnique.OpenMU.Network.PlugIns;
+using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
+using Nito.AsyncEx;
 
 /// <summary>
 /// Helper functions to create test players.
@@ -79,6 +87,53 @@ public static class PlayerTestHelper
         var player = new TestPlayer(gameContext);
         await EnterWorldAsync(player, CreateCharacter(gameContext)).ConfigureAwait(false);
         return player;
+    }
+
+    /// <summary>
+    /// Creates a remote player with an in-memory packet output and a minimal game server context.
+    /// </summary>
+    /// <param name="clientVersion">The client version of the player.</param>
+    /// <returns>The remote player and its output stream.</returns>
+    public static (RemotePlayer Player, MemoryStream Output) CreateRemotePlayer(ClientVersion clientVersion = default)
+    {
+        var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
+        return CreateRemotePlayer(plugInManager, clientVersion);
+    }
+
+    /// <summary>
+    /// Creates a remote player with an in-memory packet output and a minimal game server context
+    /// which uses the specified plug-in manager.
+    /// </summary>
+    /// <param name="plugInManager">The plug-in manager of the game server context.</param>
+    /// <param name="clientVersion">The client version of the player.</param>
+    /// <returns>The remote player and its output stream.</returns>
+    public static (RemotePlayer Player, MemoryStream Output) CreateRemotePlayer(PlugInManager plugInManager, ClientVersion clientVersion = default)
+    {
+        var gameContext = new Mock<IGameServerContext>();
+        gameContext.Setup(c => c.PersistenceContextProvider)
+            .Returns(new Mock<IPersistenceContextProvider> { DefaultValue = DefaultValue.Mock }.Object);
+        gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
+        gameContext.Setup(c => c.PlugInManager).Returns(plugInManager);
+        gameContext.Setup(c => c.FeaturePlugIns).Returns(new FeaturePlugInContainer(plugInManager));
+        gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
+        return CreateRemotePlayer(gameContext.Object, clientVersion);
+    }
+
+    /// <summary>
+    /// Creates a remote player with an in-memory packet output for an existing game server context.
+    /// </summary>
+    /// <param name="gameContext">The game server context.</param>
+    /// <param name="clientVersion">The client version of the player.</param>
+    /// <returns>The remote player and its output stream.</returns>
+    public static (RemotePlayer Player, MemoryStream Output) CreateRemotePlayer(IGameServerContext gameContext, ClientVersion clientVersion = default)
+    {
+        var output = new MemoryStream();
+        var writer = PipeWriter.Create(output, new StreamPipeWriterOptions(leaveOpen: true));
+        var connection = new Mock<IConnection>();
+        connection.SetupGet(c => c.Connected).Returns(true);
+        connection.SetupGet(c => c.Output).Returns(writer);
+        connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
+        return (new RemotePlayer(gameContext, connection.Object, clientVersion), output);
     }
 
     /// <summary>

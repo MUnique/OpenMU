@@ -34,7 +34,7 @@ public class CastleSiegeWeaponExplosionTests
     [TestCase(true)]
     public async ValueTask RequestHasNoEffectAsync(bool empty)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var packet = new byte[empty ? 0 : WeaponExplosionRequest.Length];
         if (!empty)
         {

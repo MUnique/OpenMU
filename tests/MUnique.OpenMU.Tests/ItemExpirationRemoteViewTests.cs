@@ -23,7 +23,7 @@ public class ItemExpirationRemoteViewTests
     [Test]
     public async Task ListOfExpirationsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ItemExpirationViewPlugIn(player);
         var pet = new BasicModel.Item { ItemSlot = 8, ExpiresAt = ExpiresAt };
         var permanent = new BasicModel.Item { ItemSlot = 12 };
@@ -45,7 +45,7 @@ public class ItemExpirationRemoteViewTests
     [Test]
     public async Task NothingForPermanentItemsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ItemExpirationViewPlugIn(player);
         var permanent = new BasicModel.Item { ItemSlot = 12 };
 
@@ -61,7 +61,7 @@ public class ItemExpirationRemoteViewTests
     [Test]
     public async Task SingleExpirationAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ItemExpirationViewPlugIn(player);
 
         await view.ShowExpirationAsync(new BasicModel.Item { ItemSlot = 9, ExpiresAt = ExpiresAt }).ConfigureAwait(false);

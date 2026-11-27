@@ -21,7 +21,7 @@ public class ImperialGuardianRemoteViewTests
     [Test]
     public async Task PacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ImperialGuardianViewPlugIn(player);
 
         await view.ShowEnterResultAsync(ImperialGuardianEnterResult.Success, 7, 2, ImperialGuardianWeather.Storm, TimeSpan.FromSeconds(60)).ConfigureAwait(false);

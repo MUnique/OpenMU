@@ -74,6 +74,7 @@ public class OpenNpcWindowPlugIn : IOpenNpcWindowPlugIn
             NpcWindow.StatReInitializer => NpcWindowResponse.NpcWindow.StatReInitializer,
             NpcWindow.DelgadoLuckyCoinRegistration => NpcWindowResponse.NpcWindow.DelgadoLuckyCoinRegistration,
             NpcWindow.DoorkeeperTitusDuelWatch => NpcWindowResponse.NpcWindow.DoorkeeperTitusDuelWatch,
+            NpcWindow.MossMerchant => NpcWindowResponse.NpcWindow.MossMerchant,
             NpcWindow.LugardDoppelgangerEntry => NpcWindowResponse.NpcWindow.LugardDoppelgangerEntry,
             NpcWindow.JerintGaionEvententry => NpcWindowResponse.NpcWindow.JerintGaionEvententry,
             NpcWindow.JuliaWarpMarketServer => NpcWindowResponse.NpcWindow.JuliaWarpMarketServer,
