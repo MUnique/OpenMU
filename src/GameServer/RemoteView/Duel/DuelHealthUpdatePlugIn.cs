@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView.Duel;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
@@ -33,21 +34,43 @@ public class DuelHealthUpdatePlugIn : IDuelHealthUpdatePlugIn
     /// <inheritdoc />
     public async ValueTask UpdateHealthAsync(DuelRoom duelRoom)
     {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
         var player1 = this._player == duelRoom.Opponent ? duelRoom.Opponent : duelRoom.Requester;
         var player2 = this._player == duelRoom.Opponent ? duelRoom.Requester : duelRoom.Opponent;
 
-        var player1Health = player1.Attributes![Stats.CurrentHealth] / (player1.Attributes[Stats.MaximumHealth] / 100f);
-        var player1Shield = player1.Attributes[Stats.CurrentShield] / (player1.Attributes[Stats.MaximumShield] / 100f);
-        var player2Health = player2.Attributes![Stats.CurrentHealth] / (player1.Attributes[Stats.MaximumHealth] / 100f);
-        var player2Shield = player2.Attributes[Stats.CurrentShield] / (player1.Attributes[Stats.MaximumShield] / 100f);
+        if (player1.Attributes is not { } player1Attributes || player2.Attributes is not { } player2Attributes)
+        {
+            return;
+        }
 
-        await this._player.Connection.SendDuelHealthUpdateAsync(
+        var player1Health = CalculatePercentage(player1Attributes, Stats.CurrentHealth, Stats.MaximumHealth);
+        var player1Shield = CalculatePercentage(player1Attributes, Stats.CurrentShield, Stats.MaximumShield);
+        var player2Health = CalculatePercentage(player2Attributes, Stats.CurrentHealth, Stats.MaximumHealth);
+        var player2Shield = CalculatePercentage(player2Attributes, Stats.CurrentShield, Stats.MaximumShield);
+
+        await connection.SendDuelHealthUpdateAsync(
                 player1.GetId(this._player),
                 player2.GetId(this._player),
-                (byte)player1Health,
-                (byte)player2Health,
-                (byte)player1Shield,
-                (byte)player2Shield)
+                player1Health,
+                player2Health,
+                player1Shield,
+                player2Shield)
             .ConfigureAwait(false);
+    }
+
+    private static byte CalculatePercentage(IAttributeSystem attributes, AttributeDefinition currentStat, AttributeDefinition maximumStat)
+    {
+        var maximum = attributes[maximumStat];
+        var current = attributes[currentStat];
+        if (maximum <= 0 || float.IsNaN(maximum) || float.IsNaN(current))
+        {
+            return 0;
+        }
+
+        return (byte)Math.Clamp((double)current * 100.0 / maximum, 0.0, 100.0);
     }
 }
