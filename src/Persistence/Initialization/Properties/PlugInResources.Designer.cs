@@ -2113,6 +2113,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Switches off &quot;Excellent Raises Level Requirement&quot; for the weapons, shields and armor pieces with a level requirement and for the Horn of Fenrir, so that their excellent version needs the same level as the normal one, as on the original game servers..
+        /// </summary>
+        public static string FixExcellentLevelRequirementPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixExcellentLevelRequirementPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fix Excellent Level Requirement.
+        /// </summary>
+        public static string FixExcellentLevelRequirementPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixExcellentLevelRequirementPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This update corrects the energy and leadership requirements of the fire scream skill to 150 and 70. They were swapped, so a dark lord with less than 150 leadership could learn the skill but not use it..
         /// </summary>
         public static string FixFireScreamRequirementsUpdatePlugIn_Description {

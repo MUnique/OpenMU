@@ -105,6 +105,7 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();
+        ExcellentLevelRequirement.Apply(this.GameConfiguration);
         new CashShopInitializer(this.Context, this.GameConfiguration).Initialize();
         new ItemPriceDefinitions(this.Context, this.GameConfiguration).Initialize();
     }

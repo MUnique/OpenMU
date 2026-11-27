@@ -308,6 +308,12 @@
   <data name="FixAncientDiscriminatorsUpdatePlugIn_Description" xml:space="preserve">
     <value>Diese Aktualisierung korrigiert die Diskriminatoren einiger antiker Gegenstände.</value>
   </data>
+  <data name="FixExcellentLevelRequirementPlugIn_Name" xml:space="preserve">
+    <value>Level-Anforderung exzellenter Gegenstände korrigieren</value>
+  </data>
+  <data name="FixExcellentLevelRequirementPlugIn_Description" xml:space="preserve">
+    <value>Schaltet „Exzellent erhöht Level-Anforderung“ für die Waffen, Schilde und Rüstungsteile mit Level-Anforderung und für das Horn des Fenrir aus, sodass ihre exzellente Version dasselbe Level benötigt wie die normale, wie auf den originalen Spielservern.</value>
+  </data>
   <data name="AddSummonerBuffSkillsPlugIn_Name" xml:space="preserve">
     <value>Buff-Fähigkeiten des Beschwörers hinzufügen</value>
   </data>

@@ -357,6 +357,49 @@ public sealed class ItemExchangeExportTests
         Assert.That(items[2].GetProperty("height").GetInt32(), Is.EqualTo(3));
     }
 
+    /// <summary>
+    /// Tests <c>excellentRaisesLevel</c>: it's the item's, e.g. <c>false</c> for the lucky items.
+    /// </summary>
+    [Test]
+    public void ExcellentRaisesLevelIsTheItems()
+    {
+        using var file = Parse(ItemExchangeExport.Write(this._seasonSixConfiguration, ItemExchangeExport.ClientGameVersion));
+        var items = file.RootElement.GetProperty("items").EnumerateArray().ToList();
+        var exported = ItemExchangeExport.GetExportedItems(this._seasonSixConfiguration).ToList();
+
+        Assert.That(ItemExchangeExport.Fields.Select(field => field.Key), Contains.Item("excellentRaisesLevel"));
+        Assert.That(items, Has.Count.EqualTo(exported.Count));
+        foreach (var (definition, item) in exported.Zip(items))
+        {
+            Assert.That(GetFlagOrTrue(item, "excellentRaisesLevel"), Is.EqualTo(definition.ExcellentRaisesLevel), $"excellentRaisesLevel of {definition.Group},{definition.Number}");
+        }
+
+        var luckyArmor = items.First(item => item.GetProperty("group").GetInt32() == 8 && item.GetProperty("number").GetInt32() == 62);
+        Assert.That(luckyArmor.GetProperty("excellentRaisesLevel").GetBoolean(), Is.False);
+    }
+
+    /// <summary>
+    /// Tests that an <c>excellentRaisesLevel</c> of <c>true</c>, the client's default, is left out as
+    /// the client's files leave it out.
+    /// </summary>
+    [Test]
+    public void ExcellentRaisesLevelOfTrueIsLeftOut()
+    {
+        var provider = new InMemoryPersistenceContextProvider();
+        using var context = provider.CreateNewContext();
+        var configuration = context.CreateNew<GameConfiguration>();
+        AddItem(context, configuration, 8, 29);
+        var keepsLevel = CreateItem(context, 8, 30);
+        keepsLevel.ExcellentRaisesLevel = false;
+        configuration.Items.Add(keepsLevel);
+
+        using var file = Parse(ItemExchangeExport.Write(configuration, ItemExchangeExport.ClientGameVersion));
+        var items = file.RootElement.GetProperty("items");
+
+        Assert.That(items[0].TryGetProperty("excellentRaisesLevel", out _), Is.False);
+        Assert.That(items[1].GetProperty("excellentRaisesLevel").GetBoolean(), Is.False);
+    }
+
     private static JsonDocument Parse(byte[] file) => JsonDocument.Parse(file);
 
     private static List<(int Group, int Number)> GetItemKeys(byte[] file)
@@ -435,6 +478,11 @@ public sealed class ItemExchangeExportTests
     private static int GetNumberOrZero(JsonElement item, string key)
     {
         return item.TryGetProperty(key, out var value) ? value.GetInt32() : 0;
+    }
+
+    private static bool GetFlagOrTrue(JsonElement item, string key)
+    {
+        return !item.TryGetProperty(key, out var value) || value.GetBoolean();
     }
 
     private static void AddItem(IContext context, GameConfiguration configuration, byte group, short number)

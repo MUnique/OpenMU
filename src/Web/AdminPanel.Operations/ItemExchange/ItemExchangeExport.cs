@@ -61,6 +61,7 @@ public static class ItemExchangeExport
     [
         NumberField("width", item => item.Width),
         NumberField("height", item => item.Height),
+        FlagField("excellentRaisesLevel", item => item.ExcellentRaisesLevel),
     ];
 
     /// <summary>
@@ -175,6 +176,24 @@ public static class ItemExchangeExport
             if (number != 0)
             {
                 writer.WriteNumber(key, number);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Creates a field which is true or false, which is left out when it's true, the client's default,
+    /// as the client's files leave it out.
+    /// </summary>
+    /// <param name="key">The client's key of the field, which the file lists and the items carry.</param>
+    /// <param name="value">Gets the field's value of an item.</param>
+    /// <returns>The field.</returns>
+    private static ItemExchangeField FlagField(string key, Func<ItemDefinition, bool> value)
+    {
+        return new(key, (writer, item) =>
+        {
+            if (!value(item))
+            {
+                writer.WriteBoolean(key, false);
             }
         });
     }
