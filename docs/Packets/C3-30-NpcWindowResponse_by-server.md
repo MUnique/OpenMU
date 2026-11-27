@@ -44,6 +44,7 @@ Defines the kind of npc window which should be shown on the client.
 | 25 | StatReInitializer | The stat reinitializer window. |
 | 32 | DelgadoLuckyCoinRegistration | The delgado lucky coin registration window. |
 | 33 | DoorkeeperTitusDuelWatch | The doorkeeper titus duel watch window. |
+| 34 | MossMerchant | The moss merchant window. |
 | 35 | LugardDoppelgangerEntry | The lugard doppelganger entry window. |
 | 36 | JerintGaionEvententry | The jerint gaion event entry window. |
 | 37 | JuliaWarpMarketServer | The julia warp market server window. |
