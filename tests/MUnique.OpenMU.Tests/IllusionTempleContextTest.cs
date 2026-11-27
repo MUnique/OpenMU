@@ -321,7 +321,8 @@ public class IllusionTempleContextTest
                     members.Any(m => m.PlayerId == teamMate.Id)),
                 It.Is<(ushort PlayerId, byte PositionX, byte PositionY)?>(carrier =>
                     carrier.HasValue && carrier.Value.PlayerId == ViewExtensions.ConstantPlayerId)),
-            Times.Once);
+            // At least once: the cyclic state update, which the game start began, may send the same state in between.
+            Times.AtLeastOnce);
     }
 
     /// <summary>
