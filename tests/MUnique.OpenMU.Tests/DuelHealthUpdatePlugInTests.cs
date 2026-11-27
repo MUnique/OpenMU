@@ -40,7 +40,7 @@ public class DuelHealthUpdatePlugInTests
     public async Task SpectatorReceivesSecondFighterPercentagesAgainstOwnMaximumsForIssue1622Async()
     {
         var context = CreateGameServerContext();
-        var (spectator, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context);
+        var (spectator, output) = PlayerTestHelper.CreateRemotePlayer(context);
         var (requester, _) = await CreatePlayerWithStatsAsync(context, RequesterId, 120614, 120614, 169442, 169442).ConfigureAwait(false);
         var (opponent, _) = await CreatePlayerWithStatsAsync(context, OpponentId, 110731, 110731, 163780, 163780).ConfigureAwait(false);
         await using var duelRoom = CreateDuelRoom(requester, opponent);
@@ -99,7 +99,7 @@ public class DuelHealthUpdatePlugInTests
         byte expectedPlayer2Sd)
     {
         var context = CreateGameServerContext();
-        var (spectator, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context);
+        var (spectator, output) = PlayerTestHelper.CreateRemotePlayer(context);
         var (requester, _) = await CreatePlayerWithStatsAsync(context, RequesterId, requesterCurrentHp, requesterMaxHp, requesterCurrentSd, requesterMaxSd).ConfigureAwait(false);
         var (opponent, _) = await CreatePlayerWithStatsAsync(context, OpponentId, opponentCurrentHp, opponentMaxHp, opponentCurrentSd, opponentMaxSd).ConfigureAwait(false);
         await using var duelRoom = CreateDuelRoom(requester, opponent);
@@ -171,7 +171,7 @@ public class DuelHealthUpdatePlugInTests
         byte expectedOpponentSd)
     {
         var context = CreateGameServerContext();
-        var (spectator, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context);
+        var (spectator, output) = PlayerTestHelper.CreateRemotePlayer(context);
         var (requester, _) = await CreatePlayerWithStatsAsync(context, RequesterId, 90, 100, 0, 0).ConfigureAwait(false);
         var (opponent, _) = await CreatePlayerWithStatsAsync(context, OpponentId, opponentCurrentHp, opponentMaxHp, opponentCurrentSd, opponentMaxSd).ConfigureAwait(false);
         await using var duelRoom = CreateDuelRoom(requester, opponent);
@@ -196,7 +196,7 @@ public class DuelHealthUpdatePlugInTests
     public async Task OutOfRangeHealthAndShieldValuesAreClampedToBytePercentageRangeAsync()
     {
         var context = CreateGameServerContext();
-        var (spectator, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context);
+        var (spectator, output) = PlayerTestHelper.CreateRemotePlayer(context);
         var (requester, _) = await CreatePlayerWithStatsAsync(context, RequesterId, -25, 1000, -5, 500).ConfigureAwait(false);
         var (opponent, _) = await CreatePlayerWithStatsAsync(context, OpponentId, 300, 100, 260, 100).ConfigureAwait(false);
         await using var duelRoom = CreateDuelRoom(requester, opponent);
@@ -220,7 +220,7 @@ public class DuelHealthUpdatePlugInTests
     public async Task DisconnectedViewerSendsNoPacketAsync()
     {
         var context = CreateGameServerContext();
-        var (spectator, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context);
+        var (spectator, output) = PlayerTestHelper.CreateRemotePlayer(context);
         await spectator.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await spectator.DisconnectAsync().ConfigureAwait(false);
         Assert.That(spectator.Connection, Is.Null);
@@ -243,13 +243,13 @@ public class DuelHealthUpdatePlugInTests
     public async Task FighterWithNullAttributesSendsNoPacketAsync(bool requesterHasNullAttributes)
     {
         var context = CreateGameServerContext();
-        var (spectator, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context);
+        var (spectator, output) = PlayerTestHelper.CreateRemotePlayer(context);
         var requester = requesterHasNullAttributes
-            ? CastleSiegeRemoteViewTestHelper.CreatePlayer(context).Player
+            ? PlayerTestHelper.CreateRemotePlayer(context).Player
             : (await CreatePlayerWithStatsAsync(context, RequesterId, 100, 100, 100, 100).ConfigureAwait(false)).Player;
         var opponent = requesterHasNullAttributes
             ? (await CreatePlayerWithStatsAsync(context, OpponentId, 100, 100, 100, 100).ConfigureAwait(false)).Player
-            : CastleSiegeRemoteViewTestHelper.CreatePlayer(context).Player;
+            : PlayerTestHelper.CreateRemotePlayer(context).Player;
         await using var duelRoom = CreateDuelRoom(requester, opponent);
 
         await new DuelHealthUpdatePlugIn(spectator).UpdateHealthAsync(duelRoom).ConfigureAwait(false);
@@ -291,7 +291,7 @@ public class DuelHealthUpdatePlugInTests
         float currentShield,
         float maximumShield)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(gameContext);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(gameContext);
         var character = CreateCharacterWithEditableStats(gameContext);
         await PlayerTestHelper.EnterWorldAsync(player, character).ConfigureAwait(false);
         player.Id = id;

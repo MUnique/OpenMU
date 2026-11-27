@@ -30,7 +30,7 @@ public class PlayerShopCurrenciesRemoteViewTests
     [Test]
     public async Task PriceTypesAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ShowShopCurrenciesExtendedPlugIn(player);
 
         await view.ShowShopCurrenciesAsync([JewelOfBless], [CashShopCoinType.GoblinPoints]).ConfigureAwait(false);
@@ -81,7 +81,7 @@ public class PlayerShopCurrenciesRemoteViewTests
     [Test]
     public async Task ItemListWithCurrenciesAsync()
     {
-        var (viewer, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (viewer, output) = PlayerTestHelper.CreateRemotePlayer();
         viewer.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, ItemSerializer>();
         viewer.ClientVersion = new ClientVersion(106, 3, ClientLanguage.English);
         var configuration = new PlayerShopCurrenciesConfiguration { IsGoblinPointsAllowed = true };

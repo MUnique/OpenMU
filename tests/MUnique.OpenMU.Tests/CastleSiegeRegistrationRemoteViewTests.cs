@@ -20,7 +20,7 @@ public class CastleSiegeRegistrationRemoteViewTests
     [Test]
     public async ValueTask SerializeRegistrationResponsesAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeRegistrationResultPlugIn(player)
             .ShowRegistrationResultAsync(CastleSiegeRegistrationResult.AlreadyRegistered, "GuildA")

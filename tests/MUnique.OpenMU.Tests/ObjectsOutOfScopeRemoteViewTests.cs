@@ -27,7 +27,7 @@ public class ObjectsOutOfScopeRemoteViewTests
     [TestCase(300, 3)]
     public async ValueTask ManyObjectsAreSplitIntoPacketsWhichFitAsync(int objectCount, int expectedPacketCount)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var objects = Enumerable.Range(1, objectCount).Select(id => CreateObject((ushort)id)).ToList();
 
         await new ObjectsOutOfScopePlugIn(player).ObjectsOutOfScopeAsync(objects).ConfigureAwait(false);

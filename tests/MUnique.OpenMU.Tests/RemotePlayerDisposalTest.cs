@@ -55,7 +55,7 @@ public class RemotePlayerDisposalTest
         using var loggerFactory = new LoggerFactory();
         var manager = new PlugInManager(null, loggerFactory, null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, CharacterGroupHandlerPlugIn>();
-        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer(CreateGameContext(manager, loggerFactory));
+        var (player, _) = PlayerTestHelper.CreateRemotePlayer(CreateGameContext(manager, loggerFactory));
 
         await player.DisposeAsync().ConfigureAwait(false);
 
@@ -71,7 +71,7 @@ public class RemotePlayerDisposalTest
     {
         var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IPacketHandlerPlugIn, GensGroupHandlerPlugIn>();
-        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer(CreateGameContext(manager, new NullLoggerFactory()));
+        var (player, _) = PlayerTestHelper.CreateRemotePlayer(CreateGameContext(manager, new NullLoggerFactory()));
         player.ClientVersion = new ClientVersion(6, 3, ClientLanguage.Invariant);
         Assert.That(player.MainPacketHandler.AvailableStrategies, Is.Not.Empty, "The gens group handler should have been created for season 6.");
 
@@ -96,7 +96,7 @@ public class RemotePlayerDisposalTest
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static async ValueTask<WeakReference> CreateAndDisposePlayerAsync(PlugInManager manager)
     {
-        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer(CreateGameContext(manager, new NullLoggerFactory()));
+        var (player, _) = PlayerTestHelper.CreateRemotePlayer(CreateGameContext(manager, new NullLoggerFactory()));
         Assert.That(player.MainPacketHandler.AvailableStrategies, Is.Not.Empty, "The group handler should have been created for the player.");
         await player.DisposeAsync().ConfigureAwait(false);
         return new WeakReference(player);

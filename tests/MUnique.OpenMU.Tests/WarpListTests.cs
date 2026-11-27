@@ -37,7 +37,7 @@ public class WarpListTests
     [Test]
     public async Task WarpListIsWrittenAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         player.Culture = CultureInfo.GetCultureInfo("de");
         var view = new ShowWarpListExtendedPlugIn(player);
         WarpInfo[] warps =
@@ -85,7 +85,7 @@ public class WarpListTests
     [Test]
     public async Task WarpListWithLongNameIsWrittenAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ShowWarpListExtendedPlugIn(player);
 
         await view.ShowWarpListAsync([CreateWarp(1, new string('x', 40), 0, 10, 2000)]).ConfigureAwait(false);
@@ -103,7 +103,7 @@ public class WarpListTests
     [TestCase(106, true)]
     public void OnlyTheOpenSourceClientGetsTheWarpList(byte season, bool expected)
     {
-        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, _) = PlayerTestHelper.CreateRemotePlayer();
         player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, ShowWarpListExtendedPlugIn>();
         player.ClientVersion = new ClientVersion(season, 3, ClientLanguage.English);
 
@@ -215,7 +215,7 @@ public class WarpListTests
     [Test]
     public async Task WarpRequirementsAreWrittenAfterTheWarpListAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ShowWarpListExtendedPlugIn(player);
         var masterAndResets = CreateWarp(3, "Master and resets", 2, 10, 2000, (Stats.MasterLevel, 50), (Stats.MasterLevel, 80), (Stats.Resets, 2));
         var withoutRequirements = CreateWarp(5, "Without requirements", 4, 10, 2000);
@@ -249,7 +249,7 @@ public class WarpListTests
     [Test]
     public async Task NoWarpRequirementsAreWrittenWithoutMasterLevelOrResetsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ShowWarpListExtendedPlugIn(player);
         WarpInfo[] warps =
         [

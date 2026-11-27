@@ -66,7 +66,7 @@ public class CastleSiegeMiniMapTests
         gameContext.SetupGet(context => context.LoggerFactory).Returns(fixture.Context.GameContext.LoggerFactory);
         gameContext.SetupGet(context => context.PersistenceContextProvider).Returns(fixture.Context.GameContext.PersistenceContextProvider);
         gameContext.SetupGet(context => context.PlugInManager).Returns(fixture.Context.GameContext.PlugInManager);
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(gameContext.Object);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(gameContext.Object);
         var packet = new CastleGuildCommand(new byte[CastleGuildCommand.Length])
         {
             Team = team,

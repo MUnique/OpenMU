@@ -128,7 +128,7 @@ public class InventoryRefreshRemoteViewTests
         maps.PlugInManager = context.PlugInManager;
         maps.PathFinderPool = context.PathFinderPool;
         var version = extended ? new ClientVersion(106, 3, ClientLanguage.Invariant) : new ClientVersion(6, 3, ClientLanguage.English);
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(context, version);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(context, version);
         await PlayerTestHelper.EnterWorldAsync(player, PlayerTestHelper.CreateCharacter(context)).ConfigureAwait(false);
         return (player, output);
     }

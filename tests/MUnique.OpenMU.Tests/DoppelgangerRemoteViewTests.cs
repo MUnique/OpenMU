@@ -29,7 +29,7 @@ public class DoppelgangerRemoteViewTests
     [Test]
     public async Task EventViewSerializesPacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new DoppelgangerEventViewPlugIn(player);
 
         await view.ShowStateAsync(DoppelgangerState.Playing).ConfigureAwait(false);
@@ -96,7 +96,7 @@ public class DoppelgangerRemoteViewTests
     [Test]
     public async Task EnterResultUsesDoppelgangerPacketAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ShowMiniGameEnterResultViewPlugIn(player);
 
         await view.ShowResultAsync(MiniGameType.Doppelganger, EnterResult.PlayerKillerCantEnter).ConfigureAwait(false);
@@ -111,7 +111,7 @@ public class DoppelgangerRemoteViewTests
     [Test]
     public async Task CountdownsUseDoppelgangerValuesAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var miniGameStateView = new UpdateMiniGameStateViewViewPlugIn(player);
         var eventView = new DoppelgangerEventViewPlugIn(player);
 
@@ -139,7 +139,7 @@ public class DoppelgangerRemoteViewTests
     [Test]
     public async Task LugardWindowAllowsEntranceAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new OpenNpcWindowPlugIn(player);
 
         await view.OpenNpcWindowAsync(NpcWindow.LugardDoppelgangerEntry).ConfigureAwait(false);
@@ -156,7 +156,7 @@ public class DoppelgangerRemoteViewTests
     [Test]
     public async Task EnterHandlerIgnoresTruncatedPacketAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var handler = new DoppelgangerEnterRequestHandlerPlugIn();
 
         Assert.That(handler.Key, Is.EqualTo(0x0E));

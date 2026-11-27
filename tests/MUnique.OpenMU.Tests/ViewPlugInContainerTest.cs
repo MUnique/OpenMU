@@ -7,15 +7,10 @@ namespace MUnique.OpenMU.Tests;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.PlugIns;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -120,12 +115,7 @@ public class ViewPlugInContainerTest
 
     private RemotePlayer CreatePlayer(PlugInManager plugInManager)
     {
-        var gameContext = new Mock<IGameServerContext>();
-        gameContext.Setup(c => c.PersistenceContextProvider).Returns(new Mock<IPersistenceContextProvider>().Object);
-        gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
-        gameContext.Setup(c => c.PlugInManager).Returns(plugInManager);
-        gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
-        return new RemotePlayer(gameContext.Object, new Mock<IConnection>().Object, default);
+        return PlayerTestHelper.CreateRemotePlayer(plugInManager).Player;
     }
 
     /// <summary>

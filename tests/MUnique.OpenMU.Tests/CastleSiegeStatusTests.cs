@@ -159,7 +159,7 @@ public class CastleSiegeStatusTests
     [Test]
     public async ValueTask SerializeStatusAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var status = new CastleSiegeStatus(
             CastleSiegeState.RegisterMark,
             new DateTime(2026, 8, 4, 0, 0, 0),
@@ -203,7 +203,7 @@ public class CastleSiegeStatusTests
     [Test]
     public async ValueTask SerializeUnavailableStatusAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeStatusPlugIn(player).ShowStatusAsync(null).ConfigureAwait(false);
 

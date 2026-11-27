@@ -27,7 +27,7 @@ public class HitShockViewTests
     [TestCase(true, (ushort)(TargetId | 0x8000))]
     public async Task StandardHitPacketEncodesHitShockAsync(bool triggersHitShock, ushort expectedTargetId)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var target = CreateTarget();
 
         await new ShowHitPlugIn(player)
@@ -47,7 +47,7 @@ public class HitShockViewTests
     [TestCase(true, (ushort)(TargetId | 0x8000))]
     public async Task ExtendedHitPacketEncodesHitShockAsync(bool triggersHitShock, ushort expectedTargetId)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var target = CreateTarget();
 
         await new ShowHitExtendedPlugIn(player)

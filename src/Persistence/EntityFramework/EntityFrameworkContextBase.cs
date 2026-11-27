@@ -543,6 +543,7 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
                     "Dropping {EntityType} from the save: its row is gone already (state was {EntityState}).",
                     entry.Metadata.ClrType.Name,
                     entry.State);
+
                 // Its members (e.g. an item's option links) are gone with it: their deletes would fail the same way.
                 var entity = entry.Entity;
                 entry.State = EntityState.Detached;

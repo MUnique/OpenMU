@@ -486,7 +486,7 @@ public class DeActivateMagicEffectExtendedPlugInTests
 
     private (GameServer.RemoteView.RemotePlayer Player, MemoryStream Output) CreatePlayer(ClientVersion clientVersion = default)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(clientVersion);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(clientVersion);
         this._players.Add(player);
         return (player, output);
     }

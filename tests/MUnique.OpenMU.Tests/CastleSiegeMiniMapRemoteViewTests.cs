@@ -21,7 +21,7 @@ public class CastleSiegeMiniMapRemoteViewTests
     [Test]
     public async ValueTask SerializeMiniMapPlayerAndNpcPositionsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeMiniMapPlugIn(player)
             .ShowPlayerPositionsAsync(
@@ -74,7 +74,7 @@ public class CastleSiegeMiniMapRemoteViewTests
     [Test]
     public async ValueTask SerializeMiniMapPlayerPositionsSendsEmptyListAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeMiniMapPlugIn(player)
             .ShowPlayerPositionsAsync([])
@@ -92,7 +92,7 @@ public class CastleSiegeMiniMapRemoteViewTests
     [Test]
     public async ValueTask SerializeMiniMapNpcPositionsLimitsCountAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var npcs = Enumerable.Range(0, byte.MaxValue + 1)
             .Select(_ => new CastleSiegeMiniMapNpcInfo(true, 50, 60))
             .ToList();
@@ -111,7 +111,7 @@ public class CastleSiegeMiniMapRemoteViewTests
     [Test]
     public async ValueTask SerializeGuildCommandRelaysTeamUnchangedAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeCommandPlugIn(player)
             .ShowGuildCommandAsync(team: 5, positionX: 12, positionY: 34, CastleSiegeCommandType.Attack)
@@ -137,7 +137,7 @@ public class CastleSiegeMiniMapRemoteViewTests
     [TestCase(CastleSiegeCommandType.Wait, WireCommandType.Wait)]
     public async ValueTask SerializeGuildCommandMapsCommandTypesAsync(CastleSiegeCommandType command, WireCommandType expected)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeCommandPlugIn(player)
             .ShowGuildCommandAsync(team: 0, positionX: 0, positionY: 0, command)
