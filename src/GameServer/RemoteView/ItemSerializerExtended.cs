@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameServer.RemoteView;
 
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -39,6 +40,25 @@ public class ItemSerializerExtended : IItemSerializer
         HasHarmony = 0x20,
         HasGuardian = 0x40,
         HasSockets = 0x80,
+    }
+
+    private readonly RemotePlayer? _player;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemSerializerExtended"/> class, without any plugins.
+    /// </summary>
+    public ItemSerializerExtended()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemSerializerExtended"/> class.
+    /// </summary>
+    /// <param name="player">The player who receives the serialized data.</param>
+    [ActivatorUtilitiesConstructor]
+    public ItemSerializerExtended(RemotePlayer player)
+    {
+        this._player = player;
     }
 
     /// <inheritdoc/>
@@ -103,6 +123,13 @@ public class ItemSerializerExtended : IItemSerializer
             targetStruct.SocketCount = (byte)item.SocketCount;
             targetStruct.SocketBonus = GetSocketBonusByte(item);
             SetSocketBytes(targetStruct.Sockets, item);
+        }
+
+        if (this._player?.GameContext.PlugInManager?.GetPlugInPoint<IExtendedItemSerializedPlugIn>() is { } plugInPoint)
+        {
+            var args = new ExtendedItemSerializedArgs(targetStruct.Length);
+            plugInPoint.ItemSerialized(target, item, args);
+            return args.Length;
         }
 
         return targetStruct.Length;

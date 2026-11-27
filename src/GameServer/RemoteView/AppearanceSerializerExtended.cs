@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView;
 
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -25,6 +26,25 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
     /// A cache which holds the results of the serializer.
     /// </summary>
     private static readonly ConcurrentDictionary<IAppearanceData, byte[]> Cache = new();
+
+    private readonly RemotePlayer? _player;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppearanceSerializerExtended"/> class, without any plugins.
+    /// </summary>
+    public AppearanceSerializerExtended()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppearanceSerializerExtended"/> class.
+    /// </summary>
+    /// <param name="player">The player who receives the serialized data.</param>
+    [ActivatorUtilitiesConstructor]
+    public AppearanceSerializerExtended(RemotePlayer player)
+    {
+        this._player = player;
+    }
 
     /// <inheritdoc/>
     public int NeededSpace => 27;
@@ -51,6 +71,8 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
         else
         {
             this.WritePreviewCharSet(target, appearance);
+            this._player?.GameContext.PlugInManager?.GetPlugInPoint<IExtendedAppearanceSerializedPlugIn>()
+                ?.AppearanceSerialized(target.Slice(0, this.NeededSpace), appearance);
             if (useCache)
             {
                 var cacheEntry = target.Slice(0, this.NeededSpace).ToArray();
