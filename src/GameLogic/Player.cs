@@ -883,7 +883,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
         if (attacker as IPlayerSurrogate is { } playerSurrogate)
         {
-            await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
+            await playerSurrogate.AfterHitTargetAsync(hitInfo.TotalDamage, this).ConfigureAwait(false);
         }
 
         if (attacker is Player attackerPlayer)
@@ -1937,6 +1937,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         }
 
         await this._movement.StopWalkingAsync().ConfigureAwait(false);
+        await this.ResetPetBehaviorAsync().ConfigureAwait(false);
         this.IsAlive = false;
         this._respawnAfterDeathCts = new CancellationTokenSource();
         await this.ForEachWorldObserverAsync<IObjectGotKilledPlugIn>(p => p.ObjectGotKilledAsync(this, killer), true).ConfigureAwait(false);

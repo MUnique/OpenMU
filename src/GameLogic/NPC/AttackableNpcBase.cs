@@ -156,7 +156,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)
             {
-                await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
+                await playerSurrogate.AfterHitTargetAsync(hitInfo.TotalDamage).ConfigureAwait(false);
             }
         }
 

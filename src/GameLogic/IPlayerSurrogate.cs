@@ -13,4 +13,11 @@ public interface IPlayerSurrogate
     /// Gets the owner of this instance.
     /// </summary>
     Player Owner { get; }
+
+    /// <summary>
+    /// Is called after the surrogate successfully hit a Player.
+    /// </summary>
+    /// <param name="damage">The damage dealt.</param>
+    /// <param name="target">The target.</param>
+    public ValueTask AfterHitTargetAsync(float damage, Player? target = null);
 }

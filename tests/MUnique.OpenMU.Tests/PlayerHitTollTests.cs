@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Pet;
 using Moq;
 
 /// <summary>
@@ -55,6 +56,29 @@ public class PlayerHitTollTests
         await attacker.AfterHitTargetAsync(0, null, target).ConfigureAwait(false);
 
         Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(6));
+    }
+
+    /// <summary>
+    /// A health toll inflicted through an attacker surrogate can kill its owner.
+    /// </summary>
+    [Test]
+    public async Task AttackerSurrogateTollCanKillOwnerAsync()
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        owner.Attributes![Stats.CurrentHealth] = 3;
+        target.Attributes!.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossInflictedOnAttacker);
+        var surrogate = new AttackerSurrogate(owner, new RavenAttributeSystem(owner));
+
+        await surrogate.AfterHitTargetAsync(0, target).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(owner.Attributes[Stats.CurrentHealth], Is.EqualTo(0));
+            Assert.That(owner.IsAlive, Is.False);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            Assert.That(owner.LastDeath, Is.Not.Null);
+        });
     }
 
     /// <summary>
