@@ -2977,6 +2977,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updates wing flight attributes, pet hit tolls, and skill-specific hit tolls for Season Six..
+        /// </summary>
+        public static string UpdateWingAndPetHitTollsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("UpdateWingAndPetHitTollsPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Update wing and pet hit tolls.
+        /// </summary>
+        public static string UpdateWingAndPetHitTollsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("UpdateWingAndPetHitTollsPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to This update adds the following skills: Wizardry Enhance, Increase Health, Increase Block, Ignore Defense..
         /// </summary>
         public static string WizEnhanceAndRagefighterSkillsUpdatePlugIn_Description {

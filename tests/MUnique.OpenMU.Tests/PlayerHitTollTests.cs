@@ -1,0 +1,122 @@
+// <copyright file="PlayerHitTollTests.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Tests;
+
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Pet;
+using Moq;
+
+/// <summary>
+/// Tests player health tolls applied after a successful hit.
+/// </summary>
+[TestFixture]
+public class PlayerHitTollTests
+{
+    /// <summary>
+    /// A skill-specific toll adds to the regular toll.
+    /// </summary>
+    [Test]
+    public async Task SkillTollAddsToRegularTollAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        attacker.Attributes![Stats.CurrentHealth] = 10;
+        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
+        attacker.Attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.IsImpEquipped);
+
+        var skill = new Mock<Skill>();
+        skill.Setup(existing => existing.AttributeRelationships).Returns(
+        [
+            new AttributeRelationship(Stats.SkillHealthLossAfterDealtHit, 2, Stats.IsImpEquipped),
+        ]);
+        var skillEntry = new SkillEntry { Skill = skill.Object };
+
+        await attacker.AfterHitTargetAsync(0, skillEntry).ConfigureAwait(false);
+
+        Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(5));
+    }
+
+    /// <summary>
+    /// Hitting a player adds the attacker health toll.
+    /// </summary>
+    [Test]
+    public async Task AttackerTollIsAddedAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        attacker.Attributes![Stats.CurrentHealth] = 10;
+        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
+        target.Attributes!.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.HealthLossInflictedOnAttacker);
+
+        await attacker.AfterHitTargetAsync(0, null, target).ConfigureAwait(false);
+
+        Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(6));
+    }
+
+    /// <summary>
+    /// A health toll inflicted through an attacker surrogate can kill its owner.
+    /// </summary>
+    [Test]
+    public async Task AttackerSurrogateTollCanKillOwnerAsync()
+    {
+        var owner = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        owner.Attributes![Stats.CurrentHealth] = 3;
+        target.Attributes!.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossInflictedOnAttacker);
+        var surrogate = new AttackerSurrogate(owner, new RavenAttributeSystem(owner));
+
+        await surrogate.AfterHitTargetAsync(0, target).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(owner.Attributes[Stats.CurrentHealth], Is.EqualTo(0));
+            Assert.That(owner.IsAlive, Is.False);
+            Assert.That(owner.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            Assert.That(owner.LastDeath, Is.Not.Null);
+        });
+    }
+
+    /// <summary>
+    /// A health toll for dealing a hit can kill the attacker.
+    /// </summary>
+    [Test]
+    public async Task HitTollCanKillAttackerAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        attacker.Attributes![Stats.CurrentHealth] = 3;
+        attacker.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterDealtHit);
+
+        await attacker.AfterHitTargetAsync(0, null).ConfigureAwait(false);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(attacker.Attributes[Stats.CurrentHealth], Is.EqualTo(0));
+            Assert.That(attacker.IsAlive, Is.False);
+            Assert.That(attacker.PlayerState.CurrentState, Is.EqualTo(PlayerState.Dead));
+            Assert.That(attacker.LastDeath, Is.EqualTo(new DeathInformation(0, string.Empty, default, 0)));
+        });
+    }
+
+    /// <summary>
+    /// A health toll for receiving damage is applied.
+    /// </summary>
+    [Test]
+    public async Task HealthTollForReceivingDamageIsAppliedAsync()
+    {
+        var attacker = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var target = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        target.GameContext.Configuration.Maps.Single().BattleZone = new BattleZoneDefinition();
+        attacker.Attributes!.AddElement(new SimpleElement(100, AggregateType.AddRaw), Stats.AttackRatePvp);
+        target.Attributes![Stats.CurrentHealth] = 10;
+        target.Attributes.AddElement(new SimpleElement(3, AggregateType.AddRaw), Stats.HealthLossAfterHit);
+
+        await target.AttackByAsync(attacker, null, false).ConfigureAwait(false);
+
+        Assert.That(target.Attributes[Stats.CurrentHealth], Is.EqualTo(6));
+    }
+}

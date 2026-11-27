@@ -1508,24 +1508,37 @@ public class Stats
     public static AttributeDefinition MaximumAllianceSize { get; } = new(new Guid("B3C7E9D2-5A1F-4E8B-92C7-6D3F8A4B7E5C"), "Maximum Alliance Size", string.Empty);
 
     /// <summary>
-    /// Gets the fully recover mana after hit chance definition.
+    /// Gets the fully recover mana after hit (received) chance definition.
     /// </summary>
     public static AttributeDefinition FullyRecoverManaAfterHitChance { get; } = new(new Guid("EB06D3A2-DA82-4B81-81B9-A16D39974531"), "Chance to fully recover mana when getting hit", "3rd Wing Option");
 
     /// <summary>
-    /// Gets the fully recover health after hit chance definition.
+    /// Gets the fully recover health after hit (received) chance definition.
     /// </summary>
     public static AttributeDefinition FullyRecoverHealthAfterHitChance { get; } = new(new Guid("3CA72C07-9C2C-4FC5-8BCB-9BD737F83664"), "Chance to fully recover health when getting hit", "3rd Wing Option");
 
     /// <summary>
-    /// Gets the fully reflect damage after hit chance definition.
+    /// Gets the fully reflect damage after hit (received) chance definition.
     /// </summary>
     public static AttributeDefinition FullyReflectDamageAfterHitChance { get; } = new(new Guid("1F7C1E04-4FBD-4FCB-A6C2-EB51A91D8C3E"), "Chance to fully reflect damage when getting hit", "3rd Wing Option");
 
     /// <summary>
-    /// Gets the health loss after hit definition.
+    /// Gets the health loss after hit (received) definition.
     /// </summary>
-    public static AttributeDefinition HealthLossAfterHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by wearing wings");
+    /// <remarks>A health toll apart from received damage (e.g., by equipping a dark horse).</remarks>
+    public static AttributeDefinition HealthLossAfterHit { get; } = new(new Guid("E6EB76C4-4464-42E7-9BEB-6E192D0F15EE"), "Health loss after getting hit", "Caused by equipping a dark horse");
+
+    /// <summary>
+    /// Gets the health loss after dealt hit definition.
+    /// </summary>
+    /// <remarks>Wings, imp, dinorant impose a health toll to their user.</remarks>
+    public static AttributeDefinition HealthLossAfterDealtHit { get; } = new(new Guid("D84A719B-D18E-433E-BF55-9F08A214AB00"), "Health loss after hitting a target", "Caused by equipping wings, imp, dinorant");
+
+    /// <summary>
+    /// Gets the health loss inflcited on attacker definition.
+    /// </summary>
+    /// <remarks>A health toll which is applied on the attacking player (e.g., by equipping a dinorant).</remarks>
+    public static AttributeDefinition HealthLossInflictedOnAttacker { get; } = new(new Guid("E937BDF8-3DDB-40AF-BA0C-E18E7C69B7E9"), "Health loss inflicted on attacker", "A health toll caused on an attacking a player by equipping a dinorant");
 
     /// <summary>
     /// Gets the skill extra mana cost definition.
@@ -1535,7 +1548,12 @@ public class Stats
     /// <summary>
     /// Gets the CanFly attribute for warping to icarus.
     /// </summary>
-    public static AttributeDefinition CanFly { get; } = new(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, fenrir.");
+    public static AttributeDefinition CanFly { get; } = new(new Guid("EC34C673-84DE-4811-8962-CD2164A2248C"), "Requirement of the Icarus map.", "You can enter Icarus only with wings, dinorant, horse, fenrir.");
+
+    /// <summary>
+    /// Gets the is wing equipped attribute.
+    /// </summary>
+    public static AttributeDefinition IsWingEquipped { get; } = new(new Guid("7C4A2E91-D58B-4F3A-8B6D-9E1C5F2A7B40"), "Is Wing Equipped", string.Empty);
 
     /// <summary>
     /// Gets the hit shock chance attribute definition.
@@ -1570,6 +1588,11 @@ public class Stats
     /// Gets the is dinorant equipped attribute definition.
     /// </summary>
     public static AttributeDefinition IsDinorantEquipped { get; } = new(new Guid("C52B5CA4-34BA-4E31-963B-E37089671C37"), "Is Dinorant Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the is imp equipped attribute definition.
+    /// </summary>
+    public static AttributeDefinition IsImpEquipped { get; } = new(new Guid("947DED52-3141-45AA-8D6E-F4C549ED5B36"), "Is Imp Equipped", string.Empty);
 
     /// <summary>
     /// Gets the is pet skeleton equipped attribute definition.
@@ -1751,6 +1774,11 @@ public class Stats
     {
         MaximumValue = 1,
     };
+
+    /// <summary>
+    /// Gets the skill health loss after dealt hit definition.
+    /// </summary>
+    public static AttributeDefinition SkillHealthLossAfterDealtHit { get; } = new(new Guid("BF8D6F29-7083-490F-978B-CCEBEEF139A1"), "Skill health loss after hitting a target", string.Empty);
 
     /// <summary>
     /// Gets the dictionary which relates the jewelry element resistance attribute to the correspondent DMG bonus attribute.

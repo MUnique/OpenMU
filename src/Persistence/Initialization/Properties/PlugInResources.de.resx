@@ -944,6 +944,12 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="UpdateWingAndPetHitTollsPlugIn_Name" xml:space="preserve">
+    <value>Flügel- und Begleiter-Zoll aktualisieren</value>
+  </data>
+  <data name="UpdateWingAndPetHitTollsPlugIn_Description" xml:space="preserve">
+    <value>Aktualisiert Flugattribute für Flügel, Trefferabzüge für Begleiter und fertigkeitsabhängige Trefferabzüge für Season Six.</value>
+  </data>
   <data name="AddSealItemDropRateUpdatePlugIn_Name" xml:space="preserve">
     <value>Item-Droprate der Siegel hinzufügen</value>
   </data>

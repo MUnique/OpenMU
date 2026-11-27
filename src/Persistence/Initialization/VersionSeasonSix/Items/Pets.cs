@@ -64,7 +64,9 @@ public class Pets : InitializerBase
             28,
             true,
             true,
-            (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate));
+            (Stats.IsImpEquipped, 1.0f, AggregateType.AddRaw),
+            (Stats.AttackDamageIncrease, 1.3f, AggregateType.Multiplicate),
+            (Stats.HealthLossAfterDealtHit, 3.0f, AggregateType.AddRaw));
         this.AddItemToJewelItemDrop(imp);
         var uniria = this.CreatePet(
             2,
@@ -94,7 +96,9 @@ public class Pets : InitializerBase
             (Stats.MovementSpeed, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.MovementSpeedUnderwater, MovementSpeedConstants.BasicMountMovementSpeed, AggregateType.Maximum),
             (Stats.DamageReceiveDecrement, 0.9f, AggregateType.Multiplicate),
-            (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate));
+            (Stats.AttackDamageIncrease, 1.15f, AggregateType.Multiplicate),
+            (Stats.HealthLossAfterDealtHit, 1.0f, AggregateType.AddRaw),
+            (Stats.HealthLossInflictedOnAttacker, 1.0f, AggregateType.AddRaw));
         this.AddDinorantOptions(dinorant);
 
         var darkHorse = this.CreatePet(
@@ -109,7 +113,8 @@ public class Pets : InitializerBase
             (Stats.IsHorseEquipped, 1, AggregateType.AddRaw),
             (Stats.CanFly, 1.0f, AggregateType.AddRaw),
             (Stats.MovementSpeed, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
-            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum));
+            (Stats.MovementSpeedUnderwater, MovementSpeedConstants.HorseOrFenrirMovementSpeed, AggregateType.Maximum),
+            (Stats.HealthLossAfterHit, 1.0f, AggregateType.AddRaw));
         this.AddDarkHorseOptions(darkHorse);
         this.GameConfiguration.DetermineCharacterClasses(CharacterClasses.AllLords).ForEach(darkHorse.QualifiedCharacters.Add);
         darkHorse.PetExperienceFormula = PetExperienceFormula;

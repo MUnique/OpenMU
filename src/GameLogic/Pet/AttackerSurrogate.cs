@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Pet;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
@@ -63,4 +64,18 @@ public class AttackerSurrogate : IAttacker, IWorldObserver, IPlayerSurrogate
 
     /// <inheritdoc />
     public ICustomPlugInContainer<IViewPlugIn> ViewPlugIns => this.Owner.ViewPlugIns;
+
+    /// <inheritdoc />
+    public async ValueTask AfterHitTargetAsync(float damage, Player? target = null)
+    {
+        var healthToll = target?.Attributes?[Stats.HealthLossInflictedOnAttacker] ?? 0;
+
+        this.Owner.Attributes![Stats.CurrentHealth] -= healthToll;
+        if (this.Owner.Attributes[Stats.CurrentHealth] < 1)
+        {
+            await this.Owner.KillInstantlyAsync().ConfigureAwait(false);
+        }
+
+        await this.Owner.DecreaseRavenDurabilityAfterHitAsync(damage).ConfigureAwait(false);
+    }
 }

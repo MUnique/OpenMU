@@ -120,11 +120,11 @@ public class Wings : WingsInitializerBase
             wing.QualifiedCharacters.Add(characterClass);
         }
 
-        // add CanFly Attribute to all wings
-        var canFlyPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
-        canFlyPowerUp.TargetAttribute = Stats.CanFly.GetPersistent(this.GameConfiguration);
-        canFlyPowerUp.BaseValue = 1;
-        wing.BasePowerUpAttributes.Add(canFlyPowerUp);
+        // add IsWingEquipped Attribute to all wings
+        var isWingEquippedPowerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+        isWingEquippedPowerUp.TargetAttribute = Stats.IsWingEquipped.GetPersistent(this.GameConfiguration);
+        isWingEquippedPowerUp.BaseValue = 1;
+        wing.BasePowerUpAttributes.Add(isWingEquippedPowerUp);
 
         wing.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MovementSpeed, MovementSpeedConstants.DefaultWingMovementSpeed, AggregateType.Maximum));
         wing.BasePowerUpAttributes.Add(this.CreateItemBasePowerUpDefinition(Stats.MovementSpeedUnderwater, MovementSpeedConstants.DefaultWingMovementSpeed, AggregateType.Maximum));

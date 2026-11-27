@@ -695,6 +695,26 @@ internal class SkillsInitializer : SkillsInitializerBase
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraProjectiles, 1, Stats.ExtraProjectiles);
         this.AddAttributeRelationship(SkillNumber.TripleShot, Stats.SkillExtraProjectiles, 1, Stats.TripleShotExtraProjectiles);
         this.AddAttributeRelationship(SkillNumber.MultiShot, Stats.SkillExtraProjectiles, 1, Stats.ExtraProjectiles);
+
+        // Imp toll damage: adds to its default 3 dmg health toll
+        this.AddAttributeRelationship(SkillNumber.KillingBlow, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.BeastUppercut, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.PhoenixShot, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillHealthLossAfterDealtHit, 1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.Charge, Stats.SkillHealthLossAfterDealtHit, 1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.ChainDrive, Stats.SkillHealthLossAfterDealtHit, 1, Stats.IsImpEquipped);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillHealthLossAfterDealtHit, 97, Stats.IsImpEquipped);
+
+        // Wing toll damage: adds to its default 3 dmg (RF) health toll
+        this.AddAttributeRelationship(SkillNumber.KillingBlow, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.BeastUppercut, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.DragonRoar, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.PhoenixShot, Stats.SkillHealthLossAfterDealtHit, -1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.DarkSide, Stats.SkillHealthLossAfterDealtHit, 1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.Charge, Stats.SkillHealthLossAfterDealtHit, 1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.ChainDrive, Stats.SkillHealthLossAfterDealtHit, 1, Stats.IsWingEquipped);
+        this.AddAttributeRelationship(SkillNumber.DragonSlasher, Stats.SkillHealthLossAfterDealtHit, 97, Stats.IsWingEquipped);
     }
 
     private void AddAttributeRelationship(SkillNumber skillNumber, AttributeDefinition targetAttribute, float multiplier, AttributeDefinition sourceAttribute, InputOperator inputOperator = InputOperator.Multiply, AggregateType aggregateType = AggregateType.AddRaw)

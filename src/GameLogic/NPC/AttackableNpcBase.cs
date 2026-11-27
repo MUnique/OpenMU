@@ -109,6 +109,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
     public async ValueTask<HitInfo?> AttackByAsync(IAttacker attacker, SkillEntry? skill, bool isCombo, double damageFactor = 1.0, bool? isFinalStreakHit = null)
     {
         if (this.Definition.ObjectKind == NpcObjectKind.Guard
+            || !this.IsAlive
             || this.IsAttackBlockedBySafezone(attacker)
             || !this.CanBeAttackedBy(attacker))
         {
@@ -145,7 +146,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker is Player player)
             {
-                await player.AfterHitTargetAsync(this.Attributes[Stats.DefensePvm], skill?.Skill?.DamageType).ConfigureAwait(false);
+                await player.AfterHitTargetAsync(this.Attributes[Stats.DefensePvm], skill).ConfigureAwait(false);
 
                 if (this.IsAlive && Rand.NextRandomBool(player.Attributes![Stats.MaceMasteryStunChance]))
                 {
@@ -155,7 +156,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)
             {
-                await playerSurrogate.Owner.DecreaseRavenDurabilityAfterHitAsync(hitInfo.TotalDamage).ConfigureAwait(false);
+                await playerSurrogate.AfterHitTargetAsync(hitInfo.TotalDamage).ConfigureAwait(false);
             }
         }
 
