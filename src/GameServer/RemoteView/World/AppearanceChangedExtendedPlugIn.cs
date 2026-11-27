@@ -40,14 +40,26 @@ public class AppearanceChangedExtendedPlugIn : IAppearanceChangedPlugIn
             return;
         }
 
+        var isShown = isEquipped && changedItem.IsShownInAppearance(DateTime.UtcNow);
+        var change = new ExtendedAppearanceChange
+        {
+            ItemGroup = (byte)((isShown ? changedItem.Definition?.Group : 0xFF) ?? 0xFF),
+            ItemNumber = (ushort)(changedItem.Definition?.Number ?? 0xFFFF),
+            ItemLevel = changedItem.Level,
+            ExcellentFlags = (byte)(ItemSerializerHelper.GetExcellentByte(changedItem) | ItemSerializerHelper.GetFenrirByte(changedItem)),
+            AncientDiscriminator = (byte)(changedItem.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0)?.AncientSetDiscriminator ?? 0),
+        };
+        this._player.GameContext.PlugInManager?.GetPlugInPoint<IExtendedAppearanceChangingPlugIn>()
+            ?.AppearanceChanging(changedPlayer, changedItem, isShown, change);
+
         await connection.SendAppearanceChangedExtendedAsync(
             changedPlayer.GetId(this._player),
             changedItem.ItemSlot,
-            (byte)((isEquipped && changedItem.IsShownInAppearance(DateTime.UtcNow) ? changedItem.Definition?.Group : 0xFF) ?? 0xFF),
-            (ushort)(changedItem.Definition?.Number ?? 0xFFFF),
-            changedItem.Level,
-            (byte)(ItemSerializerHelper.GetExcellentByte(changedItem) | ItemSerializerHelper.GetFenrirByte(changedItem)),
-            (byte)(changedItem.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0)?.AncientSetDiscriminator ?? 0),
+            change.ItemGroup,
+            change.ItemNumber,
+            change.ItemLevel,
+            change.ExcellentFlags,
+            change.AncientDiscriminator,
             changedPlayer.SelectedCharacter?.HasFullAncientSetEquipped() is true)
             .ConfigureAwait(false);
     }
