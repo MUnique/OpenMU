@@ -21,7 +21,7 @@ public class CastleSiegeEconomyRemoteViewTests
     [Test]
     public async ValueTask SerializeEconomyResponsesAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         await new CastleSiegeTaxInfoPlugIn(player)
             .ShowTaxInfoAsync(CastleSiegeRequestResult.Success, 3, 2, 123_456_789)
             .ConfigureAwait(false);

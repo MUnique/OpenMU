@@ -59,7 +59,7 @@ public class GensChatTest
     [Test]
     public async Task ClientGetsTwoPrefixCharactersAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new ChatViewPlugIn(player).ChatMessageAsync(Message, "Sender", ChatMessageType.Gens).ConfigureAwait(false);
 

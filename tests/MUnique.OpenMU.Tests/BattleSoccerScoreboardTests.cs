@@ -98,7 +98,7 @@ public class BattleSoccerScoreboardTests
     [Test]
     public async Task ScorePacketIsSentAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var plugIn = new GuildSoccerScoreUpdatePlugIn(player);
 
         await plugIn.UpdateSoccerScoreAsync("RED", 2, "BLUE", 3).ConfigureAwait(false);
@@ -122,7 +122,7 @@ public class BattleSoccerScoreboardTests
     [Test]
     public async Task ClockPacketIsSentAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new GuildSoccerTimeUpdatePlugIn(player).UpdateSoccerTimeAsync(600).ConfigureAwait(false);
         await player.Connection!.Output.FlushAsync().ConfigureAwait(false);

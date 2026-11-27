@@ -99,7 +99,7 @@ public class CastleSiegeGuardTalkPlugInTests
     [Test]
     public async ValueTask SerializeRegistrationWindowAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new OpenNpcWindowPlugIn(player).OpenNpcWindowAsync(NpcWindow.CastleSiegeGuardsman).ConfigureAwait(false);
 

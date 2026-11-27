@@ -168,7 +168,7 @@ public class NewPlayersInScopeRemoteViewTests
         gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
         gameContext.Setup(c => c.PlugInManager).Returns(manager);
         gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(gameContext.Object);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(gameContext.Object);
         player.ClientVersion = clientVersion;
         return (player, output);
     }

@@ -1005,7 +1005,7 @@ public class CastleSiegeNpcTests
                 Assert.That(attributes[Stats.CurrentMana], Is.GreaterThan(manaAfterFirstHealing));
             });
 
-            var (observer, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            var (observer, output) = PlayerTestHelper.CreateRemotePlayer(fixture.GameServerContext);
             observer.GuildStatus = new GuildMemberStatus(OwnerRuntimeGuildId, GuildPosition.NormalMember);
             await new NewNpcsInScopePlugIn(observer)
                 .NewNpcsInScopeAsync([lifeStone])
@@ -1066,11 +1066,11 @@ public class CastleSiegeNpcTests
                 Is.True);
             var lifeStone = fixture.Context.LifeStones.Single();
 
-            var (alliedObserver, alliedOutput) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            var (alliedObserver, alliedOutput) = PlayerTestHelper.CreateRemotePlayer(fixture.GameServerContext);
             alliedObserver.GuildStatus = new GuildMemberStatus(alliedGuildId, GuildPosition.NormalMember);
             await new NewNpcsInScopePlugIn(alliedObserver).NewNpcsInScopeAsync([lifeStone]).ConfigureAwait(false);
 
-            var (opposingObserver, opposingOutput) = CastleSiegeRemoteViewTestHelper.CreatePlayer(fixture.GameServerContext);
+            var (opposingObserver, opposingOutput) = PlayerTestHelper.CreateRemotePlayer(fixture.GameServerContext);
             opposingObserver.GuildStatus = new GuildMemberStatus(opposingGuildId, GuildPosition.NormalMember);
             await new NewNpcsInScopePlugIn(opposingObserver).NewNpcsInScopeAsync([lifeStone]).ConfigureAwait(false);
 

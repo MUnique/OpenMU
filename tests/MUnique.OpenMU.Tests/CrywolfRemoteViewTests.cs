@@ -20,7 +20,7 @@ public class CrywolfRemoteViewTests
     [Test]
     public async Task EventPacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CrywolfEventViewPlugIn(player);
 
         await view.ShowStateAsync(CrywolfOccupationState.War, CrywolfState.Ready).ConfigureAwait(false);
@@ -50,7 +50,7 @@ public class CrywolfRemoteViewTests
     [Test]
     public async Task ResultPacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CrywolfEventViewPlugIn(player);
 
         await view.ShowPersonalRankAsync(4, 1_800_000).ConfigureAwait(false);

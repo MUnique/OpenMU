@@ -21,7 +21,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task VersionsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
         var configuration = new CashShopConfiguration
         {
@@ -48,7 +48,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task PointsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
 
         await view.ShowPointsAsync(new Account { WCoinC = 100, WCoinP = 20, GoblinPoints = 3 }).ConfigureAwait(false);
@@ -69,7 +69,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task BuyResultsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
 
         await view.ShowBuyResultAsync(CashShopBuyResult.Success).ConfigureAwait(false);
@@ -92,7 +92,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task GiftResultsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
 
         await view.ShowGiftResultAsync(CashShopGiftResult.Success).ConfigureAwait(false);
@@ -112,7 +112,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task UseResultsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
 
         await view.ShowUseResultAsync(CashShopUseResult.Success).ConfigureAwait(false);
@@ -138,7 +138,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task StorageIndexIsUniqueAcrossBothStoragesAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
         var items = new List<CashShopStorageItem>
         {
@@ -162,7 +162,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task StoragePageAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
         var items = Enumerable.Range(1, 11).Select(i => new CashShopStorageItem { ProductSequence = 100 + i, PriceSequence = 200 + i }).ToList();
 
@@ -182,7 +182,7 @@ public class CashShopRemoteViewTests
     [Test]
     public async Task EmptyStorageAndGiftsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new CashShopViewPlugIn(player);
         var gift = new CashShopStorageItem { ProductSequence = 1, PriceSequence = 2, IsGift = true, GiftSenderName = "Sender", GiftMessage = "Hello" };
 

@@ -5,21 +5,14 @@
 namespace MUnique.OpenMU.Tests.Discord;
 
 using System.IO;
-using System.IO.Pipelines;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Discord;
 using MUnique.OpenMU.GameLogic.Views;
-using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView;
-using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
-using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
-using Nito.AsyncEx;
 using DiscordIntegrationInfo = MUnique.OpenMU.GameLogic.Discord.DiscordIntegrationInfo;
 using DiscordIntegrationInfoPacket = MUnique.OpenMU.Network.Packets.ServerToClient.DiscordIntegrationInfoRef;
 
@@ -165,20 +158,7 @@ public class DiscordIntegrationViewPlugInTest
         var manager = new PlugInManager(null, new NullLoggerFactory(), null, null);
         manager.RegisterPlugIn<IViewPlugIn, DiscordIntegrationViewPlugIn>();
         manager.RegisterPlugIn<IViewPlugIn, ChatViewPlugIn>();
-        var gameContext = new Mock<IGameServerContext>();
-        gameContext.Setup(c => c.PersistenceContextProvider).Returns(new Mock<IPersistenceContextProvider>().Object);
-        gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
-        gameContext.Setup(c => c.PlugInManager).Returns(manager);
-        gameContext.Setup(c => c.FeaturePlugIns).Returns(new FeaturePlugInContainer(manager));
-        gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
-
-        var output = new MemoryStream();
-        var writer = PipeWriter.Create(output, new StreamPipeWriterOptions(leaveOpen: true));
-        var connection = new Mock<IConnection>();
-        connection.SetupGet(c => c.Connected).Returns(true);
-        connection.SetupGet(c => c.Output).Returns(writer);
-        connection.SetupGet(c => c.OutputLock).Returns(new AsyncLock());
-        return (new RemotePlayer(gameContext.Object, connection.Object, MuMainVersion), output);
+        return PlayerTestHelper.CreateRemotePlayer(manager, MuMainVersion);
     }
 
     /// <summary>

@@ -113,7 +113,7 @@ public class ShowCharacterListPlugInTests
         gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());
         gameContext.Setup(c => c.GuildServer).Returns(guildServer.Object);
 
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(gameContext.Object, clientVersion);
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer(gameContext.Object, clientVersion);
         player.Account = account;
         return (player, output);
     }

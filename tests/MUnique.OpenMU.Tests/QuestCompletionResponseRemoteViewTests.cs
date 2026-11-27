@@ -29,7 +29,7 @@ public class QuestCompletionResponseRemoteViewTests
     [TestCase(QuestCompletionRefusal.ZenLimitReached, QuestCompletionResponse.QuestCompletionResult.ZenLimitReached)]
     public async ValueTask RefusalIsSentWithItsResultAsync(QuestCompletionRefusal refusal, QuestCompletionResponse.QuestCompletionResult expectedResult)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var quest = new BasicModel.QuestDefinition { Group = 5, Number = 7 };
 
         await new QuestCompletionResponsePlugIn(player).QuestCompletionRefusedAsync(quest, refusal).ConfigureAwait(false);
@@ -54,7 +54,7 @@ public class QuestCompletionResponseRemoteViewTests
     [TestCase(QuestCompletionRefusal.ZenLimitReached, nameof(PlayerMessage.QuestZenLimitReached))]
     public async ValueTask LegacyRefusalSendsOnlyTheMessageAsync(QuestCompletionRefusal refusal, string expectedMessageKey)
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         player.GameContext.PlugInManager.RegisterPlugIn<IShowMessagePlugIn, ShowMessagePlugIn>();
         var quest = new BasicModel.QuestDefinition { Group = 0, Number = 3 };
 

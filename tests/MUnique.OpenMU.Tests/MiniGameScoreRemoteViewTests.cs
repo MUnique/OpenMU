@@ -21,7 +21,7 @@ public class MiniGameScoreRemoteViewTests
     [Test]
     public async Task BloodCastleResultAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new BloodCastleScoreTableViewPlugin(player);
 
         await view.ShowScoreTableAsync(true, "Winner", 1234, 5000, 70000).ConfigureAwait(false);
@@ -48,7 +48,7 @@ public class MiniGameScoreRemoteViewTests
     [Test]
     public async Task ChaosCastleResultAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new ChaosCastleScoreTableViewPlugin(player);
 
         await view.ShowScoreTableAsync(true, "Winner", 12, 3, 5000).ConfigureAwait(false);
@@ -75,7 +75,7 @@ public class MiniGameScoreRemoteViewTests
     [Test]
     public async Task DevilSquareRankTableIsLimitedAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         var view = new MiniGameScoreTableViewPlugin(player);
         var scores = Enumerable.Range(1, 12).Select(i => ($"Player{i}", 100 - i, i * 10, i * 100)).ToList();
 

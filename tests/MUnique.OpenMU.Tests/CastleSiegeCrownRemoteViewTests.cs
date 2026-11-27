@@ -26,7 +26,7 @@ public class CastleSiegeCrownRemoteViewTests
     [Test]
     public async ValueTask IgnoreCrownNotificationsAfterDisconnectAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         await player.PlayerState.TryAdvanceToAsync(PlayerState.LoginScreen).ConfigureAwait(false);
         await player.DisconnectAsync().ConfigureAwait(false);
         var outputLengthAfterDisconnect = output.Length;
@@ -52,7 +52,7 @@ public class CastleSiegeCrownRemoteViewTests
     [Test]
     public async ValueTask SerializeCrownAndSwitchNotificationsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeCrownStatePlugIn(player)
             .ShowCrownStateAsync(true)
@@ -119,7 +119,7 @@ public class CastleSiegeCrownRemoteViewTests
     [Test]
     public async ValueTask SerializeLifeStoneBuildTimeAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
 
         await new CastleSiegeLifeStoneStatePlugIn(player)
             .ShowLifeStoneBuildTimeAsync(0x1234, 5)

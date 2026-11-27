@@ -22,7 +22,7 @@ public class CastleSiegeMachineRemoteViewTests
     [Test]
     public async ValueTask SerializeMachinePacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         await new CastleSiegeMachineUseResultPlugIn(player)
             .ShowMachineUseResultAsync(true, 0x1234, MachineType.Attack, new Point(40, 41))
             .ConfigureAwait(false);
@@ -76,7 +76,7 @@ public class CastleSiegeMachineRemoteViewTests
     [Test]
     public async ValueTask SerializeMachineFailurePacketsAsync()
     {
-        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var (player, output) = PlayerTestHelper.CreateRemotePlayer();
         await new CastleSiegeMachineUseResultPlugIn(player)
             .ShowMachineUseResultAsync(false, 0x1234, MachineType.Attack, default)
             .ConfigureAwait(false);
