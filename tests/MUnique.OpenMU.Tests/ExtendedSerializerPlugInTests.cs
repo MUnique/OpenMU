@@ -85,7 +85,11 @@ public class ExtendedSerializerPlugInTests
     [Guid("2A9C4E61-5D3B-4F87-B0A2-9E6C1D8F3B74")]
     private sealed class AppendingPlugIn : IExtendedItemSerializedPlugIn
     {
-        public void ItemSerialized(Span<byte> data, Item item, ExtendedItemSerializedArgs args) => data[args.Length++] = 0x42;
+        public void ItemSerialized(Span<byte> data, Item item, ExtendedItemSerializedArgs args)
+        {
+            ArgumentNullException.ThrowIfNull(item);
+            data[args.Length++] = 0x42;
+        }
     }
 
     /// <summary>Marks the first byte of the appearance.</summary>
@@ -93,6 +97,10 @@ public class ExtendedSerializerPlugInTests
     [Guid("7F2B8D15-6C4A-4E93-A1D7-3B5E0C9F6A28")]
     private sealed class MarkingPlugIn : IExtendedAppearanceSerializedPlugIn
     {
-        public void AppearanceSerialized(Span<byte> data, IAppearanceData appearance) => data[0] = 0x42;
+        public void AppearanceSerialized(Span<byte> data, IAppearanceData appearance)
+        {
+            ArgumentNullException.ThrowIfNull(appearance);
+            data[0] = 0x42;
+        }
     }
 }
