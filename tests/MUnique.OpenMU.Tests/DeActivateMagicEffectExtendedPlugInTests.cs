@@ -332,6 +332,37 @@ public class DeActivateMagicEffectExtendedPlugInTests
     }
 
     /// <summary>
+    /// More values than fit are cut by whole attributes: an attribute with two parts which doesn't fit any more is left out
+    /// as a whole, and a later attribute of one value still fills the last place.
+    /// </summary>
+    [Test]
+    public async ValueTask CutKeepsTheTwoPartsOfAnAttributeTogetherAsync()
+    {
+        var (player, output) = this.CreatePlayer();
+        var single = Enumerable.Range(0, DeActivateMagicEffectExtendedPlugIn.MaximumValues - 1)
+            .Select(i => new MagicEffect.ElementWithTarget(new ConstantElement(1f), new AttributeDefinition(Guid.NewGuid(), $"Single {i}", string.Empty)))
+            .ToList();
+        var last = new AttributeDefinition(Guid.NewGuid(), "Last", string.Empty);
+        var values = single
+            .Append(new MagicEffect.ElementWithTarget(new ConstantElement(0.44f, AggregateType.AddRaw), Stats.IncreaseBlockBonus))
+            .Append(new MagicEffect.ElementWithTarget(new ConstantElement(52f, AggregateType.AddFinal), Stats.IncreaseBlockBonus))
+            .Append(new MagicEffect.ElementWithTarget(new ConstantElement(1f), last))
+            .ToArray();
+        await using var effect = CreateEffect(GreaterDamage, TimeSpan.FromSeconds(60), values);
+
+        await new DeActivateMagicEffectExtendedPlugIn(player).ActivateMagicEffectAsync(effect, player).ConfigureAwait(false);
+
+        var packet = new MagicEffectStatusExtended(output.ToArray());
+        var sentAttributes = Enumerable.Range(0, packet.ValueCount).Select(i => new Guid(packet[i].AttributeId, bigEndian: true)).ToList();
+        Assert.Multiple(() =>
+        {
+            Assert.That(packet.ValueCount, Is.EqualTo(DeActivateMagicEffectExtendedPlugIn.MaximumValues));
+            Assert.That(sentAttributes, Does.Not.Contain(Stats.IncreaseBlockBonus.Id));
+            Assert.That(sentAttributes, Does.Contain(last.Id));
+        });
+    }
+
+    /// <summary>
     /// The value keeps the maximum of its attribute, as the attribute system does: Soul Barrier's own value is already limited
     /// to 0.7, but its Strengthener master skill adds to it in a combined element without that limit, e.g. 0.7 + 0.05.
     /// </summary>

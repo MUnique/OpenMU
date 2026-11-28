@@ -126,16 +126,23 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
         }
 
         var values = effect.PowerUpElements as MagicEffect.ElementWithTarget[] ?? effect.PowerUpElements.ToArray();
+
+        // More values than fit are cut by whole attributes: the two parts of an attribute are only sent together.
         var valueCount = 0;
         for (var i = 0; i < values.Length; i++)
         {
-            if (IsFirstOfItsAttribute(values, i))
+            if (!IsFirstOfItsAttribute(values, i))
             {
-                valueCount += HasRawAndFinalParts(values, i) ? 2 : 1;
+                continue;
+            }
+
+            var count = GetValueCount(values, i);
+            if (valueCount + count <= MaximumValues)
+            {
+                valueCount += count;
             }
         }
 
-        valueCount = Math.Min(valueCount, MaximumValues);
         var size = MagicEffectStatusExtendedRef.GetRequiredSize(valueCount);
         var packet = new MagicEffectStatusExtendedRef(output.GetSpan(size)[..size])
         {
@@ -146,10 +153,11 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
             ValueCount = (byte)valueCount,
         };
 
+        // The same attributes as counted above: each one is written if it still fits as a whole.
         var written = 0;
         for (var i = 0; i < values.Length && written < valueCount; i++)
         {
-            if (!IsFirstOfItsAttribute(values, i))
+            if (!IsFirstOfItsAttribute(values, i) || written + GetValueCount(values, i) > valueCount)
             {
                 continue;
             }
@@ -160,11 +168,7 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
                 // attribute, so it keeps showing Increase Block's bonus until it reads both.
                 var (raw, final) = GetRawAndFinalParts(values, i);
                 WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddFinal, final);
-                if (written < valueCount)
-                {
-                    WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddRaw, raw);
-                }
-
+                WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddRaw, raw);
                 continue;
             }
 
@@ -174,6 +178,8 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
 
         return size;
     }
+
+    private static int GetValueCount(MagicEffect.ElementWithTarget[] values, int first) => HasRawAndFinalParts(values, first) ? 2 : 1;
 
     private static void WriteValue(MagicEffectStatusExtendedRef.EffectValueRef value, AttributeDefinition attribute, MagicEffectStatusExtended.ValueKind kind, float finishedValue)
     {
