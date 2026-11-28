@@ -270,14 +270,18 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
                 continue;
             }
 
-            all.Add(values[i].Element);
-            if (values[i].Element.AggregateType == AggregateType.AddFinal)
+            // Read once: the elements are live (e.g. 2 + the caster's energy / 10), so the parts and the whole come
+            // from the same reading.
+            var type = values[i].Element.AggregateType;
+            var value = values[i].Element.Value;
+            all.Add(type, value);
+            if (type == AggregateType.AddFinal)
             {
-                final.Add(values[i].Element);
+                final.Add(type, value);
             }
             else
             {
-                raw.Add(values[i].Element);
+                raw.Add(type, value);
             }
         }
 
