@@ -683,7 +683,7 @@ public readonly struct MagicEffectStatus
 public readonly struct MagicEffectStatusExtended
 {
     /// <summary>
-    /// Defines how a value changes its attribute (the aggregate type of the attribute system). When the effect has several kinds for one attribute, they are combined into one value: AddRaw if the effect adds a value before the factors or has a maximum, else AddFinal. Its factors are then part of the value and only count for its own values, e.g. a factor with only a finally added value gives that value.
+    /// Defines how a value changes its attribute (the aggregate type of the attribute system). When the effect has several kinds for one attribute, they are combined: the values added before the factors, a maximum and the factors into one AddRaw value, the values added after the factors into one AddFinal value. The factors only count for the effect's own values, e.g. a factor with only a finally added value gives that value.
     /// </summary>
     public enum ValueKind
     {

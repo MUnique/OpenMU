@@ -126,16 +126,23 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
         }
 
         var values = effect.PowerUpElements as MagicEffect.ElementWithTarget[] ?? effect.PowerUpElements.ToArray();
+
+        // More values than fit are cut by whole attributes: the two parts of an attribute are only sent together.
         var valueCount = 0;
         for (var i = 0; i < values.Length; i++)
         {
-            if (IsFirstOfItsAttribute(values, i))
+            if (!IsFirstOfItsAttribute(values, i))
             {
-                valueCount++;
+                continue;
+            }
+
+            var count = GetValueCount(values, i);
+            if (valueCount + count <= MaximumValues)
+            {
+                valueCount += count;
             }
         }
 
-        valueCount = Math.Min(valueCount, MaximumValues);
         var size = MagicEffectStatusExtendedRef.GetRequiredSize(valueCount);
         var packet = new MagicEffectStatusExtendedRef(output.GetSpan(size)[..size])
         {
@@ -146,23 +153,39 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
             ValueCount = (byte)valueCount,
         };
 
+        // The same attributes as counted above: each one is written if it still fits as a whole.
         var written = 0;
         for (var i = 0; i < values.Length && written < valueCount; i++)
         {
-            if (!IsFirstOfItsAttribute(values, i))
+            if (!IsFirstOfItsAttribute(values, i) || written + GetValueCount(values, i) > valueCount)
             {
                 continue;
             }
 
-            var value = packet[written];
+            if (HasRawAndFinalParts(values, i))
+            {
+                // The final part first: MuMain's buff tooltip (since sven-n/MuMain#1212) reads only the first value of an
+                // attribute, so it keeps showing Increase Block's bonus until it reads both.
+                var (raw, final) = GetRawAndFinalParts(values, i);
+                WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddFinal, final);
+                WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddRaw, raw);
+                continue;
+            }
+
             var (kind, finishedValue) = GetFinishedValue(values, i);
-            values[i].Target.Id.TryWriteBytes(value.AttributeId, bigEndian: true, out _);
-            value.Kind = kind;
-            value.Value = finishedValue;
-            written++;
+            WriteValue(packet[written++], values[i].Target, kind, finishedValue);
         }
 
         return size;
+    }
+
+    private static int GetValueCount(MagicEffect.ElementWithTarget[] values, int first) => HasRawAndFinalParts(values, first) ? 2 : 1;
+
+    private static void WriteValue(MagicEffectStatusExtendedRef.EffectValueRef value, AttributeDefinition attribute, MagicEffectStatusExtended.ValueKind kind, float finishedValue)
+    {
+        attribute.Id.TryWriteBytes(value.AttributeId, bigEndian: true, out _);
+        value.Kind = kind;
+        value.Value = finishedValue;
     }
 
     /// <summary>
@@ -185,6 +208,90 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Determines whether the effect adds values to the attribute of the value at <paramref name="first"/> both before and
+    /// after the factors, which are then sent as two values, so a client can tell them apart. E.g. Increase Block with its
+    /// master skill: the master skill's raw part is multiplied by the defense rate of the character class, the bonus isn't.
+    /// </summary>
+    /// <param name="values">The values of the effect.</param>
+    /// <param name="first">The index of the first value of the attribute.</param>
+    /// <returns><c>true</c>, if the effect has a value added before the factors (or a maximum) and one added after them.</returns>
+    private static bool HasRawAndFinalParts(MagicEffect.ElementWithTarget[] values, int first)
+    {
+        var target = values[first].Target;
+        var hasRaw = false;
+        var hasFinal = false;
+        for (var i = first; i < values.Length; i++)
+        {
+            if (values[i].Target != target)
+            {
+                continue;
+            }
+
+            switch (values[i].Element.AggregateType)
+            {
+                case AggregateType.AddRaw:
+                case AggregateType.Maximum:
+                    hasRaw = true;
+                    break;
+                case AggregateType.AddFinal:
+                    hasFinal = true;
+                    break;
+                default:
+                    // Factors belong to the raw part; they don't make a part of their own.
+                    break;
+            }
+        }
+
+        return hasRaw && hasFinal;
+    }
+
+    /// <summary>
+    /// Combines the values of the effect for the attribute of the value at <paramref name="first"/> into its raw part
+    /// (the values added before the factors, the maximum and the factors) and its final part (the values added after them),
+    /// as the attribute system does. Together they are the effect's whole value, which the attribute's maximum limits once,
+    /// as the attribute system does; the raw part keeps it on its own too, the final part is what is left of the whole.
+    /// </summary>
+    /// <param name="values">The values of the effect.</param>
+    /// <param name="first">The index of the first value of the attribute.</param>
+    /// <returns>The raw and the final part.</returns>
+    private static (float Raw, float Final) GetRawAndFinalParts(MagicEffect.ElementWithTarget[] values, int first)
+    {
+        var target = values[first].Target;
+        var all = default(ElementAggregate);
+        var raw = default(ElementAggregate);
+        var final = default(ElementAggregate);
+        for (var i = first; i < values.Length; i++)
+        {
+            if (values[i].Target != target)
+            {
+                continue;
+            }
+
+            // Read once: the elements are live (e.g. 2 + the caster's energy / 10), so the parts and the whole come
+            // from the same reading.
+            var type = values[i].Element.AggregateType;
+            var value = values[i].Element.Value;
+            all.Add(type, value);
+            if (type == AggregateType.AddFinal)
+            {
+                final.Add(type, value);
+            }
+            else
+            {
+                raw.Add(type, value);
+            }
+        }
+
+        var total = all.GetValue(target);
+        var rawValue = raw.GetValue(target);
+        var finalValue = final.GetValue();
+
+        // Unlimited, the whole is the sum of the parts as they are; else the final part is what the maximum leaves of it.
+        // A negative final part counts too: a raw part of 1.0 and a final of -0.2 at a maximum of 0.7 is 0.7 in all.
+        return (rawValue, total == rawValue + finalValue ? finalValue : total - rawValue);
     }
 
     /// <summary>
