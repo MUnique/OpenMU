@@ -255,7 +255,8 @@ public class DeActivateMagicEffectExtendedPlugInTests
     /// <summary>
     /// A value added before the factors and one added after them are sent as two values of the attribute, so the client can
     /// tell them apart: Increase Block with its master skill adds 0.44 (which the character class multiplies with the defense
-    /// rate) and a bonus of 52 to the same attribute. The factors belong to the raw part.
+    /// rate) and a bonus of 52 to the same attribute. The factors belong to the raw part. The final part comes first, which
+    /// a client reading only the first value of an attribute shows.
     /// </summary>
     /// <param name="factor">A factor of the effect for the attribute, or <c>null</c> for none.</param>
     /// <param name="expectedRaw">The expected raw part.</param>
@@ -283,11 +284,11 @@ public class DeActivateMagicEffectExtendedPlugInTests
         {
             Assert.That(packet.ValueCount, Is.EqualTo(2));
             Assert.That(new Guid(packet[0].AttributeId, bigEndian: true), Is.EqualTo(Stats.IncreaseBlockBonus.Id));
-            Assert.That(packet[0].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddRaw));
-            Assert.That(packet[0].Value, Is.EqualTo(expectedRaw).Within(0.0001f));
+            Assert.That(packet[0].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddFinal));
+            Assert.That(packet[0].Value, Is.EqualTo(52f));
             Assert.That(new Guid(packet[1].AttributeId, bigEndian: true), Is.EqualTo(Stats.IncreaseBlockBonus.Id));
-            Assert.That(packet[1].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddFinal));
-            Assert.That(packet[1].Value, Is.EqualTo(52f));
+            Assert.That(packet[1].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddRaw));
+            Assert.That(packet[1].Value, Is.EqualTo(expectedRaw).Within(0.0001f));
         });
     }
 
@@ -310,8 +311,8 @@ public class DeActivateMagicEffectExtendedPlugInTests
         var packet = new MagicEffectStatusExtended(output.ToArray());
         Assert.Multiple(() =>
         {
-            Assert.That(packet[0].Value, Is.EqualTo(20f));
-            Assert.That(packet[1].Value, Is.EqualTo(10f));
+            Assert.That(packet[0].Value, Is.EqualTo(10f));
+            Assert.That(packet[1].Value, Is.EqualTo(20f));
         });
     }
 

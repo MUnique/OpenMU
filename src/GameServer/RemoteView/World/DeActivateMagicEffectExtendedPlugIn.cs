@@ -156,11 +156,13 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
 
             if (HasRawAndFinalParts(values, i))
             {
+                // The final part first: MuMain's buff tooltip (since sven-n/MuMain#1212) reads only the first value of an
+                // attribute, so it keeps showing Increase Block's bonus until it reads both.
                 var (raw, final) = GetRawAndFinalParts(values, i);
-                WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddRaw, raw);
+                WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddFinal, final);
                 if (written < valueCount)
                 {
-                    WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddFinal, final);
+                    WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddRaw, raw);
                 }
 
                 continue;
