@@ -293,26 +293,41 @@ public class DeActivateMagicEffectExtendedPlugInTests
     }
 
     /// <summary>
-    /// The two parts of an attribute together keep its maximum: the raw part first, the final part gets what is left.
+    /// The two parts of an attribute together are what the attribute system gives for the effect's values, limited by the
+    /// attribute's maximum once; the raw part keeps the maximum on its own too, the final part is what is left.
     /// </summary>
-    [Test]
-    public async ValueTask RawAndFinalPartsKeepTheMaximumTogetherAsync()
+    /// <param name="maximum">The attribute's maximum.</param>
+    /// <param name="rawValue">The value added before the factors.</param>
+    /// <param name="finalValue">The value added after the factors.</param>
+    /// <param name="expectedRaw">The expected raw part.</param>
+    /// <param name="expectedFinal">The expected final part.</param>
+    [TestCase(30f, 20f, 15f, 20f, 10f)]
+    [TestCase(30f, 40f, 5f, 30f, 0f)]
+    [TestCase(0.7f, 1.0f, -0.2f, 0.7f, 0f)]
+    [TestCase(0.7f, 0.5f, -0.2f, 0.5f, -0.2f)]
+    public async ValueTask RawAndFinalPartsKeepTheMaximumTogetherAsync(float maximum, float rawValue, float finalValue, float expectedRaw, float expectedFinal)
     {
         var (player, output) = this.CreatePlayer();
-        var limited = new AttributeDefinition(Guid.NewGuid(), "Limited", string.Empty) { MaximumValue = 30f };
-        await using var effect = CreateEffect(
-            GreaterDamage,
-            TimeSpan.FromSeconds(60),
-            new MagicEffect.ElementWithTarget(new ConstantElement(20f, AggregateType.AddRaw), limited),
-            new MagicEffect.ElementWithTarget(new ConstantElement(15f, AggregateType.AddFinal), limited));
+        var limited = new AttributeDefinition(Guid.NewGuid(), "Limited", string.Empty) { MaximumValue = maximum };
+        var values = new[]
+        {
+            new MagicEffect.ElementWithTarget(new ConstantElement(rawValue, AggregateType.AddRaw), limited),
+            new MagicEffect.ElementWithTarget(new ConstantElement(finalValue, AggregateType.AddFinal), limited),
+        };
+        var expectedWhole = GetWholeValue(values, limited);
+        await using var effect = CreateEffect(GreaterDamage, TimeSpan.FromSeconds(60), values);
 
         await new DeActivateMagicEffectExtendedPlugIn(player).ActivateMagicEffectAsync(effect, player).ConfigureAwait(false);
 
         var packet = new MagicEffectStatusExtended(output.ToArray());
         Assert.Multiple(() =>
         {
-            Assert.That(packet[0].Value, Is.EqualTo(10f));
-            Assert.That(packet[1].Value, Is.EqualTo(20f));
+            Assert.That(packet.ValueCount, Is.EqualTo(2));
+            Assert.That(packet[0].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddFinal));
+            Assert.That(packet[0].Value, Is.EqualTo(expectedFinal).Within(0.0001f));
+            Assert.That(packet[1].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddRaw));
+            Assert.That(packet[1].Value, Is.EqualTo(expectedRaw).Within(0.0001f));
+            Assert.That(packet[0].Value + packet[1].Value, Is.EqualTo(expectedWhole).Within(0.0001f));
         });
     }
 
@@ -553,6 +568,17 @@ public class DeActivateMagicEffectExtendedPlugInTests
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(clientVersion);
         this._players.Add(player);
         return (player, output);
+    }
+
+    private static float GetWholeValue(MagicEffect.ElementWithTarget[] values, AttributeDefinition attribute)
+    {
+        var whole = default(ElementAggregate);
+        foreach (var value in values)
+        {
+            whole.Add(value.Element);
+        }
+
+        return whole.GetValue(attribute);
     }
 
     private static MagicEffect CreateEffect(short number, TimeSpan duration, params MagicEffect.ElementWithTarget[] values)

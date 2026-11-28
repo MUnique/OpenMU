@@ -245,7 +245,8 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
     /// <summary>
     /// Combines the values of the effect for the attribute of the value at <paramref name="first"/> into its raw part
     /// (the values added before the factors, the maximum and the factors) and its final part (the values added after them),
-    /// as the attribute system does. Together they stay within the attribute's maximum.
+    /// as the attribute system does. Together they are the effect's whole value, which the attribute's maximum limits once,
+    /// as the attribute system does; the raw part keeps it on its own too, the final part is what is left of the whole.
     /// </summary>
     /// <param name="values">The values of the effect.</param>
     /// <param name="first">The index of the first value of the attribute.</param>
@@ -253,6 +254,7 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
     private static (float Raw, float Final) GetRawAndFinalParts(MagicEffect.ElementWithTarget[] values, int first)
     {
         var target = values[first].Target;
+        var all = default(ElementAggregate);
         var raw = default(ElementAggregate);
         var final = default(ElementAggregate);
         for (var i = first; i < values.Length; i++)
@@ -262,6 +264,7 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
                 continue;
             }
 
+            all.Add(values[i].Element);
             if (values[i].Element.AggregateType == AggregateType.AddFinal)
             {
                 final.Add(values[i].Element);
@@ -272,14 +275,13 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
             }
         }
 
+        var total = all.GetValue(target);
         var rawValue = raw.GetValue(target);
         var finalValue = final.GetValue();
-        if (target.MaximumValue is { } maximum)
-        {
-            finalValue = Math.Min(finalValue, maximum - rawValue);
-        }
 
-        return (rawValue, finalValue);
+        // Unlimited, the whole is the sum of the parts as they are; else the final part is what the maximum leaves of it.
+        // A negative final part counts too: a raw part of 1.0 and a final of -0.2 at a maximum of 0.7 is 0.7 in all.
+        return (rawValue, total == rawValue + finalValue ? finalValue : total - rawValue);
     }
 
     /// <summary>
