@@ -131,7 +131,7 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
         {
             if (IsFirstOfItsAttribute(values, i))
             {
-                valueCount++;
+                valueCount += HasRawAndFinalParts(values, i) ? 2 : 1;
             }
         }
 
@@ -154,15 +154,30 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
                 continue;
             }
 
-            var value = packet[written];
+            if (HasRawAndFinalParts(values, i))
+            {
+                var (raw, final) = GetRawAndFinalParts(values, i);
+                WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddRaw, raw);
+                if (written < valueCount)
+                {
+                    WriteValue(packet[written++], values[i].Target, MagicEffectStatusExtended.ValueKind.AddFinal, final);
+                }
+
+                continue;
+            }
+
             var (kind, finishedValue) = GetFinishedValue(values, i);
-            values[i].Target.Id.TryWriteBytes(value.AttributeId, bigEndian: true, out _);
-            value.Kind = kind;
-            value.Value = finishedValue;
-            written++;
+            WriteValue(packet[written++], values[i].Target, kind, finishedValue);
         }
 
         return size;
+    }
+
+    private static void WriteValue(MagicEffectStatusExtendedRef.EffectValueRef value, AttributeDefinition attribute, MagicEffectStatusExtended.ValueKind kind, float finishedValue)
+    {
+        attribute.Id.TryWriteBytes(value.AttributeId, bigEndian: true, out _);
+        value.Kind = kind;
+        value.Value = finishedValue;
     }
 
     /// <summary>
@@ -185,6 +200,84 @@ public class DeActivateMagicEffectExtendedPlugIn : IActivateMagicEffectPlugIn, I
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Determines whether the effect adds values to the attribute of the value at <paramref name="first"/> both before and
+    /// after the factors, which are then sent as two values, so a client can tell them apart. E.g. Increase Block with its
+    /// master skill: the master skill's raw part is multiplied by the defense rate of the character class, the bonus isn't.
+    /// </summary>
+    /// <param name="values">The values of the effect.</param>
+    /// <param name="first">The index of the first value of the attribute.</param>
+    /// <returns><c>true</c>, if the effect has a value added before the factors (or a maximum) and one added after them.</returns>
+    private static bool HasRawAndFinalParts(MagicEffect.ElementWithTarget[] values, int first)
+    {
+        var target = values[first].Target;
+        var hasRaw = false;
+        var hasFinal = false;
+        for (var i = first; i < values.Length; i++)
+        {
+            if (values[i].Target != target)
+            {
+                continue;
+            }
+
+            switch (values[i].Element.AggregateType)
+            {
+                case AggregateType.AddRaw:
+                case AggregateType.Maximum:
+                    hasRaw = true;
+                    break;
+                case AggregateType.AddFinal:
+                    hasFinal = true;
+                    break;
+                default:
+                    // Factors belong to the raw part; they don't make a part of their own.
+                    break;
+            }
+        }
+
+        return hasRaw && hasFinal;
+    }
+
+    /// <summary>
+    /// Combines the values of the effect for the attribute of the value at <paramref name="first"/> into its raw part
+    /// (the values added before the factors, the maximum and the factors) and its final part (the values added after them),
+    /// as the attribute system does. Together they stay within the attribute's maximum.
+    /// </summary>
+    /// <param name="values">The values of the effect.</param>
+    /// <param name="first">The index of the first value of the attribute.</param>
+    /// <returns>The raw and the final part.</returns>
+    private static (float Raw, float Final) GetRawAndFinalParts(MagicEffect.ElementWithTarget[] values, int first)
+    {
+        var target = values[first].Target;
+        var raw = default(ElementAggregate);
+        var final = default(ElementAggregate);
+        for (var i = first; i < values.Length; i++)
+        {
+            if (values[i].Target != target)
+            {
+                continue;
+            }
+
+            if (values[i].Element.AggregateType == AggregateType.AddFinal)
+            {
+                final.Add(values[i].Element);
+            }
+            else
+            {
+                raw.Add(values[i].Element);
+            }
+        }
+
+        var rawValue = raw.GetValue(target);
+        var finalValue = final.GetValue();
+        if (target.MaximumValue is { } maximum)
+        {
+            finalValue = Math.Min(finalValue, maximum - rawValue);
+        }
+
+        return (rawValue, finalValue);
     }
 
     /// <summary>

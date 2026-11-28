@@ -20,7 +20,7 @@ The user interface shows the effect as icon at the top of the interface, with th
 | 6 | 1 | Byte |  | EffectId |
 | 7 | 4 | IntegerLittleEndian |  | RemainingSeconds; The seconds until the effect ends, rounded up; 0 if the effect's definition doesn't send its duration (SendDuration), so the client shows no time. |
 | 11 | 1 | Byte |  | ValueCount |
-| 12 | EffectValue.Length * ValueCount | Array of EffectValue |  | Values; The finished value of the effect for each attribute it changes, one per attribute; their order has no meaning. It's the effect's own value: the server combines the power-ups of the effect for one attribute as the attribute system does, as if the effect were the attribute's only source, and limits it to the attribute's maximum (e.g. Greater Damage: the energy bonus times the factor of its master skills; Soul Barrier at most 0.7). Other sources of the attribute, like other effects, items or stats, aren't part of it. Only the power-ups which the effect has are counted, e.g. a stun has no value for its stun chance, poison and bleeding only their first. |
+| 12 | EffectValue.Length * ValueCount | Array of EffectValue |  | Values; The finished values of the effect for each attribute it changes: one per attribute, or two when the effect adds to it both before and after the factors (an AddRaw and an AddFinal value; e.g. Increase Block with its master skill, whose raw part the character class multiplies with the defense rate); their order has no meaning. It's the effect's own value: the server combines the power-ups of the effect for one attribute as the attribute system does, as if the effect were the attribute's only source, and limits it to the attribute's maximum (e.g. Greater Damage: the energy bonus times the factor of its master skills; Soul Barrier at most 0.7). Other sources of the attribute, like other effects, items or stats, aren't part of it. Only the power-ups which the effect has are counted, e.g. a stun has no value for its stun chance, poison and bleeding only their first. |
 
 ### EffectValue Structure
 
@@ -36,7 +36,7 @@ Length: 21 Bytes
 
 ### ValueKind Enum
 
-Defines how a value changes its attribute (the aggregate type of the attribute system). When the effect has several kinds for one attribute, they are combined into one value: AddRaw if the effect adds a value before the factors or has a maximum, else AddFinal. Its factors are then part of the value and only count for its own values, e.g. a factor with only a finally added value gives that value.
+Defines how a value changes its attribute (the aggregate type of the attribute system). When the effect has several kinds for one attribute, they are combined: the values added before the factors, a maximum and the factors into one AddRaw value, the values added after the factors into one AddFinal value. The factors only count for the effect's own values, e.g. a factor with only a finally added value gives that value.
 
 | Value | Name | Description |
 |-------|------|-------------|

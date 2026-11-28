@@ -215,8 +215,8 @@ public class DeActivateMagicEffectExtendedPlugInTests
     }
 
     /// <summary>
-    /// The kind of the sent value follows the kinds which the effect has for the attribute; several kinds become one value,
-    /// the effect's own: its factors only count for its own values.
+    /// The kind of the sent value follows the kinds which the effect has for the attribute; several kinds without a value
+    /// added both before and after the factors become one value, the effect's own: its factors only count for its own values.
     /// </summary>
     /// <param name="first">The aggregate type of the first value.</param>
     /// <param name="firstValue">The first value.</param>
@@ -229,7 +229,7 @@ public class DeActivateMagicEffectExtendedPlugInTests
     [TestCase(AggregateType.Maximum, 30f, AggregateType.Maximum, 40f, MagicEffectStatusExtended.ValueKind.Maximum, 40f)]
     [TestCase(AggregateType.Multiplicate, 1.1f, AggregateType.AddFinal, 50f, MagicEffectStatusExtended.ValueKind.AddFinal, 50f)]
     [TestCase(AggregateType.Maximum, 30f, AggregateType.Multiplicate, 2f, MagicEffectStatusExtended.ValueKind.AddRaw, 60f)]
-    [TestCase(AggregateType.AddRaw, 10f, AggregateType.AddFinal, 5f, MagicEffectStatusExtended.ValueKind.AddRaw, 15f)]
+    [TestCase(AggregateType.AddRaw, 10f, AggregateType.Multiplicate, 2f, MagicEffectStatusExtended.ValueKind.AddRaw, 20f)]
     public async ValueTask KindsOfOneAttributeBecomeOneValueAsync(AggregateType first, float firstValue, AggregateType? second, float secondValue, MagicEffectStatusExtended.ValueKind expectedKind, float expectedValue)
     {
         var (player, output) = this.CreatePlayer();
@@ -249,6 +249,69 @@ public class DeActivateMagicEffectExtendedPlugInTests
             Assert.That(packet.ValueCount, Is.EqualTo(1));
             Assert.That(packet[0].Kind, Is.EqualTo(expectedKind));
             Assert.That(packet[0].Value, Is.EqualTo(expectedValue).Within(0.001f));
+        });
+    }
+
+    /// <summary>
+    /// A value added before the factors and one added after them are sent as two values of the attribute, so the client can
+    /// tell them apart: Increase Block with its master skill adds 0.44 (which the character class multiplies with the defense
+    /// rate) and a bonus of 52 to the same attribute. The factors belong to the raw part.
+    /// </summary>
+    /// <param name="factor">A factor of the effect for the attribute, or <c>null</c> for none.</param>
+    /// <param name="expectedRaw">The expected raw part.</param>
+    [TestCase(null, 0.44f)]
+    [TestCase(2f, 0.88f)]
+    public async ValueTask RawAndFinalPartsAreSentAsTwoValuesAsync(float? factor, float expectedRaw)
+    {
+        var (player, output) = this.CreatePlayer();
+        var values = new List<MagicEffect.ElementWithTarget>
+        {
+            new(new ConstantElement(52f, AggregateType.AddFinal), Stats.IncreaseBlockBonus),
+            new(new ConstantElement(0.44f, AggregateType.AddRaw), Stats.IncreaseBlockBonus),
+        };
+        if (factor is { } factorValue)
+        {
+            values.Add(new(new ConstantElement(factorValue, AggregateType.Multiplicate), Stats.IncreaseBlockBonus));
+        }
+
+        await using var effect = CreateEffect(GreaterDamage, TimeSpan.FromSeconds(60), values.ToArray());
+
+        await new DeActivateMagicEffectExtendedPlugIn(player).ActivateMagicEffectAsync(effect, player).ConfigureAwait(false);
+
+        var packet = new MagicEffectStatusExtended(output.ToArray());
+        Assert.Multiple(() =>
+        {
+            Assert.That(packet.ValueCount, Is.EqualTo(2));
+            Assert.That(new Guid(packet[0].AttributeId, bigEndian: true), Is.EqualTo(Stats.IncreaseBlockBonus.Id));
+            Assert.That(packet[0].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddRaw));
+            Assert.That(packet[0].Value, Is.EqualTo(expectedRaw).Within(0.0001f));
+            Assert.That(new Guid(packet[1].AttributeId, bigEndian: true), Is.EqualTo(Stats.IncreaseBlockBonus.Id));
+            Assert.That(packet[1].Kind, Is.EqualTo(MagicEffectStatusExtended.ValueKind.AddFinal));
+            Assert.That(packet[1].Value, Is.EqualTo(52f));
+        });
+    }
+
+    /// <summary>
+    /// The two parts of an attribute together keep its maximum: the raw part first, the final part gets what is left.
+    /// </summary>
+    [Test]
+    public async ValueTask RawAndFinalPartsKeepTheMaximumTogetherAsync()
+    {
+        var (player, output) = this.CreatePlayer();
+        var limited = new AttributeDefinition(Guid.NewGuid(), "Limited", string.Empty) { MaximumValue = 30f };
+        await using var effect = CreateEffect(
+            GreaterDamage,
+            TimeSpan.FromSeconds(60),
+            new MagicEffect.ElementWithTarget(new ConstantElement(20f, AggregateType.AddRaw), limited),
+            new MagicEffect.ElementWithTarget(new ConstantElement(15f, AggregateType.AddFinal), limited));
+
+        await new DeActivateMagicEffectExtendedPlugIn(player).ActivateMagicEffectAsync(effect, player).ConfigureAwait(false);
+
+        var packet = new MagicEffectStatusExtended(output.ToArray());
+        Assert.Multiple(() =>
+        {
+            Assert.That(packet[0].Value, Is.EqualTo(20f));
+            Assert.That(packet[1].Value, Is.EqualTo(10f));
         });
     }
 
